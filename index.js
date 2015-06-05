@@ -187,12 +187,16 @@ function validateRecording(recording) {
 	var validation = {
 		startDateTime: {
 			presence: true,
-			onlyInteger: true
+			numericality: {
+				onlyInteger: true
+			}
 		},
 		stopDateTime: {
 			presence: true,
-			onlyInteger: true,
-			greaterThan: recording.startDateTime
+			numericality: {
+				onlyInteger: true,
+				greaterThan: recording.startDateTime
+			}
 		}
 	};
 	var validationErrors = validatejs(recording, validation);
