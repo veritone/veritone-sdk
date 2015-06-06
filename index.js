@@ -53,12 +53,14 @@ ApiClient.prototype.createApplication = function createApplication(application, 
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+
 	request({
 		method: 'POST',
 		url: this._baseUri + applicationEndpoint,
-		headers: {
-			tokenHeader: this._token
-		},
+		headers: headers,
 		json: application
 	}, function(err, response, body) {
 		if (err) {
