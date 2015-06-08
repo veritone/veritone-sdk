@@ -336,6 +336,33 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 	});
 };
 
+ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(recordingId, callback) {
+	if (typeof recordingId !== 'string') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+
+	request({
+		method: 'GET',
+		uri: this._baseUri + recordingEndpoint + recordingId + '/transcript',
+		headers: headers,
+		json: true
+	}, function (err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
 		throw 'Missing recordingId!';
