@@ -396,6 +396,31 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 	});
 };
 
+ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, assetId, fileName, callback) {
+	if (typeof recordingId !== 'string') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof assetId !== 'string') {
+		throw 'Missing assetId!';
+	}
+	if (typeof fileName !== 'string') {
+		throw 'Missing fileName!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	this.getAsset(recordingId, assetId, function(err, result) {
+		if (err) {
+			return callback(err);
+		}
+		result.stream.on('end', function() {
+			callback(null, result);
+		});
+		result.pipe(fs.createWriteStream(fileName));
+	});
+};
+
 ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callback) {
 	if (typeof recordingId !== 'string') {
 		throw 'Missing recordingId!';
