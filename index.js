@@ -363,6 +363,36 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 	});
 };
 
+ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, callback) {
+	if (typeof recordingId !== 'string') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+
+	var req = request({
+		method: 'GET',
+		uri: this._baseUri + recordingEndpoint + recordingId + '/media',
+		headers: headers
+	}).on('error', function (err) {
+		callback(err);
+	}).on('response', function(response) {
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		var metadata = response.headers[metadataHeader.toLowerCase()];
+		callback(null, {
+			contentType: response.headers['content-type'],
+			metadata: (metadata ? JSON.parse(metadata) : undefined),
+			stream: req
+		});
+	});
+};
+
 ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
 		throw 'Missing recordingId!';
