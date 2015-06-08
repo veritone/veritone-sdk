@@ -22,40 +22,46 @@ describe('veritone-api', function() {
 			apiClient.createJob(job, function(err, newJob) {
 				expect(err).not.toBeTruthy();
 				expect(newJob).toBeTruthy();
-				expect(newJob.jobId).toBeTruthy();
-				expect(newJob.status).toEqual('accepted');
+				if (newJob) {
+					expect(newJob.jobId).toBeTruthy();
+					expect(newJob.status).toEqual('accepted');
 
-				job = newJob;
+					job = newJob;
+				}
+
 				done();
 			});
 		});
 
-		xit('shoud get a job', function(done) {
-			apiClient.getJob(job.jobId, function(err, returnedJob) {
-				expect(err).not.toBeTruthy();
-				expect(returnedJob).toBeTruthy();
-				expect(returnedJob.status).toEqual('running');
-				done();
-			});
-		});
-
-		xit('should update a task in a job', function(done) {
-			var taskResult = {
-				taskStatus: 'complete',
-				taskOutput: {recordingId: '123'}
-			}
-			apiClient.updateTask(job.jobId, job.tasks[0].taskId, taskResult, function(err) {
-				expect(err).not.toBeTruthy();
-
-				// Verify update by retrieving job again.
+		if (job)
+		{
+			xit('shoud get a job', function(done) {
 				apiClient.getJob(job.jobId, function(err, returnedJob) {
 					expect(err).not.toBeTruthy();
 					expect(returnedJob).toBeTruthy();
-					expect(returnedJob.status).toEqual('complete');
-					expect(returnedJob.recordingId).toEqual('123');
+					expect(returnedJob.status).toEqual('running');
 					done();
 				});
 			});
-		});
+
+			xit('should update a task in a job', function(done) {
+				var taskResult = {
+					taskStatus: 'complete',
+					taskOutput: {recordingId: '123'}
+				}
+				apiClient.updateTask(job.jobId, job.tasks[0].taskId, taskResult, function(err) {
+					expect(err).not.toBeTruthy();
+
+					// Verify update by retrieving job again.
+					apiClient.getJob(job.jobId, function(err, returnedJob) {
+						expect(err).not.toBeTruthy();
+						expect(returnedJob).toBeTruthy();
+						expect(returnedJob.status).toEqual('complete');
+						expect(returnedJob.recordingId).toEqual('123');
+						done();
+					});
+				});
+			});
+		}
 	});
 });

@@ -20,6 +20,8 @@ var request = require('request'),
 var applicationEndpoint = '/api/application/',
 	recordingEndpoint = '/api/recording/',
 	jobEndpoint = '/api/job/',
+	searchEndpoint = '/api/search',
+	reportsEndpoint = '/api/report/',
 	tokenHeader = 'X-Veritone-Application',
 	metadataHeader = 'X-Veritone-Metadata';
 
@@ -379,16 +381,15 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
 		headers: headers
-	}, function (err, response, body) {
-		if (err) {
-			return callback(err);
-		}
+	}).on('error', function (err) {
+		callback(err);
+	}).on('response', function(response) {
 		if (response.statusCode !== 200) {
 			return callback('Received status: ' + response.statusCode, body);
 		}
-		var metadata = response.headers[metadataHeader];
+		var metadata = response.headers[metadataHeader.toLowerCase()];
 		callback(null, {
-			contentType: response.headers['Content-Type'],
+			contentType: response.headers['content-type'],
 			metadata: (metadata ? JSON.parse(metadata) : undefined),
 			stream: req
 		});
@@ -619,5 +620,130 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 		callback(null);
 	});
 };
+
+ApiClient.prototype.search = function search(searchRequest, callback) {
+	if (typeof searchRequest !== 'object') {
+		throw 'Missing search request!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+	
+	request({
+		method: 'POST',
+		url: this._baseUri + searchEndpoint,
+		headers: headers,
+		json: searchRequest
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+/*
+ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport(reportRequest, callback) {
+	if (typeof reportRequest !== 'object') {
+		throw 'Missing report request!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+	
+	request({
+		method: 'POST',
+		url: this._baseUri + reportsEndpoint + 'recordings',
+		headers: headers,
+		json: searchRequest
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body.reportId);
+	});
+};
+
+ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId, callback) {
+	if (typeof reportId !== 'string') {
+		throw 'Missing reportId!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+	
+	request({
+		method: 'GET',
+		url: this._baseUri + reportsEndpoint + 'recordings/' + reportId,
+		headers: headers,
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode === 420) {
+			// report isn't ready
+			return callback();
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.listUsageReports = function listUsageReports(callback) {
+	if (typeof reportId !== 'string') {
+		throw 'Missing reportId!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+	
+	request({
+		method: 'GET',
+		url: this._baseUri + reportsEndpoint + 'usage',
+		headers: headers,
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getUsageReport = function getUsageReport(reportId, callback) {
+	if (typeof reportId !== 'string') {
+		throw 'Missing reportId!';
+	}
+
+	var headers = {};
+	headers[tokenHeader] = this._token;
+	
+	request({
+		method: 'GET',
+		url: this._baseUri + reportsEndpoint + 'usage/' + reportId,
+		headers: headers,
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+*/
 
 module.exports = ApiClient;
