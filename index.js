@@ -417,7 +417,7 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 		result.stream.on('end', function() {
 			callback(null, result);
 		});
-		result.pipe(fs.createWriteStream(fileName));
+		result.stream.pipe(fs.createWriteStream(fileName));
 	});
 };
 
