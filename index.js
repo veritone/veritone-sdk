@@ -22,7 +22,8 @@ var applicationEndpoint = '/api/application/',
 	jobEndpoint = '/api/job/',
 	searchEndpoint = '/api/search',
 	reportsEndpoint = '/api/report/',
-	metadataHeader = 'X-Veritone-Metadata';
+	metadataHeader = 'X-Veritone-Metadata',
+	applicationIdHeader = 'X-Veritone-Application-Id';
 
 function generateHeaders(token) {
 	var headers = {};
@@ -437,7 +438,7 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 		result.stream.on('end', function() {
 			callback(null, result);
 		});
-		result.pipe(fs.createWriteStream(fileName));
+		result.stream.pipe(fs.createWriteStream(fileName));
 	});
 };
 
@@ -476,6 +477,9 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	};
 	if (asset.metadata) {
 		opts.headers[metadataHeader] = JSON.stringify(asset.metadata);
+	}
+	if (asset.applicationId) {
+		opts.headers[applicationIdHeader] = asset.applicationId;
 	}
 	fs.createReadStream(asset.fileName).pipe(
 		request(opts, function (err, response, body) {
