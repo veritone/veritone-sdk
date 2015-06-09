@@ -23,7 +23,8 @@ var applicationEndpoint = '/api/application/',
 	searchEndpoint = '/api/search',
 	reportsEndpoint = '/api/report/',
 	tokenHeader = 'X-Veritone-Application',
-	metadataHeader = 'X-Veritone-Metadata';
+	metadataHeader = 'X-Veritone-Metadata',
+	applicationIdHeader = 'X-Veritone-Application-Id';
 
 function validateApplication(application) {
 	if (typeof application !== 'object') {
@@ -458,6 +459,9 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	};
 	if (asset.metadata) {
 		opts.headers[metadataHeader] = JSON.stringify(asset.metadata);
+	}
+	if (asset.applicationId) {
+		opts.headers[applicationIdHeader] = asset.applicationId;
 	}
 	fs.createReadStream(asset.fileName).pipe(
 		request(opts, function (err, response, body) {
