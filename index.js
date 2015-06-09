@@ -27,7 +27,7 @@ var applicationEndpoint = '/api/application/',
 
 function generateHeaders(token) {
 	var headers = {};
-	headers['Authorization'] = 'Bearer ' + token;
+	headers.Authorization = 'Bearer ' + token;
 	return headers;
 }
 
@@ -352,7 +352,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		callback(err);
 	}).on('response', function(response) {
 		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
+			return callback('Received status: ' + response.statusCode);
 		}
 		var metadata = response.headers[metadataHeader.toLowerCase()];
 		callback(null, {
@@ -406,7 +406,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		callback(err);
 	}).on('response', function(response) {
 		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
+			return callback('Received status: ' + response.statusCode);
 		}
 		var metadata = response.headers[metadataHeader.toLowerCase()];
 		callback(null, {
