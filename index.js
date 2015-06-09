@@ -10,7 +10,7 @@ function ApiClient(options) {
 		throw 'Missing token!';
 	}
 	this._token = options.token;
-	this._baseUri = options.baseUri || 'https://api.veritone.com';
+	this._baseUri = options.baseUri || 'https://core.veritone.com';
 }
 
 var request = require('request'),
@@ -22,8 +22,13 @@ var applicationEndpoint = '/api/application/',
 	jobEndpoint = '/api/job/',
 	searchEndpoint = '/api/search',
 	reportsEndpoint = '/api/report/',
-	tokenHeader = 'X-Veritone-Application',
 	metadataHeader = 'X-Veritone-Metadata';
+
+function generateHeaders(token) {
+	var headers = {};
+	headers['Authorization'] = 'Bearer ' + token;
+	return headers;
+}
 
 function validateApplication(application) {
 	if (typeof application !== 'object') {
@@ -56,13 +61,10 @@ ApiClient.prototype.createApplication = function createApplication(application, 
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'POST',
 		url: this._baseUri + applicationEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: application
 	}, function(err, response, body) {
 		if (err) {
@@ -80,13 +82,10 @@ ApiClient.prototype.getApplication = function getApplication(callback) {
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'GET',
 		url: this._baseUri + applicationEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
 		if (err) {
@@ -105,13 +104,10 @@ ApiClient.prototype.updateApplication = function updateApplication(application, 
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'PUT',
 		url: this._baseUri + applicationEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: application
 	}, function(err, response, body) {
 		if (err) {
@@ -135,13 +131,10 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'POST',
 		url: this._baseUri + '/api/application/token/',
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: {
 			tokenLabel: label,
 			rights: rights
@@ -165,13 +158,10 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'DELETE',
 		url: this._baseUri + '/api/application/token/' + token,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
 		if (err) {
@@ -215,13 +205,10 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'POST',
 		url: this._baseUri + recordingEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: recording
 	}, function (err, response, body) {
 		if (err) {
@@ -233,19 +220,16 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 		callback(null, body);
 	});
 };
-
+/*
 ApiClient.prototype.getRecordings = function getRecordings(callback) {
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function (err, response, body) {
 		if (err) {
@@ -257,7 +241,7 @@ ApiClient.prototype.getRecordings = function getRecordings(callback) {
 		callback(null, body);
 	});
 };
-
+*/
 ApiClient.prototype.getRecording = function getRecording(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
 		throw 'Missing recordingId!';
@@ -266,13 +250,10 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint + recordingId,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function (err, response, body) {
 		if (err) {
@@ -291,13 +272,10 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'PUT',
 		url: this._baseUri + recordingEndpoint + recording.recordingId,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: recording
 	}, function (err, response, body) {
 		if (err) {
@@ -309,7 +287,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		callback(null, body);
 	});
 };
-
+/*
 ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
 	if (typeof recordingId !== 'object') {
 		throw 'Missing recordingId!';
@@ -318,13 +296,10 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'DELETE',
 		url: this._baseUri + recordingEndpoint + recordingId,
-		headers: headers
+		headers: generateHeaders(this._token)
 	}, function (err, response, body) {
 		if (err) {
 			return callback(err);
@@ -335,7 +310,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 		callback(null, body);
 	});
 };
-
+*/
 ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
 		throw 'Missing recordingId!';
@@ -344,13 +319,10 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint + recordingId + '/transcript',
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function (err, response, body) {
 		if (err) {
@@ -371,13 +343,10 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	var req = request({
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint + recordingId + '/media',
-		headers: headers
+		headers: generateHeaders(this._token)
 	}).on('error', function (err) {
 		callback(err);
 	}).on('response', function(response) {
@@ -401,13 +370,10 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/',
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function (err, response, body) {
 		if (err) {
@@ -431,13 +397,10 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	var req = request({
 		method: 'GET',
 		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
-		headers: headers
+		headers: generateHeaders(this._token)
 	}).on('error', function (err) {
 		callback(err);
 	}).on('response', function(response) {
@@ -501,11 +464,9 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		throw 'File "' + asset.fileName + '" does not exist!';
 	}
 
-	var headers = {
-		'X-Veritone-Asset-Type': asset.assetType,
-		'Content-Type': asset.contentType
-	};
-	headers[tokenHeader] = this._token;
+	var headers = generateHeaders(this._token);
+	headers['X-Veritone-Asset-Type'] = asset.assetType;
+	headers['Content-Type'] = asset.contentType;
 
 	var opts = {
 		method: 'POST',
@@ -552,13 +513,10 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	var opts = {
 		method: 'PUT',
 		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/' + asset.assetId,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	};
 	if (asset.fileName) {
@@ -601,13 +559,10 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-
 	request({
 		method: 'POST',
 		url: this._baseUri + jobEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: job
 	}, function(err, response, body) {
 		if (err) {
@@ -619,29 +574,16 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		callback(null, body);
 	});
 };
-
+/*
 ApiClient.prototype.getJobs = function getJobs(callback) {
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
-	throw 'Not implemented!';
-};
-
-ApiClient.prototype.getJob = function getJob(jobId, callback) {
-	if (typeof jobId !== 'string') {
-		throw 'Missing jobId!';
-	}
-	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
-	}
-
-	var headers = {};
-	headers[tokenHeader] = this._token;
 
 	request({
 		method: 'GET',
-		url: this._baseUri + jobEndpoint + jobId,
-		headers: headers,
+		url: this._baseUri + jobEndpoint,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
 		if (err) {
@@ -653,7 +595,31 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 		callback(null, body);
 	});
 };
+*/
+ApiClient.prototype.getJob = function getJob(jobId, callback) {
+	if (typeof jobId !== 'string') {
+		throw 'Missing jobId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 
+	request({
+		method: 'GET',
+		url: this._baseUri + jobEndpoint + jobId,
+		headers: generateHeaders(this._token),
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+/*
 ApiClient.prototype.cancelJob = function cancelJob(jobId, callback) {
 	if (typeof jobId !== 'string') {
 		throw 'Missing jobId!';
@@ -661,9 +627,23 @@ ApiClient.prototype.cancelJob = function cancelJob(jobId, callback) {
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
-	throw 'Not implemented!';
+	
+	request({
+		method: 'DELETE',
+		url: this._baseUri + jobEndpoint + jobId,
+		headers: generateHeaders(this._token),
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 204) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
 };
-
+*/
 ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, callback) {
 	if (typeof jobId !== 'string') {
 		throw 'Missing jobId!';
@@ -684,13 +664,10 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 		throw 'Missing callback!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-	
 	request({
 		method: 'PUT',
 		url: this._baseUri + jobEndpoint + jobId + '/task/' + taskId,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: result
 	}, function(err, response, body) {
 		if (err) {
@@ -708,13 +685,10 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 		throw 'Missing search request!';
 	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-	
 	request({
 		method: 'POST',
 		url: this._baseUri + searchEndpoint,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: searchRequest
 	}, function(err, response, body) {
 		if (err) {
