@@ -179,6 +179,9 @@ function validateRecording(recording) {
 	if (typeof recording !== 'object') {
 		throw 'Missing recording!';
 	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 	var validation = {
 		startDateTime: {
 			presence: true,
@@ -550,6 +553,9 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 	if (typeof job !== 'object') {
 		throw 'Missing job!';
 	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 	var validation = {
 		tasks: {
 			presence: true
@@ -688,6 +694,9 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 	if (typeof searchRequest !== 'object') {
 		throw 'Missing search request!';
 	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 
 	request({
 		method: 'POST',
@@ -704,20 +713,20 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 		callback(null, body);
 	});
 };
-/*
+
 ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport(reportRequest, callback) {
 	if (typeof reportRequest !== 'object') {
 		throw 'Missing report request!';
 	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-	
 	request({
 		method: 'POST',
 		url: this._baseUri + reportsEndpoint + 'recordings',
-		headers: headers,
-		json: searchRequest
+		headers: generateHeaders(this._token),
+		json: reportRequest
 	}, function(err, response, body) {
 		if (err) {
 			return callback(err);
@@ -729,19 +738,26 @@ ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport
 	});
 };
 
-ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId, callback) {
+ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId, contentType, callback) {
 	if (typeof reportId !== 'string') {
 		throw 'Missing reportId!';
 	}
+	if (typeof contentType === 'function' && !callback) {
+		callback = contentType;
+		contentType = 'application/json';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-	
+	var headers = generateHeaders(this._token);
+	headers['Accept'] = contentType;
+
 	request({
 		method: 'GET',
 		url: this._baseUri + reportsEndpoint + 'recordings/' + reportId,
 		headers: headers,
-		json: true
+		json: (contentType === 'application/json')
 	}, function(err, response, body) {
 		if (err) {
 			return callback(err);
@@ -756,19 +772,19 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 		callback(null, body);
 	});
 };
-
+/*
 ApiClient.prototype.listUsageReports = function listUsageReports(callback) {
 	if (typeof reportId !== 'string') {
 		throw 'Missing reportId!';
 	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-	
 	request({
 		method: 'GET',
 		url: this._baseUri + reportsEndpoint + 'usage',
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
 		if (err) {
@@ -785,14 +801,14 @@ ApiClient.prototype.getUsageReport = function getUsageReport(reportId, callback)
 	if (typeof reportId !== 'string') {
 		throw 'Missing reportId!';
 	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
 
-	var headers = {};
-	headers[tokenHeader] = this._token;
-	
 	request({
 		method: 'GET',
 		url: this._baseUri + reportsEndpoint + 'usage/' + reportId,
-		headers: headers,
+		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
 		if (err) {
