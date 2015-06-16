@@ -22,6 +22,7 @@ var applicationEndpoint = '/api/application/',
 	jobEndpoint = '/api/job/',
 	searchEndpoint = '/api/search',
 	reportsEndpoint = '/api/report/',
+	batchEndpoint = '/api/batch',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
@@ -179,9 +180,6 @@ function validateRecording(recording) {
 	if (typeof recording !== 'object') {
 		throw 'Missing recording!';
 	}
-	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
-	}
 	var validation = {
 		startDateTime: {
 			presence: true,
@@ -291,9 +289,9 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		callback(null, body);
 	});
 };
-/*
+
 ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
-	if (typeof recordingId !== 'object') {
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof callback !== 'function') {
@@ -314,7 +312,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 		callback(null, body);
 	});
 };
-*/
+
 ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
 		throw 'Missing recordingId!';
@@ -549,6 +547,32 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	}
 };
 
+ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, callback) {
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof assetId !== 'string' || assetId === '') {
+		throw 'Missing assetId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'DELETE',
+		url: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
+		headers: generateHeaders(this._token)
+	}, function (err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 204) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.createJob = function createJob(job, callback) {
 	if (typeof job !== 'object') {
 		throw 'Missing job!';
@@ -751,7 +775,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 	}
 
 	var headers = generateHeaders(this._token);
-	headers['Accept'] = contentType;
+	headers.Accept = contentType;
 
 	request({
 		method: 'GET',
@@ -821,5 +845,27 @@ ApiClient.prototype.getUsageReport = function getUsageReport(reportId, callback)
 	});
 };
 */
+
+ApiClient.prototype.batch = function batch(requests, callback) {
+	//validateBatch(requests);
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'POST',
+		url: this._baseUri + batchEndpoint,
+		headers: generateHeaders(this._token),
+		json: requests
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
 
 module.exports = ApiClient;
