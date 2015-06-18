@@ -10,19 +10,20 @@ function ApiClient(options) {
 		throw 'Missing token!';
 	}
 	this._token = options.token;
-	this._baseUri = options.baseUri || 'https://core.veritone.com';
+	this._baseUri = options.baseUri || 'https://api.veritone.com';
+	this._version = options.version || 1;
 }
 
 var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs');
 
-var applicationEndpoint = '/api/application/',
-	recordingEndpoint = '/api/recording/',
-	jobEndpoint = '/api/job/',
-	searchEndpoint = '/api/search',
-	reportsEndpoint = '/api/report/',
-	batchEndpoint = '/api/batch',
+var applicationEndpoint = '/v' + this._version + '/application/',
+	recordingEndpoint = '/v' + this._version + '/recording/',
+	jobEndpoint = '/v' + this._version + '/job/',
+	searchEndpoint = '/v' + this._version + '/search',
+	reportsEndpoint = '/v' + this._version + '/report/',
+	batchEndpoint = '/v' + this._version + '/batch',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
@@ -135,7 +136,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 
 	request({
 		method: 'POST',
-		url: this._baseUri + '/api/application/token/',
+		url: this._baseUri + applicationEndpoint + 'token/',
 		headers: generateHeaders(this._token),
 		json: {
 			tokenLabel: label,
@@ -162,7 +163,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 
 	request({
 		method: 'DELETE',
-		url: this._baseUri + '/api/application/token/' + token,
+		url: this._baseUri + applicationEndpoin + 'token/' + token,
 		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
