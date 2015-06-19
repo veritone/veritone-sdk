@@ -12,18 +12,19 @@ function ApiClient(options) {
 	this._token = options.token;
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
 	this._version = options.version || 1;
+	this._baseUri = this._baseUri + '/v' + this._version;
 }
 
 var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs');
 
-var applicationEndpoint = '/v' + this._version + '/application/',
-	recordingEndpoint = '/v' + this._version + '/recording/',
-	jobEndpoint = '/v' + this._version + '/job/',
-	searchEndpoint = '/v' + this._version + '/search',
-	reportsEndpoint = '/v' + this._version + '/report/',
-	batchEndpoint = '/v' + this._version + '/batch',
+var applicationEndpoint = '/application/',
+	recordingEndpoint = '/recording/',
+	jobEndpoint = '/job/',
+	searchEndpoint = '/search',
+	reportsEndpoint = '/report/',
+	batchEndpoint = '/batch',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
