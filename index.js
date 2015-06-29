@@ -610,7 +610,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		callback(null, body);
 	});
 };
-/*
+
 ApiClient.prototype.getJobs = function getJobs(callback) {
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
@@ -631,7 +631,7 @@ ApiClient.prototype.getJobs = function getJobs(callback) {
 		callback(null, body);
 	});
 };
-*/
+
 ApiClient.prototype.getJob = function getJob(jobId, callback) {
 	if (typeof jobId !== 'string') {
 		throw 'Missing jobId!';
