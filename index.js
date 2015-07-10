@@ -203,7 +203,7 @@ function validateRecording(recording) {
 	};
 	var validationErrors = validatejs(recording, validation);
 	if (validationErrors) {
-		throw 'Invalid recording object!';
+		throw 'Invalid recording object: ' + JSON.stringify(validationErrors);
 	}
 }
 
