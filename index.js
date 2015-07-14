@@ -229,14 +229,35 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 	});
 };
 
-ApiClient.prototype.getRecordings = function getRecordings(callback) {
+ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	} else if (typeof options === 'string') {
+		options = {
+			recordingId: options
+		};
+	} else if (typeof options !== 'object') {
+		throw 'Missing options!';
+	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
 
+	var uri = this._baseUri + recordingEndpoint;
+	if (options.limit || options.offset) {
+		if (options.limit && options.ofset) {
+			uri += '?limit=' + options.limit + '&offset=' + options.offset;
+		} else if (options.limit) {
+			uri += '?limit=' + options.limit;
+		} else if (options.offset) {
+			uri += '?offset=' + options.offset;
+		}
+	}
+
 	request({
 		method: 'GET',
-		uri: this._baseUri + recordingEndpoint,
+		uri: uri,
 		headers: generateHeaders(this._token),
 		json: true
 	}, function (err, response, body) {
@@ -615,14 +636,81 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 	});
 };
 
-ApiClient.prototype.getJobs = function getJobs(callback) {
+ApiClient.prototype.getJobs = function getJobs(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	} else if (typeof options === 'string') {
+		options = {
+			recordingId: options
+		};
+	} else if (typeof options !== 'object') {
+		throw 'Missing options!';
+	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
 
+	var uri = this._baseUri + jobEndpoint;
+	if (options.limit || options.offset) {
+		if (options.limit && options.ofset) {
+			uri += '?limit=' + options.limit + '&offset=' + options.offset;
+		} else if (options.limit) {
+			uri += '?limit=' + options.limit;
+		} else if (options.offset) {
+			uri += '?offset=' + options.offset;
+		}
+	}
+
 	request({
 		method: 'GET',
-		url: this._baseUri + jobEndpoint,
+		url: uri,
+		headers: generateHeaders(this._token),
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	} else if (typeof options === 'string') {
+		options = {
+			recordingId: options
+		};
+	} else if (typeof options !== 'object') {
+		throw 'Missing options!';
+	}
+	if (typeof options.recordingId !== 'string') {
+		throw 'Missing options.recordingId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var uri = this._baseUri + jobEndpoint + 'recording/' + options.recordingId;
+	if (options.limit || options.offset) {
+		if (options.limit && options.ofset) {
+			uri += '?limit=' + options.limit + '&offset=' + options.offset;
+		} else if (options.limit) {
+			uri += '?limit=' + options.limit;
+		} else if (options.offset) {
+			uri += '?offset=' + options.offset;
+		}
+	}
+	console.log(uri, options);
+
+	request({
+		method: 'GET',
+		url: uri,
 		headers: generateHeaders(this._token),
 		json: true
 	}, function(err, response, body) {
