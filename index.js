@@ -128,6 +128,22 @@ function generateHeaders(token) {
 //	});
 //};
 
+ApiClient.prototype.getTranscript = function getTranscript(trans_id, callback) {
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'GET',
+		url: this._baseUri + transcriptEndpoint + trans_id
+	}, function (err, response, body) {
+		if(err) {
+			return callback(err, null);
+		}
+		callback(null, body);
+	})
+}
+
 ApiClient.prototype.createToken = function createToken(label, rights, callback) {
 	if (typeof label !== 'string') {
 		throw 'Missing label!';
