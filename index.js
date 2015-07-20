@@ -772,6 +772,66 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 //	});
 //};
 
+ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'GET',
+		url: this._baseUri + jobEndpoint + 'task_type',
+		headers: generateHeaders(this._token),
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.createTaskType = function createTaskType(taskType, callback) {
+	if (typeof taskType !== 'object') {
+		throw 'Missing taskType!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+	var validation = {
+		taskTypeId: {
+			presence: true
+		},
+		validateUri: {
+			presence: true
+		},
+		executeUri: {
+			presence: true
+		}
+	};
+	var validationErrors = validatejs(taskType, validation);
+	if (validationErrors) {
+		throw 'Invalid taskType object!';
+	}
+
+	request({
+		method: 'POST',
+		url: this._baseUri + jobEndpoint + 'task_type',
+		headers: generateHeaders(this._token),
+		json: taskType
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 200) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, callback) {
 	if (typeof jobId !== 'string') {
 		throw 'Missing jobId!';
