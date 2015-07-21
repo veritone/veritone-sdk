@@ -29,6 +29,7 @@ var applicationEndpoint = '/application/',
 	searchEndpoint = '/search',
 	reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
+	transcriptEndpoint = '/transcript/',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
