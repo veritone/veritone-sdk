@@ -707,7 +707,6 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 			uri += '?offset=' + options.offset;
 		}
 	}
-	console.log(uri, options);
 
 	request({
 		method: 'GET',
