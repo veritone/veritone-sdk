@@ -1,20 +1,7 @@
-module.exports = function initRetryHelper(maxRetry, retryIntervalMs) {
-	if (typeof maxRetry !== 'number') {
-		throw 'Missing maxRetry!';
-	}
-	if (maxRetry < 0) {
-		throw 'Invalid maxRetry must be greater than equal to 0!';
-	}
-	if (maxRetry === 0) {
-		maxRetry = 1; // async.retry expects at least 1. 0 is retry indefinitely
-	}
-	if (typeof retryIntervalMs !== 'number' || retryIntervalMs < 0) {
-		throw 'Missing retryIntervalMs!';
-	}
-
+module.exports = function initRetryHelper() {
 	var async = require('async');
 
-	function retry(task, callback) {
+	function retry(maxRetry, retryIntervalMs, task, callback) {
 		if (typeof task !== 'function') {
 			throw 'task is required!';
 		}

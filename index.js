@@ -20,9 +20,19 @@ function ApiClient(options) {
 	this._maxRetry = 0;
 	this._retryIntervalMs = 0;
 	if (typeof options.maxRetry === 'number') {
+		if (options.maxRetry < 0) {
+			throw 'Invalid maxRetry must be greater than equal to 0!';
+		}
+
 		this._maxRetry = options.maxRetry;
 	}
+	if (this._maxRetry === 0) {
+		this._maxRetry = 1; // async.retry expects at least 1. 0 is retry indefinitely
+	}
 	if (typeof options.retryIntervalMs === 'number') {
+		if (options.retryIntervalMs < 0) {
+			throw 'Invalid retryIntervalMs must be greater than equal to 0!';
+		}
 		this._retryIntervalMs = options.retryIntervalMs;
 	}
 }
@@ -30,7 +40,7 @@ function ApiClient(options) {
 var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
-	retry = require('./retry.js')(this._maxRetry, this._retryIntervalMs);
+	retry = require('./retry.js')();
 
 var applicationEndpoint = '/application/',
 	recordingEndpoint = '/recording/',
@@ -149,20 +159,30 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + applicationEndpoint + 'token/',
-		headers: generateHeaders(this._token),
-		json: {
-			tokenLabel: label,
-			rights: rights
-		}
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + applicationEndpoint + 'token/',
+			headers: generateHeaders(self._token),
+			json: {
+				tokenLabel: label,
+				rights: rights
+			}
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -176,17 +196,27 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'DELETE',
-		url: this._baseUri + applicationEndpoint + 'token/' + token,
-		headers: generateHeaders(this._token),
-		json: true
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'DELETE',
+			url: self._baseUri + applicationEndpoint + 'token/' + token,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200 && response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200 && response.statusCode !== 204) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -223,17 +253,27 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + recordingEndpoint,
-		headers: generateHeaders(this._token),
-		json: recording
-	}, function (err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + recordingEndpoint,
+			headers: generateHeaders(self._token),
+			json: recording
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -265,11 +305,12 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		}
 	}
 
+	var self = this;
 	function task(callback) {
 		request({
 			method: 'GET',
 			uri: uri,
-			headers: generateHeaders(this._token),
+			headers: generateHeaders(self._token),
 			json: true
 		}, function (err, response, body) {
 			if (err) {
@@ -282,7 +323,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		});
 	}
 
-	retry.retry(task, function(err, body) {
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -298,17 +339,27 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'GET',
-		uri: this._baseUri + recordingEndpoint + recordingId,
-		headers: generateHeaders(this._token),
-		json: true
-	}, function (err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: self._baseUri + recordingEndpoint + recordingId,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -320,17 +371,27 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'PUT',
-		url: this._baseUri + recordingEndpoint + recording.recordingId,
-		headers: generateHeaders(this._token),
-		json: recording
-	}, function (err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + recordingEndpoint + recording.recordingId,
+			headers: generateHeaders(self._token),
+			json: recording
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -367,17 +428,27 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'GET',
-		uri: this._baseUri + recordingEndpoint + recordingId + '/transcript',
-		headers: generateHeaders(this._token),
-		json: true
-	}, function (err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: self._baseUri + recordingEndpoint + recordingId + '/transcript',
+			headers: generateHeaders(self._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -391,22 +462,32 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		throw 'Missing callback!';
 	}
 
-	var req = request({
-		method: 'GET',
-		uri: this._baseUri + recordingEndpoint + recordingId + '/media',
-		headers: generateHeaders(this._token)
-	}).on('error', function (err) {
-		callback(err);
-	}).on('response', function(response) {
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode);
-		}
-		var metadata = response.headers[metadataHeader.toLowerCase()];
-		callback(null, {
-			contentType: response.headers['content-type'],
-			metadata: (metadata ? JSON.parse(metadata) : undefined),
-			stream: req
+	var self = this;
+	function task(callback) {
+		var req = request({
+			method: 'GET',
+			uri: self._baseUri + recordingEndpoint + recordingId + '/media',
+			headers: generateHeaders(self._token)
+		}).on('error', function (err) {
+			callback(err);
+		}).on('response', function(response) {
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode);
+			}
+			var metadata = response.headers[metadataHeader.toLowerCase()];
+			callback(null, {
+				contentType: response.headers['content-type'],
+				metadata: (metadata ? JSON.parse(metadata) : undefined),
+				stream: req
+			});
 		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
 	});
 };
 
@@ -418,17 +499,27 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'GET',
-		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/',
-		headers: generateHeaders(this._token),
-		json: true
-	}, function (err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/',
+			headers: generateHeaders(self._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -445,22 +536,32 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		throw 'Missing callback!';
 	}
 
-	var req = request({
-		method: 'GET',
-		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
-		headers: generateHeaders(this._token)
-	}).on('error', function (err) {
-		callback(err);
-	}).on('response', function(response) {
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode);
-		}
-		var metadata = response.headers[metadataHeader.toLowerCase()];
-		callback(null, {
-			contentType: response.headers['content-type'],
-			metadata: (metadata ? JSON.parse(metadata) : undefined),
-			stream: req
+	var self = this;
+	function task(callback) {
+		var req = request({
+			method: 'GET',
+			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
+			headers: generateHeaders(self._token)
+		}).on('error', function (err) {
+			callback(err);
+		}).on('response', function(response) {
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode);
+			}
+			var metadata = response.headers[metadataHeader.toLowerCase()];
+			callback(null, {
+				contentType: response.headers['content-type'],
+				metadata: (metadata ? JSON.parse(metadata) : undefined),
+				stream: req
+			});
 		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
 	});
 };
 
@@ -543,7 +644,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		);
 	}
 
-	retry.retry(task, function(err, body) {
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -589,18 +690,28 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	if (asset.metadata) {
 		opts.headers[metadataHeader] = JSON.stringify(asset.metadata);
 	}
-	var req = request(opts, function (err, response, body) {
+
+	function task(callback) {
+		var req = request(opts, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+		if (asset.fileName) {
+			fs.createReadStream(asset.fileName).pipe(req);
+		}
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
-		}
 		callback(null, body);
 	});
-	if (asset.fileName) {
-		fs.createReadStream(asset.fileName).pipe(req);
-	}
 };
 
 //ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, callback) {
@@ -649,17 +760,27 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + jobEndpoint,
-		headers: generateHeaders(this._token),
-		json: job
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + jobEndpoint,
+			headers: generateHeaders(self._token),
+			json: job
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -691,17 +812,27 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 		}
 	}
 
-	request({
-		method: 'GET',
-		url: uri,
-		headers: generateHeaders(this._token),
-		json: true
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: uri,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -736,17 +867,27 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 		}
 	}
 
-	request({
-		method: 'GET',
-		url: uri,
-		headers: generateHeaders(this._token),
-		json: true
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: uri,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -760,17 +901,27 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'GET',
-		url: this._baseUri + jobEndpoint + jobId,
-		headers: generateHeaders(this._token),
-		json: true
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + jobEndpoint + jobId,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -805,17 +956,27 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'GET',
-		url: this._baseUri + jobEndpoint + 'task_type',
-		headers: generateHeaders(this._token),
-		json: true
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + jobEndpoint + 'task_type',
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -844,17 +1005,27 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 		throw 'Invalid taskType object!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + jobEndpoint + 'task_type',
-		headers: generateHeaders(this._token),
-		json: taskType
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + jobEndpoint + 'task_type',
+			headers: generateHeaders(self._token),
+			json: taskType
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -880,19 +1051,29 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'PUT',
-		url: this._baseUri + jobEndpoint + jobId + '/task/' + taskId,
-		headers: generateHeaders(this._token),
-		json: result
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId,
+			headers: generateHeaders(self._token),
+			json: result
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
-		if (response.statusCode !== 204) {
-			return callback('Received status: ' + response.statusCode, body);
-		}
-		callback(null);
+		callback(null, body);
 	});
 };
 
@@ -904,17 +1085,27 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + searchEndpoint,
-		headers: generateHeaders(this._token),
-		json: searchRequest
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + searchEndpoint,
+			headers: generateHeaders(self._token),
+			json: searchRequest
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -928,19 +1119,29 @@ ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + reportsEndpoint + 'recordings',
-		headers: generateHeaders(this._token),
-		json: reportRequest
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + reportsEndpoint + 'recordings',
+			headers: generateHeaders(self._token),
+			json: reportRequest
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body.reportId);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
-		}
-		callback(null, body.reportId);
+		callback(null, body);
 	});
 };
 
@@ -959,21 +1160,31 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 	var headers = generateHeaders(this._token);
 	headers.Accept = contentType;
 
-	request({
-		method: 'GET',
-		url: this._baseUri + reportsEndpoint + 'recordings/' + reportId,
-		headers: headers,
-		json: (contentType === 'application/json')
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + reportsEndpoint + 'recordings/' + reportId,
+			headers: headers,
+			json: (contentType === 'application/json')
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode === 420) {
+				// report isn't ready
+				return callback();
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode === 420) {
-			// report isn't ready
-			return callback();
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -1033,17 +1244,27 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'POST',
-		url: this._baseUri + batchEndpoint,
-		headers: generateHeaders(this._token),
-		json: requests
-	}, function(err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + batchEndpoint,
+			headers: generateHeaders(self._token),
+			json: requests
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
