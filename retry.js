@@ -1,9 +1,12 @@
 module.exports = function initRetryHelper(maxRetry, retryIntervalMs) {
 	if (typeof maxRetry !== 'number') {
-    	throw 'Missing maxRetry!';
+		throw 'Missing maxRetry!';
 	}
-	if (maxRetry < 1) {
-		throw 'Invalid maxRetry must be greater than 0!';
+	if (maxRetry < 0) {
+		throw 'Invalid maxRetry must be greater than equal to 0!';
+	}
+	if (maxRetry === 0) {
+		maxRetry = 1; // async.retry expects at least 1. 0 is retry indefinitely
 	}
 	if (typeof retryIntervalMs !== 'number' || retryIntervalMs < 0) {
 		throw 'Missing retryIntervalMs!';

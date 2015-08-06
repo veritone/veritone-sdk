@@ -17,10 +17,12 @@ function ApiClient(options) {
 	} else {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
-	this._maxRetry = 1;
+	this._maxRetry = 0;
 	this._retryIntervalMs = 0;
-	if (typeof options.maxRetry === 'number' && typeof options.retryIntervalMs === 'number') {
+	if (typeof options.maxRetry === 'number') {
 		this._maxRetry = options.maxRetry;
+	}
+	if (typeof options.retryIntervalMs === 'number') {
 		this._retryIntervalMs = options.retryIntervalMs;
 	}
 }
