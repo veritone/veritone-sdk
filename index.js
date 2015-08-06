@@ -1,5 +1,10 @@
 'use strict';
 
+var request = require('request'),
+	validatejs = require('validate.js'),
+	fs = require('fs'),
+	RetryHelper = require('./retry');
+
 function ApiClient(options) {
 	if (typeof options === 'string') {
 		options = {
@@ -17,30 +22,8 @@ function ApiClient(options) {
 	} else {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
-	this._maxRetry = 0;
-	this._retryIntervalMs = 0;
-	if (typeof options.maxRetry === 'number') {
-		if (options.maxRetry < 0) {
-			throw 'Invalid maxRetry must be greater than equal to 0!';
-		}
-
-		this._maxRetry = options.maxRetry;
-	}
-	if (this._maxRetry === 0) {
-		this._maxRetry = 1; // async.retry expects at least 1. 0 is retry indefinitely
-	}
-	if (typeof options.retryIntervalMs === 'number') {
-		if (options.retryIntervalMs < 0) {
-			throw 'Invalid retryIntervalMs must be greater than equal to 0!';
-		}
-		this._retryIntervalMs = options.retryIntervalMs;
-	}
+	this._retryHelper = new RetryHelper(this._retryIntervalMs);
 }
-
-var request = require('request'),
-	validatejs = require('validate.js'),
-	fs = require('fs'),
-	retry = require('./retry.js')();
 
 var applicationEndpoint = '/application/',
 	recordingEndpoint = '/recording/',
@@ -180,7 +163,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -214,7 +197,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -271,7 +254,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -323,7 +306,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -357,7 +340,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -389,7 +372,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -446,7 +429,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -483,7 +466,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -517,7 +500,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -557,7 +540,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -644,7 +627,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		);
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -706,7 +689,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 		}
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -778,7 +761,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -830,7 +813,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -885,7 +868,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -919,7 +902,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -974,7 +957,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1023,7 +1006,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1069,7 +1052,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1103,7 +1086,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1137,7 +1120,7 @@ ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1182,7 +1165,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1262,7 +1245,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 		});
 	}
 
-	retry.retry(this._maxRetry, this._retryIntervalMs, task, function(err, body) {
+	this._retryHelper(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
