@@ -17,11 +17,18 @@ function ApiClient(options) {
 	} else {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
+	this._maxRetry = 1;
+	this._retryIntervalMs = 0;
+	if (typeof options.maxRetry === 'number' && typeof options.retryIntervalMs === 'number') {
+		this._maxRetry = options.maxRetry;
+		this._retryIntervalMs = options.retryIntervalMs;
+	}
 }
 
 var request = require('request'),
 	validatejs = require('validate.js'),
-	fs = require('fs');
+	fs = require('fs'),
+	retry = require('./retry.js')(this._maxRetry, this._retryIntervalMs);
 
 var applicationEndpoint = '/application/',
 	recordingEndpoint = '/recording/',
@@ -256,17 +263,26 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		}
 	}
 
-	request({
-		method: 'GET',
-		uri: uri,
-		headers: generateHeaders(this._token),
-		json: true
-	}, function (err, response, body) {
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: uri,
+			headers: generateHeaders(this._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	retry.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 200) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
@@ -510,17 +526,27 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	if (asset.applicationId) {
 		opts.headers[applicationIdHeader] = asset.applicationId;
 	}
-	fs.createReadStream(asset.fileName).pipe(
-		request(opts, function (err, response, body) {
-			if (err) {
-				return callback(err);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		})
-	);
+
+	function task(callback) {
+		fs.createReadStream(asset.fileName).pipe(
+			request(opts, function (err, response, body) {
+				if (err) {
+					return callback(err);
+				}
+				if (response.statusCode !== 200) {
+					return callback('Received status: ' + response.statusCode, body);
+				}
+				callback(null, body);
+			})
+		);
+	}
+
+	retry.retry(task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
+	});
 };
 
 ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callback) {
