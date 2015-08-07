@@ -163,7 +163,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -197,7 +197,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -254,7 +254,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -306,7 +306,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -340,7 +340,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -372,7 +372,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -429,7 +429,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -466,7 +466,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -500,7 +500,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -540,7 +540,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -629,7 +629,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		);
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -693,7 +693,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 		}
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -765,7 +765,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -817,7 +817,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -872,7 +872,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -906,7 +906,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -961,7 +961,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1010,7 +1010,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1056,7 +1056,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1090,7 +1090,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1124,7 +1124,7 @@ ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1169,7 +1169,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
@@ -1249,7 +1249,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 		});
 	}
 
-	self._retryHelper(task, function(err, body) {
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
 		}
