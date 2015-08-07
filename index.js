@@ -3,7 +3,7 @@
 var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
-	RetryHelper = require('./retry');
+	RetryHelper = require('./RetryHelper');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
