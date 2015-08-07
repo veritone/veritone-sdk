@@ -596,6 +596,8 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		throw 'File "' + asset.fileName + '" does not exist!';
 	}
 
+	var self = this;
+
 	var headers = generateHeaders(this._token);
 	headers['X-Veritone-Asset-Type'] = asset.assetType;
 	headers['Content-Type'] = asset.contentType;
@@ -657,6 +659,8 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
+
+	var self = this;
 
 	var opts = {
 		method: 'PUT',
