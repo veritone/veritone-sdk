@@ -5,7 +5,7 @@ var async = require('async');
 function RetryHelper(options) {
 	options = options || {};
 	options.maxRetry = options.maxRetry || 0;
-	options.retryIntervalMs = retryIntervalMs || 0;
+	options.retryIntervalMs = options.retryIntervalMs || 0;
 
 	if (typeof options.maxRetry !== 'number') {
 		throw 'maxRetry must be a number!';
