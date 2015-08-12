@@ -388,16 +388,26 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 		throw 'Missing callback!';
 	}
 
-	request({
-		method: 'DELETE',
-		url: this._baseUri + recordingEndpoint + recordingId,
-		headers: generateHeaders(this._token)
-	}, function (err, response, body) {
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'DELETE',
+			url: self._baseUri + recordingEndpoint + recordingId,
+			headers: generateHeaders(self._token)
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err);
-		}
-		if (response.statusCode !== 204) {
-			return callback('Received status: ' + response.statusCode, body);
 		}
 		callback(null, body);
 	});
