@@ -3,7 +3,7 @@
 var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
-	RetryHelper = require('./retry');
+	RetryHelper = require('./RetryHelper');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -380,28 +380,38 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 	});
 };
 
-//ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
-//	if (typeof recordingId !== 'string' || recordingId === '') {
-//		throw 'Missing recordingId!';
-//	}
-//	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
-//	}
-//
-//	request({
-//		method: 'DELETE',
-//		url: this._baseUri + recordingEndpoint + recordingId,
-//		headers: generateHeaders(this._token)
-//	}, function (err, response, body) {
-//		if (err) {
-//			return callback(err);
-//		}
-//		if (response.statusCode !== 204) {
-//			return callback('Received status: ' + response.statusCode, body);
-//		}
-//		callback(null, body);
-//	});
-//};
+ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'DELETE',
+			url: self._baseUri + recordingEndpoint + recordingId,
+			headers: generateHeaders(self._token)
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
+	});
+};
 
 ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
