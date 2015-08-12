@@ -380,28 +380,28 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 	});
 };
 
-//ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
-//	if (typeof recordingId !== 'string' || recordingId === '') {
-//		throw 'Missing recordingId!';
-//	}
-//	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
-//	}
-//
-//	request({
-//		method: 'DELETE',
-//		url: this._baseUri + recordingEndpoint + recordingId,
-//		headers: generateHeaders(this._token)
-//	}, function (err, response, body) {
-//		if (err) {
-//			return callback(err);
-//		}
-//		if (response.statusCode !== 204) {
-//			return callback('Received status: ' + response.statusCode, body);
-//		}
-//		callback(null, body);
-//	});
-//};
+ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'DELETE',
+		url: this._baseUri + recordingEndpoint + recordingId,
+		headers: generateHeaders(this._token)
+	}, function (err, response, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (response.statusCode !== 204) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
 
 ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(recordingId, callback) {
 	if (typeof recordingId !== 'string') {
