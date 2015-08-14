@@ -27,6 +27,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	recordingEndpoint = '/recording/',
+	tasksByRecordingEndpoint = '/recording/tasks',	
 	jobEndpoint = '/job/',
 	searchEndpoint = '/search',
 	reportsEndpoint = '/report/',
