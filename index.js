@@ -1267,4 +1267,55 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 	});
 };
 
+ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	} else if (typeof options === 'string') {
+		options = {
+			recordingId: options
+		};
+	} else if (typeof options !== 'object') {
+		throw 'Missing options!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var uri = this._baseUri + tasksByRecordingEndpoint;
+	if(options.keys.length > 0) {
+		uri += '?';
+	}
+
+	Object.keys(options).forEach(function(key) {
+        uri += key+'='+options[key];
+    });
+
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: uri,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
+	});
+};
+
 module.exports = ApiClient;
