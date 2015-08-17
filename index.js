@@ -28,6 +28,7 @@ function ApiClient(options) {
 var applicationEndpoint = '/application/',
 	recordingEndpoint = '/recording/',
 	tasksByRecordingEndpoint = '/recording/tasks',	
+	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
 	searchEndpoint = '/search',
 	reportsEndpoint = '/report/',
@@ -958,7 +959,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + taskByJobEndpoint + taskTypeId,
+			url: self._baseUri + taskTypeByJobEndpoint + taskTypeId,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function(err, response, body) {
