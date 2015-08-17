@@ -949,6 +949,37 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 //	});
 //};
 
+ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + taskByJobEndpoint + taskTypeId,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
