@@ -556,7 +556,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 		if (err) {
 			return callback(err);
 		}
-		returncallback(null, body);
+		callback(null, body);
 	});
 };
 
