@@ -26,8 +26,9 @@ function ApiClient(options) {
 }
 
 var applicationEndpoint = '/application/',
+	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
-	tasksByRecordingEndpoint = '/recording/tasks',	
+	tasksByRecordingEndpoint = '/recording/tasks',
 	jobEndpoint = '/job/',
 	searchEndpoint = '/search',
 	reportsEndpoint = '/report/',
@@ -80,7 +81,7 @@ function generateHeaders(token) {
 //		json: application
 //	}, function(err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 200) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -101,7 +102,7 @@ function generateHeaders(token) {
 //		json: true
 //	}, function(err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 200) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -123,7 +124,7 @@ function generateHeaders(token) {
 //		json: application
 //	}, function(err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 200) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -155,7 +156,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 			}
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -166,7 +167,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -189,7 +190,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 			json: true
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200 && response.statusCode !== 204) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -200,7 +201,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -246,7 +247,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 			json: recording
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -257,7 +258,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -298,7 +299,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 			json: true
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -309,7 +310,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -332,7 +333,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 			json: true
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -343,7 +344,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -364,7 +365,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 			json: recording
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -375,7 +376,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -397,7 +398,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 			headers: generateHeaders(self._token)
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 204) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -408,7 +409,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -431,7 +432,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 			json: true
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -442,7 +443,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -463,7 +464,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			uri: self._baseUri + recordingEndpoint + recordingId + '/media',
 			headers: generateHeaders(self._token)
 		}).on('error', function (err) {
-			callback(err);
+			callback(err, body);
 		}).on('response', function(response) {
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
@@ -479,7 +480,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -502,7 +503,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 			json: true
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -513,7 +514,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -537,7 +538,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
 			headers: generateHeaders(self._token)
 		}).on('error', function (err) {
-			callback(err);
+			callback(err, body);
 		}).on('response', function(response) {
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
@@ -553,7 +554,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -575,7 +576,7 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 
 	this.getAsset(recordingId, assetId, function(err, result) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		result.stream.on('end', function() {
 			callback(null, result);
@@ -630,7 +631,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		fs.createReadStream(asset.fileName).pipe(
 			request(opts, function (err, response, body) {
 				if (err) {
-					return callback(err);
+					return callback(err, body);
 				}
 				if (response.statusCode !== 200) {
 					return callback('Received status: ' + response.statusCode, body);
@@ -642,7 +643,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -692,7 +693,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	function task(callback) {
 		var req = request(opts, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -706,7 +707,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -729,7 +730,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 //		headers: generateHeaders(this._token)
 //	}, function (err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 204) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -767,7 +768,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 			json: job
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -778,7 +779,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -819,7 +820,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 			json: true
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -830,7 +831,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -874,7 +875,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 			json: true
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -885,7 +886,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -908,7 +909,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 			json: true
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -919,7 +920,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -940,7 +941,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 //		json: true
 //	}, function(err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 204) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -963,7 +964,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 			json: true
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -974,7 +975,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1012,7 +1013,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 			json: taskType
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1023,7 +1024,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1058,7 +1059,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 			json: result
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 204) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1069,7 +1070,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1092,7 +1093,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 			json: searchRequest
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1103,7 +1104,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1126,7 +1127,7 @@ ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport
 			json: reportRequest
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1137,7 +1138,7 @@ ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1167,7 +1168,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 			json: (contentType === 'application/json')
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode === 420) {
 				// report isn't ready
@@ -1182,7 +1183,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1203,7 +1204,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 //		json: true
 //	}, function(err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 200) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -1227,7 +1228,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 //		json: true
 //	}, function(err, response, body) {
 //		if (err) {
-//			return callback(err);
+//			return callback(err, body);
 //		}
 //		if (response.statusCode !== 200) {
 //			return callback('Received status: ' + response.statusCode, body);
@@ -1251,7 +1252,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 			json: requests
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1262,7 +1263,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1302,7 +1303,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 			json: true
 		}, function (err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1313,7 +1314,190 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+/** SaaS functions ************************************************************************************************/
+
+ApiClient.prototype.createDropboxWatcher = function createDropboxWatcher(watcher, callback) {
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + dropboxWatcherEndpoint,
+			headers: generateHeaders(self._token),
+			json: watcher
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	} else if (typeof options === 'string') {
+		options = {
+			watcherId: options
+		};
+	} else if (typeof options !== 'object') {
+		throw 'Missing options!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var uri = this._baseUri + dropboxWatcherEndpoint;
+	if (options.limit || options.offset) {
+		if (options.limit && options.ofset) {
+			uri += '?limit=' + options.limit + '&offset=' + options.offset;
+		} else if (options.limit) {
+			uri += '?limit=' + options.limit;
+		} else if (options.offset) {
+			uri += '?offset=' + options.offset;
+		}
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: uri,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, callback) {
+	if (typeof watcherId !== 'string') {
+		throw 'Missing watcherId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: self._baseUri + dropboxWatcherEndpoint + watcherId,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher, callback) {
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + dropboxWatcherEndpoint + watcher.watcherId,
+			headers: generateHeaders(self._token),
+			json: watcher
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcherId, callback) {
+	if (typeof watcherId !== 'string' || watcherId === '') {
+		throw 'Missing watcherId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'DELETE',
+			url: self._baseUri + dropboxWatcherEndpoint + watcherId,
+			headers: generateHeaders(self._token)
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
