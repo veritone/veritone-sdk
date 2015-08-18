@@ -29,6 +29,7 @@ var applicationEndpoint = '/application/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
 	tasksByRecordingEndpoint = '/recording/tasks',
+	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
 	searchEndpoint = '/search',
 	reportsEndpoint = '/report/',
@@ -950,6 +951,37 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 //	});
 //};
 
+ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + taskTypeByJobEndpoint + taskTypeId,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
@@ -1025,6 +1057,58 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
 			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback) {
+	if (typeof taskType !== 'object') {
+		throw 'Missing taskType!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+	if (typeof taskType.taskTypeId !== 'string') {
+		throw 'Missing taskTypeId!';
+	}
+	var validation = {
+		taskTypeId: {
+			presence: true
+		},
+		validateUri: {
+			presence: true
+		},
+		executeUri: {
+			presence: true
+		}
+	};
+	var validationErrors = validatejs(taskType, validation);
+	if (validationErrors) {
+		throw 'Invalid taskType object!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + taskTypeByJobEndpoint + taskType.taskTypeId,
+			headers: generateHeaders(self._token),
+			json: taskType
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err);
 		}
 		callback(null, body);
 	});
