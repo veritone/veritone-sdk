@@ -665,6 +665,9 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	if (asset.contentType && !asset.fileName) {
 		throw 'Missing asset.fileName!';
 	}
+	if (typeof asset.assetType !== 'string') {
+		throw 'Missing asset.assetType!';
+	}
 	if (!asset.contentType && !asset.fileName && !asset.metadata) {
 		throw 'Nothing to do!';
 	}
@@ -688,9 +691,13 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 			throw 'File "' + asset.fileName + '" does not exist!';
 		}
 		opts.headers['Content-Type'] = asset.contentType;
+		opts.headers['X-Veritone-Asset-Type'] = asset.assetType;
 	}
 	if (asset.metadata) {
 		opts.headers[metadataHeader] = JSON.stringify(asset.metadata);
+	}
+	if (asset.applicationId) {
+		opts.headers[applicationIdHeader] = asset.applicationId;
 	}
 
 	function task(callback) {
