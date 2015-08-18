@@ -974,7 +974,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 			json: true
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -985,7 +985,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
@@ -1106,7 +1106,7 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 			json: taskType
 		}, function(err, response, body) {
 			if (err) {
-				return callback(err);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
@@ -1117,7 +1117,7 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 
 	self._retryHelper.retry(task, function(err, body) {
 		if (err) {
-			return callback(err);
+			return callback(err, body);
 		}
 		callback(null, body);
 	});
