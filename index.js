@@ -1440,6 +1440,9 @@ ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, ca
 };
 
 ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher, callback) {
+	if (typeof watcher !== 'object') {
+		throw 'Missing watcher!';
+	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
