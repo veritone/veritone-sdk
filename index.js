@@ -1370,7 +1370,7 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 
 	var uri = this._baseUri + dropboxWatcherEndpoint;
 	if (options.limit || options.offset) {
-		if (options.limit && options.ofset) {
+		if (options.limit && options.offset) {
 			uri += '?limit=' + options.limit + '&offset=' + options.offset;
 		} else if (options.limit) {
 			uri += '?limit=' + options.limit;
