@@ -3,6 +3,7 @@
 var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
+	path = require('path'),
 	RetryHelper = require('./RetryHelper');
 
 function ApiClient(options) {
@@ -610,6 +611,11 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	if (!fs.existsSync(asset.fileName)) {
 		throw 'File "' + asset.fileName + '" does not exist!';
 	}
+	asset.metadata = asset.metadata || {};
+	asset.metadata.fileName = path.basename(asset.fileName);
+	var stat = fs.statSync(asset.fileName);
+	asset.metadata.size = stat.size;
+	//console.log(asset);
 
 	var self = this;
 
@@ -629,6 +635,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	if (asset.applicationId) {
 		opts.headers[applicationIdHeader] = asset.applicationId;
 	}
+	//console.log(opts);
 
 	function task(callback) {
 		fs.createReadStream(asset.fileName).pipe(
