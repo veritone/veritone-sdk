@@ -468,7 +468,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			uri: self._baseUri + recordingEndpoint + recordingId + '/media',
 			headers: generateHeaders(self._token)
 		}).on('error', function (err) {
-			callback(err, body);
+			callback(err);
 		}).on('response', function(response) {
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
@@ -542,7 +542,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
 			headers: generateHeaders(self._token)
 		}).on('error', function (err) {
-			callback(err, body);
+			callback(err);
 		}).on('response', function(response) {
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
@@ -580,7 +580,7 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 
 	this.getAsset(recordingId, assetId, function(err, result) {
 		if (err) {
-			return callback(err, body);
+			return callback(err);
 		}
 		result.stream.on('end', function() {
 			callback(null, result);
