@@ -611,11 +611,12 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
-	if (!fs.existsSync(asset.fileName)) {
-		throw 'File "' + asset.fileName + '" does not exist!';
-	}
 	asset.metadata = asset.metadata || {};
 	if (asset.fileName) {
+		if (!fs.existsSync(asset.fileName)) {
+			throw 'File "' + asset.fileName + '" does not exist!';
+		}
+
 		asset.metadata.fileName = path.basename(asset.fileName);
 		var stat = fs.statSync(asset.fileName);
 		asset.metadata.size = stat.size;
