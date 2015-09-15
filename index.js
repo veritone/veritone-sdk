@@ -596,8 +596,11 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	if (typeof asset !== 'object') {
 		throw 'Missing asset!';
 	}
-	if (typeof asset.fileName !== 'string') {
-		throw 'Missing asset.fileName!';
+	if (typeof asset.fileName !== 'string' && typeof asset.stream !== 'object') {
+		throw 'Missing asset.fileName or asset.stream!';
+	}
+	if (asset.fileName && asset.stream) {
+		throw 'You can specify only asset.fileName or asset.stream!';
 	}
 	if (typeof asset.assetType !== 'string') {
 		throw 'Missing asset.assetType!';
@@ -612,9 +615,11 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		throw 'File "' + asset.fileName + '" does not exist!';
 	}
 	asset.metadata = asset.metadata || {};
-	asset.metadata.fileName = path.basename(asset.fileName);
-	var stat = fs.statSync(asset.fileName);
-	asset.metadata.size = stat.size;
+	if (asset.fileName) {
+		asset.metadata.fileName = path.basename(asset.fileName);
+		var stat = fs.statSync(asset.fileName);
+		asset.metadata.size = stat.size;
+	}
 	//console.log(asset);
 
 	var self = this;
@@ -636,9 +641,10 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		opts.headers[applicationIdHeader] = asset.applicationId;
 	}
 	//console.log(opts);
+	var stream = asset.stream || fs.createReadStream(asset.fileName);
 
 	function task(callback) {
-		fs.createReadStream(asset.fileName).pipe(
+		stream.pipe(
 			request(opts, function (err, response, body) {
 				if (err) {
 					return callback(err, body);
