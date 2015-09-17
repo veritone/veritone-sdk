@@ -138,7 +138,7 @@ function generateHeaders(token) {
 //};
 
 ApiClient.prototype.createToken = function createToken(label, rights, callback) {
-	if (typeof label !== 'string') {
+	if (typeof label !== 'string' || label === '') {
 		throw 'Missing label!';
 	}
 	if (!rights || !rights.length) {
@@ -178,7 +178,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 };
 
 ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
-	if (typeof token !== 'string') {
+	if (typeof token !== 'string' || token === '') {
 		throw 'Missing token!';
 	}
 	if (typeof callback !== 'function') {
@@ -321,7 +321,10 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 };
 
 ApiClient.prototype.getRecording = function getRecording(recordingId, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof callback !== 'function') {
@@ -387,6 +390,9 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 };
 
 ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
@@ -420,7 +426,10 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 };
 
 ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(recordingId, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof callback !== 'function') {
@@ -454,7 +463,10 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 };
 
 ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof callback !== 'function') {
@@ -491,7 +503,10 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 };
 
 ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof callback !== 'function') {
@@ -525,10 +540,13 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 };
 
 ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
-	if (typeof assetId !== 'string') {
+	if (typeof assetId !== 'string' || assetId === '') {
 		throw 'Missing assetId!';
 	}
 	if (typeof callback !== 'function') {
@@ -565,13 +583,16 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 };
 
 ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, assetId, fileName, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
-	if (typeof assetId !== 'string') {
+	if (typeof assetId !== 'string' || assetId === '') {
 		throw 'Missing assetId!';
 	}
-	if (typeof fileName !== 'string') {
+	if (typeof fileName !== 'string' || fileName === '') {
 		throw 'Missing fileName!';
 	}
 	if (typeof callback !== 'function') {
@@ -590,7 +611,10 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 };
 
 ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof asset !== 'object') {
@@ -602,10 +626,10 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	if (asset.fileName && asset.stream) {
 		throw 'You can specify only asset.fileName or asset.stream!';
 	}
-	if (typeof asset.assetType !== 'string') {
+	if (typeof asset.assetType !== 'string' || asset.assetType === '') {
 		throw 'Missing asset.assetType!';
 	}
-	if (typeof asset.contentType !== 'string') {
+	if (typeof asset.contentType !== 'string' || asset.contentType === '') {
 		throw 'Missing asset.contentType!';
 	}
 	if (typeof callback !== 'function') {
@@ -667,7 +691,10 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 };
 
 ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callback) {
-	if (typeof recordingId !== 'string') {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
 		throw 'Missing recordingId!';
 	}
 	if (typeof asset !== 'object') {
@@ -679,7 +706,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	if (asset.contentType && !asset.fileName) {
 		throw 'Missing asset.fileName!';
 	}
-	if (typeof asset.assetType !== 'string') {
+	if (typeof asset.assetType !== 'string' || asset.assetType === '') {
 		throw 'Missing asset.assetType!';
 	}
 	if (!asset.contentType && !asset.fileName && !asset.metadata) {
@@ -738,6 +765,9 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 };
 
 //ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, callback) {
+//	if (typeof recordingId === 'number') {
+//		recordingId = recordingId + '';
+//	}
 //	if (typeof recordingId !== 'string' || recordingId === '') {
 //		throw 'Missing recordingId!';
 //	}
@@ -872,7 +902,10 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 	} else if (typeof options !== 'object') {
 		throw 'Missing options!';
 	}
-	if (typeof options.recordingId !== 'string') {
+	if (typeof options.recordingId === 'number') {
+		options.recordingId = options.recordingId + '';
+	}
+	if (typeof options.recordingId !== 'string' || options.recordingId === '') {
 		throw 'Missing options.recordingId!';
 	}
 	if (typeof callback !== 'function') {
@@ -917,7 +950,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 };
 
 ApiClient.prototype.getJob = function getJob(jobId, callback) {
-	if (typeof jobId !== 'string') {
+	if (typeof jobId !== 'string' || jobId === '') {
 		throw 'Missing jobId!';
 	}
 	if (typeof callback !== 'function') {
@@ -951,7 +984,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 };
 
 //ApiClient.prototype.cancelJob = function cancelJob(jobId, callback) {
-//	if (typeof jobId !== 'string') {
+//	if (typeof jobId !== 'string' || jobId === '') {
 //		throw 'Missing jobId!';
 //	}
 //	if (typeof callback !== 'function') {
@@ -1092,7 +1125,7 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
-	if (typeof taskType.taskTypeId !== 'string') {
+	if (typeof taskType.taskTypeId !== 'string' || taskType.taskTypeId === '') {
 		throw 'Missing taskTypeId!';
 	}
 	var validation = {
@@ -1138,16 +1171,16 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 };
 
 ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, callback) {
-	if (typeof jobId !== 'string') {
+	if (typeof jobId !== 'string' || jobId === '') {
 		throw 'Missing jobId!';
 	}
-	if (typeof taskId !== 'string') {
+	if (typeof taskId !== 'string' || taskId === '') {
 		throw 'Missing taskId!';
 	}
 	if (typeof result !== 'object') {
 		throw 'Missing result!';
 	}
-	if (typeof result.taskStatus !== 'string') {
+	if (typeof result.taskStatus !== 'string' || result.taskStatus === '') {
 		throw 'Missing result.taskStatus!';
 	}
 	if (result.taskStatus !== 'running' && result.taskStatus !== 'complete' && result.taskStatus !== 'failed') {
@@ -1217,87 +1250,87 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 	});
 };
 
-ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport(reportRequest, callback) {
-	if (typeof reportRequest !== 'object') {
-		throw 'Missing report request!';
-	}
-	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'POST',
-			url: self._baseUri + reportsEndpoint + 'recordings',
-			headers: generateHeaders(self._token),
-			json: reportRequest
-		}, function(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body.reportId);
-		});
-	}
-
-	self._retryHelper.retry(task, function(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
-};
-
-ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId, contentType, callback) {
-	if (typeof reportId !== 'string') {
-		throw 'Missing reportId!';
-	}
-	if (typeof contentType === 'function' && !callback) {
-		callback = contentType;
-		contentType = 'application/json';
-	}
-	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
-	}
-
-	var headers = generateHeaders(this._token);
-	headers.Accept = contentType;
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			url: self._baseUri + reportsEndpoint + 'recordings/' + reportId,
-			headers: headers,
-			json: (contentType === 'application/json')
-		}, function(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode === 420) {
-				// report isn't ready
-				return callback();
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
-};
-
+//ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport(reportRequest, callback) {
+//	if (typeof reportRequest !== 'object') {
+//		throw 'Missing report request!';
+//	}
+//	if (typeof callback !== 'function') {
+//		throw 'Missing callback!';
+//	}
+//
+//	var self = this;
+//	function task(callback) {
+//		request({
+//			method: 'POST',
+//			url: self._baseUri + reportsEndpoint + 'recordings',
+//			headers: generateHeaders(self._token),
+//			json: reportRequest
+//		}, function(err, response, body) {
+//			if (err) {
+//				return callback(err, body);
+//			}
+//			if (response.statusCode !== 200) {
+//				return callback('Received status: ' + response.statusCode, body);
+//			}
+//			callback(null, body.reportId);
+//		});
+//	}
+//
+//	self._retryHelper.retry(task, function(err, body) {
+//		if (err) {
+//			return callback(err, body);
+//		}
+//		callback(null, body);
+//	});
+//};
+//
+//ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId, contentType, callback) {
+//	if (typeof reportId !== 'string' || reportId === '') {
+//		throw 'Missing reportId!';
+//	}
+//	if (typeof contentType === 'function' && !callback) {
+//		callback = contentType;
+//		contentType = 'application/json';
+//	}
+//	if (typeof callback !== 'function') {
+//		throw 'Missing callback!';
+//	}
+//
+//	var headers = generateHeaders(this._token);
+//	headers.Accept = contentType;
+//
+//	var self = this;
+//	function task(callback) {
+//		request({
+//			method: 'GET',
+//			url: self._baseUri + reportsEndpoint + 'recordings/' + reportId,
+//			headers: headers,
+//			json: (contentType === 'application/json')
+//		}, function(err, response, body) {
+//			if (err) {
+//				return callback(err, body);
+//			}
+//			if (response.statusCode === 420) {
+//				// report isn't ready
+//				return callback();
+//			}
+//			if (response.statusCode !== 200) {
+//				return callback('Received status: ' + response.statusCode, body);
+//			}
+//			callback(null, body);
+//		});
+//	}
+//
+//	self._retryHelper.retry(task, function(err, body) {
+//		if (err) {
+//			return callback(err, body);
+//		}
+//		callback(null, body);
+//	});
+//};
+//
 //ApiClient.prototype.listUsageReports = function listUsageReports(callback) {
-//	if (typeof reportId !== 'string') {
+//	if (typeof reportId !== 'string' || reportId === '') {
 //		throw 'Missing reportId!';
 //	}
 //	if (typeof callback !== 'function') {
@@ -1321,7 +1354,7 @@ ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId,
 //};
 
 //ApiClient.prototype.getUsageReport = function getUsageReport(reportId, callback) {
-//	if (typeof reportId !== 'string') {
+//	if (typeof reportId !== 'string' || reportId === '') {
 //		throw 'Missing reportId!';
 //	}
 //	if (typeof callback !== 'function') {
@@ -1513,7 +1546,7 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 };
 
 ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, callback) {
-	if (typeof watcherId !== 'string') {
+	if (typeof watcherId !== 'string' || watcherId === '') {
 		throw 'Missing watcherId!';
 	}
 	if (typeof callback !== 'function') {
