@@ -582,6 +582,93 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 	});
 };
 
+ApiClient.prototype.getAssetMetadata = function getAssetMetadata(recordingId, assetId, callback) {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof assetId !== 'string' || assetId === '') {
+		throw 'Missing assetId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId + '/metadata',
+			headers: generateHeaders(self._token),
+			json: true
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err);
+			}
+
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.updateAssetMetadata = function updateAssetMetadata(recordingId, asset, callback) {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof asset !== 'object') {
+		throw 'Missing asset!';
+	}
+	if (typeof asset.assetId !== 'string' || asset.assetId === '') {
+		throw 'Missing asset.assetId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'PUT',
+			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + asset.assetId + '/metadata',
+			headers: generateHeaders(self._token),
+			json: asset.metadata || {}
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode);
+			}
+			callback();
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, assetId, fileName, callback) {
 	if (typeof recordingId === 'number') {
 		recordingId = recordingId + '';
