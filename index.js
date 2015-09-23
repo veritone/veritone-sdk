@@ -610,7 +610,7 @@ ApiClient.prototype.getAssetMetadata = function getAssetMetadata(recordingId, as
 			}
 
 			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode + ' ' + util.inspect(body));
+				return callback('Received status: ' + response.statusCode, body);
 			}
 			callback(null, body);
 		});
