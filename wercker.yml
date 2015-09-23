@@ -1,0 +1,46 @@
+box: nodesource/centos6
+# Build definition
+build:
+  # The steps that will be executed on build
+  steps:
+    - create-file:
+        name: write netrc
+        filename: $HOME/.netrc
+        content: machine github.com login $GITHUB_ACCESS_TOKEN
+        overwrite: true
+        hide-from-log: true
+
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
+
+    - script:
+        name: Fix RPM database, update existing packages, and install dependencies
+        code: |
+          rpm --rebuilddb
+          #yum clean all
+          yum -y update
+          yum -y install gcc gcc-c++ kernel-devel automake cmake make clang curl libcurl libcurl-devel git tar sudo
+
+    - script:
+        name: npm install
+        code: |
+          mkdir -p $WERCKER_CACHE_DIR/npm
+          npm config set cache $WERCKER_CACHE_DIR/npm
+          npm config list
+          npm install -g npm
+          NODE_ENV=dev npm install
+
+    - hgen/gulp:
+        tasks: test
+
+  after-steps:
+    - hipchat-notify:
+        token: $HIPCHAT_TOKEN
+        room-id: 783420
+        from-name: wercker
+        on: failed
+
+
