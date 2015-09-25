@@ -360,6 +360,9 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 
 ApiClient.prototype.updateRecording = function updateRecording(recording, callback) {
 	validateRecording(recording);
+	if (typeof recording.recordingId === 'number') {
+		recording.recordingId = recording.recordingId + '';
+	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
 	}
@@ -884,6 +887,9 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 ApiClient.prototype.createJob = function createJob(job, callback) {
 	if (typeof job !== 'object') {
 		throw 'Missing job!';
+	}
+	if (typeof job.recordingId === 'number') {
+		job.recordingId = job.recordingId + '';
 	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
@@ -1507,6 +1513,9 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 		};
 	} else if (typeof options !== 'object') {
 		throw 'Missing options!';
+	}
+	if (typeof options.recordingId === 'number') {
+		options.recordingId = options.recordingId + '';
 	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
