@@ -1780,8 +1780,8 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 	if (typeof faceset !== 'object') {
 		throw 'Missing faceset!';
 	}
-	if (typeof faceset.face_set_id !== 'string') {
-		throw 'Missing face_set_id!';
+	if (typeof faceset.faceSetId !== 'string') {
+		throw 'Missing faceSetId!';
 	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
@@ -1792,7 +1792,7 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.face_set_id),
+			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
 			headers: generateHeaders(self._token),
 			json: faceset
 		}, function(err, response, body) {
@@ -1818,8 +1818,8 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	if (typeof faceset !== 'object') {
 		throw 'Missing faceset!';
 	}
-	if (typeof faceset.face_set_id !== 'string') {
-		throw 'Missing face_set_id!';
+	if (typeof faceset.faceSetId !== 'string') {
+		throw 'Missing faceSetId!';
 	}
 	if (typeof callback !== 'function') {
 		throw 'Missing callback!';
@@ -1830,7 +1830,7 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	function task(callback) {
 		request({
 			method: 'PUT',
-			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.face_set_id),
+			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
 			headers: generateHeaders(self._token),
 			json: faceset
 		}, function(err, response, body) {
