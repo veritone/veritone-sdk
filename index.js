@@ -518,7 +518,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 				}
 			}
 		}).on('end', function() {
-			progress.received = progress.received;
+			progress.received = progress.total;
 			progress.percentage = 1.00;
 			progressCallback(progress);
 		});
@@ -626,7 +626,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 				}
 			}
 		}).on('end', function() {
-			progress.received = progress.received;
+			progress.received = progress.total;
 			progress.percentage = 1.00;
 			progressCallback(progress);
 		});
