@@ -479,9 +479,11 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 	var self = this;
 	function task(callback) {
 		var progress = {
-			total: 0,
-			received: 0
-		};
+				total: 0,
+				received: 0,
+				percentage: 0
+			},
+			lastReportedPercentage = 0;
 
 		var req = request({
 			method: 'GET',
@@ -494,6 +496,8 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 				return callback('Received status: ' + response.statusCode);
 			}
 			progress.total = parseInt(response.headers['content-length']);
+			progress.received = 0;
+			progress.percentage = 0;
 			if (progressCallback) {
 				progressCallback(progress);
 			}
@@ -505,9 +509,18 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			});
 		}).on('data', function(data) {
 			progress.received += data.length;
+			progress.percentage = (progress.received / progress.total) / progress.total;
 			if (progressCallback) {
-				progressCallback(progress);
+				// only update every tenth of a percent
+				if (Math.abs(progress.percentage - lastReportedPercentage) >= 0.001) {
+					lastPercentage = progress.percentage;
+					progressCallback(progress);
+				}
 			}
+		}).on('end', function() {
+			progress.received = progress.received;
+			progress.percentage = 1.00;
+			progressCallback(progress);
 		});
 	}
 
@@ -573,9 +586,12 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 	var self = this;
 	function task(callback) {
 		var progress = {
-			total: 0,
-			received: 0
-		};
+				total: 0,
+				received: 0,
+				percentage: 0
+			},
+			percentage,
+			lastReportedPercentage = 0;
 
 		var req = request({
 			method: 'GET',
@@ -588,8 +604,9 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 				return callback('Received status: ' + response.statusCode);
 			}
 			progress.total = parseInt(response.headers['content-length']);
+			progress.received = 0;
+			progress.percentage = 0;
 			if (progressCallback) {
-				console.log('response.headers', response.headers);
 				progressCallback(progress);
 			}
 			var metadata = response.headers[metadataHeader.toLowerCase()];
@@ -600,10 +617,19 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 			});
 		}).on('data', function(data) {
 			progress.received += data.length;
+			progress.percentage = (progress.received / progress.total) / progress.total;
 			if (progressCallback) {
-				progressCallback(progress);
+				// only update every tenth of a percent
+				if (Math.abs(progress.percentage - lastReportedPercentage) >= 0.001) {
+					lastPercentage = progress.percentage;
+					progressCallback(progress);
+				}
 			}
-		});
+		}).on('end', function() {
+			progress.received = progress.received;
+			progress.percentage = 1.00;
+			progressCallback(progress);
+		});;
 	}
 
 	self._retryHelper.retry(task, function(err, body) {
