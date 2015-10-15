@@ -513,7 +513,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			if (progressCallback) {
 				// only update every tenth of a percent
 				if (Math.abs(progress.percentage - lastReportedPercentage) >= 0.001) {
-					lastPercentage = progress.percentage;
+					lastReportedPercentage = progress.percentage;
 					progressCallback(progress);
 				}
 			}
@@ -621,7 +621,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 			if (progressCallback) {
 				// only update every tenth of a percent
 				if (Math.abs(progress.percentage - lastReportedPercentage) >= 0.001) {
-					lastPercentage = progress.percentage;
+					lastReportedPercentage = progress.percentage;
 					progressCallback(progress);
 				}
 			}
@@ -629,7 +629,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 			progress.received = progress.received;
 			progress.percentage = 1.00;
 			progressCallback(progress);
-		});;
+		});
 	}
 
 	self._retryHelper.retry(task, function(err, body) {
