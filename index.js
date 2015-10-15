@@ -509,7 +509,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			});
 		}).on('data', function(data) {
 			progress.received += data.length;
-			progress.percentage = (progress.received / progress.total) / progress.total;
+			progress.percentage = (progress.total ? (progress.received / progress.total) / progress.total : 0);
 			if (progressCallback) {
 				// only update every tenth of a percent
 				if (Math.abs(progress.percentage - lastReportedPercentage) >= 0.001) {
@@ -617,7 +617,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 			});
 		}).on('data', function(data) {
 			progress.received += data.length;
-			progress.percentage = (progress.received / progress.total) / progress.total;
+			progress.percentage = (progress.total ? (progress.received / progress.total) / progress.total : 0);
 			if (progressCallback) {
 				// only update every tenth of a percent
 				if (Math.abs(progress.percentage - lastReportedPercentage) >= 0.001) {
