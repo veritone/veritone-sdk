@@ -465,7 +465,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 	});
 };
 
-ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, callback) {
+ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, callback, progressCallback) {
 	if (typeof recordingId === 'number') {
 		recordingId = recordingId + '';
 	}
@@ -478,6 +478,11 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 
 	var self = this;
 	function task(callback) {
+		var progress = {
+			total: 0,
+			received: 0
+		};
+
 		var req = request({
 			method: 'GET',
 			uri: self._baseUri + recordingEndpoint + recordingId + '/media',
@@ -488,12 +493,21 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
 			}
+			progress.total = parseInt(response.headers['content-length']);
+			if (progressCallback) {
+				progressCallback(progress);
+			}
 			var metadata = response.headers[metadataHeader.toLowerCase()];
 			callback(null, {
 				contentType: response.headers['content-type'],
 				metadata: (metadata ? JSON.parse(metadata) : undefined),
 				stream: req
 			});
+		}).on('data', function(data) {
+			progress.received += data.length;
+			if (progressCallback) {
+				progressCallback(progress);
+			}
 		});
 	}
 
@@ -542,7 +556,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 	});
 };
 
-ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback) {
+ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback, progressCallback) {
 	if (typeof recordingId === 'number') {
 		recordingId = recordingId + '';
 	}
@@ -558,6 +572,11 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 
 	var self = this;
 	function task(callback) {
+		var progress = {
+			total: 0,
+			received: 0
+		};
+
 		var req = request({
 			method: 'GET',
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
@@ -568,12 +587,22 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback)
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
 			}
+			progress.total = parseInt(response.headers['content-length']);
+			if (progressCallback) {
+				console.log('response.headers', response.headers);
+				progressCallback(progress);
+			}
 			var metadata = response.headers[metadataHeader.toLowerCase()];
 			callback(null, {
 				contentType: response.headers['content-type'],
 				metadata: (metadata ? JSON.parse(metadata) : undefined),
 				stream: req
 			});
+		}).on('data', function(data) {
+			progress.received += data.length;
+			if (progressCallback) {
+				progressCallback(progress);
+			}
 		});
 	}
 
@@ -672,7 +701,7 @@ ApiClient.prototype.updateAssetMetadata = function updateAssetMetadata(recording
 	});
 };
 
-ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, assetId, fileName, callback) {
+ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, assetId, fileName, callback, progressCallback) {
 	if (typeof recordingId === 'number') {
 		recordingId = recordingId + '';
 	}
@@ -697,7 +726,7 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 			callback(null, result);
 		});
 		result.stream.pipe(fs.createWriteStream(fileName));
-	});
+	}, progressCallback);
 };
 
 ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callback) {
