@@ -31,6 +31,7 @@ function ApiClient(options) {
 var applicationEndpoint = '/application/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
+	facesetEndpoint = '/face-recognition/faceset/',
 	tasksByRecordingEndpoint = '/recording/tasks',
 	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
@@ -1123,7 +1124,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 //	if (typeof callback !== 'function') {
 //		throw 'Missing callback!';
 //	}
-//	
+//
 //	request({
 //		method: 'DELETE',
 //		url: this._baseUri + jobEndpoint + jobId,
@@ -1768,6 +1769,115 @@ ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcher
 				return callback(err, body);
 			}
 			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
+	if (typeof q !== 'string' || q === '') {
+		throw 'Missing query!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + facesetEndpoint + 'autocomplete/' + encodeURIComponent(q),
+			headers: generateHeaders(self._token)
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
+	if (typeof faceset !== 'object') {
+		throw 'Missing faceset!';
+	}
+	if (typeof faceset.faceSetId !== 'string') {
+		throw 'Missing faceSetId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
+			headers: generateHeaders(self._token),
+			json: faceset
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
+	if (typeof faceset !== 'object') {
+		throw 'Missing faceset!';
+	}
+	if (typeof faceset.faceSetId !== 'string') {
+		throw 'Missing faceSetId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
+			headers: generateHeaders(self._token),
+			json: faceset
+		}, function(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
 			}
 			callback(null, body);
