@@ -3,7 +3,6 @@
 var gulp = require('gulp'),
     gulpJshint = require('gulp-jshint'),
     gulpDebug = require('gulp-debug'),
-    gulpNodemon = require('gulp-nodemon'),
     gulpJasmine = require('gulp-jasmine');
 
 var allOfMyFiles = [
@@ -37,12 +36,6 @@ gulp.task('test', ['lint', 'jasmine']);
 
 gulp.task('watch', ['test'], function() {
 	gulp.watch(allOfMyFiles, ['test']);
-});
-
-gulp.task('serve', ['test'], function() {
-	gulpNodemon({
-		script: 'server.js'
-	});
 });
 
 gulp.task('default', ['test']);

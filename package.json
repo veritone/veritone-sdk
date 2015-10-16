@@ -11,14 +11,9 @@
     "validate.js": "^0.7.1"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-jasmine-nodejs": "^1.4.0",
     "gulp": "^3.8.11",
     "gulp-debug": "^2.0.1",
     "gulp-jasmine": "^2.0.1",
-    "gulp-jshint": "^1.11.0",
-    "gulp-nodemon": "^2.0.3"
+    "gulp-jshint": "^1.11.0"
   }
 }
