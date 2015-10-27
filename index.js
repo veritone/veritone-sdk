@@ -393,6 +393,39 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 	});
 };
 
+ApiClient.prototype.updateCms = function updateCms(recordingId, callback) {
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + recordingEndpoint + recordingId + '/cms',
+			headers: generateHeaders(self._token)
+		}, function (err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null);
+		});
+	}
+
+	self._retryHelper.retry(task, function(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, callback) {
 	if (typeof recordingId === 'number') {
 		recordingId = recordingId + '';
