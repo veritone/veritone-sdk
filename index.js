@@ -928,34 +928,34 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	});
 };
 
-//ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, callback) {
-//	if (typeof recordingId === 'number') {
-//		recordingId = recordingId + '';
-//	}
-//	if (typeof recordingId !== 'string' || recordingId === '') {
-//		throw 'Missing recordingId!';
-//	}
-//	if (typeof assetId !== 'string' || assetId === '') {
-//		throw 'Missing assetId!';
-//	}
-//	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
-//	}
-//
-//	request({
-//		method: 'DELETE',
-//		url: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
-//		headers: generateHeaders(this._token)
-//	}, function (err, response, body) {
-//		if (err) {
-//			return callback(err, body);
-//		}
-//		if (response.statusCode !== 204) {
-//			return callback('Received status: ' + response.statusCode, body);
-//		}
-//		callback(null, body);
-//	});
-//};
+ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, callback) {
+	if (typeof recordingId === 'number') {
+		recordingId = recordingId + '';
+	}
+	if (typeof recordingId !== 'string' || recordingId === '') {
+		throw 'Missing recordingId!';
+	}
+	if (typeof assetId !== 'string' || assetId === '') {
+		throw 'Missing assetId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'DELETE',
+		url: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
+		headers: generateHeaders(this._token)
+	}, function (err, response, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		if (response.statusCode !== 204) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
 
 ApiClient.prototype.createJob = function createJob(job, callback) {
 	if (typeof job !== 'object') {
