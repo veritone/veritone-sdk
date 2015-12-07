@@ -1150,6 +1150,54 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 	});
 };
 
+ApiClient.prototype.restartJob = function restartJob(jobId, callback) {
+	if (typeof jobId !== 'string' || jobId === '') {
+		throw 'Missing jobId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'PUT',
+		url: this._baseUri + jobEndpoint + jobId + '/restart',
+		headers: generateHeaders(this._token),
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		if (response.statusCode !== 204) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
+	if (typeof jobId !== 'string' || jobId === '') {
+		throw 'Missing jobId!';
+	}
+	if (typeof callback !== 'function') {
+		throw 'Missing callback!';
+	}
+
+	request({
+		method: 'PUT',
+		url: this._baseUri + jobEndpoint + jobId + '/retry',
+		headers: generateHeaders(this._token),
+		json: true
+	}, function(err, response, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		if (response.statusCode !== 204) {
+			return callback('Received status: ' + response.statusCode, body);
+		}
+		callback(null, body);
+	});
+};
+
 //ApiClient.prototype.cancelJob = function cancelJob(jobId, callback) {
 //	if (typeof jobId !== 'string' || jobId === '') {
 //		throw 'Missing jobId!';
