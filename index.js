@@ -13,7 +13,7 @@ function ApiClient(options) {
 		};
 	}
 	if (!options.token) {
-		throw 'Missing token!';
+		throw new Error('Missing token!');
 	}
 	this._token = options.token;
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
@@ -36,9 +36,9 @@ var applicationEndpoint = '/application/',
 	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
 	searchEndpoint = '/search',
-	reportsEndpoint = '/report/',
+	//reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
-	transcriptEndpoint = '/transcript/',
+	//transcriptEndpoint = '/transcript/',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
@@ -50,7 +50,7 @@ function generateHeaders(token) {
 
 //function validateApplication(application) {
 //	if (typeof application !== 'object') {
-//		throw 'Missing application!';
+//		throw new Error('Missing application!');
 //	}
 //	var validation = {
 //		applicationName: {
@@ -69,14 +69,14 @@ function generateHeaders(token) {
 //	};
 //	var validationErrors = validatejs(application, validation);
 //	if (validationErrors) {
-//		throw 'Invalid application object!';
+//		throw new Error('Invalid application object!');
 //	}
 //}
 //
 //ApiClient.prototype.createApplication = function createApplication(application, callback) {
 //	validateApplication(application);
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	request({
@@ -84,7 +84,7 @@ function generateHeaders(token) {
 //		url: this._baseUri + applicationEndpoint,
 //		headers: generateHeaders(this._token),
 //		json: application
-//	}, function(err, response, body) {
+//	}, function requestCallback(err, response, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -97,7 +97,7 @@ function generateHeaders(token) {
 //
 //ApiClient.prototype.getApplication = function getApplication(callback) {
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	request({
@@ -105,7 +105,7 @@ function generateHeaders(token) {
 //		url: this._baseUri + applicationEndpoint,
 //		headers: generateHeaders(this._token),
 //		json: true
-//	}, function(err, response, body) {
+//	}, function requestCallback(err, response, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -119,7 +119,7 @@ function generateHeaders(token) {
 //ApiClient.prototype.updateApplication = function updateApplication(application, callback) {
 //	validateApplication(application);
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	request({
@@ -127,7 +127,7 @@ function generateHeaders(token) {
 //		url: this._baseUri + applicationEndpoint,
 //		headers: generateHeaders(this._token),
 //		json: application
-//	}, function(err, response, body) {
+//	}, function requestCallback(err, response, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -140,13 +140,13 @@ function generateHeaders(token) {
 
 ApiClient.prototype.createToken = function createToken(label, rights, callback) {
 	if (typeof label !== 'string' || label === '') {
-		throw 'Missing label!';
+		throw new Error('Missing label!');
 	}
 	if (!rights || !rights.length) {
-		throw 'Missing rights!';
+		throw new Error('Missing rights!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -159,7 +159,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 				tokenLabel: label,
 				rights: rights
 			}
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -170,7 +170,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -180,10 +180,10 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 
 ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 	if (typeof token !== 'string' || token === '') {
-		throw 'Missing token!';
+		throw new Error('Missing token!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -193,7 +193,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 			url: self._baseUri + applicationEndpoint + 'token/' + token,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -204,7 +204,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -214,7 +214,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 
 function validateRecording(recording) {
 	if (typeof recording !== 'object') {
-		throw 'Missing recording!';
+		throw new Error('Missing recording!');
 	}
 	var validation = {
 		startDateTime: {
@@ -233,14 +233,14 @@ function validateRecording(recording) {
 	};
 	var validationErrors = validatejs(recording, validation);
 	if (validationErrors) {
-		throw 'Invalid recording object: ' + JSON.stringify(validationErrors);
+		throw new Error('Invalid recording object: ' + JSON.stringify(validationErrors));
 	}
 }
 
 ApiClient.prototype.createRecording = function createRecording(recording, callback) {
 	validateRecording(recording);
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -250,7 +250,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 			url: self._baseUri + recordingEndpoint,
 			headers: generateHeaders(self._token),
 			json: recording
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -261,7 +261,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -278,10 +278,10 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 			recordingId: options
 		};
 	} else if (typeof options !== 'object') {
-		throw 'Missing options!';
+		throw new Error('Missing options!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var uri = this._baseUri + recordingEndpoint;
@@ -302,7 +302,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 			uri: uri,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -313,7 +313,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -326,10 +326,10 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -339,7 +339,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 			uri: self._baseUri + recordingEndpoint + recordingId,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -350,7 +350,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -364,7 +364,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		recording.recordingId = recording.recordingId + '';
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -374,7 +374,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 			url: self._baseUri + recordingEndpoint + recording.recordingId,
 			headers: generateHeaders(self._token),
 			json: recording
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -385,7 +385,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -395,10 +395,10 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 
 ApiClient.prototype.updateCms = function updateCms(recordingId, callback) {
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -407,7 +407,7 @@ ApiClient.prototype.updateCms = function updateCms(recordingId, callback) {
 			method: 'PUT',
 			url: self._baseUri + recordingEndpoint + recordingId + '/cms',
 			headers: generateHeaders(self._token)
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -418,7 +418,7 @@ ApiClient.prototype.updateCms = function updateCms(recordingId, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -431,10 +431,10 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -443,7 +443,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 			method: 'DELETE',
 			url: self._baseUri + recordingEndpoint + recordingId,
 			headers: generateHeaders(self._token)
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -454,7 +454,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -467,10 +467,10 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -480,7 +480,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 			uri: self._baseUri + recordingEndpoint + recordingId + '/transcript',
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -491,7 +491,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -504,10 +504,10 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -521,9 +521,9 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			method: 'GET',
 			uri: self._baseUri + recordingEndpoint + recordingId + '/media',
 			headers: generateHeaders(self._token)
-		}).on('error', function (err) {
+		}).on('error', function onError(err) {
 			callback(err);
-		}).on('response', function(response) {
+		}).on('response', function onResponse(response) {
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
 			}
@@ -538,12 +538,12 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 				metadata: (metadata ? JSON.parse(metadata) : undefined),
 				stream: req
 			});
-		}).on('data', function(data) {
+		}).on('data', function onData(data) {
 			progress.received += data.length;
 			if (progressCallback) {
 				progressCallback(progress);
 			}
-		}).on('end', function() {
+		}).on('end', function onEnd() {
 			progress.received = progress.total;
 			if (progressCallback) {
 				progressCallback(progress);
@@ -551,7 +551,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -564,10 +564,10 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -577,7 +577,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/',
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -588,7 +588,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -601,29 +601,29 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof assetId !== 'string' || assetId === '') {
-		throw 'Missing assetId!';
+		throw new Error('Missing assetId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
 	function task(callback) {
 		var progress = {
-				total: 0,
-				received: 0
-			};
+			total: 0,
+			received: 0
+		};
 
 		var req = request({
 			method: 'GET',
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
 			headers: generateHeaders(self._token)
-		}).on('error', function (err) {
+		}).on('error', function onError(err) {
 			callback(err);
-		}).on('response', function(response) {
+		}).on('response', function onResponse(response) {
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode);
 			}
@@ -638,12 +638,12 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 				metadata: (metadata ? JSON.parse(metadata) : undefined),
 				stream: req
 			});
-		}).on('data', function(data) {
+		}).on('data', function onData(data) {
 			progress.received += data.length;
 			if (progressCallback) {
 				progressCallback(progress);
 			}
-		}).on('end', function() {
+		}).on('end', function onEnd() {
 			progress.received = progress.total;
 			if (progressCallback) {
 				progressCallback(progress);
@@ -651,7 +651,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -664,13 +664,13 @@ ApiClient.prototype.getAssetMetadata = function getAssetMetadata(recordingId, as
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof assetId !== 'string' || assetId === '') {
-		throw 'Missing assetId!';
+		throw new Error('Missing assetId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -681,7 +681,7 @@ ApiClient.prototype.getAssetMetadata = function getAssetMetadata(recordingId, as
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId + '/metadata',
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err);
 			}
@@ -693,7 +693,7 @@ ApiClient.prototype.getAssetMetadata = function getAssetMetadata(recordingId, as
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -706,16 +706,16 @@ ApiClient.prototype.updateAssetMetadata = function updateAssetMetadata(recording
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof asset !== 'object') {
-		throw 'Missing asset!';
+		throw new Error('Missing asset!');
 	}
 	if (typeof asset.assetId !== 'string' || asset.assetId === '') {
-		throw 'Missing asset.assetId!';
+		throw new Error('Missing asset.assetId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -726,7 +726,7 @@ ApiClient.prototype.updateAssetMetadata = function updateAssetMetadata(recording
 			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + asset.assetId + '/metadata',
 			headers: generateHeaders(self._token),
 			json: asset.metadata || {}
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -738,7 +738,7 @@ ApiClient.prototype.updateAssetMetadata = function updateAssetMetadata(recording
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -751,23 +751,23 @@ ApiClient.prototype.saveAssetToFile = function saveAssetToFile(recordingId, asse
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof assetId !== 'string' || assetId === '') {
-		throw 'Missing assetId!';
+		throw new Error('Missing assetId!');
 	}
 	if (typeof fileName !== 'string' || fileName === '') {
-		throw 'Missing fileName!';
+		throw new Error('Missing fileName!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
-	this.getAsset(recordingId, assetId, function(err, result) {
+	this.getAsset(recordingId, assetId, function getAssetCallback(err, result) {
 		if (err) {
 			return callback(err);
 		}
-		result.stream.on('end', function() {
+		result.stream.on('end', function onEnd() {
 			callback(null, result);
 		});
 		result.stream.pipe(fs.createWriteStream(fileName));
@@ -779,30 +779,30 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof asset !== 'object') {
-		throw 'Missing asset!';
+		throw new Error('Missing asset!');
 	}
 	if (typeof asset.fileName !== 'string' && typeof asset.stream !== 'object') {
-		throw 'Missing asset.fileName or asset.stream!';
+		throw new Error('Missing asset.fileName or asset.stream!');
 	}
 	if (asset.fileName && asset.stream) {
-		throw 'You can specify only asset.fileName or asset.stream!';
+		throw new Error('You can specify only asset.fileName or asset.stream!');
 	}
 	if (typeof asset.assetType !== 'string' || asset.assetType === '') {
-		throw 'Missing asset.assetType!';
+		throw new Error('Missing asset.assetType!');
 	}
 	if (typeof asset.contentType !== 'string' || asset.contentType === '') {
-		throw 'Missing asset.contentType!';
+		throw new Error('Missing asset.contentType!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 	asset.metadata = asset.metadata || {};
 	if (asset.fileName) {
 		if (!fs.existsSync(asset.fileName)) {
-			throw 'File "' + asset.fileName + '" does not exist!';
+			throw new Error('File "' + asset.fileName + '" does not exist!');
 		}
 
 		asset.metadata.fileName = path.basename(asset.fileName);
@@ -834,7 +834,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 
 	function task(callback) {
 		stream.pipe(
-			request(opts, function (err, response, body) {
+			request(opts, function requestCallback(err, response, body) {
 				if (err) {
 					return callback(err, body);
 				}
@@ -846,7 +846,7 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 		);
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -859,28 +859,28 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof asset !== 'object') {
-		throw 'Missing asset!';
+		throw new Error('Missing asset!');
 	}
 	if (asset.fileName && !asset.contentType) {
-		throw 'Missing asset.contentType!';
+		throw new Error('Missing asset.contentType!');
 	}
 	if (asset.contentType && !asset.fileName) {
-		throw 'Missing asset.fileName!';
+		throw new Error('Missing asset.fileName!');
 	}
 	if (typeof asset.assetType !== 'string' || asset.assetType === '') {
-		throw 'Missing asset.assetType!';
+		throw new Error('Missing asset.assetType!');
 	}
 	if (!asset.contentType && !asset.fileName && !asset.metadata) {
-		throw 'Nothing to do!';
+		throw new Error('Nothing to do!');
 	}
 	if (!fs.existsSync(asset.fileName)) {
-		throw 'File "' + asset.fileName + '" does not exist!';
+		throw new Error('File "' + asset.fileName + '" does not exist!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -893,7 +893,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	};
 	if (asset.fileName) {
 		if (!fs.existsSync(asset.fileName)) {
-			throw 'File "' + asset.fileName + '" does not exist!';
+			throw new Error('File "' + asset.fileName + '" does not exist!');
 		}
 		opts.headers['Content-Type'] = asset.contentType;
 		opts.headers['X-Veritone-Asset-Type'] = asset.assetType;
@@ -906,7 +906,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 	}
 
 	function task(callback) {
-		var req = request(opts, function (err, response, body) {
+		var req = request(opts, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -920,7 +920,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 		}
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -933,20 +933,20 @@ ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, cal
 		recordingId = recordingId + '';
 	}
 	if (typeof recordingId !== 'string' || recordingId === '') {
-		throw 'Missing recordingId!';
+		throw new Error('Missing recordingId!');
 	}
 	if (typeof assetId !== 'string' || assetId === '') {
-		throw 'Missing assetId!';
+		throw new Error('Missing assetId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	request({
 		method: 'DELETE',
 		url: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
 		headers: generateHeaders(this._token)
-	}, function (err, response, body) {
+	}, function requestCallback(err, response, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -959,13 +959,13 @@ ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, cal
 
 ApiClient.prototype.createJob = function createJob(job, callback) {
 	if (typeof job !== 'object') {
-		throw 'Missing job!';
+		throw new Error('Missing job!');
 	}
 	if (typeof job.recordingId === 'number') {
 		job.recordingId = job.recordingId + '';
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 	var validation = {
 		tasks: {
@@ -974,10 +974,10 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 	};
 	var validationErrors = validatejs(job, validation);
 	if (validationErrors) {
-		throw 'Invalid job object!';
+		throw new Error('Invalid job object!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -987,7 +987,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 			url: self._baseUri + jobEndpoint,
 			headers: generateHeaders(self._token),
 			json: job
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -998,7 +998,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1015,10 +1015,10 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 			recordingId: options
 		};
 	} else if (typeof options !== 'object') {
-		throw 'Missing options!';
+		throw new Error('Missing options!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var uri = this._baseUri + jobEndpoint;
@@ -1039,7 +1039,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 			url: uri,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1050,7 +1050,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1067,16 +1067,16 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 			recordingId: options
 		};
 	} else if (typeof options !== 'object') {
-		throw 'Missing options!';
+		throw new Error('Missing options!');
 	}
 	if (typeof options.recordingId === 'number') {
 		options.recordingId = options.recordingId + '';
 	}
 	if (typeof options.recordingId !== 'string' || options.recordingId === '') {
-		throw 'Missing options.recordingId!';
+		throw new Error('Missing options.recordingId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var uri = this._baseUri + jobEndpoint + 'recording/' + options.recordingId;
@@ -1097,7 +1097,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 			url: uri,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1108,7 +1108,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1118,10 +1118,10 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 
 ApiClient.prototype.getJob = function getJob(jobId, callback) {
 	if (typeof jobId !== 'string' || jobId === '') {
-		throw 'Missing jobId!';
+		throw new Error('Missing jobId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1131,7 +1131,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 			url: self._baseUri + jobEndpoint + jobId,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1142,7 +1142,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1152,10 +1152,10 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 
 ApiClient.prototype.restartJob = function restartJob(jobId, callback) {
 	if (typeof jobId !== 'string' || jobId === '') {
-		throw 'Missing jobId!';
+		throw new Error('Missing jobId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	request({
@@ -1163,7 +1163,7 @@ ApiClient.prototype.restartJob = function restartJob(jobId, callback) {
 		url: this._baseUri + jobEndpoint + jobId + '/restart',
 		headers: generateHeaders(this._token),
 		json: true
-	}, function(err, response, body) {
+	}, function requestCallback(err, response, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1176,10 +1176,10 @@ ApiClient.prototype.restartJob = function restartJob(jobId, callback) {
 
 ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 	if (typeof jobId !== 'string' || jobId === '') {
-		throw 'Missing jobId!';
+		throw new Error('Missing jobId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	request({
@@ -1187,7 +1187,7 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 		url: this._baseUri + jobEndpoint + jobId + '/retry',
 		headers: generateHeaders(this._token),
 		json: true
-	}, function(err, response, body) {
+	}, function requestCallback(err, response, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1200,10 +1200,10 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 
 //ApiClient.prototype.cancelJob = function cancelJob(jobId, callback) {
 //	if (typeof jobId !== 'string' || jobId === '') {
-//		throw 'Missing jobId!';
+//		throw new Error('Missing jobId!');
 //	}
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	request({
@@ -1211,7 +1211,7 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 //		url: this._baseUri + jobEndpoint + jobId,
 //		headers: generateHeaders(this._token),
 //		json: true
-//	}, function(err, response, body) {
+//	}, function requestCallback(err, response, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -1224,7 +1224,7 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 
 ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1234,7 +1234,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 			url: self._baseUri + taskTypeByJobEndpoint + taskTypeId,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1245,7 +1245,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1255,7 +1255,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 
 ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1265,7 +1265,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 			url: self._baseUri + jobEndpoint + 'task_type',
 			headers: generateHeaders(self._token),
 			json: true
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1276,7 +1276,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1286,10 +1286,10 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 
 ApiClient.prototype.createTaskType = function createTaskType(taskType, callback) {
 	if (typeof taskType !== 'object') {
-		throw 'Missing taskType!';
+		throw new Error('Missing taskType!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 	var validation = {
 		taskTypeId: {
@@ -1304,7 +1304,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 	};
 	var validationErrors = validatejs(taskType, validation);
 	if (validationErrors) {
-		throw 'Invalid taskType object!';
+		throw new Error('Invalid taskType object!');
 	}
 
 	var self = this;
@@ -1314,7 +1314,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 			url: self._baseUri + jobEndpoint + 'task_type',
 			headers: generateHeaders(self._token),
 			json: taskType
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1325,7 +1325,7 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1335,13 +1335,13 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 
 ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback) {
 	if (typeof taskType !== 'object') {
-		throw 'Missing taskType!';
+		throw new Error('Missing taskType!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 	if (typeof taskType.taskTypeId !== 'string' || taskType.taskTypeId === '') {
-		throw 'Missing taskTypeId!';
+		throw new Error('Missing taskTypeId!');
 	}
 	var validation = {
 		taskTypeId: {
@@ -1356,7 +1356,7 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 	};
 	var validationErrors = validatejs(taskType, validation);
 	if (validationErrors) {
-		throw 'Invalid taskType object!';
+		throw new Error('Invalid taskType object!');
 	}
 
 	var self = this;
@@ -1366,7 +1366,7 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 			url: self._baseUri + taskTypeByJobEndpoint + taskType.taskTypeId,
 			headers: generateHeaders(self._token),
 			json: taskType
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1377,7 +1377,7 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1387,22 +1387,22 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 
 ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, callback) {
 	if (typeof jobId !== 'string' || jobId === '') {
-		throw 'Missing jobId!';
+		throw new Error('Missing jobId!');
 	}
 	if (typeof taskId !== 'string' || taskId === '') {
-		throw 'Missing taskId!';
+		throw new Error('Missing taskId!');
 	}
 	if (typeof result !== 'object') {
-		throw 'Missing result!';
+		throw new Error('Missing result!');
 	}
 	if (typeof result.taskStatus !== 'string' || result.taskStatus === '') {
-		throw 'Missing result.taskStatus!';
+		throw new Error('Missing result.taskStatus!');
 	}
 	if (result.taskStatus !== 'running' && result.taskStatus !== 'complete' && result.taskStatus !== 'failed') {
-		throw 'Invalid task status: ' + result.taskStatus;
+		throw new Error('Invalid task status: ' + result.taskStatus);
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1412,7 +1412,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 			url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId,
 			headers: generateHeaders(self._token),
 			json: result
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1423,7 +1423,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1433,10 +1433,10 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 
 ApiClient.prototype.search = function search(searchRequest, callback) {
 	if (typeof searchRequest !== 'object') {
-		throw 'Missing search request!';
+		throw new Error('Missing search request!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1446,7 +1446,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 			url: self._baseUri + searchEndpoint,
 			headers: generateHeaders(self._token),
 			json: searchRequest
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1457,7 +1457,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1467,10 +1467,10 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 
 //ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport(reportRequest, callback) {
 //	if (typeof reportRequest !== 'object') {
-//		throw 'Missing report request!';
+//		throw new Error('Missing report request!');
 //	}
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	var self = this;
@@ -1480,7 +1480,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //			url: self._baseUri + reportsEndpoint + 'recordings',
 //			headers: generateHeaders(self._token),
 //			json: reportRequest
-//		}, function(err, response, body) {
+//		}, function requestCallback(err, response, body) {
 //			if (err) {
 //				return callback(err, body);
 //			}
@@ -1491,7 +1491,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //		});
 //	}
 //
-//	self._retryHelper.retry(task, function(err, body) {
+//	self._retryHelper.retry(task, function retryCallback(err, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -1501,14 +1501,14 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //
 //ApiClient.prototype.getRecordingsReport = function getRecordingsReport(reportId, contentType, callback) {
 //	if (typeof reportId !== 'string' || reportId === '') {
-//		throw 'Missing reportId!';
+//		throw new Error('Missing reportId!');
 //	}
 //	if (typeof contentType === 'function' && !callback) {
 //		callback = contentType;
 //		contentType = 'application/json';
 //	}
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	var headers = generateHeaders(this._token);
@@ -1521,7 +1521,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //			url: self._baseUri + reportsEndpoint + 'recordings/' + reportId,
 //			headers: headers,
 //			json: (contentType === 'application/json')
-//		}, function(err, response, body) {
+//		}, function requestCallback(err, response, body) {
 //			if (err) {
 //				return callback(err, body);
 //			}
@@ -1536,7 +1536,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //		});
 //	}
 //
-//	self._retryHelper.retry(task, function(err, body) {
+//	self._retryHelper.retry(task, function retryCallback(err, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -1546,10 +1546,10 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //
 //ApiClient.prototype.listUsageReports = function listUsageReports(callback) {
 //	if (typeof reportId !== 'string' || reportId === '') {
-//		throw 'Missing reportId!';
+//		throw new Error('Missing reportId!');
 //	}
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	request({
@@ -1557,7 +1557,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //		url: this._baseUri + reportsEndpoint + 'usage',
 //		headers: generateHeaders(this._token),
 //		json: true
-//	}, function(err, response, body) {
+//	}, function requestCallback(err, response, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -1570,10 +1570,10 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 
 //ApiClient.prototype.getUsageReport = function getUsageReport(reportId, callback) {
 //	if (typeof reportId !== 'string' || reportId === '') {
-//		throw 'Missing reportId!';
+//		throw new Error('Missing reportId!');
 //	}
 //	if (typeof callback !== 'function') {
-//		throw 'Missing callback!';
+//		throw new Error('Missing callback!');
 //	}
 //
 //	request({
@@ -1581,7 +1581,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 //		url: this._baseUri + reportsEndpoint + 'usage/' + reportId,
 //		headers: generateHeaders(this._token),
 //		json: true
-//	}, function(err, response, body) {
+//	}, function requestCallback(err, response, body) {
 //		if (err) {
 //			return callback(err, body);
 //		}
@@ -1595,7 +1595,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 ApiClient.prototype.batch = function batch(requests, callback) {
 	//validateBatch(requests);
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1605,7 +1605,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 			url: self._baseUri + batchEndpoint,
 			headers: generateHeaders(self._token),
 			json: requests
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1616,7 +1616,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1633,24 +1633,23 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 			recordingId: options
 		};
 	} else if (typeof options !== 'object') {
-		throw 'Missing options!';
+		throw new Error('Missing options!');
 	}
 	if (typeof options.recordingId === 'number') {
 		options.recordingId = options.recordingId + '';
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var uri = this._baseUri + tasksByRecordingEndpoint;
-	if(options.keys.length > 0) {
+	if (options.keys.length > 0) {
 		uri += '?';
 	}
 
-	Object.keys(options).forEach(function(key) {
-        uri += key+'='+options[key];
-    });
-
+	Object.keys(options).forEach(function forEachKey(key) {
+		uri += key + '=' + options[key];
+	});
 
 	var self = this;
 	function task(callback) {
@@ -1659,7 +1658,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 			uri: uri,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1670,7 +1669,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1682,7 +1681,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 
 ApiClient.prototype.createDropboxWatcher = function createDropboxWatcher(watcher, callback) {
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1692,7 +1691,7 @@ ApiClient.prototype.createDropboxWatcher = function createDropboxWatcher(watcher
 			url: self._baseUri + dropboxWatcherEndpoint,
 			headers: generateHeaders(self._token),
 			json: watcher
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1703,7 +1702,7 @@ ApiClient.prototype.createDropboxWatcher = function createDropboxWatcher(watcher
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1720,10 +1719,10 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 			watcherId: options
 		};
 	} else if (typeof options !== 'object') {
-		throw 'Missing options!';
+		throw new Error('Missing options!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var uri = this._baseUri + dropboxWatcherEndpoint;
@@ -1744,7 +1743,7 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 			uri: uri,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1755,7 +1754,7 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1765,10 +1764,10 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 
 ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, callback) {
 	if (typeof watcherId !== 'string' || watcherId === '') {
-		throw 'Missing watcherId!';
+		throw new Error('Missing watcherId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1778,7 +1777,7 @@ ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, ca
 			uri: self._baseUri + dropboxWatcherEndpoint + watcherId,
 			headers: generateHeaders(self._token),
 			json: true
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1789,7 +1788,7 @@ ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, ca
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1799,10 +1798,10 @@ ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, ca
 
 ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher, callback) {
 	if (typeof watcher !== 'object') {
-		throw 'Missing watcher!';
+		throw new Error('Missing watcher!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1812,7 +1811,7 @@ ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher
 			url: self._baseUri + dropboxWatcherEndpoint + watcher.watcherId,
 			headers: generateHeaders(self._token),
 			json: watcher
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1823,7 +1822,7 @@ ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1833,10 +1832,10 @@ ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher
 
 ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcherId, callback) {
 	if (typeof watcherId !== 'string' || watcherId === '') {
-		throw 'Missing watcherId!';
+		throw new Error('Missing watcherId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1845,7 +1844,7 @@ ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcher
 			method: 'DELETE',
 			url: self._baseUri + dropboxWatcherEndpoint + watcherId,
 			headers: generateHeaders(self._token)
-		}, function (err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1856,7 +1855,7 @@ ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcher
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1866,10 +1865,10 @@ ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcher
 
 ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
 	if (typeof q !== 'string' || q === '') {
-		throw 'Missing query!';
+		throw new Error('Missing query!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 	var self = this;
 
@@ -1878,7 +1877,7 @@ ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
 			method: 'GET',
 			url: self._baseUri + facesetEndpoint + 'autocomplete/' + encodeURIComponent(q),
 			headers: generateHeaders(self._token)
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1889,7 +1888,7 @@ ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1899,13 +1898,13 @@ ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
 
 ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 	if (typeof faceset !== 'object') {
-		throw 'Missing faceset!';
+		throw new Error('Missing faceset!');
 	}
 	if (typeof faceset.faceSetId !== 'string') {
-		throw 'Missing faceSetId!';
+		throw new Error('Missing faceSetId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1916,7 +1915,7 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
 			headers: generateHeaders(self._token),
 			json: faceset
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1927,7 +1926,7 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
@@ -1937,13 +1936,13 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 
 ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	if (typeof faceset !== 'object') {
-		throw 'Missing faceset!';
+		throw new Error('Missing faceset!');
 	}
 	if (typeof faceset.faceSetId !== 'string') {
-		throw 'Missing faceSetId!';
+		throw new Error('Missing faceSetId!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'Missing callback!';
+		throw new Error('Missing callback!');
 	}
 
 	var self = this;
@@ -1954,7 +1953,7 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
 			headers: generateHeaders(self._token),
 			json: faceset
-		}, function(err, response, body) {
+		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
 			}
@@ -1965,7 +1964,7 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 		});
 	}
 
-	self._retryHelper.retry(task, function(err, body) {
+	self._retryHelper.retry(task, function retryCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
