@@ -2,14 +2,13 @@
 
 describe('veritone-api', function() {
 
-	var VeritoneApi = require('./index');
 /*
 	describe('job', function() {
 		var apiClient = new VeritoneApi({
 			token: 'iaiqfyxz:eyJhbGciOiJSUzUxMiJ9.eyJyIjpbInRhc2s6dXBkYXRlIl0sImlkIjoiaWFpcWZ5eHoifQ.ZEmqCnikGdOVQaqCRGYTA61FArlZGRhuYUwGu6v53nKwOqMTzEpyZwC_7VTM637CeCbh7TTf4ieAwF8yGArOyHIt3CtjXNZtonkbrgpVZoCn_4jlhactObwVcETWiilNVfhgEzezKPxCJQp7GFGChu6lvHu5GqUKdt6JPeaaUJhjkqeV0k2mL68qathhN1J_rWy2WaJ3LZW8O4nkZhUGWxpdE1etWUIjo8ePFGXr9mkBGR452C_P1J8WVxniwVWXnUdd1G_kQ2HEQDZlH8fjoxIA0mnDBOEpqltulAipfd9utGOjyGPx_yrirM_rUxBvnuJ7ea95YDYQepAc-VUpvg',
 			baseUri: 'http://localhost:9000'
 		});
-		
+
 		var job = {
 			tasks:[
 				{

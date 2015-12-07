@@ -1,16 +1,14 @@
-'use strict';
-
 var gulp = require('gulp'),
-    gulpJshint = require('gulp-jshint'),
-    gulpDebug = require('gulp-debug'),
-    gulpJasmine = require('gulp-jasmine');
+	gulpEslint = require('gulp-eslint'),
+	gulpDebug = require('gulp-debug'),
+	gulpJasmine = require('gulp-jasmine');
 
 var allOfMyFiles = [
 	'!node_modules/**',
 	'!**/node_modules/**',
 	//'*.js',
 	'**/*.js'
-];
+ ];
 
 var allOfMyTestFiles = [
 	'!node_modules/**',
@@ -18,15 +16,15 @@ var allOfMyTestFiles = [
 	'**/*.spec.js'
 ];
 
-gulp.task('lint', function() {
+gulp.task('lint', function lint() {
 	return gulp.src(allOfMyFiles).
 		pipe(gulpDebug({ title: 'lint:' })).
-		pipe(gulpJshint('.jshintrc-spec')).
-		pipe(gulpJshint.reporter()).
-		pipe(gulpJshint.reporter('fail'));
+		pipe(gulpEslint()).
+		pipe(gulpEslint.format()).
+		pipe(gulpEslint.failAfterError());
 });
 
-gulp.task('jasmine', function() {
+gulp.task('jasmine', function jasmine() {
 	return gulp.src(allOfMyTestFiles).
 		pipe(gulpDebug({ title: 'jasmine:' })).
 		pipe(gulpJasmine({ verbose: true }));
@@ -34,7 +32,7 @@ gulp.task('jasmine', function() {
 
 gulp.task('test', ['lint', 'jasmine']);
 
-gulp.task('watch', ['test'], function() {
+gulp.task('watch', ['test'], function watch() {
 	gulp.watch(allOfMyFiles, ['test']);
 });
 

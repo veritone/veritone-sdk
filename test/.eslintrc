@@ -1,0 +1,18 @@
+{
+	"env": {
+		"node": true
+	},
+	"rules": {
+		"func-names": 0
+	},
+	"globals": {
+		"describe": true,
+		"xdescribe": true,
+		"it": true,
+		"xit": true,
+		"expect": true,
+		"beforeAll": true,
+		"beforeEach": true,
+		"spyOn": true
+	}
+}

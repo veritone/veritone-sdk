@@ -2,7 +2,7 @@
 
 describe('RetryHelper', function() {
 
-	var RetryHelper = require('./RetryHelper');
+	var RetryHelper = require('../RetryHelper');
 
 	it('should have defaults', function(done) {
 		var retryHelper = new RetryHelper();
@@ -31,7 +31,7 @@ describe('RetryHelper', function() {
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
-				throw 'Invalid cb value!';
+				throw new Error('Invalid cb value!');
 			}
 
 			runCount++;
@@ -53,7 +53,7 @@ describe('RetryHelper', function() {
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
-				throw 'Invalid cb value!';
+				throw new Error('Invalid cb value!');
 			}
 
 			runCount++;
@@ -78,7 +78,7 @@ describe('RetryHelper', function() {
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
-				throw 'Invalid cb value!';
+				throw new Error('Invalid cb value!');
 			}
 
 			cb('error');

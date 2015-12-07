@@ -8,17 +8,17 @@ function RetryHelper(options) {
 	options.retryIntervalMs = options.retryIntervalMs || 0;
 
 	if (typeof options.maxRetry !== 'number') {
-		throw 'maxRetry must be a number!';
+		throw new Error('maxRetry must be a number!');
 	}
 	if (options.maxRetry < 0) {
-		throw 'maxRetry must be zero or greater!';
+		throw new Error('maxRetry must be zero or greater!');
 	}
 
 	if (typeof options.retryIntervalMs !== 'number') {
-		throw 'retryIntervalMs must be a number!';
+		throw new Error('retryIntervalMs must be a number!');
 	}
 	if (options.retryIntervalMs < 0) {
-		throw 'retryIntervalMs must be zero or greater!';
+		throw new Error('retryIntervalMs must be zero or greater!');
 	}
 
 	this._maxRetry = options.maxRetry;
@@ -27,10 +27,10 @@ function RetryHelper(options) {
 
 RetryHelper.prototype.retry = function retry(task, callback) {
 	if (typeof task !== 'function') {
-		throw 'task is required!';
+		throw new Error('task is required!');
 	}
 	if (typeof callback !== 'function') {
-		throw 'callback is required!';
+		throw new Error('callback is required!');
 	}
 
 	var self = this;
