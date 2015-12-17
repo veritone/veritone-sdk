@@ -816,6 +816,9 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	var headers = generateHeaders(this._token);
 	headers['X-Veritone-Asset-Type'] = asset.assetType;
 	headers['Content-Type'] = asset.contentType;
+	if (asset.metadata.size) {
+		headers['Content-Length'] = asset.size;
+	}
 
 	var opts = {
 		method: 'POST',
