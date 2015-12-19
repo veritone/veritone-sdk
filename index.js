@@ -805,7 +805,9 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 			throw new Error('File "' + asset.fileName + '" does not exist!');
 		}
 
-		asset.metadata.fileName = path.basename(asset.fileName);
+		if (!asset.metadata.fileName) {
+			asset.metadata.fileName = path.basename(asset.fileName);
+		}
 		var stat = fs.statSync(asset.fileName);
 		asset.metadata.size = stat.size;
 	}
@@ -816,9 +818,10 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	var headers = generateHeaders(this._token);
 	headers['X-Veritone-Asset-Type'] = asset.assetType;
 	headers['Content-Type'] = asset.contentType;
-	if (asset.metadata.size) {
-		headers['Content-Length'] = asset.metadata.size;
-	}
+//	This causes things to hang
+//	if (asset.metadata.size) {
+//		headers['Content-Length'] = asset.metadata.size;
+//	}
 
 	var opts = {
 		method: 'POST',
