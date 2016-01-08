@@ -4,7 +4,8 @@ var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
 	path = require('path'),
-	RetryHelper = require('./RetryHelper');
+	RetryHelper = require('./RetryHelper'),
+	qs = require('querystring');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -1992,7 +1993,9 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 
 	var uri = this._baseUri + collectionEndpoint + 'metrics/';
 	if (options.organizationId) {
-		uri += '?organizationId=' + options.organizationId;
+		uri += '?' + qs.stringify({
+			organizationId: options.organizationId
+		});
 	}
 
 	var self = this;
@@ -2004,7 +2007,10 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 			json: true
 		}, function requestCallback(err, response, body) {
 			if (err) {
-				return callback(err, body);
+				return callback({
+					error: err,
+					statusCode: response.statusCode
+				}, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
