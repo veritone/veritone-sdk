@@ -2007,10 +2007,7 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 			json: true
 		}, function requestCallback(err, response, body) {
 			if (err) {
-				return callback({
-					error: err,
-					statusCode: response.statusCode
-				}, body);
+				return callback(err, body);
 			}
 			if (response.statusCode !== 200) {
 				return callback('Received status: ' + response.statusCode, body);
