@@ -1991,14 +1991,17 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	}
 
 	var uri = this._baseUri + collectionEndpoint;
+	var qs = {};
 	if (options.limit || options.offset) {
-		if (options.limit && options.ofset) {
-			uri += '?limit=' + options.limit + '&offset=' + options.offset;
-		} else if (options.limit) {
-			uri += '?limit=' + options.limit;
-		} else if (options.offset) {
-			uri += '?offset=' + options.offset;
+		if (options.limit) {
+			qs.limit = options.limit;
 		}
+		if (options.offset) {
+			qs.offset = options.offset;
+		}
+	}
+	if (options.organizationId) {
+		qs.organizationId = options.organizationId;
 	}
 
 	var self = this;
@@ -2007,7 +2010,8 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 			method: 'GET',
 			uri: uri,
 			headers: generateHeaders(self._token),
-			json: true
+			json: true,
+			qs: qs
 		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
