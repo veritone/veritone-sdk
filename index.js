@@ -1992,13 +1992,11 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 
 	var uri = this._baseUri + collectionEndpoint;
 	var qs = {};
-	if (options.limit || options.offset) {
-		if (options.limit) {
-			qs.limit = options.limit;
-		}
-		if (options.offset) {
-			qs.offset = options.offset;
-		}
+	if (options.limit) {
+		qs.limit = options.limit;
+	}
+	if (options.offset) {
+		qs.offset = options.offset;
 	}
 	if (options.organizationId) {
 		qs.organizationId = options.organizationId;
