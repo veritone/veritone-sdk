@@ -2046,6 +2046,9 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 	if (options.organizationId) {
 		qs.organizationId = options.organizationId;
 	}
+	if (options.range) {
+		qs.range = options.range;
+	}
 
 	var self = this;
 	function task(callback) {
