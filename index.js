@@ -30,6 +30,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
+	metricsEndpoint = '/metrics/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
 	facesetEndpoint = '/face-recognition/faceset/',
@@ -1990,7 +1991,7 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + collectionEndpoint + 'metrics/';
+	var uri = this._baseUri + metricsEndpoint;
 	var qs = {};
 	if (options.organizationId) {
 		qs.organizationId = options.organizationId;
