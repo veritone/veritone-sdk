@@ -30,6 +30,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
+	metricsEndpoint = '/metrics/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
 	facesetEndpoint = '/face-recognition/faceset/',
@@ -2000,6 +2001,53 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	}
 	if (options.organizationId) {
 		qs.organizationId = options.organizationId;
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'GET',
+			uri: uri,
+			headers: generateHeaders(self._token),
+			json: true,
+			qs: qs
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	} else if (typeof options !== 'object') {
+		throw new Error('Missing options!');
+	}
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+
+	var uri = this._baseUri + metricsEndpoint;
+	var qs = {};
+	if (options.organizationId) {
+		qs.organizationId = options.organizationId;
+	}
+	if (options.range) {
+		qs.range = options.range;
 	}
 
 	var self = this;
