@@ -1984,7 +1984,7 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 
 ApiClient.prototype._retryRequest = function _retryRequest(method, path, params, callback) {
 	if (typeof callback !== 'function') {
-		throw 'callback must be a function.';
+		throw new Error('callback must be a function.');
 	}
 
 	var cfg = {
@@ -1998,7 +1998,7 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 	} else if (method === 'POST' || method === 'PUT') {
 		cfg.json = params;
 	} else {
-		throw 'Unsupported HTTP method: ' + method;
+		throw new Error('Unsupported HTTP method: ' + method);
 	}
 
 	function getRequestCallbackHandler(retryCallback) {
@@ -2024,7 +2024,7 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 	this._retryHelper.retry(function task(retryCallback) {
 		request(cfg, getRequestCallbackHandler(retryCallback));
 	}, retryFinalCallback);
-}
+};
 
 ApiClient.prototype.searchMentions = function searchMentions(options, callback) {
 	this._retryRequest('POST', mentionEndpoint + 'search', options, callback);
