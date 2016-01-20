@@ -8,6 +8,7 @@
   "dependencies": {
     "async": "^1.4.0",
     "request": "^2.57.0",
+    "qs": "^6.0.2",
     "validate.js": "^0.7.1"
   },
   "devDependencies": {

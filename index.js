@@ -4,7 +4,8 @@ var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
 	path = require('path'),
-	RetryHelper = require('./RetryHelper');
+	RetryHelper = require('./RetryHelper'),
+	qs = require('qs');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -30,6 +31,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
+	mentionEndpoint = '/mention/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
 	facesetEndpoint = '/face-recognition/faceset/',
@@ -1979,6 +1981,86 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	});
 };
 
+ApiClient.prototype._retryRequest = function _retryRequest(method, path, params, callback) {
+	if (typeof callback !== 'function') {
+		throw 'callback must be a function.';
+	}
+
+	var cfg = {
+		method: method,
+		uri: this._baseUri + path,
+		headers: generateHeaders(this._token)
+	};
+
+	if (method === 'GET' || method === 'DELETE') {
+		cfg.qs = qs.stringify(params);
+	} else if (method === 'POST' || method === 'PUT') {
+		cfg.json = params;
+	} else {
+		throw 'Unsupported HTTP method: ' + method;
+	}
+
+	function getRequestCallbackHandler(retryCallback) {
+		return function requestCallback(err, response, body) {
+			if (err) {
+				return retryCallback(err, body);
+			}
+			if (response.statusCode === 200 || response.statusCode === 204) {
+				retryCallback(null, body);
+			} else {
+				return retryCallback('Received status: ' + response.statusCode, body);
+			}
+		};
+	}
+
+	function retryFinalCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	}
+
+	this._retryHelper.retry(function task(retryCallback) {
+		request(cfg, getRequestCallbackHandler(retryCallback));
+	}, retryFinalCallback);
+}
+
+ApiClient.prototype.searchMentions = function searchMentions(options, callback) {
+	this._retryRequest('POST', mentionEndpoint + 'search', options, callback);
+};
+
+ApiClient.prototype.getMentions = function getMention(mentionId, filter, callback) {
+	this._retryRequest('GET', mentionEndpoint + mentionId, filter, callback);
+};
+
+ApiClient.prototype.updateMentionSelectively = function updateMentionSelectively(mentionId, mention, callback) {
+	this._retryRequest('PUT', mentionEndpoint + mentionId, mention, callback);
+};
+
+ApiClient.prototype.createMentionComment = function createMentionComment(mentionId, comment, callback) {
+	this._retryRequest('POST', mentionEndpoint + mentionId + '/comment', comment, callback);
+};
+
+ApiClient.prototype.updateMentionComment = function updateMentionComment(mentionId, commentId, comment, callback) {
+	this._retryRequest('PUT', mentionEndpoint + mentionId + '/comment/' + commentId, comment, callback);
+};
+
+ApiClient.prototype.deleteMentionComment = function deleteMentionComment(mentionId, commentId, comment, callback) {
+	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + commentId, comment, callback);
+};
+
+ApiClient.prototype.createMentionRating = function createMentionRating(mentionId, rating, callback) {
+	this._retryRequest('POST', mentionEndpoint + mentionId + '/rating', rating, callback);
+};
+
+ApiClient.prototype.updateMentionRating = function updateMentionRating(mentionId, ratingId, rating, callback) {
+	this._retryRequest('PUT', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
+};
+
+ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId, ratingId, rating, callback) {
+	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
+};
+
 ApiClient.prototype.getCollections = function getCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
@@ -1991,15 +2073,15 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	}
 
 	var uri = this._baseUri + collectionEndpoint;
-	var qs = {};
+	var query = {};
 	if (options.limit) {
-		qs.limit = options.limit;
+		query.limit = options.limit;
 	}
 	if (options.offset) {
-		qs.offset = options.offset;
+		query.offset = options.offset;
 	}
 	if (options.organizationId) {
-		qs.organizationId = options.organizationId;
+		query.organizationId = options.organizationId;
 	}
 
 	var self = this;
@@ -2009,7 +2091,7 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 			uri: uri,
 			headers: generateHeaders(self._token),
 			json: true,
-			qs: qs
+			qs: query
 		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
