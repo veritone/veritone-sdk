@@ -4,16 +4,12 @@ var gulp = require('gulp'),
 	gulpJasmine = require('gulp-jasmine');
 
 var allOfMyFiles = [
-	'!node_modules/**',
-	'!**/node_modules/**',
-	//'*.js',
-	'**/*.js'
+	'*.js',
+	'test/*.js'
  ];
 
 var allOfMyTestFiles = [
-	'!node_modules/**',
-	'!**/node_modules/**',
-	'**/*.spec.js'
+	'test/*.spec.js'
 ];
 
 gulp.task('lint', function lint() {

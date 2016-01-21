@@ -4,7 +4,8 @@ var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
 	path = require('path'),
-	RetryHelper = require('./RetryHelper');
+	RetryHelper = require('./RetryHelper'),
+	qs = require('qs');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -31,6 +32,7 @@ function ApiClient(options) {
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
 	metricsEndpoint = '/metrics/',
+	mentionEndpoint = '/mention/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
 	facesetEndpoint = '/face-recognition/faceset/',
@@ -1980,101 +1982,104 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	});
 };
 
-ApiClient.prototype.getCollections = function getCollections(options, callback) {
-	if (typeof options === 'function' && !callback) {
-		callback = options;
-		options = {};
-	} else if (typeof options !== 'object') {
-		throw new Error('Missing options!');
-	}
+ApiClient.prototype._retryRequest = function _retryRequest(method, path, params, callback) {
 	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
+		throw new Error('callback must be a function.');
+	} else if (typeof params !== 'object') {
+		throw new Error('params must be an object.');
 	}
 
-	var uri = this._baseUri + collectionEndpoint;
-	var qs = {};
-	if (options.limit) {
-		qs.limit = options.limit;
-	}
-	if (options.offset) {
-		qs.offset = options.offset;
-	}
-	if (options.organizationId) {
-		qs.organizationId = options.organizationId;
+	var cfg = {
+		method: method,
+		uri: this._baseUri + path,
+		headers: generateHeaders(this._token)
+	};
+
+	if (method === 'GET' || method === 'DELETE') {
+		cfg.qs = qs.stringify(params);
+		cfg.json = true;
+	} else if (method === 'POST' || method === 'PUT') {
+		cfg.json = params;
+	} else {
+		throw new Error('Unsupported HTTP method: ' + method);
 	}
 
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			uri: uri,
-			headers: generateHeaders(self._token),
-			json: true,
-			qs: qs
-		}, function requestCallback(err, response, body) {
+	function getRequestCallbackHandler(retryCallback) {
+		return function requestCallback(err, response, body) {
 			if (err) {
-				return callback(err, body);
+				retryCallback(err, body);
+			} else if (response.statusCode === 200 || response.statusCode === 204) {
+				retryCallback(null, body);
+			} else {
+				retryCallback('Received status: ' + response.statusCode, body);
 			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
+		};
 	}
 
-	self._retryHelper.retry(task, function retryCallback(err, body) {
+	function retryFinalCallback(err, body) {
 		if (err) {
 			return callback(err, body);
 		}
 		callback(null, body);
-	});
+	}
+
+	this._retryHelper.retry(function task(retryCallback) {
+		request(cfg, getRequestCallbackHandler(retryCallback));
+	}, retryFinalCallback);
+};
+
+ApiClient.prototype.searchMentions = function searchMentions(options, callback) {
+	this._retryRequest('POST', mentionEndpoint + 'search', options, callback);
+};
+
+ApiClient.prototype.getMentions = function getMention(mentionId, filter, callback) {
+	this._retryRequest('GET', mentionEndpoint + mentionId, filter, callback);
+};
+
+ApiClient.prototype.updateMentionSelectively = function updateMentionSelectively(mentionId, mention, callback) {
+	this._retryRequest('PUT', mentionEndpoint + mentionId, mention, callback);
+};
+
+ApiClient.prototype.createMentionComment = function createMentionComment(mentionId, comment, callback) {
+	this._retryRequest('POST', mentionEndpoint + mentionId + '/comment', comment, callback);
+};
+
+ApiClient.prototype.updateMentionComment = function updateMentionComment(mentionId, commentId, comment, callback) {
+	this._retryRequest('PUT', mentionEndpoint + mentionId + '/comment/' + commentId, comment, callback);
+};
+
+ApiClient.prototype.deleteMentionComment = function deleteMentionComment(mentionId, commentId, comment, callback) {
+	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + commentId, comment, callback);
+};
+
+ApiClient.prototype.createMentionRating = function createMentionRating(mentionId, rating, callback) {
+	this._retryRequest('POST', mentionEndpoint + mentionId + '/rating', rating, callback);
+};
+
+ApiClient.prototype.updateMentionRating = function updateMentionRating(mentionId, ratingId, rating, callback) {
+	this._retryRequest('PUT', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
+};
+
+ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId, ratingId, rating, callback) {
+	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
+};
+
+ApiClient.prototype.getCollections = function getCollections(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+
+	this._retryRequest('GET', collectionEndpoint, options, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
 		options = {};
-	} else if (typeof options !== 'object') {
-		throw new Error('Missing options!');
-	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + metricsEndpoint;
-	var qs = {};
-	if (options.organizationId) {
-		qs.organizationId = options.organizationId;
-	}
-	if (options.range) {
-		qs.range = options.range;
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			uri: uri,
-			headers: generateHeaders(self._token),
-			json: true,
-			qs: qs
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('GET', metricsEndpoint, options, callback);
 };
 
 module.exports = ApiClient;

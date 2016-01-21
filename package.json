@@ -4,10 +4,15 @@
   "description": "",
   "private": true,
   "main": "index.js",
+  "scripts": {
+    "test": "gulp test",
+    "lint": "gulp lint"
+  },
   "homepage": "https://github.com/veritone/veritone-api",
   "dependencies": {
     "async": "^1.4.0",
     "request": "^2.57.0",
+    "qs": "^6.0.2",
     "validate.js": "^0.7.1"
   },
   "devDependencies": {
