@@ -1985,6 +1985,8 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 ApiClient.prototype._retryRequest = function _retryRequest(method, path, params, callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('callback must be a function.');
+	} else if (typeof params !== 'object') {
+		throw new Error('params must be an object.');
 	}
 
 	var cfg = {
@@ -1995,6 +1997,7 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 
 	if (method === 'GET' || method === 'DELETE') {
 		cfg.qs = qs.stringify(params);
+		cfg.json = true;
 	} else if (method === 'POST' || method === 'PUT') {
 		cfg.json = params;
 	} else {
@@ -2004,12 +2007,11 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 	function getRequestCallbackHandler(retryCallback) {
 		return function requestCallback(err, response, body) {
 			if (err) {
-				return retryCallback(err, body);
-			}
-			if (response.statusCode === 200 || response.statusCode === 204) {
+				retryCallback(err, body);
+			} else if (response.statusCode === 200 || response.statusCode === 204) {
 				retryCallback(null, body);
 			} else {
-				return retryCallback('Received status: ' + response.statusCode, body);
+				retryCallback('Received status: ' + response.statusCode, body);
 			}
 		};
 	}
@@ -2066,97 +2068,18 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	if (typeof options === 'function' && !callback) {
 		callback = options;
 		options = {};
-	} else if (typeof options !== 'object') {
-		throw new Error('Missing options!');
-	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + collectionEndpoint;
-	var query = {};
-	if (options.limit) {
-		query.limit = options.limit;
-	}
-	if (options.offset) {
-		query.offset = options.offset;
-	}
-	if (options.organizationId) {
-		query.organizationId = options.organizationId;
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			uri: uri,
-			headers: generateHeaders(self._token),
-			json: true,
-			qs: query
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('GET', collectionEndpoint, options, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
 		options = {};
-	} else if (typeof options !== 'object') {
-		throw new Error('Missing options!');
-	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + metricsEndpoint;
-	var qs = {};
-	if (options.organizationId) {
-		qs.organizationId = options.organizationId;
-	}
-	if (options.range) {
-		qs.range = options.range;
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			uri: uri,
-			headers: generateHeaders(self._token),
-			json: true,
-			qs: qs
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('GET', metricsEndpoint, options, callback);
 };
 
 module.exports = ApiClient;
