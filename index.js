@@ -37,6 +37,7 @@ var applicationEndpoint = '/application/',
 	recordingEndpoint = '/recording/',
 	facesetEndpoint = '/face-recognition/faceset/',
 	tasksByRecordingEndpoint = '/recording/tasks',
+	recordingFoldersEndpoint = '/recording/folder/',
 	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
 	searchEndpoint = '/search',
@@ -386,6 +387,43 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 				return callback('Received status: ' + response.statusCode, body);
 			}
 			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.updateRecordingFolder = function updateRecordingFolder(folder, callback) {
+	if (typeof folder !== 'object') {
+		throw new Error('Missing folder!');
+	}
+	if (typeof folder.folderId !== 'string' || folder.folderId === '') {
+		throw new Error('Missing folder.folderId!');
+	}
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+
+	var self = this;
+	function task(callback) {
+		request({
+			method: 'PUT',
+			url: self._baseUri + recordingFoldersEndpoint + folder.folderId,
+			headers: generateHeaders(self._token),
+			json: folder
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null);
 		});
 	}
 
