@@ -44,6 +44,7 @@ var applicationEndpoint = '/application/',
 	//reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
 	//transcriptEndpoint = '/transcript/',
+	ingestionEndpoint = '/ingestion',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
@@ -1728,34 +1729,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 /** SaaS functions ************************************************************************************************/
 
 ApiClient.prototype.createDropboxWatcher = function createDropboxWatcher(watcher, callback) {
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'POST',
-			url: self._baseUri + dropboxWatcherEndpoint,
-			headers: generateHeaders(self._token),
-			json: watcher
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('POST', dropboxWatcherEndpoint, watcher, callback);
 };
 
 ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, callback) {
@@ -1769,179 +1743,35 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 	} else if (typeof options !== 'object') {
 		throw new Error('Missing options!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var uri = this._baseUri + dropboxWatcherEndpoint;
-	if (options.limit || options.offset) {
-		if (options.limit && options.offset) {
-			uri += '?limit=' + options.limit + '&offset=' + options.offset;
-		} else if (options.limit) {
-			uri += '?limit=' + options.limit;
-		} else if (options.offset) {
-			uri += '?offset=' + options.offset;
-		}
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			uri: uri,
-			headers: generateHeaders(self._token),
-			json: true
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('GET', dropboxWatcherEndpoint, options, callback);
 };
 
 ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, callback) {
 	if (typeof watcherId !== 'string' || watcherId === '') {
 		throw new Error('Missing watcherId!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			uri: self._baseUri + dropboxWatcherEndpoint + watcherId,
-			headers: generateHeaders(self._token),
-			json: true
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('GET', dropboxWatcherEndpoint + watcherId, null, callback);
 };
 
 ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher, callback) {
 	if (typeof watcher !== 'object') {
 		throw new Error('Missing watcher!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'PUT',
-			url: self._baseUri + dropboxWatcherEndpoint + watcher.watcherId,
-			headers: generateHeaders(self._token),
-			json: watcher
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('PUT', dropboxWatcherEndpoint + watcher.watcherId, watcher, callback);
 };
 
 ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcherId, callback) {
 	if (typeof watcherId !== 'string' || watcherId === '') {
 		throw new Error('Missing watcherId!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'DELETE',
-			url: self._baseUri + dropboxWatcherEndpoint + watcherId,
-			headers: generateHeaders(self._token)
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 204) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('DELETE', dropboxWatcherEndpoint + watcherId, null, callback);
 };
 
 ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
 	if (typeof q !== 'string' || q === '') {
 		throw new Error('Missing query!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-	var self = this;
-
-	function task(callback) {
-		request({
-			method: 'GET',
-			url: self._baseUri + facesetEndpoint + 'autocomplete/' + encodeURIComponent(q),
-			headers: generateHeaders(self._token)
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('GET', facesetEndpoint + 'autocomplete/' + encodeURIComponent(q), null, callback);
 };
 
 ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
@@ -1951,35 +1781,7 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 	if (typeof faceset.faceSetId !== 'string') {
 		throw new Error('Missing faceSetId!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-
-	function task(callback) {
-		request({
-			method: 'POST',
-			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
-			headers: generateHeaders(self._token),
-			json: faceset
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('POST', facesetEndpoint + encodeURIComponent(faceset.faceSetId), faceset, callback);
 };
 
 ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
@@ -1989,35 +1791,7 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	if (typeof faceset.faceSetId !== 'string') {
 		throw new Error('Missing faceSetId!');
 	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-
-	function task(callback) {
-		request({
-			method: 'PUT',
-			url: self._baseUri + facesetEndpoint + encodeURIComponent(faceset.faceSetId),
-			headers: generateHeaders(self._token),
-			json: faceset
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
+	this._retryRequest('PUT', facesetEndpoint + encodeURIComponent(faceset.faceSetId), faceset, callback);
 };
 
 ApiClient.prototype._retryRequest = function _retryRequest(method, path, params, callback) {
@@ -2034,7 +1808,9 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 	};
 
 	if (method === 'GET' || method === 'DELETE') {
-		cfg.qs = qs.stringify(params);
+		if (params) {
+			cfg.qs = qs.stringify(params);
+		}
 		cfg.json = true;
 	} else if (method === 'POST' || method === 'PUT') {
 		cfg.json = params;
@@ -2118,6 +1894,10 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 	}
 
 	this._retryRequest('GET', metricsEndpoint, options, callback);
+};
+
+ApiClient.prototype.createIngestion = function createIngestion(ingestion, callback) {
+	this._retryRequest('POST', ingestionEndpoint, ingestion, callback);
 };
 
 module.exports = ApiClient;
