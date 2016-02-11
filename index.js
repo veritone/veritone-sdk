@@ -4,8 +4,7 @@ var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
 	path = require('path'),
-	RetryHelper = require('./RetryHelper'),
-	qs = require('qs');
+	RetryHelper = require('./RetryHelper');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -1809,7 +1808,7 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 
 	if (method === 'GET' || method === 'DELETE') {
 		if (params) {
-			cfg.qs = qs.stringify(params);
+			cfg.qs = params;
 		}
 		cfg.json = true;
 	} else if (method === 'POST' || method === 'PUT') {
