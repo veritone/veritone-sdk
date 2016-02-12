@@ -1,4 +1,4 @@
-box: nodesource/centos6
+box: nodesource/centos6:0.12.10
 # Build definition
 build:
   # The steps that will be executed on build
