@@ -1886,6 +1886,21 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	this._retryRequest('GET', collectionEndpoint, options, callback);
 };
 
+ApiClient.prototype.getCollection = function getCollection(collectionId, options, callback) {
+	if (collectionId === undefined) {
+		throw new Error('Missing collectionId!');
+	}
+	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
+		throw new Error('Invalid collectionId type!');
+	}
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+
+	this._retryRequest('GET', collectionEndpoint + collectionId, options, callback);
+};
+
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
