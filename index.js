@@ -17,14 +17,14 @@ function ApiClient(options) {
 	}
 	this._token = options.token;
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
-	// this._version = options.version || 1;
+	this._version = options.version || 1;
 	this._maxRetry = options.maxRetry;
 	this._retryIntervalMs = options.retryIntervalMs;
-	// if (typeof this._version === 'number') {
-	// 	this._baseUri = this._baseUri + '/v' + this._version;
-	// } else {
-	// 	this._baseUri = this._baseUri + '/' + this._version;
-	// }
+	if (typeof this._version === 'number') {
+		this._baseUri = this._baseUri + '/v' + this._version;
+	} else {
+		this._baseUri = this._baseUri + '/' + this._version;
+	}
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
 }
 
