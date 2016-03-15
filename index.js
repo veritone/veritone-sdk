@@ -17,14 +17,14 @@ function ApiClient(options) {
 	}
 	this._token = options.token;
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
-	this._version = options.version || 1;
+	// this._version = options.version || 1;
 	this._maxRetry = options.maxRetry;
 	this._retryIntervalMs = options.retryIntervalMs;
-	if (typeof this._version === 'number') {
-		this._baseUri = this._baseUri + '/v' + this._version;
-	} else {
-		this._baseUri = this._baseUri + '/' + this._version;
-	}
+	// if (typeof this._version === 'number') {
+	// 	this._baseUri = this._baseUri + '/v' + this._version;
+	// } else {
+	// 	this._baseUri = this._baseUri + '/' + this._version;
+	// }
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
 }
 
@@ -1877,6 +1877,10 @@ ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId
 	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
 };
 
+ApiClient.prototype.createCollection = function createCollection(collection, callback) {
+	this._retryRequest('POST', collectionEndpoint, collection, callback);
+};
+
 ApiClient.prototype.getCollections = function getCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
@@ -1899,6 +1903,29 @@ ApiClient.prototype.getCollection = function getCollection(collectionId, options
 	}
 
 	this._retryRequest('GET', collectionEndpoint + collectionId, options, callback);
+};
+
+ApiClient.prototype.updateCollection = function updateCollection(collectionId, patch, callback) {
+	if (collectionId === undefined) {
+		throw new Error('Missing collectionId!');
+	}
+	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
+		throw new Error('Invalid collectionId type!');
+	}
+
+	console.log('patch', patch);
+
+	this._retryRequest('PUT', collectionEndpoint + collectionId, patch, callback);
+};
+
+ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, options, callback) {
+	if (collectionId === undefined) {
+		throw new Error('Missing collectionId!');
+	}
+	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
+		throw new Error('Invalid collectionId type!');
+	}
+	this._retryRequest('DELETE', collectionEndpoint + collectionId, options, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
