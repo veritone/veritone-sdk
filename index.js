@@ -1877,6 +1877,10 @@ ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId
 	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
 };
 
+ApiClient.prototype.createCollection = function createCollection(collection, callback) {
+	this._retryRequest('POST', collectionEndpoint, collection, callback);
+};
+
 ApiClient.prototype.getCollections = function getCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
@@ -1887,11 +1891,8 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 };
 
 ApiClient.prototype.getCollection = function getCollection(collectionId, options, callback) {
-	if (collectionId === undefined) {
-		throw new Error('Missing collectionId!');
-	}
-	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
-		throw new Error('Invalid collectionId type!');
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
 	}
 	if (typeof options === 'function' && !callback) {
 		callback = options;
@@ -1899,6 +1900,52 @@ ApiClient.prototype.getCollection = function getCollection(collectionId, options
 	}
 
 	this._retryRequest('GET', collectionEndpoint + collectionId, options, callback);
+};
+
+ApiClient.prototype.updateCollection = function updateCollection(collectionId, patch, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	this._retryRequest('PUT', collectionEndpoint + collectionId, patch, callback);
+};
+
+ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, options, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	this._retryRequest('DELETE', collectionEndpoint + collectionId, options, callback);
+};
+
+ApiClient.prototype.shareCollection = function shareCollection(collectionId, share, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collecitonId');
+	}
+
+	var url = collectionEndpoint + collectionId + '/share';
+	this._retryRequest('POST', url, share, callback);
+};
+
+ApiClient.prototype.shareMentionFromCollection = function shareMentionFromCollection(collectionId, mentionId, share, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	if (typeof mentionId !== 'string' || mentionId === '') {
+		throw new Error('Missing mentionId');
+	}
+
+	var url = collectionEndpoint + collectionId + '/mention/' + mentionId + '/share';
+	this._retryRequest('POST', url, share, callback);
+};
+
+ApiClient.prototype.getShare = function getShare(shareId, callback) {
+	if (typeof shareId !== 'string' || shareId === '') {
+		throw new Error('Missing shareId');
+	}
+
+	this._retryRequest('GET', collectionEndpoint + '/share/' + shareId, {}, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
