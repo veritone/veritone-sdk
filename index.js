@@ -1928,6 +1928,36 @@ ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, o
 	this._retryRequest('DELETE', collectionEndpoint + collectionId, options, callback);
 };
 
+ApiClient.prototype.shareCollection = function shareCollection(collectionId, share, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collecitonId');
+	}
+
+	var url = collectionEndpoint + collectionId + '/share';
+	this._retryRequest('POST', url, share, callback);
+};
+
+ApiClient.prototype.shareMentionFromCollection = function shareMentionFromCollection(collectionId, mentionId, share, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	if (typeof mentionId !== 'string' || mentionId === '') {
+		throw new Error('Missing mentionId');
+	}
+
+	var url = collectionEndpoint + collectionId + '/mention/' + mentionId + '/share';
+	this._retryRequest('POST', url, share, callback);
+};
+
+ApiClient.prototype.getShare = function getShare(shareId, callback) {
+	if (typeof shareId !== 'string' || shareId === '') {
+		throw new Error('Missing shareId');
+	}
+
+	this._retryRequest('GET', collectionEndpoint + '/share/' + shareId, {}, callback);
+};
+
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
 	if (typeof options === 'function' && !callback) {
 		callback = options;
