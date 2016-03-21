@@ -1891,11 +1891,8 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 };
 
 ApiClient.prototype.getCollection = function getCollection(collectionId, options, callback) {
-	if (collectionId === undefined) {
-		throw new Error('Missing collectionId!');
-	}
-	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
-		throw new Error('Invalid collectionId type!');
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
 	}
 	if (typeof options === 'function' && !callback) {
 		callback = options;
@@ -1906,25 +1903,18 @@ ApiClient.prototype.getCollection = function getCollection(collectionId, options
 };
 
 ApiClient.prototype.updateCollection = function updateCollection(collectionId, patch, callback) {
-	if (collectionId === undefined) {
-		throw new Error('Missing collectionId!');
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
 	}
-	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
-		throw new Error('Invalid collectionId type!');
-	}
-
-	console.log('patch', patch);
 
 	this._retryRequest('PUT', collectionEndpoint + collectionId, patch, callback);
 };
 
 ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, options, callback) {
-	if (collectionId === undefined) {
-		throw new Error('Missing collectionId!');
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
 	}
-	if (typeof collectionId !== 'string' && typeof collectionId !== 'number') {
-		throw new Error('Invalid collectionId type!');
-	}
+
 	this._retryRequest('DELETE', collectionEndpoint + collectionId, options, callback);
 };
 
