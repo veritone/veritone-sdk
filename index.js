@@ -25,10 +25,7 @@ function ApiClient(options) {
 	} else {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
-	this._retryHelper = new RetryHelper({
-		maxRetry: this._maxRetry,
-		retryIntervalMs: this._retryIntervalMs
-	});
+	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
 }
 
 var applicationEndpoint = '/application/',
@@ -158,7 +155,6 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'POST',
@@ -196,7 +192,6 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'DELETE',
@@ -254,7 +249,6 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'POST',
@@ -307,7 +301,6 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -345,7 +338,6 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -381,7 +373,6 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'PUT',
@@ -419,7 +410,6 @@ ApiClient.prototype.updateRecordingFolder = function updateRecordingFolder(folde
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'PUT',
@@ -454,7 +444,6 @@ ApiClient.prototype.updateCms = function updateCms(recordingId, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'PUT',
@@ -491,7 +480,6 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'DELETE',
@@ -528,7 +516,6 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -566,7 +553,6 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 	}
 
 	var self = this;
-
 	function task(callback) {
 		var progress = {
 			total: 0,
@@ -627,7 +613,6 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -668,7 +653,6 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 	}
 
 	var self = this;
-
 	function task(callback) {
 		var progress = {
 			total: 0,
@@ -876,10 +860,10 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	var headers = generateHeaders(this._token);
 	headers['X-Veritone-Asset-Type'] = asset.assetType;
 	headers['Content-Type'] = asset.contentType;
-	//	This causes things to hang
-	//	if (asset.metadata.size) {
-	//		headers['Content-Length'] = asset.metadata.size;
-	//	}
+//	This causes things to hang
+//	if (asset.metadata.size) {
+//		headers['Content-Length'] = asset.metadata.size;
+//	}
 
 	var opts = {
 		method: 'POST',
@@ -1045,7 +1029,6 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'POST',
@@ -1098,7 +1081,6 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -1157,7 +1139,6 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -1192,7 +1173,6 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -1296,7 +1276,6 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -1328,7 +1307,6 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -1378,7 +1356,6 @@ ApiClient.prototype.createTaskType = function createTaskType(taskType, callback)
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'POST',
@@ -1431,7 +1408,6 @@ ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback)
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'PUT',
@@ -1478,7 +1454,6 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'PUT',
@@ -1513,7 +1488,6 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'POST',
@@ -1673,7 +1647,6 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 	}
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'POST',
@@ -1727,7 +1700,6 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 	});
 
 	var self = this;
-
 	function task(callback) {
 		request({
 			method: 'GET',
@@ -1946,18 +1918,6 @@ ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, o
 	this._retryRequest('DELETE', collectionEndpoint + collectionId, options, callback);
 };
 
-ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(collectionId, mentionId, options, callback) {
-	if (typeof collectionId !== 'string' || collectionId === '') {
-		throw new Error('Missing collectionId');
-	}
-
-	if (typeof mentionId !== 'string' || mentionId === '') {
-		throw new Error('Missing mentionId');
-	}
-
-	this._retryRequest('DELETE', collectionEndpoint + collectionId + '/mention/' + mentionId, options, callback);
-};
-
 ApiClient.prototype.shareCollection = function shareCollection(collectionId, share, callback) {
 	if (typeof collectionId !== 'string' || collectionId === '') {
 		throw new Error('Missing collecitonId');
@@ -1986,6 +1946,18 @@ ApiClient.prototype.getShare = function getShare(shareId, callback) {
 	}
 
 	this._retryRequest('GET', collectionEndpoint + 'share/' + shareId, {}, callback);
+};
+
+ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(collectionId, mentionId, options, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	if (typeof mentionId !== 'string' || mentionId === '') {
+		throw new Error('Missing mentionId');
+	}
+
+	this._retryRequest('DELETE', collectionEndpoint + collectionId + '/mention/' + mentionId, options, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
