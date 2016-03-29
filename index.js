@@ -1945,7 +1945,19 @@ ApiClient.prototype.getShare = function getShare(shareId, callback) {
 		throw new Error('Missing shareId');
 	}
 
-	this._retryRequest('GET', collectionEndpoint + '/share/' + shareId, {}, callback);
+	this._retryRequest('GET', collectionEndpoint + 'share/' + shareId, {}, callback);
+};
+
+ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(collectionId, mentionId, options, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	if (typeof mentionId !== 'string' || mentionId === '') {
+		throw new Error('Missing mentionId');
+	}
+
+	this._retryRequest('DELETE', collectionEndpoint + collectionId + '/mention/' + mentionId, options, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
