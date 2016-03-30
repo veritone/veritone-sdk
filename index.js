@@ -1911,11 +1911,11 @@ ApiClient.prototype.updateCollection = function updateCollection(collectionId, p
 };
 
 ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, options, callback) {
-	if (Array.isArray(collectionId)) {
-		collectionId = collectionId.join(',');
-	}
+	var ids = Array.isArray(collectionId) ?
+		collectionId.join(',') :
+		collectionId;
 
-	if (typeof collectionId !== 'string' || collectionId === '') {
+	if (typeof ids !== 'string' || ids === '') {
 		throw new Error('Missing collectionId');
 	}
 
@@ -1923,7 +1923,7 @@ ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, o
 		callback = options;
 		options = {};
 	}
-	options.collectionId = collectionId;
+	options.collectionId = ids;
 
 	this._retryRequest('DELETE', collectionEndpoint, options, callback);
 };
