@@ -1911,11 +1911,21 @@ ApiClient.prototype.updateCollection = function updateCollection(collectionId, p
 };
 
 ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, options, callback) {
-	if (typeof collectionId !== 'string' || collectionId === '') {
+	var ids = Array.isArray(collectionId) ?
+		collectionId.join(',') :
+		collectionId;
+
+	if (typeof ids !== 'string' || ids === '') {
 		throw new Error('Missing collectionId');
 	}
 
-	this._retryRequest('DELETE', collectionEndpoint + collectionId, options, callback);
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	options.collectionId = ids;
+
+	this._retryRequest('DELETE', collectionEndpoint, options, callback);
 };
 
 ApiClient.prototype.shareCollection = function shareCollection(collectionId, share, callback) {
