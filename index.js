@@ -1915,6 +1915,14 @@ ApiClient.prototype.getWidget = function getWidget(collectionId, widgetId, optio
 	this._retryRequest('GET', collectionEndpoint + collectionId + '/widget/' + widgetId, options, callback);
 };
 
+ApiClient.prototype.updateWidget = function updateWidget(collectionId, widget, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	this._retryRequest('PUT', collectionEndpoint + collectionId + '/widget', widget, callback);
+};
+
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
