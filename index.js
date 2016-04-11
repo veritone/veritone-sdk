@@ -1877,6 +1877,52 @@ ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId
 	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
 };
 
+ApiClient.prototype.createWidget = function createWidget(collectionId, widget, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	this._retryRequest('POST', collectionEndpoint + collectionId + '/widget', widget, callback);
+};
+
+ApiClient.prototype.getWidgets = function getWidgets(collectionId, options, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+
+	this._retryRequest('GET', collectionEndpoint + collectionId + '/widget', options, callback);
+};
+
+ApiClient.prototype.getWidget = function getWidget(collectionId, widgetId, options, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	if (typeof widgetId !== 'string' || widgetId === '') {
+		throw new Error('Missing widgetId');
+	}
+
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+
+	this._retryRequest('GET', collectionEndpoint + collectionId + '/widget/' + widgetId, options, callback);
+};
+
+ApiClient.prototype.updateWidget = function updateWidget(collectionId, widget, callback) {
+	if (typeof collectionId !== 'string' || collectionId === '') {
+		throw new Error('Missing collectionId');
+	}
+
+	this._retryRequest('PUT', collectionEndpoint + collectionId + '/widget', widget, callback);
+};
+
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
