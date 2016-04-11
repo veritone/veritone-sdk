@@ -1996,12 +1996,17 @@ ApiClient.prototype.shareMentionFromCollection = function shareMentionFromCollec
 	this._retryRequest('POST', url, share, callback);
 };
 
-ApiClient.prototype.getShare = function getShare(shareId, callback) {
+ApiClient.prototype.getShare = function getShare(shareId, options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+
 	if (typeof shareId !== 'string' || shareId === '') {
 		throw new Error('Missing shareId');
 	}
 
-	this._retryRequest('GET', collectionEndpoint + 'share/' + shareId, {}, callback);
+	this._retryRequest('GET', path.join(collectionEndpoint, 'share/', shareId), options, callback);
 };
 
 ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(collectionId, mentionId, options, callback) {
