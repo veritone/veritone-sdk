@@ -1960,7 +1960,7 @@ ApiClient.prototype.getShare = function getShare(shareId, options, callback) {
 		throw new Error('Missing shareId');
 	}
 
-	this._retryRequest('GET', collectionEndpoint + '/share/' + shareId, options, callback);
+	this._retryRequest('GET', path.join(collectionEndpoint, 'share/', shareId), options, callback);
 };
 
 ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(collectionId, mentionId, options, callback) {
