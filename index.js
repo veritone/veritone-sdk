@@ -32,6 +32,7 @@ var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
 	metricsEndpoint = '/metrics/',
 	mentionEndpoint = '/mention/',
+	widgetEndpoint = '/widget/',
 	dropboxWatcherEndpoint = '/watcher/dropbox/',
 	recordingEndpoint = '/recording/',
 	facesetEndpoint = '/face-recognition/faceset/',
@@ -1878,11 +1879,7 @@ ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId
 };
 
 ApiClient.prototype.createWidget = function createWidget(collectionId, widget, callback) {
-	if (typeof collectionId !== 'string' || collectionId === '') {
-		throw new Error('Missing collectionId');
-	}
-
-	this._retryRequest('POST', collectionEndpoint + collectionId + '/widget', widget, callback);
+	this._retryRequest('POST', path.join(collectionEndpoint, collectionId, 'widget'), widget, callback);
 };
 
 ApiClient.prototype.getWidgets = function getWidgets(collectionId, options, callback) {
@@ -1895,14 +1892,10 @@ ApiClient.prototype.getWidgets = function getWidgets(collectionId, options, call
 		options = {};
 	}
 
-	this._retryRequest('GET', collectionEndpoint + collectionId + '/widget', options, callback);
+	this._retryRequest('GET', path.join(collectionEndpoint, collectionId, 'widget'), options, callback);
 };
 
-ApiClient.prototype.getWidget = function getWidget(collectionId, widgetId, options, callback) {
-	if (typeof collectionId !== 'string' || collectionId === '') {
-		throw new Error('Missing collectionId');
-	}
-
+ApiClient.prototype.getWidget = function getWidget(widgetId, options, callback) {
 	if (typeof widgetId !== 'string' || widgetId === '') {
 		throw new Error('Missing widgetId');
 	}
@@ -1912,15 +1905,11 @@ ApiClient.prototype.getWidget = function getWidget(collectionId, widgetId, optio
 		options = {};
 	}
 
-	this._retryRequest('GET', collectionEndpoint + collectionId + '/widget/' + widgetId, options, callback);
+	this._retryRequest('GET', path.join(widgetEndpoint, widgetId), options, callback);
 };
 
-ApiClient.prototype.updateWidget = function updateWidget(collectionId, widget, callback) {
-	if (typeof collectionId !== 'string' || collectionId === '') {
-		throw new Error('Missing collectionId');
-	}
-
-	this._retryRequest('PUT', collectionEndpoint + collectionId + '/widget', widget, callback);
+ApiClient.prototype.updateWidget = function updateWidget(widget, callback) {
+	this._retryRequest('PUT', widgetEndpoint, widget, callback);
 };
 
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
