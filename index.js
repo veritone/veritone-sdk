@@ -2023,4 +2023,40 @@ ApiClient.prototype.createIngestion = function createIngestion(ingestion, callba
 	this._retryRequest('POST', ingestionEndpoint, ingestion, callback);
 };
 
+ApiClient.prototype.getIngestions = function getIngestions(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	this._retryRequest('GET', ingestionEndpoint, options, callback);
+};
+
+ApiClient.prototype.getIngestion = function getIngestion(ingestionId, options, callback) {
+	if (typeof ingestionId !== 'string' || ingestionId === '') {
+		throw new Error('Missing ingestionId');
+	}
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+
+	this._retryRequest('GET', ingestionEndpoint + ingestionId, options, callback);
+};
+
+ApiClient.prototype.updateIngestion = function updateIngestion(ingestionId, patch, callback) {
+	if (typeof ingestionId !== 'string' || ingestionId === '') {
+		throw new Error('Missing ingestionId');
+	}
+
+	this._retryRequest('PUT', ingestionEndpoint + ingestionId, patch, callback);
+};
+
+ApiClient.prototype.deleteIngestion = function deleteIngestion(ingestionId, options, callback) {
+	if (typeof ingestionId !== 'string' || ingestionId === '') {
+		throw new Error('Missing ingestionId');
+	}
+
+	this._retryRequest('DELETE', ingestionEndpoint + ingestionId, options, callback);
+};
+
 module.exports = ApiClient;
