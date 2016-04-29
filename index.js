@@ -44,7 +44,7 @@ var applicationEndpoint = '/application/',
 	//reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
 	//transcriptEndpoint = '/transcript/',
-	ingestionEndpoint = '/ingestion',
+	ingestionEndpoint = '/ingestion/',
 	metadataHeader = 'X-Veritone-Metadata',
 	applicationIdHeader = 'X-Veritone-Application-Id';
 
