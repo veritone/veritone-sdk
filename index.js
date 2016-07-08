@@ -2059,4 +2059,11 @@ ApiClient.prototype.deleteIngestion = function deleteIngestion(ingestionId, opti
 	this._retryRequest('DELETE', ingestionEndpoint + ingestionId, options, callback);
 };
 
+ApiClient.prototype.canConnectRtspCamera = function canConnectRtspCamera(cameraOptions, callback) {
+	if (typeof cameraOptions === 'undefined') {
+		throw new Error('Missing RTSP Camera Options');
+	}
+	this._retryRequest('POST', ingestionEndpoint + 'rtspConnect', cameraOptions, callback);
+};
+
 module.exports = ApiClient;
