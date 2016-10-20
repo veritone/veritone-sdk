@@ -10,15 +10,15 @@
   },
   "homepage": "https://github.com/veritone/veritone-api",
   "dependencies": {
-    "async": "^1.4.0",
-    "request": "^2.57.0",
-    "qs": "^6.0.2",
-    "validate.js": "^0.7.1"
+    "async": "^2.0.1",
+    "request": "^2.75.0",
+    "qs": "^6.2.1",
+    "validate.js": "^0.10.0"
   },
   "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-debug": "^2.0.1",
-    "gulp-eslint": "^1.1.1",
-    "gulp-jasmine": "^2.0.1"
+    "gulp": "^3.9.1",
+    "gulp-debug": "^2.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-jasmine": "^2.4.1"
   }
 }
