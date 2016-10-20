@@ -30,6 +30,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
+	collectionFoldersEndpoint = '/api/folder/',
 	metricsEndpoint = '/metrics/',
 	mentionEndpoint = '/mention/',
 	widgetEndpoint = '/widget/',
@@ -1912,6 +1913,40 @@ ApiClient.prototype.updateWidget = function updateWidget(widget, callback) {
 	this._retryRequest('PUT', widgetEndpoint, widget, callback);
 };
 
+ApiClient.prototype.getRootTreeFolder = function getRootTreeFolder(organizationId, userId, rootFolderType, options, callback) {
+	if (typeof organizationId !== 'string' || organizationId === '') {
+		throw new Error('Missing organizationId');
+	}
+	if (typeof userId !== 'string' || userId === '') {
+		throw new Error('Missing userId');
+	}
+	if (typeof rootFolderType !== 'string' || rootFolderType === '') {
+		throw new Error('Missing rootFolderType');
+	}
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	var rootFolderPath = collectionFoldersEndpoint + organizationId + '/' + userId + '/type/' + rootFolderType;
+	this._retryRequest('GET', rootFolderPath, options, callback);
+};
+ApiClient.prototype.getTreeObject = function getTreeObject(treeObjectId, options, callback) {
+	if (typeof treeObjectId !== 'string' || treeObjectId === '') {
+		throw new Error('Missing organizationId');
+	}
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	var treeObjectPath = collectionFoldersEndpoint + treeObjectId;
+	this._retryRequest('GET', treeObjectPath, options, callback);
+};
+ApiClient.prototype.createTreeFolder = function createTreeFolder(treeFolder, callback) {
+	if (typeof treeFolder !== 'object') {
+		throw new Error('Missing tree folder!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint, treeFolder, callback);
+};
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
@@ -1925,6 +1960,13 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	this._retryRequest('GET', collectionEndpoint, options, callback);
 };
 
+ApiClient.prototype.getCollections = function getCollections(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	this._retryRequest('GET', collectionEndpoint, options, callback);
+};
 ApiClient.prototype.getCollection = function getCollection(collectionId, options, callback) {
 	if (typeof collectionId !== 'string' || collectionId === '') {
 		throw new Error('Missing collectionId');
