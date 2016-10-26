@@ -1947,6 +1947,23 @@ ApiClient.prototype.createTreeFolder = function createTreeFolder(treeFolder, cal
 	}
 	this._retryRequest('POST', collectionFoldersEndpoint, treeFolder, callback);
 };
+ApiClient.prototype.moveTreeFolder = function moveTreeFolder(treeObjectId, treeFolderMoveObj, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree object id!');
+	}
+	if (typeof treeFolderMoveObj !== 'object') {
+		throw new Error('Missing tree folder move information!');
+	}
+	this._retryRequest('PUT', collectionFoldersEndpoint + 'move/' + treeObjectId, treeFolderMoveObj, callback);
+};
+ApiClient.prototype.deleteTreeFolder = function deleteTreeFolder(treeObjectId, options, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree folder!');
+	}
+	console.log('\n\n\n\n\n\n\nthings:');
+	console.log(JSON.stringify(options));
+	this._retryRequest('DELETE', collectionFoldersEndpoint + treeObjectId, options, callback);
+};
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
