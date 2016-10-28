@@ -1947,6 +1947,12 @@ ApiClient.prototype.createTreeFolder = function createTreeFolder(treeFolder, cal
 	}
 	this._retryRequest('POST', collectionFoldersEndpoint, treeFolder, callback);
 };
+ApiClient.prototype.createTreeObject = function createTreeObject(treeObject, callback) {
+	if (typeof treeObject !== 'object') {
+		throw new Error('Missing tree object!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint + 'object/', treeObject, callback);
+};
 ApiClient.prototype.moveTreeFolder = function moveTreeFolder(treeObjectId, treeFolderMoveObj, callback) {
 	if (typeof treeObjectId !== 'string') {
 		throw new Error('Missing tree object id!');
@@ -1955,6 +1961,15 @@ ApiClient.prototype.moveTreeFolder = function moveTreeFolder(treeObjectId, treeF
 		throw new Error('Missing tree folder move information!');
 	}
 	this._retryRequest('PUT', collectionFoldersEndpoint + 'move/' + treeObjectId, treeFolderMoveObj, callback);
+};
+ApiClient.prototype.updateTreeFolder = function updateTreeFolder(treeObjectId, treeFolderObj, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree object id!');
+	}
+	if (typeof treeFolderObj !== 'object') {
+		throw new Error('Missing tree folder information!');
+	}
+	this._retryRequest('PUT', collectionFoldersEndpoint + treeObjectId, treeFolderObj, callback);
 };
 ApiClient.prototype.deleteTreeFolder = function deleteTreeFolder(treeObjectId, options, callback) {
 	if (typeof treeObjectId !== 'string') {
