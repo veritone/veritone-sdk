@@ -30,7 +30,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
-	collectionFoldersEndpoint = '/api/folder/',
+	collectionFoldersEndpoint = '/folder/',
 	metricsEndpoint = '/metrics/',
 	mentionEndpoint = '/mention/',
 	widgetEndpoint = '/widget/',
