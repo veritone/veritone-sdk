@@ -1979,6 +1979,12 @@ ApiClient.prototype.deleteTreeFolder = function deleteTreeFolder(treeObjectId, o
 	console.log(JSON.stringify(options));
 	this._retryRequest('DELETE', collectionFoldersEndpoint + treeObjectId, options, callback);
 };
+ApiClient.prototype.searchTreeFolder = function searchTreeFolder(queryTerms, callback) {
+	if (typeof queryTerms !== 'object') {
+		throw new Error('Missing query terms!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint + 'search/', queryTerms, callback);
+};
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
