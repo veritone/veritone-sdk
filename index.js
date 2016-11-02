@@ -1985,6 +1985,12 @@ ApiClient.prototype.searchTreeFolder = function searchTreeFolder(queryTerms, cal
 	}
 	this._retryRequest('POST', collectionFoldersEndpoint + 'search/', queryTerms, callback);
 };
+ApiClient.prototype.folderSummary = function folderSummary(queryTerms, callback) {
+	if (typeof queryTerms !== 'object') {
+		throw new Error('Missing folder summary terms!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint + 'summary/', queryTerms, callback);
+};
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
