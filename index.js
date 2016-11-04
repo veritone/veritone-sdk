@@ -2158,4 +2158,11 @@ ApiClient.prototype.ingestionConnect = function ingestionConnect(connectOptions,
 	this._retryRequest('POST', ingestionEndpoint + 'connect', connectOptions, callback);
 };
 
+ApiClient.prototype.verifyEmailIngestion = function verifyEmailIngestion(emailOptions, callback) {
+	if (typeof emailOptions === 'undefined' || (typeof emailOptions === 'object' && !emailOptions.emailAddress)) {
+		throw new Error('Missing email address');
+	}
+	this._retryRequest('POST', ingestionEndpoint + 'verifyEmailIngestion', emailOptions, callback);
+}
+
 module.exports = ApiClient;
