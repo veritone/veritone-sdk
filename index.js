@@ -30,6 +30,7 @@ function ApiClient(options) {
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
+	collectionFoldersEndpoint = '/folder/',
 	metricsEndpoint = '/metrics/',
 	mentionEndpoint = '/mention/',
 	widgetEndpoint = '/widget/',
@@ -1912,6 +1913,90 @@ ApiClient.prototype.updateWidget = function updateWidget(widget, callback) {
 	this._retryRequest('PUT', widgetEndpoint, widget, callback);
 };
 
+ApiClient.prototype.getRootTreeFolder = function getRootTreeFolder(organizationId, userId, rootFolderType, options, callback) {
+	if (typeof organizationId !== 'string' || organizationId === '') {
+		throw new Error('Missing organizationId');
+	}
+	if (typeof userId !== 'string' || userId === '') {
+		throw new Error('Missing userId');
+	}
+	if (typeof rootFolderType !== 'string' || rootFolderType === '') {
+		throw new Error('Missing rootFolderType');
+	}
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	var rootFolderPath = collectionFoldersEndpoint + organizationId + '/' + userId + '/type/' + rootFolderType;
+	this._retryRequest('GET', rootFolderPath, options, callback);
+};
+ApiClient.prototype.getTreeObject = function getTreeObject(treeObjectId, options, callback) {
+	if (typeof treeObjectId !== 'string' || treeObjectId === '') {
+		throw new Error('Missing organizationId');
+	}
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	var treeObjectPath = collectionFoldersEndpoint + treeObjectId;
+	this._retryRequest('GET', treeObjectPath, options, callback);
+};
+ApiClient.prototype.createTreeFolder = function createTreeFolder(treeFolder, callback) {
+	if (typeof treeFolder !== 'object') {
+		throw new Error('Missing tree folder!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint, treeFolder, callback);
+};
+ApiClient.prototype.createTreeObject = function createTreeObject(treeObject, callback) {
+	if (typeof treeObject !== 'object') {
+		throw new Error('Missing tree object!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint + 'object/', treeObject, callback);
+};
+ApiClient.prototype.moveTreeFolder = function moveTreeFolder(treeObjectId, treeFolderMoveObj, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree object id!');
+	}
+	if (typeof treeFolderMoveObj !== 'object') {
+		throw new Error('Missing tree folder move information!');
+	}
+	this._retryRequest('PUT', collectionFoldersEndpoint + 'move/' + treeObjectId, treeFolderMoveObj, callback);
+};
+ApiClient.prototype.updateTreeFolder = function updateTreeFolder(treeObjectId, treeFolderObj, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree object id!');
+	}
+	if (typeof treeFolderObj !== 'object') {
+		throw new Error('Missing tree folder information!');
+	}
+	this._retryRequest('PUT', collectionFoldersEndpoint + treeObjectId, treeFolderObj, callback);
+};
+ApiClient.prototype.deleteTreeFolder = function deleteTreeFolder(treeObjectId, options, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree folder!');
+	}
+	console.log('\n\n\n\n\n\n\nthings:');
+	console.log(JSON.stringify(options));
+	this._retryRequest('DELETE', collectionFoldersEndpoint + treeObjectId, options, callback);
+};
+ApiClient.prototype.deleteTreeObject = function deleteTreeObject(treeObjectId, options, callback) {
+	if (typeof treeObjectId !== 'string') {
+		throw new Error('Missing tree folder!');
+	}
+	this._retryRequest('DELETE', collectionFoldersEndpoint + 'object/' + treeObjectId, options, callback);
+};
+ApiClient.prototype.searchTreeFolder = function searchTreeFolder(queryTerms, callback) {
+	if (typeof queryTerms !== 'object') {
+		throw new Error('Missing query terms!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint + 'search/', queryTerms, callback);
+};
+ApiClient.prototype.folderSummary = function folderSummary(queryTerms, callback) {
+	if (typeof queryTerms !== 'object') {
+		throw new Error('Missing folder summary terms!');
+	}
+	this._retryRequest('POST', collectionFoldersEndpoint + 'summary/', queryTerms, callback);
+};
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
 	this._retryRequest('POST', collectionEndpoint, collection, callback);
 };
@@ -1925,6 +2010,13 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 	this._retryRequest('GET', collectionEndpoint, options, callback);
 };
 
+ApiClient.prototype.getCollections = function getCollections(options, callback) {
+	if (typeof options === 'function' && !callback) {
+		callback = options;
+		options = {};
+	}
+	this._retryRequest('GET', collectionEndpoint, options, callback);
+};
 ApiClient.prototype.getCollection = function getCollection(collectionId, options, callback) {
 	if (typeof collectionId !== 'string' || collectionId === '') {
 		throw new Error('Missing collectionId');
