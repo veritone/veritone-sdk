@@ -19,6 +19,7 @@ function ApiClient(options) {
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
 	this._version = options.version || 1;
 	this._maxRetry = options.maxRetry;
+	this._param = options.param;
 	this._retryIntervalMs = options.retryIntervalMs;
 	if (typeof this._version === 'number') {
 		this._baseUri = this._baseUri + '/v' + this._version;
@@ -1313,6 +1314,38 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 		request({
 			method: 'GET',
 			url: self._baseUri + jobEndpoint + 'task_type',
+			headers: generateHeaders(self._token),
+			json: true
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getUserTaskTypes = function getUserTaskTypes(callback) {
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + jobEndpoint + 'task-type/all?orgId=' + self._param + '&limit=99999',
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
