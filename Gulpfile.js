@@ -6,7 +6,7 @@ var gulp = require('gulp'),
 var allOfMyFiles = [
 	'*.js',
 	'test/*.js'
- ];
+];
 
 var allOfMyTestFiles = [
 	'test/*.spec.js'

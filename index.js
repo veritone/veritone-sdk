@@ -2196,6 +2196,6 @@ ApiClient.prototype.verifyEmailIngestion = function verifyEmailIngestion(emailOp
 		throw new Error('Missing email address');
 	}
 	this._retryRequest('POST', ingestionEndpoint + 'verifyEmailIngestion', emailOptions, callback);
-}
+};
 
 module.exports = ApiClient;
