@@ -42,6 +42,7 @@ var applicationEndpoint = '/application/',
 	recordingFoldersEndpoint = '/recording/folder/',
 	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
+	engineEndpoint = '/engine/',
 	searchEndpoint = '/search',
 	//reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
@@ -1335,7 +1336,7 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 	});
 };
 
-ApiClient.prototype.getUserTaskTypes = function getUserTaskTypes(callback) {
+ApiClient.prototype.getEngines = function getEngines(callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
 	}
@@ -1345,7 +1346,39 @@ ApiClient.prototype.getUserTaskTypes = function getUserTaskTypes(callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + jobEndpoint + 'task-type/all?orgId=' + self._param + '&limit=99999',
+			url: self._baseUri + engineEndpoint + '?limit=99999',
+			headers: generateHeaders(self._token),
+			json: true
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getEngineCategories = function getEngineCategories(callback) {
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + engineEndpoint + 'category?limit=99999',
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
