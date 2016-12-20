@@ -29,6 +29,8 @@ function ApiClient(options) {
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
 }
 
+const enginePageLimit = 99999;
+
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
 	collectionFoldersEndpoint = '/folder/',
@@ -1274,68 +1276,6 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 //	});
 //};
 
-ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			url: self._baseUri + taskTypeByJobEndpoint + taskTypeId,
-			headers: generateHeaders(self._token),
-			json: true
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
-};
-
-ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'GET',
-			url: self._baseUri + jobEndpoint + 'task_type',
-			headers: generateHeaders(self._token),
-			json: true
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
-};
-
 ApiClient.prototype.getEngines = function getEngines(callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
@@ -1346,7 +1286,7 @@ ApiClient.prototype.getEngines = function getEngines(callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + '?limit=99999',
+			url: self._baseUri + engineEndpoint + '?limit=' + enginePageLimit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1378,7 +1318,7 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + 'category?limit=99999',
+			url: self._baseUri + engineEndpoint + 'category?limit=' + enginePageLimit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
