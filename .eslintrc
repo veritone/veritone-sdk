@@ -27,7 +27,20 @@
 		"no-throw-literal": 2
 	},
 	"env": {
+		"es6": true,
 		"node": true
+	},
+	"globals": {
+		"jasmine": true,
+		"describe": true,
+		"xdescribe": true,
+		"it": true,
+		"xit": true,
+		"expect": true,
+		"beforeAll": true,
+		"beforeEach": true,
+		"afterEach": true,
+		"spyOn": true
 	},
 	"extends": "eslint:recommended"
 }
