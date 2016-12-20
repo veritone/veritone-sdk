@@ -1344,9 +1344,11 @@ ApiClient.prototype.getEngines = function getEngines(callback) {
 	var self = this;
 
 	function task(callback) {
+		var limit = 99999;
+
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + '?limit=99999',
+			url: self._baseUri + engineEndpoint + '?limit=' + limit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1376,9 +1378,11 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 	var self = this;
 
 	function task(callback) {
+		var limit = 99999;
+
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + 'category?limit=99999',
+			url: self._baseUri + engineEndpoint + 'category?limit=' + limit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
