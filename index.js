@@ -42,7 +42,7 @@ var applicationEndpoint = '/application/',
 	recordingFoldersEndpoint = '/recording/folder/',
 	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
-	engineEndpoint = '/engine/',
+	engineEndpoint = '/engine',
 	searchEndpoint = '/search',
 	//reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
@@ -1382,7 +1382,7 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + 'category?limit=' + limit,
+			url: self._baseUri + engineEndpoint + '/category?limit=' + limit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {

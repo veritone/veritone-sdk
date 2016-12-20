@@ -29,7 +29,7 @@ describe('veritone-api', function() {
 
 		apiClient = new VeritoneApi({
 			token: 'api-token-abc',
-			baseUri: 'http://mock-api:9000'
+			baseUri: 'mock.api.veritone.com'
 		});
 	});
 
@@ -49,7 +49,7 @@ describe('veritone-api', function() {
 
 		it('should create a job', function(done) {
 			requestMockOptions = {
-				url: 'http://mock-api:9000/v1/job/'
+				url: 'mock.api.veritone.com/v1/job/'
 			};
 			requestMockCallback = {
 				error: null,
@@ -77,7 +77,7 @@ describe('veritone-api', function() {
 
 		it('should get a job', function(done) {
 			requestMockOptions = {
-				url: 'http://mock-api:9000/v1/job/123'
+				url: 'mock.api.veritone.com/v1/job/123'
 			};
 			requestMockCallback = {
 				error: null,
@@ -102,7 +102,7 @@ describe('veritone-api', function() {
 			};
 
 			requestMockOptions = {
-				url: 'http://mock-api:9000/v1/job/123/task/some-task-id'
+				url: 'mock.api.veritone.com/v1/job/123/task/some-task-id'
 			};
 
 			requestMockCallback = {
@@ -119,5 +119,78 @@ describe('veritone-api', function() {
 				done();
 			});
 		});
+	});
+
+	describe('engine', function() {
+		const mockJob = {
+			jobId: '123',
+			status: 'accepted',
+			tasks: [
+				{ taskId: 'some-task-id' }
+			]
+		};
+
+		it('should create a job', function(done) {
+			requestMockOptions = {
+				url: 'mock.api.veritone.com/v1/job/'
+			};
+			requestMockCallback = {
+				error: null,
+				response: { statusCode: 200 },
+				body: {
+					jobId: '123',
+					status: 'accepted',
+					tasks: [
+						{ taskId: 'some-task-id' }
+					]
+				}
+			};
+
+			apiClient.createJob(mockJob, function(err, newJob) {
+				expect(err).not.toBeTruthy();
+				expect(newJob).toBeTruthy();
+				if (newJob) {
+					expect(newJob.jobId).toBeTruthy();
+					expect(newJob.status).toEqual('accepted');
+				}
+
+				done();
+			});
+		});
+
+		it('should get engines', function(done) {
+			requestMockOptions = {
+				url: 'mock.api.veritone.com/v1/engine?limit=99999'
+			};
+			requestMockCallback = {
+				error: null,
+				response: { statusCode: 200 },
+				body: {}
+			};
+
+			apiClient.getEngines(function(err, results) {
+				expect(err).not.toBeTruthy();
+				expect(results).toBeTruthy();
+				done();
+			});
+		});
+
+		it('should get engine categories', function(done) {
+			requestMockOptions = {
+				url: 'mock.api.veritone.com/v1/engine/category?limit=99999'
+			};
+			requestMockCallback = {
+				error: null,
+				response: { statusCode: 200 },
+				body: {}
+			};
+
+			apiClient.getEngineCategories(function(err, results) {
+				expect(err).not.toBeTruthy();
+				expect(results).toBeTruthy();
+				done();
+			});
+		});
+
 	});
 });
