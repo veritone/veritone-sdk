@@ -27,10 +27,6 @@ build:
     - script:
         name: npm install
         code: |
-          mkdir -p $WERCKER_CACHE_DIR/npm
-          npm config set cache $WERCKER_CACHE_DIR/npm
-          npm config list
-          npm install -g npm
           NODE_ENV=dev npm install
 
     - hgen/gulp:
