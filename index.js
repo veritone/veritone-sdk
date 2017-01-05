@@ -19,6 +19,7 @@ function ApiClient(options) {
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
 	this._version = options.version || 1;
 	this._maxRetry = options.maxRetry;
+	this._param = options.param;
 	this._retryIntervalMs = options.retryIntervalMs;
 	if (typeof this._version === 'number') {
 		this._baseUri = this._baseUri + '/v' + this._version;
@@ -27,6 +28,8 @@ function ApiClient(options) {
 	}
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
 }
+
+const enginePageLimit = 99999;
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
@@ -41,6 +44,7 @@ var applicationEndpoint = '/application/',
 	recordingFoldersEndpoint = '/recording/folder/',
 	taskTypeByJobEndpoint = '/job/task_type/',
 	jobEndpoint = '/job/',
+	engineEndpoint = '/engine',
 	searchEndpoint = '/search',
 	//reportsEndpoint = '/report/',
 	batchEndpoint = '/batch',
@@ -1272,6 +1276,70 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 //	});
 //};
 
+ApiClient.prototype.getEngines = function getEngines(callback) {
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + engineEndpoint + '?limit=' + enginePageLimit,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
+ApiClient.prototype.getEngineCategories = function getEngineCategories(callback) {
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+
+	var self = this;
+
+	function task(callback) {
+		request({
+			method: 'GET',
+			url: self._baseUri + engineEndpoint + '/category?limit=' + enginePageLimit,
+			headers: generateHeaders(self._token),
+			json: true
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 200) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
+};
+
 ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
@@ -2163,6 +2231,6 @@ ApiClient.prototype.verifyEmailIngestion = function verifyEmailIngestion(emailOp
 		throw new Error('Missing email address');
 	}
 	this._retryRequest('POST', ingestionEndpoint + 'verifyEmailIngestion', emailOptions, callback);
-}
+};
 
 module.exports = ApiClient;
