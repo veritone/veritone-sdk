@@ -29,7 +29,7 @@ function ApiClient(options) {
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
 }
 
-const enginePageLimit = 99999;
+var enginePageLimit = 99999;
 
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
