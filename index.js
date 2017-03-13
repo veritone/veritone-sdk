@@ -4,7 +4,8 @@ var request = require('request'),
 	validatejs = require('validate.js'),
 	fs = require('fs'),
 	path = require('path'),
-	RetryHelper = require('./RetryHelper');
+	RetryHelper = require('./RetryHelper'),
+	apis = require('./apis');
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -27,6 +28,10 @@ function ApiClient(options) {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
+
+	for (var name in apis) {
+		this[name] = apis[name].call(this);
+	}
 }
 
 var enginePageLimit = 99999;
@@ -58,6 +63,8 @@ function generateHeaders(token) {
 	headers.Authorization = 'Bearer ' + token;
 	return headers;
 }
+
+ApiClient.prototype.generateHeaders = generateHeaders;
 
 //function validateApplication(application) {
 //	if (typeof application !== 'object') {
