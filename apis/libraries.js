@@ -32,6 +32,9 @@ module.exports = function init() {
 	}
 
 	function getLibrary(libraryId, callback) {
+		if (!libraryId) {
+			throw new Error('libraryId is required');
+		}
 		if (typeof callback != 'function') {
 			throw new Error('Missing callback!');
 		}
@@ -49,6 +52,9 @@ module.exports = function init() {
 	}
 
 	function createLibrary(library, callback) {
+		if (typeof library != 'object') {
+			throw new Error('Expected library to be an object');
+		}
 		if (typeof callback != 'function') {
 			throw new Error('Missing callback!');
 		}
