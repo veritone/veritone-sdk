@@ -64,7 +64,9 @@ function generateHeaders(token) {
 	return headers;
 }
 
-ApiClient.prototype.generateHeaders = generateHeaders;
+ApiClient.prototype.generateHeaders = function genHeaders() {
+	return generateHeaders(this._token);
+};
 
 //function validateApplication(application) {
 //	if (typeof application !== 'object') {

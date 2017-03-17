@@ -1,175 +1,52 @@
 'use strict';
 
-var request = require('request');
 var librariesApiBaseUri = '/media';
 
 module.exports = function init() {
-	var self = this;
+	var generateHandler = require('./helper/generate-handler')(this, this._baseUri + librariesApiBaseUri);
 
 	return {
-		getLibraries: getLibraries,
-		getLibrary: getLibrary,
-		createLibrary: createLibrary,
-		updateLibrary: updateLibrary,
-		deleteLibrary: deleteLibrary,
-		publishLibraryChanges: publishLibraryChanges
+		getLibraryTypes: generateHandler('GET', '/library-type'),
+		getLibraryType: generateHandler('GET', '/library-type/:libraryTypeId'),
+		createLibraryType: generateHandler('POST', '/library-type'),
+		updateLibraryType: generateHandler('PUT', '/library-type/:libraryTypeId'),
 
-		// TODO:
+		getLibraries: generateHandler('GET', '/library'),
+		getLibrary: generateHandler('GET', '/library/:libraryId'),
+		createLibrary: generateHandler('POST', '/library'),
+		updateLibrary: generateHandler('PUT', '/library/:libraryId'),
+		deleteLibrary: generateHandler('DELETE', '/library/:libraryId'),
+		publishLibraryChanges: generateHandler('POST', '/library/:libraryId/version'),
 
-		//getLibraryTypes: getLibraryTypes,
-		//getLibraryType: getLibraryType,
-		//createLibraryType: createLibraryType,
-		//updateLibraryType: updateLibraryType,
+		getLibraryEngineModels: generateHandler('GET', '/library/:libraryId/engine-model'),
+		getLibraryEngineModel: generateHandler('GET', '/library/:libraryId/engine-model/:libraryEngineModelId'),
+		createLibraryEngineModel: generateHandler('POST', '/library/:libraryId/engine-model'),
+		updateLibraryEngineModel: generateHandler('PUT', '/library/:libraryId/engine-model/:libraryEngineModelId'),
+		deleteLibraryEngineModel: generateHandler('DELETE', '/library/:libraryId/engine-model/:libraryEngineModelId'),
 
-		//getLibraryEngineModels: getLibraryEngineModels,
-		//getLibraryEngineModel: getLibraryEngineModel,
-		//createLibraryEngineModel: createLibraryEngineModel,
-		//updateLibraryEngineModel: updateLibraryEngineModel,
-		//deleteLibraryEngineModel: deleteLibraryEngineModel,
+		getLibraryCollaborators: generateHandler('GET', '/library/:libraryId/collaborator'),
+		getLibraryCollaborator: generateHandler('GET', '/library/:libraryId/collaborator/:collaboratorOrgId'),
+		createLibraryCollaborator: generateHandler('POST', '/library/:libraryId/collaborator'),
+		updateLibraryCollaborator: generateHandler('PUT', '/library/:libraryId/collaborator/:collaboratorOrgId'),
+		deleteLibraryCollaborator: generateHandler('DELETE', '/library/:libraryId/collaborator/:collaboratorOrgId'),
 
-		//getLibraryCollaborators: getLibraryCollaborators,
-		//getLibraryCollaborator: getLibraryCollaborator,
-		//createLibraryCollaborator: createLibraryCollaborator,
-		//updateLibraryCollaborator: updateLibraryCollaborator,
-		//deleteLibraryCollaborator: deleteLibraryCollaborator,
+		getEntityIdentifierTypes: generateHandler('GET', '/entity-identifier-type'),
+		getEntityIdentifierType: generateHandler('GET', '/entity-identifier-type/:entityIdentifierTypeId'),
+		createEntityIdentifierType: generateHandler('POST', '/entity-identifier-type'),
+		updateEntityIdentifierType: generateHandler('PUT', '/entity-identifier-type/:entityIdentifierTypeId'),
 
-		//getEntities: getEntities,
-		//getEntity: getEntity,
-		//createEntity: createEntity,
-		//updateEntity: updateEntity,
-		//uploadEntityProfileImage: uploadEntityProfileImage,
-		//deleteEntity: deleteEntity,
+		getEntities: generateHandler('GET', '/library/:libraryId/entity'),
+		getEntity: generateHandler('GET', '/library/:libraryId/entity/:entityId'),
+		createEntity: generateHandler('POST', '/library/:libraryId/entity'),
+		updateEntity: generateHandler('PUT', '/library/:libraryId/entity/:entityId'),
+		uploadEntityProfileImage: generateHandler('POST', '/library/:libraryId/entity/:entityId/profile-image', ['Content-Type']),
+		deleteEntity: generateHandler('DELETE', '/library/:libraryId/entity/:entityId'),
 
-		//getEntityIdentifierTypes: getEntityIdentifierTypes,
-		//getEntityIdentifierType: getEntityIdentifierType,
-		//createEntityIdentifierType: createEntityIdentifierType,
-		//updateEntityIdentifierType: updateEntityIdentifierType,
-
-		//getEntityIdentifiers: getEntityIdentifiers,
-		//getEntityIdentifier: getEntityIdentifier,
-		//createEntityIdentifier: createEntityIdentifier,
-		//uploadEntityIdentifier: uploadEntityIdentifier,
-		//updateEntityIdentifier: updateEntityIdentifier,
-		//deleteEntityIdentifier: deleteEntityIdentifier,
+		getEntityIdentifiers: generateHandler('GET', '/library/:libraryId/entity/:entityId/identifier'),
+		getEntityIdentifier: generateHandler('GET', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierId'),
+		createEntityIdentifier: generateHandler('POST', '/library/:libraryId/entity/:entityId/identifier'),
+		updateEntityIdentifier: generateHandler('PUT', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierId'),
+		uploadEntityIdentifier: generateHandler('POST', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierTypeId', ['Content-Type']),
+		deleteEntityIdentifier: generateHandler('DELETE', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierId'),
 	};
-
-	function getLibraries(callback) {
-		if (typeof callback != 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var options = {
-			method: 'GET',
-			url: self._baseUri + librariesApiBaseUri + '/library',
-			headers: self.generateHeaders(self._token),
-			json: true
-		};
-
-		self._retryHelper.retry(function task(callback) {
-			request(options, callback);
-		}, callback);
-	}
-
-	function getLibrary(libraryId, callback) {
-		if (!libraryId) {
-			throw new Error('libraryId is required');
-		}
-		if (typeof callback != 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var options = {
-			method: 'GET',
-			url: self._baseUri + librariesApiBaseUri + '/library/' + libraryId,
-			headers: self.generateHeaders(self._token),
-			json: true
-		};
-
-		self._retryHelper.retry(function task(callback) {
-			request(options, callback);
-		}, callback);
-	}
-
-	function createLibrary(library, callback) {
-		if (typeof library != 'object') {
-			throw new Error('Expected library to be an object');
-		}
-		if (typeof callback != 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var options = {
-			method: 'POST',
-			url: self._baseUri + librariesApiBaseUri + '/library',
-			headers: self.generateHeaders(self._token),
-			json: library
-		};
-
-		self._retryHelper.retry(function task(callback) {
-			request(options, callback);
-		}, callback);
-	}
-
-	function updateLibrary(library, callback) {
-		if (typeof library != 'object') {
-			throw new Error('Expected library to be an object');
-		}
-		if (!library.libraryId) {
-			throw new Error('library.libraryId is required');
-		}
-		if (typeof callback != 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var options = {
-			method: 'PUT',
-			url: self._baseUri + librariesApiBaseUri + '/library/' + library.libraryId,
-			headers: self.generateHeaders(self._token),
-			json: library
-		};
-
-		self._retryHelper.retry(function task(callback) {
-			request(options, callback);
-		}, callback);
-	}
-
-	function deleteLibrary(libraryId, callback) {
-		if (!libraryId) {
-			throw new Error('libraryId is required');
-		}
-		if (typeof callback != 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var options = {
-			method: 'DELETE',
-			url: self._baseUri + librariesApiBaseUri + '/library/' + libraryId,
-			headers: self.generateHeaders(self._token),
-			json: true
-		};
-
-		self._retryHelper.retry(function task(callback) {
-			request(options, callback);
-		}, callback);
-	}
-
-	function publishLibraryChanges(libraryId, callback) {
-		if (!libraryId) {
-			throw new Error('libraryId is required');
-		}
-		if (typeof callback != 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var options = {
-			method: 'POST',
-			url: self._baseUri + librariesApiBaseUri + '/library/' + libraryId + '/version',
-			headers: self.generateHeaders(self._token),
-			json: true
-		};
-
-		self._retryHelper.retry(function task(callback) {
-			request(options, callback);
-		}, callback);
-	}
 };
