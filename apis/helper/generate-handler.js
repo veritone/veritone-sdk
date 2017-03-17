@@ -35,7 +35,7 @@ module.exports = function init(client, baseUri) {
 					params = {};
 				}
 
-				var req = generateRequest(params, payload); console.log(req);
+				var req = generateRequest(params, payload);
 				performRequest(req, callback);
 			};
 		}
@@ -46,7 +46,7 @@ module.exports = function init(client, baseUri) {
 				params = {};
 			}
 
-			var req = generateRequest(params || {}); console.log(req);
+			var req = generateRequest(params || {});
 			performRequest(req, callback);
 		};
 
