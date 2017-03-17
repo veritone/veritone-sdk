@@ -107,7 +107,13 @@ module.exports = function init(client, baseUri) {
 		}
 
 		client._retryHelper.retry(function task(callback) {
-			request(options, callback);
+			request(options, function requestCallback(err, response, body) {
+				if (!err && response.statusCode > 299) {
+					err = body || response.statusCode;
+				}
+
+				callback(err, body);
+			});
 		}, callback);
 	}
 };
