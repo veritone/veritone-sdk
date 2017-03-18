@@ -1341,6 +1341,14 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 };
 
 ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
+	throw new Error('Migration - use getEngineUsingRightsFiltered!');
+};
+
+ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
+	throw new Error('Migration - use getEngineCategoriesWithEngines!');
+}
+
+ApiClient.prototype.getEngineUsingRightsFiltered = function getEngineUsingRightsFiltered(engineId, callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
 	}
@@ -1349,7 +1357,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + taskTypeByJobEndpoint + taskTypeId,
+			url: self._baseUri + taskTypeByJobEndpoint + engineId,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1371,7 +1379,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	});
 };
 
-ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
+ApiClient.prototype.getEngineCategoriesWithEngines = function getEngineCategoriesWithEngines(callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
 	}
