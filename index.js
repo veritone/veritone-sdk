@@ -1340,13 +1340,13 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 	});
 };
 
-ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
+ApiClient.prototype.getTaskType = function getTaskType() {
 	throw new Error('Migration - use getEngineUsingRightsFiltered!');
 };
 
-ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
+ApiClient.prototype.getTaskTypes = function getTaskTypes() {
 	throw new Error('Migration - use getEngineCategoriesWithEngines!');
-}
+};
 
 ApiClient.prototype.getEngineUsingRightsFiltered = function getEngineUsingRightsFiltered(engineId, callback) {
 	if (typeof callback !== 'function') {
