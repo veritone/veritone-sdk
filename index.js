@@ -24,7 +24,7 @@ function ApiClient(options) {
 	this._retryIntervalMs = options.retryIntervalMs;
 	if (typeof this._version === 'number') {
 		this._baseUri = this._baseUri + '/v' + this._version;
-	} else {
+	} else if (this._version != 'disable') {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
 	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
