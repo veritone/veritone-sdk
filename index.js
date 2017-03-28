@@ -1340,7 +1340,15 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 	});
 };
 
-ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
+ApiClient.prototype.getTaskType = function getTaskType() {
+	throw new Error('Migration - use getEngineUsingRightsFiltered!');
+};
+
+ApiClient.prototype.getTaskTypes = function getTaskTypes() {
+	throw new Error('Migration - use getEngineCategoriesWithEngines!');
+};
+
+ApiClient.prototype.getEngineUsingRightsFiltered = function getEngineUsingRightsFiltered(engineId, callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
 	}
@@ -1349,7 +1357,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + taskTypeByJobEndpoint + taskTypeId,
+			url: self._baseUri + taskTypeByJobEndpoint + engineId,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1371,7 +1379,7 @@ ApiClient.prototype.getTaskType = function getTaskType(taskTypeId, callback) {
 	});
 };
 
-ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
+ApiClient.prototype.getEngineCategoriesWithEngines = function getEngineCategoriesWithEngines(callback) {
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
 	}
@@ -1383,107 +1391,6 @@ ApiClient.prototype.getTaskTypes = function getTaskTypes(callback) {
 			url: self._baseUri + jobEndpoint + 'task_type',
 			headers: generateHeaders(self._token),
 			json: true
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
-};
-
-ApiClient.prototype.createTaskType = function createTaskType(taskType, callback) {
-	if (typeof taskType !== 'object') {
-		throw new Error('Missing taskType!');
-	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-	var validation = {
-		taskTypeId: {
-			presence: true
-		},
-		validateUri: {
-			presence: true
-		},
-		executeUri: {
-			presence: true
-		}
-	};
-	var validationErrors = validatejs(taskType, validation);
-	if (validationErrors) {
-		throw new Error('Invalid taskType object!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'POST',
-			url: self._baseUri + jobEndpoint + 'task_type',
-			headers: generateHeaders(self._token),
-			json: taskType
-		}, function requestCallback(err, response, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			if (response.statusCode !== 200) {
-				return callback('Received status: ' + response.statusCode, body);
-			}
-			callback(null, body);
-		});
-	}
-
-	self._retryHelper.retry(task, function retryCallback(err, body) {
-		if (err) {
-			return callback(err, body);
-		}
-		callback(null, body);
-	});
-};
-
-ApiClient.prototype.updateTaskType = function updateTaskType(taskType, callback) {
-	if (typeof taskType !== 'object') {
-		throw new Error('Missing taskType!');
-	}
-	if (typeof callback !== 'function') {
-		throw new Error('Missing callback!');
-	}
-	if (typeof taskType.taskTypeId !== 'string' || taskType.taskTypeId === '') {
-		throw new Error('Missing taskTypeId!');
-	}
-	var validation = {
-		taskTypeId: {
-			presence: true
-		},
-		validateUri: {
-			presence: true
-		},
-		executeUri: {
-			presence: true
-		}
-	};
-	var validationErrors = validatejs(taskType, validation);
-	if (validationErrors) {
-		throw new Error('Invalid taskType object!');
-	}
-
-	var self = this;
-	function task(callback) {
-		request({
-			method: 'PUT',
-			url: self._baseUri + taskTypeByJobEndpoint + taskType.taskTypeId,
-			headers: generateHeaders(self._token),
-			json: taskType
 		}, function requestCallback(err, response, body) {
 			if (err) {
 				return callback(err, body);
