@@ -41,6 +41,7 @@ module.exports = function init() {
 		updateEntity: generateHandler('PUT', '/library/:libraryId/entity/:entityId'),
 		uploadEntityProfileImage: generateHandler('POST', '/library/:libraryId/entity/:entityId/profile-image', ['Content-Type']),
 		deleteEntity: generateHandler('DELETE', '/library/:libraryId/entity/:entityId'),
+		entityLookup: generateHandler('POST', '/entity-lookup'),
 
 		getEntityIdentifiers: generateHandler('GET', '/library/:libraryId/entity/:entityId/identifier'),
 		getEntityIdentifier: generateHandler('GET', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierId'),
