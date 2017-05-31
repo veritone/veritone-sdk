@@ -1515,7 +1515,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
     function task(callback) {
         request({
             method: 'POST',
-            url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId+'/poll',
+            url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId +'/poll',
             headers: generateHeaders(self._token),
             json: data
         }, function requestCallback(err, response, body) {
