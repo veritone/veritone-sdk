@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
+    "test:watch": "gulp watch",
     "lint": "gulp lint"
   },
   "homepage": "https://github.com/veritone/veritone-api",

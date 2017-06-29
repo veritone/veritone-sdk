@@ -35,20 +35,26 @@ gulp.task('pre-jasmine', function preJasmine() {
 		pipe(gulpIstanbul.hookRequire());
 });
 
+function swallowError() {
+	this.emit('end');
+}
+
 gulp.task('jasmine', ['pre-jasmine'], function jasmine() {
-	return gulp.src(allOfMyTestFiles).
-		pipe(gulpDebug({ title: 'jasmine:' })).
-		pipe(gulpJasmine({
+	return gulp.src(allOfMyTestFiles)
+		.pipe(gulpDebug({ title: 'jasmine:' }))
+		.pipe(gulpJasmine({
 			verbose: true,
 			timeout: 1000
-		})).
-		pipe(gulpIstanbul.writeReports());
+		}))
+		.on('error', swallowError)
+		.pipe(gulpIstanbul.writeReports());
 });
 
 gulp.task('test', ['lint', 'jasmine']);
 
+
 gulp.task('watch', ['test'], function watch() {
-	gulp.watch(allOfMyFiles, ['test']);
+	gulp.watch([allOfMyFiles, allOfMyTestFiles], ['test']);
 });
 
 gulp.task('default', ['test']);
