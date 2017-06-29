@@ -10,7 +10,7 @@
   },
   "homepage": "https://github.com/veritone/veritone-api",
   "dependencies": {
-    "async": "^2.0.1",
+    "async": "^2.5.0",
     "qs": "^6.2.1",
     "request": "^2.75.0",
     "route-parser": "0.0.5",

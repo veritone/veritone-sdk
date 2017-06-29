@@ -1,6 +1,6 @@
 'use strict';
 
-var async = require('async');
+const asyncRetry = require('async/retry');
 
 function RetryHelper(options) {
 	options = options || {};
@@ -53,7 +53,7 @@ RetryHelper.prototype.retry = function retry(task, callback) {
 		}
 	}
 
-	async.retry(self._maxRetry, retryTask, callback);
+	asyncRetry(self._maxRetry, retryTask, callback);
 };
 
 module.exports = RetryHelper;
