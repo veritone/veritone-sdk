@@ -1500,41 +1500,42 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 };
 
 ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) {
-    if (typeof jobId !== 'string' || jobId === '') {
-        throw new Error('Missing jobId!');
-    }
-    if (typeof taskId !== 'string' || taskId === '') {
-        throw new Error('Missing taskId!');
-    }
-    if (typeof callback !== 'function') {
-        throw new Error('Missing callback!');
-    }
-    data = data || {};
+	if (typeof jobId !== 'string' || jobId === '') {
+		throw new Error('Missing jobId!');
+	}
+	if (typeof taskId !== 'string' || taskId === '') {
+		throw new Error('Missing taskId!');
+	}
+	if (typeof callback !== 'function') {
+		throw new Error('Missing callback!');
+	}
+	data = data || {};
 
-    var self = this;
-    function task(callback) {
-        request({
-            method: 'POST',
-            url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId +'/poll',
-            headers: generateHeaders(self._token),
-            json: data
-        }, function requestCallback(err, response, body) {
-            if (err) {
-                return callback(err, body);
-            }
-            if (response.statusCode !== 204) {
-                return callback('Received status: ' + response.statusCode, body);
-            }
-            callback(null);
-        });
-    }
+	var self = this;
 
-    self._retryHelper.retry(task, function retryCallback(err, body) {
-        if (err) {
-            return callback(err, body);
-        }
-        callback(null, body);
-    });
+	function task(callback) {
+		request({
+			method: 'POST',
+			url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId + '/poll',
+			headers: generateHeaders(self._token),
+			json: data
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null);
+		});
+	}
+
+	self._retryHelper.retry(task, function retryCallback(err, body) {
+		if (err) {
+			return callback(err, body);
+		}
+		callback(null, body);
+	});
 };
 
 //ApiClient.prototype.generateRecordingsReport = function generateRecordingsReport(reportRequest, callback) {
