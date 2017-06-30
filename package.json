@@ -5,8 +5,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require babel-register",
-    "test:watch": "mocha --require babel-register --watch",
+    "test": "mocha",
+    "test:watch": "mocha --watch",
     "lint": "eslint ./**/*.js",
     "format": "prettier --single-quote --use-tabs --write ./**/*.js"
   },
