@@ -6,7 +6,6 @@
 		"semi": [ 2, "always" ],
 		"no-console": 0,
 		"camelcase": [ 2, { "properties": "always" } ],
-		"func-style": [ 2, "declaration" ],
 		"new-cap": 2,
 		"new-parens": 2,
 		"no-restricted-syntax": [ 2, "WithStatement" ],

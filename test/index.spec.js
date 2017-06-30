@@ -4,6 +4,7 @@ nock.disableNetConnect();
 
 import VeritoneApi from '../index.js';
 
+const noop = () => {};
 const apiBaseUri = 'http://fake.domain';
 
 describe('ApiClient constructor', function() {
@@ -36,15 +37,15 @@ describe('API methods', function() {
 	describe('Token', function() {
 		describe('createToken', function() {
 			it('validates label', function() {
-				const incorrectLabels = [undefined, () => {}, ''];
+				const incorrectLabels = [undefined, noop, ''];
 				const correctLabels = ['ok'];
 
 				incorrectLabels.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', () => {})).to.throw();
+					expect(() => this.api.createToken(l, 'a', noop)).to.throw();
 				});
 
 				correctLabels.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', () => {})).not.to.throw();
+					expect(() => this.api.createToken(l, 'a', noop)).not.to.throw();
 				});
 			});
 
@@ -53,19 +54,17 @@ describe('API methods', function() {
 				const correctRights = ['rights']; // todo: string or array?
 
 				incorrectRights.forEach(r => {
-					expect(() => this.api.createToken('label', r, () => {})).to.throw();
+					expect(() => this.api.createToken('label', r, noop)).to.throw();
 				});
 
 				correctRights.forEach(r => {
-					expect(() =>
-						this.api.createToken('label', r, () => {})
-					).not.to.throw();
+					expect(() => this.api.createToken('label', r, noop)).not.to.throw();
 				});
 			});
 
 			it('validates callback', function() {
 				const incorrectCallbacks = [undefined, ''];
-				const correctCallbacks = [() => {}];
+				const correctCallbacks = [noop];
 
 				incorrectCallbacks.forEach(c => {
 					expect(() => this.api.createToken('label', 'a', c)).to.throw();
@@ -95,39 +94,15 @@ describe('API methods', function() {
 
 		describe('revokeToken', function() {
 			it('validates token', function() {
-				const incorrectTokens = [undefined, () => {}, ''];
+				const incorrectTokens = [undefined, noop, ''];
 				const correctTokens = ['ok'];
 
-				incorrectTokens.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', () => {})).to.throw();
+				incorrectTokens.forEach(t => {
+					expect(() => this.api.revokeToken(t, noop)).to.throw();
 				});
 
-				correctTokens.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', () => {})).not.to.throw();
-				});
-			});
-
-			it('makes a delete request to the api with the token', function(done) {
-				const scope = nock(apiBaseUri).delete(/some-token/).reply(200, 'ok');
-
-				this.api.revokeToken('some-token', () => {
-					scope.done();
-					done();
-				});
-			});
-		});
-
-		describe('revokeToken', function() {
-			it('validates token', function() {
-				const incorrectTokens = [undefined, () => {}, ''];
-				const correctTokens = ['ok'];
-
-				incorrectTokens.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', () => {})).to.throw();
-				});
-
-				correctTokens.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', () => {})).not.to.throw();
+				correctTokens.forEach(t => {
+					expect(() => this.api.revokeToken(t, noop)).not.to.throw();
 				});
 			});
 
@@ -143,28 +118,105 @@ describe('API methods', function() {
 	});
 
 	describe('Recording', function() {
-		xdescribe('validateRecording');
-		xdescribe('createRecording');
-		xdescribe('getRecordings');
-		xdescribe('getRecording');
-		xdescribe('updateRecording');
-		xdescribe('updateRecordingFolder');
-		xdescribe('updateCms');
-		xdescribe('deleteRecording');
-		xdescribe('getRecordingTranscript');
-		xdescribe('getRecordingMedia');
-		xdescribe('getRecordingAssets');
+		describe('createRecording', function() {
+			it('validates recording', function() {
+				expect(() => this.api.createRecording(undefined, noop)).to.throw();
+			});
+
+			it('posts to API with recording in json body', function(done) {
+				const scope = nock(apiBaseUri)
+					.post(/record/, {
+						startDateTime: 1,
+						stopDateTime: 2
+					})
+					.reply(200, 'ok');
+
+				this.api.createRecording(
+					{
+						startDateTime: 1,
+						stopDateTime: 2
+					},
+					() => {
+						scope.done();
+						done();
+					}
+				);
+			});
+		});
+
+		describe('getRecordings', function() {
+			it('can be called with only a callback', function(done) {
+				const scope = nock(apiBaseUri).get(/record/).reply(200, 'ok');
+
+				this.api.getRecordings(() => {
+					scope.done();
+					done();
+				});
+			});
+
+			it('can be called with options.limit and options.offset', function(done) {
+				const scope = nock(apiBaseUri)
+					.get(/record/)
+					.query({
+						offset: 1,
+						limit: 2
+					})
+					.reply(200, 'ok');
+
+				this.api.getRecordings({ offset: 1, limit: 2 }, () => {
+					scope.done();
+					done();
+				});
+			});
+
+			it('can be called with limit only', function(done) {
+				const scope = nock(apiBaseUri)
+					.get(/record/)
+					.query({
+						limit: 2
+					})
+					.reply(200, 'ok');
+
+				this.api.getRecordings({ limit: 2 }, () => {
+					scope.done();
+					done();
+				});
+			});
+
+			it('can be called with offset only', function(done) {
+				const scope = nock(apiBaseUri)
+					.get(/record/)
+					.query({
+						offset: 2
+					})
+					.reply(200, 'ok');
+
+				this.api.getRecordings({ offset: 2 }, () => {
+					scope.done();
+					done();
+				});
+			});
+		});
+
+		// xdescribe('getRecording');
+		// xdescribe('updateRecording');
+		// xdescribe('updateRecordingFolder');
+		// xdescribe('updateCms');
+		// xdescribe('deleteRecording');
+		// xdescribe('getRecordingTranscript');
+		// xdescribe('getRecordingMedia');
+		// xdescribe('getRecordingAssets');
 	});
 
-	xdescribe('Asset');
-	xdescribe('Job');
-	xdescribe('Engine');
-	xdescribe('Task');
-	xdescribe('DropboxWatcher');
-	xdescribe('Faces');
-	xdescribe('Mentions');
-	xdescribe('Widgets');
-	xdescribe('Folder');
-	xdescribe('Collection');
-	xdescribe('Ingestion');
+	// xdescribe('Asset');
+	// xdescribe('Job');
+	// xdescribe('Engine');
+	// xdescribe('Task');
+	// xdescribe('DropboxWatcher');
+	// xdescribe('Faces');
+	// xdescribe('Mentions');
+	// xdescribe('Widgets');
+	// xdescribe('Folder');
+	// xdescribe('Collection');
+	// xdescribe('Ingestion');
 });
