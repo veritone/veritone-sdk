@@ -141,4 +141,30 @@ describe('API methods', function() {
 			});
 		});
 	});
+
+	describe('Recording', function() {
+		xdescribe('validateRecording');
+		xdescribe('createRecording');
+		xdescribe('getRecordings');
+		xdescribe('getRecording');
+		xdescribe('updateRecording');
+		xdescribe('updateRecordingFolder');
+		xdescribe('updateCms');
+		xdescribe('deleteRecording');
+		xdescribe('getRecordingTranscript');
+		xdescribe('getRecordingMedia');
+		xdescribe('getRecordingAssets');
+	});
+
+	xdescribe('Asset');
+	xdescribe('Job');
+	xdescribe('Engine');
+	xdescribe('Task');
+	xdescribe('DropboxWatcher');
+	xdescribe('Faces');
+	xdescribe('Mentions');
+	xdescribe('Widgets');
+	xdescribe('Folder');
+	xdescribe('Collection');
+	xdescribe('Ingestion');
 });
