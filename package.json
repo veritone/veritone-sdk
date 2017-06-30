@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha --require babel-register",
     "test:watch": "mocha --require babel-register --watch",
-    "lint": "eslint ./**/*.js"
+    "lint": "eslint ./**/*.js",
+    "format": "prettier --single-quote --use-tabs --write ./**/*.js"
   },
   "homepage": "https://github.com/veritone/veritone-api",
   "dependencies": {
@@ -24,6 +25,7 @@
     "eslint": "^4.1.1",
     "mocha": "^3.4.2",
     "nock": "^9.0.13",
+    "prettier": "^1.5.2",
     "sinon": "^2.3.6"
   }
 }
