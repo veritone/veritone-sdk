@@ -1,196 +1,144 @@
-'use strict';
+import { expect } from 'chai';
+import nock from 'nock';
+nock.disableNetConnect();
 
-const mockery = require('mockery');
+import VeritoneApi from '../index.js';
 
-describe('veritone-api', function() {
+const apiBaseUri = 'http://fake.domain';
 
-	let apiClient, requestMock, requestMockCallback, requestMockOptions;
+describe('ApiClient constructor', function() {
+	it('can be configured with a string (token for auth header)', function() {
+		const api = new VeritoneApi('testToken');
 
+		expect(api.generateHeaders().Authorization).to.match(/testToken/);
+	});
+
+	it('throws if no token is configured', function() {
+		expect(() => new VeritoneApi()).to.throw();
+		expect(() => new VeritoneApi({})).to.throw();
+		expect(() => new VeritoneApi('testToken')).not.to.throw();
+		expect(() => new VeritoneApi({ token: 'testToken' })).not.to.throw();
+	});
+});
+
+describe('API methods', function() {
 	beforeEach(function() {
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		});
-
-		requestMockCallback = {
-			error: null,
-			response: null,
-			body: null
-		};
-
-		requestMock = jasmine.createSpy('request').and.callFake(function mockCallback(options, callback) {
-			expect(options.url).toEqual(requestMockOptions.url);
-			callback(requestMockCallback.error, requestMockCallback.response, requestMockCallback.body);
-		});
-
-		mockery.registerMock('request', requestMock);
-
-		const VeritoneApi = require('../index.js');
-
-		apiClient = new VeritoneApi({
+		this.api = new VeritoneApi({
 			token: 'api-token-abc',
-			baseUri: 'mock.api.veritone.com'
+			baseUri: apiBaseUri
 		});
 	});
 
 	afterEach(function() {
-		mockery.deregisterMock('request');
-		mockery.disable();
+		nock.cleanAll();
 	});
 
-	describe('job', function() {
-		const mockJob = {
-			jobId: '123',
-			status: 'accepted',
-			tasks: [
-				{ taskId: 'some-task-id' }
-			]
-		};
+	describe('Token', function() {
+		describe('createToken', function() {
+			it('validates label', function() {
+				const incorrectLabels = [undefined, () => {}, ''];
+				const correctLabels = ['ok'];
 
-		it('should create a job', function(done) {
-			requestMockOptions = {
-				url: 'mock.api.veritone.com/v1/job/'
-			};
-			requestMockCallback = {
-				error: null,
-				response: { statusCode: 200 },
-				body: {
-					jobId: '123',
-					status: 'accepted',
-					tasks: [
-						{ taskId: 'some-task-id' }
-					]
-				}
-			};
+				incorrectLabels.forEach(l => {
+					expect(() => this.api.createToken(l, 'a', () => {})).to.throw();
+				});
 
-			apiClient.createJob(mockJob, function(err, newJob) {
-				expect(err).not.toBeTruthy();
-				expect(newJob).toBeTruthy();
-				if (newJob) {
-					expect(newJob.jobId).toBeTruthy();
-					expect(newJob.status).toEqual('accepted');
-				}
+				correctLabels.forEach(l => {
+					expect(() => this.api.createToken(l, 'a', () => {})).not.to.throw();
+				});
+			});
 
-				done();
+			it('validates rights', function() {
+				const incorrectRights = [undefined, ''];
+				const correctRights = ['rights']; // todo: string or array?
+
+				incorrectRights.forEach(r => {
+					expect(() => this.api.createToken('label', r, () => {})).to.throw();
+				});
+
+				correctRights.forEach(r => {
+					expect(() =>
+						this.api.createToken('label', r, () => {})
+					).not.to.throw();
+				});
+			});
+
+			it('validates callback', function() {
+				const incorrectCallbacks = [undefined, ''];
+				const correctCallbacks = [() => {}];
+
+				incorrectCallbacks.forEach(c => {
+					expect(() => this.api.createToken('label', 'a', c)).to.throw();
+				});
+
+				correctCallbacks.forEach(c => {
+					expect(() => this.api.createToken('label', 'a', c)).not.to.throw();
+				});
+			});
+
+			it('posts to API with tokenLabel and rights in json body', function(
+				done
+			) {
+				const scope = nock(apiBaseUri)
+					.post(/token/, {
+						tokenLabel: 'label',
+						rights: 'rights'
+					})
+					.reply(200, 'ok');
+
+				this.api.createToken('label', 'rights', () => {
+					scope.done();
+					done();
+				});
 			});
 		});
 
-		it('should get a job', function(done) {
-			requestMockOptions = {
-				url: 'mock.api.veritone.com/v1/job/123'
-			};
-			requestMockCallback = {
-				error: null,
-				response: { statusCode: 200 },
-				body: {
-					status: 'running'
-				}
-			};
+		describe('revokeToken', function() {
+			it('validates token', function() {
+				const incorrectTokens = [undefined, () => {}, ''];
+				const correctTokens = ['ok'];
 
-			apiClient.getJob(mockJob.jobId, function(err, returnedJob) {
-				expect(err).not.toBeTruthy();
-				expect(returnedJob).toBeTruthy();
-				expect(returnedJob.status).toEqual('running');
-				done();
+				incorrectTokens.forEach(l => {
+					expect(() => this.api.createToken(l, 'a', () => {})).to.throw();
+				});
+
+				correctTokens.forEach(l => {
+					expect(() => this.api.createToken(l, 'a', () => {})).not.to.throw();
+				});
+			});
+
+			it('makes a delete request to the api with the token', function(done) {
+				const scope = nock(apiBaseUri).delete(/some-token/).reply(200, 'ok');
+
+				this.api.revokeToken('some-token', () => {
+					scope.done();
+					done();
+				});
 			});
 		});
 
-		it('should update a task in a job', function(done) {
-			const taskResult = {
-				taskStatus: 'complete',
-				taskOutput: { recordingId: '123' }
-			};
+		describe('revokeToken', function() {
+			it('validates token', function() {
+				const incorrectTokens = [undefined, () => {}, ''];
+				const correctTokens = ['ok'];
 
-			requestMockOptions = {
-				url: 'mock.api.veritone.com/v1/job/123/task/some-task-id'
-			};
+				incorrectTokens.forEach(l => {
+					expect(() => this.api.createToken(l, 'a', () => {})).to.throw();
+				});
 
-			requestMockCallback = {
-				error: null,
-				response: { statusCode: 204 },
-				body: {
-					recordingId: '123',
-					status: 'complete'
-				}
-			};
+				correctTokens.forEach(l => {
+					expect(() => this.api.createToken(l, 'a', () => {})).not.to.throw();
+				});
+			});
 
-			apiClient.updateTask(mockJob.jobId, mockJob.tasks[0].taskId, taskResult, function(err) {
-				expect(err).not.toBeTruthy();
-				done();
+			it('makes a delete request to the api with the token', function(done) {
+				const scope = nock(apiBaseUri).delete(/some-token/).reply(200, 'ok');
+
+				this.api.revokeToken('some-token', () => {
+					scope.done();
+					done();
+				});
 			});
 		});
-	});
-
-	describe('engine', function() {
-		const mockJob = {
-			jobId: '123',
-			status: 'accepted',
-			tasks: [
-				{ taskId: 'some-task-id' }
-			]
-		};
-
-		it('should create a job', function(done) {
-			requestMockOptions = {
-				url: 'mock.api.veritone.com/v1/job/'
-			};
-			requestMockCallback = {
-				error: null,
-				response: { statusCode: 200 },
-				body: {
-					jobId: '123',
-					status: 'accepted',
-					tasks: [
-						{ taskId: 'some-task-id' }
-					]
-				}
-			};
-
-			apiClient.createJob(mockJob, function(err, newJob) {
-				expect(err).not.toBeTruthy();
-				expect(newJob).toBeTruthy();
-				if (newJob) {
-					expect(newJob.jobId).toBeTruthy();
-					expect(newJob.status).toEqual('accepted');
-				}
-
-				done();
-			});
-		});
-
-		it('should get engines', function(done) {
-			requestMockOptions = {
-				url: 'mock.api.veritone.com/v1/engine?limit=99999'
-			};
-			requestMockCallback = {
-				error: null,
-				response: { statusCode: 200 },
-				body: {}
-			};
-
-			apiClient.getEngines(function(err, results) {
-				expect(err).not.toBeTruthy();
-				expect(results).toBeTruthy();
-				done();
-			});
-		});
-
-		it('should get engine categories', function(done) {
-			requestMockOptions = {
-				url: 'mock.api.veritone.com/v1/engine/category?limit=99999'
-			};
-			requestMockCallback = {
-				error: null,
-				response: { statusCode: 200 },
-				body: {}
-			};
-
-			apiClient.getEngineCategories(function(err, results) {
-				expect(err).not.toBeTruthy();
-				expect(results).toBeTruthy();
-				done();
-			});
-		});
-
 	});
 });
