@@ -41,8 +41,15 @@ build:
         code: |
           NODE_ENV=dev npm install
 
-    - hgen/gulp:
-        tasks: test
+    - script:
+        name: npm test
+        code: |
+          npm test
+
+    - script:
+        name: npm lint
+        code: |
+          npm run lint
 
   after-steps:
     - hipchat-notify:
