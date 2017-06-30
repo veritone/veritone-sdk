@@ -28,14 +28,6 @@ build:
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
 
-#    - script:
-#        name: Fix RPM database, update existing packages, and install dependencies
-#        code: |
-#          rpm --rebuilddb
-#          #yum clean all
-#          yum -y update
-#          yum -y install gcc gcc-c++ kernel-devel automake cmake make clang curl libcurl libcurl-devel git tar sudo
-
     - script:
         name: npm install
         code: |
@@ -50,12 +42,4 @@ build:
         name: npm lint
         code: |
           npm run lint
-
-  after-steps:
-    - hipchat-notify:
-        token: $HIPCHAT_TOKEN
-        room-id: 783420
-        from-name: wercker
-        on: failed
-
 
