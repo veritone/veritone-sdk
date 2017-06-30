@@ -5,9 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "gulp test",
-    "test:watch": "gulp watch",
-    "lint": "gulp lint"
+    "test": "mocha --require babel-register",
+    "test:watch": "mocha --require babel-register --watch",
+    "lint": "eslint ./**/*.js"
   },
   "homepage": "https://github.com/veritone/veritone-api",
   "dependencies": {
@@ -18,11 +18,12 @@
     "validate.js": "^0.10.0"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-debug": "^2.1.2",
-    "gulp-eslint": "^3.0.1",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-jasmine": "^2.4.1",
-    "mockery": "^2.0.0"
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "chai": "^4.0.2",
+    "eslint": "^4.1.1",
+    "mocha": "^3.4.2",
+    "nock": "^9.0.13",
+    "sinon": "^2.3.6"
   }
 }

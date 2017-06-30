@@ -1,33 +1,32 @@
-'use strict';
+import { expect } from 'chai';
 
 describe('RetryHelper', function() {
-
-	var RetryHelper = require('../RetryHelper');
+	const RetryHelper = require('../RetryHelper');
 
 	it('should have defaults', function(done) {
-		var retryHelper = new RetryHelper();
-		expect(retryHelper._maxRetry).toEqual(0);
-		expect(retryHelper._retryIntervalMs).toEqual(0);
+		const retryHelper = new RetryHelper();
+		expect(retryHelper._maxRetry).to.equal(0);
+		expect(retryHelper._retryIntervalMs).to.equal(0);
 		done();
 	});
 
 	it('should load settings', function(done) {
-		var retryHelper = new RetryHelper({ maxRetry: 3, retryIntervalMs: 10 });
-		expect(retryHelper._maxRetry).toEqual(3);
-		expect(retryHelper._retryIntervalMs).toEqual(10);
+		const retryHelper = new RetryHelper({ maxRetry: 3, retryIntervalMs: 10 });
+		expect(retryHelper._maxRetry).to.equal(3);
+		expect(retryHelper._retryIntervalMs).to.equal(10);
 		done();
 	});
 
 	it('should have function "retry"', function(done) {
-		var retryHelper = new RetryHelper({ maxRetry: 3 });
-		expect(retryHelper.retry).toBeTruthy();
-		expect(typeof retryHelper.retry).toEqual('function');
+		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		expect(retryHelper.retry).to.exist;
+		expect(typeof retryHelper.retry).to.equal('function');
 		done();
 	});
 
 	it('should run once', function(done) {
-		var retryHelper = new RetryHelper({ maxRetry: 3 }),
-			runCount = 0;
+		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		let runCount = 0;
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
@@ -39,17 +38,17 @@ describe('RetryHelper', function() {
 		}
 
 		retryHelper.retry(task, function(err, results) {
-			expect(err).not.toBeTruthy();
-			expect(results).toEqual('whee');
-			expect(runCount).toEqual(1);
+			expect(err).not.to.exist;
+			expect(results).to.equal('whee');
+			expect(runCount).to.equal(1);
 
 			done();
 		});
 	});
 
 	it('should run three times', function(done) {
-		var retryHelper = new RetryHelper({ maxRetry: 3 }),
-			runCount = 0;
+		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		let runCount = 0;
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
@@ -65,16 +64,16 @@ describe('RetryHelper', function() {
 		}
 
 		retryHelper.retry(task, function(err, results) {
-			expect(err).not.toBeTruthy();
-			expect(results).toEqual('whee');
-			expect(runCount).toEqual(3);
+			expect(err).not.to.exist;
+			expect(results).to.equal('whee');
+			expect(runCount).to.equal(3);
 
 			done();
 		});
 	});
 
 	it('should run and return error', function(done) {
-		var retryHelper = new RetryHelper({ maxRetry: 3 });
+		const retryHelper = new RetryHelper({ maxRetry: 3 });
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
@@ -85,8 +84,8 @@ describe('RetryHelper', function() {
 		}
 
 		retryHelper.retry(task, function(err, results) {
-			expect(err).toEqual('error');
-			expect(results).not.toBeTruthy();
+			expect(err).to.equal('error');
+			expect(results).not.to.exist;
 
 			done();
 		});
