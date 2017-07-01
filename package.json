@@ -8,7 +8,7 @@
     "test": "mocha",
     "test:watch": "mocha --watch",
     "coverage": "nyc mocha",
-    "lint": "eslint ./**/*.js",
+    "lint": "eslint --ext .js ./ ",
     "format": "prettier --single-quote --use-tabs --write ./**/*.js"
   },
   "homepage": "https://github.com/veritone/veritone-api",
