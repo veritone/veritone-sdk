@@ -8,6 +8,7 @@ const path = require('path');
 const RetryHelper = require('./apis/helper/RetryHelper');
 const apis = require('./apis');
 const validate = require('./apis/validations').default;
+import { endpoints, headers } from './apis/config';
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -36,29 +37,6 @@ function ApiClient(options) {
 }
 
 var enginePageLimit = 99999;
-
-// fixme -- move these to a config file
-var applicationEndpoint = '/application/',
-	collectionEndpoint = '/collection/',
-	collectionFoldersEndpoint = '/folder/',
-	metricsEndpoint = '/metrics/',
-	mentionEndpoint = '/mention/',
-	widgetEndpoint = '/widget/',
-	dropboxWatcherEndpoint = '/watcher/dropbox/',
-	recordingEndpoint = '/recording/',
-	facesetEndpoint = '/face-recognition/faceset/',
-	tasksByRecordingEndpoint = '/recording/tasks',
-	recordingFoldersEndpoint = '/recording/folder/',
-	taskTypeByJobEndpoint = '/job/task_type/',
-	jobEndpoint = '/job/',
-	engineEndpoint = '/engine',
-	searchEndpoint = '/search',
-	//reportsEndpoint = '/report/',
-	batchEndpoint = '/batch',
-	//transcriptEndpoint = '/transcript/',
-	ingestionEndpoint = '/ingestion/',
-	metadataHeader = 'X-Veritone-Metadata',
-	applicationIdHeader = 'X-Veritone-Application-Id';
 
 function generateHeaders(token) {
 	var headers = {};
@@ -103,7 +81,7 @@ ApiClient.prototype.generateHeaders = function genHeaders() {
 //
 //	request({
 //		method: 'POST',
-//		url: this._baseUri + applicationEndpoint,
+//		url: this._baseUri + endpoints.application,
 //		headers: generateHeaders(this._token),
 //		json: application
 //	}, function requestCallback(err, response, body) {
@@ -124,7 +102,7 @@ ApiClient.prototype.generateHeaders = function genHeaders() {
 //
 //	request({
 //		method: 'GET',
-//		url: this._baseUri + applicationEndpoint,
+//		url: this._baseUri + endpoints.application,
 //		headers: generateHeaders(this._token),
 //		json: true
 //	}, function requestCallback(err, response, body) {
@@ -146,7 +124,7 @@ ApiClient.prototype.generateHeaders = function genHeaders() {
 //
 //	request({
 //		method: 'PUT',
-//		url: this._baseUri + applicationEndpoint,
+//		url: this._baseUri + endpoints.application,
 //		headers: generateHeaders(this._token),
 //		json: application
 //	}, function requestCallback(err, response, body) {
@@ -175,7 +153,7 @@ ApiClient.prototype.createToken = function createToken(label, rights, callback) 
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + applicationEndpoint + 'token/',
+			url: self._baseUri + endpoints.application + 'token/',
 			headers: generateHeaders(self._token),
 			json: {
 				tokenLabel: label,
@@ -212,7 +190,7 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 	function task(callback) {
 		request({
 			method: 'DELETE',
-			url: self._baseUri + applicationEndpoint + 'token/' + token,
+			url: self._baseUri + endpoints.application + 'token/' + token,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -244,7 +222,7 @@ ApiClient.prototype.createRecording = function createRecording(recording, callba
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + recordingEndpoint,
+			url: self._baseUri + endpoints.recording,
 			headers: generateHeaders(self._token),
 			json: recording
 		}, function requestCallback(err, response, body) {
@@ -281,7 +259,7 @@ ApiClient.prototype.getRecordings = function getRecordings(options, callback) {
 		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + recordingEndpoint;
+	var uri = this._baseUri + endpoints.recording;
 	if (options.limit || options.offset) {
 		if (options.limit && options.offset) {
 			uri += '?limit=' + options.limit + '&offset=' + options.offset;
@@ -333,7 +311,7 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 	function task(callback) {
 		request({
 			method: 'GET',
-			uri: self._baseUri + recordingEndpoint + recordingId,
+			uri: self._baseUri + endpoints.recording + recordingId,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -369,7 +347,7 @@ ApiClient.prototype.updateRecording = function updateRecording(recording, callba
 	function task(callback) {
 		request({
 			method: 'PUT',
-			url: self._baseUri + recordingEndpoint + recording.recordingId,
+			url: self._baseUri + endpoints.recording + recording.recordingId,
 			headers: generateHeaders(self._token),
 			json: recording
 		}, function requestCallback(err, response, body) {
@@ -406,7 +384,7 @@ ApiClient.prototype.updateRecordingFolder = function updateRecordingFolder(folde
 	function task(callback) {
 		request({
 			method: 'PUT',
-			url: self._baseUri + recordingFoldersEndpoint + folder.folderId,
+			url: self._baseUri + endpoints.recordingFolders + folder.folderId,
 			headers: generateHeaders(self._token),
 			json: folder
 		}, function requestCallback(err, response, body) {
@@ -440,7 +418,7 @@ ApiClient.prototype.updateCms = function updateCms(recordingId, callback) {
 	function task(callback) {
 		request({
 			method: 'PUT',
-			url: self._baseUri + recordingEndpoint + recordingId + '/cms',
+			url: self._baseUri + endpoints.recording + recordingId + '/cms',
 			headers: generateHeaders(self._token)
 		}, function requestCallback(err, response, body) {
 			if (err) {
@@ -476,7 +454,7 @@ ApiClient.prototype.deleteRecording = function deleteRecording(recordingId, call
 	function task(callback) {
 		request({
 			method: 'DELETE',
-			url: self._baseUri + recordingEndpoint + recordingId,
+			url: self._baseUri + endpoints.recording + recordingId,
 			headers: generateHeaders(self._token)
 		}, function requestCallback(err, response, body) {
 			if (err) {
@@ -512,7 +490,7 @@ ApiClient.prototype.getRecordingTranscript = function getRecordingTranscript(rec
 	function task(callback) {
 		request({
 			method: 'GET',
-			uri: self._baseUri + recordingEndpoint + recordingId + '/transcript',
+			uri: self._baseUri + endpoints.recording + recordingId + '/transcript',
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -554,7 +532,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 
 		var req = request({
 			method: 'GET',
-			uri: self._baseUri + recordingEndpoint + recordingId + '/media',
+			uri: self._baseUri + endpoints.recording + recordingId + '/media',
 			headers: generateHeaders(self._token)
 		}).on('error', function onError(err) {
 			callback(err);
@@ -567,7 +545,7 @@ ApiClient.prototype.getRecordingMedia = function getRecordingMedia(recordingId, 
 			if (progressCallback) {
 				progressCallback(progress);
 			}
-			var metadata = response.headers[metadataHeader.toLowerCase()];
+			var metadata = response.headers[headers.metadataHeader.toLowerCase()];
 			callback(null, {
 				contentType: response.headers['content-type'],
 				metadata: (metadata ? JSON.parse(metadata) : undefined),
@@ -609,7 +587,7 @@ ApiClient.prototype.getRecordingAssets = function getRecordingAssets(recordingId
 	function task(callback) {
 		request({
 			method: 'GET',
-			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/',
+			uri: self._baseUri + endpoints.recording + recordingId + '/asset/',
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -654,7 +632,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 
 		var req = request({
 			method: 'GET',
-			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
+			uri: self._baseUri + endpoints.recording + recordingId + '/asset/' + assetId,
 			headers: generateHeaders(self._token)
 		}).on('error', function onError(err) {
 			callback(err);
@@ -667,7 +645,7 @@ ApiClient.prototype.getAsset = function getAsset(recordingId, assetId, callback,
 			if (progressCallback) {
 				progressCallback(progress);
 			}
-			var metadata = response.headers[metadataHeader.toLowerCase()];
+			var metadata = response.headers[headers.metadataHeader.toLowerCase()];
 			callback(null, {
 				contentType: response.headers['content-type'],
 				metadata: (metadata ? JSON.parse(metadata) : undefined),
@@ -713,7 +691,7 @@ ApiClient.prototype.getAssetMetadata = function getAssetMetadata(recordingId, as
 	function task(callback) {
 		request({
 			method: 'GET',
-			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId + '/metadata',
+			uri: self._baseUri + endpoints.recording + recordingId + '/asset/' + assetId + '/metadata',
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -758,7 +736,7 @@ ApiClient.prototype.updateAssetMetadata = function updateAssetMetadata(recording
 	function task(callback) {
 		request({
 			method: 'PUT',
-			uri: self._baseUri + recordingEndpoint + recordingId + '/asset/' + asset.assetId + '/metadata',
+			uri: self._baseUri + endpoints.recording + recordingId + '/asset/' + asset.assetId + '/metadata',
 			headers: generateHeaders(self._token),
 			json: asset.metadata || {}
 		}, function requestCallback(err, response, body) {
@@ -853,22 +831,22 @@ ApiClient.prototype.createAsset = function createAsset(recordingId, asset, callb
 	var headers = generateHeaders(this._token);
 	headers['X-Veritone-Asset-Type'] = asset.assetType;
 	headers['Content-Type'] = asset.contentType;
-//	This causes things to hang
-//	if (asset.metadata.size) {
-//		headers['Content-Length'] = asset.metadata.size;
-//	}
+	//	This causes things to hang
+	//	if (asset.metadata.size) {
+	//		headers['Content-Length'] = asset.metadata.size;
+	//	}
 
 	var opts = {
 		method: 'POST',
-		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/',
+		uri: this._baseUri + endpoints.recording + recordingId + '/asset/',
 		headers: headers,
 		json: true
 	};
 	if (asset.metadata) {
-		opts.headers[metadataHeader] = JSON.stringify(asset.metadata);
+		opts.headers[headers.metadataHeader] = JSON.stringify(asset.metadata);
 	}
 	if (asset.applicationId) {
-		opts.headers[applicationIdHeader] = asset.applicationId;
+		opts.headers[headers.applicationIdHeader] = asset.applicationId;
 	}
 	//console.log(opts);
 	var stream = asset.stream || fs.createReadStream(asset.fileName);
@@ -928,7 +906,7 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 
 	var opts = {
 		method: 'PUT',
-		uri: this._baseUri + recordingEndpoint + recordingId + '/asset/' + asset.assetId,
+		uri: this._baseUri + endpoints.recording + recordingId + '/asset/' + asset.assetId,
 		headers: generateHeaders(this._token),
 		json: true
 	};
@@ -940,10 +918,10 @@ ApiClient.prototype.updateAsset = function updateAsset(recordingId, asset, callb
 		opts.headers['X-Veritone-Asset-Type'] = asset.assetType;
 	}
 	if (asset.metadata) {
-		opts.headers[metadataHeader] = JSON.stringify(asset.metadata);
+		opts.headers[headers.metadataHeader] = JSON.stringify(asset.metadata);
 	}
 	if (asset.applicationId) {
-		opts.headers[applicationIdHeader] = asset.applicationId;
+		opts.headers[headers.applicationIdHeader] = asset.applicationId;
 	}
 
 	function task(callback) {
@@ -985,7 +963,7 @@ ApiClient.prototype.deleteAsset = function deleteAsset(recordingId, assetId, cal
 
 	request({
 		method: 'DELETE',
-		url: this._baseUri + recordingEndpoint + recordingId + '/asset/' + assetId,
+		url: this._baseUri + endpoints.recording + recordingId + '/asset/' + assetId,
 		headers: generateHeaders(this._token)
 	}, function requestCallback(err, response, body) {
 		if (err) {
@@ -1025,7 +1003,7 @@ ApiClient.prototype.createJob = function createJob(job, callback) {
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + jobEndpoint,
+			url: self._baseUri + endpoints.job,
 			headers: generateHeaders(self._token),
 			json: job
 		}, function requestCallback(err, response, body) {
@@ -1062,7 +1040,7 @@ ApiClient.prototype.getJobs = function getJobs(options, callback) {
 		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + jobEndpoint;
+	var uri = this._baseUri + endpoints.job;
 	if (options.limit || options.offset) {
 		if (options.limit && options.ofset) {
 			uri += '?limit=' + options.limit + '&offset=' + options.offset;
@@ -1120,7 +1098,7 @@ ApiClient.prototype.getJobsForRecording = function getJobsForRecording(options, 
 		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + jobEndpoint + 'recording/' + options.recordingId;
+	var uri = this._baseUri + endpoints.job + 'recording/' + options.recordingId;
 	if (options.limit || options.offset) {
 		if (options.limit && options.ofset) {
 			uri += '?limit=' + options.limit + '&offset=' + options.offset;
@@ -1169,7 +1147,7 @@ ApiClient.prototype.getJob = function getJob(jobId, callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + jobEndpoint + jobId,
+			url: self._baseUri + endpoints.job + jobId,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1201,7 +1179,7 @@ ApiClient.prototype.restartJob = function restartJob(jobId, callback) {
 
 	request({
 		method: 'PUT',
-		url: this._baseUri + jobEndpoint + jobId + '/restart',
+		url: this._baseUri + endpoints.job + jobId + '/restart',
 		headers: generateHeaders(this._token),
 		json: true
 	}, function requestCallback(err, response, body) {
@@ -1225,7 +1203,7 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 
 	request({
 		method: 'PUT',
-		url: this._baseUri + jobEndpoint + jobId + '/retry',
+		url: this._baseUri + endpoints.job + jobId + '/retry',
 		headers: generateHeaders(this._token),
 		json: true
 	}, function requestCallback(err, response, body) {
@@ -1249,7 +1227,7 @@ ApiClient.prototype.retryJob = function retryJob(jobId, callback) {
 //
 //	request({
 //		method: 'DELETE',
-//		url: this._baseUri + jobEndpoint + jobId,
+//		url: this._baseUri + endpoints.job+ jobId,
 //		headers: generateHeaders(this._token),
 //		json: true
 //	}, function requestCallback(err, response, body) {
@@ -1273,7 +1251,7 @@ ApiClient.prototype.getEngines = function getEngines(callback) {
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + '?limit=' + enginePageLimit,
+			url: self._baseUri + endpoints.engine + '?limit=' + enginePageLimit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1305,7 +1283,7 @@ ApiClient.prototype.getEngineCategories = function getEngineCategories(callback)
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + engineEndpoint + '/category?limit=' + enginePageLimit,
+			url: self._baseUri + endpoints.engine + '/category?limit=' + enginePageLimit,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1344,7 +1322,7 @@ ApiClient.prototype.getEngineUsingRightsFiltered = function getEngineUsingRights
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + taskTypeByJobEndpoint + engineId,
+			url: self._baseUri + endpoints.taskTypeByJob + engineId,
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1375,7 +1353,7 @@ ApiClient.prototype.getEngineCategoriesWithEngines = function getEngineCategorie
 	function task(callback) {
 		request({
 			method: 'GET',
-			url: self._baseUri + jobEndpoint + 'task_type',
+			url: self._baseUri + endpoints.job + 'task_type',
 			headers: generateHeaders(self._token),
 			json: true
 		}, function requestCallback(err, response, body) {
@@ -1421,7 +1399,7 @@ ApiClient.prototype.updateTask = function updateTask(jobId, taskId, result, call
 	function task(callback) {
 		request({
 			method: 'PUT',
-			url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId,
+			url: self._baseUri + endpoints.job + jobId + '/task/' + taskId,
 			headers: generateHeaders(self._token),
 			json: result
 		}, function requestCallback(err, response, body) {
@@ -1455,7 +1433,7 @@ ApiClient.prototype.search = function search(searchRequest, callback) {
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + searchEndpoint,
+			url: self._baseUri + endpoints.search,
 			headers: generateHeaders(self._token),
 			json: searchRequest
 		}, function requestCallback(err, response, body) {
@@ -1494,7 +1472,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + jobEndpoint + jobId + '/task/' + taskId + '/poll',
+			url: self._baseUri + endpoints.job + jobId + '/task/' + taskId + '/poll',
 			headers: generateHeaders(self._token),
 			json: data
 		}, function requestCallback(err, response, body) {
@@ -1528,7 +1506,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
 //	function task(callback) {
 //		request({
 //			method: 'POST',
-//			url: self._baseUri + reportsEndpoint + 'recordings',
+//			url: self._baseUri + endpoints.reports+ 'recordings',
 //			headers: generateHeaders(self._token),
 //			json: reportRequest
 //		}, function requestCallback(err, response, body) {
@@ -1569,7 +1547,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
 //	function task(callback) {
 //		request({
 //			method: 'GET',
-//			url: self._baseUri + reportsEndpoint + 'recordings/' + reportId,
+//			url: self._baseUri + endpoints.reports+ 'recordings/' + reportId,
 //			headers: headers,
 //			json: (contentType === 'application/json')
 //		}, function requestCallback(err, response, body) {
@@ -1605,7 +1583,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
 //
 //	request({
 //		method: 'GET',
-//		url: this._baseUri + reportsEndpoint + 'usage',
+//		url: this._baseUri + endpoints.reports+ 'usage',
 //		headers: generateHeaders(this._token),
 //		json: true
 //	}, function requestCallback(err, response, body) {
@@ -1629,7 +1607,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
 //
 //	request({
 //		method: 'GET',
-//		url: this._baseUri + reportsEndpoint + 'usage/' + reportId,
+//		url: this._baseUri + endpoints.reports+ 'usage/' + reportId,
 //		headers: generateHeaders(this._token),
 //		json: true
 //	}, function requestCallback(err, response, body) {
@@ -1653,7 +1631,7 @@ ApiClient.prototype.batch = function batch(requests, callback) {
 	function task(callback) {
 		request({
 			method: 'POST',
-			url: self._baseUri + batchEndpoint,
+			url: self._baseUri + endpoints.batch,
 			headers: generateHeaders(self._token),
 			json: requests
 		}, function requestCallback(err, response, body) {
@@ -1693,7 +1671,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 		throw new Error('Missing callback!');
 	}
 
-	var uri = this._baseUri + tasksByRecordingEndpoint;
+	var uri = this._baseUri + endpoints.tasksByRecording;
 	if (options.keys.length > 0) {
 		uri += '?';
 	}
@@ -1731,7 +1709,7 @@ ApiClient.prototype.getTaskSummaryByRecording = function getRecordings(options, 
 /** SaaS functions ************************************************************************************************/
 
 ApiClient.prototype.createDropboxWatcher = function createDropboxWatcher(watcher, callback) {
-	this._retryRequest('POST', dropboxWatcherEndpoint, watcher, callback);
+	this._retryRequest('POST', endpoints.dropboxWatcher, watcher, callback);
 };
 
 ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, callback) {
@@ -1745,35 +1723,35 @@ ApiClient.prototype.getDropboxWatchers = function getDropboxWatchers(options, ca
 	} else if (typeof options !== 'object') {
 		throw new Error('Missing options!');
 	}
-	this._retryRequest('GET', dropboxWatcherEndpoint, options, callback);
+	this._retryRequest('GET', endpoints.dropboxWatcher, options, callback);
 };
 
 ApiClient.prototype.getDropboxWatcher = function getDropboxWatcher(watcherId, callback) {
 	if (typeof watcherId !== 'string' || watcherId === '') {
 		throw new Error('Missing watcherId!');
 	}
-	this._retryRequest('GET', dropboxWatcherEndpoint + watcherId, null, callback);
+	this._retryRequest('GET', endpoints.dropboxWatcher + watcherId, null, callback);
 };
 
 ApiClient.prototype.updateDropboxWatcher = function updateDropboxWatcher(watcher, callback) {
 	if (typeof watcher !== 'object') {
 		throw new Error('Missing watcher!');
 	}
-	this._retryRequest('PUT', dropboxWatcherEndpoint + watcher.watcherId, watcher, callback);
+	this._retryRequest('PUT', endpoints.dropboxWatcher + watcher.watcherId, watcher, callback);
 };
 
 ApiClient.prototype.deleteDropboxWatcher = function deleteDropboxWatcher(watcherId, callback) {
 	if (typeof watcherId !== 'string' || watcherId === '') {
 		throw new Error('Missing watcherId!');
 	}
-	this._retryRequest('DELETE', dropboxWatcherEndpoint + watcherId, null, callback);
+	this._retryRequest('DELETE', endpoints.dropboxWatcher + watcherId, null, callback);
 };
 
 ApiClient.prototype.queryFaceset = function queryFaceset(q, callback) {
 	if (typeof q !== 'string' || q === '') {
 		throw new Error('Missing query!');
 	}
-	this._retryRequest('GET', facesetEndpoint + 'autocomplete/' + encodeURIComponent(q), null, callback);
+	this._retryRequest('GET', endpoints.faceset + 'autocomplete/' + encodeURIComponent(q), null, callback);
 };
 
 ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
@@ -1783,7 +1761,7 @@ ApiClient.prototype.createFaceset = function createFaceset(faceset, callback) {
 	if (typeof faceset.faceSetId !== 'string') {
 		throw new Error('Missing faceSetId!');
 	}
-	this._retryRequest('POST', facesetEndpoint + encodeURIComponent(faceset.faceSetId), faceset, callback);
+	this._retryRequest('POST', endpoints.faceset + encodeURIComponent(faceset.faceSetId), faceset, callback);
 };
 
 ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
@@ -1793,7 +1771,7 @@ ApiClient.prototype.updateFaceset = function updateFaceset(faceset, callback) {
 	if (typeof faceset.faceSetId !== 'string') {
 		throw new Error('Missing faceSetId!');
 	}
-	this._retryRequest('PUT', facesetEndpoint + encodeURIComponent(faceset.faceSetId), faceset, callback);
+	this._retryRequest('PUT', endpoints.faceset + encodeURIComponent(faceset.faceSetId), faceset, callback);
 };
 
 ApiClient.prototype._retryRequest = function _retryRequest(method, path, params, callback) {
@@ -1845,43 +1823,43 @@ ApiClient.prototype._retryRequest = function _retryRequest(method, path, params,
 };
 
 ApiClient.prototype.searchMentions = function searchMentions(options, callback) {
-	this._retryRequest('POST', mentionEndpoint + 'search', options, callback);
+	this._retryRequest('POST', endpoints.mention + 'search', options, callback);
 };
 
 ApiClient.prototype.getMentions = function getMention(mentionId, filter, callback) {
-	this._retryRequest('GET', mentionEndpoint + mentionId, filter, callback);
+	this._retryRequest('GET', endpoints.mention + mentionId, filter, callback);
 };
 
 ApiClient.prototype.updateMentionSelectively = function updateMentionSelectively(mentionId, mention, callback) {
-	this._retryRequest('PUT', mentionEndpoint + mentionId, mention, callback);
+	this._retryRequest('PUT', endpoints.mention + mentionId, mention, callback);
 };
 
 ApiClient.prototype.createMentionComment = function createMentionComment(mentionId, comment, callback) {
-	this._retryRequest('POST', mentionEndpoint + mentionId + '/comment', comment, callback);
+	this._retryRequest('POST', endpoints.mention + mentionId + '/comment', comment, callback);
 };
 
 ApiClient.prototype.updateMentionComment = function updateMentionComment(mentionId, commentId, comment, callback) {
-	this._retryRequest('PUT', mentionEndpoint + mentionId + '/comment/' + commentId, comment, callback);
+	this._retryRequest('PUT', endpoints.mention + mentionId + '/comment/' + commentId, comment, callback);
 };
 
 ApiClient.prototype.deleteMentionComment = function deleteMentionComment(mentionId, commentId, comment, callback) {
-	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + commentId, comment, callback);
+	this._retryRequest('DELETE', endpoints.mention + mentionId + '/comment/' + commentId, comment, callback);
 };
 
 ApiClient.prototype.createMentionRating = function createMentionRating(mentionId, rating, callback) {
-	this._retryRequest('POST', mentionEndpoint + mentionId + '/rating', rating, callback);
+	this._retryRequest('POST', endpoints.mention + mentionId + '/rating', rating, callback);
 };
 
 ApiClient.prototype.updateMentionRating = function updateMentionRating(mentionId, ratingId, rating, callback) {
-	this._retryRequest('PUT', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
+	this._retryRequest('PUT', endpoints.mention + mentionId + '/comment/' + ratingId, rating, callback);
 };
 
 ApiClient.prototype.deleteMentionRating = function deleteMentionRating(mentionId, ratingId, rating, callback) {
-	this._retryRequest('DELETE', mentionEndpoint + mentionId + '/comment/' + ratingId, rating, callback);
+	this._retryRequest('DELETE', endpoints.mention + mentionId + '/comment/' + ratingId, rating, callback);
 };
 
 ApiClient.prototype.createWidget = function createWidget(collectionId, widget, callback) {
-	this._retryRequest('POST', path.join(collectionEndpoint, collectionId, 'widget'), widget, callback);
+	this._retryRequest('POST', path.join(endpoints.collection, collectionId, 'widget'), widget, callback);
 };
 
 ApiClient.prototype.getWidgets = function getWidgets(collectionId, options, callback) {
@@ -1894,7 +1872,7 @@ ApiClient.prototype.getWidgets = function getWidgets(collectionId, options, call
 		options = {};
 	}
 
-	this._retryRequest('GET', path.join(collectionEndpoint, collectionId, 'widget'), options, callback);
+	this._retryRequest('GET', path.join(endpoints.collection, collectionId, 'widget'), options, callback);
 };
 
 ApiClient.prototype.getWidget = function getWidget(widgetId, options, callback) {
@@ -1907,11 +1885,11 @@ ApiClient.prototype.getWidget = function getWidget(widgetId, options, callback) 
 		options = {};
 	}
 
-	this._retryRequest('GET', path.join(widgetEndpoint, widgetId), options, callback);
+	this._retryRequest('GET', path.join(endpoints.widget, widgetId), options, callback);
 };
 
 ApiClient.prototype.updateWidget = function updateWidget(widget, callback) {
-	this._retryRequest('PUT', widgetEndpoint, widget, callback);
+	this._retryRequest('PUT', endpoints.widget, widget, callback);
 };
 
 ApiClient.prototype.getRootTreeFolder = function getRootTreeFolder(organizationId, userId, rootFolderType, options, callback) {
@@ -1928,7 +1906,7 @@ ApiClient.prototype.getRootTreeFolder = function getRootTreeFolder(organizationI
 		callback = options;
 		options = {};
 	}
-	var rootFolderPath = collectionFoldersEndpoint + organizationId + '/' + userId + '/type/' + rootFolderType;
+	var rootFolderPath = endpoints.collectionFolders + organizationId + '/' + userId + '/type/' + rootFolderType;
 	this._retryRequest('GET', rootFolderPath, options, callback);
 };
 ApiClient.prototype.getTreeObject = function getTreeObject(treeObjectId, options, callback) {
@@ -1939,20 +1917,20 @@ ApiClient.prototype.getTreeObject = function getTreeObject(treeObjectId, options
 		callback = options;
 		options = {};
 	}
-	var treeObjectPath = collectionFoldersEndpoint + treeObjectId;
+	var treeObjectPath = endpoints.collectionFolders + treeObjectId;
 	this._retryRequest('GET', treeObjectPath, options, callback);
 };
 ApiClient.prototype.createTreeFolder = function createTreeFolder(treeFolder, callback) {
 	if (typeof treeFolder !== 'object') {
 		throw new Error('Missing tree folder!');
 	}
-	this._retryRequest('POST', collectionFoldersEndpoint, treeFolder, callback);
+	this._retryRequest('POST', endpoints.collectionFolders, treeFolder, callback);
 };
 ApiClient.prototype.createTreeObject = function createTreeObject(treeObject, callback) {
 	if (typeof treeObject !== 'object') {
 		throw new Error('Missing tree object!');
 	}
-	this._retryRequest('POST', collectionFoldersEndpoint + 'object/', treeObject, callback);
+	this._retryRequest('POST', endpoints.collectionFolders + 'object/', treeObject, callback);
 };
 ApiClient.prototype.moveTreeFolder = function moveTreeFolder(treeObjectId, treeFolderMoveObj, callback) {
 	if (typeof treeObjectId !== 'string') {
@@ -1961,7 +1939,7 @@ ApiClient.prototype.moveTreeFolder = function moveTreeFolder(treeObjectId, treeF
 	if (typeof treeFolderMoveObj !== 'object') {
 		throw new Error('Missing tree folder move information!');
 	}
-	this._retryRequest('PUT', collectionFoldersEndpoint + 'move/' + treeObjectId, treeFolderMoveObj, callback);
+	this._retryRequest('PUT', endpoints.collectionFolders + 'move/' + treeObjectId, treeFolderMoveObj, callback);
 };
 ApiClient.prototype.updateTreeFolder = function updateTreeFolder(treeObjectId, treeFolderObj, callback) {
 	if (typeof treeObjectId !== 'string') {
@@ -1970,7 +1948,7 @@ ApiClient.prototype.updateTreeFolder = function updateTreeFolder(treeObjectId, t
 	if (typeof treeFolderObj !== 'object') {
 		throw new Error('Missing tree folder information!');
 	}
-	this._retryRequest('PUT', collectionFoldersEndpoint + treeObjectId, treeFolderObj, callback);
+	this._retryRequest('PUT', endpoints.collectionFolders + treeObjectId, treeFolderObj, callback);
 };
 ApiClient.prototype.deleteTreeFolder = function deleteTreeFolder(treeObjectId, options, callback) {
 	if (typeof treeObjectId !== 'string') {
@@ -1978,28 +1956,28 @@ ApiClient.prototype.deleteTreeFolder = function deleteTreeFolder(treeObjectId, o
 	}
 	console.log('\n\n\n\n\n\n\nthings:');
 	console.log(JSON.stringify(options));
-	this._retryRequest('DELETE', collectionFoldersEndpoint + treeObjectId, options, callback);
+	this._retryRequest('DELETE', endpoints.collectionFolders + treeObjectId, options, callback);
 };
 ApiClient.prototype.deleteTreeObject = function deleteTreeObject(treeObjectId, options, callback) {
 	if (typeof treeObjectId !== 'string') {
 		throw new Error('Missing tree folder!');
 	}
-	this._retryRequest('DELETE', collectionFoldersEndpoint + 'object/' + treeObjectId, options, callback);
+	this._retryRequest('DELETE', endpoints.collectionFolders + 'object/' + treeObjectId, options, callback);
 };
 ApiClient.prototype.searchTreeFolder = function searchTreeFolder(queryTerms, callback) {
 	if (typeof queryTerms !== 'object') {
 		throw new Error('Missing query terms!');
 	}
-	this._retryRequest('POST', collectionFoldersEndpoint + 'search/', queryTerms, callback);
+	this._retryRequest('POST', endpoints.collectionFolders + 'search/', queryTerms, callback);
 };
 ApiClient.prototype.folderSummary = function folderSummary(queryTerms, callback) {
 	if (typeof queryTerms !== 'object') {
 		throw new Error('Missing folder summary terms!');
 	}
-	this._retryRequest('POST', collectionFoldersEndpoint + 'summary/', queryTerms, callback);
+	this._retryRequest('POST', endpoints.collectionFolders + 'summary/', queryTerms, callback);
 };
 ApiClient.prototype.createCollection = function createCollection(collection, callback) {
-	this._retryRequest('POST', collectionEndpoint, collection, callback);
+	this._retryRequest('POST', endpoints.collection, collection, callback);
 };
 
 ApiClient.prototype.getCollections = function getCollections(options, callback) {
@@ -2008,7 +1986,7 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 		options = {};
 	}
 
-	this._retryRequest('GET', collectionEndpoint, options, callback);
+	this._retryRequest('GET', endpoints.collection, options, callback);
 };
 
 ApiClient.prototype.getCollections = function getCollections(options, callback) {
@@ -2016,7 +1994,7 @@ ApiClient.prototype.getCollections = function getCollections(options, callback) 
 		callback = options;
 		options = {};
 	}
-	this._retryRequest('GET', collectionEndpoint, options, callback);
+	this._retryRequest('GET', endpoints.collection, options, callback);
 };
 ApiClient.prototype.getCollection = function getCollection(collectionId, options, callback) {
 	if (typeof collectionId !== 'string' || collectionId === '') {
@@ -2027,7 +2005,7 @@ ApiClient.prototype.getCollection = function getCollection(collectionId, options
 		options = {};
 	}
 
-	this._retryRequest('GET', collectionEndpoint + collectionId, options, callback);
+	this._retryRequest('GET', endpoints.collection + collectionId, options, callback);
 };
 
 ApiClient.prototype.updateCollection = function updateCollection(collectionId, patch, callback) {
@@ -2035,7 +2013,7 @@ ApiClient.prototype.updateCollection = function updateCollection(collectionId, p
 		throw new Error('Missing collectionId');
 	}
 
-	this._retryRequest('PUT', collectionEndpoint + collectionId, patch, callback);
+	this._retryRequest('PUT', endpoints.collection + collectionId, patch, callback);
 };
 
 ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, options, callback) {
@@ -2053,7 +2031,7 @@ ApiClient.prototype.deleteCollection = function deleteCollection(collectionId, o
 	}
 	options.collectionId = ids;
 
-	this._retryRequest('DELETE', collectionEndpoint, options, callback);
+	this._retryRequest('DELETE', endpoints.collection, options, callback);
 };
 
 ApiClient.prototype.shareCollection = function shareCollection(collectionId, share, callback) {
@@ -2061,7 +2039,7 @@ ApiClient.prototype.shareCollection = function shareCollection(collectionId, sha
 		throw new Error('Missing collecitonId');
 	}
 
-	var url = collectionEndpoint + collectionId + '/share';
+	var url = endpoints.collection + collectionId + '/share';
 	this._retryRequest('POST', url, share, callback);
 };
 
@@ -2074,7 +2052,7 @@ ApiClient.prototype.shareMentionFromCollection = function shareMentionFromCollec
 		throw new Error('Missing mentionId');
 	}
 
-	var url = collectionEndpoint + collectionId + '/mention/' + mentionId + '/share';
+	var url = endpoints.collection + collectionId + '/mention/' + mentionId + '/share';
 	this._retryRequest('POST', url, share, callback);
 };
 
@@ -2088,7 +2066,7 @@ ApiClient.prototype.getShare = function getShare(shareId, options, callback) {
 		throw new Error('Missing shareId');
 	}
 
-	this._retryRequest('GET', path.join(collectionEndpoint, 'share/', shareId), options, callback);
+	this._retryRequest('GET', path.join(endpoints.collection, 'share/', shareId), options, callback);
 };
 
 ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(collectionId, mentionId, options, callback) {
@@ -2100,7 +2078,7 @@ ApiClient.prototype.deleteCollectionMention = function deleteCollectionMention(c
 		throw new Error('Missing mentionId');
 	}
 
-	this._retryRequest('DELETE', collectionEndpoint + collectionId + '/mention/' + mentionId, options, callback);
+	this._retryRequest('DELETE', endpoints.collection + collectionId + '/mention/' + mentionId, options, callback);
 };
 
 ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllCollections(options, callback) {
@@ -2109,11 +2087,11 @@ ApiClient.prototype.getMetricsForAllCollections = function getMetricsForAllColle
 		options = {};
 	}
 
-	this._retryRequest('GET', metricsEndpoint, options, callback);
+	this._retryRequest('GET', endpoints.metrics, options, callback);
 };
 
 ApiClient.prototype.createIngestion = function createIngestion(ingestion, callback) {
-	this._retryRequest('POST', ingestionEndpoint, ingestion, callback);
+	this._retryRequest('POST', endpoints.ingestion, ingestion, callback);
 };
 
 ApiClient.prototype.getIngestions = function getIngestions(options, callback) {
@@ -2121,7 +2099,7 @@ ApiClient.prototype.getIngestions = function getIngestions(options, callback) {
 		callback = options;
 		options = {};
 	}
-	this._retryRequest('GET', ingestionEndpoint, options, callback);
+	this._retryRequest('GET', endpoints.ingestion, options, callback);
 };
 
 ApiClient.prototype.getIngestion = function getIngestion(ingestionId, options, callback) {
@@ -2133,7 +2111,7 @@ ApiClient.prototype.getIngestion = function getIngestion(ingestionId, options, c
 		options = {};
 	}
 
-	this._retryRequest('GET', ingestionEndpoint + ingestionId, options, callback);
+	this._retryRequest('GET', endpoints.ingestion + ingestionId, options, callback);
 };
 
 ApiClient.prototype.updateIngestion = function updateIngestion(ingestionId, patch, callback) {
@@ -2141,7 +2119,7 @@ ApiClient.prototype.updateIngestion = function updateIngestion(ingestionId, patc
 		throw new Error('Missing ingestionId');
 	}
 
-	this._retryRequest('PUT', ingestionEndpoint + ingestionId, patch, callback);
+	this._retryRequest('PUT', endpoints.ingestion + ingestionId, patch, callback);
 };
 
 ApiClient.prototype.deleteIngestion = function deleteIngestion(ingestionId, options, callback) {
@@ -2149,21 +2127,21 @@ ApiClient.prototype.deleteIngestion = function deleteIngestion(ingestionId, opti
 		throw new Error('Missing ingestionId');
 	}
 
-	this._retryRequest('DELETE', ingestionEndpoint + ingestionId, options, callback);
+	this._retryRequest('DELETE', endpoints.ingestion + ingestionId, options, callback);
 };
 
 ApiClient.prototype.ingestionConnect = function ingestionConnect(connectOptions, callback) {
 	if (typeof connectOptions === 'undefined') {
 		throw new Error('Missing Connect Options');
 	}
-	this._retryRequest('POST', ingestionEndpoint + 'connect', connectOptions, callback);
+	this._retryRequest('POST', endpoints.ingestion + 'connect', connectOptions, callback);
 };
 
 ApiClient.prototype.verifyEmailIngestion = function verifyEmailIngestion(emailOptions, callback) {
 	if (typeof emailOptions === 'undefined' || (typeof emailOptions === 'object' && !emailOptions.emailAddress)) {
 		throw new Error('Missing email address');
 	}
-	this._retryRequest('POST', ingestionEndpoint + 'verifyEmailIngestion', emailOptions, callback);
+	this._retryRequest('POST', endpoints.ingestion + 'verifyEmailIngestion', emailOptions, callback);
 };
 
 module.exports = ApiClient;
