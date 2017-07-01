@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 describe('RetryHelper', function() {
-	const RetryHelper = require('../RetryHelper');
+	const RetryHelper = require('./RetryHelper');
 
 	it('should have defaults', function(done) {
 		const retryHelper = new RetryHelper();

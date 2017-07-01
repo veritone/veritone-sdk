@@ -5,7 +5,7 @@ const validatejs = require('validate.js');
 const fs = require('fs');
 const path = require('path');
 
-const RetryHelper = require('./RetryHelper');
+const RetryHelper = require('./apis/helper/RetryHelper');
 const apis = require('./apis');
 const validate = require('./apis/validations').default;
 
