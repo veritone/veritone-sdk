@@ -198,9 +198,61 @@ describe('API methods', function() {
 			});
 		});
 
-		// xdescribe('getRecording');
-		// xdescribe('updateRecording');
-		// xdescribe('updateRecordingFolder');
+		describe('getRecording', function() {
+			it('validates recordingId', function() {
+				const incorrectIds = [undefined, noop, ''];
+				const correctIds = [123, '123'];
+
+				incorrectIds.forEach(i => {
+					expect(() => this.api.getRecording(i, noop)).to.throw();
+				});
+
+				correctIds.forEach(i => {
+					expect(() => this.api.getRecording(i, noop)).not.to.throw();
+				});
+			});
+
+			it('makes a get request to the api with the id', function(done) {
+				const scope = nock(apiBaseUri)
+					.get(/some-recording-id/)
+					.reply(200, 'ok');
+
+				this.api.getRecording('some-recording-id', () => {
+					scope.done();
+					done();
+				});
+			});
+		});
+
+		describe('updateRecording', function() {
+			it('validates recording', function() {
+				expect(() => this.api.updateRecording(undefined, noop)).to.throw();
+			});
+
+			it('makes a put request to the api with the id and body', function(done) {
+				const recording = {
+					startDateTime: 1,
+					stopDateTime: 2,
+					recordingId: 'some-recording-id'
+				};
+
+				const scope = nock(apiBaseUri)
+					.put(/some-recording-id/, recording)
+					.reply(200, 'ok');
+
+				this.api.updateRecording(recording, () => {
+					scope.done();
+					done();
+				});
+			});
+		});
+
+		describe('updateRecordingFolder', function() {
+			it('validates folder', function() {
+				expect(() => this.api.updateRecordingFolder(undefined, noop)).to.throw();
+				expect(() => this.api.updateRecordingFolder({}, noop)).to.throw();
+			});
+		});
 		// xdescribe('updateCms');
 		// xdescribe('deleteRecording');
 		// xdescribe('getRecordingTranscript');

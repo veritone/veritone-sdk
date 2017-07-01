@@ -1,11 +1,13 @@
 'use strict';
 
-var request = require('request'),
-	validatejs = require('validate.js'),
-	fs = require('fs'),
-	path = require('path'),
-	RetryHelper = require('./RetryHelper'),
-	apis = require('./apis');
+const request = require('request');
+const validatejs = require('validate.js');
+const fs = require('fs');
+const path = require('path');
+
+const RetryHelper = require('./RetryHelper');
+const apis = require('./apis');
+const validate = require('./apis/validations').default;
 
 function ApiClient(options) {
 	if (typeof options === 'string') {
@@ -36,6 +38,7 @@ function ApiClient(options) {
 
 var enginePageLimit = 99999;
 
+// fixme -- move these to a config file
 var applicationEndpoint = '/application/',
 	collectionEndpoint = '/collection/',
 	collectionFoldersEndpoint = '/folder/',
@@ -232,33 +235,8 @@ ApiClient.prototype.revokeToken = function revokeToken(token, callback) {
 	});
 };
 
-function validateRecording(recording) {
-	if (typeof recording !== 'object') {
-		throw new Error('Missing recording!');
-	}
-	var validation = {
-		startDateTime: {
-			presence: true,
-			numericality: {
-				onlyInteger: true
-			}
-		},
-		stopDateTime: {
-			presence: true,
-			numericality: {
-				onlyInteger: true,
-				greaterThan: recording.startDateTime
-			}
-		}
-	};
-	var validationErrors = validatejs(recording, validation);
-	if (validationErrors) {
-		throw new Error('Invalid recording object: ' + JSON.stringify(validationErrors));
-	}
-}
-
 ApiClient.prototype.createRecording = function createRecording(recording, callback) {
-	validateRecording(recording);
+	validate.recording(recording);
 	if (typeof callback !== 'function') {
 		throw new Error('Missing callback!');
 	}
@@ -379,8 +357,9 @@ ApiClient.prototype.getRecording = function getRecording(recordingId, callback) 
 };
 
 ApiClient.prototype.updateRecording = function updateRecording(recording, callback) {
-	validateRecording(recording);
+	validate.recording(recording);
 	if (typeof recording.recordingId === 'number') {
+		// fixme -- don't mutate
 		recording.recordingId = recording.recordingId + '';
 	}
 	if (typeof callback !== 'function') {
