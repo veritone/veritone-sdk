@@ -20,6 +20,52 @@ describe('ApiClient constructor', function() {
 		expect(() => new VeritoneApi('testToken')).not.to.throw();
 		expect(() => new VeritoneApi({ token: 'testToken' })).not.to.throw();
 	});
+
+	it('adds an api version', function(done) {
+		const api = new VeritoneApi({
+			token: 'api-token-abc',
+			baseUri: apiBaseUri,
+			version: 5
+		});
+
+		const scope = nock(apiBaseUri).get(/v5/).reply(200, 'ok');
+
+		api.getRecordings(() => {
+			scope.done();
+			done();
+		});
+	});
+
+	it('defaults to version 1', function(done) {
+		const api = new VeritoneApi({
+			token: 'api-token-abc',
+			baseUri: apiBaseUri
+		});
+
+		const scope = nock(apiBaseUri).get(/v1/).reply(200, 'ok');
+
+		api.getRecordings(() => {
+			scope.done();
+			done();
+		});
+	});
+
+	it('adds no version when version="disable" (fixme--this is gross)', function(done) {
+		const api = new VeritoneApi({
+			token: 'api-token-abc',
+			baseUri: apiBaseUri,
+			version: 'disable'
+		});
+
+		const scope = nock(apiBaseUri)
+			.get(uri => !uri.match('disable') && !uri.match('v1'))
+			.reply(200, 'ok');
+
+		api.getRecordings(() => {
+			scope.done();
+			done();
+		});
+	});
 });
 
 describe('API methods', function() {
