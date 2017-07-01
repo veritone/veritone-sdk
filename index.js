@@ -22,7 +22,6 @@ function ApiClient(options) {
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
 	this._version = options.version || 1;
 	this._maxRetry = options.maxRetry;
-	this._param = options.param;
 	this._retryIntervalMs = options.retryIntervalMs;
 	if (typeof this._version === 'number') {
 		this._baseUri = this._baseUri + '/v' + this._version;
