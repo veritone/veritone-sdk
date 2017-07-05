@@ -1,10 +1,4 @@
 import { expect } from 'chai';
-// fixme: move polyfills to entry
-const values = require('object.values');
-if (!Object.values) {
-	values.shim();
-}
-
 
 import { handler, REQUIRED } from './handler';
 

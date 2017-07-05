@@ -1,3 +1,4 @@
 --require babel-register
+--require polyfill.js
 --recursive
 ./**/*.spec.js
