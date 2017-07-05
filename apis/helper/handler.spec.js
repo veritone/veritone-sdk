@@ -198,10 +198,55 @@ describe('handler', function() {
 	});
 
 	describe('headers', function() {
-		it('should attach specified headers to the request');
-		it('should ignore any headers not specified');
-		it('should allow default headers not specified');
-		it('should validate the presence of required headers');
+		it('should attach specified headers to the request', function() {
+			const makeRequest = handler('get', '/path', {
+				headers: ['Some-Header']
+			});
+
+			let request = makeRequest({ 'Some-Header': 'ok' });
+			expect(request.headers).to.eql({ 'Some-Header': 'ok' });
+		});
+
+		it('should ignore any headers not specified', function() {
+			const makeRequest = handler('post', '/path', {
+				headers: ['status']
+			});
+
+			let request = makeRequest({ status: 'ok', somethingElse: 'not-ok' });
+			expect(request.headers).to.eql({ status: 'ok' });
+		});
+
+		it('should allow default headers', function() {
+			const makeRequest = handler('post', '/path', {
+				headers: [{ headerWithDefault: 5 }, 'headerWithoutDefault']
+			});
+
+			let request = makeRequest({ headerWithoutDefault: 6 });
+			expect(request.headers).to.eql({
+				headerWithDefault: 5,
+				headerWithoutDefault: 6
+			});
+		});
+
+		it('should validate the presence of required headers', function() {
+			const makeRequest = handler('post', '/path', {
+				headers: [{ requiredHeader: REQUIRED }, { otherRequiredHeader: REQUIRED }]
+			});
+
+			const invalidHeaders = [
+				{},
+				{ requiredHeader: 5 },
+				{ otherRequiredHeader: 5 }
+			];
+
+			invalidHeaders.forEach(p => {
+				expect(() => makeRequest(p)).to.throw();
+			});
+
+			expect(() =>
+				makeRequest({ requiredHeader: 5, otherRequiredHeader: 5 })
+			).not.to.throw();
+		});
 		xit('should allow camelCase and Original-Case config keys');
 	});
 });

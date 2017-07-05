@@ -9,8 +9,9 @@ export function handler(method, path, options = {}) {
 	validateOptions(options);
 
 	const route = new Route(path);
-	const allQueryParamNames = (options.query || [])
-		.map(q => (typeof q === 'object' ? Object.keys(q)[0] : q));
+
+	const allQueryNames = (options.query || []).map(getConfigParamName);
+	const allHeaderNames = (options.headers || []).map(getConfigParamName);
 
 	// const pathHasParams = !!(path.split(':').length - 1);
 	// const hasRequestBody = ['PUT', 'POST', 'PATCH'].includes(method.toUpperCase());
@@ -23,6 +24,7 @@ export function handler(method, path, options = {}) {
 		// 	params = undefined;
 		// }
 		validateQueryParams(params, options.query);
+		validateHeaders(params, options.headers);
 
 		const pathWithParams = route.reverse(params);
 
@@ -53,9 +55,11 @@ export function handler(method, path, options = {}) {
 				: undefined,
 
 			query: options.query
-				? filterObject(paramsWithDefaults, (_, k) =>
-						allQueryParamNames.includes(k)
-					)
+				? filterObject(paramsWithDefaults, (_, k) => allQueryNames.includes(k))
+				: undefined,
+
+			headers: options.headers
+				? filterObject(paramsWithDefaults, (_, k) => allHeaderNames.includes(k))
 				: undefined
 		};
 	};
@@ -78,6 +82,12 @@ function mergeDefaultParams(base, ...params) {
 
 	const mergedDefaults = Object.assign({}, ...allDefaults);
 	return Object.assign({}, mergedDefaults, base);
+}
+
+function getConfigParamName(q) {
+	// given a string name, return the string
+	// given a config object, return the param name it configures
+	return typeof q === 'object' ? Object.keys(q)[0] : q;
 }
 
 function validateMethod(method) {
@@ -118,7 +128,21 @@ function validateQueryParams(params, schema = []) {
 	requiredParams.forEach(p => {
 		if (params[p] === undefined) {
 			throw new Error(
-				`param ${p} is required. expected ${params} to match ${schema}`
+				`param ${p} is required. expected ${JSON.stringify(params)} to match ${JSON.stringify(schema)}`
+			);
+		}
+	});
+}
+
+function validateHeaders(params, schema = []) {
+	const requiredHeaders = schema
+		.filter(p => Object.values(p)[0] === REQUIRED)
+		.map(p => Object.keys(p)[0]);
+
+	requiredHeaders.forEach(p => {
+		if (params[p] === undefined) {
+			throw new Error(
+				`header ${p} is required. expected ${JSON.stringify(params)} to match ${JSON.stringify(schema)}`
 			);
 		}
 	});
@@ -132,7 +156,7 @@ function validateConfigObject(configObject) {
 	if (Object.keys(configObject).length > 1) {
 		throw new Error(
 			'malformed config object found.' +
-				`got: ${configObject}. ` +
+				`got: ${JSON.stringify(configObject)}. ` +
 				'expected an object with one key, the value of which is either a default, or the REQUIRED symbol' +
 				"like { query: [{ paramWithDefault: 5 }, 'paramWithoutDefault'] }, " +
 				'or { query: [{ requiredParam: handler.REQUIRED }, ...] }'
