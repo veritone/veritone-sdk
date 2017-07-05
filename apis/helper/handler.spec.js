@@ -175,6 +175,17 @@ describe('handler', function() {
 			});
 		});
 
+		it('should override default params when specified', function() {
+			const makeRequest = handler('post', '/path', {
+				query: [{ paramWithDefault: 5 }]
+			});
+
+			let request = makeRequest({ paramWithDefault: 6 });
+			expect(request.query).to.eql({
+				paramWithDefault: 6
+			});
+		});
+
 		it('should validate presence of required query params', function() {
 			const makeRequest = handler('post', '/path', {
 				query: [{ requiredParam: REQUIRED }, { otherRequiredParam: REQUIRED }]
@@ -225,6 +236,17 @@ describe('handler', function() {
 			expect(request.headers).to.eql({
 				headerWithDefault: 5,
 				headerWithoutDefault: 6
+			});
+		});
+
+		it('should override default headers when specified', function() {
+			const makeRequest = handler('post', '/path', {
+				headers: [{ headerWithDefault: 5 }]
+			});
+
+			let request = makeRequest({ headerWithDefault: 6 });
+			expect(request.headers).to.eql({
+				headerWithDefault: 6
 			});
 		});
 

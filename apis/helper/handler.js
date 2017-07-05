@@ -23,7 +23,7 @@ export function handler(method, path, options = {}) {
 		// 	data = params;
 		// 	params = undefined;
 		// }
-		validateQueryParams(params, options.query);
+		validateQuery(params, options.query);
 		validateHeaders(params, options.headers);
 
 		const pathWithParams = route.reverse(params);
@@ -120,7 +120,7 @@ function validateOptions(options) {
 	}
 }
 
-function validateQueryParams(params, schema = []) {
+function validateQuery(params, schema = []) {
 	const requiredParams = schema
 		.filter(p => Object.values(p)[0] === REQUIRED)
 		.map(p => Object.keys(p)[0]);
@@ -128,7 +128,9 @@ function validateQueryParams(params, schema = []) {
 	requiredParams.forEach(p => {
 		if (params[p] === undefined) {
 			throw new Error(
-				`param ${p} is required. expected ${JSON.stringify(params)} to match ${JSON.stringify(schema)}`
+				`param ${p} is required. expected ${JSON.stringify(
+					params
+				)} to match ${JSON.stringify(schema)}`
 			);
 		}
 	});
@@ -142,7 +144,9 @@ function validateHeaders(params, schema = []) {
 	requiredHeaders.forEach(p => {
 		if (params[p] === undefined) {
 			throw new Error(
-				`header ${p} is required. expected ${JSON.stringify(params)} to match ${JSON.stringify(schema)}`
+				`header ${p} is required. expected ${JSON.stringify(
+					params
+				)} to match ${JSON.stringify(schema)}`
 			);
 		}
 	});
@@ -157,7 +161,7 @@ function validateConfigObject(configObject) {
 		throw new Error(
 			'malformed config object found.' +
 				`got: ${JSON.stringify(configObject)}. ` +
-				'expected an object with one key, the value of which is either a default, or the REQUIRED symbol' +
+				'expected an object with one key, the value of which is either a default, or the REQUIRED symbol ' +
 				"like { query: [{ paramWithDefault: 5 }, 'paramWithoutDefault'] }, " +
 				'or { query: [{ requiredParam: handler.REQUIRED }, ...] }'
 		);
