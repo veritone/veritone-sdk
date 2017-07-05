@@ -1,7 +1,7 @@
 {
 	"rules": {
 		"indent": [ 2, "tab" ],
-		"quotes": [ 2, "single" ],
+		"quotes": [ 2, "single", {"avoidEscape": true} ],
 		"linebreak-style": [ 2, "unix" ],
 		"semi": [ 2, "always" ],
 		"no-console": 0,
@@ -10,7 +10,6 @@
 		"new-parens": 2,
 		"no-restricted-syntax": [ 2, "WithStatement" ],
 		"no-trailing-spaces": 2,
-		"operator-linebreak": [ 2, "after" ],
 		"quote-props": [ 2, "as-needed" ],
 		"semi-spacing": [ 2, { "before": false, "after": true } ],
 		"comma-spacing": [ 2, { "before": false, "after": true } ],

@@ -114,9 +114,16 @@ object of:
 ```
 {
 	// all keys are optional
-	headers: [string or { string: defaultVal }], 	// ie ['id', {type: 'recording'}] 
-																									// provides default of 'recording' for 'type'
-	query: [string],
+	headers: [string | configObject],
+	query: [string | configObject],
+	// configObject is:
+	{
+		paramName: REQUIRED (`import { REQUIRED } from handler`)
+	}
+	or
+	{
+		paramName: 'someDefaultValue'
+	}
 	
 	// these are attached to request objects and used down the chain in callApi:
 	transformResponse: object -> object, default identity
@@ -124,7 +131,7 @@ object of:
 	progress: bool // should a progress callback be provided? default false
 	validateStatus: number -> bool 	// true if status code is not an error
 																		// default: status >= 200 && status < 300
-	maxRetries: number // default per constructor (3?)
+	maxRetries: number // default per constructor (3?), 0 to disable
 }
 ```
 
