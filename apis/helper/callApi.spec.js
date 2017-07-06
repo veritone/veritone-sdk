@@ -4,12 +4,13 @@ nock.disableNetConnect();
 
 import { callApi } from './callApi';
 
+const apiToken = 'api-token-abc';
 const apiBaseUri = 'http://fake.domain';
 
 describe('callApi', function() {
 	beforeEach(function() {
 		this.callApi = callApi.bind(null, {
-			token: 'api-token-abc',
+			token: apiToken,
 			baseUri: apiBaseUri
 		});
 	});
@@ -23,11 +24,13 @@ describe('callApi', function() {
 		const invalidUris = ['www.test.com', 'test.com'];
 
 		invalidUris.forEach(baseUri =>
-			expect(() => callApi({ baseUri }, () => {})).to.throw()
+			expect(() => callApi({ baseUri, token: apiToken }, () => {})).to.throw()
 		);
 
 		validUris.forEach(baseUri =>
-			expect(() => callApi({ baseUri }, () => {})).not.to.throw()
+			expect(() =>
+				callApi({ baseUri, token: apiToken }, () => {})
+			).not.to.throw()
 		);
 	});
 
@@ -37,15 +40,25 @@ describe('callApi', function() {
 
 		invalidHandlers.forEach(handler =>
 			expect(() =>
-				callApi({ baseUri: 'http://www.test.com' }, handler)
+				callApi({ baseUri: 'http://www.test.com', token: apiToken }, handler)
 			).to.throw()
 		);
 
 		validHandlers.forEach(handler =>
 			expect(() =>
-				callApi({ baseUri: 'http://www.test.com' }, handler)
+				callApi({ baseUri: 'http://www.test.com', token: apiToken }, handler)
 			).not.to.throw()
 		);
+	});
+
+	it('requires an auth token', function() {
+		expect(() =>
+			callApi({ baseUri: 'http://www.test.com' }, () => {})
+		).to.throw();
+
+		expect(() =>
+			callApi({ baseUri: 'http://www.test.com', token: apiToken }, () => {})
+		).not.to.throw();
 	});
 
 	it('validates requestOptions');
@@ -72,7 +85,9 @@ describe('callApi', function() {
 
 			scope.done();
 			done();
-		});
+		})
+			// suppress unhandled rejection error
+			.catch(() => {});
 	});
 
 	it('should call the callback with the response', function(done) {
@@ -112,7 +127,9 @@ describe('callApi', function() {
 			.then(() => scope.done());
 	});
 
-	it('should return a promise that is resolved with the response', function(done) {
+	it('should return a promise that is resolved with the response', function(
+		done
+	) {
 		const scope = nock(apiBaseUri).get('/test-path').reply(200, 'ok');
 
 		const requestFn = this.callApi(() => ({
@@ -121,14 +138,31 @@ describe('callApi', function() {
 		}));
 
 		requestFn()
-			.then((res) => {
+			.then(res => {
 				expect(res.status).to.equal(200);
 				expect(res.data).to.equal('ok');
-				done()
+				done();
 			})
 			.catch(() => {
 				done(new Error('Expected requestFn to throw.'));
 			})
 			.then(() => scope.done());
+	});
+
+	it('should include token in the request', function() {
+		const scope = nock(apiBaseUri, {
+			reqheaders: {
+				authorization: `Bearer ${apiToken}`
+			}
+		})
+			.get('/test-path')
+			.reply(200, 'ok');
+
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path'
+		}));
+
+		return requestFn().then().then(() => scope.done());
 	});
 });

@@ -3,6 +3,7 @@ import axios from 'axios';
 const noop = () => {};
 
 export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
+	validateAuthToken(token);
 	validateBaseUri(baseUri);
 	validateHandlerFn(handlerFn);
 
@@ -20,6 +21,9 @@ export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 				.request({
 					method,
 					url: path,
+					headers: {
+						Authorization: `Bearer ${token}`
+					},
 					baseURL: baseUri
 				})
 				.then(res => {
@@ -34,6 +38,11 @@ export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 	};
 }
 
+function validateAuthToken(token) {
+	if (typeof token !== 'string') {
+		throw new Error(`callApi requires an api token`);
+	}
+}
 function validateBaseUri(uri) {
 	if (!(uri.startsWith('http://') || uri.startsWith('https://'))) {
 		throw new Error(`expected ${uri} to include http(s) protocol`);
