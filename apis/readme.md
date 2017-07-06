@@ -147,8 +147,6 @@ generic request object interface
 	path: string: required
 	query: string: optional
 	data: object, string: optional, // post/put/patch body
-	headers: object: optional,
-	
-	// plus attach the meta keys in the config object above
+	headers: object: optional
 }
 ```
