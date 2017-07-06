@@ -165,4 +165,53 @@ describe('callApi', function() {
 
 		return requestFn().then().then(() => scope.done());
 	});
+
+	it('should make a post request with data payload', function() {
+		const scope = nock(apiBaseUri)
+			.post('/test-path', {
+				postBody: 'ok'
+			})
+			.reply(200, 'ok');
+
+		const requestFn = this.callApi(() => ({
+			method: 'post',
+			path: 'test-path',
+			data: { postBody: 'ok' }
+		}));
+
+		return requestFn().then(() => scope.done());
+	});
+
+	it('should include query params in the request', function() {
+		const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.query({ it: 'worked' })
+			.reply(200, 'ok');
+
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			query: { it: 'worked' }
+		}));
+
+		return requestFn().then(() => scope.done());
+	});
+
+	it('should include headers in the request', function() {
+		const scope = nock(apiBaseUri, {
+			reqheaders: {
+				it: 'worked'
+			}
+		})
+			.get('/test-path')
+			.reply(200, 'ok');
+
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			headers: { it: 'worked' }
+		}));
+
+		return requestFn().then(() => scope.done());
+	});
 });

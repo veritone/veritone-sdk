@@ -20,9 +20,12 @@ export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 			axios
 				.request({
 					method,
+					data,
 					url: path,
+					params: query,
 					headers: {
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${token}`,
+						...headers
 					},
 					baseURL: baseUri
 				})
