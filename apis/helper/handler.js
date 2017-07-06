@@ -73,7 +73,10 @@ function mergeDefaultParams(base, ...params) {
 		});
 
 	const mergedDefaults = Object.assign({}, ...allDefaults);
-	return Object.assign({}, mergedDefaults, base);
+	return {
+		...mergedDefaults,
+		...base
+	};
 }
 
 function getConfigParamName(q) {
