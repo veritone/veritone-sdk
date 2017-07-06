@@ -92,6 +92,16 @@ callResourceApi({
 * multiple callApi implementations (so we can ie. use fetch on the 
 frontend and request on the backend) (maybe)
 
+`callApi()` accepts additional options as a second argument:
+```
+	transformResponse: object -> object, default identity
+	withCredentials? default †rue?
+	progress: bool // should a progress callback be provided? default false
+	validateStatus: number -> bool 	// true if status code is not an error
+																		// default: status >= 200 && status < 300
+	maxRetries: number // default per constructor (3?), 0 to disable
+```
+
 
 `handler()` interface:
 
@@ -124,14 +134,6 @@ object of:
 	{
 		paramName: 'someDefaultValue'
 	}
-	
-	// these are attached to request objects and used down the chain in callApi:
-	transformResponse: object -> object, default identity
-	withCredentials? default †rue?
-	progress: bool // should a progress callback be provided? default false
-	validateStatus: number -> bool 	// true if status code is not an error
-																		// default: status >= 200 && status < 300
-	maxRetries: number // default per constructor (3?), 0 to disable
 }
 ```
 

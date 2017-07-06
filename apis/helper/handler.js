@@ -1,7 +1,5 @@
-// import { validate } from 'validate.js';
 import Route from 'route-parser';
 
-// import qs from 'qs';
 export const REQUIRED = '@@required';
 export function handler(method, path, options = {}) {
 	validateMethod(method);
@@ -17,12 +15,6 @@ export function handler(method, path, options = {}) {
 	// const hasRequestBody = ['PUT', 'POST', 'PATCH'].includes(method.toUpperCase());
 
 	return function request(params = {}, data) {
-		// if (hasRequestBody && !pathHasParams) {
-		// 	// fixme -- this should happen only when we have post/put/patch,
-		// 	// but no headers, query, or addtl options are provided
-		// 	data = params;
-		// 	params = undefined;
-		// }
 		validateQuery(params, options.query);
 		validateHeaders(params, options.headers);
 
