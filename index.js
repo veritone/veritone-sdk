@@ -1525,7 +1525,7 @@ ApiClient.prototype.pollTask = function pollTask(jobId, taskId, data, callback) 
             if (response.statusCode !== 204) {
                 return callback('Received status: ' + response.statusCode, body);
             }
-            callback(null);
+            return callback(null, body);
         });
     }
 
