@@ -1,28 +1,29 @@
-'use strict';
-
+import validate from 'validate.js';
 const asyncRetry = require('async/retry');
 
-function RetryHelper(options) {
-	options = options || {};
-	options.maxRetry = options.maxRetry || 0;
-	options.retryIntervalMs = options.retryIntervalMs || 0;
+function RetryHelper(options = {}) {
+	const finalOptions = {
+		maxRetry: 0,
+		retryIntervalMs: 0,
+		...options
+	};
 
-	if (typeof options.maxRetry !== 'number') {
-		throw new Error('maxRetry must be a number!');
-	}
-	if (options.maxRetry < 0) {
-		throw new Error('maxRetry must be zero or greater!');
+	const constraints = {
+		maxRetry: {
+			numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 }
+		},
+		retryIntervalMs: {
+			numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 }
+		}
+	};
+
+	const errors = validate(finalOptions, constraints);
+	if (errors) {
+		throw new Error(Object.values(errors)[0]);
 	}
 
-	if (typeof options.retryIntervalMs !== 'number') {
-		throw new Error('retryIntervalMs must be a number!');
-	}
-	if (options.retryIntervalMs < 0) {
-		throw new Error('retryIntervalMs must be zero or greater!');
-	}
-
-	this._maxRetry = options.maxRetry;
-	this._retryIntervalMs = options.retryIntervalMs;
+	this._maxRetry = finalOptions.maxRetry;
+	this._retryIntervalMs = finalOptions.retryIntervalMs;
 }
 
 RetryHelper.prototype.retry = function retry(task, callback) {
@@ -33,28 +34,11 @@ RetryHelper.prototype.retry = function retry(task, callback) {
 		throw new Error('callback is required!');
 	}
 
-	var self = this;
-
-	if (self._maxRetry === 0) {
-		return task(callback);
-	}
-
-	var attemptCount = 0;
-
-	function retryTask(retryCallback) {
-		attemptCount++;
-
-		if (attemptCount === 1) {
-			task(retryCallback);
-		} else {
-			setTimeout(function retryTaskTimeoutCallback() {
-				task(retryCallback);
-			}, self._retryIntervalMs);
-		}
-	}
-
-	asyncRetry(self._maxRetry, retryTask, callback);
+	asyncRetry(
+		{ times: this._maxRetry, interval: this._retryIntervalMs },
+		task,
+		callback
+	);
 };
 
 module.exports = RetryHelper;
-
