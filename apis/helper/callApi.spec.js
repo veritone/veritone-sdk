@@ -273,7 +273,7 @@ describe('callApi', function() {
 				method: 'get',
 				path: 'test-path'
 			}),
-			{ timeoutMs: 500 }
+			{ timeoutMs: 50 }
 		);
 
 		requestFn()
@@ -302,5 +302,30 @@ describe('callApi', function() {
 		);
 
 		return requestFn().then(() => scope.done());
+	});
+
+	it('should allow response data to be transformed', function() {
+		const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.reply(200, { worked: false, otherKey: 123 });
+
+		const requestFn = this.callApi(
+			() => ({
+				method: 'get',
+				path: 'test-path'
+			}),
+			{
+				transformResponseData: res => ({
+					...res,
+					worked: true
+				})
+			}
+		);
+
+		return requestFn().then(res => {
+			expect(res.data.worked).to.equal(true);
+			expect(res.data.otherKey).to.equal(123);
+			scope.done();
+		});
 	});
 });

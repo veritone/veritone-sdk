@@ -17,6 +17,8 @@ export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 	) {
 		const { method, path, data, query, headers } = handlerFn(params, reqData);
 		const options = {
+			withCredentials: true,
+			maxRetries: 3,
 			...requestOptions,
 			...requestOptionOverrides
 		};
@@ -36,12 +38,18 @@ export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 						...options.headers
 					},
 					baseURL: baseUri,
-					timeout: options.timeoutMs,
-
+					timeout: options.timeoutMs
 				})
-				.then(res => {
-					resolve(res);
-					callback(null, res);
+				.then(rawResponse => {
+					let response = {
+						...rawResponse,
+						data: options.transformResponseData
+							? options.transformResponseData(rawResponse.data)
+							: rawResponse.data
+					};
+
+					resolve(response);
+					callback(null, response);
 				})
 				.catch(err => {
 					reject(err);
@@ -73,11 +81,21 @@ function validateRequestOptions(options) {
 		'maxRetries',
 		'withCredentials',
 		'timeoutMs',
-		'headers'
+		'headers',
+		'transformResponseData'
 		// 'cancelToken',
 		// onUploadProgress,
 		// onDownloadProgress,
 	];
+
+	Object.keys(options).forEach(opt => {
+		if (!supportedOptions.includes(opt)) {
+			throw new Error(
+				`unexpected requestOption: ${opt}. Supported options are: ` +
+					JSON.stringify(supportedOptions)
+			);
+		}
+	});
 
 	const constraints = {
 		maxRetries: {
@@ -91,19 +109,9 @@ function validateRequestOptions(options) {
 		}
 	};
 
-	Object.keys(options).forEach(opt => {
-		if (!supportedOptions.includes(opt)) {
-			throw new Error(
-				`unexpected requestOption: ${opt}. Supported options are: ` +
-					JSON.stringify(supportedOptions)
-			);
-		}
-	});
-
 	const errors = validate(options, constraints);
-
 	if (errors) {
-		throw new Error(Object.values(errors)[0])
+		throw new Error(Object.values(errors)[0]);
 	}
 
 	if (
@@ -113,6 +121,15 @@ function validateRequestOptions(options) {
 	) {
 		throw new Error(
 			`requestOptions.headers should be an object. got: ${options.headers}.`
+		);
+	}
+
+	if (
+		options.transformResponseData &&
+		typeof options.transformResponseData !== 'function'
+	) {
+		throw new Error(
+			`requestOptions.transformResponseData should be a function. got: ${options.transformResponseData}`
 		);
 	}
 }
