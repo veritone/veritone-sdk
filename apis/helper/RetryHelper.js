@@ -3,13 +3,13 @@ const asyncRetry = require('async/retry');
 
 function RetryHelper(options = {}) {
 	const finalOptions = {
-		maxRetry: 0,
+		maxRetries: 0,
 		retryIntervalMs: 0,
 		...options
 	};
 
 	const constraints = {
-		maxRetry: {
+		maxRetries: {
 			numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 }
 		},
 		retryIntervalMs: {
@@ -22,7 +22,7 @@ function RetryHelper(options = {}) {
 		throw new Error(Object.values(errors)[0]);
 	}
 
-	this._maxRetry = finalOptions.maxRetry;
+	this._maxRetries = finalOptions.maxRetries;
 	this._retryIntervalMs = finalOptions.retryIntervalMs;
 }
 
@@ -35,7 +35,7 @@ RetryHelper.prototype.retry = function retry(task, callback) {
 	}
 
 	asyncRetry(
-		{ times: this._maxRetry, interval: this._retryIntervalMs },
+		{ times: this._maxRetries, interval: this._retryIntervalMs },
 		task,
 		callback
 	);

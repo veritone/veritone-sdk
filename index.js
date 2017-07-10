@@ -22,14 +22,14 @@ function ApiClient(options) {
 	this._token = options.token;
 	this._baseUri = options.baseUri || 'https://api.veritone.com';
 	this._version = options.version || 1;
-	this._maxRetry = options.maxRetry;
+	this._maxRetries = options.maxRetries;
 	this._retryIntervalMs = options.retryIntervalMs;
 	if (typeof this._version === 'number') {
 		this._baseUri = this._baseUri + '/v' + this._version;
 	} else if (this._version != 'disable') {
 		this._baseUri = this._baseUri + '/' + this._version;
 	}
-	this._retryHelper = new RetryHelper({maxRetry: this._maxRetry, retryIntervalMs: this._retryIntervalMs});
+	this._retryHelper = new RetryHelper({maxRetries: this._maxRetries, retryIntervalMs: this._retryIntervalMs});
 
 	for (var name in apis) {
 		this[name] = apis[name].call(this);

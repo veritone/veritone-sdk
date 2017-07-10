@@ -5,14 +5,14 @@ describe('RetryHelper', function() {
 
 	it('should have defaults', function(done) {
 		const retryHelper = new RetryHelper();
-		expect(retryHelper._maxRetry).to.equal(0);
+		expect(retryHelper._maxRetries).to.equal(0);
 		expect(retryHelper._retryIntervalMs).to.equal(0);
 		done();
 	});
 
 	it('should load settings', function(done) {
-		const retryHelper = new RetryHelper({ maxRetry: 3, retryIntervalMs: 10 });
-		expect(retryHelper._maxRetry).to.equal(3);
+		const retryHelper = new RetryHelper({ maxRetries: 3, retryIntervalMs: 10 });
+		expect(retryHelper._maxRetries).to.equal(3);
 		expect(retryHelper._retryIntervalMs).to.equal(10);
 		done();
 	});

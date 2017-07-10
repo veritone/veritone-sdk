@@ -92,6 +92,7 @@ function validateHandlerFn(fn) {
 
 const supportedOptions = [
 	'maxRetries',
+	'retryIntervalMs',
 	'withCredentials',
 	'timeoutMs',
 	'headers',
@@ -117,6 +118,9 @@ function validateRequestOptions(options) {
 
 	const constraints = {
 		maxRetries: {
+			numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 }
+		},
+		retryIntervalMs: {
 			numericality: { onlyInteger: true, greaterThanOrEqualTo: 0 }
 		},
 		timeoutMs: {
