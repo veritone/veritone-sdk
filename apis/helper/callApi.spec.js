@@ -105,7 +105,7 @@ describe('callApi', function() {
 			path: 'test-path'
 		}));
 
-		requestFn(null, null, err => {
+		requestFn(err => {
 			expect(err.response.status).to.equal(404);
 
 			scope.done();
@@ -123,7 +123,7 @@ describe('callApi', function() {
 			path: 'test-path'
 		}));
 
-		requestFn(null, null, (err, res) => {
+		requestFn((err, res) => {
 			expect(err).to.equal(null);
 			expect(res.status).to.equal(200);
 			expect(res.data).to.equal('ok');

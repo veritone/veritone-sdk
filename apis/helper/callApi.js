@@ -1,7 +1,7 @@
 import axios from 'axios';
 import validate from 'validate.js';
 
-const noop = () => {};
+import { last, noop } from './util';
 
 export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 	validateAuthToken(token);
@@ -9,13 +9,27 @@ export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
 	validateHandlerFn(handlerFn);
 	validateRequestOptions(requestOptions);
 
+	// ...handler args, opts?, cb?
 	return function apiRequest(
-		params,
-		reqData,
-		callback = noop,
-		requestOptionOverrides
+		...args
 	) {
-		const { method, path, data, query, headers } = handlerFn(params, reqData);
+		// figure out arg signature; one of:
+		// ...handlerArgs, requestOptionOverrides, cb
+		// ...handlerArgs, cb
+		// ...handlerArgs, requestOptionOverrides
+		let requestOptionOverrides, callback;
+
+		callback = typeof last(args) === 'function'
+			? last(args)
+			: noop;
+
+		if (isRequestOptionsObj(last(args))) {
+			requestOptionOverrides = last(args)
+		} else if (isRequestOptionsObj(args[args.length - 2])) {
+			requestOptionOverrides = args[args.length - 2]
+		}
+
+		const { method, path, data, query, headers } = handlerFn(...args);
 		const options = {
 			withCredentials: true,
 			maxRetries: 3,
@@ -76,18 +90,22 @@ function validateHandlerFn(fn) {
 	}
 }
 
-function validateRequestOptions(options) {
-	const supportedOptions = [
-		'maxRetries',
-		'withCredentials',
-		'timeoutMs',
-		'headers',
-		'transformResponseData'
-		// 'cancelToken',
-		// onUploadProgress,
-		// onDownloadProgress,
-	];
+const supportedOptions = [
+	'maxRetries',
+	'withCredentials',
+	'timeoutMs',
+	'headers',
+	'transformResponseData'
+	// 'cancelToken',
+	// onUploadProgress,
+	// onDownloadProgress,
+];
 
+function isRequestOptionsObj(obj = {}) {
+	Object.keys(obj).every(opt => supportedOptions.includes(opt));
+}
+
+function validateRequestOptions(options) {
 	Object.keys(options).forEach(opt => {
 		if (!supportedOptions.includes(opt)) {
 			throw new Error(

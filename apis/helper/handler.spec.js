@@ -112,20 +112,6 @@ describe('handler', function() {
 				expect(request.data).to.be.undefined;
 			});
 		});
-
-		xit(
-			'should accept request data as the first argument if no path params exist',
-			function() {
-				const makeRequest = handler('post', '/no/parameters');
-
-				const request = makeRequest({ worked: true });
-				expect(request.data).to.eql({
-					worked: true
-				});
-
-				expect(request.path).to.eql('/no/parameters');
-			}
-		);
 	});
 
 	describe('query parameters', function() {
