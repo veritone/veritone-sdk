@@ -17,7 +17,8 @@ export const endpoints = {
 	//reports:  '/report/',
 	batch: '/batch',
 	//transcript:  '/transcript/',
-	ingestion: '/ingestion/'
+	ingestion: '/ingestion/',
+	libraries: '/media/'
 };
 
 export const headers = {

@@ -1,9 +1,7 @@
-'use strict';
-
-var librariesApiBaseUri = '/media';
+import { endpoints } from './config';
 
 module.exports = function init() {
-	var generateHandler = require('./helper/generate-handler')(this, this._baseUri + librariesApiBaseUri);
+	const generateHandler = require('./helper/generate-handler')(this, this._baseUri + endpoints.libraries);
 
 	return {
 		getLibraryTypes: generateHandler('GET', '/library-type'),
