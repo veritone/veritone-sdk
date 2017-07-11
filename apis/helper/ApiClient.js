@@ -8,7 +8,7 @@ export default function veritoneApi(
 		token,
 		baseUrl = 'https://api.veritone.com',
 		version = 1,
-		maxRetries = 1, // todo
+		maxRetries = 1,
 		retryIntervalMs = 1000
 	},
 	apis = veritoneApis

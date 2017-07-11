@@ -4,7 +4,6 @@ nock.disableNetConnect();
 
 import veritoneApi from './ApiClient';
 
-// const noop = () => {};
 const apiBaseUrl = 'http://fake.domain';
 
 describe('veritoneApi', function() {
@@ -32,11 +31,15 @@ describe('veritoneApi', function() {
 			expect(typeof api.libraries.getLibrary).to.equal('function');
 		});
 
-		it('should wrap handlers to make an API call', function(done) {
+		it('should wrap handlers to make an API call with options', function(done) {
+			const testToken = 'api-token-abc';
 			const api = veritoneApi(
 				{
-					token: 'api-token-abc',
-					baseUrl: apiBaseUrl
+					token: testToken,
+					baseUrl: apiBaseUrl,
+					maxRetries: 2,
+					retryIntervalMs: 25,
+					version: 11
 				},
 				{
 					libraries: {
@@ -48,8 +51,20 @@ describe('veritoneApi', function() {
 				}
 			);
 
-			const scope = nock(apiBaseUrl).get(/test-path/).reply(200, 'ok');
-			api.libraries.getLibrary(() => {
+			const scope = nock(`${apiBaseUrl}`, {
+				reqheaders: {
+					authorization: `Bearer ${testToken}`
+				}
+			})
+				.get(/v11\/test-path/)
+				.reply(404, 'not found')
+				.get(/v11\/test-path/)
+				.reply(200, 'ok');
+
+			api.libraries.getLibrary((err, res) => {
+				expect(err).to.equal(null);
+				expect(res.data).to.equal('ok');
+
 				scope.done();
 				done();
 			});
