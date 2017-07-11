@@ -3,8 +3,8 @@ const asyncRetry = require('async/retry');
 
 function RetryHelper(options = {}) {
 	const finalOptions = {
-		maxRetries: 0,
-		retryIntervalMs: 0,
+		maxRetries: 1,
+		retryIntervalMs: 50,
 		...options
 	};
 

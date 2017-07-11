@@ -1,74 +1,104 @@
 import axios from 'axios';
 import validate from 'validate.js';
 
+const RetryHelper = require('./RetryHelper');
 import { last, noop } from './util';
 
-export function callApi({ token, baseUri }, handlerFn, requestOptions = {}) {
+export default function callApi(
+	// base options provided by API client
+	{ token, baseUrl, maxRetries = 1, retryIntervalMs = 1000 },
+	// handler returning a request object
+	handlerFn
+) {
 	validateAuthToken(token);
-	validateBaseUri(baseUri);
+	validateBaseUrl(baseUrl);
 	validateHandlerFn(handlerFn);
-	validateRequestOptions(requestOptions);
 
-	// ...handler args, opts?, cb?
-	return function apiRequest(
-		...args
-	) {
+	return function apiRequest(...args) {
 		// figure out arg signature; one of:
-		// ...handlerArgs, requestOptionOverrides, cb
-		// ...handlerArgs, cb
-		// ...handlerArgs, requestOptionOverrides
-		let requestOptionOverrides, callback;
+		// ...handlerFnArgs, requestOptionOverrides, cb
+		// ...handlerFnArgs, cb
+		// ...handlerFnArgs, requestOptionOverrides
+		let requestOptionOverrides = {};
+		let callback = noop;
 
-		callback = typeof last(args) === 'function'
-			? last(args)
-			: noop;
-
-		if (isRequestOptionsObj(last(args))) {
-			requestOptionOverrides = last(args)
-		} else if (isRequestOptionsObj(args[args.length - 2])) {
-			requestOptionOverrides = args[args.length - 2]
+		if (typeof last(args) === 'function') {
+			callback = last(args);
 		}
 
-		const { method, path, data, query, headers } = handlerFn(...args);
+		if (isRequestOptionsObj(last(args))) {
+			requestOptionOverrides = last(args);
+		} else if (isRequestOptionsObj(args[args.length - 2])) {
+			requestOptionOverrides = args[args.length - 2];
+		}
+
+		const {
+			method,
+			path,
+			data,
+			query,
+			headers,
+			// default options for this request, if different from defaults
+			_requestOptions = {}
+		} = handlerFn(...args);
+
+		validateRequestOptions(_requestOptions);
+
 		const options = {
 			withCredentials: true,
-			maxRetries: 3,
-			...requestOptions,
+			maxRetries,
+			retryIntervalMs,
+			..._requestOptions,
 			...requestOptionOverrides
 		};
 
-		// don't return axios' promise directly, so we can support both
-		// promise and cb styles:
-		return new Promise((resolve, reject) => {
-			axios
-				.request({
-					method,
-					data,
-					url: path,
-					params: query,
-					headers: {
-						Authorization: `Bearer ${token}`,
-						...headers,
-						...options.headers
-					},
-					baseURL: baseUri,
-					timeout: options.timeoutMs
-				})
-				.then(rawResponse => {
-					let response = {
-						...rawResponse,
-						data: options.transformResponseData
-							? options.transformResponseData(rawResponse.data)
-							: rawResponse.data
-					};
+		const retryHelper = new RetryHelper({
+			maxRetries: options.maxRetries,
+			retryIntervalMs: options.retryIntervalMs
+		});
 
-					resolve(response);
-					callback(null, response);
-				})
-				.catch(err => {
-					reject(err);
-					callback(err);
-				});
+		return new Promise((resolve, reject) => {
+			retryHelper.retry(
+				cb => {
+					axios
+						.request({
+							method,
+							data,
+							url: path,
+							params: query,
+							headers: {
+								Authorization: `Bearer ${token}`,
+								...headers,
+								...options.headers
+							},
+							baseURL: baseUrl,
+							timeout: options.timeoutMs
+						})
+						.then(rawResponse => {
+							let response = {
+								...rawResponse,
+								data: options.transformResponseData
+									? options.transformResponseData(rawResponse.data)
+									: rawResponse.data
+							};
+
+							cb(null, response);
+						})
+						.catch(err => {
+							cb(err);
+						});
+				},
+				(err, res) => {
+					// provide dual promise/cb interface to callers
+					if (err) {
+						callback(err);
+						return reject(err);
+					}
+
+					callback(null, res);
+					resolve(res);
+				}
+			);
 		});
 	};
 }
@@ -78,9 +108,10 @@ function validateAuthToken(token) {
 		throw new Error(`callApi requires an api token`);
 	}
 }
-function validateBaseUri(uri) {
-	if (!(uri.startsWith('http://') || uri.startsWith('https://'))) {
-		throw new Error(`expected ${uri} to include http(s) protocol`);
+
+function validateBaseUrl(url) {
+	if (!(url.startsWith('http://') || url.startsWith('https://'))) {
+		throw new Error(`expected ${url} to include http(s) protocol`);
 	}
 }
 

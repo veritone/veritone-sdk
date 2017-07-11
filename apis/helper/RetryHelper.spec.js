@@ -5,8 +5,8 @@ describe('RetryHelper', function() {
 
 	it('should have defaults', function(done) {
 		const retryHelper = new RetryHelper();
-		expect(retryHelper._maxRetries).to.equal(0);
-		expect(retryHelper._retryIntervalMs).to.equal(0);
+		expect(retryHelper._maxRetries).to.equal(1);
+		expect(retryHelper._retryIntervalMs).to.equal(50);
 		done();
 	});
 
@@ -18,14 +18,14 @@ describe('RetryHelper', function() {
 	});
 
 	it('should have function "retry"', function(done) {
-		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		const retryHelper = new RetryHelper({ maxRetries: 3 });
 		expect(retryHelper.retry).to.exist;
 		expect(typeof retryHelper.retry).to.equal('function');
 		done();
 	});
 
 	it('should run once', function(done) {
-		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		const retryHelper = new RetryHelper({ maxRetries: 3 });
 		let runCount = 0;
 
 		function task(cb) {
@@ -47,7 +47,7 @@ describe('RetryHelper', function() {
 	});
 
 	it('should run three times', function(done) {
-		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		const retryHelper = new RetryHelper({ maxRetries: 3 });
 		let runCount = 0;
 
 		function task(cb) {
@@ -73,7 +73,7 @@ describe('RetryHelper', function() {
 	});
 
 	it('should run and return error', function(done) {
-		const retryHelper = new RetryHelper({ maxRetry: 3 });
+		const retryHelper = new RetryHelper({ maxRetries: 3 });
 
 		function task(cb) {
 			if (typeof cb !== 'function') {

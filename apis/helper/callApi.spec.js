@@ -2,16 +2,24 @@ import { expect } from 'chai';
 import nock from 'nock';
 nock.disableNetConnect();
 
-import { callApi } from './callApi';
+import callApi from './callApi';
 
 const apiToken = 'api-token-abc';
 const apiBaseUri = 'http://fake.domain';
+
+
+process.on('unhandledRejection', (error) => {
+	// suppress errors from nock disabling net connect
+	if (error.name !== 'NetConnectNotAllowedError') {
+		throw error;
+	}
+});
 
 describe('callApi', function() {
 	beforeEach(function() {
 		this.callApi = callApi.bind(null, {
 			token: apiToken,
-			baseUri: apiBaseUri
+			baseUrl: apiBaseUri
 		});
 	});
 
@@ -19,17 +27,17 @@ describe('callApi', function() {
 		nock.cleanAll();
 	});
 
-	it('validates baseUri', function() {
+	it('validates baseUrl', function() {
 		const validUris = ['http://www.test.com', 'https://www.test.com'];
 		const invalidUris = ['www.test.com', 'test.com'];
 
-		invalidUris.forEach(baseUri =>
-			expect(() => callApi({ baseUri, token: apiToken }, () => {})).to.throw()
+		invalidUris.forEach(baseUrl =>
+			expect(() => callApi({ baseUrl, token: apiToken }, () => {})).to.throw()
 		);
 
-		validUris.forEach(baseUri =>
+		validUris.forEach(baseUrl =>
 			expect(() =>
-				callApi({ baseUri, token: apiToken }, () => {})
+				callApi({ baseUrl, token: apiToken }, () => {})
 			).not.to.throw()
 		);
 	});
@@ -40,52 +48,121 @@ describe('callApi', function() {
 
 		invalidHandlers.forEach(handler =>
 			expect(() =>
-				callApi({ baseUri: 'http://www.test.com', token: apiToken }, handler)
+				callApi({ baseUrl: 'http://www.test.com', token: apiToken }, handler)
 			).to.throw()
 		);
 
 		validHandlers.forEach(handler =>
 			expect(() =>
-				callApi({ baseUri: 'http://www.test.com', token: apiToken }, handler)
+				callApi({ baseUrl: 'http://www.test.com', token: apiToken }, handler)
 			).not.to.throw()
 		);
 	});
 
 	it('requires an auth token', function() {
 		expect(() =>
-			callApi({ baseUri: 'http://www.test.com' }, () => {})
+			callApi({ baseUrl: 'http://www.test.com' }, () => {})
 		).to.throw();
 
 		expect(() =>
-			callApi({ baseUri: 'http://www.test.com', token: apiToken }, () => {})
+			callApi({ baseUrl: 'http://www.test.com', token: apiToken }, () => {})
 		).not.to.throw();
 	});
 
 	it('validates requestOptions', function() {
-		const _callApi = this.callApi.bind(null, () => ({
+		const baseOptions = {
 			method: 'get',
 			path: 'test-path'
-		}));
+		};
 
-		expect(() => _callApi()).not.to.throw();
-		expect(() => _callApi({ unknownOption: true })).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { unknownOption: true }
+			}))
+		).to.throw();
 
-		expect(() => _callApi({ maxRetries: 0 })).not.to.throw();
-		expect(() => _callApi({ maxRetries: -1 })).to.throw();
-		expect(() => _callApi({ maxRetries: 1.1 })).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { maxRetries: 0 }
+			}))
+		).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { maxRetries: -1 }
+			}))
+		).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { maxRetries: 1.1 }
+			}))
+		).to.throw();
 
-		expect(() => _callApi({ timeoutMs: 0 })).not.to.throw();
-		expect(() => _callApi({ timeoutMs: -1 })).to.throw();
-		expect(() => _callApi({ timeoutMs: 1.1 })).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { timeoutMs: 0 }
+			}))
+		).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { timeoutMs: -1 }
+			}))
+		).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { timeoutMs: 1.1 }
+			}))
+		).to.throw();
 
-		expect(() => _callApi({ withCredentials: 'ok' })).to.throw();
-		expect(() => _callApi({ withCredentials: false })).not.to.throw();
-		expect(() => _callApi({ withCredentials: true })).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { withCredentials: 'ok' }
+			}))
+		).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { withCredentials: false }
+			}))
+		).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { withCredentials: true }
+			}))
+		).not.to.throw();
 
-		expect(() => _callApi({ headers: 'ok' })).to.throw();
-		expect(() => _callApi({ headers: {} })).not.to.throw();
-		expect(() => _callApi({ headers: { someHeader: 'ok' } })).not.to.throw();
-		expect(() => _callApi({ headers: null })).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { headers: 'ok' }
+			}))
+		).to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { headers: {} }
+			}))
+		).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { headers: { someHeader: 'ok' } }
+			}))
+		).not.to.throw();
+		expect(
+			this.callApi(() => ({
+				...baseOptions,
+				_requestOptions: { headers: null }
+			}))
+		).not.to.throw();
 	});
 
 	it('returns a function', function() {
@@ -252,9 +329,9 @@ describe('callApi', function() {
 		const requestFn = this.callApi(
 			() => ({
 				method: 'get',
-				path: 'test-path'
-			}),
-			{ headers: { it: 'worked' } }
+				path: 'test-path',
+				_requestOptions: { headers: { it: 'worked' } }
+			})
 		);
 
 		return requestFn().then(() => scope.done());
@@ -271,9 +348,9 @@ describe('callApi', function() {
 		const requestFn = this.callApi(
 			() => ({
 				method: 'get',
-				path: 'test-path'
-			}),
-			{ timeoutMs: 50 }
+				path: 'test-path',
+				_requestOptions: { timeoutMs: 50 }
+			})
 		);
 
 		requestFn()
@@ -296,9 +373,9 @@ describe('callApi', function() {
 		const requestFn = this.callApi(
 			() => ({
 				method: 'get',
-				path: 'test-path'
-			}),
-			{ timeoutMs: 100 }
+				path: 'test-path',
+				_requestOptions: { timeoutMs: 100 }
+			})
 		);
 
 		return requestFn().then(() => scope.done());
@@ -309,23 +386,116 @@ describe('callApi', function() {
 			.get('/test-path')
 			.reply(200, { worked: false, otherKey: 123 });
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path'
-			}),
-			{
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: {
 				transformResponseData: res => ({
 					...res,
 					worked: true
 				})
 			}
-		);
+		}));
 
 		return requestFn().then(res => {
 			expect(res.data.worked).to.equal(true);
 			expect(res.data.otherKey).to.equal(123);
 			scope.done();
+		});
+	});
+
+	it('should retry failed requests if configured (promise)', function() {
+		const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.reply(404, { worked: false })
+			.get('/test-path')
+			.reply(200, { worked: true });
+
+		const requestFn = this.callApi(
+			() => ({
+				method: 'get',
+				path: 'test-path',
+				_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
+			})
+		);
+
+		return requestFn().then(res => {
+			expect(res.data.worked).to.equal(true);
+
+			scope.done();
+		});
+	});
+
+	it('should retry failed requests if configured (callback)', function(done) {
+		const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.reply(404, { worked: false })
+			.get('/test-path')
+			.reply(200, { worked: true });
+
+		const requestFn = this.callApi(
+			() => ({
+				method: 'get',
+				path: 'test-path',
+				_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
+			})
+		);
+
+		requestFn((err, res) => {
+			expect(res.data.worked).to.equal(true);
+
+			scope.done();
+			done();
+		});
+	});
+
+	it('should ultimately fail after exhausting retries (promise)', function(
+		done
+	) {
+		const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.reply(404, { worked: false })
+			.get('/test-path')
+			.reply(404, { worked: false });
+
+		const requestFn = this.callApi(
+			() => ({
+				method: 'get',
+				path: 'test-path',
+				_requestOptions: { maxRetries: 2, retryIntervalMs: 50 }
+			})
+		);
+
+		requestFn().catch(err => {
+			expect(err.response.data.worked).to.equal(false);
+
+			scope.done();
+			done();
+		});
+	});
+
+	it('should ultimately fail after exhausting retries (callback)', function(
+		done
+	) {
+		const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.reply(404, { worked: false })
+			.get('/test-path')
+			.reply(404, { worked: false });
+
+		const requestFn = this.callApi(
+			() => ({
+				method: 'get',
+				path: 'test-path',
+				_requestOptions: { maxRetries: 2, retryIntervalMs: 50 }
+			})
+		);
+
+		requestFn(err => {
+			expect(err.response.data.worked).to.equal(false);
+
+			scope.done();
+			done();
 		});
 	});
 });

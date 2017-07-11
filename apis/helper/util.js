@@ -11,14 +11,12 @@ export function path(path, params = {}) {
 		const requiredRouteParams = Object.keys(route.match(path));
 		throw new Error(
 			'all path parameters are required to make a request; ' +
-			`required: ${requiredRouteParams}. ` +
-			`got: ${Object.keys(params)}.`
+				`required: ${requiredRouteParams}. ` +
+				`got: ${Object.keys(params)}.`
 		);
 	}
 
-	return pathWithParams.startsWith('/')
-		? pathWithParams
-		: `/${pathWithParams}`
+	return pathWithParams.startsWith('/') ? pathWithParams : `/${pathWithParams}`;
 }
 
 function validatePath(path) {
@@ -33,8 +31,18 @@ function validateParams(params) {
 	}
 }
 
+export function mapObject(obj, fn) {
+	let result = {};
+
+	Object.keys(obj).forEach(k => {
+		result[k] = fn(obj[k], k, obj);
+	});
+
+	return result;
+}
+
 export function last(array = []) {
-	return array[array.length - 1]
+	return array[array.length - 1];
 }
 
 export function noop() {}
