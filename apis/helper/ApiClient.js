@@ -18,16 +18,18 @@ export default function veritoneApi(
 	}
 
 	return mapObject(apis, ns =>
-		mapObject(ns, handler =>
-			callApi({ token, baseUrl: `${baseUrl}/v${version}` }, handler)
-			// fixme -- handler's request options?
+		mapObject(
+			ns,
+			handler =>
+				callApi(
+					{
+						token,
+						baseUrl: `${baseUrl}/v${version}`,
+						maxRetries,
+						retryIntervalMs
+					},
+					handler
+				)
 		)
 	);
-
-	// this._token = token;
-	// this._baseUrl = `${baseUrl}/v${version}`;
-	// this._retryHelper = new RetryHelper({ maxRetries, retryIntervalMs });
-	//
-
-	// Object.assign(this, apis);
 }
