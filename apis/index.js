@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-	libraries: require('./libraries')
+	token: require('./token').default
+	// libraries: require('./libraries')
 };

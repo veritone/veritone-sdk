@@ -5,74 +5,13 @@ nock.disableNetConnect();
 import VeritoneApi from '../index.js';
 
 const noop = () => {};
-const apiBaseUri = 'http://fake.domain';
-
-describe('ApiClient constructor', function() {
-	it('can be configured with a string (token for auth header)', function() {
-		const api = new VeritoneApi('testToken');
-
-		expect(api.generateHeaders().Authorization).to.match(/testToken/);
-	});
-
-	it('throws if no token is configured', function() {
-		expect(() => new VeritoneApi()).to.throw();
-		expect(() => new VeritoneApi({})).to.throw();
-		expect(() => new VeritoneApi('testToken')).not.to.throw();
-		expect(() => new VeritoneApi({ token: 'testToken' })).not.to.throw();
-	});
-
-	it('adds an api version', function(done) {
-		const api = new VeritoneApi({
-			token: 'api-token-abc',
-			baseUri: apiBaseUri,
-			version: 5
-		});
-
-		const scope = nock(apiBaseUri).get(/v5/).reply(200, 'ok');
-
-		api.getRecordings(() => {
-			scope.done();
-			done();
-		});
-	});
-
-	it('defaults to version 1', function(done) {
-		const api = new VeritoneApi({
-			token: 'api-token-abc',
-			baseUri: apiBaseUri
-		});
-
-		const scope = nock(apiBaseUri).get(/v1/).reply(200, 'ok');
-
-		api.getRecordings(() => {
-			scope.done();
-			done();
-		});
-	});
-
-	it('adds no version when version="disable" (fixme--this is gross)', function(done) {
-		const api = new VeritoneApi({
-			token: 'api-token-abc',
-			baseUri: apiBaseUri,
-			version: 'disable'
-		});
-
-		const scope = nock(apiBaseUri)
-			.get(uri => !uri.match('disable') && !uri.match('v1'))
-			.reply(200, 'ok');
-
-		api.getRecordings(() => {
-			scope.done();
-			done();
-		});
-	});
-});
+const apiBaseUrl = 'http://fake.domain';
 
 describe('API methods', function() {
 	beforeEach(function() {
-		this.api = new VeritoneApi({
+		this.api = VeritoneApi({
 			token: 'api-token-abc',
-			baseUri: apiBaseUri
+			baseUrl: apiBaseUrl
 		});
 	});
 
@@ -87,11 +26,11 @@ describe('API methods', function() {
 				const correctLabels = ['ok'];
 
 				incorrectLabels.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', noop)).to.throw();
+					expect(() => this.api.token.createToken(l, 'a', noop)).to.throw();
 				});
 
 				correctLabels.forEach(l => {
-					expect(() => this.api.createToken(l, 'a', noop)).not.to.throw();
+					expect(() => this.api.token.createToken(l, 'a', noop)).not.to.throw();
 				});
 			});
 
@@ -100,38 +39,25 @@ describe('API methods', function() {
 				const correctRights = ['rights']; // todo: string or array?
 
 				incorrectRights.forEach(r => {
-					expect(() => this.api.createToken('label', r, noop)).to.throw();
+					expect(() => this.api.token.createToken('label', r, noop)).to.throw();
 				});
 
 				correctRights.forEach(r => {
-					expect(() => this.api.createToken('label', r, noop)).not.to.throw();
-				});
-			});
-
-			it('validates callback', function() {
-				const incorrectCallbacks = [undefined, ''];
-				const correctCallbacks = [noop];
-
-				incorrectCallbacks.forEach(c => {
-					expect(() => this.api.createToken('label', 'a', c)).to.throw();
-				});
-
-				correctCallbacks.forEach(c => {
-					expect(() => this.api.createToken('label', 'a', c)).not.to.throw();
+					expect(() => this.api.token.createToken('label', r, noop)).not.to.throw();
 				});
 			});
 
 			it('posts to API with tokenLabel and rights in json body', function(
 				done
 			) {
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.post(/token/, {
 						tokenLabel: 'label',
 						rights: 'rights'
 					})
 					.reply(200, 'ok');
 
-				this.api.createToken('label', 'rights', () => {
+				this.api.token.createToken('label', 'rights', () => {
 					scope.done();
 					done();
 				});
@@ -144,18 +70,18 @@ describe('API methods', function() {
 				const correctTokens = ['ok'];
 
 				incorrectTokens.forEach(t => {
-					expect(() => this.api.revokeToken(t, noop)).to.throw();
+					expect(() => this.api.token.revokeToken(t, noop)).to.throw();
 				});
 
 				correctTokens.forEach(t => {
-					expect(() => this.api.revokeToken(t, noop)).not.to.throw();
+					expect(() => this.api.token.revokeToken(t, noop)).not.to.throw();
 				});
 			});
 
 			it('makes a delete request to the api with the token', function(done) {
-				const scope = nock(apiBaseUri).delete(/some-token/).reply(200, 'ok');
+				const scope = nock(apiBaseUrl).delete(/some-token/).reply(200, 'ok');
 
-				this.api.revokeToken('some-token', () => {
+				this.api.token.revokeToken('some-token', () => {
 					scope.done();
 					done();
 				});
@@ -170,7 +96,7 @@ describe('API methods', function() {
 			});
 
 			it('posts to API with recording in json body', function(done) {
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.post(/record/, {
 						startDateTime: 1,
 						stopDateTime: 2
@@ -192,7 +118,7 @@ describe('API methods', function() {
 
 		describe('getRecordings', function() {
 			it('can be called with only a callback', function(done) {
-				const scope = nock(apiBaseUri).get(/record/).reply(200, 'ok');
+				const scope = nock(apiBaseUrl).get(/record/).reply(200, 'ok');
 
 				this.api.getRecordings(() => {
 					scope.done();
@@ -201,7 +127,7 @@ describe('API methods', function() {
 			});
 
 			it('can be called with options.limit and options.offset', function(done) {
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.get(/record/)
 					.query({
 						offset: 1,
@@ -216,7 +142,7 @@ describe('API methods', function() {
 			});
 
 			it('can be called with limit only', function(done) {
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.get(/record/)
 					.query({
 						limit: 2
@@ -230,7 +156,7 @@ describe('API methods', function() {
 			});
 
 			it('can be called with offset only', function(done) {
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.get(/record/)
 					.query({
 						offset: 2
@@ -259,7 +185,7 @@ describe('API methods', function() {
 			});
 
 			it('makes a get request to the api with the id', function(done) {
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.get(/some-recording-id/)
 					.reply(200, 'ok');
 
@@ -282,7 +208,7 @@ describe('API methods', function() {
 					recordingId: 'some-recording-id'
 				};
 
-				const scope = nock(apiBaseUri)
+				const scope = nock(apiBaseUrl)
 					.put(/some-recording-id/, recording)
 					.reply(200, 'ok');
 

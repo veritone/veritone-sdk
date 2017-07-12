@@ -7,8 +7,7 @@ import callApi from './callApi';
 const apiToken = 'api-token-abc';
 const apiBaseUri = 'http://fake.domain';
 
-
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', error => {
 	// suppress errors from nock disabling net connect
 	if (error.name !== 'NetConnectNotAllowedError') {
 		throw error;
@@ -326,13 +325,11 @@ describe('callApi', function() {
 			.get('/test-path')
 			.reply(200, 'ok');
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { headers: { it: 'worked' } }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { headers: { it: 'worked' } }
+		}));
 
 		return requestFn().then(() => scope.done());
 	});
@@ -345,13 +342,11 @@ describe('callApi', function() {
 			.delayConnection(1000)
 			.reply(200, 'ok');
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { timeoutMs: 50 }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { timeoutMs: 50 }
+		}));
 
 		requestFn()
 			.then(() => {
@@ -370,13 +365,11 @@ describe('callApi', function() {
 			.delayConnection(50)
 			.reply(200, 'ok');
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { timeoutMs: 100 }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { timeoutMs: 100 }
+		}));
 
 		return requestFn().then(() => scope.done());
 	});
@@ -411,13 +404,11 @@ describe('callApi', function() {
 			.get('/test-path')
 			.reply(200, { worked: true });
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
+		}));
 
 		return requestFn().then(res => {
 			expect(res.data.worked).to.equal(true);
@@ -433,13 +424,11 @@ describe('callApi', function() {
 			.get('/test-path')
 			.reply(200, { worked: true });
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
+		}));
 
 		requestFn((err, res) => {
 			expect(res.data.worked).to.equal(true);
@@ -458,13 +447,11 @@ describe('callApi', function() {
 			.get('/test-path')
 			.reply(404, { worked: false });
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { maxRetries: 2, retryIntervalMs: 50 }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { maxRetries: 2, retryIntervalMs: 50 }
+		}));
 
 		requestFn().catch(err => {
 			expect(err.response.data.worked).to.equal(false);
@@ -483,13 +470,11 @@ describe('callApi', function() {
 			.get('/test-path')
 			.reply(404, { worked: false });
 
-		const requestFn = this.callApi(
-			() => ({
-				method: 'get',
-				path: 'test-path',
-				_requestOptions: { maxRetries: 2, retryIntervalMs: 50 }
-			})
-		);
+		const requestFn = this.callApi(() => ({
+			method: 'get',
+			path: 'test-path',
+			_requestOptions: { maxRetries: 2, retryIntervalMs: 50 }
+		}));
 
 		requestFn(err => {
 			expect(err.response.data.worked).to.equal(false);
@@ -497,5 +482,104 @@ describe('callApi', function() {
 			scope.done();
 			done();
 		});
+	});
+
+	it('should resolve by default if status >= 200 && status < 300', function(
+		done
+	) {
+		const scope1 = nock(apiBaseUri).get('/test-path1').reply(200);
+		const scope2 = nock(apiBaseUri).get('/test-path2').reply(299);
+
+		Promise.all([
+			this.callApi(() => ({
+				method: 'get',
+				path: 'test-path1'
+			}))(),
+			this.callApi(() => ({
+				method: 'get',
+				path: 'test-path2'
+			}))()
+		]).then(([res1, res2]) => {
+			expect(res1.status).to.equal(200);
+			expect(res2.status).to.equal(299);
+
+			scope1.done();
+			scope2.done();
+			done();
+		});
+	});
+
+	it('should reject by default if status < 200 && status >= 300', function(
+		done
+	) {
+		const scope1 = nock(apiBaseUri).get('/test-path1').reply(199);
+		const scope2 = nock(apiBaseUri).get('/test-path2').reply(300);
+
+		let status1, status2;
+
+		this.callApi(() => ({
+			method: 'get',
+			path: 'test-path1'
+		}))()
+			.catch(e => {
+				status1 = e.response.status;
+			})
+			.then(
+				this.callApi(() => ({
+					method: 'get',
+					path: 'test-path2'
+				}))
+			)
+			.catch(e => {
+				status2 = e.response.status;
+			})
+			.then(() => {
+				expect(status1).to.equal(199);
+				expect(status2).to.equal(300);
+
+				scope1.done();
+				scope2.done();
+				done();
+			});
+	});
+
+	it('should resolve/reject properly with a custom status validator', function(done) {
+		const scope1 = nock(apiBaseUri).get('/test-path1').reply(101);
+		const scope2 = nock(apiBaseUri).get('/test-path2').reply(102);
+
+		let status1, status2;
+
+		this.callApi(() => ({
+			method: 'get',
+			path: 'test-path1',
+			_requestOptions: {
+				validateStatus: (status) => status !== 101
+			}
+		}))()
+			.catch(e => {
+				// fails because status is 101
+				status1 = e.response.status;
+			})
+			.then(
+				this.callApi(() => ({
+					method: 'get',
+					path: 'test-path2',
+					_requestOptions: {
+						validateStatus: (status) => status !== 101
+					}
+				}))
+			)
+			.then(res => {
+				// fails because status is !== 101
+				status2 = res.status;
+			})
+			.then(() => {
+				expect(status1).to.equal(101);
+				expect(status2).to.equal(102);
+
+				scope1.done();
+				scope2.done();
+				done();
+			});
 	});
 });

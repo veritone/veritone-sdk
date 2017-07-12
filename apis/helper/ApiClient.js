@@ -1,5 +1,3 @@
-// const RetryHelper = require('./RetryHelper');
-import veritoneApis from '../index';
 import callApi from './callApi';
 import { mapObject } from './util';
 
@@ -11,7 +9,7 @@ export default function veritoneApi(
 		maxRetries = 1,
 		retryIntervalMs = 1000
 	},
-	apis = veritoneApis
+	apis = {}
 ) {
 	if (!token) {
 		throw new Error('Token is required');

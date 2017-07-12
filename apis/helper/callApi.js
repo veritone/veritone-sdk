@@ -45,6 +45,7 @@ export default function callApi(
 		validateRequestOptions(_requestOptions);
 
 		const options = {
+			validateStatus: status => status >= 200 && status < 300,
 			withCredentials: true,
 			maxRetries,
 			retryIntervalMs,
@@ -72,7 +73,8 @@ export default function callApi(
 								...options.headers
 							},
 							baseURL: baseUrl,
-							timeout: options.timeoutMs
+							timeout: options.timeoutMs,
+							validateStatus: options.validateStatus
 						})
 						.then(rawResponse => {
 							let response = {
@@ -127,7 +129,8 @@ const supportedOptions = [
 	'withCredentials',
 	'timeoutMs',
 	'headers',
-	'transformResponseData'
+	'transformResponseData',
+	'validateStatus',
 	// 'cancelToken',
 	// onUploadProgress,
 	// onDownloadProgress,
