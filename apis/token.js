@@ -1,7 +1,7 @@
 import { endpoints } from './config';
 
 export default {
-	createToken: (tokenLabel, rights) => {
+	createToken(tokenLabel, rights) {
 		if (typeof tokenLabel !== 'string' || tokenLabel === '') {
 			throw new Error('Missing label!');
 		}
@@ -13,10 +13,12 @@ export default {
 		return {
 			method: 'post',
 			path: `${endpoints.application}/token`,
-			data: { tokenLabel, rights }
+			data: { tokenLabel, rights },
+			validateStatus: s => s === 200
 		}
 	},
-	revokeToken: (token) => {
+
+	revokeToken(token) {
 		if (typeof token !== 'string' || token === '') {
 			throw new Error('Missing token!');
 		}
@@ -24,6 +26,7 @@ export default {
 		return {
 			method: 'delete',
 			path: `${endpoints.application}/token/${token}`,
+			validateStatus: s => s === 200 || s === 204
 		}
 	}
 }

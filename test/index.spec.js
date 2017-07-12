@@ -43,7 +43,9 @@ describe('API methods', function() {
 				});
 
 				correctRights.forEach(r => {
-					expect(() => this.api.token.createToken('label', r, noop)).not.to.throw();
+					expect(() =>
+						this.api.token.createToken('label', r, noop)
+					).not.to.throw();
 				});
 			});
 
@@ -89,10 +91,12 @@ describe('API methods', function() {
 		});
 	});
 
-	describe('Recording', function() {
+	describe.only('Recording', function() {
 		describe('createRecording', function() {
 			it('validates recording', function() {
-				expect(() => this.api.createRecording(undefined, noop)).to.throw();
+				expect(() =>
+					this.api.recording.createRecording(undefined, noop)
+				).to.throw();
 			});
 
 			it('posts to API with recording in json body', function(done) {
@@ -103,7 +107,7 @@ describe('API methods', function() {
 					})
 					.reply(200, 'ok');
 
-				this.api.createRecording(
+				this.api.recording.createRecording(
 					{
 						startDateTime: 1,
 						stopDateTime: 2
@@ -120,7 +124,7 @@ describe('API methods', function() {
 			it('can be called with only a callback', function(done) {
 				const scope = nock(apiBaseUrl).get(/record/).reply(200, 'ok');
 
-				this.api.getRecordings(() => {
+				this.api.recording.getRecordings(() => {
 					scope.done();
 					done();
 				});
@@ -135,7 +139,7 @@ describe('API methods', function() {
 					})
 					.reply(200, 'ok');
 
-				this.api.getRecordings({ offset: 1, limit: 2 }, () => {
+				this.api.recording.getRecordings({ offset: 1, limit: 2 }, () => {
 					scope.done();
 					done();
 				});
@@ -149,7 +153,7 @@ describe('API methods', function() {
 					})
 					.reply(200, 'ok');
 
-				this.api.getRecordings({ limit: 2 }, () => {
+				this.api.recording.getRecordings({ limit: 2 }, () => {
 					scope.done();
 					done();
 				});
@@ -163,7 +167,7 @@ describe('API methods', function() {
 					})
 					.reply(200, 'ok');
 
-				this.api.getRecordings({ offset: 2 }, () => {
+				this.api.recording.getRecordings({ offset: 2 }, () => {
 					scope.done();
 					done();
 				});
@@ -172,15 +176,15 @@ describe('API methods', function() {
 
 		describe('getRecording', function() {
 			it('validates recordingId', function() {
-				const incorrectIds = [undefined, noop, ''];
+				const incorrectIds = [undefined, noop];
 				const correctIds = [123, '123'];
 
 				incorrectIds.forEach(i => {
-					expect(() => this.api.getRecording(i, noop)).to.throw();
+					expect(() => this.api.recording.getRecording(i, noop)).to.throw();
 				});
 
 				correctIds.forEach(i => {
-					expect(() => this.api.getRecording(i, noop)).not.to.throw();
+					expect(() => this.api.recording.getRecording(i, noop)).not.to.throw();
 				});
 			});
 
@@ -189,7 +193,7 @@ describe('API methods', function() {
 					.get(/some-recording-id/)
 					.reply(200, 'ok');
 
-				this.api.getRecording('some-recording-id', () => {
+				this.api.recording.getRecording('some-recording-id', () => {
 					scope.done();
 					done();
 				});
@@ -198,7 +202,9 @@ describe('API methods', function() {
 
 		describe('updateRecording', function() {
 			it('validates recording', function() {
-				expect(() => this.api.updateRecording(undefined, noop)).to.throw();
+				expect(() =>
+					this.api.recording.updateRecording(undefined, noop)
+				).to.throw();
 			});
 
 			it('makes a put request to the api with the id and body', function(done) {
@@ -212,7 +218,7 @@ describe('API methods', function() {
 					.put(/some-recording-id/, recording)
 					.reply(200, 'ok');
 
-				this.api.updateRecording(recording, () => {
+				this.api.recording.updateRecording(recording, () => {
 					scope.done();
 					done();
 				});
@@ -221,8 +227,12 @@ describe('API methods', function() {
 
 		describe('updateRecordingFolder', function() {
 			it('validates folder', function() {
-				expect(() => this.api.updateRecordingFolder(undefined, noop)).to.throw();
-				expect(() => this.api.updateRecordingFolder({}, noop)).to.throw();
+				expect(() =>
+					this.api.recording.updateRecordingFolder(undefined, noop)
+				).to.throw();
+				expect(() =>
+					this.api.recording.updateRecordingFolder({}, noop)
+				).to.throw();
 			});
 		});
 		// xdescribe('updateCms');
