@@ -16,8 +16,6 @@
     "async": "^2.5.0",
     "axios": "^0.16.2",
     "object.values": "^1.0.4",
-    "qs": "^6.2.1",
-    "request": "^2.75.0",
     "route-parser": "0.0.5",
     "validate.js": "^0.10.0"
   },
@@ -28,6 +26,7 @@
     "chai": "^4.0.2",
     "eslint": "^4.1.1",
     "eslint-config-prettier": "^2.3.0",
+    "lodash": "^4.17.4",
     "mocha": "^3.4.2",
     "nock": "^9.0.13",
     "nyc": "^11.0.3",
