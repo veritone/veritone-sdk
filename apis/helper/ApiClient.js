@@ -10,7 +10,7 @@ export default function veritoneApi(
 		retryIntervalMs = 1000
 	},
 	apis = {},
-	legacyApis = {}
+	legacyApis = {} // fixme -- delete after done migrating
 ) {
 	if (!token) {
 		throw new Error('Token is required');

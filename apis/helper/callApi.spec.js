@@ -543,7 +543,9 @@ describe('callApi', function() {
 			});
 	});
 
-	it('should resolve/reject properly with a custom status validator', function(done) {
+	it('should resolve/reject properly with a custom status validator', function(
+		done
+	) {
 		const scope1 = nock(apiBaseUri).get('/test-path1').reply(101);
 		const scope2 = nock(apiBaseUri).get('/test-path2').reply(102);
 
@@ -553,7 +555,7 @@ describe('callApi', function() {
 			method: 'get',
 			path: 'test-path1',
 			_requestOptions: {
-				validateStatus: (status) => status !== 101
+				validateStatus: status => status !== 101
 			}
 		}))()
 			.catch(e => {
@@ -565,7 +567,7 @@ describe('callApi', function() {
 					method: 'get',
 					path: 'test-path2',
 					_requestOptions: {
-						validateStatus: (status) => status !== 101
+						validateStatus: status => status !== 101
 					}
 				}))
 			)

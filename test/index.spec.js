@@ -20,7 +20,7 @@ describe('API methods', function() {
 		nock.cleanAll();
 	});
 
-	describe('Recording', function() {
+	// describe('Recording', function() {
 		// describe('createRecording', function() {
 		// 	it('validates recording', function() {
 		// 		expect(() =>
@@ -234,274 +234,328 @@ describe('API methods', function() {
 		// 	});
 		// });
 
-		describe('getRecordingTranscript', function() {
-			it('validates recordingId', function() {
-				expect(() => this.api.getRecordingTranscript(undefined, noop)).to.throw(
-					/recordingId/
-				);
+	// 	describe('getRecordingTranscript', function() {
+	// 		it('validates recordingId', function() {
+	// 			expect(() => this.api.getRecordingTranscript(undefined, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getRecordingTranscript({}, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getRecordingTranscript('2', noop)).not.to.throw();
+	// 		});
+  //
+	// 		it("makes a get request to the recording's transcript", function(done) {
+	// 			const scope = nock(apiBaseUrl)
+	// 				.get(/some-id\/transcript/)
+	// 				.reply(200, 'ok');
+  //
+	// 			this.api.getRecordingTranscript('some-id', () => {
+	// 				scope.done();
+	// 				done();
+	// 			});
+	// 		});
+	// 	});
+  //
+	// 	describe('getRecordingMedia', function() {
+	// 		it('validates recordingId', function() {
+	// 			expect(() => this.api.getRecordingMedia(undefined, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getRecordingMedia({}, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getRecordingMedia('2', noop)).not.to.throw();
+	// 		});
+  //
+	// 		it("makes a get request to the recording's media", function(done) {
+	// 			const scope = nock(apiBaseUrl).get(/some-id\/media/).reply(200, 'ok');
+  //
+	// 			this.api.getRecordingMedia('some-id', () => {
+	// 				scope.done();
+	// 				done();
+	// 			});
+	// 		});
+  //
+	// 		it('provides progress and success callbacks', function(done) {
+	// 			const fs = require('fs');
+  //
+	// 			const contentLength = 10000;
+	// 			const metaHeader = { meta: 'meta-header' };
+	// 			const scope = nock(apiBaseUrl)
+	// 				.get(/some-id\/media/)
+	// 				.reply(200, () => fs.createReadStream('index.js'), {
+	// 					'Content-length': contentLength,
+	// 					'Content-type': 'some-type',
+	// 					[headers.metadataHeader]: JSON.stringify(metaHeader)
+	// 				});
+  //
+	// 			let sawProgress = false;
+  //
+	// 			this.api.getRecordingMedia(
+	// 				'some-id',
+	// 				(err, res) => {
+	// 					expect(res.contentType).to.equal('some-type');
+	// 					expect(res.metadata).to.deep.equal(metaHeader);
+	// 					expect(err).to.equal(null);
+	// 				},
+	// 				progress => {
+	// 					expect(progress.received).to.be.a('number');
+	// 					expect(progress.total).to.be.a('number');
+  //
+	// 					if (progress.received !== progress.total) {
+	// 						sawProgress = true;
+	// 					} else {
+	// 						expect(sawProgress).to.equal(true);
+  //
+	// 						scope.done();
+	// 						done();
+	// 					}
+	// 				}
+	// 			);
+	// 		});
+	// 	});
+  //
+	// 	describe('getRecordingAssets', function() {
+	// 		it('validates recordingId', function() {
+	// 			expect(() => this.api.getRecordingAssets(undefined, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getRecordingAssets({}, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getRecordingAssets('2', noop)).not.to.throw();
+	// 		});
+  //
+	// 		it("makes a get request to the recording's asset", function(done) {
+	// 			const scope = nock(apiBaseUrl).get(/some-id\/asset/).reply(200, 'ok');
+  //
+	// 			this.api.getRecordingAssets('some-id', () => {
+	// 				scope.done();
+	// 				done();
+	// 			});
+	// 		});
+	// 	});
+  //
+	// 	describe('getAsset', function() {
+	// 		it('validates recordingId', function() {
+	// 			expect(() => this.api.getAsset(undefined, '5', noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getAsset({}, '5', noop)).to.throw(/recordingId/);
+  //
+	// 			expect(() => this.api.getAsset('2', '5', noop)).not.to.throw();
+	// 		});
+  //
+	// 		it('validates assetId', function() {
+	// 			expect(() => this.api.getAsset('2', undefined, noop)).to.throw(
+	// 				/assetId/
+	// 			);
+  //
+	// 			expect(() => this.api.getAsset('2', '5', noop)).not.to.throw(/assetId/);
+	// 		});
+  //
+	// 		it('provides progress and success callbacks', function(done) {
+	// 			const fs = require('fs');
+  //
+	// 			const contentLength = 10000;
+	// 			const metaHeader = { meta: 'meta-header' };
+	// 			const scope = nock(apiBaseUrl)
+	// 				.get(/recording-id\/asset\/asset-id/)
+	// 				.reply(200, () => fs.createReadStream('index.js'), {
+	// 					'Content-length': contentLength,
+	// 					'Content-type': 'some-type',
+	// 					[headers.metadataHeader]: JSON.stringify(metaHeader)
+	// 				});
+  //
+	// 			let sawProgress = false;
+  //
+	// 			this.api.getAsset(
+	// 				'recording-id',
+	// 				'asset-id',
+	// 				(err, res) => {
+	// 					expect(res.contentType).to.equal('some-type');
+	// 					expect(res.metadata).to.deep.equal(metaHeader);
+	// 					expect(err).to.equal(null);
+	// 				},
+	// 				progress => {
+	// 					expect(progress.received).to.be.a('number');
+	// 					expect(progress.total).to.be.a('number');
+	// 					if (progress.received !== progress.total) {
+	// 						sawProgress = true;
+	// 					} else {
+	// 						expect(sawProgress).to.equal(true);
+  //
+	// 						scope.done();
+	// 						done();
+	// 					}
+	// 				}
+	// 			);
+	// 		});
+	// 	});
+	// 	describe('getAssetMetadata', function() {
+	// 		it('validates recordingId', function() {
+	// 			expect(() => this.api.getAssetMetadata(undefined, '5', noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getAssetMetadata({}, '5', noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.getAssetMetadata('2', '5', noop)).not.to.throw();
+	// 		});
+  //
+	// 		it('validates assetId', function() {
+	// 			expect(() => this.api.getAssetMetadata('2', undefined, noop)).to.throw(
+	// 				/assetId/
+	// 			);
+  //
+	// 			expect(() => this.api.getAssetMetadata('2', '5', noop)).not.to.throw(
+	// 				/assetId/
+	// 			);
+	// 		});
+  //
+	// 		it("makes a get request to the recording's asset metadata", function(
+	// 			done
+	// 		) {
+	// 			const scope = nock(apiBaseUrl)
+	// 				.get(/rec-id\/asset\/asset-id\/meta/)
+	// 				.reply(200, 'ok');
+  //
+	// 			this.api.getAssetMetadata('rec-id', 'asset-id', () => {
+	// 				scope.done();
+	// 				done();
+	// 			});
+	// 		});
+	// 	});
+	// 	describe('updateAssetMetadata', function() {
+	// 		it('validates recordingId', function() {
+	// 			const asset = {
+	// 				assetId: '1'
+	// 			};
+  //
+	// 			expect(() =>
+	// 				this.api.updateAssetMetadata(undefined, asset, noop)
+	// 			).to.throw(/recordingId/);
+  //
+	// 			expect(() => this.api.updateAssetMetadata({}, asset, noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() =>
+	// 				this.api.updateAssetMetadata('2', asset, noop)
+	// 			).not.to.throw();
+	// 		});
+  //
+	// 		it('validates assetId', function() {
+	// 			expect(() =>
+	// 				this.api.updateAssetMetadata('2', undefined, noop)
+	// 			).to.throw(/asset/);
+  //
+	// 			expect(() => this.api.updateAssetMetadata('2', {}, noop)).to.throw(
+	// 				/assetId/
+	// 			);
+  //
+	// 			expect(() =>
+	// 				this.api.updateAssetMetadata(
+	// 					'2',
+	// 					{
+	// 						assetId: '1'
+	// 					},
+	// 					noop
+	// 				)
+	// 			).not.to.throw(/asset/);
+	// 		});
+  //
+	// 		it("makes a put request to the recording's asset metadata", function(
+	// 			done
+	// 		) {
+	// 			const scope = nock(apiBaseUrl)
+	// 				.put(/rec-id\/asset\/asset-id\/meta/, {
+	// 					meta: 'meta'
+	// 				})
+	// 				.reply(204, 'ok');
+  //
+	// 			this.api.updateAssetMetadata(
+	// 				'rec-id',
+	// 				{ assetId: 'asset-id', metadata: { meta: 'meta' } },
+	// 				() => {
+	// 					scope.done();
+	// 					done();
+	// 				}
+	// 			);
+	// 		});
+	// 	});
+  //
+	//
+	// 	// describe('updateAsset');
+  //
+	// 	describe('deleteAsset', function() {
+	// 		it('validates recordingId', function() {
+	// 			expect(() => this.api.deleteAsset(undefined, '5', noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.deleteAsset({}, '5', noop)).to.throw(
+	// 				/recordingId/
+	// 			);
+  //
+	// 			expect(() => this.api.deleteAsset('2', '5', noop)).not.to.throw();
+	// 		});
+  //
+	// 		it('validates assetId', function() {
+	// 			expect(() => this.api.deleteAsset('2', undefined, noop)).to.throw(
+	// 				/assetId/
+	// 			);
+  //
+	// 			expect(() => this.api.deleteAsset('2', '5', noop)).not.to.throw(
+	// 				/assetId/
+	// 			);
+	// 		});
+  //
+	// 		it('makes a delete request to the asset', function(done) {
+	// 			const scope = nock(apiBaseUrl)
+	// 				.delete(/rec-id\/asset\/asset-id/)
+	// 				.reply(204, 'ok');
+  //
+	// 			this.api.deleteAsset('rec-id', 'asset-id', () => {
+	// 				scope.done();
+	// 				done();
+	// 			});
+	// 		});
+	// 	});
+	// });
 
-				expect(() => this.api.getRecordingTranscript({}, noop)).to.throw(
-					/recordingId/
+	describe('Job', function() {
+		describe('createJob', function() {
+			it('validates the job', function() {
+				expect(() => this.api.createJob(undefined, noop)).to.throw(/job/);
+				expect(() => this.api.createJob({}, noop)).to.throw(/job/);
+				expect(() => this.api.createJob({ tasks: 'ok' }, noop)).not.to.throw(
+					/job/
 				);
-
-				expect(() => this.api.getRecordingTranscript('2', noop)).not.to.throw();
 			});
 
-			it("makes a get request to the recording's transcript", function(done) {
-				const scope = nock(apiBaseUrl)
-					.get(/some-id\/transcript/)
-					.reply(200, 'ok');
+			it('posts the job to the API', function(done) {
+				const job = { tasks: 'ok' };
 
-				this.api.getRecordingTranscript('some-id', () => {
+				const scope = nock(apiBaseUrl).post(/job/, job).reply(200, 'ok');
+
+				this.api.createJob(job, () => {
 					scope.done();
 					done();
 				});
 			});
 		});
-
-		describe('getRecordingMedia', function() {
-			it('validates recordingId', function() {
-				expect(() => this.api.getRecordingMedia(undefined, noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getRecordingMedia({}, noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getRecordingMedia('2', noop)).not.to.throw();
-			});
-
-			it("makes a get request to the recording's media", function(done) {
-				const scope = nock(apiBaseUrl).get(/some-id\/media/).reply(200, 'ok');
-
-				this.api.getRecordingMedia('some-id', () => {
-					scope.done();
-					done();
-				});
-			});
-
-			it('provides progress and success callbacks', function(done) {
-				const fs = require('fs');
-
-				const contentLength = 10000;
-				const metaHeader = { meta: 'meta-header' };
-				const scope = nock(apiBaseUrl)
-					.get(/some-id\/media/)
-					.reply(200, () => fs.createReadStream('index.js'), {
-						'Content-length': contentLength,
-						'Content-type': 'some-type',
-						[headers.metadataHeader]: JSON.stringify(metaHeader)
-					});
-
-				let sawProgress = false;
-
-				this.api.getRecordingMedia(
-					'some-id',
-					(err, res) => {
-						expect(res.contentType).to.equal('some-type');
-						expect(res.metadata).to.deep.equal(metaHeader);
-						expect(err).to.equal(null);
-					},
-					progress => {
-						expect(progress.received).to.be.a('number');
-						expect(progress.total).to.be.a('number');
-
-						if (progress.received !== progress.total) {
-							sawProgress = true;
-						} else {
-							expect(sawProgress).to.equal(true);
-
-							scope.done();
-							done();
-						}
-					}
-				);
-			});
-		});
-
-		describe('getRecordingAssets', function() {
-			it('validates recordingId', function() {
-				expect(() => this.api.getRecordingAssets(undefined, noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getRecordingAssets({}, noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getRecordingAssets('2', noop)).not.to.throw();
-			});
-
-			it("makes a get request to the recording's asset", function(done) {
-				const scope = nock(apiBaseUrl).get(/some-id\/asset/).reply(200, 'ok');
-
-				this.api.getRecordingAssets('some-id', () => {
-					scope.done();
-					done();
-				});
-			});
-		});
-
-		describe('getAsset', function() {
-			it('validates recordingId', function() {
-				expect(() => this.api.getAsset(undefined, '5', noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getAsset({}, '5', noop)).to.throw(/recordingId/);
-
-				expect(() => this.api.getAsset('2', '5', noop)).not.to.throw();
-			});
-
-			it('validates assetId', function() {
-				expect(() => this.api.getAsset('2', undefined, noop)).to.throw(
-					/assetId/
-				);
-
-				expect(() => this.api.getAsset('2', '5', noop)).not.to.throw(/assetId/);
-			});
-
-			it('provides progress and success callbacks', function(done) {
-				const fs = require('fs');
-
-				const contentLength = 10000;
-				const metaHeader = { meta: 'meta-header' };
-				const scope = nock(apiBaseUrl)
-					.get(/recording-id\/asset\/asset-id/)
-					.reply(200, () => fs.createReadStream('index.js'), {
-						'Content-length': contentLength,
-						'Content-type': 'some-type',
-						[headers.metadataHeader]: JSON.stringify(metaHeader)
-					});
-
-				let sawProgress = false;
-
-				this.api.getAsset(
-					'recording-id',
-					'asset-id',
-					(err, res) => {
-						expect(res.contentType).to.equal('some-type');
-						expect(res.metadata).to.deep.equal(metaHeader);
-						expect(err).to.equal(null);
-					},
-					progress => {
-						expect(progress.received).to.be.a('number');
-						expect(progress.total).to.be.a('number');
-						if (progress.received !== progress.total) {
-							sawProgress = true;
-						} else {
-							expect(sawProgress).to.equal(true);
-
-							scope.done();
-							done();
-						}
-					}
-				);
-			});
-		});
-		describe('getAssetMetadata', function() {
-			it('validates recordingId', function() {
-				expect(() => this.api.getAssetMetadata(undefined, '5', noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getAssetMetadata({}, '5', noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() => this.api.getAssetMetadata('2', '5', noop)).not.to.throw();
-			});
-
-			it('validates assetId', function() {
-				expect(() => this.api.getAssetMetadata('2', undefined, noop)).to.throw(
-					/assetId/
-				);
-
-				expect(() => this.api.getAssetMetadata('2', '5', noop)).not.to.throw(
-					/assetId/
-				);
-			});
-
-			it("makes a get request to the recording's asset metadata", function(
-				done
-			) {
-				const scope = nock(apiBaseUrl)
-					.get(/rec-id\/asset\/asset-id\/meta/)
-					.reply(200, 'ok');
-
-				this.api.getAssetMetadata('rec-id', 'asset-id', () => {
-					scope.done();
-					done();
-				});
-			});
-		});
-		describe('updateAssetMetadata', function() {
-			it('validates recordingId', function() {
-				const asset = {
-					assetId: '1'
-				};
-
-				expect(() =>
-					this.api.updateAssetMetadata(undefined, asset, noop)
-				).to.throw(/recordingId/);
-
-				expect(() => this.api.updateAssetMetadata({}, asset, noop)).to.throw(
-					/recordingId/
-				);
-
-				expect(() =>
-					this.api.updateAssetMetadata('2', asset, noop)
-				).not.to.throw();
-			});
-
-			it('validates assetId', function() {
-				expect(() =>
-					this.api.updateAssetMetadata('2', undefined, noop)
-				).to.throw(/asset/);
-
-				expect(() => this.api.updateAssetMetadata('2', {}, noop)).to.throw(
-					/assetId/
-				);
-
-				expect(() =>
-					this.api.updateAssetMetadata(
-						'2',
-						{
-							assetId: '1'
-						},
-						noop
-					)
-				).not.to.throw(/asset/);
-			});
-
-			it("makes a put request to the recording's asset metadata", function(
-				done
-			) {
-				const scope = nock(apiBaseUrl)
-					.put(/rec-id\/asset\/asset-id\/meta/, {
-						meta: 'meta'
-					})
-					.reply(200, 'ok');
-
-				this.api.updateAssetMetadata(
-					'rec-id',
-					{ assetId: 'asset-id', metadata: { meta: 'meta'} },
-					() => {
-						scope.done();
-						done();
-					}
-				);
-			});
-		});
-		// xdescribe('saveAssetToFile');
-		// xdescribe('createAsset');
-		// xdescribe('updateAsset');
-		// xdescribe('deleteAsset');
 	});
-
-	// xdescribe('Asset');
-	// xdescribe('Job');
 	// xdescribe('Engine');
 	// xdescribe('Task');
 	// xdescribe('DropboxWatcher');

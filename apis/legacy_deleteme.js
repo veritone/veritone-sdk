@@ -14,573 +14,6 @@ function generateHeaders() {
 }
 
 export default {
-	getRecordingTranscript: function getRecordingTranscript(
-		recordingId,
-		callback
-	) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					uri: baseUri + endpoints.recording + recordingId + '/transcript',
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	getRecordingMedia: function getRecordingMedia(
-		recordingId,
-		callback,
-		progressCallback
-	) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		const self = this;
-
-		function task(callback) {
-			let progress = {
-				total: 0,
-				received: 0
-			};
-
-			const req = request({
-				method: 'GET',
-				uri: baseUri + endpoints.recording + recordingId + '/media',
-				headers: generateHeaders(self._token)
-			})
-				.on('error', function onError(err) {
-					callback(err);
-				})
-				.on('response', function onResponse(response) {
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode);
-					}
-					progress.total = parseInt(response.headers['content-length']);
-					progress.received = 0;
-					if (progressCallback) {
-						progressCallback(progress);
-					}
-					const metadata =
-						response.headers[headers.metadataHeader.toLowerCase()];
-					callback(null, {
-						contentType: response.headers['content-type'],
-						metadata: metadata ? JSON.parse(metadata) : undefined,
-						stream: req
-					});
-				})
-				.on('data', function onData(data) {
-					progress.received += data.length;
-					if (progressCallback) {
-						progressCallback(progress);
-					}
-				})
-				.on('end', function onEnd() {
-					progress.received = progress.total;
-					if (progressCallback) {
-						progressCallback(progress);
-					}
-				});
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	getRecordingAssets: function getRecordingAssets(recordingId, callback) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					uri: baseUri + endpoints.recording + recordingId + '/asset/',
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	getAsset: function getAsset(
-		recordingId,
-		assetId,
-		callback,
-		progressCallback
-	) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof assetId !== 'string' || assetId === '') {
-			throw new Error('Missing assetId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			var progress = {
-				total: 0,
-				received: 0
-			};
-
-			var req = request({
-				method: 'GET',
-				uri: baseUri + endpoints.recording + recordingId + '/asset/' + assetId,
-				headers: generateHeaders(self._token)
-			})
-				.on('error', function onError(err) {
-					callback(err);
-				})
-				.on('response', function onResponse(response) {
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode);
-					}
-					progress.total = parseInt(response.headers['content-length']);
-					progress.received = 0;
-					if (progressCallback) {
-						progressCallback(progress);
-					}
-					var metadata = response.headers[headers.metadataHeader.toLowerCase()];
-					callback(null, {
-						contentType: response.headers['content-type'],
-						metadata: metadata ? JSON.parse(metadata) : undefined,
-						stream: req
-					});
-				})
-				.on('data', function onData(data) {
-					progress.received += data.length;
-					if (progressCallback) {
-						progressCallback(progress);
-					}
-				})
-				.on('end', function onEnd() {
-					progress.received = progress.total;
-					if (progressCallback) {
-						progressCallback(progress);
-					}
-				});
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	getAssetMetadata: function getAssetMetadata(recordingId, assetId, callback) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof assetId !== 'string' || assetId === '') {
-			throw new Error('Missing assetId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					uri:
-						baseUri +
-						endpoints.recording +
-						recordingId +
-						'/asset/' +
-						assetId +
-						'/metadata',
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err);
-					}
-
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	updateAssetMetadata: function updateAssetMetadata(
-		recordingId,
-		asset,
-		callback
-	) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof asset !== 'object') {
-			throw new Error('Missing asset!');
-		}
-		if (typeof asset.assetId !== 'string' || asset.assetId === '') {
-			throw new Error('Missing asset.assetId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'PUT',
-					uri:
-						baseUri +
-						endpoints.recording +
-						recordingId +
-						'/asset/' +
-						asset.assetId +
-						'/metadata',
-					headers: generateHeaders(self._token),
-					json: asset.metadata || {}
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-
-					if (response.statusCode !== 204) {
-						return callback('Received status: ' + response.statusCode);
-					}
-					callback();
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	saveAssetToFile: function saveAssetToFile(
-		recordingId,
-		assetId,
-		fileName,
-		callback,
-		progressCallback
-	) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof assetId !== 'string' || assetId === '') {
-			throw new Error('Missing assetId!');
-		}
-		if (typeof fileName !== 'string' || fileName === '') {
-			throw new Error('Missing fileName!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		this.getAsset(
-			recordingId,
-			assetId,
-			function getAssetCallback(err, result) {
-				if (err) {
-					return callback(err);
-				}
-				result.stream.on('end', function onEnd() {
-					callback(null, result);
-				});
-				result.stream.pipe(fs.createWriteStream(fileName));
-			},
-			progressCallback
-		);
-	},
-	createAsset: function createAsset(recordingId, asset, callback) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof asset !== 'object') {
-			throw new Error('Missing asset!');
-		}
-		if (
-			typeof asset.fileName !== 'string' &&
-			typeof asset.stream !== 'object'
-		) {
-			throw new Error('Missing asset.fileName or asset.stream!');
-		}
-		if (asset.fileName && asset.stream) {
-			throw new Error('You can specify only asset.fileName or asset.stream!');
-		}
-		if (typeof asset.assetType !== 'string' || asset.assetType === '') {
-			throw new Error('Missing asset.assetType!');
-		}
-		if (typeof asset.contentType !== 'string' || asset.contentType === '') {
-			throw new Error('Missing asset.contentType!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-		asset.metadata = asset.metadata || {};
-		if (asset.fileName) {
-			if (!fs.existsSync(asset.fileName)) {
-				throw new Error('File "' + asset.fileName + '" does not exist!');
-			}
-
-			if (!asset.metadata.fileName) {
-				asset.metadata.fileName = path.basename(asset.fileName);
-			}
-			var stat = fs.statSync(asset.fileName);
-			asset.metadata.size = stat.size;
-		}
-		//console.log(asset);
-
-		var headers = generateHeaders(this._token);
-		headers['X-Veritone-Asset-Type'] = asset.assetType;
-		headers['Content-Type'] = asset.contentType;
-		//	This causes things to hang
-		//	if (asset.metadata.size) {
-		//		headers['Content-Length'] = asset.metadata.size;
-		//	}
-
-		var opts = {
-			method: 'POST',
-			uri: this._baseUri + endpoints.recording + recordingId + '/asset/',
-			headers: headers,
-			json: true
-		};
-		if (asset.metadata) {
-			opts.headers[headers.metadataHeader] = JSON.stringify(asset.metadata);
-		}
-		if (asset.applicationId) {
-			opts.headers[headers.applicationIdHeader] = asset.applicationId;
-		}
-		//console.log(opts);
-		var stream = asset.stream || fs.createReadStream(asset.fileName);
-
-		function task(callback) {
-			stream.pipe(
-				request(opts, function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				})
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	updateAsset: function updateAsset(recordingId, asset, callback) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof asset !== 'object') {
-			throw new Error('Missing asset!');
-		}
-		if (asset.fileName && !asset.contentType) {
-			throw new Error('Missing asset.contentType!');
-		}
-		if (asset.contentType && !asset.fileName) {
-			throw new Error('Missing asset.fileName!');
-		}
-		if (typeof asset.assetType !== 'string' || asset.assetType === '') {
-			throw new Error('Missing asset.assetType!');
-		}
-		if (!asset.contentType && !asset.fileName && !asset.metadata) {
-			throw new Error('Nothing to do!');
-		}
-		if (!fs.existsSync(asset.fileName)) {
-			throw new Error('File "' + asset.fileName + '" does not exist!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var opts = {
-			method: 'PUT',
-			uri:
-				this._baseUri +
-				endpoints.recording +
-				recordingId +
-				'/asset/' +
-				asset.assetId,
-			headers: generateHeaders(this._token),
-			json: true
-		};
-		if (asset.fileName) {
-			if (!fs.existsSync(asset.fileName)) {
-				throw new Error('File "' + asset.fileName + '" does not exist!');
-			}
-			opts.headers['Content-Type'] = asset.contentType;
-			opts.headers['X-Veritone-Asset-Type'] = asset.assetType;
-		}
-		if (asset.metadata) {
-			opts.headers[headers.metadataHeader] = JSON.stringify(asset.metadata);
-		}
-		if (asset.applicationId) {
-			opts.headers[headers.applicationIdHeader] = asset.applicationId;
-		}
-
-		function task(callback) {
-			var req = request(opts, function requestCallback(err, response, body) {
-				if (err) {
-					return callback(err, body);
-				}
-				if (response.statusCode !== 200) {
-					return callback('Received status: ' + response.statusCode, body);
-				}
-				callback(null, body);
-			});
-			if (asset.fileName) {
-				fs.createReadStream(asset.fileName).pipe(req);
-			}
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-	deleteAsset: function deleteAsset(recordingId, assetId, callback) {
-		if (typeof recordingId === 'number') {
-			recordingId = recordingId + '';
-		}
-		if (typeof recordingId !== 'string' || recordingId === '') {
-			throw new Error('Missing recordingId!');
-		}
-		if (typeof assetId !== 'string' || assetId === '') {
-			throw new Error('Missing assetId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		request(
-			{
-				method: 'DELETE',
-				url:
-					this._baseUri +
-					endpoints.recording +
-					recordingId +
-					'/asset/' +
-					assetId,
-				headers: generateHeaders(this._token)
-			},
-			function requestCallback(err, response, body) {
-				if (err) {
-					return callback(err, body);
-				}
-				if (response.statusCode !== 204) {
-					return callback('Received status: ' + response.statusCode, body);
-				}
-				callback(null, body);
-			}
-		);
-	},
 	createJob: function createJob(job, callback) {
 		if (typeof job !== 'object') {
 			throw new Error('Missing job!');
@@ -649,7 +82,7 @@ export default {
 			throw new Error('Missing callback!');
 		}
 
-		var uri = this._baseUri + endpoints.job;
+		var uri = baseUri + endpoints.job;
 		if (options.limit || options.offset) {
 			if (options.limit && options.ofset) {
 				uri += '?limit=' + options.limit + '&offset=' + options.offset;
@@ -711,8 +144,7 @@ export default {
 			throw new Error('Missing callback!');
 		}
 
-		var uri =
-			this._baseUri + endpoints.job + 'recording/' + options.recordingId;
+		var uri = baseUri + endpoints.job + 'recording/' + options.recordingId;
 		if (options.limit || options.offset) {
 			if (options.limit && options.ofset) {
 				uri += '?limit=' + options.limit + '&offset=' + options.offset;
@@ -802,7 +234,7 @@ export default {
 		request(
 			{
 				method: 'PUT',
-				url: this._baseUri + endpoints.job + jobId + '/restart',
+				url: baseUri + endpoints.job + jobId + '/restart',
 				headers: generateHeaders(this._token),
 				json: true
 			},
@@ -829,7 +261,7 @@ export default {
 		request(
 			{
 				method: 'PUT',
-				url: this._baseUri + endpoints.job + jobId + '/retry',
+				url: baseUri + endpoints.job + jobId + '/retry',
 				headers: generateHeaders(this._token),
 				json: true
 			},
@@ -855,7 +287,7 @@ export default {
 	//
 	//	request({
 	//		method: 'DELETE',
-	//		url: this._baseUri + endpoints.job+ jobId,
+	//		url: baseUri + endpoints.job+ jobId,
 	//		headers: generateHeaders(this._token),
 	//		json: true
 	//	}, function requestCallback(err, response, body) {
@@ -1246,7 +678,7 @@ export default {
 	//
 	//	request({
 	//		method: 'GET',
-	//		url: this._baseUri + endpoints.reports+ 'usage',
+	//		url: baseUri + endpoints.reports+ 'usage',
 	//		headers: generateHeaders(this._token),
 	//		json: true
 	//	}, function requestCallback(err, response, body) {
@@ -1270,7 +702,7 @@ export default {
 	//
 	//	request({
 	//		method: 'GET',
-	//		url: this._baseUri + endpoints.reports+ 'usage/' + reportId,
+	//		url: baseUri + endpoints.reports+ 'usage/' + reportId,
 	//		headers: generateHeaders(this._token),
 	//		json: true
 	//	}, function requestCallback(err, response, body) {
@@ -1338,7 +770,7 @@ export default {
 			throw new Error('Missing callback!');
 		}
 
-		var uri = this._baseUri + endpoints.tasksByRecording;
+		var uri = baseUri + endpoints.tasksByRecording;
 		if (options.keys.length > 0) {
 			uri += '?';
 		}
@@ -1484,7 +916,7 @@ export default {
 
 		var cfg = {
 			method: method,
-			uri: this._baseUri + path,
+			uri: baseUri + path,
 			headers: generateHeaders(this._token)
 		};
 
@@ -2053,7 +1485,7 @@ export default {
 //
 // 	request({
 // 		method: 'POST',
-// 		url: this._baseUri + endpoints.application,
+// 		url: baseUri + endpoints.application,
 // 		headers: generateHeaders(this._token),
 // 		json: application
 // 	}, function requestCallback(err, response, body) {
@@ -2074,7 +1506,7 @@ export default {
 //
 // 	request({
 // 		method: 'GET',
-// 		url: this._baseUri + endpoints.application,
+// 		url: baseUri + endpoints.application,
 // 		headers: generateHeaders(this._token),
 // 		json: true
 // 	}, function requestCallback(err, response, body) {
@@ -2096,7 +1528,7 @@ export default {
 //
 // 	request({
 // 		method: 'PUT',
-// 		url: this._baseUri + endpoints.application,
+// 		url: baseUri + endpoints.application,
 // 		headers: generateHeaders(this._token),
 // 		json: application
 // 	}, function requestCallback(err, response, body) {

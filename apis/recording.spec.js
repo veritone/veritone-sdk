@@ -1,10 +1,25 @@
 import { expect } from 'chai';
-import { noop } from './helper/util';
+import nock from 'nock';
+nock.disableNetConnect();
 
+import { headers } from './config';
+import { noop } from './helper/util';
 import { assertMatches } from '../apis/helper/test-util';
 import recordingHandlers from './recording';
 
+const apiBaseUrl = 'http://fake.domain';
+const nonStandardHandlerOptions = {
+	token: 'some-token',
+	baseUrl: apiBaseUrl,
+	maxRetries: 1,
+	retryIntervalMs: 50
+};
+
 describe('Recording', function() {
+	afterEach(function() {
+		nock.cleanAll();
+	});
+
 	describe('createRecording', function() {
 		it('validates recording', function() {
 			expect(() =>
@@ -161,9 +176,13 @@ describe('Recording', function() {
 
 	describe('updateCms', function() {
 		it('validates recordingId', function() {
-			expect(() => recordingHandlers.updateCms(undefined, noop)).to.throw(/recordingId/);
+			expect(() => recordingHandlers.updateCms(undefined, noop)).to.throw(
+				/recordingId/
+			);
 
-			expect(() => recordingHandlers.updateCms({}, noop)).to.throw(/recordingId/);
+			expect(() => recordingHandlers.updateCms({}, noop)).to.throw(
+				/recordingId/
+			);
 
 			expect(() => recordingHandlers.updateCms('2', noop)).not.to.throw();
 		});
@@ -185,7 +204,9 @@ describe('Recording', function() {
 				/recordingId/
 			);
 
-			expect(() => recordingHandlers.deleteRecording({}, noop)).to.throw(/recordingId/);
+			expect(() => recordingHandlers.deleteRecording({}, noop)).to.throw(
+				/recordingId/
+			);
 
 			expect(() => recordingHandlers.deleteRecording('2', noop)).not.to.throw();
 		});
@@ -200,7 +221,367 @@ describe('Recording', function() {
 			assertMatches(result, expected);
 		});
 	});
-	// xdescribe('getRecordingTranscript');
-	// xdescribe('getRecordingMedia');
-	// xdescribe('getRecordingAssets');
+
+	describe('getRecordingTranscript', function() {
+		it('validates recordingId', function() {
+			expect(() =>
+				recordingHandlers.getRecordingTranscript(
+					nonStandardHandlerOptions,
+					undefined,
+					noop
+				)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.getRecordingTranscript(
+					nonStandardHandlerOptions,
+					{},
+					noop
+				)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.getRecordingTranscript(
+					nonStandardHandlerOptions,
+					'2',
+					noop
+				)
+			).not.to.throw();
+		});
+
+		it("makes a get request to the recording's transcript", function(done) {
+			const scope = nock(apiBaseUrl)
+				.get(/some-id\/transcript/)
+				.reply(200, 'ok');
+
+			recordingHandlers.getRecordingTranscript(
+				nonStandardHandlerOptions,
+				'some-id',
+				() => {
+					scope.done();
+					done();
+				}
+			);
+		});
+	});
+
+	describe('getRecordingMedia', function() {
+		it('validates recordingId', function() {
+			expect(() =>
+				recordingHandlers.getRecordingMedia(
+					nonStandardHandlerOptions,
+					undefined,
+					noop
+				)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.getRecordingMedia(nonStandardHandlerOptions, {}, noop)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.getRecordingMedia(
+					nonStandardHandlerOptions,
+					'2',
+					noop
+				)
+			).not.to.throw();
+		});
+
+		it("makes a get request to the recording's media", function(done) {
+			const scope = nock(apiBaseUrl).get(/some-id\/media/).reply(200, 'ok');
+
+			recordingHandlers.getRecordingMedia(
+				nonStandardHandlerOptions,
+				'some-id',
+				() => {
+					scope.done();
+					done();
+				}
+			);
+		});
+
+		it('provides progress and success callbacks', function(done) {
+			const fs = require('fs');
+
+			const contentLength = 10000;
+			const metaHeader = { meta: 'meta-header' };
+			const scope = nock(apiBaseUrl)
+				.get(/some-id\/media/)
+				.reply(200, () => fs.createReadStream('index.js'), {
+					'Content-length': contentLength,
+					'Content-type': 'some-type',
+					[headers.metadataHeader]: JSON.stringify(metaHeader)
+				});
+
+			let sawProgress = false;
+
+			recordingHandlers.getRecordingMedia(
+				nonStandardHandlerOptions,
+				'some-id',
+				(err, res) => {
+					expect(res.contentType).to.equal('some-type');
+					expect(res.metadata).to.deep.equal(metaHeader);
+					expect(err).to.equal(null);
+				},
+				progress => {
+					expect(progress.received).to.be.a('number');
+					expect(progress.total).to.be.a('number');
+
+					if (progress.received !== progress.total) {
+						sawProgress = true;
+					} else {
+						expect(sawProgress).to.equal(true);
+
+						scope.done();
+						done();
+					}
+				}
+			);
+		});
+	});
+
+	describe('getRecordingAssets', function() {
+		it('validates recordingId', function() {
+			expect(() =>
+				recordingHandlers.getRecordingAssets(undefined, noop)
+			).to.throw(/recordingId/);
+
+			expect(() => recordingHandlers.getRecordingAssets({}, noop)).to.throw(
+				/recordingId/
+			);
+
+			expect(() =>
+				recordingHandlers.getRecordingAssets('2', noop)
+			).not.to.throw();
+		});
+
+		it("makes a get request to the recording's asset", function() {
+			const expected = {
+				method: 'get',
+				path: /rec-id\/asset/
+			};
+
+			const result = recordingHandlers.getRecordingAssets('rec-id');
+
+			assertMatches(result, expected);
+		});
+	});
+
+	describe('getAsset', function() {
+		it('validates recordingId', function() {
+			expect(() =>
+				recordingHandlers.getAsset(
+					nonStandardHandlerOptions,
+					undefined,
+					'5',
+					noop
+				)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.getAsset(nonStandardHandlerOptions, {}, '5', noop)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.getAsset(nonStandardHandlerOptions, '2', '5', noop)
+			).not.to.throw();
+		});
+
+		it('validates assetId', function() {
+			expect(() =>
+				recordingHandlers.getAsset(
+					nonStandardHandlerOptions,
+					'2',
+					undefined,
+					noop
+				)
+			).to.throw(/assetId/);
+
+			expect(() =>
+				recordingHandlers.getAsset(nonStandardHandlerOptions, '2', '5', noop)
+			).not.to.throw(/assetId/);
+		});
+
+		it('provides progress and success callbacks', function(done) {
+			const fs = require('fs');
+
+			const contentLength = 10000;
+			const metaHeader = { meta: 'meta-header' };
+			const scope = nock(apiBaseUrl)
+				.get(/recording-id\/asset\/asset-id/)
+				.reply(200, () => fs.createReadStream('index.js'), {
+					'Content-length': contentLength,
+					'Content-type': 'some-type',
+					[headers.metadataHeader]: JSON.stringify(metaHeader)
+				});
+
+			let sawProgress = false;
+
+			recordingHandlers.getAsset(
+				nonStandardHandlerOptions,
+				'recording-id',
+				'asset-id',
+				(err, res) => {
+					expect(res.contentType).to.equal('some-type');
+					expect(res.metadata).to.deep.equal(metaHeader);
+					expect(err).to.equal(null);
+				},
+				progress => {
+					expect(progress.received).to.be.a('number');
+					expect(progress.total).to.be.a('number');
+					if (progress.received !== progress.total) {
+						sawProgress = true;
+					} else {
+						expect(sawProgress).to.equal(true);
+
+						scope.done();
+						done();
+					}
+				}
+			);
+		});
+	});
+	describe('getAssetMetadata', function() {
+		it('validates recordingId', function() {
+			expect(() =>
+				recordingHandlers.getAssetMetadata(undefined, '5', noop)
+			).to.throw(/recordingId/);
+
+			expect(() => recordingHandlers.getAssetMetadata({}, '5', noop)).to.throw(
+				/recordingId/
+			);
+
+			expect(() =>
+				recordingHandlers.getAssetMetadata('2', '5', noop)
+			).not.to.throw();
+		});
+
+		it('validates assetId', function() {
+			expect(() =>
+				recordingHandlers.getAssetMetadata('2', undefined, noop)
+			).to.throw(/assetId/);
+
+			expect(() =>
+				recordingHandlers.getAssetMetadata('2', '5', noop)
+			).not.to.throw(/assetId/);
+		});
+
+		it("makes a get request to the recording's asset metadata", function() {
+			const expected = {
+				method: 'get',
+				path: /rec-id\/asset\/asset-id\/meta/
+			};
+
+			const result = recordingHandlers.getAssetMetadata('rec-id', 'asset-id');
+
+			assertMatches(result, expected);
+		});
+	});
+	describe('updateAssetMetadata', function() {
+		it('validates recordingId', function() {
+			const asset = {
+				assetId: '1'
+			};
+
+			expect(() =>
+				recordingHandlers.updateAssetMetadata(undefined, asset, noop)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.updateAssetMetadata({}, asset, noop)
+			).to.throw(/recordingId/);
+
+			expect(() =>
+				recordingHandlers.updateAssetMetadata('2', asset, noop)
+			).not.to.throw();
+		});
+
+		it('validates assetId', function() {
+			expect(() =>
+				recordingHandlers.updateAssetMetadata('2', undefined, noop)
+			).to.throw(/asset/);
+
+			expect(() =>
+				recordingHandlers.updateAssetMetadata('2', {}, noop)
+			).to.throw(/assetId/);
+
+			expect(() =>
+				recordingHandlers.updateAssetMetadata(
+					'2',
+					{
+						assetId: '1'
+					},
+					noop
+				)
+			).not.to.throw(/asset/);
+		});
+
+		it("makes a put request to the recording's asset metadata", function() {
+			const expected = {
+				method: 'put',
+				path: /rec-id\/asset\/asset-id\/metadata/,
+				data: {
+					meta: 'meta'
+				}
+			};
+
+			const result = recordingHandlers.updateAssetMetadata('rec-id', {
+				assetId: 'asset-id',
+				metadata: { meta: 'meta' }
+			});
+
+			assertMatches(result, expected);
+		});
+	});
+
+	describe('saveAssetToFile', function() {
+		// todo: mock the fs write stream somehow
+		it('saves the asset to a file');
+	});
+
+	describe('createAsset', function() {
+		it('streams the asset to the server');
+	});
+
+	describe('updateAsset', function() {
+		it('streams the asset to the server');
+	});
+
+	describe('deleteAsset', function() {
+		it('validates recordingId', function() {
+			expect(() =>
+				recordingHandlers.deleteAsset(undefined, '5', noop)
+			).to.throw(/recordingId/);
+
+			expect(() => recordingHandlers.deleteAsset({}, '5', noop)).to.throw(
+				/recordingId/
+			);
+
+			expect(() =>
+				recordingHandlers.deleteAsset('2', '5', noop)
+			).not.to.throw();
+		});
+
+		it('validates assetId', function() {
+			expect(() =>
+				recordingHandlers.deleteAsset('2', undefined, noop)
+			).to.throw(/assetId/);
+
+			expect(() => recordingHandlers.deleteAsset('2', '5', noop)).not.to.throw(
+				/assetId/
+			);
+		});
+
+		it('makes a delete request to the asset', function() {
+			const expected = {
+				method: 'delete',
+				path: /rec-id\/asset\/asset-id/
+			};
+
+			const result = recordingHandlers.deleteAsset('rec-id', 'asset-id');
+
+			assertMatches(result, expected);
+		});
+	});
 });
