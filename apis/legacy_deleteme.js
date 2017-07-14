@@ -1,6 +1,7 @@
 import request from 'request';
 import validatejs from 'validate.js';
 import path from 'path';
+import fs from 'fs';
 
 import RetryHelper from './helper/RetryHelper';
 import { endpoints, headers } from './config';
@@ -8,7 +9,9 @@ import { endpoints, headers } from './config';
 const retryHelper = new RetryHelper();
 const baseUri = 'http://fake.domain';
 var enginePageLimit = 99999;
-function generateHeaders() { return {} }
+function generateHeaders() {
+	return {};
+}
 
 export default {
 	getRecordingTranscript: function getRecordingTranscript(
@@ -31,8 +34,7 @@ export default {
 			request(
 				{
 					method: 'GET',
-					uri:
-						baseUri + endpoints.recording + recordingId + '/transcript',
+					uri: baseUri + endpoints.recording + recordingId + '/transcript',
 					headers: generateHeaders(self._token),
 					json: true
 				},
@@ -95,7 +97,8 @@ export default {
 					if (progressCallback) {
 						progressCallback(progress);
 					}
-					const metadata = response.headers[headers.metadataHeader.toLowerCase()];
+					const metadata =
+						response.headers[headers.metadataHeader.toLowerCase()];
 					callback(null, {
 						contentType: response.headers['content-type'],
 						metadata: metadata ? JSON.parse(metadata) : undefined,
@@ -192,12 +195,7 @@ export default {
 
 			var req = request({
 				method: 'GET',
-				uri:
-					baseUri +
-					endpoints.recording +
-					recordingId +
-					'/asset/' +
-					assetId,
+				uri: baseUri + endpoints.recording + recordingId + '/asset/' + assetId,
 				headers: generateHeaders(self._token)
 			})
 				.on('error', function onError(err) {
@@ -427,8 +425,6 @@ export default {
 		}
 		//console.log(asset);
 
-		var self = this;
-
 		var headers = generateHeaders(this._token);
 		headers['X-Veritone-Asset-Type'] = asset.assetType;
 		headers['Content-Type'] = asset.contentType;
@@ -501,8 +497,6 @@ export default {
 		if (typeof callback !== 'function') {
 			throw new Error('Missing callback!');
 		}
-
-		var self = this;
 
 		var opts = {
 			method: 'PUT',
@@ -922,10 +916,7 @@ export default {
 				{
 					method: 'GET',
 					url:
-						baseUri +
-						endpoints.engine +
-						'/category?limit=' +
-						enginePageLimit,
+						baseUri + endpoints.engine + '/category?limit=' + enginePageLimit,
 					headers: generateHeaders(self._token),
 					json: true
 				},
@@ -1142,8 +1133,7 @@ export default {
 			request(
 				{
 					method: 'POST',
-					url:
-						baseUri + endpoints.job + jobId + '/task/' + taskId + '/poll',
+					url: baseUri + endpoints.job + jobId + '/task/' + taskId + '/poll',
 					headers: generateHeaders(self._token),
 					json: data
 				},
@@ -1837,13 +1827,13 @@ export default {
 		this._retryRequest('GET', endpoints.collection, options, callback);
 	},
 
-	getCollections: function getCollections(options, callback) {
-		if (typeof options === 'function' && !callback) {
-			callback = options;
-			options = {};
-		}
-		this._retryRequest('GET', endpoints.collection, options, callback);
-	},
+	// getCollections: function getCollections(options, callback) {
+	// 	if (typeof options === 'function' && !callback) {
+	// 		callback = options;
+	// 		options = {};
+	// 	}
+	// 	this._retryRequest('GET', endpoints.collection, options, callback);
+	// },
 	getCollection: function getCollection(collectionId, options, callback) {
 		if (typeof collectionId !== 'string' || collectionId === '') {
 			throw new Error('Missing collectionId');

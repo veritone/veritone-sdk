@@ -20,7 +20,7 @@ describe('API methods', function() {
 		nock.cleanAll();
 	});
 
-	describe.only('Recording', function() {
+	describe('Recording', function() {
 		// describe('createRecording', function() {
 		// 	it('validates recording', function() {
 		// 		expect(() =>
