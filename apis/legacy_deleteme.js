@@ -3,7 +3,7 @@ import validatejs from 'validate.js';
 import path from 'path';
 
 import RetryHelper from './helper/RetryHelper';
-import { endpoints } from './config';
+import { endpoints, headers } from './config';
 
 const retryHelper = new RetryHelper();
 const baseUri = 'http://fake.domain';
@@ -70,15 +70,15 @@ export default {
 			throw new Error('Missing callback!');
 		}
 
-		var self = this;
+		const self = this;
 
 		function task(callback) {
-			var progress = {
+			let progress = {
 				total: 0,
 				received: 0
 			};
 
-			var req = request({
+			const req = request({
 				method: 'GET',
 				uri: baseUri + endpoints.recording + recordingId + '/media',
 				headers: generateHeaders(self._token)
@@ -95,7 +95,7 @@ export default {
 					if (progressCallback) {
 						progressCallback(progress);
 					}
-					var metadata = response.headers[headers.metadataHeader.toLowerCase()];
+					const metadata = response.headers[headers.metadataHeader.toLowerCase()];
 					callback(null, {
 						contentType: response.headers['content-type'],
 						metadata: metadata ? JSON.parse(metadata) : undefined,
