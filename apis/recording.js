@@ -85,7 +85,7 @@ const recordingApi = {
 		};
 	},
 
-	deleteRecording: recordingId => {
+	deleteRecording(recordingId) {
 		if (typeof recordingId === 'number') {
 			recordingId = recordingId + '';
 		}
@@ -190,7 +190,7 @@ const recordingApi = {
 		});
 	},
 
-	getRecordingAssets: recordingId => {
+	getRecordingAssets(recordingId) {
 		if (typeof recordingId === 'number') {
 			recordingId = recordingId + '';
 		}
@@ -284,7 +284,7 @@ const recordingApi = {
 		});
 	},
 
-	getAssetMetadata: (recordingId, assetId) => {
+	getAssetMetadata(recordingId, assetId) {
 		if (typeof recordingId === 'number') {
 			recordingId = recordingId + '';
 		}
@@ -301,7 +301,7 @@ const recordingApi = {
 		};
 	},
 
-	updateAssetMetadata: (recordingId, asset) => {
+	updateAssetMetadata(recordingId, asset) {
 		if (typeof recordingId === 'number') {
 			recordingId = recordingId + '';
 		}
@@ -365,7 +365,7 @@ const recordingApi = {
 		);
 	},
 
-	createAsset: function createAsset(
+	createAsset(
 		{ token, baseUrl, maxRetries, retryIntervalMs },
 		recordingId,
 		asset,
@@ -553,7 +553,7 @@ const recordingApi = {
 		});
 	},
 
-	deleteAsset: (recordingId, assetId) => {
+	deleteAsset(recordingId, assetId) {
 		if (typeof recordingId === 'number') {
 			recordingId = recordingId + '';
 		}
