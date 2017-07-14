@@ -1,10 +1,9 @@
 import request from 'request';
 import validatejs from 'validate.js';
 import path from 'path';
-import fs from 'fs';
 
 import RetryHelper from './helper/RetryHelper';
-import { endpoints, headers } from './config';
+import { endpoints } from './config';
 
 const retryHelper = new RetryHelper();
 const baseUri = 'http://fake.domain';
@@ -84,7 +83,7 @@ export default {
 
 		var uri = baseUri + endpoints.job;
 		if (options.limit || options.offset) {
-			if (options.limit && options.ofset) {
+			if (options.limit && options.offset) {
 				uri += '?limit=' + options.limit + '&offset=' + options.offset;
 			} else if (options.limit) {
 				uri += '?limit=' + options.limit;
@@ -146,7 +145,7 @@ export default {
 
 		var uri = baseUri + endpoints.job + 'recording/' + options.recordingId;
 		if (options.limit || options.offset) {
-			if (options.limit && options.ofset) {
+			if (options.limit && options.offset) {
 				uri += '?limit=' + options.limit + '&offset=' + options.offset;
 			} else if (options.limit) {
 				uri += '?limit=' + options.limit;
@@ -277,29 +276,29 @@ export default {
 		);
 	},
 
-	//cancelJob: function cancelJob(jobId, callback) {
-	//	if (typeof jobId !== 'string' || jobId === '') {
-	//		throw new Error('Missing jobId!');
-	//	}
-	//	if (typeof callback !== 'function') {
-	//		throw new Error('Missing callback!');
-	//	}
-	//
-	//	request({
-	//		method: 'DELETE',
-	//		url: baseUri + endpoints.job+ jobId,
-	//		headers: generateHeaders(this._token),
-	//		json: true
-	//	}, function requestCallback(err, response, body) {
-	//		if (err) {
-	//			return callback(err, body);
-	//		}
-	//		if (response.statusCode !== 204) {
-	//			return callback('Received status: ' + response.statusCode, body);
-	//		}
-	//		callback(null, body);
-	//	});
-	//};
+	cancelJob: function cancelJob(jobId, callback) {
+		if (typeof jobId !== 'string' || jobId === '') {
+			throw new Error('Missing jobId!');
+		}
+		if (typeof callback !== 'function') {
+			throw new Error('Missing callback!');
+		}
+
+		request({
+			method: 'DELETE',
+			url: baseUri + endpoints.job+ jobId,
+			headers: generateHeaders(this._token),
+			json: true
+		}, function requestCallback(err, response, body) {
+			if (err) {
+				return callback(err, body);
+			}
+			if (response.statusCode !== 204) {
+				return callback('Received status: ' + response.statusCode, body);
+			}
+			callback(null, body);
+		});
+	},
 
 	getEngines: function getEngines(callback) {
 		if (typeof callback !== 'function') {
