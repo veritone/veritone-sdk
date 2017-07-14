@@ -14,6 +14,20 @@ export default function callApi(
 	validateBaseUrl(baseUrl);
 	validateHandlerFn(handlerFn);
 
+	if (handlerFn.isNonStandard) {
+		// non-standard APIs don't use callApi()'s request wrapper, so
+		// they handle their own request/response, retries, callbacks, etc.
+		// used for streaming requests, requests that read/write from
+		// the filesystem, etc.
+		// all they need is the handler options.
+		return handlerFn.bind(null, {
+			token,
+			baseUrl,
+			maxRetries,
+			retryIntervalMs
+		});
+	}
+
 	return function apiRequest(...args) {
 		// figure out arg signature; one of:
 		// ...handlerFnArgs, requestOptionOverrides, cb
@@ -32,6 +46,9 @@ export default function callApi(
 			requestOptionOverrides = args[args.length - 2];
 		}
 
+		const request = handlerFn(...args);
+		validateRequestObject(request);
+
 		const {
 			method,
 			path,
@@ -40,7 +57,7 @@ export default function callApi(
 			headers,
 			// default options for this request, if different from defaults
 			_requestOptions = {}
-		} = handlerFn(...args);
+		} = request;
 
 		validateRequestOptions(_requestOptions);
 
@@ -123,6 +140,26 @@ function validateHandlerFn(fn) {
 	}
 }
 
+function validateRequestObject(obj) {
+	const validKeys = [
+		'method',
+		'path',
+		'data',
+		'query',
+		'headers',
+		'_requestOptions'
+	];
+
+	Object.keys(obj).forEach(key => {
+		if (!validKeys.includes(key)) {
+			throw new Error(
+				`unexpected key in request object: ${key}. Supported keys are: ` +
+					JSON.stringify(validKeys)
+			);
+		}
+	});
+}
+
 const supportedOptions = [
 	'maxRetries',
 	'retryIntervalMs',
@@ -130,7 +167,7 @@ const supportedOptions = [
 	'timeoutMs',
 	'headers',
 	'transformResponseData',
-	'validateStatus',
+	'validateStatus'
 	// 'cancelToken',
 	// onUploadProgress,
 	// onDownloadProgress,
