@@ -226,7 +226,6 @@ describe('Recording', function() {
 		it('validates recordingId', function() {
 			expect(() =>
 				recordingHandlers.getRecordingTranscript(
-					nonStandardHandlerOptions,
 					undefined,
 					noop
 				)
@@ -234,7 +233,6 @@ describe('Recording', function() {
 
 			expect(() =>
 				recordingHandlers.getRecordingTranscript(
-					nonStandardHandlerOptions,
 					{},
 					noop
 				)
@@ -242,26 +240,21 @@ describe('Recording', function() {
 
 			expect(() =>
 				recordingHandlers.getRecordingTranscript(
-					nonStandardHandlerOptions,
 					'2',
 					noop
 				)
 			).not.to.throw();
 		});
 
-		it("makes a get request to the recording's transcript", function(done) {
-			const scope = nock(apiBaseUrl)
-				.get(/some-id\/transcript/)
-				.reply(200, 'ok');
+		it("makes a get request to the recording's transcript", function() {
+			const expected = {
+				method: 'get',
+				path: /some-id\/transcript/
+			};
 
-			recordingHandlers.getRecordingTranscript(
-				nonStandardHandlerOptions,
-				'some-id',
-				() => {
-					scope.done();
-					done();
-				}
-			);
+			const result = recordingHandlers.getRecordingTranscript('some-id');
+
+			assertMatches(result, expected);
 		});
 	});
 

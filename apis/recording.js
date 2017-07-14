@@ -97,55 +97,18 @@ const recordingApi = {
 		};
 	},
 
-	getRecordingTranscript(
-		{ token, baseUrl, maxRetries, retryIntervalMs },
-		recordingId,
-		callback
-	) {
+	getRecordingTranscript(recordingId) {
 		if (typeof recordingId === 'number') {
 			recordingId = recordingId + '';
 		}
 		if (typeof recordingId !== 'string' || recordingId === '') {
 			throw new Error('Missing recordingId!');
 		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
 
-		const request = require('request');
-		const retryHelper = new RetryHelper({
-			maxRetries,
-			retryIntervalMs
-		});
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					uri: `${baseUrl}/${endpoints.recording}/${recordingId}/transcript`,
-					headers: {
-						Authorization: `Bearer ${token}`
-					},
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
+		return {
+			method: 'get',
+			path: `${endpoints.recording}/${recordingId}/transcript`
+		};
 	},
 
 	getRecordingMedia(
@@ -354,7 +317,7 @@ const recordingApi = {
 			method: 'put',
 			path: `${endpoints.recording}/${recordingId}/asset/${asset.assetId}/metadata`,
 			data: asset.metadata || {}
-		}
+		};
 	},
 
 	saveAssetToFile(
