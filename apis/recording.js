@@ -6,7 +6,8 @@ const doNotWrapHandlers = [
 	'getRecordingMedia',
 	'getAsset',
 	'saveAssetToFile',
-	'createAsset'
+	'createAsset',
+	'updateAsset'
 ];
 
 // todo:
@@ -14,7 +15,8 @@ const doNotWrapHandlers = [
 // 	'getRecordingMedia',
 // 	'getAsset',
 // 	'saveAssetToFile',
-// 	'createAsset'
+// 	'createAsset',
+// 	'updateAsset'
 // ];
 
 const recordingApi = {
