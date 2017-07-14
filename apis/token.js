@@ -14,7 +14,9 @@ export default {
 			method: 'post',
 			path: `${endpoints.application}/token`,
 			data: { tokenLabel, rights },
-			validateStatus: s => s === 200
+			_requestOptions: {
+				validateStatus: s => s === 200
+			}
 		}
 	},
 
@@ -26,7 +28,9 @@ export default {
 		return {
 			method: 'delete',
 			path: `${endpoints.application}/token/${token}`,
-			validateStatus: s => s === 200 || s === 204
+			_requestOptions: {
+				validateStatus: s => s === 200 || s === 204
+			}
 		}
 	}
 }
