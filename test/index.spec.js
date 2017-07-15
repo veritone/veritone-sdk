@@ -3,7 +3,7 @@ import nock from 'nock';
 nock.disableNetConnect();
 
 import VeritoneApi from '../index.js';
-import { headers } from '../apis/config';
+// import { headers } from '../apis/config';
 
 const noop = () => {};
 const apiBaseUrl = 'http://fake.domain';
