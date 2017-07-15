@@ -16,6 +16,7 @@
     "async": "^2.5.0",
     "axios": "^0.16.2",
     "object.values": "^1.0.4",
+    "request": "^2.81.0",
     "route-parser": "0.0.5",
     "validate.js": "^0.10.0"
   },
