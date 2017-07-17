@@ -1,5 +1,4 @@
 import request from 'request';
-import validatejs from 'validate.js';
 import path from 'path';
 
 import RetryHelper from './helper/RetryHelper';
@@ -7,166 +6,12 @@ import { endpoints } from './config';
 
 const retryHelper = new RetryHelper();
 const baseUri = 'http://fake.domain';
-var enginePageLimit = 99999;
+
 function generateHeaders() {
 	return {};
 }
 
 export default {
-	getEngines: function getEngines(callback) {
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					url: baseUri + endpoints.engine + '?limit=' + enginePageLimit,
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-
-	getEngineCategories: function getEngineCategories(callback) {
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					url:
-						baseUri + endpoints.engine + '/category?limit=' + enginePageLimit,
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-
-	getTaskType: function getTaskType() {
-		throw new Error('Migration - use getEngineUsingRightsFiltered!');
-	},
-
-	getTaskTypes: function getTaskTypes() {
-		throw new Error('Migration - use getEngineCategoriesWithEngines!');
-	},
-
-	getEngineUsingRightsFiltered: function getEngineUsingRightsFiltered(
-		engineId,
-		callback
-	) {
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					url: baseUri + endpoints.taskTypeByJob + engineId,
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-
-	getEngineCategoriesWithEngines: function getEngineCategoriesWithEngines(
-		callback
-	) {
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					url: baseUri + endpoints.job + 'task_type',
-					headers: generateHeaders(self._token),
-					json: true
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-
 	updateTask: function updateTask(jobId, taskId, result, callback) {
 		if (typeof jobId !== 'string' || jobId === '') {
 			throw new Error('Missing jobId!');
