@@ -2,7 +2,7 @@ import validate from './validations';
 import { endpoints, headers } from './config';
 const RetryHelper = require('./helper/RetryHelper');
 
-const doNotWrapHandlers = [
+const nonStandardHandlers = [
 	'getRecordingMedia',
 	'getAsset',
 	'saveAssetToFile',
@@ -574,6 +574,6 @@ const recordingApi = {
 	}
 };
 
-doNotWrapHandlers.forEach(name => (recordingApi[name].isNonStandard = true));
+nonStandardHandlers.forEach(name => (recordingApi[name].isNonStandard = true));
 
 export default recordingApi;
