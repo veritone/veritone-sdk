@@ -47,7 +47,7 @@ describe('RetryHelper', function() {
 	});
 
 	it('should run three times', function(done) {
-		const retryHelper = new RetryHelper({ maxRetries: 3 });
+		const retryHelper = new RetryHelper({ maxRetries: 3, retryIntervalMs: 25 });
 		let runCount = 0;
 
 		function task(cb) {
@@ -73,7 +73,7 @@ describe('RetryHelper', function() {
 	});
 
 	it('should run and return error', function(done) {
-		const retryHelper = new RetryHelper({ maxRetries: 3 });
+		const retryHelper = new RetryHelper({ maxRetries: 3, retryIntervalMs: 25 });
 
 		function task(cb) {
 			if (typeof cb !== 'function') {
