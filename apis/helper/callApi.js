@@ -35,18 +35,22 @@ export default function callApi(
 		// ...handlerFnArgs, requestOptionOverrides
 		let requestOptionOverrides = {};
 		let callback = noop;
+		let matchedRequestArgs = 0;
 
 		if (typeof last(args) === 'function') {
+			matchedRequestArgs++;
 			callback = last(args);
 		}
 
 		if (isRequestOptionsObj(last(args))) {
 			requestOptionOverrides = last(args);
+			matchedRequestArgs++;
 		} else if (isRequestOptionsObj(args[args.length - 2])) {
 			requestOptionOverrides = args[args.length - 2];
+			matchedRequestArgs++;
 		}
 
-		const request = handlerFn(...args);
+		const request = handlerFn(...args.slice(0, args.length - matchedRequestArgs));
 		validateRequestObject(request);
 
 		const {
@@ -102,20 +106,19 @@ export default function callApi(
 							};
 
 							cb(null, response);
+						}, err => {
+							cb(err)
 						})
-						.catch(err => {
-							cb(err);
-						});
 				},
 				(err, res) => {
 					// provide dual promise/cb interface to callers
 					if (err) {
-						callback(err);
-						return reject(err);
+						reject(err);
+						return callback(err);
 					}
 
-					callback(null, res);
 					resolve(res);
+					callback(null, res);
 				}
 			);
 		});
@@ -174,7 +177,10 @@ const supportedOptions = [
 ];
 
 function isRequestOptionsObj(obj = {}) {
-	Object.keys(obj).every(opt => supportedOptions.includes(opt));
+	return (
+		Object.keys(obj).length &&
+		Object.keys(obj).every(opt => supportedOptions.includes(opt))
+	);
 }
 
 function validateRequestOptions(options) {

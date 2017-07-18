@@ -14,7 +14,7 @@ process.on('unhandledRejection', error => {
 	}
 });
 
-describe('callApi', function() {
+describe.only('callApi', function() {
 	beforeEach(function() {
 		this.callApi = callApi.bind(null, {
 			token: apiToken,
@@ -585,19 +585,137 @@ describe('callApi', function() {
 			});
 	});
 
-	it('binds options to nonStandard handlers and leaves them alone otherwise', function() {
-		let called = false;
+	it('allows request options to be overridden on a per-call basis (cb)', function(
+		done
+	) {
+		const handler = id => ({
+			method: 'get',
+			path: 'test',
+			query: { id },
+			_requestOptions: {
+				headers: { ok: 'no' }
+			}
+		});
 
-		function nonStandardHandler({ token, baseUrl }, thing) {
-			expect(thing).to.equal('ok');
-			expect(token).to.equal(apiToken);
-			expect(baseUrl).to.equal(apiBaseUri);
+		const scope = nock(apiBaseUri, {
+			reqheaders: {
+				ok: 'yes'
+			}
+		})
+			.get('/test')
+			.query({
+				id: 123
+			})
+			.reply(200, 'ok');
 
-			called = true;
-		}
-		nonStandardHandler.isNonStandard = true;
+		this.callApi(handler)(123, {
+			headers: {
+				ok: 'yes'
+			}
+		}, function() {
+			scope.done();
+			done();
+		});
+	});
 
-		this.callApi(nonStandardHandler)('ok');
-		expect(called).to.equal(true);
+	it('allows request options to be overridden on a per-call basis (promise)', function(
+		done
+	) {
+		const handler = id => ({
+			method: 'get',
+			path: 'test',
+			query: { id },
+			_requestOptions: {
+				headers: { ok: 'no' }
+			}
+		});
+
+		const scope = nock(apiBaseUri, {
+			reqheaders: {
+				ok: 'yes'
+			}
+		})
+			.get('/test')
+			.query({
+				id: 123
+			})
+			.reply(200, 'ok');
+
+		this.callApi(handler)(123, {
+			headers: {
+				ok: 'yes'
+			}
+		}).then(() => {
+			scope.done();
+			done();
+		});
+	});
+
+	it('deals with optional args in handlers (cb)', function(done) {
+		let handler = (id, options) => {
+			return {
+				method: 'get',
+				path: `ok/${id}`,
+				query: options
+			};
+		};
+
+		const scope = nock(apiBaseUri).get(/ok\/123/).reply(200, 'ok');
+
+		this.callApi(handler)(123, (err, res) => {
+			expect(err).to.equal(null);
+			expect(res.request.path).to.equal('/ok/123');
+
+			scope.done();
+			done();
+		});
+	});
+
+	it('deals with optional args in handlers (promise)', function(done) {
+		let handler = (id, options) => {
+			return {
+				method: 'get',
+				path: `ok/${id}`,
+				query: options
+			};
+		};
+
+		const scope = nock(apiBaseUri).get(/ok\/123/).reply(200, 'ok');
+
+		this.callApi(handler)(123).then(res => {
+			// path does not contain any query
+			expect(res.request.path).to.equal('/ok/123');
+
+			scope.done();
+			done();
+		});
+	});
+
+	it('deals with optional args + request overrides in handlers', function(
+		done
+	) {
+		let handler = (id, options) => {
+			return {
+				method: 'get',
+				path: `ok/${id}`,
+				query: options,
+				_requestOptions: {
+					validateStatus: s => s === 200
+				}
+			};
+		};
+
+		const scope = nock(apiBaseUri).get(/ok\/123/).reply(201, 'ok');
+
+		this.callApi(
+			handler
+		)(123, { validateStatus: s => s === 201 }, (err, res) => {
+			expect(err).to.equal(null);
+			// no query in path
+			expect(res.request.path).to.equal('/ok/123');
+
+			scope.done();
+			done();
+		});
 	});
 });
