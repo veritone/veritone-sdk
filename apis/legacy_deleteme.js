@@ -12,7 +12,6 @@ function generateHeaders() {
 }
 
 export default {
-
 	search: function search(searchRequest, callback) {
 		if (typeof searchRequest !== 'object') {
 			throw new Error('Missing search request!');
@@ -355,7 +354,7 @@ export default {
 			callback(null, body);
 		}
 
-		this._retryHelper.retry(function task(retryCallback) {
+		retryHelper.retry(function task(retryCallback) {
 			request(cfg, getRequestCallbackHandler(retryCallback));
 		}, retryFinalCallback);
 	},
@@ -587,6 +586,7 @@ export default {
 			callback
 		);
 	},
+
 	updateTreeFolder: function updateTreeFolder(
 		treeObjectId,
 		treeFolderObj,
@@ -609,8 +609,7 @@ export default {
 		if (typeof treeObjectId !== 'string') {
 			throw new Error('Missing tree folder!');
 		}
-		console.log('\n\n\n\n\n\n\nthings:');
-		console.log(JSON.stringify(options));
+
 		this._retryRequest(
 			'DELETE',
 			endpoints.collectionFolders + treeObjectId,
@@ -633,6 +632,7 @@ export default {
 		if (typeof queryTerms !== 'object') {
 			throw new Error('Missing query terms!');
 		}
+
 		this._retryRequest(
 			'POST',
 			endpoints.collectionFolders + 'search/',
@@ -651,6 +651,7 @@ export default {
 			callback
 		);
 	},
+
 	createCollection: function createCollection(collection, callback) {
 		this._retryRequest('POST', endpoints.collection, collection, callback);
 	},
@@ -721,7 +722,7 @@ export default {
 
 	shareCollection: function shareCollection(collectionId, share, callback) {
 		if (typeof collectionId !== 'string' || collectionId === '') {
-			throw new Error('Missing collecitonId');
+			throw new Error('Missing collectionId');
 		}
 
 		var url = endpoints.collection + collectionId + '/share';
