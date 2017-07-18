@@ -32,7 +32,7 @@ export default {
 			method: 'get',
 			path: endpoints.job,
 			query: { limit, offset }
-		}
+		};
 	},
 
 	getJobsForRecording(options) {
@@ -99,5 +99,5 @@ export default {
 			method: 'delete',
 			path: `${endpoints.job}/${jobId}`
 		};
-	},
-}
+	}
+};

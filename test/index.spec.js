@@ -3,7 +3,7 @@ import nock from 'nock';
 nock.disableNetConnect();
 
 import VeritoneApi from '../index.js';
-// import { headers } from '../apis/config';
+import { endpoints } from '../apis/config';
 
 const noop = () => {};
 const apiBaseUrl = 'http://fake.domain';
@@ -20,8 +20,6 @@ describe('API methods', function() {
 		nock.cleanAll();
 	});
 
-
-	// xdescribe('Task');
 	// xdescribe('DropboxWatcher');
 	// xdescribe('Faces');
 	// xdescribe('Mentions');

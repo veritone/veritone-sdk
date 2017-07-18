@@ -12,59 +12,6 @@ function generateHeaders() {
 }
 
 export default {
-	updateTask: function updateTask(jobId, taskId, result, callback) {
-		if (typeof jobId !== 'string' || jobId === '') {
-			throw new Error('Missing jobId!');
-		}
-		if (typeof taskId !== 'string' || taskId === '') {
-			throw new Error('Missing taskId!');
-		}
-		if (typeof result !== 'object') {
-			throw new Error('Missing result!');
-		}
-		if (typeof result.taskStatus !== 'string' || result.taskStatus === '') {
-			throw new Error('Missing result.taskStatus!');
-		}
-		if (
-			result.taskStatus !== 'running' &&
-			result.taskStatus !== 'complete' &&
-			result.taskStatus !== 'failed'
-		) {
-			throw new Error('Invalid task status: ' + result.taskStatus);
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'PUT',
-					url: baseUri + endpoints.job + jobId + '/task/' + taskId,
-					headers: generateHeaders(self._token),
-					json: result
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 204) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
 
 	search: function search(searchRequest, callback) {
 		if (typeof searchRequest !== 'object') {
@@ -89,48 +36,6 @@ export default {
 						return callback(err, body);
 					}
 					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-
-	pollTask: function pollTask(jobId, taskId, data, callback) {
-		if (typeof jobId !== 'string' || jobId === '') {
-			throw new Error('Missing jobId!');
-		}
-		if (typeof taskId !== 'string' || taskId === '') {
-			throw new Error('Missing taskId!');
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-		data = data || {};
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'POST',
-					url: baseUri + endpoints.job + jobId + '/task/' + taskId + '/poll',
-					headers: generateHeaders(self._token),
-					json: data
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 204) {
 						return callback('Received status: ' + response.statusCode, body);
 					}
 					callback(null, body);
@@ -288,63 +193,6 @@ export default {
 					url: baseUri + endpoints.batch,
 					headers: generateHeaders(self._token),
 					json: requests
-				},
-				function requestCallback(err, response, body) {
-					if (err) {
-						return callback(err, body);
-					}
-					if (response.statusCode !== 200) {
-						return callback('Received status: ' + response.statusCode, body);
-					}
-					callback(null, body);
-				}
-			);
-		}
-
-		retryHelper.retry(task, function retryCallback(err, body) {
-			if (err) {
-				return callback(err, body);
-			}
-			callback(null, body);
-		});
-	},
-
-	getTaskSummaryByRecording: function getRecordings(options, callback) {
-		if (typeof options === 'function' && !callback) {
-			callback = options;
-			options = {};
-		} else if (typeof options === 'string') {
-			options = {
-				recordingId: options
-			};
-		} else if (typeof options !== 'object') {
-			throw new Error('Missing options!');
-		}
-		if (typeof options.recordingId === 'number') {
-			options.recordingId = options.recordingId + '';
-		}
-		if (typeof callback !== 'function') {
-			throw new Error('Missing callback!');
-		}
-
-		var uri = baseUri + endpoints.tasksByRecording;
-		if (options.keys.length > 0) {
-			uri += '?';
-		}
-
-		Object.keys(options).forEach(function forEachKey(key) {
-			uri += key + '=' + options[key];
-		});
-
-		var self = this;
-
-		function task(callback) {
-			request(
-				{
-					method: 'GET',
-					uri: uri,
-					headers: generateHeaders(self._token),
-					json: true
 				},
 				function requestCallback(err, response, body) {
 					if (err) {
