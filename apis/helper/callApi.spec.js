@@ -585,22 +585,19 @@ describe('callApi', function() {
 			});
 	});
 
-	it(
-		'binds options to nonStandard handlers and leaves them alone otherwise',
-		function() {
-			let called = false;
+	it('binds options to nonStandard handlers and leaves them alone otherwise', function() {
+		let called = false;
 
-			function nonStandardHandler({ token, baseUrl }, thing) {
-				expect(thing).to.equal('ok');
-				expect(token).to.equal(apiToken);
-				expect(baseUrl).to.equal(apiBaseUri);
+		function nonStandardHandler({ token, baseUrl }, thing) {
+			expect(thing).to.equal('ok');
+			expect(token).to.equal(apiToken);
+			expect(baseUrl).to.equal(apiBaseUri);
 
-				called = true;
-			}
-			nonStandardHandler.isNonStandard = true;
-
-			this.callApi(nonStandardHandler)('ok');
-			expect(called).to.equal(true);
+			called = true;
 		}
-	);
+		nonStandardHandler.isNonStandard = true;
+
+		this.callApi(nonStandardHandler)('ok');
+		expect(called).to.equal(true);
+	});
 });
