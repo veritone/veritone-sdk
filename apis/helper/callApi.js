@@ -50,7 +50,9 @@ export default function callApi(
 			matchedRequestArgs++;
 		}
 
-		const request = handlerFn(...args.slice(0, args.length - matchedRequestArgs));
+		const request = handlerFn(
+			...args.slice(0, args.length - matchedRequestArgs)
+		);
 		validateRequestObject(request);
 
 		const {
@@ -97,18 +99,21 @@ export default function callApi(
 							timeout: options.timeoutMs,
 							validateStatus: options.validateStatus
 						})
-						.then(rawResponse => {
-							let response = {
-								...rawResponse,
-								data: options.transformResponseData
-									? options.transformResponseData(rawResponse.data)
-									: rawResponse.data
-							};
+						.then(
+							rawResponse => {
+								let response = {
+									...rawResponse,
+									data: options.transformResponseData
+										? options.transformResponseData(rawResponse.data)
+										: rawResponse.data
+								};
 
-							cb(null, response);
-						}, err => {
-							cb(err)
-						})
+								cb(null, response);
+							},
+							err => {
+								cb(err);
+							}
+						);
 				},
 				(err, res) => {
 					// provide dual promise/cb interface to callers

@@ -14,7 +14,7 @@ process.on('unhandledRejection', error => {
 	}
 });
 
-describe.only('callApi', function() {
+describe('callApi', function() {
 	beforeEach(function() {
 		this.callApi = callApi.bind(null, {
 			token: apiToken,
