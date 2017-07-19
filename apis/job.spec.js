@@ -6,8 +6,6 @@ import { noop } from './helper/util';
 import { assertMatches } from '../apis/helper/test-util';
 import jobHandlers from './job';
 
-const apiBaseUrl = 'http://fake.domain';
-
 describe('Job', function() {
 	describe('createJob', function() {
 		it('validates the job', function() {

@@ -1,14 +1,10 @@
-import { expect } from 'chai';
 import nock from 'nock';
-
 nock.disableNetConnect();
 
 // import { headers } from './config';
 // import { noop } from './helper/util';
 import { assertMatches } from '../apis/helper/test-util';
 import engineHandlers from './engine';
-
-const apiBaseUrl = 'http://fake.domain';
 
 describe('Engine', function() {
 	describe('getEngines', function() {
