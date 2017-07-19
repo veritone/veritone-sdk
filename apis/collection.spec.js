@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { assertMatches } from '../apis/helper/test-util';
 import collectionHandlers from './collection';
 
-describe.only('Collection', function() {
+describe('Collection', function() {
 	describe('createCollection', function() {
 		it('posts to the collection endpoint with collection in the body', function() {
 			const data = {

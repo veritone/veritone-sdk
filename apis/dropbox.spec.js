@@ -4,114 +4,105 @@ import { endpoints } from './config';
 import { assertMatches } from '../apis/helper/test-util';
 import dropboxHandlers from './dropbox';
 
-const apiBaseUrl = 'http://fake.domain';
-
 describe('DropboxWatcher', function() {
 	describe('getDropboxWatchers', function() {
 		it('validates options', function() {
-			expect(() => this.api.getDropboxWatchers()).to.throw(/options/);
+			expect(() => dropboxHandlers.getDropboxWatchers()).to.throw(/options/);
 		});
 
-		it('makes the correct request to the api', function(done) {
-			const scope = nock(apiBaseUrl)
-				.get(new RegExp(endpoints.dropboxWatcher))
-				.query({
+		it('makes the correct request to the api', function() {
+			const expected = {
+				method: 'get',
+				path: new RegExp(endpoints.dropboxWatcher),
+				query: {
 					watcherId: 'watcher-id'
-				})
-				.reply(200, 'ok');
-
-			this.api.getDropboxWatchers(
-				{
-					watcherId: 'watcher-id'
-				},
-				() => {
-					scope.done();
-					done();
 				}
-			);
+			};
+
+			const result = dropboxHandlers.getDropboxWatchers({ watcherId: 'watcher-id' });
+			assertMatches(result, expected);
 		});
 
-		it('accepts watcherId as a string', function(done) {
-			const scope = nock(apiBaseUrl)
-				.get(new RegExp(endpoints.dropboxWatcher))
-				.query({
+		it('accepts watcherId as a string', function() {
+			const expected = {
+				method: 'get',
+				path: new RegExp(endpoints.dropboxWatcher),
+				query: {
 					watcherId: 'watcher-id'
-				})
-				.reply(200, 'ok');
+				}
+			};
 
-			this.api.getDropboxWatchers('watcher-id', () => {
-				scope.done();
-				done();
-			});
+			const result = dropboxHandlers.getDropboxWatchers('watcher-id');
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('createDropboxWatcher', function() {
-		it('makes the correct request to the api', function(done) {
-			const scope = nock(apiBaseUrl)
-				.post(new RegExp(endpoints.dropboxWatcher), {
+		it('makes the correct request to the api', function() {
+			const expected = {
+				method: 'post',
+				path: new RegExp(endpoints.dropboxWatcher),
+				data: {
 					watcherId: 'watcher-id'
-				})
-				.reply(200, 'ok');
+				}
+			};
 
-			this.api.createDropboxWatcher(
+			const result = dropboxHandlers.createDropboxWatcher(
 				{
 					watcherId: 'watcher-id'
-				},
-				() => {
-					scope.done();
-					done();
-				}
-			);
+				});
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('getDropboxWatcher', function() {
 		it('validates watcherId', function() {
-			expect(() => this.api.getDropboxWatcher()).to.throw(/watcherId/);
+			expect(() => dropboxHandlers.getDropboxWatcher()).to.throw(/watcherId/);
 		});
 
-		it('makes the correct request to the api', function(done) {
-			const scope = nock(apiBaseUrl).get(/watcher-id/).reply(200, 'ok');
+		it('makes the correct request to the api', function() {
+			const expected = {
+				method: 'get',
+				path: /watcher-id/
+			};
 
-			this.api.getDropboxWatcher('watcher-id', () => {
-				scope.done();
-				done();
-			});
+			const result = dropboxHandlers.getDropboxWatcher('watcher-id');
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('updateDropboxWatcher', function() {
 		it('validates watcher', function() {
-			expect(() => this.api.updateDropboxWatcher()).to.throw(/watcher/);
+			expect(() => dropboxHandlers.updateDropboxWatcher()).to.throw(/watcher/);
 		});
 
-		it('makes the correct request to the api', function(done) {
-			const scope = nock(apiBaseUrl)
-				.put(/watcher-id/, {
+		it('makes the correct request to the api', function() {
+			const expected = {
+				method: 'put',
+				path: /watcher-id/,
+				data: {
 					watcherId: 'watcher-id'
-				})
-				.reply(200, 'ok');
+				}
+			};
 
-			this.api.updateDropboxWatcher({ watcherId: 'watcher-id' }, () => {
-				scope.done();
-				done();
-			});
+			const result = dropboxHandlers.updateDropboxWatcher({ watcherId: 'watcher-id' })
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('deleteDropboxWatcher', function() {
 		it('validates watcherId', function() {
-			expect(() => this.api.deleteDropboxWatcher()).to.throw(/watcherId/);
+			expect(() => dropboxHandlers.deleteDropboxWatcher()).to.throw(/watcherId/);
 		});
 
-		it('makes the correct request to the api', function(done) {
-			const scope = nock(apiBaseUrl).delete(/watcher-id/).reply(200, 'ok');
+		it('makes the correct request to the api', function() {
+			const expected = {
+				method: 'delete',
+				path: /watcher-id/,
+			};
 
-			this.api.deleteDropboxWatcher('watcher-id', () => {
-				scope.done();
-				done();
-			});
+			const result = dropboxHandlers.deleteDropboxWatcher('watcher-id')
+			assertMatches(result, expected);
 		});
 	});
 });

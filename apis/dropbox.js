@@ -2,10 +2,14 @@ import { endpoints } from './config';
 
 export default {
 	createDropboxWatcher(watcher) {
-		this._retryRequest('POST', endpoints.dropboxWatcher, watcher, callback);
+		return {
+			method: 'post',
+			path: endpoints.dropboxWatcher,
+			data: watcher
+		};
 	},
 
-	getDropboxWatchers(options = {}) {
+	getDropboxWatchers(options) {
 		if (typeof options === 'string') {
 			options = {
 				watcherId: options
@@ -13,42 +17,43 @@ export default {
 		} else if (typeof options !== 'object') {
 			throw new Error('Missing options!');
 		}
-		this._retryRequest('GET', endpoints.dropboxWatcher, options, callback);
+
+		return {
+			method: 'get',
+			path: endpoints.dropboxWatcher,
+			query: options
+		};
 	},
 
 	getDropboxWatcher(watcherId) {
 		if (typeof watcherId !== 'string' || watcherId === '') {
 			throw new Error('Missing watcherId!');
 		}
-		this._retryRequest(
-			'GET',
-			endpoints.dropboxWatcher + watcherId,
-			null,
-			callback
-		);
+		return {
+			method: 'get',
+			path: `${endpoints.dropboxWatcher}/${watcherId}`
+		};
 	},
 
 	updateDropboxWatcher(watcher) {
 		if (typeof watcher !== 'object') {
 			throw new Error('Missing watcher!');
 		}
-		this._retryRequest(
-			'PUT',
-			endpoints.dropboxWatcher + watcher.watcherId,
-			watcher,
-			callback
-		);
+		return {
+			method: 'put',
+			path: `${endpoints.dropboxWatcher}/${watcher.watcherId}`,
+			data: watcher
+		};
 	},
 
 	deleteDropboxWatcher(watcherId) {
 		if (typeof watcherId !== 'string' || watcherId === '') {
 			throw new Error('Missing watcherId!');
 		}
-		this._retryRequest(
-			'DELETE',
-			endpoints.dropboxWatcher + watcherId,
-			null,
-			callback
-		);
+
+		return {
+			method: 'delete',
+			path: `${endpoints.dropboxWatcher}/${watcherId}`
+		};
 	}
 }
