@@ -1,12 +1,7 @@
-import { endpoints } from './config'
+import { endpoints } from './config';
 
 export default {
-	getRootTreeFolder(
-		organizationId,
-		userId,
-		rootFolderType,
-		options = {}
-	) {
+	getRootTreeFolder(organizationId, userId, rootFolderType, options = {}) {
 		if (typeof organizationId !== 'string' || organizationId === '') {
 			throw new Error('Missing organizationId');
 		}
@@ -17,14 +12,11 @@ export default {
 			throw new Error('Missing rootFolderType');
 		}
 
-		var rootFolderPath =
-			endpoints.collectionFolders +
-			organizationId +
-			'/' +
-			userId +
-			'/type/' +
-			rootFolderType;
-		this._retryRequest('GET', rootFolderPath, options, callback);
+		return {
+			method: 'get',
+			path: `${endpoints.collectionFolders}/${organizationId}/${userId}/type/${rootFolderType}`,
+			query: options
+		};
 	},
 
 	getTreeObject(treeObjectId, options = {}) {
@@ -32,67 +24,65 @@ export default {
 			throw new Error('Missing organizationId');
 		}
 
-		var treeObjectPath = endpoints.collectionFolders + treeObjectId;
-		this._retryRequest('GET', treeObjectPath, options, callback);
+		return {
+			method: 'get',
+			path: `${endpoints.collectionFolders}/${treeObjectId}`,
+			query: options
+		};
 	},
+
 	createTreeFolder(treeFolder) {
 		if (typeof treeFolder !== 'object') {
 			throw new Error('Missing tree folder!');
 		}
-		this._retryRequest(
-			'POST',
-			endpoints.collectionFolders,
-			treeFolder,
-			callback
-		);
+
+		return {
+			method: 'post',
+			path: endpoints.collectionFolders,
+			data: treeFolder
+		};
 	},
 
 	createTreeObject(treeObject) {
 		if (typeof treeObject !== 'object') {
 			throw new Error('Missing tree object!');
 		}
-		this._retryRequest(
-			'POST',
-			endpoints.collectionFolders + 'object/',
-			treeObject,
-			callback
-		);
+
+		return {
+			method: 'post',
+			path: `${endpoints.collectionFolders}/object`,
+			data: treeObject
+		};
 	},
 
-	moveTreeFolder(
-		treeObjectId,
-		treeFolderMoveObj
-	) {
+	moveTreeFolder(treeObjectId, treeFolderMoveObj) {
 		if (typeof treeObjectId !== 'string') {
 			throw new Error('Missing tree object id!');
 		}
 		if (typeof treeFolderMoveObj !== 'object') {
 			throw new Error('Missing tree folder move information!');
 		}
-		this._retryRequest(
-			'PUT',
-			endpoints.collectionFolders + 'move/' + treeObjectId,
-			treeFolderMoveObj,
-			callback
-		);
+
+		return {
+			method: 'put',
+			path: `${endpoints.collectionFolders}/move/${treeObjectId}`,
+			data: treeFolderMoveObj
+		};
 	},
 
-	updateTreeFolder(
-		treeObjectId,
-		treeFolderObj
-	) {
+	updateTreeFolder(treeObjectId, treeFolderObj) {
 		if (typeof treeObjectId !== 'string') {
 			throw new Error('Missing tree object id!');
 		}
 		if (typeof treeFolderObj !== 'object') {
 			throw new Error('Missing tree folder information!');
 		}
-		this._retryRequest(
-			'PUT',
-			endpoints.collectionFolders + treeObjectId,
-			treeFolderObj,
-			callback
-		);
+
+		return {
+			method: 'put',
+			path: `${endpoints.collectionFolders}/${treeObjectId}`,
+			data: treeFolderObj
+		};
 	},
 
 	deleteTreeFolder(treeObjectId, options) {
@@ -100,24 +90,23 @@ export default {
 			throw new Error('Missing tree folder!');
 		}
 
-		this._retryRequest(
-			'DELETE',
-			endpoints.collectionFolders + treeObjectId,
-			options,
-			callback
-		);
+		return {
+			method: 'delete',
+			path: `${endpoints.collectionFolders}/${treeObjectId}`,
+			query: options
+		};
 	},
 
 	deleteTreeObject(treeObjectId, options) {
 		if (typeof treeObjectId !== 'string') {
 			throw new Error('Missing tree folder!');
 		}
-		this._retryRequest(
-			'DELETE',
-			endpoints.collectionFolders + 'object/' + treeObjectId,
-			options,
-			callback
-		);
+
+		return {
+			method: 'delete',
+			path: `${endpoints.collectionFolders}/object/${treeObjectId}`,
+			query: options
+		};
 	},
 
 	searchTreeFolder(queryTerms) {
@@ -125,23 +114,22 @@ export default {
 			throw new Error('Missing query terms!');
 		}
 
-		this._retryRequest(
-			'POST',
-			endpoints.collectionFolders + 'search/',
-			queryTerms,
-			callback
-		);
+		return {
+			method: 'post',
+			path: `${endpoints.collectionFolders}/search`,
+			data: queryTerms
+		};
 	},
 
 	folderSummary(queryTerms) {
 		if (typeof queryTerms !== 'object') {
 			throw new Error('Missing folder summary terms!');
 		}
-		this._retryRequest(
-			'POST',
-			endpoints.collectionFolders + 'summary/',
-			queryTerms,
-			callback
-		);
+
+		return {
+			method: 'post',
+			path: `${endpoints.collectionFolders}/summary`,
+			data: queryTerms
+		};
 	}
 };
