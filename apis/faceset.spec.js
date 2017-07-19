@@ -3,63 +3,64 @@ import { expect } from 'chai';
 import { assertMatches } from '../apis/helper/test-util';
 import facesetHandlers from './faceset';
 
-const apiBaseUrl = 'http://fake.domain';
-
 describe('Faceset', function() {
 	describe('queryFaceset', function() {
 		it('validates q', function() {
-			expect(() => this.api.queryFaceset()).to.throw(/query/);
+			expect(() => facesetHandlers.queryFaceset()).to.throw(/query/);
 		});
 
-		it('makes the correct request to the api', function(done) {
-			const scope = nock(apiBaseUrl)
-				.get(/autocomplete\/my-face/)
-				.reply(200, 'ok');
+		it('makes the correct request to the api', function() {
+			const expected = {
+				method: 'get',
+				path: /autocomplete\/my-face/
+			};
 
-			this.api.queryFaceset('my-face', () => {
-				scope.done();
-				done();
-			});
+			const result = facesetHandlers.queryFaceset('my-face');
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('createFaceset', function() {
 		it('validates faceSet', function() {
-			expect(() => this.api.createFaceset()).to.throw(/faceset/);
-			expect(() => this.api.createFaceset({})).to.throw(/faceSetId/);
+			expect(() => facesetHandlers.createFaceset()).to.throw(/faceset/);
+			expect(() => facesetHandlers.createFaceset({})).to.throw(/faceSetId/);
 		});
 
-		it('makes the correct request to the api', function(done) {
+		it('makes the correct request to the api', function() {
 			const data = {
 				faceSetId: 'my-face'
 			};
 
-			const scope = nock(apiBaseUrl).post(/my-face/, data).reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: /my-face/,
+				data
+			};
 
-			this.api.createFaceset(data, () => {
-				scope.done();
-				done();
-			});
+			const result = facesetHandlers.createFaceset(data);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('updateFaceset', function() {
 		it('validates faceSet', function() {
-			expect(() => this.api.updateFaceset()).to.throw(/faceset/);
-			expect(() => this.api.updateFaceset({})).to.throw(/faceSetId/);
+			expect(() => facesetHandlers.updateFaceset()).to.throw(/faceset/);
+			expect(() => facesetHandlers.updateFaceset({})).to.throw(/faceSetId/);
 		});
 
-		it('makes the correct request to the api', function(done) {
+		it('makes the correct request to the api', function() {
 			const data = {
 				faceSetId: 'my-face'
 			};
 
-			const scope = nock(apiBaseUrl).put(/my-face/, data).reply(200, 'ok');
+			const expected = {
+				method: 'put',
+				path: /my-face/,
+				data
+			};
 
-			this.api.updateFaceset(data, () => {
-				scope.done();
-				done();
-			});
+			const result = facesetHandlers.updateFaceset(data);
+			assertMatches(result, expected);
 		});
 	});
 });

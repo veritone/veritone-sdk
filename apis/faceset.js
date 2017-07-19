@@ -5,12 +5,11 @@ export default {
 		if (typeof q !== 'string' || q === '') {
 			throw new Error('Missing query!');
 		}
-		this._retryRequest(
-			'GET',
-			endpoints.faceset + 'autocomplete/' + encodeURIComponent(q),
-			null,
-			callback
-		);
+
+		return {
+			method: 'get',
+			path: `${endpoints.faceset}/autocomplete/${encodeURIComponent(q)}`
+		};
 	},
 
 	createFaceset(faceset) {
@@ -20,12 +19,12 @@ export default {
 		if (typeof faceset.faceSetId !== 'string') {
 			throw new Error('Missing faceSetId!');
 		}
-		this._retryRequest(
-			'POST',
-			endpoints.faceset + encodeURIComponent(faceset.faceSetId),
-			faceset,
-			callback
-		);
+
+		return {
+			method: 'post',
+			path: `${endpoints.faceset}/${encodeURIComponent(faceset.faceSetId)}`,
+			data: faceset
+		};
 	},
 
 	updateFaceset(faceset) {
@@ -35,11 +34,11 @@ export default {
 		if (typeof faceset.faceSetId !== 'string') {
 			throw new Error('Missing faceSetId!');
 		}
-		this._retryRequest(
-			'PUT',
-			endpoints.faceset + encodeURIComponent(faceset.faceSetId),
-			faceset,
-			callback
-		);
+
+		return {
+			method: 'put',
+			path: `${endpoints.faceset}/${encodeURIComponent(faceset.faceSetId)}`,
+			data: faceset
+		};
 	}
-}
+};
