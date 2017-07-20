@@ -20,6 +20,10 @@ function walk(obj, cb, path = '') {
 	});
 }
 
+// do nothing if obj matches source, otherwise throw a relevant error.
+// obj/source are deep-compared; if sourceVal is a string, the matching
+// objectVal is compared with ===. if sourceVal is a regex, objectVal is
+// tested against it.
 export function assertMatches(obj, source) {
 	return walk(source, (srcVal, key, path) => {
 		const objVal = get(obj, path);
