@@ -2,12 +2,11 @@ import { endpoints } from './config';
 
 export default {
 	createWidget(collectionId, widget) {
-		this._retryRequest(
-			'POST',
-			path.join(endpoints.collection, collectionId, 'widget'),
-			widget,
-			callback
-		);
+		return {
+			method: 'post',
+			path: `${endpoints.collection}/${collectionId}/widget`,
+			data: widget
+		};
 	},
 
 	getWidgets(collectionId, options = {}) {
@@ -15,12 +14,11 @@ export default {
 			throw new Error('Missing collectionId');
 		}
 
-		this._retryRequest(
-			'GET',
-			path.join(endpoints.collection, collectionId, 'widget'),
-			options,
-			callback
-		);
+		return {
+			method: 'get',
+			path: `${endpoints.collection}/${collectionId}/widget`,
+			query: options
+		};
 	},
 
 	getWidget(widgetId, options) {
@@ -28,15 +26,18 @@ export default {
 			throw new Error('Missing widgetId');
 		}
 
-		this._retryRequest(
-			'GET',
-			path.join(endpoints.widget, widgetId),
-			options,
-			callback
-		);
+		return {
+			method: 'get',
+			path: `${endpoints.widget}/${widgetId}`,
+			query: options
+		};
 	},
 
 	updateWidget(widget) {
-		this._retryRequest('PUT', endpoints.widget, widget, callback);
-	},
-}
+		return {
+			method: 'put',
+			path: endpoints.widget,
+			data: widget
+		};
+	}
+};
