@@ -1,16 +1,26 @@
 import { expect } from 'chai';
-import nock from 'nock';
+import { endpoints } from './config';
 
-nock.disableNetConnect();
-
-// import { headers } from './config';
 import { assertMatches } from '../apis/helper/test-util';
 import searchHandlers from './search';
 
-const apiBaseUrl = 'http://fake.domain';
-
-describe('Search', function() {
-	describe('fixme', function() {
-		it('fixme');
+describe('search', function() {
+	it('validates searchRequest', function() {
+		expect(() => searchHandlers.search()).to.throw(/search/);
 	});
+
+	it('posts to the search endpoint', function() {
+		const data = {
+			my: 'search'
+		};
+
+		const expected = {
+			method: 'post',
+			path: endpoints.search,
+			data
+		};
+
+		const result = searchHandlers.search(data);
+		assertMatches(result, expected);
+	})
 });
