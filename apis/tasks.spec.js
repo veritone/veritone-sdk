@@ -23,6 +23,15 @@ describe('Task', function() {
 
 		it('validates result', function() {
 			expect(() =>
+				tasksHandlers.updateTask('job-id', 'task-id', 123)
+			).to.throw(/result/);
+
+			expect(() =>
+				tasksHandlers.updateTask('job-id', 'task-id', {
+				})
+			).to.throw(/taskStatus/);
+
+			expect(() =>
 				tasksHandlers.updateTask('job-id', 'task-id', {
 					taskStatus: 'this-should-fail'
 				})

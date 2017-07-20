@@ -52,9 +52,6 @@ export default {
 		} else if (typeof options !== 'object') {
 			throw new Error('Missing options!');
 		}
-		if (typeof options.recordingId === 'number') {
-			options.recordingId = options.recordingId + '';
-		}
 
 		return {
 			method: 'get',
