@@ -6,9 +6,6 @@ export default {
 		if (typeof job !== 'object') {
 			throw new Error('Missing job!');
 		}
-		if (typeof job.recordingId === 'number') {
-			job.recordingId = job.recordingId + '';
-		}
 
 		const validation = {
 			tasks: {
@@ -43,9 +40,7 @@ export default {
 		} else if (typeof options !== 'object') {
 			throw new Error('Missing options!');
 		}
-		if (typeof options.recordingId === 'number') {
-			options.recordingId = options.recordingId + '';
-		}
+
 		if (typeof options.recordingId !== 'string' || options.recordingId === '') {
 			throw new Error('Missing options.recordingId!');
 		}
