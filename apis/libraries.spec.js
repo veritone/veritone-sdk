@@ -6,7 +6,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library-type'
+				path: new RegExp('/library-type')
 			};
 
 			const result = libraryHandlers.getLibraryTypes();
@@ -18,7 +18,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library-type/123'
+				path: new RegExp('/library-type/123')
 			};
 
 			const result = libraryHandlers.getLibraryType({
@@ -36,7 +36,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library-type',
+				path: new RegExp('/library-type'),
 				data
 			};
 
@@ -53,7 +53,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/library-type/123',
+				path: new RegExp('/library-type/123'),
 				data
 			};
 
@@ -71,7 +71,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library'
+				path: new RegExp('/library')
 			};
 
 			const result = libraryHandlers.getLibraries();
@@ -83,7 +83,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123'
+				path: new RegExp('/library/123')
 			};
 
 			const result = libraryHandlers.getLibrary({
@@ -101,7 +101,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library',
+				path: new RegExp('/library'),
 				data
 			};
 
@@ -118,7 +118,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/library/123',
+				path: new RegExp('/library/123'),
 				data
 			};
 
@@ -136,7 +136,7 @@ describe('Library', function() {
 		it('makes the correct delete request', function() {
 			const expected = {
 				method: 'delete',
-				path: '/library/123'
+				path: new RegExp('/library/123')
 			};
 
 			const result = libraryHandlers.deleteLibrary({
@@ -154,7 +154,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/version',
+				path: new RegExp('/library/123/version'),
 				data
 			};
 
@@ -172,7 +172,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/engine-model'
+				path: new RegExp('/library/123/engine-model')
 			};
 
 			const result = libraryHandlers.getLibraryEngineModels({
@@ -186,7 +186,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/engine-model/456'
+				path: new RegExp('/library/123/engine-model/456')
 			};
 
 			const result = libraryHandlers.getLibraryEngineModel({
@@ -205,7 +205,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/engine-model',
+				path: new RegExp('/library/123/engine-model'),
 				data
 			};
 
@@ -227,7 +227,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/library/123/engine-model/456',
+				path: new RegExp('/library/123/engine-model/456'),
 				data
 			};
 
@@ -246,7 +246,7 @@ describe('Library', function() {
 		it('makes the correct delete request', function() {
 			const expected = {
 				method: 'delete',
-				path: '/library/123/engine-model/456'
+				path: new RegExp('/library/123/engine-model/456')
 			};
 
 			const result = libraryHandlers.deleteLibraryEngineModel({
@@ -261,7 +261,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/collaborator'
+				path: new RegExp('/library/123/collaborator')
 			};
 
 			const result = libraryHandlers.getLibraryCollaborators({
@@ -275,7 +275,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/collaborator/456'
+				path: new RegExp('/library/123/collaborator/456')
 			};
 
 			const result = libraryHandlers.getLibraryCollaborator({
@@ -294,7 +294,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/collaborator',
+				path: new RegExp('/library/123/collaborator'),
 				data
 			};
 
@@ -316,7 +316,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/library/123/collaborator/456',
+				path: new RegExp('/library/123/collaborator/456'),
 				data
 			};
 
@@ -335,7 +335,7 @@ describe('Library', function() {
 		it('makes the correct delete request', function() {
 			const expected = {
 				method: 'delete',
-				path: '/library/123/collaborator/456'
+				path: new RegExp('/library/123/collaborator/456')
 			};
 
 			const result = libraryHandlers.deleteLibraryCollaborator({
@@ -350,7 +350,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/entity-identifier-type'
+				path: new RegExp('/entity-identifier-type')
 			};
 
 			const result = libraryHandlers.getEntityIdentifierTypes();
@@ -362,7 +362,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/entity-identifier-type/123'
+				path: new RegExp('/entity-identifier-type/123')
 			};
 
 			const result = libraryHandlers.getEntityIdentifierType({
@@ -380,7 +380,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/entity-identifier-type',
+				path: new RegExp('/entity-identifier-type'),
 				data
 			};
 
@@ -397,7 +397,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/entity-identifier-type/123',
+				path: new RegExp('/entity-identifier-type/123'),
 				data
 			};
 
@@ -415,7 +415,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/entity'
+				path: new RegExp('/library/123/entity')
 			};
 
 			const result = libraryHandlers.getEntities({
@@ -429,7 +429,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/entity/456'
+				path: new RegExp('/library/123/entity/456')
 			};
 
 			const result = libraryHandlers.getEntity({
@@ -448,7 +448,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/entity',
+				path: new RegExp('/library/123/entity'),
 				data
 			};
 
@@ -470,7 +470,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/library/123/entity/456',
+				path: new RegExp('/library/123/entity/456'),
 				data
 			};
 
@@ -493,7 +493,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/entity/456/profile-image',
+				path: new RegExp('/library/123/entity/456/profile-image'),
 				headers: {
 					'Content-Type': 'something'
 				},
@@ -513,7 +513,7 @@ describe('Library', function() {
 		it('makes the correct delete request', function() {
 			const expected = {
 				method: 'delete',
-				path: '/library/123/entity/456'
+				path: new RegExp('/library/123/entity/456')
 			};
 
 			const result = libraryHandlers.deleteEntity({
@@ -532,7 +532,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/entity-lookup',
+				path: new RegExp('/entity-lookup'),
 				data
 			};
 
@@ -545,7 +545,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/entity/456/identifier'
+				path: new RegExp('/library/123/entity/456/identifier')
 			};
 
 			const result = libraryHandlers.getEntityIdentifiers({
@@ -560,7 +560,7 @@ describe('Library', function() {
 		it('makes the correct get request', function() {
 			const expected = {
 				method: 'get',
-				path: '/library/123/entity/456/identifier/789'
+				path: new RegExp('/library/123/entity/456/identifier/789')
 			};
 
 			const result = libraryHandlers.getEntityIdentifier({
@@ -580,7 +580,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/entity/456/identifier',
+				path: new RegExp('/library/123/entity/456/identifier'),
 				data
 			};
 
@@ -603,7 +603,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'put',
-				path: '/library/123/entity/456/identifier/789',
+				path: new RegExp('/library/123/entity/456/identifier/789'),
 				data
 			};
 
@@ -627,7 +627,7 @@ describe('Library', function() {
 
 			const expected = {
 				method: 'post',
-				path: '/library/123/entity/456/identifier/789',
+				path: new RegExp('/library/123/entity/456/identifier/789'),
 				headers: {
 					'Content-Type': 'something'
 				},
@@ -648,7 +648,7 @@ describe('Library', function() {
 		it('makes the correct delete request', function() {
 			const expected = {
 				method: 'delete',
-				path: '/library/123/entity/456/identifier/789'
+				path: new RegExp('/library/123/entity/456/identifier/789')
 			};
 
 			const result = libraryHandlers.deleteEntityIdentifier({
