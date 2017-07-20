@@ -1,12 +1,20 @@
-import { endpoints } from './config'
+import { endpoints } from './config';
 
 export default {
 	createIngestion(ingestion) {
-		this._retryRequest('POST', endpoints.ingestion, ingestion, callback);
+		return {
+			method: 'post',
+			path: endpoints.ingestion,
+			data: ingestion
+		};
 	},
 
 	getIngestions(options = {}) {
-		this._retryRequest('GET', endpoints.ingestion, options, callback);
+		return {
+			method: 'get',
+			path: endpoints.ingestion,
+			query: options
+		};
 	},
 
 	getIngestion(ingestionId, options = {}) {
@@ -14,12 +22,11 @@ export default {
 			throw new Error('Missing ingestionId');
 		}
 
-		this._retryRequest(
-			'GET',
-			endpoints.ingestion + ingestionId,
-			options,
-			callback
-		);
+		return {
+			method: 'get',
+			path: `${endpoints.ingestion}/${ingestionId}`,
+			query: options
+		};
 	},
 
 	updateIngestion(ingestionId, patch) {
@@ -27,12 +34,11 @@ export default {
 			throw new Error('Missing ingestionId');
 		}
 
-		this._retryRequest(
-			'PUT',
-			endpoints.ingestion + ingestionId,
-			patch,
-			callback
-		);
+		return {
+			method: 'put',
+			path: `${endpoints.ingestion}/${ingestionId}`,
+			data: patch
+		};
 	},
 
 	deleteIngestion(ingestionId, options) {
@@ -40,24 +46,23 @@ export default {
 			throw new Error('Missing ingestionId');
 		}
 
-		this._retryRequest(
-			'DELETE',
-			endpoints.ingestion + ingestionId,
-			options,
-			callback
-		);
+		return {
+			method: 'delete',
+			path: `${endpoints.ingestion}/${ingestionId}`,
+			query: options
+		};
 	},
 
 	ingestionConnect(connectOptions) {
 		if (typeof connectOptions === 'undefined') {
 			throw new Error('Missing Connect Options');
 		}
-		this._retryRequest(
-			'POST',
-			endpoints.ingestion + 'connect',
-			connectOptions,
-			callback
-		);
+
+		return {
+			method: 'post',
+			path: `${endpoints.ingestion}/connect`,
+			data: connectOptions
+		};
 	},
 
 	verifyEmailIngestion(emailOptions) {
@@ -67,11 +72,11 @@ export default {
 		) {
 			throw new Error('Missing email address');
 		}
-		this._retryRequest(
-			'POST',
-			endpoints.ingestion + 'verifyEmailIngestion',
-			emailOptions,
-			callback
-		);
+
+		return {
+			method: 'post',
+			path: `${endpoints.ingestion}/verifyEmailIngestion`,
+			data: emailOptions
+		};
 	}
-}
+};

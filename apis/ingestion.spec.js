@@ -4,148 +4,145 @@ import { endpoints } from './config';
 import { assertMatches } from '../apis/helper/test-util';
 import ingestionHandlers from './ingestion';
 
-const apiBaseUrl = 'http://fake.domain';
-
 describe('Ingestion', function() {
 	describe('createIngestion', function() {
-		it('posts to the ingestion endpoint with the data', function(done) {
+		it('posts to the ingestion endpoint with the data', function() {
 			const data = {
 				data: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.post(endpoints.ingestion, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: endpoints.ingestion,
+				data
+			};
 
-			this.api.createIngestion(data, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.createIngestion(data);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('getIngestions', function() {
-		it('gets to the ingestion endpoint with additional data in the query', function(done) {
+		it('gets to the ingestion endpoint with additional data in the query', function() {
 			const query = {
 				query: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.get(endpoints.ingestion)
-				.query(query)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'get',
+				path: endpoints.ingestion,
+				query
+			};
 
-			this.api.getIngestions(query, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.getIngestions(query);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('getIngestion', function() {
 		it('validates ingestionId', function() {
-			expect(() => this.api.getIngestion()).to.throw(/ingestionId/);
+			expect(() => ingestionHandlers.getIngestion()).to.throw(/ingestionId/);
 		});
 
-		it('gets to the ingestion id with additional data in the query', function(done) {
+		it('gets to the ingestion id with additional data in the query', function() {
 			const query = {
 				query: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.get(/ingestion-id/)
-				.query(query)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'get',
+				path: /ingestion-id/,
+				query
+			};
 
-			this.api.getIngestion('ingestion-id', query, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.getIngestion('ingestion-id', query);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('updateIngestion', function() {
 		it('validates ingestionId', function() {
-			expect(() => this.api.updateIngestion()).to.throw(/ingestionId/);
+			expect(() => ingestionHandlers.updateIngestion()).to.throw(/ingestionId/);
 		});
 
-		it('puts to the ingestion id with additional data in the query', function(done) {
+		it('puts to the ingestion id with additional data in the query', function() {
 			const data = {
 				data: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.put(/ingestion-id/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'put',
+				path: /ingestion-id/,
+				data
+			};
 
-			this.api.updateIngestion('ingestion-id', data, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.updateIngestion('ingestion-id', data);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('deleteIngestion', function() {
 		it('validates ingestionId', function() {
-			expect(() => this.api.deleteIngestion()).to.throw(/ingestionId/);
+			expect(() => ingestionHandlers.deleteIngestion()).to.throw(/ingestionId/);
 		});
 
-		it('gets to the ingestion id with additional data in the query', function(done) {
+		it('gets to the ingestion id with additional data in the query', function() {
 			const query = {
 				query: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.delete(/ingestion-id/)
-				.query(query)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'delete',
+				path: /ingestion-id/,
+				query
+			};
 
-			this.api.deleteIngestion('ingestion-id', query, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.deleteIngestion('ingestion-id', query);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('ingestionConnect', function() {
 		it('validates connectOptions', function() {
-			expect(() => this.api.ingestionConnect()).to.throw(/options/i);
+			expect(() => ingestionHandlers.ingestionConnect()).to.throw(/options/i);
 		});
 
-		it('posts to the ingestion connect endpoint with data', function(done) {
+		it('posts to the ingestion connect endpoint with data', function() {
 			const data = {
 				data: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.post(/connect/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: /connect/,
+				data
+			};
 
-			this.api.ingestionConnect(data, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.ingestionConnect(data);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('verifyEmailIngestion', function() {
 		it('validates emailOptions', function() {
-			expect(() => this.api.verifyEmailIngestion({})).to.throw(/email/i);
+			expect(() => ingestionHandlers.verifyEmailIngestion({})).to.throw(
+				/email/i
+			);
 		});
 
-		it('posts to the ingestion connect endpoint with data', function(done) {
+		it('posts to the ingestion connect endpoint with data', function() {
 			const data = {
 				emailAddress: 'ok'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.post(/verifyEmailIngestion/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: /verifyEmailIngestion/,
+				data
+			};
 
-			this.api.verifyEmailIngestion(data, () => {
-				scope.done();
-				done();
-			});
+			const result = ingestionHandlers.verifyEmailIngestion(data);
+			assertMatches(result, expected);
 		});
 	});
 });
