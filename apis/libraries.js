@@ -46,3 +46,4 @@ export default {
 	uploadEntityIdentifier: generateHandler('POST', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierTypeId', ['Content-Type']),
 	deleteEntityIdentifier: generateHandler('DELETE', '/library/:libraryId/entity/:entityId/identifier/:entityIdentifierId')
 };
+// todo: add endpoints.library
