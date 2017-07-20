@@ -9,29 +9,23 @@ export default function veritoneApi(
 		maxRetries = 1,
 		retryIntervalMs = 1000
 	},
-	apis = {},
-	legacyApis = {} // fixme -- delete after done migrating
+	apis = {}
 ) {
 	if (!token) {
 		throw new Error('Token is required');
 	}
 
-	return {
-		...legacyApis,
-		...mapObject(apis, ns =>
-			mapObject(
-				ns,
-				handler =>
-					callApi(
-						{
-							token,
-							baseUrl: `${baseUrl}/v${version}`,
-							maxRetries,
-							retryIntervalMs
-						},
-						handler
-					)
+	return mapObject(apis, ns =>
+		mapObject(ns, handler =>
+			callApi(
+				{
+					token,
+					baseUrl: `${baseUrl}/v${version}`,
+					maxRetries,
+					retryIntervalMs
+				},
+				handler
 			)
 		)
-	}
+	);
 }
