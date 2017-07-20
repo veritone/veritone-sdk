@@ -1,163 +1,176 @@
-import { expect } from 'chai';
-import nock from 'nock';
-
-nock.disableNetConnect();
-
 import { assertMatches } from '../apis/helper/test-util';
 import mentionHandlers from './mention';
 
-const apiBaseUrl = 'http://fake.domain';
-
 describe('Mentions', function() {
 	describe('searchMentions', function() {
-		it('posts to the search api with the body', function(done) {
+		it('posts to the search api with the body', function() {
 			const data = {
 				option: 'my-option'
 			};
 
-			const scope = nock(apiBaseUrl).post(/search/, data).reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: /search/,
+				data
+			};
 
-			this.api.searchMentions(data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.searchMentions(data);
+			assertMatches(result, expected);
 		});
 	});
 
-	describe('getMentions', function() {
-		it('gets the mentionId with filter in the query', function(done) {
+	describe('getMention', function() {
+		it('gets the mentionId with filter in the query', function() {
 			const filter = {
 				filter: 'my-filter'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.get(/my-mention/)
-				.query(filter)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'get',
+				path: /my-mention/,
+				query: filter
+			};
 
-			this.api.getMentions('my-mention', filter, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.getMention('my-mention', filter);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('updateMentionSelectively', function() {
-		it('puts to the mentionId with the body', function(done) {
+		it('puts to the mentionId with the body', function() {
 			const data = {
 				mention: 'my-mention'
 			};
 
-			const scope = nock(apiBaseUrl).put(/my-mention/, data).reply(200, 'ok');
+			const expected = {
+				method: 'put',
+				path: /my-mention/,
+				data
+			};
 
-			this.api.updateMentionSelectively('my-mention', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.updateMentionSelectively(
+				'my-mention',
+				data
+			);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('createMentionComment', function() {
-		it('puts to the mentionId with the comment', function(done) {
+		it('puts to the mentionId with the comment', function() {
 			const data = {
 				comment: 'my-comment'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.post(/my-mention\/comment/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: /my-mention\/comment/,
+				data
+			};
 
-			this.api.createMentionComment('my-mention', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.createMentionComment('my-mention', data);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('updateMentionComment', function() {
-		it('puts to the mentionId/commentId with the comment', function(done) {
+		it('puts to the mentionId/commentId with the comment', function() {
 			const data = {
 				comment: 'my-comment'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.put(/my-mention\/comment\/my-comment/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'put',
+				path: /my-mention\/comment\/my-comment/,
+				data
+			};
 
-			this.api.updateMentionComment('my-mention', 'my-comment', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.updateMentionComment(
+				'my-mention',
+				'my-comment',
+				data
+			);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('deleteMentionComment', function() {
-		it('deletes to the mentionId/commentId with the comment', function(done) {
+		it('deletes to the mentionId/commentId with the comment', function() {
 			const data = {
 				comment: 'my-comment'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.delete(/my-mention\/comment\/my-comment/)
-				.query(data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'delete',
+				path: /my-mention\/comment\/my-comment/,
+				query: data
+			};
 
-			this.api.deleteMentionComment('my-mention', 'my-comment', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.deleteMentionComment(
+				'my-mention',
+				'my-comment',
+				data
+			);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('createMentionRating', function() {
-		it('posts to the mentionId rating with the rating', function(done) {
+		it('posts to the mentionId rating with the rating', function() {
 			const data = {
 				rating: 'my-rating'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.post(/my-mention\/rating/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'post',
+				path: /my-mention\/rating/,
+				data
+			};
 
-			this.api.createMentionRating('my-mention', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.createMentionRating('my-mention', data);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('updateMentionRating', function() {
-		it('puts to the mentionId rating with the rating', function(done) {
+		it('puts to the mentionId rating with the rating', function() {
 			const data = {
 				rating: 'my-rating'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.put(/my-mention\/comment\/my-rating/, data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'put',
+				path: /my-mention\/comment\/my-rating/,
+				data
+			};
 
-			this.api.updateMentionRating('my-mention', 'my-rating', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.updateMentionRating(
+				'my-mention',
+				'my-rating',
+				data
+			);
+			assertMatches(result, expected);
 		});
 	});
 
 	describe('deleteMentionRating', function() {
-		it('deletes to the mentionId/commentId with the comment', function(done) {
+		it('deletes to the mentionId/commentId with the comment', function() {
 			const data = {
 				rating: 'my-rating'
 			};
 
-			const scope = nock(apiBaseUrl)
-				.delete(/my-mention\/comment\/my-rating/)
-				.query(data)
-				.reply(200, 'ok');
+			const expected = {
+				method: 'delete',
+				path: /my-mention\/comment\/my-rating/,
+				query: data
+			};
 
-			this.api.deleteMentionRating('my-mention', 'my-rating', data, () => {
-				scope.done();
-				done();
-			});
+			const result = mentionHandlers.deleteMentionRating(
+				'my-mention',
+				'my-rating',
+				data
+			);
+			assertMatches(result, expected);
 		});
 	});
 });

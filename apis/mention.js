@@ -2,68 +2,74 @@ import { endpoints } from './config';
 
 export default {
 	searchMentions(options) {
-		this._retryRequest('POST', endpoints.mention + 'search', options, callback);
+		return {
+			method: 'post',
+			path: `${endpoints.mention}/search`,
+			data: options
+		};
 	},
 
-	getMention(mentionId, filter, callback) {
-		this._retryRequest('GET', endpoints.mention + mentionId, filter, callback);
+	getMention(mentionId, filter) {
+		return {
+			method: 'get',
+			path: `${endpoints.mention}/${mentionId}`,
+			query: filter
+		};
 	},
 
 	updateMentionSelectively(mentionId, mention) {
-		this._retryRequest('PUT', endpoints.mention + mentionId, mention, callback);
+		return {
+			method: 'put',
+			path: `${endpoints.mention}/${mentionId}`,
+			data: mention
+		};
 	},
 
 	createMentionComment(mentionId, comment) {
-		this._retryRequest(
-			'POST',
-			endpoints.mention + mentionId + '/comment',
-			comment,
-			callback
-		);
+		return {
+			method: 'post',
+			path: `${endpoints.mention}/${mentionId}/comment`,
+			data: comment
+		};
 	},
 
 	updateMentionComment(mentionId, commentId, comment) {
-		this._retryRequest(
-			'PUT',
-			endpoints.mention + mentionId + '/comment/' + commentId,
-			comment,
-			callback
-		);
+		return {
+			method: 'put',
+			path: `${endpoints.mention}/${mentionId}/comment/${commentId}`,
+			data: comment
+		};
 	},
 
 	deleteMentionComment(mentionId, commentId, comment) {
-		this._retryRequest(
-			'DELETE',
-			endpoints.mention + mentionId + '/comment/' + commentId,
-			comment,
-			callback
-		);
+		return {
+			method: 'delete',
+			path: `${endpoints.mention}/${mentionId}/comment/${commentId}`,
+			query: comment
+		};
 	},
 
 	createMentionRating(mentionId, rating) {
-		this._retryRequest(
-			'POST',
-			endpoints.mention + mentionId + '/rating',
-			rating,
-			callback
-		);
+		return {
+			method: 'post',
+			path: `${endpoints.mention}/${mentionId}/rating`,
+			data: rating
+		};
 	},
 
 	updateMentionRating(mentionId, ratingId, rating) {
-		this._retryRequest(
-			'PUT',
-			endpoints.mention + mentionId + '/comment/' + ratingId,
-			rating,
-			callback
-		);
+		return {
+			method: 'put',
+			path: `${endpoints.mention}/${mentionId}/comment/${ratingId}`,
+			data: rating
+		};
 	},
 
 	deleteMentionRating(mentionId, ratingId, rating) {
-		this._retryRequest(
-			'DELETE',
-			endpoints.mention + mentionId + '/comment/' + ratingId,
-			rating,
-			callback
-		);
+		return {
+			method: 'delete',
+			path: `${endpoints.mention}/${mentionId}/comment/${ratingId}`,
+			query: rating
+		};
 	}
 };
