@@ -64,7 +64,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('getLibraries', function() {
@@ -129,7 +129,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('deleteLibrary', function() {
@@ -239,7 +239,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('deleteLibraryEngineModel', function() {
@@ -328,7 +328,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('deleteLibraryCollaborator', function() {
@@ -408,7 +408,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('getEntities', function() {
@@ -482,7 +482,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('uploadEntityProfileImage', function() {
@@ -500,13 +500,16 @@ describe('Library', function() {
 				data
 			};
 
-			const result = libraryHandlers.uploadEntityProfileImage({
-				libraryId: 123,
-				entityId: 456,
-				'Content-Type': 'something'
-			}, data);
+			const result = libraryHandlers.uploadEntityProfileImage(
+				{
+					libraryId: 123,
+					entityId: 456,
+					'Content-Type': 'something'
+				},
+				data
+			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('deleteEntity', function() {
@@ -538,7 +541,7 @@ describe('Library', function() {
 
 			const result = libraryHandlers.entityLookup(data);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('getEntityIdentifiers', function() {
@@ -616,7 +619,7 @@ describe('Library', function() {
 				data
 			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('uploadEntityIdentifier', function() {
@@ -634,14 +637,17 @@ describe('Library', function() {
 				data
 			};
 
-			const result = libraryHandlers.uploadEntityIdentifier({
-				libraryId: 123,
-				entityId: 456,
-				entityIdentifierTypeId: 789,
-				'Content-Type': 'something'
-			}, data);
+			const result = libraryHandlers.uploadEntityIdentifier(
+				{
+					libraryId: 123,
+					entityId: 456,
+					entityIdentifierTypeId: 789,
+					'Content-Type': 'something'
+				},
+				data
+			);
 			assertMatches(result, expected);
-		})
+		});
 	});
 
 	describe('deleteEntityIdentifier', function() {
