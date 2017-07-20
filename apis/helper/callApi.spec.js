@@ -608,14 +608,18 @@ describe('callApi', function() {
 			})
 			.reply(200, 'ok');
 
-		this.callApi(handler)(123, {
-			headers: {
-				ok: 'yes'
+		this.callApi(handler)(
+			123,
+			{
+				headers: {
+					ok: 'yes'
+				}
+			},
+			function() {
+				scope.done();
+				done();
 			}
-		}, function() {
-			scope.done();
-			done();
-		});
+		);
 	});
 
 	it('allows request options to be overridden on a per-call basis (promise)', function(
@@ -707,15 +711,34 @@ describe('callApi', function() {
 
 		const scope = nock(apiBaseUri).get(/ok\/123/).reply(201, 'ok');
 
-		this.callApi(
-			handler
-		)(123, { validateStatus: s => s === 201 }, (err, res) => {
-			expect(err).to.equal(null);
-			// no query in path
-			expect(res.request.path).to.equal('/ok/123');
+		this.callApi(handler)(
+			123,
+			{ validateStatus: s => s === 201 },
+			(err, res) => {
+				expect(err).to.equal(null);
+				// no query in path
+				expect(res.request.path).to.equal('/ok/123');
 
-			scope.done();
-			done();
+				scope.done();
+				done();
+			}
+		);
+	});
+
+	it('binds options to nonStandard handlers, and leaves them otherwise unmodified', function() {
+		let handler = ({token, baseUrl}, id) => ({
+			method: 'get',
+			path: id,
+			data: { token, baseUrl }
 		});
+
+		handler.isNonStandard = true;
+		const result = this.callApi(handler)('123');
+
+		expect(result).to.deep.equal({
+			method: 'get',
+			path: '123',
+			data: { token: apiToken, baseUrl: apiBaseUri }
+		})
 	});
 });
