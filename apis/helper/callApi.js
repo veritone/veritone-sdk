@@ -122,8 +122,8 @@ export default function callApi(
 						return callback(err);
 					}
 
-					resolve(res);
-					callback(null, res);
+					resolve(res.data); // todo: a way to give the promise raw res?
+					callback(null, res.data, res);
 				}
 			);
 		});

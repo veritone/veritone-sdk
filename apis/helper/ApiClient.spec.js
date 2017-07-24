@@ -63,7 +63,7 @@ describe('veritoneApi', function() {
 
 			api.libraries.getLibrary((err, res) => {
 				expect(err).to.equal(null);
-				expect(res.data).to.equal('ok');
+				expect(res).to.equal('ok');
 
 				scope.done();
 				done();

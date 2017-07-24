@@ -199,10 +199,10 @@ describe('callApi', function() {
 			path: 'test-path'
 		}));
 
-		requestFn((err, res) => {
+		requestFn((err, body, res) => {
 			expect(err).to.equal(null);
 			expect(res.status).to.equal(200);
-			expect(res.data).to.equal('ok');
+			expect(body).to.equal('ok');
 
 			scope.done();
 			done();
@@ -239,9 +239,8 @@ describe('callApi', function() {
 		}));
 
 		requestFn()
-			.then(res => {
-				expect(res.status).to.equal(200);
-				expect(res.data).to.equal('ok');
+			.then(body => {
+				expect(body).to.equal('ok');
 				done();
 			})
 			.catch(() => {
@@ -390,9 +389,9 @@ describe('callApi', function() {
 			}
 		}));
 
-		return requestFn().then(res => {
-			expect(res.data.worked).to.equal(true);
-			expect(res.data.otherKey).to.equal(123);
+		return requestFn().then(body => {
+			expect(body.worked).to.equal(true);
+			expect(body.otherKey).to.equal(123);
 			scope.done();
 		});
 	});
@@ -410,8 +409,8 @@ describe('callApi', function() {
 			_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
 		}));
 
-		return requestFn().then(res => {
-			expect(res.data.worked).to.equal(true);
+		return requestFn().then(body => {
+			expect(body.worked).to.equal(true);
 
 			scope.done();
 		});
@@ -430,8 +429,8 @@ describe('callApi', function() {
 			_requestOptions: { maxRetries: 3, retryIntervalMs: 50 }
 		}));
 
-		requestFn((err, res) => {
-			expect(res.data.worked).to.equal(true);
+		requestFn((err, body) => {
+			expect(body.worked).to.equal(true);
 
 			scope.done();
 			done();
@@ -499,10 +498,7 @@ describe('callApi', function() {
 				method: 'get',
 				path: 'test-path2'
 			}))()
-		]).then(([res1, res2]) => {
-			expect(res1.status).to.equal(200);
-			expect(res2.status).to.equal(299);
-
+		]).then(() => {
 			scope1.done();
 			scope2.done();
 			done();
@@ -546,10 +542,10 @@ describe('callApi', function() {
 	it('should resolve/reject properly with a custom status validator', function(
 		done
 	) {
-		const scope1 = nock(apiBaseUri).get('/test-path1').reply(101);
-		const scope2 = nock(apiBaseUri).get('/test-path2').reply(102);
+		const scope1 = nock(apiBaseUri).get('/test-path1').reply(101, 'one');
+		const scope2 = nock(apiBaseUri).get('/test-path2').reply(102, 'two');
 
-		let status1, status2;
+		let status1, body2;
 
 		this.callApi(() => ({
 			method: 'get',
@@ -571,13 +567,13 @@ describe('callApi', function() {
 					}
 				}))
 			)
-			.then(res => {
+			.then(data => {
 				// fails because status is !== 101
-				status2 = res.status;
+				body2 = data;
 			})
 			.then(() => {
 				expect(status1).to.equal(101);
-				expect(status2).to.equal(102);
+				expect(body2).to.equal('two');
 
 				scope1.done();
 				scope2.done();
@@ -666,7 +662,7 @@ describe('callApi', function() {
 
 		const scope = nock(apiBaseUri).get(/ok\/123/).reply(200, 'ok');
 
-		this.callApi(handler)(123, (err, res) => {
+		this.callApi(handler)(123, (err, body, res) => {
 			expect(err).to.equal(null);
 			expect(res.request.path).to.equal('/ok/123');
 
@@ -677,19 +673,18 @@ describe('callApi', function() {
 
 	it('deals with optional args in handlers (promise)', function(done) {
 		let handler = (id, options) => {
+			const path = `${id}/${options || 'no-options'}`;
+
 			return {
 				method: 'get',
-				path: `ok/${id}`,
-				query: options
+				path
 			};
 		};
 
-		const scope = nock(apiBaseUri).get(/ok\/123/).reply(200, 'ok');
+		// assert that options is undefined
+		const scope = nock(apiBaseUri).get('/123/no-options').reply(200, 'ok');
 
-		this.callApi(handler)(123).then(res => {
-			// path does not contain any query
-			expect(res.request.path).to.equal('/ok/123');
-
+		this.callApi(handler)(123).then(() => {
 			scope.done();
 			done();
 		});
@@ -714,7 +709,7 @@ describe('callApi', function() {
 		this.callApi(handler)(
 			123,
 			{ validateStatus: s => s === 201 },
-			(err, res) => {
+			(err, body, res) => {
 				expect(err).to.equal(null);
 				// no query in path
 				expect(res.request.path).to.equal('/ok/123');
@@ -726,7 +721,7 @@ describe('callApi', function() {
 	});
 
 	it('binds options to nonStandard handlers, and leaves them otherwise unmodified', function() {
-		let handler = ({token, baseUrl}, id) => ({
+		let handler = ({ token, baseUrl }, id) => ({
 			method: 'get',
 			path: id,
 			data: { token, baseUrl }
@@ -739,6 +734,6 @@ describe('callApi', function() {
 			method: 'get',
 			path: '123',
 			data: { token: apiToken, baseUrl: apiBaseUri }
-		})
+		});
 	});
 });
