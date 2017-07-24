@@ -30,7 +30,7 @@ const recordingApi = {
 		};
 	},
 
-	getRecordings({ offset, limit }) {
+	getRecordings({ offset, limit } = {}) {
 		return {
 			method: 'get',
 			path: endpoints.recording,
