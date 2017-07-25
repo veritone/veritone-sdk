@@ -17,7 +17,7 @@ export default {
 			_requestOptions: {
 				validateStatus: s => s === 200
 			}
-		}
+		};
 	},
 
 	revokeToken(token) {
@@ -31,9 +31,9 @@ export default {
 			_requestOptions: {
 				validateStatus: s => s === 200 || s === 204
 			}
-		}
+		};
 	}
-}
+};
 // createToken: function createToken(label, rights, callback) {
 // 	if (typeof label !== 'string' || label === '') {
 // 		throw new Error('Missing label!');

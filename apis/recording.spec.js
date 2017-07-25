@@ -225,24 +225,15 @@ describe('Recording', function() {
 	describe('getRecordingTranscript', function() {
 		it('validates recordingId', function() {
 			expect(() =>
-				recordingHandlers.getRecordingTranscript(
-					undefined,
-					noop
-				)
+				recordingHandlers.getRecordingTranscript(undefined, noop)
 			).to.throw(/recordingId/);
 
-			expect(() =>
-				recordingHandlers.getRecordingTranscript(
-					{},
-					noop
-				)
-			).to.throw(/recordingId/);
+			expect(() => recordingHandlers.getRecordingTranscript({}, noop)).to.throw(
+				/recordingId/
+			);
 
 			expect(() =>
-				recordingHandlers.getRecordingTranscript(
-					'2',
-					noop
-				)
+				recordingHandlers.getRecordingTranscript('2', noop)
 			).not.to.throw();
 		});
 

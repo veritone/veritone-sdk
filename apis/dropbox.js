@@ -56,4 +56,4 @@ export default {
 			path: `${endpoints.dropboxWatcher}/${watcherId}`
 		};
 	}
-}
+};

@@ -19,7 +19,9 @@ describe('DropboxWatcher', function() {
 				}
 			};
 
-			const result = dropboxHandlers.getDropboxWatchers({ watcherId: 'watcher-id' });
+			const result = dropboxHandlers.getDropboxWatchers({
+				watcherId: 'watcher-id'
+			});
 			assertMatches(result, expected);
 		});
 
@@ -47,10 +49,9 @@ describe('DropboxWatcher', function() {
 				}
 			};
 
-			const result = dropboxHandlers.createDropboxWatcher(
-				{
-					watcherId: 'watcher-id'
-				});
+			const result = dropboxHandlers.createDropboxWatcher({
+				watcherId: 'watcher-id'
+			});
 			assertMatches(result, expected);
 		});
 	});
@@ -85,23 +86,27 @@ describe('DropboxWatcher', function() {
 				}
 			};
 
-			const result = dropboxHandlers.updateDropboxWatcher({ watcherId: 'watcher-id' })
+			const result = dropboxHandlers.updateDropboxWatcher({
+				watcherId: 'watcher-id'
+			});
 			assertMatches(result, expected);
 		});
 	});
 
 	describe('deleteDropboxWatcher', function() {
 		it('validates watcherId', function() {
-			expect(() => dropboxHandlers.deleteDropboxWatcher()).to.throw(/watcherId/);
+			expect(() => dropboxHandlers.deleteDropboxWatcher()).to.throw(
+				/watcherId/
+			);
 		});
 
 		it('makes the correct request to the api', function() {
 			const expected = {
 				method: 'delete',
-				path: /watcher-id/,
+				path: /watcher-id/
 			};
 
-			const result = dropboxHandlers.deleteDropboxWatcher('watcher-id')
+			const result = dropboxHandlers.deleteDropboxWatcher('watcher-id');
 			assertMatches(result, expected);
 		});
 	});

@@ -17,5 +17,5 @@ describe('Batch', function() {
 
 		const result = batchHandlers.batch(data);
 		assertMatches(result, expected);
-	})
+	});
 });

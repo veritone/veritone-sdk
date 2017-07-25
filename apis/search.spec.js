@@ -22,5 +22,5 @@ describe('search', function() {
 
 		const result = searchHandlers.search(data);
 		assertMatches(result, expected);
-	})
+	});
 });

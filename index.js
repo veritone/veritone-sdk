@@ -5,6 +5,5 @@ import apis from './apis';
 import './polyfill';
 
 export default function ApiClient(options) {
-	return veritoneApi(options, apis)
+	return veritoneApi(options, apis);
 }
-
