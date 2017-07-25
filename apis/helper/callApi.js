@@ -1,7 +1,7 @@
 import axios from 'axios';
 import validate from 'validate.js';
 
-const RetryHelper = require('./RetryHelper');
+import RetryHelper from './RetryHelper';
 import { last, noop } from './util';
 
 export default function callApi(

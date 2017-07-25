@@ -1,7 +1,7 @@
 import validate from 'validate.js';
-const asyncRetry = require('async/retry');
+import asyncRetry from 'async/retry';
 
-function RetryHelper(options = {}) {
+export default function RetryHelper(options = {}) {
 	const finalOptions = {
 		maxRetries: 1,
 		retryIntervalMs: 50,
@@ -40,5 +40,3 @@ RetryHelper.prototype.retry = function retry(task, callback) {
 		callback
 	);
 };
-
-module.exports = RetryHelper;

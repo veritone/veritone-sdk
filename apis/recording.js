@@ -1,6 +1,6 @@
 import validate from './validations';
 import { endpoints, headers } from './config';
-const RetryHelper = require('./helper/RetryHelper');
+import RetryHelper from './helper/RetryHelper';
 
 const nonStandardHandlers = [
 	'getRecordingMedia',

@@ -1,3 +1,13 @@
 {
-	"presets": ["es2015", "stage-1"]
+	"presets": [
+		"stage-1",
+		[
+			"latest", {
+			"es2015": {
+				"modules": false
+			}
+		}
+		]
+	],
+	"plugins": ["external-helpers"]
 }

@@ -1,19 +1,33 @@
-'use strict';
+import batch from './batch'
+import collection from './collection'
+import dropbox from './dropbox'
+import engine from './engine'
+import faceset from './faceset'
+import folder from './folder'
+import ingestion from './ingestion'
+import job from './job'
+import library from './libraries'
+import mention from './mention'
+import recording from './recording'
+import search from './search'
+import tasks from './tasks'
+import token from './token'
+import widget from './widget'
 
-module.exports = {
-	batch: require('./batch').default,
-	collection: require('./collection').default,
-	dropbox: require('./dropbox').default,
-	engine: require('./engine').default,
-	faceset: require('./faceset').default,
-	folder: require('./folder').default,
-	ingestion: require('./ingestion').default,
-	job: require('./job').default,
-	// library: require('./libraries').default,
-	mention: require('./mention').default,
-	recording: require('./recording').default,
-	search: require('./search').default,
-	tasks: require('./tasks').default,
-	token: require('./token').default,
-	widget: require('./widget').default
+export default {
+	batch,
+	collection,
+	dropbox,
+	engine,
+	faceset,
+	folder,
+	ingestion,
+	job,
+	library,
+	mention,
+	recording,
+	search,
+	tasks,
+	token,
+	widget
 };
