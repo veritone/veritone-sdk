@@ -5,10 +5,10 @@
   "private": true,
   "main": "dist/bundle.js",
   "scripts": {
-		"build": "rollup -c",
-    "test": "mocha",
-    "test:watch": "mocha --watch",
-    "coverage": "nyc mocha",
+    "build": "NODE_ENV=production rollup -c",
+    "test": "NODE_ENV=test mocha",
+    "test:watch": "NODE_ENV=test mocha --watch",
+    "coverage": "NODE_ENV=test nyc mocha",
     "lint": "eslint --ext .js ./ ",
     "format": "prettier --single-quote --use-tabs --write \"./*.js|{apis,test}/**.*.js\""
   },
