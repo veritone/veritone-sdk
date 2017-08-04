@@ -1,13 +1,24 @@
 {
-	"presets": [
-		"stage-1",
-		[
-			"latest", {
-			"es2015": {
-				"modules": false
-			}
+	"env": {
+		"production": {
+			"presets": [
+				"stage-1",
+				[
+					"latest", {
+					"es2015": {
+						"modules": false
+					}
+				}
+				]
+			],
+			"plugins": ["external-helpers"]
+		},
+
+		"test": {
+			"presets": [
+				"stage-1",
+				"latest"
+			]
 		}
-		]
-	],
-	"plugins": ["external-helpers"]
+	}
 }
