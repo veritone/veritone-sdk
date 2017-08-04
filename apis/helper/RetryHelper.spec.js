@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-describe('RetryHelper', function() {
-	const RetryHelper = require('./RetryHelper');
+import RetryHelper from './RetryHelper';
 
+describe('RetryHelper', function() {
 	it('should have defaults', function(done) {
 		const retryHelper = new RetryHelper();
 		expect(retryHelper._maxRetries).to.equal(1);
