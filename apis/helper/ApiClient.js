@@ -1,4 +1,4 @@
-import callApi from './callApi';
+import callApi from './callApi-browser';
 import { mapObject } from './util';
 
 export default function veritoneApi(

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import nock from 'nock';
 nock.disableNetConnect();
 
-import callApi from './callApi';
+import callApi from './callApi-browser';
 
 const apiToken = 'api-token-abc';
 const apiBaseUri = 'http://fake.domain';

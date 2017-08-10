@@ -8,7 +8,7 @@ import ingestion from './ingestion';
 import job from './job';
 import library from './libraries';
 import mention from './mention';
-import recording from './recording';
+// import recording from './recording';
 import search from './search';
 import tasks from './tasks';
 import token from './token';
@@ -25,7 +25,7 @@ export default {
 	job,
 	library,
 	mention,
-	recording,
+	// recording,
 	search,
 	tasks,
 	token,

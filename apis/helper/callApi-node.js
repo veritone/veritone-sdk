@@ -4,12 +4,10 @@ import validate from 'validate.js';
 import RetryHelper from './RetryHelper';
 import { last, noop } from './util';
 
-export default function callApi(
-	// base options provided by API client
-	{ token, baseUrl, maxRetries = 1, retryIntervalMs = 1000 },
-	// handler returning a request object
-	handlerFn
-) {
+export default function callApi(// base options provided by API client
+																{ token, baseUrl, maxRetries = 1, retryIntervalMs = 1000 } = {},
+																// handler returning a request object
+																handlerFn) {
 	validateAuthToken(token);
 	validateBaseUrl(baseUrl);
 	validateHandlerFn(handlerFn);
@@ -132,7 +130,7 @@ export default function callApi(
 
 function validateAuthToken(token) {
 	if (typeof token !== 'string') {
-		throw new Error(`callApi requires an api token`);
+		throw new Error(`callApi requires an api token, which must be a string`);
 	}
 }
 
@@ -162,7 +160,7 @@ function validateRequestObject(obj) {
 		if (!validKeys.includes(key)) {
 			throw new Error(
 				`unexpected key in request object: ${key}. Supported keys are: ` +
-					JSON.stringify(validKeys)
+				JSON.stringify(validKeys)
 			);
 		}
 	});
@@ -193,7 +191,7 @@ function validateRequestOptions(options) {
 		if (!supportedOptions.includes(opt)) {
 			throw new Error(
 				`unexpected requestOption: ${opt}. Supported options are: ` +
-					JSON.stringify(supportedOptions)
+				JSON.stringify(supportedOptions)
 			);
 		}
 	});

@@ -7,3 +7,5 @@ import './polyfill';
 export default function ApiClient(options) {
 	return veritoneApi(options, apis);
 }
+
+window.ApiClient = ApiClient;
