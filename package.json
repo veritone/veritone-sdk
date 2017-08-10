@@ -35,6 +35,7 @@
     "chai": "^4.0.2",
     "eslint": "^4.1.1",
     "eslint-config-prettier": "^2.3.0",
+    "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "mocha": "^3.4.2",
     "nock": "^9.0.13",

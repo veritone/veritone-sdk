@@ -1,4 +1,5 @@
 // const path = require('path');
+const webpack = require('webpack');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
 module.exports = {
@@ -7,6 +8,9 @@ module.exports = {
 		filename: 'dist/bundle-browser.js'
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			__BROWSER__: process.env.BUILD_ENV === 'browser'
+		}),
 		new CaseSensitivePathsPlugin()
 	],
 	module: {

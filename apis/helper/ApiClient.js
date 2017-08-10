@@ -1,4 +1,7 @@
-import callApi from './callApi-browser';
+const callApi = __BROWSER__
+	? require('./callApi-browser').default
+	: require('./callApi-node').default;
+
 import { mapObject } from './util';
 
 export default function veritoneApi(

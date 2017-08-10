@@ -2076,8 +2076,8 @@ window.ApiClient = ApiClient;
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = veritoneApi;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__callApi_browser__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(10);
+var callApi =  true ? __webpack_require__(25).default : require('./callApi-node').default;
 
 
 
@@ -2097,9 +2097,9 @@ function veritoneApi(_ref) {
 		throw new Error('Token is required');
 	}
 
-	return Object(__WEBPACK_IMPORTED_MODULE_1__util__["b" /* mapObject */])(apis, function (ns) {
-		return Object(__WEBPACK_IMPORTED_MODULE_1__util__["b" /* mapObject */])(ns, function (handler) {
-			return Object(__WEBPACK_IMPORTED_MODULE_0__callApi_browser__["a" /* default */])({
+	return Object(__WEBPACK_IMPORTED_MODULE_0__util__["b" /* mapObject */])(apis, function (ns) {
+		return Object(__WEBPACK_IMPORTED_MODULE_0__util__["b" /* mapObject */])(ns, function (handler) {
+			return callApi({
 				token: token,
 				baseUrl: baseUrl + '/v' + version,
 				maxRetries: maxRetries,
@@ -2114,7 +2114,8 @@ function veritoneApi(_ref) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = callApi;
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (immutable) */ __webpack_exports__["default"] = callApi;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_validate_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_validate_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_validate_js__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_qs__ = __webpack_require__(27);

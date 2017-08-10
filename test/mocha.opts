@@ -1,4 +1,7 @@
 --require babel-register
 --require polyfill.js
+--require test/mocha-setup.js
+--require isomorphic-fetch
 --recursive
+--globals __BROWSER__
 ./**/*.spec.js

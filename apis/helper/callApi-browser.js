@@ -1,4 +1,3 @@
-const fetch = window.fetch;
 import validate from 'validate.js';
 import qs from 'qs';
 
@@ -82,12 +81,17 @@ export default function callApi(
 			retryIntervalMs: options.retryIntervalMs
 		});
 
+		let url = `${baseUrl}/${path}`;
+		if (query && Object.keys(query).length) {
+			url = `${url}?${qs.stringify(query)}`;
+		}
+
 		return new Promise((resolve, reject) => {
 			retryHelper.retry(
 				cb => {
-					fetch(`${baseUrl}/${path}?${qs.stringify(query)}`, {
+					fetch(url, {
 						method,
-						body: data,
+						body: JSON.stringify(data),
 						headers: {
 							Authorization: `Bearer ${token}`,
 							...headers,
@@ -97,24 +101,32 @@ export default function callApi(
 						// fixme:
 						// 		timeout: options.timeoutMs,
 					})
-						.then(r => {
-							if (!options.validateStatus(r.status)) {
-								// todo: cleanup
-								let e = new Error(`Request failed with status code ${r.status}`);
-								e.status = r.status;
-								return r.text().then(t => e.data = t).then(() => Promise.reject(e))
-							}
+						.then(
+							r => {
+								if (!options.validateStatus(r.status)) {
+									// todo: cleanup
+									let e = new Error(
+										`Request failed with status code ${r.status}`
+									);
+									e.status = r.status;
+									return r
+										.text()
+										.then(t => (e.data = t))
+										.then(() => Promise.reject(e));
+								}
 
-							return r;
-						})
-						.then(r => r.json())
+								return r;
+							},
+							err => {
+								cb(err);
+							}
+						)
+						.then(r => tryJson(r))
 						.then(
 							rawResponseData => {
-								let response = {
-									...options.transformResponseData
+								let response = options.transformResponseData
 										? options.transformResponseData(rawResponseData)
-										: rawResponseData
-								};
+										: rawResponseData;
 
 								cb(null, response);
 							},
@@ -244,4 +256,18 @@ function validateRequestOptions(options) {
 			`requestOptions.transformResponseData should be a function. got: ${options.transformResponseData}`
 		);
 	}
+}
+
+function tryJson(response) {
+	if (!response) {
+		return null;
+	}
+
+	return response.text().then(text => {
+		try {
+			return JSON.parse(text);
+		} catch (e) {
+			return text;
+		}
+	});
 }

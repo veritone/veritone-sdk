@@ -8,6 +8,9 @@
 		"browser": true,
 		"mocha": true
 	},
+	"globals": {
+		"__BROWSER__": true
+	},
 	"parserOptions": {
 		"ecmaVersion": 6,
 		"sourceType": "module",
