@@ -4,6 +4,7 @@
   "description": "",
   "private": true,
   "main": "dist/bundle-browser.js",
+	"module": "index.js",
   "scripts": {
     "build": "npm run build:node && npm run build:browser",
     "build:node": "NODE_ENV=production BUILD_ENV=node webpack",

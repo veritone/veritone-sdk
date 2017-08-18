@@ -2,10 +2,10 @@
 
 import veritoneApi from './apis/helper/ApiClient';
 import apis from './apis';
-import './polyfill';
+// import './polyfill';
 
 export default function ApiClient(options) {
 	return veritoneApi(options, apis);
 }
 
-window.ApiClient = ApiClient;
+// window.ApiClient = ApiClient;

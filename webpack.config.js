@@ -9,8 +9,12 @@ module.exports = {
 	output: {
 		filename: process.env.BUILD_ENV === 'browser'
 		 ? 'dist/bundle-browser.js'
-		 : 'dist/bundle-node.js'
+		 : 'dist/bundle-node.js',
+		library: 'veritoneApi',
+		libraryTarget: 'umd',
+		libraryExport: 'default'
 	},
+	target: process.env.BUILD_ENV === 'browser' ? 'web' : 'node',
 	plugins: [
 		new webpack.DefinePlugin({
 			__BROWSER__: process.env.BUILD_ENV === 'browser'
