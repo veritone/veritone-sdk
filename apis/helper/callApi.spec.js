@@ -498,7 +498,7 @@ process.on('unhandledRejection', error => {
 
 				scope.done();
 				done();
-			});
+			}).catch(() => {});
 		});
 
 		it('should resolve by default if status >= 200 && status < 300', function(
