@@ -1,4 +1,5 @@
 --require babel-register
+--require babel-polyfill
 --require polyfill.js
 --require test/mocha-setup.js
 --require isomorphic-fetch

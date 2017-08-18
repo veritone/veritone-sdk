@@ -3,6 +3,7 @@ import qs from 'qs';
 
 import RetryHelper from './RetryHelper';
 import { last, noop } from './util';
+import ApiError from './ApiError';
 
 export default function callApi(
 	// base options provided by API client
@@ -88,52 +89,29 @@ export default function callApi(
 
 		return new Promise((resolve, reject) => {
 			retryHelper.retry(
-				cb => {
-					fetch(url, {
-						method,
-						body: JSON.stringify(data),
-						headers: {
-							Authorization: `Bearer ${token}`,
-							...headers,
-							...options.headers
-						}
-						// 		validateStatus: options.validateStatus
-						// fixme:
-						// 		timeout: options.timeoutMs,
-					})
-						.then(
-							r => {
-								if (!options.validateStatus(r.status)) {
-									// todo: cleanup
-									let e = new Error(
-										`Request failed with status code ${r.status}`
-									);
-									e.status = r.status;
-									return r
-										.text()
-										.then(t => (e.data = t))
-										.then(() => Promise.reject(e));
-								}
-
-								return r;
-							},
-							err => {
-								cb(err);
-							}
-						)
-						.then(r => tryJson(r))
-						.then(
-							rawResponseData => {
-								let response = options.transformResponseData
-										? options.transformResponseData(rawResponseData)
-										: rawResponseData;
-
-								cb(null, response);
-							},
-							err => {
-								cb(err);
-							}
+				async cb => {
+					try {
+						cb(
+							null,
+							await doFetch(url, {
+								method,
+								body: JSON.stringify(data),
+								headers: {
+									Authorization: `Bearer ${token}`,
+									...headers,
+									...options.headers
+								},
+								withCredentials: options.withCredentials
+							}, {
+								validateStatus: options.validateStatus,
+								transformResponseData: options.transformResponseData,
+								// fixme:
+								// 		timeout: options.timeoutMs,
+							})
 						);
+					} catch (e) {
+						cb(e);
+					}
 				},
 				(err, res) => {
 					// provide dual promise/cb interface to callers
@@ -148,6 +126,38 @@ export default function callApi(
 			);
 		});
 	};
+}
+
+async function doFetch(url, fetchOptions, clientOptions) {
+	let result;
+	try {
+		result = await fetch(url, fetchOptions);
+	} catch (e) {
+		// fetch failure -- offline, cors, etc
+		throw new ApiError(e.message);
+	}
+
+	if (!clientOptions.validateStatus(result.status)) {
+		// failure from bad http status
+		throw new ApiError(
+			`Request failed with status code ${result.status}`,
+			result.status,
+			tryJson(await result.text())
+		);
+	}
+
+	let rawResponseBody, responseBodyData;
+	try {
+		rawResponseBody = await result.text();
+	} catch (e) {
+		// no body
+	}
+
+	responseBodyData = tryJson(rawResponseBody);
+
+	return clientOptions.transformResponseData
+		? clientOptions.transformResponseData(responseBodyData)
+		: responseBodyData;
 }
 
 function validateAuthToken(token) {
@@ -258,16 +268,10 @@ function validateRequestOptions(options) {
 	}
 }
 
-function tryJson(response) {
-	if (!response) {
-		return null;
+function tryJson(text) {
+	try {
+		return JSON.parse(text);
+	} catch (e) {
+		return text;
 	}
-
-	return response.text().then(text => {
-		try {
-			return JSON.parse(text);
-		} catch (e) {
-			return text;
-		}
-	});
 }

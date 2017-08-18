@@ -3,11 +3,13 @@ import validate from 'validate.js';
 
 import RetryHelper from './RetryHelper';
 import { last, noop } from './util';
+import ApiError from './ApiError';
 
-export default function callApi(// base options provided by API client
-																{ token, baseUrl, maxRetries = 1, retryIntervalMs = 1000 } = {},
-																// handler returning a request object
-																handlerFn) {
+export default function callApi( // base options provided by API client
+	{ token, baseUrl, maxRetries = 1, retryIntervalMs = 1000 } = {},
+	// handler returning a request object
+	handlerFn
+) {
 	validateAuthToken(token);
 	validateBaseUrl(baseUrl);
 	validateHandlerFn(handlerFn);
@@ -109,7 +111,13 @@ export default function callApi(// base options provided by API client
 								cb(null, response);
 							},
 							err => {
-								cb(err);
+								cb(
+									new ApiError(
+										err.message,
+										err.response ? err.response.status : null,
+										err.response ? err.response.data : null
+									)
+								);
 							}
 						);
 				},
@@ -160,7 +168,7 @@ function validateRequestObject(obj) {
 		if (!validKeys.includes(key)) {
 			throw new Error(
 				`unexpected key in request object: ${key}. Supported keys are: ` +
-				JSON.stringify(validKeys)
+					JSON.stringify(validKeys)
 			);
 		}
 	});
@@ -191,7 +199,7 @@ function validateRequestOptions(options) {
 		if (!supportedOptions.includes(opt)) {
 			throw new Error(
 				`unexpected requestOption: ${opt}. Supported options are: ` +
-				JSON.stringify(supportedOptions)
+					JSON.stringify(supportedOptions)
 			);
 		}
 	});
