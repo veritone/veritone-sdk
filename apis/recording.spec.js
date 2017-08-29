@@ -524,8 +524,26 @@ describe('Recording', function() {
 		it('saves the asset to a file');
 	});
 
-	describe('createAsset', function() {
+	describe('createAssetFromFile', function() {
 		it('streams the asset to the server');
+	});
+
+	describe('createAsset', function() {
+		it('makes the correct request', function() {
+			const expected = {
+				method: 'post',
+				path: /rec-id\/asset/,
+				headers: {
+					'X-Veritone-Asset-Type': 'media',
+					'Content-Type': 'video/mp4'
+				},
+				data: 'my-file'
+			};
+
+			const result = recordingHandlers.createAsset('rec-id', 'my-file');
+
+			assertMatches(result, expected);
+		});
 	});
 
 	describe('updateAsset', function() {
