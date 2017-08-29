@@ -154,7 +154,7 @@ const recordingApi = {
 			path: `${endpoints.recording}/${recordingId}/asset`,
 			headers: {
 				'X-Veritone-Asset-Type': 'media',
-				'Content-Type': 'video/mp4'
+				'content-type': asset.type
 			},
 			data: asset
 		};
