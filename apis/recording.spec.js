@@ -535,7 +535,7 @@ describe('Recording', function() {
 				path: /rec-id\/asset/,
 				headers: {
 					'X-Veritone-Asset-Type': 'media',
-					'Content-Type': 'video/mp4'
+					'content-type': 'video/mp4'
 				},
 				data: 'my-file'
 			};

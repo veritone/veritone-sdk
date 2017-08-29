@@ -156,7 +156,10 @@ const recordingApi = {
 				'X-Veritone-Asset-Type': 'media',
 				'content-type': asset.type
 			},
-			data: asset
+			data: asset,
+			_requestOptions: {
+				jsonStringifyRequestData: false
+			}
 		};
 	},
 

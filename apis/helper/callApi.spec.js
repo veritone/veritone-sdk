@@ -750,5 +750,27 @@ process.on('unhandledRejection', error => {
 				data: { token: apiToken, baseUrl: apiBaseUri }
 			});
 		});
+
+		it('should should not JSON stringify requestData when jsonStringifyRequestData is false', function() {
+			const data = 'not json';
+
+			const scope = nock(apiBaseUri)
+				.post('/test-path', data)
+				.reply(200, { worked: true});
+
+			const requestFn = this.callApi(() => ({
+				method: 'post',
+				path: 'test-path',
+				data,
+				_requestOptions: {
+					jsonStringifyRequestData: false
+				}
+			}));
+
+			return requestFn().then(body => {
+				expect(body.worked).to.equal(true);
+				scope.done();
+			});
+		});
 	});
 });

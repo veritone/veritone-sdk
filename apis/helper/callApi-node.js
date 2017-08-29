@@ -10,14 +10,14 @@ export default callApiFactory(function callApiNode(
 		data,
 		query,
 		headers,
-		options: { validateStatus, withCredentials, transformResponseData, timeoutMs }
+		options: { validateStatus, withCredentials, transformResponseData, timeoutMs, jsonStringifyRequestData }
 	},
 	callback
 ) {
 	axios
 		.request({
 			method,
-			data,
+			data: jsonStringifyRequestData ? JSON.stringify(data) : data,
 			url: path,
 			params: query,
 			headers,

@@ -70,6 +70,7 @@ export default function callApiFactory(doRequest) {
 				// todo: timeout interval on constructor/overrides
 				validateStatus: status => status >= 200 && status < 300,
 				withCredentials: true,
+				jsonStringifyRequestData: true,
 				maxRetries,
 				retryIntervalMs,
 				// options defined on handler:
@@ -163,7 +164,8 @@ const supportedOptions = [
 	'timeoutMs',
 	'headers',
 	'transformResponseData',
-	'validateStatus'
+	'validateStatus',
+	'jsonStringifyRequestData'
 	// 'cancelToken',
 	// onUploadProgress,
 	// onDownloadProgress,

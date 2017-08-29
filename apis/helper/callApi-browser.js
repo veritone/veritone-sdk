@@ -10,7 +10,7 @@ export default callApiFactory(async function callApiBrowser(
 		data,
 		query,
 		headers,
-		options: { validateStatus, withCredentials, transformResponseData }
+		options: { validateStatus, withCredentials, transformResponseData, jsonStringifyRequestData }
 	},
 	callback
 ) {
@@ -26,7 +26,7 @@ export default callApiFactory(async function callApiBrowser(
 				url,
 				{
 					method,
-					body: JSON.stringify(data),
+					body: jsonStringifyRequestData ? JSON.stringify(data) : data,
 					headers: {
 						'content-type': 'application/json',
 						...headers
