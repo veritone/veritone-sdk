@@ -27,7 +27,10 @@ export default callApiFactory(async function callApiBrowser(
 				{
 					method,
 					body: JSON.stringify(data),
-					headers,
+					headers: {
+						'content-type': 'application/json',
+						...headers
+					},
 					withCredentials: withCredentials
 				},
 				{
