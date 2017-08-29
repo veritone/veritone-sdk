@@ -530,6 +530,11 @@ describe('Recording', function() {
 
 	describe('createAsset', function() {
 		it('makes the correct request', function() {
+			const asset = {
+				name: 'my-file',
+				type: 'video/mp4'
+			};
+
 			const expected = {
 				method: 'post',
 				path: /rec-id\/asset/,
@@ -537,10 +542,10 @@ describe('Recording', function() {
 					'X-Veritone-Asset-Type': 'media',
 					'content-type': 'video/mp4'
 				},
-				data: 'my-file'
+				data: asset
 			};
 
-			const result = recordingHandlers.createAsset('rec-id', 'my-file');
+			const result = recordingHandlers.createAsset('rec-id', asset);
 
 			assertMatches(result, expected);
 		});
