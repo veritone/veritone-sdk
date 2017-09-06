@@ -18,7 +18,8 @@ export const endpoints = {
 	batch: 'batch',
 	//transcript:  'transcript',
 	ingestion: 'ingestion',
-	libraries: 'media'
+	libraries: 'media',
+	user: 'admin/current-user'
 };
 
 export const headers = {
