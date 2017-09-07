@@ -6,11 +6,18 @@ import { last, noop } from './util';
 export default function callApiFactory(doRequest) {
 	return function callApiBase(
 		// base options provided by API client
-		{ token, baseUrl, maxRetries = 1, retryIntervalMs = 1000 } = {},
+		{
+			token,
+			apiToken,
+			oauthToken,
+			baseUrl,
+			maxRetries = 1,
+			retryIntervalMs = 1000
+		} = {},
 		// handler returning a request object
 		handlerFn
 	) {
-		validateAuthToken(token);
+		validateTokens({ token, apiToken, oauthToken });
 		validateBaseUrl(baseUrl);
 		validateHandlerFn(handlerFn);
 
@@ -22,6 +29,8 @@ export default function callApiFactory(doRequest) {
 			// all they need is the handler options.
 			return handlerFn.bind(null, {
 				token,
+				apiToken,
+				oauthToken,
 				baseUrl,
 				maxRetries,
 				retryIntervalMs
@@ -84,6 +93,13 @@ export default function callApiFactory(doRequest) {
 				retryIntervalMs: options.retryIntervalMs
 			});
 
+			// oauth token always used if provided.
+			// use api token if specified by handler,
+			// otherwise default to session token
+			const neededToken = oauthToken
+				? oauthToken
+				: options.tokenType === 'api' ? apiToken : token;
+
 			return new Promise((resolve, reject) => {
 				retryHelper.retry(
 					cb => {
@@ -94,7 +110,7 @@ export default function callApiFactory(doRequest) {
 								data,
 								query,
 								headers: {
-									Authorization: `Bearer ${token}`,
+									Authorization: `Bearer ${neededToken}`,
 									...headers,
 									...options.headers
 								},
@@ -119,9 +135,26 @@ export default function callApiFactory(doRequest) {
 	};
 }
 
-function validateAuthToken(token) {
+function validateTokens({ token, apiToken, oauthToken }) {
+	// require both token and apiToken, or oauthToken
+	if (oauthToken) {
+		if (typeof oauthToken === 'string') {
+			return;
+		} else {
+			throw new Error(`oauthToken must be a string`);
+		}
+	}
+
+	if ((!token && !apiToken) || (token && !apiToken) || (apiToken && !token)) {
+		throw new Error(`callApi requires both token and apiToken.`);
+	}
+
 	if (typeof token !== 'string') {
-		throw new Error(`callApi requires an api token, which must be a string`);
+		throw new Error(`token must be a string`);
+	}
+
+	if (typeof apiToken !== 'string') {
+		throw new Error(`apiToken must be a string`);
 	}
 }
 
@@ -165,7 +198,8 @@ const supportedOptions = [
 	'headers',
 	'transformResponseData',
 	'validateStatus',
-	'jsonStringifyRequestData'
+	'jsonStringifyRequestData',
+	'tokenType'
 	// 'cancelToken',
 	// onUploadProgress,
 	// onDownloadProgress,
@@ -200,6 +234,12 @@ function validateRequestOptions(options) {
 		},
 		withCredentials: {
 			inclusion: { within: [true, false], message: 'should be a boolean' }
+		},
+		tokenType: {
+			inclusion: {
+				within: ['api', 'session'],
+				message: 'should be either "api" or "session"'
+			}
 		}
 	};
 

@@ -2,7 +2,9 @@ import { expect } from 'chai';
 import nock from 'nock';
 nock.disableNetConnect();
 
+const sessionToken = 'session-token-abc';
 const apiToken = 'api-token-abc';
+const oauthToken = 'oauth-token-abc';
 const apiBaseUri = 'http://fake.domain';
 
 process.on('unhandledRejection', error => {
@@ -23,7 +25,8 @@ process.on('unhandledRejection', error => {
 	describe(`callApi (${env})`, function() {
 		beforeEach(function() {
 			this.callApi = callApi.bind(null, {
-				token: apiToken,
+				token: sessionToken,
+				apiToken,
 				baseUrl: apiBaseUri
 			});
 		});
@@ -37,12 +40,14 @@ process.on('unhandledRejection', error => {
 			const invalidUris = ['www.test.com', 'test.com'];
 
 			invalidUris.forEach(baseUrl =>
-				expect(() => callApi({ baseUrl, token: apiToken }, () => {})).to.throw()
+				expect(() =>
+					callApi({ baseUrl, token: sessionToken, apiToken }, () => {})
+				).to.throw()
 			);
 
 			validUris.forEach(baseUrl =>
 				expect(() =>
-					callApi({ baseUrl, token: apiToken }, () => {})
+					callApi({ baseUrl, token: sessionToken, apiToken }, () => {})
 				).not.to.throw()
 			);
 		});
@@ -53,24 +58,33 @@ process.on('unhandledRejection', error => {
 
 			invalidHandlers.forEach(handler =>
 				expect(() =>
-					callApi({ baseUrl: 'http://www.test.com', token: apiToken }, handler)
+					callApi(
+						{ baseUrl: 'http://www.test.com', token: sessionToken, apiToken },
+						handler
+					)
 				).to.throw()
 			);
 
 			validHandlers.forEach(handler =>
 				expect(() =>
-					callApi({ baseUrl: 'http://www.test.com', token: apiToken }, handler)
+					callApi(
+						{ baseUrl: 'http://www.test.com', token: sessionToken, apiToken },
+						handler
+					)
 				).not.to.throw()
 			);
 		});
 
 		it('requires an auth token', function() {
 			expect(() =>
-				callApi({ baseUrl: 'http://www.test.com' }, () => {})
+				callApi({ baseUrl: 'http://www.test.com', apiToken }, () => {})
 			).to.throw();
 
 			expect(() =>
-				callApi({ baseUrl: 'http://www.test.com', token: apiToken }, () => {})
+				callApi(
+					{ baseUrl: 'http://www.test.com', token: sessionToken, apiToken },
+					() => {}
+				)
 			).not.to.throw();
 		});
 
@@ -261,7 +275,63 @@ process.on('unhandledRejection', error => {
 				.then(() => scope.done());
 		});
 
-		it('should include token in the request', function() {
+		it('should validate _requestOptions.tokenType', function() {
+			expect(
+				this.callApi(() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: {
+						tokenType: 'invalid'
+					}
+				}))
+			).to.throw(/token type/i);
+
+			expect(
+				this.callApi(() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: {
+						tokenType: 'api'
+					}
+				}))
+			).not.to.throw(/token type/i);
+
+			expect(
+				this.callApi(() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: {
+						tokenType: 'session'
+					}
+				}))
+			).not.to.throw(/token type/i);
+		});
+
+		it('should include session token in the request by default', function() {
+			const scope = nock(apiBaseUri, {
+				reqheaders: {
+					authorization: `Bearer ${sessionToken}`
+				}
+			})
+				.get('/test-path')
+				.reply(200, 'ok');
+
+			const requestFn = callApi(
+				{
+					token: sessionToken,
+					apiToken,
+					baseUrl: apiBaseUri
+				},
+				() => ({
+					method: 'get',
+					path: 'test-path'
+				})
+			);
+
+			return requestFn().then(() => scope.done());
+		});
+
+		it('should include the api token in the request if _requestOptions.tokenType is "api"', function() {
 			const scope = nock(apiBaseUri, {
 				reqheaders: {
 					authorization: `Bearer ${apiToken}`
@@ -270,12 +340,107 @@ process.on('unhandledRejection', error => {
 				.get('/test-path')
 				.reply(200, 'ok');
 
-			const requestFn = this.callApi(() => ({
-				method: 'get',
-				path: 'test-path'
-			}));
+			const requestFn = callApi(
+				{
+					token: sessionToken,
+					apiToken,
+					baseUrl: apiBaseUri
+				},
+				() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: {
+						tokenType: 'api'
+					}
+				})
+			);
 
-			return requestFn().then().then(() => scope.done());
+			return requestFn().then(() => scope.done());
+		});
+
+		it('should include the session token if _requestOptions.tokenType is "session"', function() {
+			const scope = nock(apiBaseUri, {
+				reqheaders: {
+					authorization: `Bearer ${sessionToken}`
+				}
+			})
+				.get('/test-path')
+				.reply(200, 'ok');
+
+			const requestFn = callApi(
+				{
+					token: sessionToken,
+					apiToken,
+					baseUrl: apiBaseUri
+				},
+				() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: {
+						tokenType: 'session'
+					}
+				})
+			);
+
+			return requestFn().then(() => scope.done());
+		});
+
+		it('should include the oauth token if provided, regardless of _requestOptions.tokenType ', function() {
+			const sessionTokenScope = nock(apiBaseUri, {
+				reqheaders: {
+					authorization: `Bearer ${oauthToken}`
+				}
+			})
+				.get('/session')
+				.reply(200, 'ok');
+
+			const apiTokenScope = nock(apiBaseUri, {
+				reqheaders: {
+					authorization: `Bearer ${oauthToken}`
+				}
+			})
+				.get('/apiToken')
+				.reply(200, 'ok');
+
+			const sessionTokenRequestFn = callApi(
+				{
+					token: sessionToken,
+					apiToken,
+					oauthToken,
+					baseUrl: apiBaseUri
+				},
+				() => ({
+					method: 'get',
+					path: 'session',
+					_requestOptions: {
+						tokenType: 'session'
+					}
+				})
+			);
+
+			const apiTokenRequestFn = callApi(
+				{
+					token: sessionToken,
+					apiToken,
+					oauthToken,
+					baseUrl: apiBaseUri
+				},
+				() => ({
+					method: 'get',
+					path: 'apiToken',
+					_requestOptions: {
+						tokenType: 'api'
+					}
+				})
+			);
+
+			return Promise.all([
+				sessionTokenRequestFn(),
+				apiTokenRequestFn()
+			]).then(() => {
+				sessionTokenScope.done();
+				apiTokenScope.done();
+			});
 		});
 
 		it('should make a post request with data payload', function() {
@@ -747,7 +912,7 @@ process.on('unhandledRejection', error => {
 			expect(result).to.deep.equal({
 				method: 'get',
 				path: '123',
-				data: { token: apiToken, baseUrl: apiBaseUri }
+				data: { token: sessionToken, baseUrl: apiBaseUri }
 			});
 		});
 
@@ -756,7 +921,7 @@ process.on('unhandledRejection', error => {
 
 			const scope = nock(apiBaseUri)
 				.post('/test-path', data)
-				.reply(200, { worked: true});
+				.reply(200, { worked: true });
 
 			const requestFn = this.callApi(() => ({
 				method: 'post',

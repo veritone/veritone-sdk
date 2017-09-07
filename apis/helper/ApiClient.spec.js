@@ -19,7 +19,8 @@ describe('veritoneApi', function() {
 		it('Returns the configured API functions', function() {
 			const api = veritoneApi(
 				{
-					token: 'api-token-abc'
+					token: 'token-abc',
+					apiToken: 'api-token-abc'
 				},
 				{
 					libraries: {
@@ -36,6 +37,7 @@ describe('veritoneApi', function() {
 			const api = veritoneApi(
 				{
 					token: testToken,
+					apiToken: 'api-token',
 					baseUrl: apiBaseUrl,
 					maxRetries: 2,
 					retryIntervalMs: 25,

@@ -7,9 +7,14 @@ See the docs on authentication at https://veritone-developer.atlassian.net/
 ```javascript
 import veritoneApi from 'veritone-api'
 const client = VeritoneApi({
-	// required:
-	token: 'my-api-token',
-	// optional (defaults):
+	// requires either session AND api tokens (from user object):
+	token: 'my-session-token',
+	apiToken: 'my-api-token',
+
+	// OR an oauth token (from oauth grant flow)
+	oauthToken: 'my-oauth-token',
+
+	// optional (defaults shown):
 	baseUrl: 'https://api.veritone.com',
 	version: 1,
 	maxRetries: 1,
@@ -110,7 +115,7 @@ const {
 				// headers,
 				// transformResponseData,
 				// validateStatus
+				// tokenType
 			}
 		} = request;
-
 ```

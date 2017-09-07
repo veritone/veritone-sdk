@@ -7,6 +7,8 @@ import { mapObject } from './util';
 export default function veritoneApi(
 	{
 		token,
+		apiToken,
+		oauthToken,
 		baseUrl = 'https://api.veritone.com',
 		version = 1,
 		maxRetries = 1,
@@ -23,6 +25,8 @@ export default function veritoneApi(
 			callApi(
 				{
 					token,
+					apiToken,
+					oauthToken,
 					baseUrl: `${baseUrl}/v${version}`,
 					maxRetries,
 					retryIntervalMs

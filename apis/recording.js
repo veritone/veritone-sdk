@@ -9,7 +9,10 @@ const recordingApi = {
 		return {
 			method: 'post',
 			path: endpoints.recording,
-			data: recording
+			data: recording,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -17,7 +20,10 @@ const recordingApi = {
 		return {
 			method: 'get',
 			path: endpoints.recording,
-			query: { offset, limit }
+			query: { offset, limit },
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -28,7 +34,10 @@ const recordingApi = {
 
 		return {
 			method: 'get',
-			path: `${endpoints.recording}/${recordingId}`
+			path: `${endpoints.recording}/${recordingId}`,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -38,7 +47,10 @@ const recordingApi = {
 		return {
 			method: 'put',
 			path: `${endpoints.recording}/${recording.recordingId}`,
-			data: recording
+			data: recording,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -53,7 +65,10 @@ const recordingApi = {
 		return {
 			method: 'put',
 			path: `${endpoints.recordingFolders}/${folder.folderId}`,
-			data: folder
+			data: folder,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -64,7 +79,10 @@ const recordingApi = {
 
 		return {
 			method: 'put',
-			path: `${endpoints.recording}/${recordingId}/cms`
+			path: `${endpoints.recording}/${recordingId}/cms`,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -78,7 +96,10 @@ const recordingApi = {
 
 		return {
 			method: 'delete',
-			path: `${endpoints.recording}/${recordingId}`
+			path: `${endpoints.recording}/${recordingId}`,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -92,7 +113,10 @@ const recordingApi = {
 
 		return {
 			method: 'get',
-			path: `${endpoints.recording}/${recordingId}/transcript`
+			path: `${endpoints.recording}/${recordingId}/transcript`,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -106,7 +130,10 @@ const recordingApi = {
 
 		return {
 			method: 'get',
-			path: `${endpoints.recording}/${recordingId}/asset`
+			path: `${endpoints.recording}/${recordingId}/asset`,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -123,7 +150,10 @@ const recordingApi = {
 
 		return {
 			method: 'get',
-			path: `${endpoints.recording}/${recordingId}/asset/${assetId}/metadata`
+			path: `${endpoints.recording}/${recordingId}/asset/${assetId}/metadata`,
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -144,7 +174,10 @@ const recordingApi = {
 		return {
 			method: 'put',
 			path: `${endpoints.recording}/${recordingId}/asset/${asset.assetId}/metadata`,
-			data: asset.metadata || {}
+			data: asset.metadata || {},
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
@@ -158,7 +191,8 @@ const recordingApi = {
 			},
 			data: asset,
 			_requestOptions: {
-				jsonStringifyRequestData: false
+				jsonStringifyRequestData: false,
+				tokenType: 'api'
 			}
 		};
 	},
@@ -178,7 +212,8 @@ const recordingApi = {
 			method: 'delete',
 			path: `${endpoints.recording}/${recordingId}/asset/${assetId}`,
 			_requestOptions: {
-				validateStatus: s => s === 204
+				validateStatus: s => s === 204,
+				tokenType: 'api'
 			}
 		};
 	}
@@ -191,7 +226,7 @@ let exportedRecordingApi = recordingApi;
 if (!__BROWSER__) {
 	const nodeOnlyRecordingApi = {
 		getRecordingMedia(
-			{ token, baseUrl, maxRetries, retryIntervalMs },
+			{ apiToken, baseUrl, maxRetries, retryIntervalMs },
 			recordingId,
 			callback,
 			progressCallback
@@ -222,7 +257,7 @@ if (!__BROWSER__) {
 					method: 'GET',
 					uri: `${baseUrl}/${endpoints.recording}/${recordingId}/media`,
 					headers: {
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${apiToken}`
 					}
 				})
 					.on('error', function onError(err) {
@@ -268,7 +303,7 @@ if (!__BROWSER__) {
 		},
 
 		getAsset(
-			{ token, baseUrl, maxRetries, retryIntervalMs },
+			{ apiToken, baseUrl, maxRetries, retryIntervalMs },
 			recordingId,
 			assetId,
 			callback,
@@ -303,7 +338,7 @@ if (!__BROWSER__) {
 					method: 'GET',
 					uri: `${baseUrl}/${endpoints.recording}/${recordingId}/asset/${assetId}`,
 					headers: {
-						Authorization: `Bearer ${token}`
+						Authorization: `Bearer ${apiToken}`
 					}
 				})
 					.on('error', function onError(err) {
@@ -349,7 +384,7 @@ if (!__BROWSER__) {
 		},
 
 		saveAssetToFile(
-			{ token, baseUrl, maxRetries, retryIntervalMs },
+			{ apiToken, baseUrl, maxRetries, retryIntervalMs },
 			recordingId,
 			assetId,
 			fileName,
@@ -375,7 +410,7 @@ if (!__BROWSER__) {
 			const fs = require('fs');
 
 			recordingApi.getAsset(
-				{ token, baseUrl, maxRetries, retryIntervalMs },
+				{ apiToken, baseUrl, maxRetries, retryIntervalMs },
 				recordingId,
 				assetId,
 				function getAssetCallback(err, result) {
@@ -392,7 +427,7 @@ if (!__BROWSER__) {
 		},
 
 		createAssetFromFile(
-			{ token, baseUrl, maxRetries, retryIntervalMs },
+			{ apiToken, baseUrl, maxRetries, retryIntervalMs },
 			recordingId,
 			asset,
 			callback
@@ -447,7 +482,7 @@ if (!__BROWSER__) {
 			//console.log(asset);
 
 			var headers = {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${apiToken}`
 			};
 			headers['X-Veritone-Asset-Type'] = asset.assetType;
 			headers['Content-Type'] = asset.contentType;
@@ -494,7 +529,7 @@ if (!__BROWSER__) {
 		},
 
 		updateAsset(
-			{ token, baseUrl, maxRetries, retryIntervalMs },
+			{ apiToken, baseUrl, maxRetries, retryIntervalMs },
 			recordingId,
 			asset,
 			callback
@@ -538,7 +573,7 @@ if (!__BROWSER__) {
 				method: 'PUT',
 				uri: `${baseUrl}/${endpoints.recording}/${recordingId}/asset/${asset.assetId}`,
 				headers: {
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${apiToken}`
 				},
 				json: true
 			};
