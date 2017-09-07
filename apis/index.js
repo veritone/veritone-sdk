@@ -12,6 +12,7 @@ import recording from './recording';
 import search from './search';
 import tasks from './tasks';
 import token from './token';
+import user from './user';
 import widget from './widget';
 
 export default {
@@ -29,5 +30,6 @@ export default {
 	search,
 	tasks,
 	token,
+	user,
 	widget
 };
