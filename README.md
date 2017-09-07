@@ -5,7 +5,11 @@ See the docs on authentication at https://veritone-developer.atlassian.net/
 
 ## Constructing the api client
 ```javascript
-import veritoneApi from 'veritone-api'
+// in a browser:
+import veritoneApi from 'veritone-api/dist/bundle-browser'
+// in Node:
+import veritoneApi from 'veritone-api/dist/bundle-node'
+
 const client = VeritoneApi({
 	// requires either session AND api tokens (from user object):
 	token: 'my-session-token',
