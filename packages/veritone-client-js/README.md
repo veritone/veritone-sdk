@@ -1,5 +1,13 @@
 # Veritone-Api 
 
+## Installation
+We provide bundles for the browser and for node.
+
+Install the package:
+`npm install --save veritone-api`
+
+in your code, import either `veritone-api/dist/bundle-browser` or `veritone-api/dist/bundle-node`, as described below.
+
 ## Getting a token
 See the docs on authentication at https://veritone-developer.atlassian.net/
 
