@@ -2,7 +2,7 @@
   "name": "veritone-api",
   "version": "1.0.0",
   "description": "",
-  "private": true,
+  "private": false,
   "main": "dist/bundle-browser.js",
 	"module": "index.js",
   "scripts": {
@@ -13,9 +13,10 @@
     "test:watch": "NODE_ENV=test mocha --watch",
     "coverage": "NODE_ENV=test nyc mocha",
     "lint": "eslint --ext .js ./ ",
-    "format": "prettier --single-quote --use-tabs --write \"./*.js|{apis,test}/**.*.js\""
+    "format": "prettier --single-quote --use-tabs --write \"./*.js|{apis,test}/**.*.js\"",
+    "prepublishOnly": "npm run build"
   },
-  "homepage": "https://github.com/veritone/veritone-api",
+  "homepage": "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-client-js",
   "dependencies": {
     "async": "^2.5.0",
     "axios": "^0.16.2",
