@@ -1,0 +1,12 @@
+{
+  "name": "veritone-developer-sdk",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Tools for Veritone platform developers",
+  "repository": "https://github.com/veritone/veritone-developer-sdk.git",
+  "author": "Mitch Robb <mrobb@veritone.com>",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ]
+}
