@@ -4,7 +4,8 @@
   "description": "Passport auth strategy for Veritone oauth.",
   "keywords": [
     "passport",
-    "strategy"
+    "strategy",
+    "veritone"
   ],
   "author": {
     "name": "Veritone",
@@ -13,10 +14,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/veritone/passport-veritone.git"
+    "url": "git://github.com/veritone/veritone-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/veritone/passport-veritone/issues"
+    "url": "https://github.com/veritone/veritone-sdk/issues"
   },
   "licenses": [
     {
