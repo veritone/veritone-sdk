@@ -8,6 +8,8 @@ class Bootstrap extends React.Component {
         // For developers not using React.JS, this would effectively be a <script> </script> block.
     
         const mountPoint = document.getElementById('mountPoint');
+
+        console.log("Creating a new EditProfile component with no parameters");
         const editProfile = new EditProfile();
         await editProfile.mount(mountPoint);
         console.log("Done mounting, will destroy the component in 5 seconds");
@@ -16,13 +18,15 @@ class Bootstrap extends React.Component {
             let result = await editProfile.destroy();
             console.log("Edit profile destroyed", result);
 
-            console.log("Saying hello to Rick James");
+            console.log("Creating a new EditProfileComponent() to say hello to Rick James");
             editProfile = new EditProfile({name: "Rick James"});
             await editProfile.mount(mountPoint);
-            console.log("Asking Rick James to change his name to Darth Vader in 3 seconds");
+
+            console.log("Asking Rick James to change his name to Darth Vader in 5 seconds");
             setTimeout( () => {
                 editProfile.ref.refresh("Darth Vader");
-            }, 3000);
+            }, 5000);
+            
         }, 5000);
 
     }
