@@ -19,12 +19,12 @@ class Bootstrap extends React.Component {
             console.log("Edit profile destroyed", result);
 
             console.log("Creating a new EditProfileComponent() to say hello to Rick James");
-            editProfile = new EditProfile({name: "Rick James"});
-            await editProfile.mount(mountPoint);
-
+            const editProfile2 = new EditProfile({name: "Rick James"});
+            await editProfile2.mount(mountPoint);
+            console.log("New EditProfile component", editProfile2);
             console.log("Asking Rick James to change his name to Darth Vader in 5 seconds");
             setTimeout( () => {
-                editProfile.ref.refresh("Darth Vader");
+                editProfile2.refresh("Darth Vader");
             }, 5000);
             
         }, 5000);
