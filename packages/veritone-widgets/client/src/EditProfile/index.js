@@ -3,6 +3,14 @@ import VeritoneWidget from '../shared/VeritoneWidget'
 
 class EditProfileWrapper extends VeritoneWidget {
     constructor(parameters={}) {
+        parameters.ref= (instance) => {
+            this.ref = instance; 
+
+            // explicit binding to make the refresh function available to the outside world
+            if(instance && instance.refresh) {
+                this.refresh = instance.refresh;
+            }
+        }; 
         super(EditProfile, parameters);
     }
 }
