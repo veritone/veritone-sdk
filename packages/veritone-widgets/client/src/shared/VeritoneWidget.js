@@ -9,8 +9,8 @@ class VeritoneWidget {
      */
     constructor(type, parameters) {
         this.type = type;
-        // we can move this binding into the wrapper to explicitly define what we expose to the outside world
-        parameters.ref= (instance) => { this.ref = instance; }; 
+        // uncomment this if you want to expose the React component externally
+        //parameters.ref= (instance) => { this.ref = instance; }; 
         this.parameters = parameters;
     }
 
