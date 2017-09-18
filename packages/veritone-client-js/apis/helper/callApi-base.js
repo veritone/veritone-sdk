@@ -82,6 +82,7 @@ export default function callApiFactory(doRequest) {
 				jsonStringifyRequestData: true,
 				maxRetries,
 				retryIntervalMs,
+				version: 1,
 				// options defined on handler:
 				..._requestOptions,
 				// options provided by consumer at call-time:
@@ -100,15 +101,12 @@ export default function callApiFactory(doRequest) {
 				? oauthToken
 				: options.tokenType === 'api' ? apiToken : token;
 
-			// overwrite version if specified by handler
-			const apiVersion = options.version || 1;
-
 			return new Promise((resolve, reject) => {
 				retryHelper.retry(
 					cb => {
 						doRequest(
 							{
-								path: `${baseUrl}/v${apiVersion}/${path}`,
+								path: `${baseUrl}/v${options.version}/${path}`,
 								method,
 								data,
 								query,

@@ -5,7 +5,8 @@ nock.disableNetConnect();
 const sessionToken = 'session-token-abc';
 const apiToken = 'api-token-abc';
 const oauthToken = 'oauth-token-abc';
-const apiBaseUri = 'http://fake.domain';
+const unversionedBaseUrl = 'http://fake.domain';
+const apiBaseUri = 'http://fake.domain/v1';
 
 process.on('unhandledRejection', error => {
 	// suppress errors from nock disabling net connect
@@ -27,7 +28,7 @@ process.on('unhandledRejection', error => {
 			this.callApi = callApi.bind(null, {
 				token: sessionToken,
 				apiToken,
-				baseUrl: apiBaseUri
+				baseUrl: 'http://fake.domain'
 			});
 		});
 
@@ -205,7 +206,10 @@ process.on('unhandledRejection', error => {
 
 			const requestFn = this.callApi(() => ({
 				method: 'get',
-				path: 'test-path'
+				path: 'test-path',
+				_requestOptions: {
+					version: 1
+				}
 			}));
 
 			requestFn(err => {
@@ -320,7 +324,7 @@ process.on('unhandledRejection', error => {
 				{
 					token: sessionToken,
 					apiToken,
-					baseUrl: apiBaseUri
+					baseUrl: unversionedBaseUrl
 				},
 				() => ({
 					method: 'get',
@@ -344,7 +348,7 @@ process.on('unhandledRejection', error => {
 				{
 					token: sessionToken,
 					apiToken,
-					baseUrl: apiBaseUri
+					baseUrl: unversionedBaseUrl
 				},
 				() => ({
 					method: 'get',
@@ -371,7 +375,7 @@ process.on('unhandledRejection', error => {
 				{
 					token: sessionToken,
 					apiToken,
-					baseUrl: apiBaseUri
+					baseUrl: unversionedBaseUrl
 				},
 				() => ({
 					method: 'get',
@@ -407,7 +411,7 @@ process.on('unhandledRejection', error => {
 					token: sessionToken,
 					apiToken,
 					oauthToken,
-					baseUrl: apiBaseUri
+					baseUrl: unversionedBaseUrl
 				},
 				() => ({
 					method: 'get',
@@ -423,7 +427,7 @@ process.on('unhandledRejection', error => {
 					token: sessionToken,
 					apiToken,
 					oauthToken,
-					baseUrl: apiBaseUri
+					baseUrl: unversionedBaseUrl
 				},
 				() => ({
 					method: 'get',
@@ -912,7 +916,7 @@ process.on('unhandledRejection', error => {
 			expect(result).to.deep.equal({
 				method: 'get',
 				path: '123',
-				data: { token: sessionToken, baseUrl: apiBaseUri }
+				data: { token: sessionToken, baseUrl: unversionedBaseUrl }
 			});
 		});
 

@@ -46,7 +46,8 @@ describe('veritoneApi', function() {
 					libraries: {
 						getLibrary: () => ({
 							method: 'get',
-							path: 'test-path'
+							path: 'test-path',
+							_requestOptions: { version: 1 }
 						})
 					}
 				}
