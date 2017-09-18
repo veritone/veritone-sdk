@@ -40,8 +40,7 @@ describe('veritoneApi', function() {
 					apiToken: 'api-token',
 					baseUrl: apiBaseUrl,
 					maxRetries: 2,
-					retryIntervalMs: 25,
-					version: 11
+					retryIntervalMs: 25
 				},
 				{
 					libraries: {
@@ -58,9 +57,9 @@ describe('veritoneApi', function() {
 					authorization: `Bearer ${testToken}`
 				}
 			})
-				.get(/v11\/test-path/)
+				.get(/v1\/test-path/)
 				.reply(404, 'not found')
-				.get(/v11\/test-path/)
+				.get(/v1\/test-path/)
 				.reply(200, 'ok');
 
 			api.libraries.getLibrary((err, res) => {

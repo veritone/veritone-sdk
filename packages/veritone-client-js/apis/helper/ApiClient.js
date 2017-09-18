@@ -10,7 +10,6 @@ export default function veritoneApi(
 		apiToken,
 		oauthToken,
 		baseUrl = 'https://api.veritone.com',
-		version = 1,
 		maxRetries = 1,
 		retryIntervalMs = 1000
 	},
@@ -27,7 +26,7 @@ export default function veritoneApi(
 					token,
 					apiToken,
 					oauthToken,
-					baseUrl: `${baseUrl}/v${version}`,
+					baseUrl,
 					maxRetries,
 					retryIntervalMs
 				},

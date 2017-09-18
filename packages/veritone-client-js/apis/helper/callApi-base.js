@@ -100,12 +100,15 @@ export default function callApiFactory(doRequest) {
 				? oauthToken
 				: options.tokenType === 'api' ? apiToken : token;
 
+			// overwrite version if specified by handler
+			const apiVersion = options.version || 1;
+
 			return new Promise((resolve, reject) => {
 				retryHelper.retry(
 					cb => {
 						doRequest(
 							{
-								path: `${baseUrl}/${path}`,
+								path: `${baseUrl}/v${apiVersion}/${path}`,
 								method,
 								data,
 								query,
@@ -199,7 +202,8 @@ const supportedOptions = [
 	'transformResponseData',
 	'validateStatus',
 	'jsonStringifyRequestData',
-	'tokenType'
+	'tokenType',
+	'version'
 	// 'cancelToken',
 	// onUploadProgress,
 	// onDownloadProgress,
