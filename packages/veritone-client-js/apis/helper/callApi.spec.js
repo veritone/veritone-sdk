@@ -6,7 +6,7 @@ const sessionToken = 'session-token-abc';
 const apiToken = 'api-token-abc';
 const oauthToken = 'oauth-token-abc';
 const unversionedBaseUrl = 'http://fake.domain';
-const apiBaseUri = 'http://fake.domain/v1';
+const apiBaseUri = `${unversionedBaseUrl}/v1`;
 
 process.on('unhandledRejection', error => {
 	// suppress errors from nock disabling net connect
@@ -28,7 +28,7 @@ process.on('unhandledRejection', error => {
 			this.callApi = callApi.bind(null, {
 				token: sessionToken,
 				apiToken,
-				baseUrl: 'http://fake.domain'
+				baseUrl: unversionedBaseUrl
 			});
 		});
 
