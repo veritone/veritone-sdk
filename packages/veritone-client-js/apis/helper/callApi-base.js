@@ -82,6 +82,7 @@ export default function callApiFactory(doRequest) {
 				jsonStringifyRequestData: true,
 				maxRetries,
 				retryIntervalMs,
+				version: 1,
 				// options defined on handler:
 				..._requestOptions,
 				// options provided by consumer at call-time:
@@ -105,7 +106,7 @@ export default function callApiFactory(doRequest) {
 					cb => {
 						doRequest(
 							{
-								path: `${baseUrl}/${path}`,
+								path: `${baseUrl}/v${options.version}/${path}`,
 								method,
 								data,
 								query,
@@ -199,7 +200,8 @@ const supportedOptions = [
 	'transformResponseData',
 	'validateStatus',
 	'jsonStringifyRequestData',
-	'tokenType'
+	'tokenType',
+	'version'
 	// 'cancelToken',
 	// onUploadProgress,
 	// onDownloadProgress,

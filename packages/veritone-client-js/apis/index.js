@@ -14,6 +14,7 @@ import tasks from './tasks';
 import token from './token';
 import user from './user';
 import widget from './widget';
+import graphql from './graphql';
 
 export default {
 	batch,
@@ -31,5 +32,6 @@ export default {
 	tasks,
 	token,
 	user,
-	widget
+	widget,
+	graphql
 };

@@ -19,7 +19,8 @@ export const endpoints = {
 	//transcript:  'transcript',
 	ingestion: 'ingestion',
 	libraries: 'media',
-	user: 'admin/current-user'
+	user: 'admin/current-user',
+	graphql: 'graphql'
 };
 
 export const headers = {
