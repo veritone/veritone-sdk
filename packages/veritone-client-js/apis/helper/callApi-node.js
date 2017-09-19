@@ -10,7 +10,13 @@ export default callApiFactory(function callApiNode(
 		data,
 		query,
 		headers,
-		options: { validateStatus, withCredentials, transformResponseData, timeoutMs, jsonStringifyRequestData }
+		options: {
+			validateStatus,
+			withCredentials,
+			transformResponseData,
+			timeoutMs,
+			jsonStringifyRequestData
+		}
 	},
 	callback
 ) {

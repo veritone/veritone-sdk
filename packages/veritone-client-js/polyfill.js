@@ -3,4 +3,4 @@ if (!Object.values) {
 	values.shim();
 }
 
-import "regenerator-runtime/runtime";
+import 'regenerator-runtime/runtime';

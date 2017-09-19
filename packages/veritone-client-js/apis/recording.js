@@ -622,7 +622,7 @@ if (!__BROWSER__) {
 	exportedRecordingApi = {
 		...recordingApi,
 		...nodeOnlyRecordingApi
-	}
+	};
 }
 
 export default exportedRecordingApi;

@@ -7,9 +7,10 @@ const MinifyPlugin = require('babili-webpack-plugin');
 module.exports = {
 	entry: ['./index.js'],
 	output: {
-		filename: process.env.BUILD_ENV === 'browser'
-		 ? 'dist/bundle-browser.js'
-		 : 'dist/bundle-node.js',
+		filename:
+			process.env.BUILD_ENV === 'browser'
+				? 'dist/bundle-browser.js'
+				: 'dist/bundle-node.js',
 		library: 'veritoneApi',
 		libraryTarget: 'umd',
 		libraryExport: 'default'
@@ -20,7 +21,7 @@ module.exports = {
 			__BROWSER__: process.env.BUILD_ENV === 'browser'
 		}),
 		new CaseSensitivePathsPlugin(),
-		new MinifyPlugin(),
+		new MinifyPlugin()
 		// new BundleAnalyzerPlugin()
 	],
 	module: {

@@ -10,7 +10,12 @@ export default callApiFactory(async function callApiBrowser(
 		data,
 		query,
 		headers,
-		options: { validateStatus, withCredentials, transformResponseData, jsonStringifyRequestData }
+		options: {
+			validateStatus,
+			withCredentials,
+			transformResponseData,
+			jsonStringifyRequestData
+		}
 	},
 	callback
 ) {

@@ -91,12 +91,12 @@ process.on('unhandledRejection', error => {
 
 		it('defaults version to 1', function() {
 			const scope = nock(apiBaseUri)
-			.get('/test-path')
-			.reply(200, 'ok');
+				.get('/test-path')
+				.reply(200, 'ok');
 
 			const requestFn = this.callApi(() => ({
-					method: 'get',
-					path: 'test-path'
+				method: 'get',
+				path: 'test-path'
 			}));
 
 			return requestFn().then(() => scope.done());
@@ -104,13 +104,13 @@ process.on('unhandledRejection', error => {
 
 		it('allows version to be specificed', function() {
 			const scope = nock(unversionedBaseUrl + '/v3')
-			.get('/test-path')
-			.reply(200, 'ok');
+				.get('/test-path')
+				.reply(200, 'ok');
 
 			const requestFn = this.callApi(() => ({
-					method: 'get',
-					path: 'test-path',
-					_requestOptions: { version: 3 }
+				method: 'get',
+				path: 'test-path',
+				_requestOptions: { version: 3 }
 			}));
 
 			return requestFn().then(() => scope.done());
@@ -229,7 +229,9 @@ process.on('unhandledRejection', error => {
 		});
 
 		it('should call the callback with an error', function(done) {
-			const scope = nock(apiBaseUri).get('/test-path').reply(404);
+			const scope = nock(apiBaseUri)
+				.get('/test-path')
+				.reply(404);
 
 			const requestFn = this.callApi(() => ({
 				method: 'get',
@@ -250,7 +252,9 @@ process.on('unhandledRejection', error => {
 		});
 
 		it('should call the callback with the response', function(done) {
-			const scope = nock(apiBaseUri).get('/test-path').reply(200, 'ok');
+			const scope = nock(apiBaseUri)
+				.get('/test-path')
+				.reply(200, 'ok');
 
 			const requestFn = this.callApi(() => ({
 				method: 'get',
@@ -267,7 +271,9 @@ process.on('unhandledRejection', error => {
 		});
 
 		it('should return a promise that is rejected on error', function(done) {
-			const scope = nock(apiBaseUri).get('/test-path').reply(404);
+			const scope = nock(apiBaseUri)
+				.get('/test-path')
+				.reply(404);
 
 			const requestFn = this.callApi(() => ({
 				method: 'get',
@@ -288,7 +294,9 @@ process.on('unhandledRejection', error => {
 		it('should return a promise that is resolved with the response', function(
 			done
 		) {
-			const scope = nock(apiBaseUri).get('/test-path').reply(200, 'ok');
+			const scope = nock(apiBaseUri)
+				.get('/test-path')
+				.reply(200, 'ok');
 
 			const requestFn = this.callApi(() => ({
 				method: 'get',
@@ -700,8 +708,12 @@ process.on('unhandledRejection', error => {
 		it('should resolve by default if status >= 200 && status < 300', function(
 			done
 		) {
-			const scope1 = nock(apiBaseUri).get('/test-path1').reply(200);
-			const scope2 = nock(apiBaseUri).get('/test-path2').reply(299);
+			const scope1 = nock(apiBaseUri)
+				.get('/test-path1')
+				.reply(200);
+			const scope2 = nock(apiBaseUri)
+				.get('/test-path2')
+				.reply(299);
 
 			Promise.all([
 				this.callApi(() => ({
@@ -722,8 +734,12 @@ process.on('unhandledRejection', error => {
 		it('should reject by default if status < 200 && status >= 300', function(
 			done
 		) {
-			const scope1 = nock(apiBaseUri).get('/test-path1').reply(199);
-			const scope2 = nock(apiBaseUri).get('/test-path2').reply(300);
+			const scope1 = nock(apiBaseUri)
+				.get('/test-path1')
+				.reply(199);
+			const scope2 = nock(apiBaseUri)
+				.get('/test-path2')
+				.reply(300);
 
 			let status1, status2;
 
@@ -756,8 +772,12 @@ process.on('unhandledRejection', error => {
 		it('should resolve/reject properly with a custom status validator', function(
 			done
 		) {
-			const scope1 = nock(apiBaseUri).get('/test-path1').reply(101, 'one');
-			const scope2 = nock(apiBaseUri).get('/test-path2').reply(102, 'two');
+			const scope1 = nock(apiBaseUri)
+				.get('/test-path1')
+				.reply(101, 'one');
+			const scope2 = nock(apiBaseUri)
+				.get('/test-path2')
+				.reply(102, 'two');
 
 			let status1, body2;
 
@@ -874,7 +894,9 @@ process.on('unhandledRejection', error => {
 				};
 			};
 
-			const scope = nock(apiBaseUri).get('/ok/123').reply(200, { ok: true });
+			const scope = nock(apiBaseUri)
+				.get('/ok/123')
+				.reply(200, { ok: true });
 
 			this.callApi(handler)(123, err => {
 				expect(err).to.equal(null);
@@ -919,7 +941,9 @@ process.on('unhandledRejection', error => {
 				};
 			};
 
-			const scope = nock(apiBaseUri).get('/ok/123').reply(201, 'ok');
+			const scope = nock(apiBaseUri)
+				.get('/ok/123')
+				.reply(201, 'ok');
 
 			this.callApi(handler)(123, { validateStatus: s => s === 201 }, err => {
 				// no query in path

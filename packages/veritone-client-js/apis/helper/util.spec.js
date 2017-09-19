@@ -1,4 +1,3 @@
 // import { expect } from 'chai';
 
-describe('utils', function() {
-});
+describe('utils', function() {});

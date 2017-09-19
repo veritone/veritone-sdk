@@ -13,19 +13,23 @@ describe('Graphql', function() {
 			}
 		`;
 		const variables = {
-			jobId: "b469c835-d9da-460f-a6fa-9ff12fe3cbfc"
+			jobId: 'b469c835-d9da-460f-a6fa-9ff12fe3cbfc'
 		};
 
 		it('validates query param', function() {
-			expect(() => graphqlHandlers.query()).to.throw("Missing query!");
+			expect(() => graphqlHandlers.query()).to.throw('Missing query!');
 		});
 
 		it('validates variables param', function() {
-			expect(() => graphqlHandlers.query(query, '{ jobId: "123" }')).to.throw("variables must be an object!");
+			expect(() => graphqlHandlers.query(query, '{ jobId: "123" }')).to.throw(
+				'variables must be an object!'
+			);
 		});
 
 		it('validates operation name param', function() {
-			expect(() => graphqlHandlers.query(query, variables, {})).to.throw("operation name must be a string!");
+			expect(() => graphqlHandlers.query(query, variables, {})).to.throw(
+				'operation name must be a string!'
+			);
 		});
 
 		it('gets the job via id successfully', function() {

@@ -5,7 +5,7 @@ describe('User', function() {
 	describe('getCurrentUser', function() {
 		it('gets the current user', function() {
 			const expected = {
-				method: 'get',
+				method: 'get'
 			};
 
 			const result = userHandlers.getCurrentUser();

@@ -273,7 +273,9 @@ describe('Recording', function() {
 		});
 
 		it("makes a get request to the recording's media", function(done) {
-			const scope = nock(apiBaseUrl).get(/some-id\/media/).reply(200, 'ok');
+			const scope = nock(apiBaseUrl)
+				.get(/some-id\/media/)
+				.reply(200, 'ok');
 
 			recordingHandlers.getRecordingMedia(
 				nonStandardHandlerOptions,
