@@ -13,7 +13,7 @@ export default {
 		}
 
     return {
-      method: 'post',
+			method: 'post',
 			path: endpoints.graphql,
 			data: {
 				query,
