@@ -12,7 +12,7 @@ export default {
 			throw new Error('operation name must be a string!');
 		}
 
-    return {
+		return {
 			method: 'post',
 			path: endpoints.graphql,
 			data: {
@@ -23,6 +23,6 @@ export default {
 			_requestOptions: {
 				version: 3
 			}
-    };
+		};
 	},
 };
