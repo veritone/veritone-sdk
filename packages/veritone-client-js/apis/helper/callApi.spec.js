@@ -89,6 +89,33 @@ process.on('unhandledRejection', error => {
 			).not.to.throw();
 		});
 
+		it('defaults version to 1', function() {
+			const scope = nock(apiBaseUri)
+			.get('/test-path')
+			.reply(200, 'ok');
+
+			const requestFn = this.callApi(() => ({
+					method: 'get',
+					path: 'test-path'
+			}));
+
+			return requestFn().then(() => scope.done());
+		});
+
+		it('allows version to be specificed', function() {
+			const scope = nock(unversionedBaseUrl + '/v3')
+			.get('/test-path')
+			.reply(200, 'ok');
+
+			const requestFn = this.callApi(() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: { version: 3 }
+			}));
+
+			return requestFn().then(() => scope.done());
+		});
+
 		it('validates requestOptions', function() {
 			const baseOptions = {
 				method: 'get',
