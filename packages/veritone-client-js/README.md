@@ -28,7 +28,6 @@ const client = VeritoneApi({
 
 	// optional (defaults shown):
 	baseUrl: 'https://api.veritone.com',
-	version: 1,
 	maxRetries: 1,
 	retryIntervalMs: 1000
 })
@@ -100,6 +99,7 @@ client.recording.getRecordings(
 * headers -- object
 * transformResponseData -- function
 * validateStatus -- number => bool
+* version -- number
 
 ## Errors
 ### APIError
@@ -128,6 +128,7 @@ const {
 				// transformResponseData,
 				// validateStatus
 				// tokenType
+				// version
 			}
 		} = request;
 ```
