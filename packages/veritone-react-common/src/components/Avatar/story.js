@@ -1,14 +1,31 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { number } from '@storybook/addon-knobs';
 
 import Avatar from './';
 
 storiesOf('Avatar', module)
   .add('Base', () => <Avatar src="http://placekitten.com/g/400/300" />)
-  .add('Custom size', () => (
-    <Avatar src="http://placekitten.com/g/400/300" size={200} />
-  ))
+  .add('Custom size', () => {
+    const size = number('Size', 75);
+
+    return (
+      <div>
+        Size: {size}
+        <hr />
+        <Avatar
+          src="http://placekitten.com/g/400/300"
+          size={size}
+        />
+        <Avatar
+          src="http://placekitten.com/g/400/300"
+          label="Change"
+          size={size}
+        />
+      </div>
+    );
+  })
   .add('Label', () => (
     <div>
       <Avatar src="http://placekitten.com/g/400/300" label="Change" />
