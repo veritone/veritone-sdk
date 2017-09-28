@@ -2,6 +2,7 @@
   "name": "veritone-react-common",
   "version": "0.0.1",
   "dependencies": {
+    "classnames": "^2.2.5",
     "lodash": "^4.17.4",
     "material-ui": "^0.19.2",
     "prop-types": "^15.6.0",

@@ -1,21 +1,52 @@
 import React from 'react';
+import cx from 'classnames';
 import Paper from 'material-ui/Paper';
+import IconButton from 'material-ui/IconButton';
+import ArrowRightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 
 import PropTypes from 'helpers/PropTypes';
-const { func, element, string } = PropTypes;
+const { func, oneOf, string } = PropTypes;
 
 import styles from './styles.scss';
-console.log(styles);
 
-const RaisedTextField = ({ label, value, iconRight, onClickIcon }) => {
-  return <Paper>test</Paper>;
+const RaisedTextField = ({
+  label,
+  value,
+  action,
+  onClickAction,
+  className,
+  containerStyle
+}) => {
+  const actionIcon = {
+    edit: <EditIcon />,
+    go: <ArrowRightIcon />
+  }[action];
+
+  return (
+    <Paper
+      className={cx(styles.paper, className)}
+      style={containerStyle}
+      rounded={false}
+    >
+      <div className={styles.container}>
+        <div className={styles.label}>{label}</div>
+        <div className={styles.value}>{value}</div>
+        <div className={styles.actionIconContainer}>
+        <IconButton className={styles.actionIcon} onClick={onClickAction} disabled={!actionIcon}>
+          {actionIcon}
+        </IconButton>
+        </div>
+      </div>
+    </Paper>
+  );
 };
 
 RaisedTextField.propTypes = {
   label: string,
   value: string,
-  iconRight: element,
-  onClickIcon: func
+  action: oneOf(['edit', 'go']),
+  onClickAction: func
 };
 
 export default RaisedTextField;

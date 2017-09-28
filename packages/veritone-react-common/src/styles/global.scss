@@ -1,0 +1,10 @@
+// roboto font
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500');
+// veritone icons
+@import url('https://static.veritone.com/veritone-ui/veritone-icons-10/style.css');
+
+
+// workaround https://github.com/callemall/material-ui/issues/283
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset;
+}
