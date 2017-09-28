@@ -19,12 +19,7 @@
   "bugs": {
     "url": "https://github.com/veritone/veritone-sdk/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/MIT"
-    }
-  ],
+  "license": "Apache-2.0",
   "main": "./lib",
   "dependencies": {
     "passport-oauth2": "^1.4.0"

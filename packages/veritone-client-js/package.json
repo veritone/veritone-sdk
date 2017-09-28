@@ -49,5 +49,6 @@
     "rollup-plugin-replace": "^1.1.1",
     "webpack": "^3.5.2",
     "webpack-bundle-analyzer": "^2.9.0"
-  }
+  },
+  "license": "Apache-2.0"
 }
