@@ -2,7 +2,6 @@
   "name": "veritone-client-js",
   "version": "1.0.0",
   "description": "",
-  "private": false,
   "main": "dist/bundle-browser.js",
 	"module": "index.js",
   "scripts": {
