@@ -1,6 +1,5 @@
 import ReactPropTypes from 'prop-types';
 
-
 export default {
   ...ReactPropTypes,
 
