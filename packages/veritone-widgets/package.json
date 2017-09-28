@@ -13,5 +13,6 @@
     "neutrino": "^6.2.0",
     "neutrino-middleware-start-server": "^6.2.0",
     "neutrino-preset-react": "^6.2.0"
-  }
+  },
+  "license": "Apache-2.0"
 }
