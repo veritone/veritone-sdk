@@ -37,3 +37,9 @@ app.get('/auth/veritone/callback',
       .redirect(302, `http://local.veritone.com:3000`);
   });
 ```
+
+
+# License
+Copyright (c) Veritone Corporation. All rights reserved.
+
+Licensed under the Apache 2.0 License.
