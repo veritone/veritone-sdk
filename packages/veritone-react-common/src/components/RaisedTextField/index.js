@@ -5,8 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import ArrowRightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 
-import PropTypes from 'helpers/PropTypes';
-const { func, oneOf, string } = PropTypes;
+import { func, oneOf, string } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -33,9 +32,13 @@ const RaisedTextField = ({
         <div className={styles.label}>{label}</div>
         <div className={styles.value}>{value}</div>
         <div className={styles.actionIconContainer}>
-        <IconButton className={styles.actionIcon} onClick={onClickAction} disabled={!actionIcon}>
-          {actionIcon}
-        </IconButton>
+          <IconButton
+            className={styles.actionIcon}
+            onClick={onClickAction}
+            disabled={!actionIcon}
+          >
+            {actionIcon}
+          </IconButton>
         </div>
       </div>
     </Paper>

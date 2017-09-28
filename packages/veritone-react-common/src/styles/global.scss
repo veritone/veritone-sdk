@@ -3,6 +3,9 @@
 // veritone icons
 @import url('https://static.veritone.com/veritone-ui/veritone-icons-10/style.css');
 
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
 
 // workaround https://github.com/callemall/material-ui/issues/283
 input:-webkit-autofill {
