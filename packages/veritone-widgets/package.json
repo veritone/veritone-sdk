@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "veritone-react-common": "^0.0.1"
   },
   "scripts": {
     "start": "neutrino start --use neutrino-preset-react"

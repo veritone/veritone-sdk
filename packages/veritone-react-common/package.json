@@ -1,6 +1,7 @@
 {
   "name": "veritone-react-common",
   "version": "0.0.1",
+  "main": "dist/bundle.js",
   "dependencies": {
     "@storybook/addon-knobs": "^3.2.10",
     "classnames": "^2.2.5",
@@ -13,12 +14,19 @@
   "scripts": {
     "start": "",
     "storybook": "start-storybook -p 9001 -c .storybook",
-    "format": "prettier --write \"./src/**/*.{js,scss}\""
+    "format": "prettier --write \"./src/**/*.{js,scss}\"",
+    "clean:build": "rimraf build",
+    "prebuild": "npm run clean:build",
+    "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
+    "build:watch": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress --watch"
   },
   "devDependencies": {
     "@storybook/react": "^3.2.11",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "node-sass": "^4.5.3",
+    "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2"
   }
