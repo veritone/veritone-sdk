@@ -12,15 +12,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 25px;
-
-  div {
-    //border: 1px solid black;
-  }
 }
 
 .label {
   @include mui-text('body2');
   width: 40%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .value {
@@ -30,7 +29,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-
 }
 .actionIconContainer{
   width: 50px;

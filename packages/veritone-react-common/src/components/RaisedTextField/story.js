@@ -40,7 +40,12 @@ storiesOf('RaisedTextField', module)
         action="edit"
         onClickAction={action('clicked')}
       />
-      <RaisedTextField label="Name" />
+      <RaisedTextField
+        label="Name And Also Where You Were Born And Your Favorite Beverage"
+        value="My name is Chad Steelberg and I was born in Northridge, CA on May 8, 1971 and I really like Diet Coke"
+        action="edit"
+        onClickAction={action('clicked')}
+      />
     </div>
   ))
   .add('With styling', () => (
