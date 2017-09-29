@@ -13,12 +13,12 @@ var InternalOAuthError = require('passport-oauth2').InternalOAuthError
  */
 function Strategy(options, verify) {
   options = options || {}
-  options.authorizationURL = options.authorizationURL || 'https://api.aws-dev.veritone.com/v1/admin/oauth/authorize'
-  options.tokenURL = options.tokenURL || 'https://api.aws-dev.veritone.com/v1/admin/oauth/token';
-  options.scopeSeparator = options.scopeSeparator || ' '
+  options.authorizationURL = options.authorizationURL || 'https://api.veritone.com/v1/admin/oauth/authorize';
+  options.tokenURL = options.tokenURL || 'https://api.veritone.com/v1/admin/oauth/token';
+  options.scopeSeparator = options.scopeSeparator || ' ';
   OAuth2Strategy.call(this, options, verify);
   this.name = 'veritone';
-  this._profileUrl = options.profileUrl || 'https://api.aws-dev.veritone.com/v1/admin/current-user';
+  this._profileUrl = options.profileUrl || 'https://api.veritone.com/v1/admin/current-user';
   this._oauth2.useAuthorizationHeaderforGET(true)
 }
 
@@ -38,7 +38,7 @@ util.inherits(Strategy, OAuth2Strategy);
  * @api protected
  */
 Strategy.prototype.userProfile = function(accessToken, done) {
-  this._oauth2.get(this._profileUrl, accessToken, function (err, body, res) {
+  this._oauth2.get(this._profileUrl, accessToken, function(err, body, res) {
     var json
 
     if (err) {
