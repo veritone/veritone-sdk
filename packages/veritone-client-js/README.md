@@ -1,12 +1,12 @@
-# Veritone-Api 
+# Veritone JS client library 
 
 ## Installation
 We provide bundles for the browser and for node.
 
 Install the package:
-`npm install --save veritone-api`
+`npm install --save veritone-client-js`
 
-in your code, import either `veritone-api/dist/bundle-browser` or `veritone-api/dist/bundle-node`, as described below.
+in your code, import either `veritone-client-js/dist/bundle-browser` or `veritone-client-js/dist/bundle-node`, as described below.
 
 ## Getting a token
 See the docs on authentication at https://veritone-developer.atlassian.net/
@@ -14,9 +14,9 @@ See the docs on authentication at https://veritone-developer.atlassian.net/
 ## Constructing the api client
 ```javascript
 // in a browser:
-import veritoneApi from 'veritone-api/dist/bundle-browser'
+import veritoneApi from 'veritone-client-js/dist/bundle-browser'
 // in Node:
-import veritoneApi from 'veritone-api/dist/bundle-node'
+import veritoneApi from 'veritone-client-js/dist/bundle-node'
 
 const client = VeritoneApi({
 	// requires either session AND api tokens (from user object):
