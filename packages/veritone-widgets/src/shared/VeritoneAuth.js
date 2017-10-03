@@ -1,6 +1,6 @@
 import { Promise } from 'es6-promise';
 
-class Auth {
+class VeritoneAuth {
     /**
      * @constructor
      * @param {OAuthURI} parameters - URI of the Veritone-Widget-Server
@@ -119,4 +119,4 @@ class Auth {
     }
 }
 
-export default Auth;
+export default VeritoneAuth;
