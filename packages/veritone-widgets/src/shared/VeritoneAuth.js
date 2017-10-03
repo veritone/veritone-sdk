@@ -85,8 +85,8 @@ class VeritoneAuth {
 
         this.logout = () => {
             return new Promise( (resolve, reject) => {
-                cleanupAuthWindow();
                 removeAuthWindowListener();
+                cleanupAuthWindow();
 
                 // TO DO: Make a backend call to destroy the token
                 _OAuthToken = null;
