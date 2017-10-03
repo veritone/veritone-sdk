@@ -2,7 +2,6 @@
   "name": "veritone-functional-permissions",
   "version": "1.0.0",
   "description": "responsible for managing functional permissions",
-  "private": true,
   "main": "index.js",
   "homepage": "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-functional-permissions",
   "scripts": {
@@ -28,7 +27,7 @@
     "url": "git+https://github.com/veritone/veritone-sdk/.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/veritone/veritone-sdk/issues"
   }

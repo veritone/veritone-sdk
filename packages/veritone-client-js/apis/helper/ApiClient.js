@@ -15,10 +15,6 @@ export default function veritoneApi(
 	},
 	apis = {}
 ) {
-	if (!token) {
-		throw new Error('Token is required');
-	}
-
 	return mapObject(apis, ns =>
 		mapObject(ns, handler =>
 			callApi(
