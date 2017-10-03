@@ -7,14 +7,6 @@ import veritoneApi from './ApiClient';
 const apiBaseUrl = 'http://fake.domain';
 
 describe('veritoneApi', function() {
-	describe('veritoneApi constructor', function() {
-		it('throws if no token is configured', function() {
-			expect(() => veritoneApi({})).to.throw();
-			expect(() => veritoneApi({})).to.throw();
-			expect(() => veritoneApi({ token: 'testToken' })).not.to.throw();
-		});
-	});
-
 	describe('API methods', function() {
 		it('Returns the configured API functions', function() {
 			const api = veritoneApi(
