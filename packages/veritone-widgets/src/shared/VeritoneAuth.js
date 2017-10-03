@@ -83,7 +83,7 @@ const ParseURI = (url) => {
 
 const login = (OAuthURI) => {
     if(!OAuthURI) {
-        throw new Exception("Missing parameter: Need to include the backend OAuth2 URI");
+        throw new Error("Missing parameter: Need to include the backend OAuth2 URI");
     }
 
     removeAuthWindowListener();
