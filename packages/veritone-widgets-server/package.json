@@ -1,0 +1,18 @@
+{
+  "name": "veritone-widgets-server",
+  "version": "1.0.0",
+  "description": "Backend server for widgets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrew Tung",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "ejs": "^2.5.7",
+    "express": "^4.16.1",
+    "passport": "^0.4.0",
+    "passport-veritone": "^1.0.0"
+  }
+}

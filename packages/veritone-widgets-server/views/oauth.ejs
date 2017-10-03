@@ -1,0 +1,18 @@
+<html>
+    <body>
+        <script>
+            var self = this;
+            window.onload = function() {
+                self.bindToContext = (event) => {
+                    if(event.origin === '<%= clientOrigin %>' || ( event.origin + '/' ) === '<%= clientOrigin %>') {
+                        self.origin = event.origin;
+                        self.source = event.source;
+                        event.source.postMessage({ token: '<%= oauthToken %>' }, self.origin);
+                    }
+                }
+
+                window.addEventListener('message', self.bindToContext, false);
+            }
+        </script>
+    </body>
+</html>
