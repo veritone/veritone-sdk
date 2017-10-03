@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Andrew Tung",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "dotenv": "^4.0.0",
     "ejs": "^2.5.7",
