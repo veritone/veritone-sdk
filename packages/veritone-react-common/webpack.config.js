@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: { 'veritone-react-common': path.join(__dirname, './src/index.js')},
+  entry: { 'veritone-react-common': path.join(__dirname, './src/index.js') },
   output: {
     filename: 'dist/bundle.js',
     libraryTarget: 'umd',
@@ -9,7 +9,9 @@ module.exports = {
   },
   resolve: {
     alias: {
-      helpers: path.join(__dirname, '../src/helpers')
+      helpers: path.join(__dirname, 'src/helpers'),
+      components: path.join(__dirname, 'src/components'),
+      images: path.join(__dirname, 'src/resources/images'),
     },
   },
   module: {
@@ -35,6 +37,14 @@ module.exports = {
           'sass-loader'
         ],
         include: path.resolve('./src')
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        loader: 'url-loader',
+        query: {
+          limit: 8192,
+          name: 'images/[name].[ext]?[hash]'
+        }
       }
     ]
   }

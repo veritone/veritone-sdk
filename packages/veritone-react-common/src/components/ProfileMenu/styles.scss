@@ -1,0 +1,34 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.header {
+  display: flex;
+
+  .user-avatar {
+    padding-right: 15px;
+  }
+
+  .user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+    .full-name {
+      @include mui-text("body2");
+      color: $dark-black;
+    }
+
+    .username {
+      @include mui-text("caption");
+    }
+
+    .editButton {
+      padding-top: 5px;
+
+      div {
+        // fix shadow
+        line-height: 36px;
+      }
+    }
+  }
+}

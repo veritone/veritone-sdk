@@ -1,0 +1,19 @@
+@import 'src/styles/modules/muiTypography';
+
+.appBar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 0 32px 0 40px;
+  z-index: 901;
+}
+
+.appBar--logo {
+  height: 24px;
+}
+
+.appBar--title {
+  color: white;
+  @include mui-text('title')
+  //height: 24px;
+}
