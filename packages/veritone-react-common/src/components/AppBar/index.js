@@ -17,10 +17,12 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 
 export const appBarHeight = 60;
+@withMuiThemeProvider
 export default class AppBar extends React.Component {
   static propTypes = {
     title: string,

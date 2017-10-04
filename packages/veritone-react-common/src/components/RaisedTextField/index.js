@@ -7,6 +7,7 @@ import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 
 import { func, oneOf, string } from 'prop-types';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 const RaisedTextField = ({
@@ -52,4 +53,4 @@ RaisedTextField.propTypes = {
   onClickAction: func
 };
 
-export default RaisedTextField;
+export default withMuiThemeProvider(RaisedTextField);

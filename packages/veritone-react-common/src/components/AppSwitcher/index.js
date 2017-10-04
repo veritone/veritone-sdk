@@ -6,9 +6,11 @@ import { string, arrayOf, shape, bool, func } from 'prop-types';
 
 import AppSwitcherList from './AppSwitcherList';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 export default class AppSwitcher extends React.Component {
   static propTypes = {
     className: string,

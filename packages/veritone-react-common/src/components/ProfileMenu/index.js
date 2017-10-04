@@ -11,8 +11,11 @@ import Subheader from 'material-ui/Subheader';
 import { darkBlack } from 'material-ui/styles/colors';
 import { string, func, shape } from 'prop-types';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 export default class ProfileMenu extends React.Component {
   static propTypes = {
     className: string,
