@@ -13,7 +13,12 @@ storiesOf('VeritoneApp', module).add('Base', () => {
     <div>
       this is where the widget should go:
       <div id="appbar-widget" />
+      <br/>
+      <br/>
+      <br/>
+      <br/>
       <button onClick={app.mount.bind(app)}>Mount</button>
+      <button onClick={app.destroy.bind(app)}>destroy</button>
     </div>
     );
 });

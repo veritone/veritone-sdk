@@ -13,28 +13,37 @@ export default class VeritoneApp {
     this._widgets = widgets;
     this._store = configureStore();
     this._containerEl = null;
-
-    const existingApp = document.getElementById('veritone-react-app');
-    if (existingApp) {
-      // todo: should this be an error?
-      console.warn(
-        'The DOM element from a VeritoneApp instance already exists on this page. Deleting it.'
-      );
-
-      document.removeChild(existingApp);
-    }
   }
 
   mount() {
-    this._containerEl = document.createElement('div', { id: 'veritone-react-app'});
+    const existingApp = document.getElementById('veritone-react-app');
+    if (existingApp) {
+      // todo: should this be an error?
+      return console.warn(
+        'The DOM element from a VeritoneApp instance already exists on this page. ' +
+          'Destroy it before mounting a new one.'
+      );
+    }
+
+    this._containerEl = document.createElement('div');
+    this._containerEl.setAttribute('id', 'veritone-react-app');
     document.body.appendChild(this._containerEl);
 
     this._widgets.forEach(w => w.init());
     this._renderReactApp();
   }
 
+  destroy() {
+    if (this._containerEl) {
+      ReactDOM.unmountComponentAtNode(this._containerEl);
+      try {
+        document.body.removeChild(this._containerEl);
+      } catch (e) {}
+    }
+  }
+
   _renderReactApp() {
-    ReactDOM.render(
+    return ReactDOM.render(
       <VeritoneRootComponent store={this._store} widgets={this._widgets} />,
       this._containerEl
     );
@@ -43,16 +52,12 @@ export default class VeritoneApp {
 
 class VeritoneRootComponent extends React.Component {
   render() {
-    const components = this.props.widgets.map(w => w.getComponent());
-
     return (
       <Provider store={this.props.store}>
         <div>
           This is the veritone app
-          {this.props.widgets.map(
-            w =>
-              w.el &&
-              ReactDOM.createPortal(React.createElement(w.getComponent()), w.el)
+          {this.props.widgets.map(w =>
+            ReactDOM.createPortal(React.createElement(w.getComponent()), w.el)
           )}
         </div>
       </Provider>
