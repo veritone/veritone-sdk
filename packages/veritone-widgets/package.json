@@ -5,15 +5,19 @@
     "es6-promise": "^4.1.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "veritone-react-common": "^0.0.1"
+    "veritone-react-common": "^1.0.0"
   },
   "scripts": {
-    "start": "neutrino start --use neutrino-preset-react"
+    "format": "prettier --write \"./src/**/*.{js,scss}\"",
+    "start": "start-storybook -p 9001 -c .storybook",
+    "neutrino": "neutrino start --use neutrino-preset-react"
   },
   "devDependencies": {
     "neutrino": "^6.2.0",
     "neutrino-middleware-start-server": "^6.2.0",
-    "neutrino-preset-react": "^6.2.0"
+    "neutrino-preset-react": "^6.2.0",
+    "@storybook/addon-knobs": "^3.2.10",
+    "@storybook/react": "^3.2.11"
   },
   "license": "Apache-2.0"
 }
