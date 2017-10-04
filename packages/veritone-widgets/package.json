@@ -2,6 +2,7 @@
   "name": "veritone-widgets",
   "version": "0.0.1",
   "dependencies": {
+    "es6-promise": "^4.1.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
   },
