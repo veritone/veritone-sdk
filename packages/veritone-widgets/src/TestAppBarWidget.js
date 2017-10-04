@@ -6,7 +6,7 @@ export default class AppBarWidget {
   }
 
   init() {
-    const el = document.getElementById(this.elId); // todo: call this on mount
+    const el = document.getElementById(this.elId);
     if (!el) {
       return console.warn(`Element with ID ${this.elId} was not found in the document.`)
     }

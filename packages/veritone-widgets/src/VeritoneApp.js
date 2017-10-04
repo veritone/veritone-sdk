@@ -13,7 +13,6 @@ export default class VeritoneApp {
     this._widgets = widgets;
     this._store = configureStore();
 
-
     const existingApp = document.getElementById('veritone-react-app');
     if (existingApp) {
       // todo: should this be an error?
@@ -37,6 +36,7 @@ export default class VeritoneApp {
     this._containerEl.setAttribute('id', 'veritone-react-app');
     document.body.appendChild(this._containerEl);
 
+    this._widgets.forEach(w => w.init());
     this._renderReactApp();
   }
 }
@@ -49,13 +49,9 @@ class VeritoneRootComponent extends React.Component {
       <Provider store={this.props.store}>
         <div>
           This is the veritone app
-          {this.props.widgets.map(w => {
-            w.init();
-            return ReactDOM.createPortal(
-              React.createElement(w.getComponent()),
-              w.el
-            );
-          })}
+          {this.props.widgets.map(w =>
+            w.el && ReactDOM.createPortal(React.createElement(w.getComponent()), w.el)
+          )}
         </div>
       </Provider>
     );
