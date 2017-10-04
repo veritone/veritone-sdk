@@ -2,9 +2,15 @@
   "name": "veritone-widgets",
   "version": "0.0.1",
   "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
     "es6-promise": "^4.1.1",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "react-redux-saga": "^1.0.2",
+    "redux": "^3.7.2",
+    "redux-saga": "^0.15.6",
     "veritone-react-common": "^1.0.0"
   },
   "scripts": {
@@ -13,11 +19,15 @@
     "neutrino": "neutrino start --use neutrino-preset-react"
   },
   "devDependencies": {
+    "@storybook/addon-knobs": "3.3.0-alpha.2",
+    "@storybook/react": "v3.3.0-alpha.2",
     "neutrino": "^6.2.0",
     "neutrino-middleware-start-server": "^6.2.0",
     "neutrino-preset-react": "^6.2.0",
-    "@storybook/addon-knobs": "^3.2.10",
-    "@storybook/react": "^3.2.11"
+    "redux-devtools": "^3.4.0",
+    "redux-immutable-state-invariant": "^2.1.0",
+    "redux-logger": "^3.0.6",
+    "redux-validate-fsa": "^0.1.2"
   },
   "license": "Apache-2.0"
 }
