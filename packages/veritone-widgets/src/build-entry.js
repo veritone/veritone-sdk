@@ -1,2 +1,2 @@
-export VeritoneApp from './VeritoneApp'
-export AppBar from './TestAppBarWidget'
+export VeritoneApp from './shared/VeritoneApp'
+export AppBar from './widgets/AppBar'

@@ -2,8 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import VeritoneApp from './VeritoneApp';
-import AppBarWidget from './TestAppBarWidget';
+import VeritoneApp from './shared/VeritoneApp';
+import AppBarWidget from './widgets/AppBar';
 
 const app = new VeritoneApp(
   new AppBarWidget({ elId: 'error-display', title: 'test', profileMenu: true, appSwitcher: true })
