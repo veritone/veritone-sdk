@@ -6,7 +6,7 @@ import { action } from '@storybook/addon-actions';
 import VeritoneApp from './VeritoneApp';
 import AppBarWidget from './TestAppBarWidget';
 
-const app = new VeritoneApp(new AppBarWidget({ elId: 'appbar-widget'}));
+const app = new VeritoneApp(new AppBarWidget({ elId: 'appbar-widget', title: 'test'}));
 
 storiesOf('VeritoneApp', module).add('Base', () => {
   return (

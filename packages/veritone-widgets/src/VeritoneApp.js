@@ -57,7 +57,7 @@ class VeritoneRootComponent extends React.Component {
         <div>
           This is the veritone app
           {this.props.widgets.map(w =>
-            ReactDOM.createPortal(React.createElement(w.getComponent()), w.el)
+            ReactDOM.createPortal(<w.Component { ...w.props}/>, w.el)
           )}
         </div>
       </Provider>
