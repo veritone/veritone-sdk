@@ -58,7 +58,9 @@ function VeritoneRootComponent({store, widgets }) {
   return (
     <Provider store={store}>
       <div>
-      <AppBar profileMenu/>
+        {widgets.map(w =>
+          ReactDOM.createPortal(<w.Component {...w.props}/>, w.el)
+        )}
       </div>
     </Provider>
   );
