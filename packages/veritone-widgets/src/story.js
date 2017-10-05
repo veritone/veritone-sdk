@@ -1,13 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-// import { AppBar } from 'veritone-react-common';
 
 import VeritoneApp from './VeritoneApp';
 import AppBarWidget from './TestAppBarWidget';
 
 const app = new VeritoneApp(
-  new AppBarWidget({ elId: 'error-display', title: 'test', profileMenu: true })
+  new AppBarWidget({ elId: 'error-display', title: 'test', profileMenu: true, appSwitcher: true })
 );
 
 storiesOf('VeritoneApp', module).add('Base', () => {
