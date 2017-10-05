@@ -1,7 +1,8 @@
 import React from 'react';
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
+import LibAppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
 import IconButton from 'material-ui/IconButton';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
+import CloseIcon from 'material-ui-icons/Close';
 
 import {
   objectOf,
@@ -21,7 +22,7 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 
-export const appBarHeight = 60;
+export const appBarHeight = 64;
 @withMuiThemeProvider
 export default class AppBar extends React.Component {
   static propTypes = {
@@ -58,17 +59,18 @@ export default class AppBar extends React.Component {
 
   render() {
     return (
-      <Toolbar
+      <LibAppBar
         className={styles.appBar}
         style={{ height: appBarHeight, background: this.props.backgroundColor }}
       >
-        <ToolbarGroup>
+        <Toolbar>
+        <div>
           <img src={veritoneLogo} className={styles['appBar--logo']} />
-        </ToolbarGroup>
-        <ToolbarGroup className={styles['appBar--title']}>
+        </div>
+        <div className={styles['appBar--title']}>
           {this.props.title}
-        </ToolbarGroup>
-        <ToolbarGroup style={{ width: 170 }}>
+        </div>
+        <div className={styles['appBar--iconGroup']}>
           {this.props.appSwitcher && (
             <AppSwitcher
               enabledAppsFailedLoading={this.props.enabledAppsFailedLoading}
@@ -91,8 +93,9 @@ export default class AppBar extends React.Component {
               </IconButton>
             </div>
           )}
-        </ToolbarGroup>
-      </Toolbar>
+        </div>
+        </Toolbar>
+      </LibAppBar>
     );
   }
 }

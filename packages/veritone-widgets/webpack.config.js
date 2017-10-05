@@ -1,12 +1,12 @@
 const path = require('path');
 
 module.exports = {
-  // entry: { 'veritone-react-common': path.join(__dirname, './src/index.js') },
-  // output: {
-  //   filename: 'dist/bundle.js',
-  //   libraryTarget: 'umd',
-  //   umdNamedDefine: true
-  // },
+  entry: { 'veritone-widgets': path.join(__dirname, 'src/build-entry.js') },
+  output: {
+    filename: 'dist/bundle.js',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
+  },
   resolve: {
     alias: {
       // helpers: path.join(__dirname, 'src/helpers'),

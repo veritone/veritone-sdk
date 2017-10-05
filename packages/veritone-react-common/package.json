@@ -6,7 +6,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "classnames": "^2.2.5",
     "lodash": "^4.17.4",
-    "material-ui": "^0.19.2",
+    "material-ui": "v1.0.0-beta.13",
+    "material-ui-icons": "^1.0.0-beta.15",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0"

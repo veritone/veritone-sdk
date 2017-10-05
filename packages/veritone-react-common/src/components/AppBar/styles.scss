@@ -4,7 +4,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  padding: 0 32px 0 40px;
+  //padding: 0 32px 0 40px;
   z-index: 901;
 }
 
@@ -14,6 +14,12 @@
 
 .appBar--title {
   color: white;
-  @include mui-text('title')
-  //height: 24px;
+  @include mui-text('title');
+  margin-left: auto;
+}
+
+.appBar--iconGroup {
+  width: 170px;
+  margin-left: auto;
+  display: flex;
 }

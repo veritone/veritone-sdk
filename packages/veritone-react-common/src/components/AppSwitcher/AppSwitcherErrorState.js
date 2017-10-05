@@ -1,6 +1,6 @@
 import React from 'react';
 import { func } from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
 
 import styles from './styles.scss';
 
@@ -13,7 +13,9 @@ export default class AppSwitcherErrorState extends React.Component {
     return (
       <div className={styles.appListButtonErrorState}>
         An error occurred loading this content
-        <RaisedButton label="retry" onClick={this.props.handleRefresh}/>
+        <Button raised onClick={this.props.handleRefresh}>
+          retry
+        </Button>
       </div>
     );
   }

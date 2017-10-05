@@ -1,7 +1,7 @@
 import React from 'react';
-import AppsIcon from 'material-ui/svg-icons/navigation/apps';
+import Menu, { MenuItem } from 'material-ui/Menu';
+import AppsIcon from 'material-ui-icons/Apps';
 import IconButton from 'material-ui/IconButton';
-import IconMenu from 'material-ui/IconMenu';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
 
 import AppSwitcherList from './AppSwitcherList';
@@ -30,39 +30,41 @@ export default class AppSwitcher extends React.Component {
   static defaultProps = {};
 
   state = {
-    menuOpen: false
+    open: false,
+    anchorEl: null
   };
 
-  handleOnRequestChange = value => {
+  openMenu = event => {
+    this.setState({ open: true, anchorEl: event.currentTarget });
+  };
+
+  closeMenu = () => {
     this.setState({
-      menuOpen: value
+      open: false
     });
   };
+
 
   render() {
     // todo: loading state
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <IconMenu
+        <IconButton onClick={this.openMenu}>
+          <AppsIcon color="white"/>
+        </IconButton>
+        <Menu
+          open={this.state.open}
+          onRequestClose={this.closeMenu}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-          iconButtonElement={
-            <IconButton
-              style={{
-                fontSize: 'inherit'
-              }}
-            >
-              <AppsIcon color="white" />
-            </IconButton>
-          }
-          open={this.state.menuOpen}
-          onRequestChange={this.handleOnRequestChange}
+          anchorEl={this.state.anchorEl}
+          getContentAnchorEl={null}
         >
           {this.props.enabledAppsFailedLoading ? (
             <AppSwitcherErrorState handleRefresh={this.props.handleRefresh} />
           ) : (
             <AppSwitcherList enabledApps={this.props.enabledApps} />
           )}
-        </IconMenu>
+        </Menu>
         <span className={styles['appSwitcher__title']}>
           {this.props.currentAppName}
         </span>

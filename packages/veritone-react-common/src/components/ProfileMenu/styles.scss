@@ -4,6 +4,10 @@
 .header {
   display: flex;
 
+  &:focus {
+    outline: none; // prevent outline around profile subheader
+  }
+
   .user-avatar {
     padding-right: 15px;
   }

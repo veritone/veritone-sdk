@@ -1,5 +1,5 @@
 import React from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
 export default function withMuiThemeProvider(Component) {
   return class WrappedComponent extends React.Component {
@@ -7,7 +7,7 @@ export default function withMuiThemeProvider(Component) {
 
     render() {
       return (
-        <MuiThemeProvider>
+        <MuiThemeProvider theme={createMuiTheme()}>
           <Component {...this.props} />
         </MuiThemeProvider>
       );

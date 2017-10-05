@@ -6,19 +6,21 @@ import { action } from '@storybook/addon-actions';
 import VeritoneApp from './VeritoneApp';
 import AppBarWidget from './TestAppBarWidget';
 
-const app = new VeritoneApp(new AppBarWidget({ elId: 'appbar-widget', title: 'test'}));
+const app = new VeritoneApp(
+  new AppBarWidget({ elId: 'error-display', title: 'test', profileMenu: true })
+);
 
 storiesOf('VeritoneApp', module).add('Base', () => {
   return (
     <div>
       this is where the widget should go:
       <div id="appbar-widget" />
-      <br/>
-      <br/>
-      <br/>
-      <br/>
+      <br />
+      <br />
+      <br />
+      <br />
       <button onClick={app.mount.bind(app)}>Mount</button>
       <button onClick={app.destroy.bind(app)}>destroy</button>
     </div>
-    );
+  );
 });

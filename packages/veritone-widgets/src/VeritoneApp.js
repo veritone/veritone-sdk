@@ -31,6 +31,8 @@ export default class VeritoneApp {
 
     this._widgets.forEach(w => w.init());
     this._renderReactApp();
+
+    return this;
   }
 
   destroy() {
@@ -50,17 +52,14 @@ export default class VeritoneApp {
   }
 }
 
-class VeritoneRootComponent extends React.Component {
-  render() {
-    return (
-      <Provider store={this.props.store}>
-        <div>
-          This is the veritone app
-          {this.props.widgets.map(w =>
-            ReactDOM.createPortal(<w.Component { ...w.props}/>, w.el)
-          )}
-        </div>
-      </Provider>
-    );
-  }
+import { AppBar } from 'veritone-react-common';
+
+function VeritoneRootComponent({store, widgets }) {
+  return (
+    <Provider store={store}>
+      <div>
+      <AppBar profileMenu/>
+      </div>
+    </Provider>
+  );
 }
