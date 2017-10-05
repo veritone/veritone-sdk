@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
 
-import configureStore from './redux/configureStore';
+import configureStore from '../redux/configureStore';
 
 export default class VeritoneApp {
   constructor(...widgets) {
