@@ -16,7 +16,7 @@
   "main": "dist/bundle.js",
   "scripts": {
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
-    "start": "start-storybook -p 9001 -c .storybook",
+    "start": "start-storybook -p 9002 -c .storybook",
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
     "neutrino": "neutrino start --use neutrino-preset-react"
   },
