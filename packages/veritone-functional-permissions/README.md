@@ -1,4 +1,4 @@
-# functional-permissions-lib
+# veritone-functional-permissions
 
 **Table of Contents**
 
