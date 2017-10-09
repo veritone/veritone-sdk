@@ -6,7 +6,7 @@ import { boolean } from '@storybook/addon-knobs';
 import FullScreenDialog from './';
 
 storiesOf('FullScreenDialog', module).add('Base', () => (
-  <div style={{ height: '100vh', width: '100vw', background: 'lightgrey' }}>
+  <div style={{ height: '100%', width: '100%', background: 'lightgrey' }}>
     <h2>Use the Knobs panel to open a dialog</h2>
     <FullScreenDialog open={boolean('Open', false)}>
       <div
