@@ -68,6 +68,7 @@ export default class AppBar extends React.Component {
   render() {
     return (
       <Paper
+        component="header"
         square
         elevation={this.props.elevation}
         className={styles.appBar}
