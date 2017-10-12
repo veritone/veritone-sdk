@@ -1,5 +1,9 @@
 import React from 'react';
-import MenuItem from 'material-ui/MenuItem';
+import {MenuItem} from 'material-ui/Menu';
+import {
+  ListItemIcon,
+  ListItemText
+} from 'material-ui/List';
 import { string, arrayOf, shape }  from 'prop-types';
 import { sortBy } from 'lodash';
 import cx from 'classnames';
@@ -32,11 +36,13 @@ export default class AppSwitcherList extends React.Component {
 
           return (
             <MenuItem
+              button
               className={styles['appListButton']}
               key={app.applicationId}
               href={`/switch-app/${app.applicationId}`}
               target={app.applicationId}
             >
+              <ListItemIcon>
               {app.applicationIconUrl || app.applicationIconSvg
                 ? <img
                   className={appListButtonIconClasses}
@@ -48,8 +54,9 @@ export default class AppSwitcherList extends React.Component {
                     'icon-applications'
                   )}
                 />}
+              </ListItemIcon>
+              <ListItemText primary={app.applicationName} />
 
-              {app.applicationName}
             </MenuItem>
           );
         })}

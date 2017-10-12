@@ -3,7 +3,6 @@
   "plugins": [
     "transform-export-extensions",
     "transform-class-properties",
-    "transform-decorators-legacy",
     "transform-object-rest-spread"
   ]
 }

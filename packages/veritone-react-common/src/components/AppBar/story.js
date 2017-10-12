@@ -11,8 +11,59 @@ storiesOf('AppBar', module)
       appSwitcher
       currentAppName="Storybook"
       logout={action('logout')}
+      user={{
+        userName: 'mrobb@veritone.com',
+        kvp: {
+          firstName: 'Mitch',
+          lastName: 'Robb'
+        }
+      }}
+      enabledApps={sampleApps}
     />
   ))
   .add('Title/close', () => (
     <AppBar title="My Veritone App" closeButton onClose={action('close')} />
   ));
+
+const sampleApps = [
+  {
+    applicationId: '0',
+    applicationName: 'Discovery',
+    applicationIconUrl:
+      'https://static.veritone.com/veritone-ui/appicons-2/discovery.png',
+    applicationIconSvg:
+      'https://static.veritone.com/veritone-ui/app-icons-svg/discovery-app.svg'
+  },
+  {
+    applicationId: '1',
+    applicationName: 'Test App',
+    applicationIconUrl: '',
+    applicationIconSvg: null
+  },
+  {
+    applicationId: '2',
+    applicationName: 'CMS',
+    applicationIconUrl:
+      'https://static.veritone.com/veritone-ui/appicons-2/cms.png',
+    applicationIconSvg:
+      'https://static.veritone.com/veritone-ui/app-icons-svg/cms-app.svg'
+  },
+  {
+    applicationId: '3',
+    applicationName: 'Collections',
+    applicationKey: 'collections',
+    applicationIconUrl:
+      'https://static.veritone.com/veritone-ui/appicons-2/collections.png',
+    applicationIconSvg:
+      'https://static.veritone.com/veritone-ui/app-icons-svg/collections-app.svg'
+  },
+  {
+    applicationId: '4',
+    applicationName: 'Library',
+    applicationKey: 'library',
+    applicationIconUrl:
+      'https://static.veritone.com/veritone-ui/appicons-2/library.png',
+    applicationIconSvg:
+      'https://static.veritone.com/veritone-ui/app-icons-svg/library-app.svg'
+  }
+];

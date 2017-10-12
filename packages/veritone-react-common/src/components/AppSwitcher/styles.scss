@@ -1,4 +1,5 @@
 @import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
 
 .appSwitcher__title {
   @include mui-text('caption');
@@ -38,4 +39,20 @@
   width: 200px;
   text-align: center;
   cursor: default !important;
+}
+
+.appListButtonErrorState {
+  @include mui-text("body1");
+
+  padding: 20px 0 !important;
+  margin: 0 auto !important;
+  white-space: normal;
+  width: 150px;
+  line-height: initial;
+  text-align: center;
+  cursor: default;
+
+  > button {
+    margin-top: 20px;
+  }
 }
