@@ -15,7 +15,8 @@ storiesOf('AppBar', module)
         userName: 'mrobb@veritone.com',
         kvp: {
           firstName: 'Mitch',
-          lastName: 'Robb'
+          lastName: 'Robb',
+          image: 'http://placekitten.com/g/400/300'
         }
       }}
       enabledApps={sampleApps}
@@ -23,6 +24,34 @@ storiesOf('AppBar', module)
   ))
   .add('Title/close', () => (
     <AppBar title="My Veritone App" closeButton onClose={action('close')} />
+  ))
+  .add('rightActions', () => (
+    <div>
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledApps={sampleApps}
+        rightActions={[
+          { label: 'Saved Searches', onClick: action('saved searches') },
+          { label: 'Search Results', onClick: action('search results') },
+          { label: 'Watchlist', onClick: action('watchlist') }
+        ]}
+      />
+    </div>
+  ))
+  .add('zero elevation, actions, switcher, profileMenu only (intro page)', () => (
+    <AppBar
+      elevation={0}
+      logo={false}
+      profileMenu
+      appSwitcher
+      currentAppName="Storybook"
+      enabledApps={sampleApps}
+      rightActions={[
+        { label: 'Saved Searches', onClick: action('saved searches') }
+      ]}
+    />
   ));
 
 const sampleApps = [

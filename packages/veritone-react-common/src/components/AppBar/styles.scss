@@ -4,21 +4,45 @@
   position: fixed;
   top: 0;
   width: 100%;
-  //padding: 0 32px 0 40px;
+
   z-index: 901;
 }
 
-.appBar--logo {
+.container {
+  padding: 0 32px 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
   height: 24px;
 }
 
-.appBar--title {
+.title {
   color: white;
   @include mui-text('title');
-  margin-left: auto;
+  //margin-left: auto;
 }
 
-.appBar--iconGroup {
-  margin-left: auto;
+.iconGroup {
+  //margin-left: auto;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.iconGroup__icon {
+  //width: 100px;
+  padding-left: 20px
+}
+
+.rightAction-label {
+  @include mui-text('caption');
+
+  text-decoration: none;
+  color: white;
+  //margin: 0;
+  opacity: 0.87;
 }
