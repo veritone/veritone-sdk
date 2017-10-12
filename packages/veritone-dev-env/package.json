@@ -1,6 +1,6 @@
 {
   "name": "veritone-dev-env",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "common configs for devtools",
   "main": "index.js",
   "scripts": {
