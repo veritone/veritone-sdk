@@ -1,6 +1,6 @@
-import prettier from './.prettierrc'
-import eslintReact from './.eslintrc.react'
+const prettier = require('./.prettierrc');
+const eslintReact = require('./.eslintrc.react');
 
-export default {
+module.exports = {
   prettier, eslintReact
 };
