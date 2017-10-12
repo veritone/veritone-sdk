@@ -1,0 +1,29 @@
+{
+  "name": "veritone-dev-env",
+  "version": "1.0.0",
+  "description": "common configs for devtools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/veritone/veritone-sdk.git"
+  },
+  "keywords": [
+    "veritone"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/veritone/veritone-sdk/issues"
+  },
+  "homepage": "https://github.com/veritone/veritone-sdk#readme",
+  "peerDependencies": {
+    "eslint": "^4.8.0",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-lodash": "^2.4.5",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-react": "^7.4.0"
+  }
+}
