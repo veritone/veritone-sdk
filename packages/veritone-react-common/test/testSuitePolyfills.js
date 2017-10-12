@@ -1,1 +1,0 @@
-global.requestAnimationFrame = require('raf');
