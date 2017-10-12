@@ -102,7 +102,7 @@ export default class ProfileMenu extends React.Component {
             <ListItemIcon>
               <PowerIcon />
             </ListItemIcon>
-            <ListItemText primary="Log out"/>
+            <ListItemText primary="Log out" />
           </MenuItem>
         </Menu>
       </div>

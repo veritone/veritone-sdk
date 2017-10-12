@@ -1,7 +1,7 @@
 import React from 'react';
-import LibAppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
+import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
+import Button from 'material-ui/Button';
 import CloseIcon from 'material-ui-icons/Close';
 
 import {
@@ -37,6 +37,12 @@ export default class AppBar extends React.Component {
       })
     ),
     currentAppName: string,
+    rightActions: arrayOf(
+      shape({
+        label: string.isRequired,
+        onClick: func
+      })
+    ),
     profileMenu: bool,
     appSwitcher: bool,
     closeButton: bool,
@@ -50,7 +56,8 @@ export default class AppBar extends React.Component {
   static defaultProps = {
     logout: () => {},
     fetchEnabledApps: () => {},
-    backgroundColor: '#4caf50'
+    backgroundColor: '#4caf50',
+    rightActions: []
   };
 
   handleRefresh = () => {
@@ -59,43 +66,68 @@ export default class AppBar extends React.Component {
 
   render() {
     return (
-      <LibAppBar
+      <Paper
+        square
+        elevation={2}
         className={styles.appBar}
         style={{ height: appBarHeight, background: this.props.backgroundColor }}
       >
-        <Toolbar>
+        <div className={styles.container}>
         <div>
-          <img src={veritoneLogo} className={styles['appBar--logo']} />
+          <img src={veritoneLogo} className={styles['logo']} />
         </div>
-        <div className={styles['appBar--title']}>
-          {this.props.title}
-        </div>
-        <div className={styles['appBar--iconGroup']}>
-          {this.props.appSwitcher && (
-            <AppSwitcher
-              enabledAppsFailedLoading={this.props.enabledAppsFailedLoading}
-              enabledApps={this.props.enabledApps}
-              isFetchingApps={this.props.isFetchingApps}
-              handleRefresh={this.handleRefresh}
-              currentAppName={this.props.currentAppName}
-            />
-          )}
-          {this.props.profileMenu && (
-            <ProfileMenu onLogout={this.props.logout} user={this.props.user} />
-          )}
-          {this.props.closeButton && (
-            <div style={{ marginLeft: 'auto' }}>
-              <IconButton
-                onClick={this.props.onClose}
-                style={{ fontSize: 'inherit' }}
+
+        <div className={styles['title']}>{this.props.title}</div>
+
+        <div className={styles['iconGroup']}>
+          {this.props.rightActions.map(({ label, onClick }) => (
+            <div className={styles['iconGroup__icon']} key={label}>
+              <a
+                href="#"
+                onClick={onClick}
+                className={styles['rightAction-label']}
               >
-                <CloseIcon color="white" />
-              </IconButton>
+                {label}
+              </a>
+            </div>
+          ))}
+
+          {this.props.appSwitcher && (
+            <div className={styles['iconGroup__icon']}>
+              <AppSwitcher
+                enabledAppsFailedLoading={this.props.enabledAppsFailedLoading}
+                enabledApps={this.props.enabledApps}
+                isFetchingApps={this.props.isFetchingApps}
+                handleRefresh={this.handleRefresh}
+                currentAppName={this.props.currentAppName}
+              />
+            </div>
+          )}
+
+          {this.props.profileMenu && (
+            <div className={styles['iconGroup__icon']}>
+              <ProfileMenu
+                onLogout={this.props.logout}
+                user={this.props.user}
+              />
+            </div>
+          )}
+
+          {this.props.closeButton && (
+            <div className={styles['iconGroup__icon']}>
+              <div style={{ marginLeft: 'auto' }}>
+                <IconButton
+                  onClick={this.props.onClose}
+                  style={{ fontSize: 'inherit' }}
+                >
+                  <CloseIcon color="white" />
+                </IconButton>
+              </div>
             </div>
           )}
         </div>
-        </Toolbar>
-      </LibAppBar>
+        </div>.
+      </Paper>
     );
   }
 }
