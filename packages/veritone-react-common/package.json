@@ -20,11 +20,13 @@
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
     "build:watch": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress --watch",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint": "eslint src/** --ext .js"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.0-alpha.2",
     "@storybook/react": "v3.3.0-alpha.2",
+    "babel-eslint": "^8.0.1",
     "babel-jest": "^21.2.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-export-extensions": "^6.22.0",
@@ -32,6 +34,10 @@
     "css-loader": "^0.28.7",
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.1",
+    "eslint": "^4.8.0",
+    "eslint-plugin-lodash": "^2.4.5",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-react": "^7.4.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^21.2.1",
     "node-sass": "^4.5.3",
@@ -40,6 +46,7 @@
     "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
+    "veritone-dev-env": "^1.0.2",
     "webpack": "^3.6.0"
   },
   "license": "Apache-2.0",
