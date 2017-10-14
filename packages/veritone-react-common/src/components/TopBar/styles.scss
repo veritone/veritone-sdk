@@ -3,7 +3,7 @@
 
 .container {
   position: fixed;
-  background: $grey-1;
+  //background: $grey-1;
   left: 0;
   right: 0;
   // copied from material-ui
@@ -11,7 +11,7 @@
     width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
 
   &.selected {
-    background: #f6fbff;
+    background: #f6fbff !important;
   }
 }
 

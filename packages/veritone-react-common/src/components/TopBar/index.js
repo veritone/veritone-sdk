@@ -70,7 +70,8 @@ export default class TopBar extends React.Component {
         style={{
           top: this.props.appBarOffset ? appBarHeight : 0,
           height: topBarHeight,
-          marginLeft: this.props.leftOffset
+          marginLeft: this.props.leftOffset,
+          background: '#fafafa'
         }}
         className={cx(styles.container, {
           [styles.selected]: this.props.selected
