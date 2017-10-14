@@ -20,7 +20,7 @@ import ProfileMenu from 'components/ProfileMenu';
 
 import styles from './styles.scss';
 
-export const appBarHeight = 64;
+export const appBarHeight = 60;
 export default class AppBar extends React.Component {
   static propTypes = {
     title: string,
