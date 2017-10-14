@@ -52,7 +52,10 @@ export default class TopBar extends React.Component {
   };
 
   openRightMenu = event => {
-    this.setState({ rightMenuOpen: true, rightMenuAnchorEl: event.currentTarget });
+    this.setState({
+      rightMenuOpen: true,
+      rightMenuAnchorEl: event.currentTarget
+    });
   };
 
   closeRightMenu = () => {

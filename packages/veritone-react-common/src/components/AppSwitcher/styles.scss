@@ -11,7 +11,7 @@
 }
 
 .appListButton {
-  @include mui-text("subhead");
+  @include mui-text('subhead');
   min-width: 220px;
   line-height: 48px !important;
 }
@@ -33,7 +33,7 @@
 }
 
 .appListButtonNullstate {
-  @include mui-text("body1");
+  @include mui-text('body1');
   padding: 20px 0 !important;
   margin: 0 auto;
   width: 200px;
@@ -42,7 +42,7 @@
 }
 
 .appListButtonErrorState {
-  @include mui-text("body1");
+  @include mui-text('body1');
 
   padding: 20px 0 !important;
   margin: 0 auto !important;

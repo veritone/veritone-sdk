@@ -40,19 +40,22 @@ storiesOf('AppBar', module)
       />
     </div>
   ))
-  .add('zero elevation, actions, switcher, profileMenu only (intro page)', () => (
-    <AppBar
-      elevation={0}
-      logo={false}
-      profileMenu
-      appSwitcher
-      currentAppName="Storybook"
-      enabledApps={sampleApps}
-      rightActions={[
-        { label: 'Saved Searches', onClick: action('saved searches') }
-      ]}
-    />
-  ));
+  .add(
+    'zero elevation, actions, switcher, profileMenu only (intro page)',
+    () => (
+      <AppBar
+        elevation={0}
+        logo={false}
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledApps={sampleApps}
+        rightActions={[
+          { label: 'Saved Searches', onClick: action('saved searches') }
+        ]}
+      />
+    )
+  );
 
 const sampleApps = [
   {

@@ -1,5 +1,5 @@
 import React from 'react';
-import Menu  from 'material-ui/Menu';
+import Menu from 'material-ui/Menu';
 import AppsIcon from 'material-ui-icons/Apps';
 import IconButton from 'material-ui/IconButton';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
@@ -44,13 +44,12 @@ export default class AppSwitcher extends React.Component {
     });
   };
 
-
   render() {
     // todo: loading state
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <IconButton onClick={this.openMenu}>
-          <AppsIcon color="white"/>
+          <AppsIcon color="white" />
         </IconButton>
         <Menu
           open={this.state.open}

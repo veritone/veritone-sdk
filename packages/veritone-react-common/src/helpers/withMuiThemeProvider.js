@@ -8,17 +8,18 @@ export default function withMuiThemeProvider(Component) {
 
     render() {
       return (
-        <MuiThemeProvider theme={createMuiTheme({
-          palette: {
-            primary: blue
-          },
-          typography: {
-            button: {
-              fontWeight: 400
+        <MuiThemeProvider
+          theme={createMuiTheme({
+            palette: {
+              primary: blue
+            },
+            typography: {
+              button: {
+                fontWeight: 400
+              }
             }
-          }
-
-        })}>
+          })}
+        >
           <Component {...this.props} />
         </MuiThemeProvider>
       );
