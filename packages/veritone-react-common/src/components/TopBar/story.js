@@ -28,13 +28,13 @@ storiesOf('TopBar', module)
       backButton
       leftText="2 items selected"
       rightIconButtons={[
-        <IconButton>
+        <IconButton key="1">
           <LibraryAddIcon />
         </IconButton>,
-        <IconButton>
+        <IconButton key="2">
           <ShareIcon />
         </IconButton>,
-        <IconButton>
+        <IconButton key="3">
           <FileDownloadIcon />
         </IconButton>
       ]}
@@ -51,10 +51,10 @@ storiesOf('TopBar', module)
           leftOffset={drawerIsOpen ? 240 : 0}
           leftText="About 448,0000 results"
           rightIconButtons={[
-            <IconButton>
+            <IconButton key="1">
               <AssessmentIcon />
             </IconButton>,
-            <IconButton>
+            <IconButton key="2">
               <BuildIcon />
             </IconButton>
           ]}
@@ -87,13 +87,13 @@ storiesOf('TopBar', module)
     <TopBar
       menuButton
       rightIconButtons={[
-        <IconButton>
+        <IconButton key="1">
           <LibraryAddIcon />
         </IconButton>,
-        <IconButton>
+        <IconButton key="2">
           <ShareIcon />
         </IconButton>,
-        <IconButton>
+        <IconButton key="3">
           <FileDownloadIcon />
         </IconButton>
       ]}

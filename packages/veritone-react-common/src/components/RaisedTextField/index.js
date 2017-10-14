@@ -5,7 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import ArrowRightIcon from 'material-ui-icons/KeyboardArrowRight';
 import EditIcon from 'material-ui-icons/ModeEdit';
 
-import { func, oneOf, string } from 'prop-types';
+import { func, oneOf, string, objectOf, any } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
@@ -47,6 +47,8 @@ const RaisedTextField = ({
 };
 
 RaisedTextField.propTypes = {
+  className: string,
+  containerStyle: objectOf(any),
   label: string,
   value: string,
   action: oneOf(['edit', 'go']),

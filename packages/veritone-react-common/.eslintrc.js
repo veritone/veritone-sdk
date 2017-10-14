@@ -5,5 +5,9 @@ module.exports = {
   globals: {
     ...env.eslintReact.globals,
     module: true
+  },
+  env: {
+    ...env.eslintReact.env,
+    jest: true
   }
 };

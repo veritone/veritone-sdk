@@ -8,7 +8,6 @@ import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import Avatar from 'material-ui/Avatar';
 import ListSubheader from 'material-ui/List/ListSubheader';
-import { darkBlack } from 'material-ui/colors/common';
 import { string, func, shape } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';

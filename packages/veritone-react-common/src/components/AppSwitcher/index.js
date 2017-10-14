@@ -1,5 +1,5 @@
 import React from 'react';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import Menu  from 'material-ui/Menu';
 import AppsIcon from 'material-ui-icons/Apps';
 import IconButton from 'material-ui/IconButton';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
