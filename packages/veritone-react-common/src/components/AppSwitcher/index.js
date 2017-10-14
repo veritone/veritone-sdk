@@ -59,7 +59,7 @@ export default class AppSwitcher extends React.Component {
           getContentAnchorEl={null}
         >
           {this.props.enabledAppsFailedLoading ? (
-            <AppSwitcherErrorState handleRefresh={this.props.handleRefresh} />
+            <AppSwitcherErrorState onRefresh={this.props.handleRefresh} />
           ) : (
             <AppSwitcherList enabledApps={this.props.enabledApps} />
           )}
