@@ -26,6 +26,7 @@ storiesOf('TopBar', module)
     <TopBar
       selected
       backButton
+      onClickBackButton={action('back')}
       leftText="2 items selected"
       rightIconButtons={[
         <IconButton key="1">
