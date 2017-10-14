@@ -88,6 +88,7 @@ export default class TopBar extends React.Component {
               <IconButton
                 style={{ height: '100%' }}
                 onClick={this.props.onRequestOpenMenu}
+                className="menuButton"
               >
                 <MenuIcon />
               </IconButton>
@@ -98,6 +99,7 @@ export default class TopBar extends React.Component {
             <IconButton
               style={{ height: '100%' }}
               onClick={this.props.onClickBackButton}
+              className="backButton"
             >
               <ArrowBackIcon />
             </IconButton>
@@ -114,7 +116,11 @@ export default class TopBar extends React.Component {
             {this.props.rightMenu &&
               this.props.rightMenuItems &&
               this.props.rightMenuItems.length && [
-                <IconButton onClick={this.openRightMenu} key="button">
+                <IconButton
+                  onClick={this.openRightMenu}
+                  key="button"
+                  className="rightMenuButton"
+                >
                   <MoreVertIcon />
                 </IconButton>,
 
