@@ -41,7 +41,7 @@ storiesOf('AppBar', module)
     </div>
   ))
   .add(
-    'zero elevation, actions, switcher, profileMenu only (intro page)',
+    'Zero elevation, actions, switcher, profileMenu only (intro page)',
     () => (
       <AppBar
         elevation={0}
@@ -55,7 +55,29 @@ storiesOf('AppBar', module)
         ]}
       />
     )
-  );
+  )
+  .add('Empty appswitcher', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledApps={[]}
+      />
+    )
+  })
+  .add('Error appswitcher', function() {
+    return (
+      <AppBar
+        profileMenu
+        appSwitcher
+        currentAppName="Storybook"
+        enabledAppsFailedLoading
+        fetchEnabledApps={action('Fetch apps')}
+        enabledApps={[]}
+      />
+    )
+  });
 
 const sampleApps = [
   {
