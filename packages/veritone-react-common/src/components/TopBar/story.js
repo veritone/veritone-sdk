@@ -48,7 +48,7 @@ storiesOf('TopBar', module)
       <div>
         <TopBar
           width
-          menuButton
+          menuButton={!drawerIsOpen}
           leftOffset={drawerIsOpen ? 240 : 0}
           leftText="About 448,0000 results"
           rightIconButtons={[
