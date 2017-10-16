@@ -1,0 +1,41 @@
+import React from 'react';
+import Paper from 'material-ui/Paper';
+import { node, number, oneOf } from 'prop-types';
+
+// import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import styles from './styles.scss';
+
+export const AppFooterHeightShort = 40;
+export const AppFooterHeightTall = 65;
+const AppFooter = ({
+  children,
+  elevation = 2,
+  leftOffset = 0,
+  height = 'short'
+}) => {
+  const footerHeight = {
+    short: AppFooterHeightShort,
+    tall: AppFooterHeightTall
+  }[height];
+
+  return (
+    <Paper
+      component="footer"
+      square
+      elevation={elevation}
+      className={styles.container}
+      style={{ height: footerHeight, marginLeft: leftOffset }}
+    >
+      {children}
+    </Paper>
+  );
+};
+
+AppFooter.propTypes = {
+  children: node,
+  elevation: number,
+  leftOffset: number,
+  height: oneOf(['short, tall'])
+};
+
+export default AppFooter;
