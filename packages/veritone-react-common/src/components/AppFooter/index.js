@@ -2,7 +2,6 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import { node, number, oneOf } from 'prop-types';
 
-// import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 export const AppFooterHeightShort = 40;
@@ -35,7 +34,7 @@ AppFooter.propTypes = {
   children: node,
   elevation: number,
   leftOffset: number,
-  height: oneOf(['short, tall'])
+  height: oneOf(['short', 'tall'])
 };
 
 export default AppFooter;
