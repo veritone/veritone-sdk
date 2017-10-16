@@ -19,6 +19,7 @@
     "prebuild": "npm run clean:build",
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
     "build:watch": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress --watch",
+    "build:storybook": "build-storybook -c .storybook -o docs-static",
     "test": "jest",
     "test:watch": "jest --watch"
   },
