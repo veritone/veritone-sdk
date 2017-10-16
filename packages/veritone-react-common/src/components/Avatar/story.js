@@ -14,10 +14,7 @@ storiesOf('Avatar', module)
       <div>
         Size: {size}
         <hr />
-        <Avatar
-          src="http://placekitten.com/g/400/300"
-          size={size}
-        />
+        <Avatar src="http://placekitten.com/g/400/300" size={size} />
         <Avatar
           src="http://placekitten.com/g/400/300"
           label="Change"

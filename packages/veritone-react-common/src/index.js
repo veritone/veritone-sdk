@@ -1,4 +1,3 @@
-import React from 'react';
 import '../src/styles/global.scss';
 
 export Avatar from './components/Avatar';

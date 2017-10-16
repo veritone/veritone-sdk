@@ -1,0 +1,52 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.container {
+  position: fixed;
+  //background: $grey-1;
+  left: 0;
+  right: 0;
+  // copied from material-ui
+  transition: margin 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms,
+    width 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+
+  &.selected {
+    background: #f6fbff !important;
+  }
+}
+
+.leftButtonContainer {
+  display: inline-block;
+
+  .highlight {
+    background: $grey-2;
+    height: 100%;
+    display: inline-block;
+  }
+}
+
+.innerContainer {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  height: 100%;
+  width: calc(100% - 48px);
+  padding: 0 22px;
+  @include mui-text('body1');
+  color: $light-black;
+
+  .selected {
+    font-weight: 400;
+    color: $blue-3;
+  }
+
+  .rightIconButtons {
+    display: flex;
+    align-items: center;
+
+    svg {
+      height: 22px;
+    }
+  }
+}

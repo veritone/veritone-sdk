@@ -17,10 +17,6 @@ export default class FullScreenDialog extends React.Component {
       this.props.open && styles['dialog--is-open']
     );
 
-    return (
-      <div className={containerClasses}>
-        {this.props.children}
-      </div>
-    );
+    return <div className={containerClasses}>{this.props.children}</div>;
   }
 }

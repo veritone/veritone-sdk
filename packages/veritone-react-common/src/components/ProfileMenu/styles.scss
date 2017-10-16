@@ -18,12 +18,12 @@
     align-items: left;
 
     .full-name {
-      @include mui-text("body2");
+      @include mui-text('body2');
       color: $dark-black;
     }
 
     .username {
-      @include mui-text("caption");
+      @include mui-text('caption');
     }
 
     .editButton {
