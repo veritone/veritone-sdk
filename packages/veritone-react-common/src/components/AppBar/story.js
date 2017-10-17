@@ -64,7 +64,7 @@ storiesOf('AppBar', module)
         currentAppName="Storybook"
         enabledApps={[]}
       />
-    )
+    );
   })
   .add('Error appswitcher', function() {
     return (
@@ -76,7 +76,7 @@ storiesOf('AppBar', module)
         fetchEnabledApps={action('Fetch apps')}
         enabledApps={[]}
       />
-    )
+    );
   });
 
 const sampleApps = [

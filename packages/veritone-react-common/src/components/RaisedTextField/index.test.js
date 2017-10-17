@@ -60,9 +60,7 @@ describe('RaisedTextField', function() {
     wrapper.find('IconButton').simulate('click');
     expect(handler).toHaveBeenCalled();
 
-    wrapper = mount(
-      <RaisedTextField action="edit" onClickAction={handler2}/>
-    );
+    wrapper = mount(<RaisedTextField action="edit" onClickAction={handler2} />);
     wrapper.find('IconButton').simulate('click');
     expect(handler2).toHaveBeenCalled();
   });
