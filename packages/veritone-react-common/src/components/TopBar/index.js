@@ -106,7 +106,7 @@ export default class TopBar extends React.Component {
           )}
         </div>
 
-        <div className={styles.innerContainer}>
+        <div className={styles.rightContainer}>
           <span className={cx({ [styles.selected]: this.props.selected })}>
             {this.props.leftText}
           </span>

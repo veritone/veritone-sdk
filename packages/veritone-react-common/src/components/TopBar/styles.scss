@@ -3,7 +3,8 @@
 
 .container {
   position: fixed;
-  //background: $grey-1;
+  display: flex;
+  justify-content: space-between;
   left: 0;
   right: 0;
   // copied from material-ui
@@ -16,8 +17,7 @@
 }
 
 .leftButtonContainer {
-  display: inline-block;
-
+  flex-grow: 0;
   .highlight {
     background: $grey-2;
     height: 100%;
@@ -25,13 +25,12 @@
   }
 }
 
-.innerContainer {
-  display: inline-flex;
+.rightContainer {
+  display: flex;
+  flex-grow: 1;
   justify-content: space-between;
   align-items: center;
-  position: absolute;
   height: 100%;
-  width: calc(100% - 48px);
   padding: 0 22px;
   @include mui-text('body1');
   color: $light-black;
