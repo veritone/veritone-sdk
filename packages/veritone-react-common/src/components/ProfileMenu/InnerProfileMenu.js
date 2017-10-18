@@ -45,14 +45,15 @@ export default class InnerProfileMenu extends React.Component {
             {get(this.props.user, 'userName')}
           </div>
           <div className={styles['editButton']}>
-            <Button raised color="primary" onClick={this.props.onEditProfile}>
+            <Button raised color="primary" onClick={this.props.onEditProfile} className="editProfileButton">
               Edit Profile
             </Button>
           </div>
         </div>
       </ListSubheader>,
 
-      <MenuItem onClick={this.props.onLogout} key="logout">
+      <MenuItem onClick={this.props.onLogout} key="logout"
+                className="logoutButton">
         <ListItemIcon>
           <PowerIcon />
         </ListItemIcon>
