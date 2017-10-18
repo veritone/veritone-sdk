@@ -1,0 +1,42 @@
+.searchBar {
+  width: 100%;
+  height: 38px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  border-radius:4px;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.supportedCategories {
+  margin-right: 0.25em;
+  margin-left: 0.25em;
+  height: 38px;
+}
+
+.searchInput {
+  flex-grow: 1;
+  height: 100%;
+  cursor: text;
+}
+
+.engineCategoryPill {
+  width: 1.5em;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0,0,0,.05);
+  }
+}
+
+.engineCategoryIcon {
+  svg {
+    color: #222222 !important;
+  }
+}
