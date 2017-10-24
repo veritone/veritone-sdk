@@ -1,6 +1,6 @@
 import React from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import { arrayOf, string, element, func } from 'prop-types';
+import { arrayOf, string, element, func, bool } from 'prop-types';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './header.scss';
 
@@ -9,7 +9,8 @@ export default class DiscoverySidebarTabbedHeader extends React.Component {
   static propTypes = {
     tabs: arrayOf(string),
     selectedTab: string.isRequired,
-    rightIconButton: element,
+    rightIconButton: bool,
+    rightIconButtonElement: element,
     onSelectTab: func.isRequired
   };
   static defaultProps = {
@@ -28,7 +29,7 @@ export default class DiscoverySidebarTabbedHeader extends React.Component {
         >
           {this.props.tabs.map(t => <Tab value={t} label={t} key={t} />)}
         </Tabs>
-        {this.props.rightIconButton && this.props.rightIconButton}
+        {this.props.rightIconButton && this.props.rightIconButtonElement}
       </div>
     );
   }
