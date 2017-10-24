@@ -26,6 +26,31 @@ const withUIState = (
   connect = libConnect
 ) => WrappedComponent => {
   // unique per instance of the component and consistent across renders
+  @connect(
+    () => {
+      const randomKey = guid();
+
+      return function mapStateToProps(state, ownProps) {
+        const stateKey = ownProps.uiStateKey || key || randomKey;
+
+        if (process.env.NODE_ENV === 'dev' && persist && !ownProps.uiStateKey) {
+          console.warn("Warning: persist won't work without a uiStateKey");
+        }
+
+        return {
+          uiStateKey: stateKey,
+          uiState: getStateForKey(state, stateKey),
+          defaultState: isFunction(defaultState)
+            ? defaultState(ownProps)
+            : defaultState
+        };
+      };
+    },
+    {
+      setStateForKey,
+      clearStateForKey
+    }
+  )
   class WrappedWithUIState extends React.Component {
     static propTypes = {
       uiStateKey: string.isRequired,
@@ -97,31 +122,7 @@ const withUIState = (
     }
   }
 
-  return connect(
-    () => {
-      const randomKey = guid();
-
-      return function mapStateToProps(state, ownProps) {
-        const stateKey = ownProps.uiStateKey || key || randomKey;
-
-        if (process.env.NODE_ENV === 'dev' && persist && !ownProps.uiStateKey) {
-          console.warn("Warning: persist won't work without a uiStateKey");
-        }
-
-        return {
-          uiStateKey: stateKey,
-          uiState: getStateForKey(state, stateKey),
-          defaultState: isFunction(defaultState)
-            ? defaultState(ownProps)
-            : defaultState
-        };
-      };
-    },
-    {
-      setStateForKey,
-      clearStateForKey
-    }
-  )(WrappedWithUIState);
+  return WrappedWithUIState;
 };
 
 export default withUIState;
