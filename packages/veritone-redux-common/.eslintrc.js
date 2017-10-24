@@ -4,7 +4,8 @@ module.exports = {
   ...env.eslintReact,
   globals: {
     ...env.eslintReact.globals,
-    module: true
+    module: true,
+    process: true
   },
   env: {
     ...env.eslintReact.env,
