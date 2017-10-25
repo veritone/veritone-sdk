@@ -15,7 +15,17 @@ const MultipleTabHeader = ({ tabs, selectedTab, onSelectTab }) => {
       }}
       fullWidth
     >
-      {tabs.map(t => <Tab value={t} label={t} key={t} />)}
+      {tabs.map(t => (
+        <Tab
+          classes={{
+            root: styles.muiTabButtonRootOverride,
+            label: styles.muiTabButtonLabelOverride
+          }}
+          value={t}
+          label={t}
+          key={t}
+        />
+      ))}
     </Tabs>
   );
 };
