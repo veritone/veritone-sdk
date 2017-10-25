@@ -3,7 +3,7 @@ import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import blue from 'material-ui/colors/blue';
 
 export default function withMuiThemeProvider(Component) {
-  return class WrappedComponent extends React.Component {
+  return class WrappedWithMuiTheme extends React.Component {
     static displayName = Component.displayName || Component.name;
 
     render() {

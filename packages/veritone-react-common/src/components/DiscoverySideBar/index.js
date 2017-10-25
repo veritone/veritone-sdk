@@ -1,9 +1,10 @@
 import React from 'react';
-import { string, func, arrayOf } from 'prop-types';
+import { string, func, arrayOf, bool } from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import ClearFiltersIconFixme from 'material-ui-icons/FormatClear';
+import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
+import styles from './styles/container.scss';
 import Header from './Header';
-import styles from './container.scss';
 
 // const sectionTree = {
 //   'Section 1': {
@@ -18,15 +19,14 @@ import styles from './container.scss';
 //   }
 // };
 
-// fixme: can i have subsections or inputs in a given view, but not both?
-
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     onClearAllFilters: func,
+    clearAllFilters: bool,
 
     // provided by wrapper:
-    tabs: arrayOf(string),
-    activeTab: string.isRequired,
+    tabs: arrayOf(string).isRequired,
+    selectedTab: string.isRequired,
     onSelectTab: func.isRequired
   };
   static defaultProps = {};
@@ -36,33 +36,31 @@ export class DiscoverySideBarContainerPure extends React.Component {
       <div className={styles.container}>
         <Header
           tabs={this.props.tabs}
-          selectedTab={this.props.activeTab}
-          rightIconButton
+          selectedTab={this.props.selectedTab}
+          rightIconButton={this.props.clearAllFilters}
           rightIconButtonElement={
-            <IconButton>
+            <IconButton onClick={this.props.onClearAllFilters}>
               <ClearFiltersIconFixme />
             </IconButton>
           }
-          onClear={this.props.onClearAllFilters}
           onSelectTab={this.props.onSelectTab}
         />
-        {
-          this.props.activeTab === 'Filters' &&
-          <div>this is filters content</div>
-        }
-        {
-          this.props.activeTab === 'Browse' &&
-          <div>this is browse content</div>
-        }
+        {this.props.selectedTab === 'Filters' && (
+          <div data-testtarget="filters">this is filters content</div>
+        )}
+        {this.props.selectedTab === 'Browse' && (
+          <div data-testtarget="browse">this is browse content</div>
+        )}
       </div>
     );
   }
 }
 
 // state provider for top level sidebar state-- selected tabs, sections etc.
+@withMuiThemeProvider
 export default class DiscoverySideBarContainer extends React.Component {
   static propTypes = {
-    tabs: arrayOf(string)
+    tabs: arrayOf(string).isRequired
   };
 
   static defaultProps = {
@@ -70,18 +68,18 @@ export default class DiscoverySideBarContainer extends React.Component {
   };
 
   state = {
-    activeTab: this.props.tabs[0]
+    selectedTab: this.props.tabs[0]
   };
 
   handleSelectTab = (_, tab) => {
-    this.setState({ activeTab: tab });
+    this.setState({ selectedTab: tab });
   };
 
   render() {
     return (
       <DiscoverySideBarContainerPure
         {...this.props}
-        activeTab={this.state.activeTab}
+        selectedTab={this.state.selectedTab}
         onSelectTab={this.handleSelectTab}
       />
     );

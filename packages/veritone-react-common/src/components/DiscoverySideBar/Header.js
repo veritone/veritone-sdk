@@ -1,35 +1,40 @@
 import React from 'react';
-import Tabs, { Tab } from 'material-ui/Tabs';
 import { arrayOf, string, element, func, bool } from 'prop-types';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import styles from './header.scss';
+import MultipleTabHeader from './MuitipleTabHeader';
+import SingleTabHeader from './SingleTabHeader';
+import styles from './styles/header.scss';
 
-@withMuiThemeProvider
-export default class DiscoverySidebarTabbedHeader extends React.Component {
+export default class DiscoverySidebarHeader extends React.Component {
   static propTypes = {
-    tabs: arrayOf(string),
+    tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
     rightIconButton: bool,
     rightIconButtonElement: element,
     onSelectTab: func.isRequired
   };
-  static defaultProps = {
-    tabs: []
-  };
 
   render() {
     return (
       <div className={styles.container}>
-        <Tabs
-          value={this.props.selectedTab}
-          onChange={this.props.onSelectTab}
-          indicatorColor="primary"
-          textColor="primary"
-          centered
-        >
-          {this.props.tabs.map(t => <Tab value={t} label={t} key={t} />)}
-        </Tabs>
-        {this.props.rightIconButton && this.props.rightIconButtonElement}
+        {this.props.tabs.length > 1 ? (
+          <div className={styles.multiTabsContainer}>
+            <MultipleTabHeader
+              tabs={this.props.tabs}
+              selectedTab={this.props.selectedTab}
+              onSelectTab={this.props.onSelectTab}
+            />
+          </div>
+        ) : (
+          <div className={styles.singleTabContainer}>
+            <SingleTabHeader tab={this.props.tabs[0]} />
+          </div>
+        )}
+        {this.props.rightIconButton && (
+          <div className={styles.rightIconButtonContainer}>
+            {this.props.rightIconButtonElement}
+          </div>
+        )}
       </div>
     );
   }
