@@ -1,4 +1,5 @@
 import '../src/styles/global.scss';
+import 'normalize.css';
 
 export Avatar from './components/Avatar';
 export AppBar from './components/AppBar';
