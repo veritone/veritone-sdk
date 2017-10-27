@@ -1,23 +1,60 @@
 import React from 'react';
-import { string, func, arrayOf, bool } from 'prop-types';
+import { string, func, arrayOf, bool, number } from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import ClearFiltersIconFixme from 'material-ui-icons/FormatClear';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
-import styles from './styles/container.scss';
-import Header from './Header';
 
-// const sectionTree = {
-//   'Section 1': {
-//     'SubSection 1': {
-//       'Sub-SubSection 1': {}
-//     }
-//   },
-//   'Section 2': {},
-//   'Section 3': {
-//     'SubSection 1': {},
-//     'SubSection 2': {}
-//   }
-// };
+import styles from './styles/container.scss';
+import Header from './header/Header';
+import SectionTree from './SectionTree';
+
+const fixmeExampleSectionTree = {
+  children: [
+    {
+      label: 'Section 1',
+      children: [
+        {
+          label: 'SubSection 1',
+          children: [
+            {
+              label: 'Sub-SubSection 1',
+              children: [{ formComponentId: 'select-station-thing' }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Section 2',
+      children: []
+    },
+    {
+      label: 'Section 3',
+      children: [
+        {
+          label: 'SubSection 1',
+          children: [{ formComponentId: 'select-station-thing' }]
+        },
+        {
+          label: 'SubSection 2',
+          children: [{ formComponentId: 'select-station-thing' }]
+        }
+      ]
+    }
+  ]
+};
+
+// {
+//         priceRange: { low: 0, high: 10 }, // one filter
+//         stationsOne: ['KCRW', 'KIIS'], // two filters
+//         stationsTwo: { values: ['KCRW'], someInternalBooleanOption: false }, // one filter
+//         someBoolean: false // one filter
+//       }
+
+// labels for each node in the tree (subheader components)
+// content (a form component) for each leaf
+// values for each leaf (props to the form component)
+// number of filters selected at each leaf
 
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
@@ -27,7 +64,9 @@ export class DiscoverySideBarContainerPure extends React.Component {
     // provided by wrapper:
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,
-    onSelectTab: func.isRequired
+    onSelectTab: func.isRequired,
+    filtersActivePath: arrayOf(number).isRequired,
+    onFiltersNavigate: func.isRequired
   };
   static defaultProps = {};
 
@@ -46,10 +85,19 @@ export class DiscoverySideBarContainerPure extends React.Component {
           onSelectTab={this.props.onSelectTab}
         />
         {this.props.selectedTab === 'Filters' && (
-          <div data-testtarget="filters">this is filters content</div>
+          <SectionTree
+            sections={fixmeExampleSectionTree}
+            activePath={this.props.filtersActivePath}
+            onNavigate={this.props.onFiltersNavigate}
+            formComponents={{
+              'select-station-thing': <div>select a station</div>
+            }}
+          />
         )}
         {this.props.selectedTab === 'Browse' && (
-          <div data-testtarget="browse">this is browse content</div>
+          <div data-testtarget="browse" style={{ width: '100%' }}>
+            this is browse content
+          </div>
         )}
       </div>
     );
@@ -68,11 +116,16 @@ export default class DiscoverySideBarContainer extends React.Component {
   };
 
   state = {
-    selectedTab: this.props.tabs[0]
+    selectedTab: this.props.tabs[0],
+    filtersActivePath: []
   };
 
   handleSelectTab = (_, tab) => {
     this.setState({ selectedTab: tab });
+  };
+
+  handleFiltersNavigate = newPath => {
+    this.setState({ filtersActivePath: newPath });
   };
 
   render() {
@@ -81,6 +134,8 @@ export default class DiscoverySideBarContainer extends React.Component {
         {...this.props}
         selectedTab={this.state.selectedTab}
         onSelectTab={this.handleSelectTab}
+        filtersActivePath={this.state.filtersActivePath}
+        onFiltersNavigate={this.handleFiltersNavigate}
       />
     );
   }

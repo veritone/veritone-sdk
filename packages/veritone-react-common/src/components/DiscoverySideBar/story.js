@@ -10,7 +10,7 @@ const Container = (
 
 storiesOf('DiscoverySideBar', module)
   .add('Two tabs', () => {
-    const clearAllFilters = boolean('clearAllFilters button', true);
+    const clearAllFilters = boolean('clearAllFilters button', false);
 
     return (
       <Container>
@@ -22,7 +22,7 @@ storiesOf('DiscoverySideBar', module)
     );
   })
   .add('One tab', () => {
-    const clearAllFilters = boolean('clearAllFilters button', true);
+    const clearAllFilters = boolean('clearAllFilters button', false);
 
     return (
       <Container>

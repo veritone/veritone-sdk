@@ -1,9 +1,8 @@
 import React from 'react';
 import { arrayOf, string, element, func, bool } from 'prop-types';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import MultipleTabHeader from './MuitipleTabHeader';
 import SingleTabHeader from './SingleTabHeader';
-import styles from './styles/header.scss';
+import styles from './styles.scss';
 
 export default class DiscoverySidebarHeader extends React.Component {
   static propTypes = {

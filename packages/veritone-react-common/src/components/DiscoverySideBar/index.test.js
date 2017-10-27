@@ -7,7 +7,9 @@ import { DiscoverySideBarContainerPure as Sidebar } from './';
 const defaultProps = {
   tabs: ['one'],
   selectedTab: 'one',
-  onSelectTab: noop
+  onSelectTab: noop,
+  filtersActivePath: [],
+  onFiltersNavigate: noop
 };
 
 describe('DiscoverySideBarContainerPure', function() {
@@ -43,9 +45,9 @@ describe('DiscoverySideBarContainerPure', function() {
     expect(handler).toHaveBeenCalled();
   });
 
-  it('should show the filters container if props.selectedTab is Filters', function() {
+  it('should show the filters tree if props.selectedTab is Filters', function() {
     const wrapper = mount(<Sidebar {...defaultProps} selectedTab="Filters" />);
-    expect(wrapper.find('[data-testtarget="filters"]')).toHaveLength(1);
+    expect(wrapper.find('SectionTree')).toHaveLength(1);
   });
 
   it('should show the browse container if props.selectedTab is Browse', function() {

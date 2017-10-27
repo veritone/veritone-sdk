@@ -1,6 +1,6 @@
 import React from 'react';
 import { string } from 'prop-types';
-import styles from './styles/header.scss';
+import styles from './styles.scss';
 
 const SingleTabHeader = ({ tab }) => {
   return <div className={styles.singleTabLabel}>{tab}</div>;

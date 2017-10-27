@@ -1,7 +1,7 @@
 import React from 'react';
 import { arrayOf, string, func } from 'prop-types';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import styles from './styles/header.scss';
+import styles from './styles.scss';
 
 const MultipleTabHeader = ({ tabs, selectedTab, onSelectTab }) => {
   return (
