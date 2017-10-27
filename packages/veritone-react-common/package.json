@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/bundle.js",
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
