@@ -16,6 +16,7 @@ import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import ChevronRightIcon from 'material-ui-icons/ChevronRight';
 
 import { intersperse } from 'helpers/fp';
+import Chip from '../Chip';
 import styles from './styles/sectiontree.scss';
 
 const nodeShape = {
@@ -92,6 +93,7 @@ export const SectionTreeTab = ({
   id,
   leftIcon,
   rightIcon,
+  filterCount,
   dark,
   onClick = noop
 }) => (
@@ -105,6 +107,17 @@ export const SectionTreeTab = ({
   >
     <span className={styles.leftIcon}>{leftIcon}</span>
     <span className={styles.label}>{label}</span>
+
+    {filterCount > 0 && (
+      <div onMouseOver={() => console.log('hover')}>
+      <Chip
+        label={filterCount}
+        hoveredLabel={'clear'}
+        style={{ height: 18 }}
+        onClick={e => e.stopPropagation()}
+      />
+      </div>
+    )}
     <span className={styles.rightIcon}>{rightIcon}</span>
   </Button>
 );
@@ -114,6 +127,7 @@ SectionTreeTab.propTypes = {
   id: number,
   leftIcon: element,
   rightIcon: element,
+  filterCount: number,
   dark: bool,
   onClick: func
 };

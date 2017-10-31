@@ -44,6 +44,7 @@ describe('SectionTree', function() {
 
   it('should render SectionTreeTabs for the root children by default', function() {
     const wrapper = mount(<SectionTree {...defaultProps} />);
+    // console.log(wrapper.find('SectionTreeTab').debug())
 
     expect(
       wrapper.containsAllMatchingElements([
@@ -165,5 +166,13 @@ describe('SectionTreeTab', function() {
     wrapper.simulate('click');
 
     expect(handler).toHaveBeenCalledWith(12);
+  });
+
+  it('shows the count/clear button if props.filterCount is >0', function() {
+    let wrapper = mount(<SectionTreeTab {...defaultProps} filterCount={0} />);
+    expect(wrapper.find('Chip')).toHaveLength(0);
+
+    wrapper = mount(<SectionTreeTab {...defaultProps} filterCount={5} />);
+    expect(wrapper.find('Chip')).toHaveLength(2);
   });
 });
