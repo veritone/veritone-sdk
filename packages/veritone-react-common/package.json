@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/bundle.js",
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -23,7 +23,8 @@
     "build:storybook": "build-storybook -c .storybook -o docs-static",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint src/** --ext .js"
+    "lint": "eslint src/** --ext .js",
+    "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.0-alpha.2",
