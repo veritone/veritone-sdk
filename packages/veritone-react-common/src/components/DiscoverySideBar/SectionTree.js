@@ -87,11 +87,18 @@ class SectionTree extends React.Component {
 
 export default SectionTree;
 
-export const SectionTreeTab = ({ label, id, leftIcon, rightIcon, dark, onClick = noop }) => (
+export const SectionTreeTab = ({
+  label,
+  id,
+  leftIcon,
+  rightIcon,
+  dark,
+  onClick = noop
+}) => (
   /* eslint-disable react/jsx-no-bind */
   <Button
     classes={{
-      root: cx(styles.sectionTreeTab, { [styles.dark]: dark}),
+      root: cx(styles.sectionTreeTab, { [styles.dark]: dark }),
       label: styles.muiButtonLabelOverride
     }}
     onClick={() => onClick(id)}
