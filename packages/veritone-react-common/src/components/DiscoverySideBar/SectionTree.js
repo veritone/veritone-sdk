@@ -63,6 +63,7 @@ class SectionTree extends React.Component {
             leftIcon={<ArrowBackIcon />}
             id={-1}
             onClick={this.handleNavigateBack}
+            data-testtarget="back-button"
           />
         )}
 
@@ -86,7 +87,7 @@ class SectionTree extends React.Component {
 
 export default SectionTree;
 
-const SectionTreeTab = ({ label, id, leftIcon, rightIcon, dark, onClick = noop }) => (
+export const SectionTreeTab = ({ label, id, leftIcon, rightIcon, dark, onClick = noop }) => (
   /* eslint-disable react/jsx-no-bind */
   <Button
     classes={{
@@ -102,8 +103,8 @@ const SectionTreeTab = ({ label, id, leftIcon, rightIcon, dark, onClick = noop }
 );
 
 SectionTreeTab.propTypes = {
-  label: string.isRequired,
-  id: number.isRequired,
+  label: string,
+  id: number,
   leftIcon: element,
   rightIcon: element,
   dark: bool,
