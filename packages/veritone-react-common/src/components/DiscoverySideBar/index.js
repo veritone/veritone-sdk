@@ -1,64 +1,18 @@
 import React from 'react';
-import { string, func, arrayOf, bool, number } from 'prop-types';
+import { string, func, arrayOf, bool, number, objectOf, element } from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import ClearFiltersIconFixme from 'material-ui-icons/FormatClear';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 
 import styles from './styles/container.scss';
 import Header from './header/Header';
-import SectionTree from './SectionTree';
+import SectionTree, { sectionsShape } from './SectionTree';
 import AllFiltersList from './AllFiltersList';
-
-const fixmeExampleSectionTree = {
-  children: [
-    {
-      label: 'Section 1',
-      children: [
-        {
-          label: 'SubSection 1',
-          children: [
-            {
-              label: 'Sub-SubSection 1',
-              children: [{ formComponentId: 'select-station-thing' }]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      label: 'Section 2',
-      children: []
-    },
-    {
-      label: 'Section 3',
-      children: [
-        {
-          label: 'SubSection 1',
-          children: [{ formComponentId: 'select-station-thing' }]
-        },
-        {
-          label: 'SubSection 2',
-          children: [{ formComponentId: 'select-station-thing' }]
-        }
-      ]
-    }
-  ]
-};
-
-// {
-//         priceRange: { low: 0, high: 10 }, // one filter
-//         stationsOne: ['KCRW', 'KIIS'], // two filters
-//         stationsTwo: { values: ['KCRW'], someInternalBooleanOption: false }, // one filter
-//         someBoolean: false // one filter
-//       }
-
-// labels for each node in the tree (subheader components)
-// content (a form component) for each leaf
-// values for each leaf (props to the form component)
-// number of filters selected at each leaf
 
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
+    formComponents: objectOf(element).isRequired,
+    sections: sectionsShape.isRequired,
     onClearAllFilters: func,
     onClearFilter: func,
     clearAllFilters: bool,
@@ -96,12 +50,10 @@ export class DiscoverySideBarContainerPure extends React.Component {
             )}
 
             <SectionTree
-              sections={fixmeExampleSectionTree}
+              sections={this.props.sections}
               activePath={this.props.filtersActivePath}
               onNavigate={this.props.onFiltersNavigate}
-              formComponents={{
-                'select-station-thing': <div>select a station</div>
-              }}
+              formComponents={this.props.formComponents}
             />
           </div>
         )}

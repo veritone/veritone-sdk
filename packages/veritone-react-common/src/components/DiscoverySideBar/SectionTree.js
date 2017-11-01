@@ -26,9 +26,11 @@ const nodeShape = {
 };
 nodeShape.children = arrayOf(shape(nodeShape));
 
+export const sectionsShape = shape(nodeShape);
+
 class SectionTree extends React.Component {
   static propTypes = {
-    sections: shape(nodeShape).isRequired,
+    sections: sectionsShape.isRequired,
     formComponents: objectOf(element).isRequired,
     activePath: arrayOf(number).isRequired,
     onNavigate: func.isRequired

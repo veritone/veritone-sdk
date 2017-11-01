@@ -11,7 +11,11 @@ const defaultProps = {
   filtersActivePath: [],
   onFiltersNavigate: noop,
   onClearAllFilters: noop,
-  onClearFilter: noop
+  onClearFilter: noop,
+  sections: {
+    children: []
+  },
+  formComponents: {}
 };
 
 describe('DiscoverySideBarContainerPure', function() {

@@ -15,6 +15,42 @@ const Container = (
   </div>
 );
 
+const exampleSectionTree = {
+  children: [
+    {
+      label: 'Section 1',
+      children: [
+        {
+          label: 'SubSection 1',
+          children: [
+            {
+              label: 'Sub-SubSection 1',
+              children: [{ formComponentId: 'select-station-form' }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Section 2',
+      children: []
+    },
+    {
+      label: 'Section 3',
+      children: [
+        {
+          label: 'SubSection 1',
+          children: [{ formComponentId: 'select-station-form' }]
+        },
+        {
+          label: 'SubSection 2',
+          children: [{ formComponentId: 'select-station-form' }]
+        }
+      ]
+    }
+  ]
+};
+
 storiesOf('DiscoverySideBar', module)
   .add('Two tabs', () => {
     const clearAllFilters = boolean('clearAllFilters button', false);
@@ -26,6 +62,10 @@ storiesOf('DiscoverySideBar', module)
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
           onClearAllFilters={action('clear all filters')}
+          sections={exampleSectionTree}
+          formComponents={{
+            'select-station-form': <div>select a station</div>
+          }}
         />
       </Container>
     );
@@ -40,6 +80,10 @@ storiesOf('DiscoverySideBar', module)
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
           onClearAllFilters={action('clear all filters')}
+          sections={exampleSectionTree}
+          formComponents={{
+            'select-station-form': <div>select a station</div>
+          }}
         />
       </Container>
     );
