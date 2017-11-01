@@ -1,14 +1,13 @@
 import React from 'react';
-import CloseIcon from 'material-ui-icons/Close';
-import IconButton from 'material-ui/IconButton';
 import { func, shape, arrayOf, string, number } from 'prop-types';
 
-import styles from './styles/allFiltersList.scss';
+import styles from './styles/filtersList.scss';
+import FiltersListItem from './FiltersListItem';
 
 export default class AllFiltersList extends React.Component {
   static propTypes = {
-    onClearAllFilters: func,
-    onClearItem: func,
+    onClearAllFilters: func.isRequired,
+    onClearFilter: func.isRequired,
     filters: arrayOf(
       shape({
         label: string.isRequired,
@@ -17,6 +16,7 @@ export default class AllFiltersList extends React.Component {
       })
     )
   };
+
   static defaultProps = {
     filters: [
       {
@@ -47,22 +47,12 @@ export default class AllFiltersList extends React.Component {
         </div>
 
         <div className={styles.filtersContainer}>
-          {this.props.filters.map(({ label, number, id }) => (
-            <div className={styles.filterItem} key={id}>
-              <IconButton
-                classes={{ root: styles.clearButton }}
-                onClick={this.props.onClearItem}
-              >
-                <CloseIcon />
-              </IconButton>
-              <a
-                href="#"
-                className={styles.filterItemLink}
-                onClick={this.props.onClearItem}
-              >
-                {label} ({number})
-              </a>
-            </div>
+          {this.props.filters.map(filter => (
+            <FiltersListItem
+              key={filter.id}
+              onClearFilter={this.props.onClearFilter}
+              {...filter}
+            />
           ))}
         </div>
       </div>

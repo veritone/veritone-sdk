@@ -60,6 +60,7 @@ const fixmeExampleSectionTree = {
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     onClearAllFilters: func,
+    onClearFilter: func,
     clearAllFilters: bool,
 
     // provided by wrapper:
@@ -87,7 +88,10 @@ export class DiscoverySideBarContainerPure extends React.Component {
         />
         {this.props.selectedTab === 'Filters' && (
           <div style={{ width: '100%' }}>
-            <AllFiltersList onClearAllFilters={this.props.onClearAllFilters} />
+            <AllFiltersList
+              onClearAllFilters={this.props.onClearAllFilters}
+              onClearFilter={this.props.onClearFilter}
+            />
             <SectionTree
               sections={fixmeExampleSectionTree}
               activePath={this.props.filtersActivePath}

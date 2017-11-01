@@ -9,7 +9,9 @@ const defaultProps = {
   selectedTab: 'one',
   onSelectTab: noop,
   filtersActivePath: [],
-  onFiltersNavigate: noop
+  onFiltersNavigate: noop,
+  onClearAllFilters: noop,
+  onClearFilter: noop
 };
 
 describe('DiscoverySideBarContainerPure', function() {
