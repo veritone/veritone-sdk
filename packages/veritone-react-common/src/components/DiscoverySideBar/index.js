@@ -7,6 +7,7 @@ import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import styles from './styles/container.scss';
 import Header from './header/Header';
 import SectionTree from './SectionTree';
+import AllFiltersList from './AllFiltersList';
 
 const fixmeExampleSectionTree = {
   children: [
@@ -85,14 +86,17 @@ export class DiscoverySideBarContainerPure extends React.Component {
           onSelectTab={this.props.onSelectTab}
         />
         {this.props.selectedTab === 'Filters' && (
-          <SectionTree
-            sections={fixmeExampleSectionTree}
-            activePath={this.props.filtersActivePath}
-            onNavigate={this.props.onFiltersNavigate}
-            formComponents={{
-              'select-station-thing': <div>select a station</div>
-            }}
-          />
+          <div style={{ width: '100%' }}>
+            <AllFiltersList onClearAllFilters={this.props.onClearAllFilters} />
+            <SectionTree
+              sections={fixmeExampleSectionTree}
+              activePath={this.props.filtersActivePath}
+              onNavigate={this.props.onFiltersNavigate}
+              formComponents={{
+                'select-station-thing': <div>select a station</div>
+              }}
+            />
+          </div>
         )}
         {this.props.selectedTab === 'Browse' && (
           <div data-testtarget="browse" style={{ width: '100%' }}>
