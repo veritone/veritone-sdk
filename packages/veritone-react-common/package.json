@@ -23,7 +23,9 @@
     "build:storybook": "build-storybook -c .storybook -o docs-static",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint src/** --ext .js",
+    "lint": "npm run lint:js; npm run lint:styles",
+    "lint:js": "eslint src/** --ext .js",
+    "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
     "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
   "devDependencies": {
@@ -40,6 +42,7 @@
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.1",
     "eslint": "^4.8.0",
+    "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-promise": "^3.5.0",
@@ -52,6 +55,8 @@
     "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
+    "stylelint": "^8.2.0",
+    "stylelint-config-standard": "^17.0.0",
     "veritone-dev-env": "^1.0.2",
     "webpack": "^3.6.0"
   },
