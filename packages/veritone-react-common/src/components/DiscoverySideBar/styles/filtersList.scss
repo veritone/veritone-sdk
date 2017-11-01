@@ -11,6 +11,7 @@
 .headerContainer {
   display: flex;
   justify-content: space-between;
+
   @include mui-text('body1');
 }
 
