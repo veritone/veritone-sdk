@@ -1,7 +1,7 @@
 import '../src/styles/global.scss';
 import 'normalize.css';
 
-export AppBar from './components/AppBar';
+export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter from './components/AppFooter';
 export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
