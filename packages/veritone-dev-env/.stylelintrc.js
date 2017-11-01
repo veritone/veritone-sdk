@@ -8,6 +8,9 @@ module.exports = {
       }
     ],
     'no-eol-whitespace': null,
-    'declaration-empty-line-before': null
+    'declaration-empty-line-before': null,
+    'at-rule-no-unknown': ['always', {
+      ignoreAtRules: ["import", "include"]
+    }],
   }
 };
