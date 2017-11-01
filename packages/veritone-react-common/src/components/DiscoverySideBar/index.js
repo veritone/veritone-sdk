@@ -88,10 +88,13 @@ export class DiscoverySideBarContainerPure extends React.Component {
         />
         {this.props.selectedTab === 'Filters' && (
           <div style={{ width: '100%' }}>
-            <AllFiltersList
-              onClearAllFilters={this.props.onClearAllFilters}
-              onClearFilter={this.props.onClearFilter}
-            />
+            {this.props.filtersActivePath.length === 0 && (
+              <AllFiltersList
+                onClearAllFilters={this.props.onClearAllFilters}
+                onClearFilter={this.props.onClearFilter}
+              />
+            )}
+
             <SectionTree
               sections={fixmeExampleSectionTree}
               activePath={this.props.filtersActivePath}
