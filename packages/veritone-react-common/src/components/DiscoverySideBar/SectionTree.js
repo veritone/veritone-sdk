@@ -110,12 +110,12 @@ export const SectionTreeTab = ({
 
     {filterCount > 0 && (
       <div onMouseOver={() => console.log('hover')}>
-      <Chip
-        label={filterCount}
-        hoveredLabel={'clear'}
-        style={{ height: 18 }}
-        onClick={e => e.stopPropagation()}
-      />
+        <Chip
+          label={filterCount}
+          hoveredLabel={'clear'}
+          style={{ height: 18 }}
+          onClick={e => e.stopPropagation()}
+        />
       </div>
     )}
     <span className={styles.rightIcon}>{rightIcon}</span>
