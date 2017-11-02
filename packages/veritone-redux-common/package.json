@@ -18,8 +18,8 @@
     "lint": "eslint src/** --ext .js",
     "clean:build": "rimraf build",
     "prebuild": "npm run clean:build",
-    "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
-    "build:watch": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress --watch",
+    "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress",
+    "build:watch": "NODE_ENV=production webpack --config ./webpack.config.js --progress --watch",
     "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
   "devDependencies": {
