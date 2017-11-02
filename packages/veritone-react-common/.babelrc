@@ -1,6 +1,7 @@
 {
   "presets": ["env", "react"],
   "plugins": [
+    "add-react-displayname",
     "transform-export-extensions",
     "transform-decorators-legacy",
     "transform-class-properties",
