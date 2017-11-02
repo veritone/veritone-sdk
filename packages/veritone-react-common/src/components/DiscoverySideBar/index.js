@@ -18,6 +18,16 @@ import Header from './header/Header';
 import SectionTree, { sectionsShape } from './SectionTree';
 import AllFiltersList from './AllFiltersList';
 
+
+// todo:
+// figure out how state will come from redux-form and how to transform that
+// into filters counts for each section/subsection
+
+// figure out how callbacks from clear-filters at various levels will clear
+// the associated redux-form state (by <Field> name/id?)
+
+// animations
+
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
@@ -55,7 +65,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
             {this.props.filtersActivePath.length === 0 &&
               this.props.selectedFilters.length > 0 && (
                 <AllFiltersList
-                  filters={this.props.selectedFilters}
+                  filters={this.props.selectedFilters} // fixme
                   onClearAllFilters={this.props.onClearAllFilters}
                   onClearFilter={this.props.onClearFilter}
                 />
