@@ -1,5 +1,14 @@
 import React from 'react';
-import { string, func, arrayOf, bool, number, objectOf, element } from 'prop-types';
+import {
+  string,
+  func,
+  arrayOf,
+  bool,
+  number,
+  objectOf,
+  element,
+  object
+} from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import ClearFiltersIconFixme from 'material-ui-icons/FormatClear';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
@@ -13,6 +22,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
     sections: sectionsShape.isRequired,
+    selectedFilters: arrayOf(object).isRequired, // see AllFiltersList.filters
     onClearAllFilters: func,
     onClearFilter: func,
     clearAllFilters: bool,
@@ -42,14 +52,17 @@ export class DiscoverySideBarContainerPure extends React.Component {
         />
         {this.props.selectedTab === 'Filters' && (
           <div style={{ width: '100%' }}>
-            {this.props.filtersActivePath.length === 0 && (
-              <AllFiltersList
-                onClearAllFilters={this.props.onClearAllFilters}
-                onClearFilter={this.props.onClearFilter}
-              />
-            )}
+            {this.props.filtersActivePath.length === 0 &&
+              this.props.selectedFilters.length > 0 && (
+                <AllFiltersList
+                  filters={this.props.selectedFilters}
+                  onClearAllFilters={this.props.onClearAllFilters}
+                  onClearFilter={this.props.onClearFilter}
+                />
+              )}
 
             <SectionTree
+              // todo: add filters
               sections={this.props.sections}
               activePath={this.props.filtersActivePath}
               onNavigate={this.props.onFiltersNavigate}

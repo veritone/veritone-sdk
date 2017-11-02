@@ -51,6 +51,19 @@ const exampleSectionTree = {
   ]
 };
 
+
+const exampleSelectedFilters = [
+  {
+    label: 'filter category one',
+    number: 5,
+    id: '1'
+  },  {
+    label: 'filter category 2',
+    number: 10,
+    id: '2'
+  }
+];
+
 storiesOf('DiscoverySideBar', module)
   .add('Two tabs', () => {
     const clearAllFilters = boolean('clearAllFilters button', false);
@@ -66,6 +79,7 @@ storiesOf('DiscoverySideBar', module)
           formComponents={{
             'select-station-form': <div>select a station</div>
           }}
+          selectedFilters={exampleSelectedFilters}
         />
       </Container>
     );
@@ -84,6 +98,7 @@ storiesOf('DiscoverySideBar', module)
           formComponents={{
             'select-station-form': <div>select a station</div>
           }}
+          selectedFilters={exampleSelectedFilters}
         />
       </Container>
     );

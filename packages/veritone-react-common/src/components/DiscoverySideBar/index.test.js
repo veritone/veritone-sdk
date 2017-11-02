@@ -15,7 +15,8 @@ const defaultProps = {
   sections: {
     children: []
   },
-  formComponents: {}
+  formComponents: {},
+  selectedFilters: []
 };
 
 describe('DiscoverySideBarContainerPure', function() {
@@ -59,5 +60,31 @@ describe('DiscoverySideBarContainerPure', function() {
   it('should show the browse container if props.selectedTab is Browse', function() {
     const wrapper = mount(<Sidebar {...defaultProps} selectedTab="Browse" />);
     expect(wrapper.find('[data-testtarget="browse"]')).toHaveLength(1);
+  });
+
+  it('should not show the AllFiltersList if props.filters.length === 0', function() {
+    const wrapper = mount(
+      <Sidebar {...defaultProps} selectedTab="Filters" selectedFilters={[]} />
+    );
+
+    expect(wrapper.find('AllFiltersList')).toHaveLength(0);
+  });
+
+  it('should show the AllFiltersList if props.filters.length > 0', function() {
+    const wrapper = mount(
+      <Sidebar
+        {...defaultProps}
+        selectedTab="Filters"
+        selectedFilters={[
+          {
+            label: 'label',
+            number: 1,
+            id: '1'
+          }
+        ]}
+      />
+    );
+
+    expect(wrapper.find('AllFiltersList')).toHaveLength(1);
   });
 });

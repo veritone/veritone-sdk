@@ -18,18 +18,7 @@ export default class AllFiltersList extends React.Component {
   };
 
   static defaultProps = {
-    filters: [
-      {
-        label: 'test 1',
-        number: 5,
-        id: '1'
-      },
-      {
-        label: 'test 2',
-        number: 1,
-        id: '2'
-      }
-    ]
+    filters: []
   };
 
   render() {
