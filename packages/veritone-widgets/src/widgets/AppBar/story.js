@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import VeritoneApp from './shared/VeritoneApp';
-import AppBarWidget from './widgets/AppBar';
+import VeritoneApp from '../../shared/VeritoneApp';
+import AppBarWidget from './';
 
 const app = new VeritoneApp(
   new AppBarWidget({
