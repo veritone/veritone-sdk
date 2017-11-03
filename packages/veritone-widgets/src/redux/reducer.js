@@ -7,7 +7,7 @@ import { combineReducers } from 'redux';
 export default function createReducer(asyncReducers) {
   return combineReducers({
     // [applicationNamespace]: application,
-    fixme: a => 'fixme',
+    fixme: a => ({}),
     ...asyncReducers
   });
 }

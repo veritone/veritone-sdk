@@ -18,14 +18,17 @@
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
     "start": "start-storybook -p 9002 -c .storybook",
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
-    "neutrino": "neutrino start --use neutrino-preset-react"
+    "lint": "eslint src/** --ext .js"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.0-alpha.2",
     "@storybook/react": "v3.3.0-alpha.2",
-    "neutrino": "^6.2.0",
-    "neutrino-middleware-start-server": "^6.2.0",
-    "neutrino-preset-react": "^6.2.0",
+    "cross-env": "^5.1.1",
+    "eslint": "^4.10.0",
+    "eslint-config-prettier": "^2.7.0",
+    "eslint-plugin-lodash": "^2.5.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.4.0",
     "redux-devtools": "^3.4.0",
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-logger": "^3.0.6",

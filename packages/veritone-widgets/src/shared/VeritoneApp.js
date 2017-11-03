@@ -1,10 +1,10 @@
 import 'babel-polyfill'; // fixme
 
-// new VeritoneApp([...widgets])
 import React from 'react';
 import ReactDOM from 'react-dom';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
+import { object, arrayOf } from 'prop-types';
 
 import configureStore from '../redux/configureStore';
 
@@ -40,28 +40,34 @@ export default class VeritoneApp {
       ReactDOM.unmountComponentAtNode(this._containerEl);
       try {
         document.body.removeChild(this._containerEl);
-      } catch (e) {}
+      } catch (e) {
+        // ignore
+      }
     }
   }
 
   _renderReactApp() {
-    return ReactDOM.render(
+    ReactDOM.render(
       <VeritoneRootComponent store={this._store} widgets={this._widgets} />,
       this._containerEl
     );
   }
 }
 
-import { AppBar } from 'veritone-react-common';
-
-function VeritoneRootComponent({store, widgets }) {
+function VeritoneRootComponent({ store, widgets }) {
   return (
     <Provider store={store}>
       <div>
         {widgets.map(w =>
-          ReactDOM.createPortal(<w.Component {...w.props}/>, w.el)
+          ReactDOM.createPortal(<w.Component {...w.props} />, w.el)
         )}
       </div>
     </Provider>
   );
 }
+
+VeritoneRootComponent.propTypes = {
+  /* eslint-disable react/forbid-prop-types */
+  store: object.isRequired, // redux store
+  widgets: arrayOf(object)
+};

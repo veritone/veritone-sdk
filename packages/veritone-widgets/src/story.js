@@ -1,13 +1,20 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 import VeritoneApp from './shared/VeritoneApp';
 import AppBarWidget from './widgets/AppBar';
 
 const app = new VeritoneApp(
-  new AppBarWidget({ elId: 'error-display', title: 'test', profileMenu: true, appSwitcher: true })
+  new AppBarWidget({
+    elId: 'appbar-widget',
+    title: 'test',
+    profileMenu: true,
+    appSwitcher: true
+  })
 );
+
+const mountApp = app.mount.bind(app);
+const destroyApp = app.destroy.bind(app);
 
 storiesOf('VeritoneApp', module).add('Base', () => {
   return (
@@ -18,8 +25,8 @@ storiesOf('VeritoneApp', module).add('Base', () => {
       <br />
       <br />
       <br />
-      <button onClick={app.mount.bind(app)}>Mount</button>
-      <button onClick={app.destroy.bind(app)}>destroy</button>
+      <button onClick={mountApp}>Mount</button>
+      <button onClick={destroyApp}>destroy</button>
     </div>
   );
 });
