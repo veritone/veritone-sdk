@@ -19,6 +19,7 @@ storiesOf('AppBar', module)
           image: 'http://placekitten.com/g/400/300'
         }
       }}
+      supportedEngineCategories={[transcriptEngine]}
       enabledApps={sampleApps}
     />
   ))
@@ -78,6 +79,16 @@ storiesOf('AppBar', module)
       />
     );
   });
+
+const transcriptEngine = {
+  id: "guid-1",
+  name: "Transcript",
+  iconClass: "icon-engine-transcription",
+  tooltip: "Search by Keyword",
+  enablePill: true,
+  showPill: true,
+  addPill: () => console.log("show transcript modal")
+}
 
 const sampleApps = [
   {

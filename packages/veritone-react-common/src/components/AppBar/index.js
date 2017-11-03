@@ -17,6 +17,7 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
+import { SearchBar, supportedEngineCategoryType } from 'components/SearchBar';
 
 import styles from './styles.scss';
 
@@ -40,6 +41,7 @@ export default class AppBar extends React.Component {
         onClick: func
       })
     ),
+    supportedEngineCategories: arrayOf( shape(supportedEngineCategoryType) ),
     elevation: number,
     profileMenu: bool,
     appSwitcher: bool,
@@ -50,7 +52,8 @@ export default class AppBar extends React.Component {
     isFetchingApps: bool,
     logout: func,
     fetchEnabledApps: func,
-    user: objectOf(any)
+    user: objectOf(any),
+
   };
   static defaultProps = {
     logo: true,
@@ -82,7 +85,7 @@ export default class AppBar extends React.Component {
           )}
 
           <div className={styles['title']}>{this.props.title}</div>
-
+          <SearchBar color={ this.props.backgroundColor } supportedEngineCategories={ this.props.supportedEngineCategories }/>
           <div className={styles['iconGroup']}>
             {this.props.rightActions.map(({ label, onClick }) => (
               <div className={styles['iconGroup__icon']} key={label}>
@@ -127,7 +130,7 @@ export default class AppBar extends React.Component {
               </div>
             )}
           </div>
-        </div>.
+        </div>
       </Paper>
     );
   }
