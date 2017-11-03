@@ -7,7 +7,7 @@ import {
   getBaseStoreEnhancers,
   getProductionOnlyStoreEnhancers
 } from './store';
-import createRootReducer from './reducer';
+import createRootReducer from './rootReducer';
 import rootSaga from './rootSaga';
 
 // Redux devtools browser extension hook
