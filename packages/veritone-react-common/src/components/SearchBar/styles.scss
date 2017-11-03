@@ -17,8 +17,11 @@
 
 .searchInput {
   flex-grow: 1;
-  height: 100%;
   cursor: text;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+  overflow-x: auto;
+  display: flex;
 }
 
 .engineCategoryPill {
@@ -39,4 +42,17 @@
   svg {
     color: #222222 !important;
   }
+}
+
+.searchPill {
+  border-radius: 3px !important;
+  margin-right: 5px;
+
+  & .deleteIcon {
+    height: 65%;
+  }
+}
+
+.searchPillLabel {
+  padding-left: 0em !important;
 }
