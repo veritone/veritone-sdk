@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import TopBar, { topBarHeight } from './';
 import { appBarHeight } from '../AppBar';
+import TopBar, { topBarHeight } from './';
 
 describe('TopBar', function() {
   it('exists', function() {

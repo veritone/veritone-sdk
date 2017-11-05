@@ -91,7 +91,10 @@ describe('InnerProfileMenu', function() {
       </div>
     );
 
-    wrapper.find('.editProfileButton').first().simulate('click');
+    wrapper
+      .find('.editProfileButton')
+      .first()
+      .simulate('click');
     expect(handler).toHaveBeenCalled();
   });
 
@@ -107,7 +110,10 @@ describe('InnerProfileMenu', function() {
       </div>
     );
 
-    wrapper.find('.logoutButton').first().simulate('click');
+    wrapper
+      .find('.logoutButton')
+      .first()
+      .simulate('click');
     expect(handler).toHaveBeenCalled();
   });
 });

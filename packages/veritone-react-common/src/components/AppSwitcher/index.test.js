@@ -2,9 +2,9 @@ import React from 'react';
 import { sortBy } from 'lodash';
 import { mount } from 'enzyme';
 
-import AppSwitcher from './';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
 import AppSwitcherList from './AppSwitcherList';
+import AppSwitcher from './';
 
 describe('AppSwitcher', () => {
   it('Should render props.currentAppName', () => {

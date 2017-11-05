@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 // roboto font
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500');
 // veritone icons
@@ -14,4 +16,13 @@ input:-webkit-autofill {
 
 * {
   box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: $blue-1;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

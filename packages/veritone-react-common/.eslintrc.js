@@ -9,5 +9,13 @@ module.exports = {
   env: {
     ...env.eslintReact.env,
     jest: true
+  },
+  plugins: [
+    ...env.eslintReact.plugins,
+    'import'
+  ],
+  rules: {
+    ...env.eslintReact.rules,
+    'import/order': 2
   }
 };

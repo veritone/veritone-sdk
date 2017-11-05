@@ -18,6 +18,7 @@
 
 .leftButtonContainer {
   flex-grow: 0;
+
   .highlight {
     background: $grey-2;
     height: 100%;
@@ -32,6 +33,7 @@
   align-items: center;
   height: 100%;
   padding: 0 22px;
+
   @include mui-text('body1');
   color: $light-black;
 
