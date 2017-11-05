@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const Strategy = require('passport-veritone');
 const ejs = require('ejs');
-const fs = require('fs');
 
 const app = express();
 

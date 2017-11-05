@@ -1,12 +1,11 @@
 import { combineReducers } from 'redux';
 
-// import application, {
-//   namespace as applicationNamespace
-// } from 'modules/application';
+import { modules } from 'veritone-redux-common';
+const { user, namespace: userNamespace } = modules;
 
 export default function createReducer(asyncReducers) {
   return combineReducers({
-    // [applicationNamespace]: application,
+    [userNamespace]: user,
     fixme: a => ({}),
     ...asyncReducers
   });

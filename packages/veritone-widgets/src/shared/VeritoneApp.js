@@ -6,13 +6,38 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { object, arrayOf } from 'prop-types';
 
+import { modules } from 'veritone-redux-common';
+const userModule = modules.user;
+
 import configureStore from '../redux/configureStore';
 
 export default class VeritoneApp {
   constructor(...widgets) {
     this._widgets = widgets;
-    this._store = configureStore();
-    this._containerEl = null;
+  }
+
+  _store = configureStore();
+  _containerEl = null;
+  _token = null;
+
+  // auth can follow two paths:
+  // 1. internal apps, make /current-user api call with appInstance.login().
+  //    this can happen automatically.
+  // 2. oauth apps, popup window flow. must be initiated by user action (clicking a button).
+  //    oauth apps must add an OAuthLoginButtonWidget
+  login({ token } = {}) {
+    // new VeritoneApp(...widgets)
+    //   .login() // try to use an existing cookie
+    // or
+    //   .login({ token }); // use provided token in header
+
+    // todo: handle promise result
+    if (token) {
+      this._token = token;
+      return this._store.dispatch(userModule.fetchUser({ token }));
+    } else {
+      return this._store.dispatch(userModule.fetchUser());
+    }
   }
 
   mount() {
@@ -48,21 +73,24 @@ export default class VeritoneApp {
 
   _renderReactApp() {
     ReactDOM.render(
-      <VeritoneRootComponent store={this._store} widgets={this._widgets} />,
+      <Provider store={this._store}>
+        <VeritoneRootComponent store={this._store} widgets={this._widgets} />
+      </Provider>,
       this._containerEl
     );
   }
 }
 
-function VeritoneRootComponent({ store, widgets }) {
+// todo:
+// @connect VeritoneRootComponent to provide auth info/dispatch auth/boot actions.
+
+function VeritoneRootComponent({ widgets }) {
   return (
-    <Provider store={store}>
-      <div>
-        {widgets.map(w =>
-          ReactDOM.createPortal(<w.Component {...w.props} />, w.el)
-        )}
-      </div>
-    </Provider>
+    <div>
+      {widgets.map(w =>
+        ReactDOM.createPortal(<w.Component {...w.props} />, w.el)
+      )}
+    </div>
   );
 }
 

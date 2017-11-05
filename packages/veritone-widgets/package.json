@@ -16,7 +16,9 @@
   "main": "dist/bundle.js",
   "scripts": {
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
-    "start": "start-storybook -p 9002 -c .storybook",
+    "start": "yarn run start:widget-server; yarn run start:storybook",
+    "start:widget-server": "yarn workspace veritone-widgets-server run start &",
+    "start:storybook": "start-storybook -p 3000 -c .storybook",
     "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress",
     "lint": "eslint src/** --ext .js"
   },
