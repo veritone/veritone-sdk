@@ -20,8 +20,8 @@
 }
 
 .title {
-  color: white;
   @include mui-text('title');
+  color: white;
   //margin-left: auto;
 }
 

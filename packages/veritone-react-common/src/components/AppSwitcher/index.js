@@ -4,9 +4,9 @@ import AppsIcon from 'material-ui-icons/Apps';
 import IconButton from 'material-ui/IconButton';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import AppSwitcherList from './AppSwitcherList';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 

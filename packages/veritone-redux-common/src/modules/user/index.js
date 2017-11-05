@@ -4,7 +4,7 @@ import cookie from 'react-cookie';
 import {
   permissions as perms,
   util as permissionUtil
-} from 'functional-permissions-lib';
+} from 'veritone-functional-permissions';
 
 import { commonHeaders } from 'helpers/api';
 import { createReducer } from 'helpers/redux';

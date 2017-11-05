@@ -1,3 +1,4 @@
+/* eslint-disable */
 // copied from https://github.com/threepointone/react-redux-saga to fix react16
 // compatibility.
 
