@@ -2,7 +2,9 @@
   "presets": ["env", "react"],
   "plugins": [
     "transform-export-extensions",
+    "transform-decorators-legacy",
     "transform-class-properties",
-    "transform-object-rest-spread"
+    "transform-object-rest-spread",
+    "lodash"
   ]
 }
