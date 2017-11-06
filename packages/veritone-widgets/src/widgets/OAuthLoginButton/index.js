@@ -4,9 +4,7 @@ import widget from '../../shared/widget';
 
 class OAuthLoginButton extends React.Component {
   render() {
-    return (
-      <button>Log in with Veritone</button>
-    )
+    return <button>Log in with Veritone</button>;
   }
 }
 

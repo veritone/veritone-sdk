@@ -15,4 +15,3 @@ export const config = {
   reducer: configReducer,
   ...configModule
 };
-
