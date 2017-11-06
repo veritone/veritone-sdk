@@ -1,14 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import AppBarWidget from './';
-
-import { login } from '../../shared/VeritoneAuth';
-const handleLogin = () =>
-  login('http://localhost:5001/auth/veritone')
-    .then(a => console.log(a))
-    .catch(e => console.log('error', e));
 
 const app = new VeritoneApp(
   new AppBarWidget({
@@ -19,10 +14,9 @@ const app = new VeritoneApp(
   })
 );
 
-const mountApp = app.mount.bind(app);
-const destroyApp = app.destroy.bind(app);
-
 storiesOf('AppBar', module).add('Base', () => {
+  const token = text('Api Session Token', 'fixme');
+
   return (
     <div>
       this is where the widget should go:
@@ -31,9 +25,11 @@ storiesOf('AppBar', module).add('Base', () => {
       <br />
       <br />
       <br />
-      <button onClick={mountApp}>Mount</button>
-      <button onClick={destroyApp}>destroy</button>
-      <button onClick={handleLogin}>log in</button>
+      <button onClick={() => app.mount()}>Mount</button>
+      <button onClick={() => app.destroy()}>destroy</button>
+      <button onClick={() => app.login({ token })}>
+        log in (set token in knobs panel)
+      </button>
     </div>
   );
 });
