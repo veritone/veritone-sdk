@@ -187,8 +187,8 @@ function local(state) {
   return state[namespace];
 }
 
-export function fetchUser() {
-  return {
+export function fetchUser({ token } = {}) {
+  let apiCall = {
     [CALL_API]: {
       types: [FETCH_USER, FETCH_USER_SUCCESS, FETCH_USER_FAILURE],
       endpoint: state => `${getConfig(state).apiRoot}/admin/current-user`,
@@ -200,6 +200,12 @@ export function fetchUser() {
       credentials: 'include'
     }
   };
+
+  if (token) {
+    apiCall[CALL_API].headers.Authorization = `Bearer ${token}`;
+  }
+
+  return apiCall;
 }
 
 export function login({ userName, password }) {
