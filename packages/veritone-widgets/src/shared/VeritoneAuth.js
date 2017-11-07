@@ -22,15 +22,26 @@ const removeAuthWindowListener = () => {
 };
 
 const createAuthWindowListener = (OAuthURI, resolve, reject) => {
+  removeAuthWindowListener();
   return function authWindowListener(event) {
     let uri = ParseURI(OAuthURI);
     if (event.origin === `${uri.origin}`) {
       let message = event.data;
-      if (message && message.token) {
-        _OAuthToken = message.token;
-        resolve({ OAuthToken: _OAuthToken });
+      // reject the login promise if there's any oauth2 error from widget-server
+      if (message && message.error) {
         removeAuthWindowListener();
         cleanupAuthWindow();
+        reject(new Error('Veritone OAuth2 Error'));
+        return
+      }
+
+      // resolve the login promise if a token is present
+      if (message && message.token) {
+        _OAuthToken = message.token;
+        removeAuthWindowListener();
+        cleanupAuthWindow();
+        resolve({ OAuthToken: _OAuthToken });
+        return
       }
     }
   };
@@ -42,7 +53,7 @@ const askOAuthServerForToken = (OAuthURI, resolve, reject) => {
     // keep polling until we receive a response
     if (!_OAuthToken) {
       if (_authWindow) {
-        _authWindow.postMessage('getOAuthToken', `${uri.origin}`);
+        _authWindow.postMessage('getOAuthToken', `*`);
       }
 
       // if the auth window is closed, stop polling
@@ -59,25 +70,26 @@ const askOAuthServerForToken = (OAuthURI, resolve, reject) => {
   }, _POLL_TIME);
 };
 
-const login = OAuthURI => {
+const login = async OAuthURI => {
   if (!OAuthURI) {
     throw new Error(
       'Missing parameter: Need to include the backend OAuth2 URI'
     );
   }
 
-  removeAuthWindowListener();
+  if (_OAuthToken) {
+    const loggedOut = await logout();
+  }
+
   _authWindow = window.open(OAuthURI, '_auth', 'width=550px,height=650px');
   return new Promise((resolve, reject) => {
-    window.addEventListener(
-      'message',
-      createAuthWindowListener(OAuthURI, resolve, reject)
-    );
+    _authWindowListener = createAuthWindowListener(OAuthURI, resolve, reject);
+    window.addEventListener('message', _authWindowListener);
     askOAuthServerForToken(OAuthURI, resolve, reject);
   });
 };
 
-const logout = () => {
+const logout = async () => {
   return new Promise((resolve, reject) => {
     removeAuthWindowListener();
     cleanupAuthWindow();
