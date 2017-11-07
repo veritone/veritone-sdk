@@ -7,9 +7,9 @@ module.exports = {
     module: true,
     process: true,
     require: true
+  },
+  env: {
+    ...env.eslintReact.env,
+    jest: true
   }
-  // env: {
-  //   ...env.eslintReact.env,
-  //   jest: true
-  // }
 };
