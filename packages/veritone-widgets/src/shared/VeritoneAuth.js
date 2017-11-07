@@ -27,11 +27,21 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
     let uri = ParseURI(OAuthURI);
     if (event.origin === `${uri.origin}`) {
       let message = event.data;
+      // reject the login promise if there's any oauth2 error from widget-server
+      if (message && message.error) {
+        removeAuthWindowListener();
+        cleanupAuthWindow();
+        reject(new Error('Veritone OAuth2 Error'));
+        return
+      }
+
+      // resolve the login promise if a token is present
       if (message && message.token) {
         _OAuthToken = message.token;
         removeAuthWindowListener();
         cleanupAuthWindow();
         resolve({ OAuthToken: _OAuthToken });
+        return
       }
     }
   };
