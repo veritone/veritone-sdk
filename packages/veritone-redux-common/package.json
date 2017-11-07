@@ -1,6 +1,6 @@
 {
   "name": "veritone-redux-common",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "dependencies": {
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
@@ -30,6 +30,7 @@
     "babel-minify-webpack-plugin": "^0.2.0",
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.2",
+    "eslint": "^4.8.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-lodash": "^2.5.0",
     "identity-obj-proxy": "^3.0.0",
