@@ -8,7 +8,7 @@ storiesOf('OAuthLoginButtonWidget', module).add('Base', () => {
   const app = new VeritoneApp([
     new OAuthLoginButtonWidget({
       elId: 'login-button-widget',
-      OAuthURI: 'http://localhost:5001/auth.veritone'
+      OAuthURI: 'http://localhost:5001/auth/veritone'
     })
   ]);
 

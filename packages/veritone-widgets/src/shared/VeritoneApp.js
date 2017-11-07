@@ -95,7 +95,6 @@ export default class VeritoneApp {
   }
 }
 
-
 // todo:
 // @connect VeritoneRootComponent to provide auth info/dispatch auth/boot actions.
 function VeritoneRootComponent({ widgets }) {
