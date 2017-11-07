@@ -2,7 +2,11 @@ import { call, put, takeLatest, fork, all } from 'redux-saga/effects';
 import { modules } from 'veritone-redux-common';
 const { user: userModule } = modules;
 
-import { REQUEST_OAUTH_GRANT, OAUTH_GRANT_FLOW_FAILED } from '../modules/oauth';
+import {
+  REQUEST_OAUTH_GRANT,
+  OAUTH_GRANT_FLOW_FAILED,
+  OAuthGrantSuccess
+} from '../modules/oauth';
 import { login } from '../../shared/VeritoneAuth';
 
 function* requestOAuthGrant({ payload: { OAuthURI } }) {
@@ -17,7 +21,8 @@ function* requestOAuthGrant({ payload: { OAuthURI } }) {
     return;
   }
 
-  yield put(userModule.fetchUser({ token }));
+  yield put.resolve(userModule.fetchUser({ token }));
+  yield put(OAuthGrantSuccess({ OAuthToken: token }));
 }
 
 function* watchOAuthGrantRequest() {
