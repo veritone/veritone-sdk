@@ -8,17 +8,31 @@ import styles from './styles.scss';
 
 @withMuiThemeProvider
 export default class FileUploader extends Component {
+    state = {
+        files: this.props.preselectedFiles
+    }
+
+    handleFileSelection = event => {
+        this.setState({files: event.target.files});
+    }
+
     render () {
         return (
             <div className={styles.fileUploader}>
-                <FileUpload />
-                Drag & Drop file(s) to upload or
-                <input accept="jpg,jpeg,JPG,JPEG" id="file" multiple type="file" />
+                <span><FileUpload /></span>
+                <span>Drag & Drop file(s) to upload or</span>
+                <div>
+                <input accept=".jpg,.jpeg,.JPG,.JPEG" 
+                       id="file" 
+                       multiple 
+                       type="file"
+                       onChange={this.handleFileSelection}/>
                 <label htmlFor="file">
-                    <Button raised color="primary">
-                        Choose File
+                    <Button raised color="primary" component="span">
+                        {this.state.files ? 'Edit Files' : 'Choose File'}
                     </Button>
                 </label>
+                </div>
             </div>
         );
     }
