@@ -1,0 +1,28 @@
+@import 'src/styles/modules/variables';
+
+.filePicker {
+}
+
+.filePickerBody {
+    padding: 10px;
+}
+
+.filePickerTabs {
+    border-bottom: 1px solid $grey-4;
+}
+
+.filePickerButtons {
+    padding: 10px;
+}
+
+.fileUploader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $grey-1;
+    border: 4px dashed $grey-4;
+    min-height: 200px;
+    input {
+        display: none;
+    }
+}
