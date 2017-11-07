@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
-
 import { modules } from 'veritone-redux-common';
+
+import OAuthReducer, { namespace as OAuthNamespace } from './modules/oauth';
 
 const {
   user: { reducer: userReducer, namespace: userNamespace },
@@ -9,6 +10,7 @@ const {
 
 export default function createReducer(asyncReducers) {
   return combineReducers({
+    [OAuthNamespace]: OAuthReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     ...asyncReducers
