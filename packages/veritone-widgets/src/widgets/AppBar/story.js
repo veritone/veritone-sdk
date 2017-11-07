@@ -5,14 +5,14 @@ import { text } from '@storybook/addon-knobs';
 import VeritoneApp from '../../shared/VeritoneApp';
 import AppBarWidget from './';
 
-const app = new VeritoneApp(
+const app = new VeritoneApp([
   new AppBarWidget({
     elId: 'appbar-widget',
     title: 'test',
     profileMenu: true,
     appSwitcher: true
   })
-);
+]);
 
 storiesOf('AppBar', module).add('Base', () => {
   const token = text('Api Session Token', 'fixme');

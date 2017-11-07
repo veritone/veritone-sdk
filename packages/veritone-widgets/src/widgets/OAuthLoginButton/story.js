@@ -5,12 +5,12 @@ import VeritoneApp from '../../shared/VeritoneApp';
 import OAuthLoginButtonWidget from './';
 
 storiesOf('OAuthLoginButtonWidget', module).add('Base', () => {
-  const app = new VeritoneApp(
+  const app = new VeritoneApp([
     new OAuthLoginButtonWidget({
       elId: 'login-button-widget',
       OAuthURI: 'http://localhost:5001/auth.veritone'
     })
-  );
+  ]);
 
   const mountApp = app.mount.bind(app);
   const destroyApp = app.destroy.bind(app);
