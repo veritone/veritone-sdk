@@ -28,6 +28,7 @@ passport.use(new Strategy({
   return done(null, profile);
 }));
 const oauthError = (err, req, res, next) => {
+  console.log("Passport-Veritone OAuth2 Error", err);
   res.render('oauth_error', { clientOrigin: settings.clientOrigin });
   next();
 };
