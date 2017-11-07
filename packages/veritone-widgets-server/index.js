@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const Strategy = require('passport-veritone');
 const ejs = require('ejs');
-const fs = require('fs');
 
 const app = express();
 
@@ -45,5 +44,5 @@ app.listen(settings.port, settings.host, err => {
     console.log(err);
     return;
   }
-  console.log('🐬  App is listening at http://%s:%s', settings.host, settings.port);
+  console.log('🐬  Veritone-widgets-server is listening at http://%s:%s', settings.host, settings.port);
 });

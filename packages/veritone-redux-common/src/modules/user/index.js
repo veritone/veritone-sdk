@@ -1,5 +1,5 @@
-import { CALL_API } from 'redux-api-middleware';
-import { get, isEmpty, isNumber } from 'lodash';
+import { CALL_API } from 'redux-api-middleware-fixed';
+import { get, isEmpty } from 'lodash';
 import cookie from 'react-cookie';
 import {
   permissions as perms,
@@ -27,10 +27,6 @@ export const LOGOUT_FAILURE = 'vtn/user/LOGOUT_FAILURE';
 export const REFRESH_TOKEN = 'vtn/user/REFRESH_TOKEN';
 export const REFRESH_TOKEN_SUCCESS = 'vtn/user/REFRESH_TOKEN_SUCCESS';
 export const REFRESH_TOKEN_FAILURE = 'vtn/user/REFRESH_TOKEN_FAILURE';
-
-export const UPDATE_PROFILE = 'vtn/user/UPDATE_PROFILE_';
-export const UPDATE_PROFILE_SUCCESS = 'vtn/user/UPDATE_PROFILE_SUCCESS';
-export const UPDATE_PROFILE_FAILURE = 'vtn/user/UPDATE_PROFILE_FAILURE';
 
 export const FETCH_USER_APPLICATIONS = 'vtn/user/FETCH_USER_APPLICATIONS';
 export const FETCH_USER_APPLICATIONS_SUCCESS =
@@ -64,7 +60,7 @@ const reducer = createReducer(defaultState, {
 
     return action.error
       ? // handle requestError ie. offline
-      this[FETCH_USER_FAILURE](state, action)
+        this[FETCH_USER_FAILURE](state, action)
       : requestSuccessState;
   },
 
@@ -119,8 +115,8 @@ const reducer = createReducer(defaultState, {
       action.payload.name === 'ApiError'
         ? statusErrors[action.payload.status] || statusErrors.default
         : action.payload.name === 'RequestError'
-        ? 'There was an error while logging in, please try again.'
-        : statusErrors.default;
+          ? 'There was an error while logging in, please try again.'
+          : statusErrors.default;
 
     return {
       ...state,
@@ -165,8 +161,8 @@ const reducer = createReducer(defaultState, {
       action.payload.name === 'ApiError'
         ? statusErrors[action.payload.status] || statusErrors.default
         : action.payload.name === 'RequestError'
-        ? 'There was an error when fetching application list, please try again.'
-        : statusErrors.default;
+          ? 'There was an error when fetching application list, please try again.'
+          : statusErrors.default;
 
     return {
       ...state,
@@ -174,13 +170,6 @@ const reducer = createReducer(defaultState, {
       fetchApplicationsFailed: true,
       fetchApplicationsFailureMessage: failureMessage,
       enabledApps: []
-    };
-  },
-
-  [UPDATE_PROFILE_SUCCESS](state, action) {
-    return {
-      ...state,
-      user: action.payload
     };
   },
 
@@ -198,8 +187,8 @@ function local(state) {
   return state[namespace];
 }
 
-export function fetchUser() {
-  return {
+export function fetchUser({ token } = {}) {
+  let apiCall = {
     [CALL_API]: {
       types: [FETCH_USER, FETCH_USER_SUCCESS, FETCH_USER_FAILURE],
       endpoint: state => `${getConfig(state).apiRoot}/admin/current-user`,
@@ -211,6 +200,12 @@ export function fetchUser() {
       credentials: 'include'
     }
   };
+
+  if (token) {
+    apiCall[CALL_API].headers.Authorization = `Bearer ${token}`;
+  }
+
+  return apiCall;
 }
 
 export function login({ userName, password }) {
@@ -238,7 +233,7 @@ export function logout() {
       types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAILURE],
       endpoint: state =>
         // prettier-ignore
-        `${getConfig(state).apiRoot}/admin/token/${selectUserApiToken(state)}/logout`,
+        `${getConfig(state).apiRoot}/admin/token/${selectSessionToken(state)}/logout`,
       method: 'GET',
       headers: commonHeaders
     }
@@ -251,23 +246,8 @@ export function refreshApiToken() {
       types: [REFRESH_TOKEN, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE],
       endpoint: state =>
         // prettier-ignore
-        `${getConfig(state).apiRoot}/admin/token/${selectUserApiToken(state)}/refresh`,
+        `${getConfig(state).apiRoot}/admin/token/${selectSessionToken(state)}/refresh`,
       method: 'GET',
-      headers: commonHeaders
-    }
-  };
-}
-
-export function setOnboardingProfileFields(values) {
-  return {
-    [CALL_API]: {
-      types: [UPDATE_PROFILE, UPDATE_PROFILE_SUCCESS, UPDATE_PROFILE_FAILURE],
-      // endpoint: 'http://local.veritone.com:9000/v1/admin/current-user/set-developer-organization-fields',
-      endpoint: state =>
-        // prettier-ignore
-        `${getConfig(state).apiRoot}/admin/current-user/set-developer-organization-fields`,
-      method: 'POST',
-      body: JSON.stringify(values),
       headers: commonHeaders
     }
   };
@@ -310,8 +290,12 @@ export function selectUserOrganizationKvp(state) {
   return get(local(state).user, 'organization.kvp');
 }
 
-export function selectUserApiToken(state) {
+export function selectSessionToken(state) {
   return get(local(state), 'user.token');
+}
+
+export function selectApiToken(state) {
+  return get(local(state), 'user.apiToken');
 }
 
 export function enabledAppsFailedLoading(state) {
@@ -327,45 +311,39 @@ export function enabledAppsFailureMessage(state) {
 }
 
 export function selectEnabledApps(state) {
+  // fixme: how should migrations work without the cookie in external apps?
+  const apps = local(state).enabledApps;
   let migrated = cookie.load('veritone-migrated-to-discovery') === 'true';
-  let appList = local(state).enabledApps;
 
-  return appList
+  return apps
     .map(app => {
-      let alteredApp = { ...app };
+      const migrations = {
+        advertiser: migrated ? 'Discovery' : 'Advertiser',
+        broadcaster: migrated ? 'Discovery' : 'Media'
+      };
 
-      if (
-        app.applicationCheckPermissions &&
-        perms[app.applicationKey] &&
-        isNumber(perms[app.applicationKey].access)
-      ) {
-        alteredApp.permissionId = perms[app.applicationKey].access;
-      }
-
-      if (app.applicationKey === 'advertiser') {
-        alteredApp.applicationName = migrated ? 'Discovery' : 'Advertiser';
-      } else if (app.applicationKey === 'broadcaster') {
-        alteredApp.applicationName = migrated ? 'Discovery' : 'Media';
-      }
-
-      return alteredApp;
+      return {
+        ...app,
+        applicationName: migrations[app.applicationName] || app.applicationName
+      };
     })
     .filter(app => {
+      if (app.applicationCheckPermissions === false) {
+        return true;
+      }
+
+      const appAccessPermissionId = get(perms, [app.applicationKey, 'access']);
+
       return (
-        (app.permissionId &&
-          permissionUtil.hasAccessTo(
-            app.permissionId,
-            selectUser(state).permissionMasks
-          )) ||
-        !app.applicationCheckPermissions
+        appAccessPermissionId &&
+        permissionUtil.hasAccessTo(
+          appAccessPermissionId,
+          selectUser(state).permissionMasks
+        )
       );
     });
 }
 
 export function userIsAuthenticated(state) {
   return !isEmpty(local(state).user);
-}
-
-export function userCompletedDevSignup(localState) {
-  return get(localState, 'user.organization.developerFieldsCompleted', false);
 }

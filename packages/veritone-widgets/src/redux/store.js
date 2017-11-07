@@ -1,8 +1,6 @@
 import { apiMiddleware } from 'redux-api-middleware-fixed';
 
-export const getBaseMiddlewares = () => [
-  apiMiddleware(fetch)
-];
+export const getBaseMiddlewares = () => [apiMiddleware(fetch)];
 
 export const getDevOnlyMiddlewares = () => {
   if (process.env.NODE_ENV !== 'production') {
@@ -14,9 +12,7 @@ export const getDevOnlyMiddlewares = () => {
   }
 };
 
-
-export const getProductionOnlyMiddlewares = () => [
-];
+export const getProductionOnlyMiddlewares = () => [];
 
 export const getBaseStoreEnhancers = () => [];
 
