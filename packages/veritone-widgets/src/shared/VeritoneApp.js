@@ -16,11 +16,9 @@ export default class VeritoneApp {
   _store = configureStore();
   _containerEl = null;
   _token = null;
-  _OAuthURI = null;
 
-  constructor(widgets, { OAuthURI } = {}) {
+  constructor(widgets) {
     this._widgets = widgets;
-    this._OAuthURI = OAuthURI;
 
     this._store.dispatch(configModule.setConfig(appConfig));
   }
