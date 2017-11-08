@@ -1,6 +1,17 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
-import FileUpload from 'material-ui-icons/FileUpload';
+import Typography from 'material-ui/Typography';
+
+import {
+    objectOf,
+    any,
+    string,
+    bool,
+    func,
+    arrayOf,
+    shape,
+    number
+  } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -8,31 +19,40 @@ import styles from './styles.scss';
 
 @withMuiThemeProvider
 export default class FileUploader extends Component {
+    static propTypes = {
+        acceptedFileTypes: arrayOf(string),
+        onFilesSelected: func
+    }
+
     state = {
-        files: this.props.preselectedFiles
+        files: [],
+        acceptedFileTypes: this.props.acceptedFileTypes || []
     }
 
     handleFileSelection = event => {
         this.setState({files: event.target.files});
+        this.props.onFilesSelected(event.target.files);
     }
 
     render () {
         return (
             <div className={styles.fileUploader}>
-                <span><FileUpload /></span>
-                <span>Drag & Drop file(s) to upload or</span>
-                <div>
-                <input accept=".jpg,.jpeg,.JPG,.JPEG" 
+                <span className={styles.fileUploadIcon}>
+                    <i className="icon-cloud_upload"></i>
+                </span>
+                <span className={styles.fileUploaderSubtext}>
+                    Drag & Drop file(s) to upload or
+                </span>
+                <input accept={this.state.acceptedFileTypes.join(',')} 
                        id="file" 
                        multiple 
                        type="file"
                        onChange={this.handleFileSelection}/>
                 <label htmlFor="file">
                     <Button raised color="primary" component="span">
-                        {this.state.files ? 'Edit Files' : 'Choose File'}
+                        {this.state.files.length ? 'Edit Files' : 'Choose File'}
                     </Button>
                 </label>
-                </div>
             </div>
         );
     }

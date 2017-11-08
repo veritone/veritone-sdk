@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .filePicker {
 }
@@ -17,6 +18,7 @@
 
 .fileUploader {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: $grey-1;
@@ -25,4 +27,14 @@
     input {
         display: none;
     }
+}
+
+.fileUploadIcon {
+    color: #9a9a9a;
+    @include mui-text('display2');
+}
+
+.fileUploaderSubtext {
+    @include mui-text('subhead');
+    margin-bottom: 15px;
 }
