@@ -38,3 +38,27 @@
     @include mui-text('subhead');
     margin-bottom: 15px;
 }
+
+.fileListItem {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+
+.fileListItemText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 4px;
+}
+
+.fileListItemImage {
+    width: 40px;
+    height: 40px;
+    margin: 4px;
+    border-radius: 50%;
+}
+
+.fileListItemDeleteIcon {
+    margin-left: auto;
+}
