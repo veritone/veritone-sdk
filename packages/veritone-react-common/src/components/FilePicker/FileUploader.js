@@ -31,7 +31,10 @@ export default class FileUploader extends Component {
 
     handleFileSelection = event => {
         this.setState({files: event.target.files});
-        this.props.onFilesSelected(event.target.files);
+        let target = event.target || event.srcElement;
+        if (target.files.length > 0) {
+            this.props.onFilesSelected(target.files);
+        }
     }
 
     render () {
