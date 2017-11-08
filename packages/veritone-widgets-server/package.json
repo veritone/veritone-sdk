@@ -4,7 +4,7 @@
   "description": "Backend server for widgets",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "Andrew Tung",
   "license": "Apache-2.0",

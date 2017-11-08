@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const Strategy = require('passport-veritone');
 const ejs = require('ejs');
-const fs = require('fs');
 
 const app = express();
 
@@ -28,15 +27,29 @@ passport.use(new Strategy({
 }, function(accessToken, refreshToken, profile, done) {
   return done(null, profile);
 }));
+const oauthError = (err, req, res, next) => {
+  console.log("Passport-Veritone OAuth2 Error", err);
+  res.render('oauth_error', { clientOrigin: settings.clientOrigin });
+  next();
+};
 
 app.get('/auth/veritone', passport.authenticate('veritone'));
 
-app.get('/auth/veritone/callback', passport.authenticate('veritone', { session: false }), (req, res) => {
-    if(!settings.clientOrigin) {
-        console.error("Must specifiy the client origin for safety");
+app.get(
+  '/auth/veritone/callback',
+  passport.authenticate('veritone', { session: false }),
+  (req, res) => {
+    if (!settings.clientOrigin) {
+      console.error('Must specifiy the client origin for safety');
     }
-    res.render('oauth', {oauthToken: req.user.oauthToken, clientOrigin: settings.clientOrigin});
-  });
+    res.render('oauth', {
+      oauthToken: req.user.oauthToken,
+      clientOrigin: settings.clientOrigin
+    });
+  }
+);
+
+app.use(oauthError);
 
 // start server
 // --------------------------------
@@ -45,5 +58,5 @@ app.listen(settings.port, settings.host, err => {
     console.log(err);
     return;
   }
-  console.log('🐬  App is listening at http://%s:%s', settings.host, settings.port);
+  console.log('🐬  Veritone-widgets-server is listening at http://%s:%s', settings.host, settings.port);
 });
