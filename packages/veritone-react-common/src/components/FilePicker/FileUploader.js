@@ -33,7 +33,7 @@ export default class FileUploader extends Component {
         this.setState({files: event.target.files});
         let target = event.target || event.srcElement;
         if (target.files.length > 0) {
-            this.props.onFilesSelected(target.files);
+            this.props.onFilesSelected(Array.from(target.files));
         }
     }
 
