@@ -44,6 +44,8 @@ const StoryForm = reduxForm({
   </form>
 ));
 
+/* eslint-disable react/jsx-no-bind */
+
 storiesOf('Form Components', module)
   .add('TextField', () => (
     <Provider store={store}>
@@ -119,8 +121,9 @@ storiesOf('Form Components', module)
   ))
   .add('Select', () => (
     <Provider store={store}>
-      <StoryForm onSubmit={values => alert(JSON.stringify(values))}
-                 initialValues={{ 'age-field-error': "10" }}
+      <StoryForm
+        onSubmit={values => alert(JSON.stringify(values))}
+        initialValues={{ 'age-field-error': '10' }}
       >
         <FormControl>
           <InputLabel>Age</InputLabel>
@@ -134,10 +137,10 @@ storiesOf('Form Components', module)
           </Field>
           <FormHelperText>This is a basic input</FormHelperText>
         </FormControl>
-
         <br />
 
         {/* fixme-- figure out how to get the Field into an error state without using FormControl props.error */}
+
         <FormControl error>
           <InputLabel>Age</InputLabel>
           <Field
@@ -155,9 +158,7 @@ storiesOf('Form Components', module)
           </Field>
           <FormHelperText>This is an error input</FormHelperText>
         </FormControl>
-
         <br />
-
         <FormControl>
           <InputLabel>Age</InputLabel>
           <Field
@@ -268,7 +269,12 @@ storiesOf('Form Components', module)
             <FormControlLabel value="dog" control={<Radio />} label="Dog" />
             <FormControlLabel value="cat" control={<Radio />} label="Cat" />
             <FormControlLabel value="other" control={<Radio />} label="Other" />
-            <FormControlLabel value="disabled" label="Disabled" disabled control={<Radio />} />
+            <FormControlLabel
+              value="disabled"
+              label="Disabled"
+              disabled
+              control={<Radio />}
+            />
           </Field>
           <FormHelperText error>This form has an error</FormHelperText>
         </FormGroup>

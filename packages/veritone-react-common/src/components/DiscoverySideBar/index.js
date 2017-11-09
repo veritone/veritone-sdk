@@ -18,7 +18,6 @@ import Header from './header/Header';
 import SectionTree, { sectionsShape } from './SectionTree';
 import AllFiltersList from './AllFiltersList';
 
-
 // todo:
 // figure out how state will come from redux-form and how to transform that
 // into filters counts for each section/subsection

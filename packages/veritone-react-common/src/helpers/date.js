@@ -151,7 +151,6 @@ export const defaultIntervals = {
     label: 'Last 30 days',
     window: [30, 'd']
   }),
-
   quarter: new Interval({
     label: 'Last 90 days',
     window: [90, 'd']

@@ -51,13 +51,13 @@ const exampleSectionTree = {
   ]
 };
 
-
 const exampleSelectedFilters = [
   {
     label: 'filter category one',
     number: 5,
     id: '1'
-  },  {
+  },
+  {
     label: 'filter category 2',
     number: 10,
     id: '2'

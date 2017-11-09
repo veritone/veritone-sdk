@@ -120,9 +120,7 @@ export default class AppBar extends React.Component {
             {this.props.closeButton && (
               <div className={styles['iconGroup__icon']}>
                 <div style={{ marginLeft: 'auto' }}>
-                  <IconButton
-                    onClick={this.props.onClose}
-                  >
+                  <IconButton onClick={this.props.onClose}>
                     <CloseIcon color="white" />
                   </IconButton>
                 </div>

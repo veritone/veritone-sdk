@@ -1,3 +1,3 @@
-import { RadioGroup } from 'redux-form-material-ui'
+import { RadioGroup } from 'redux-form-material-ui';
 
-export default RadioGroup
+export default RadioGroup;
