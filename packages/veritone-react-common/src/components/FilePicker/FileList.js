@@ -9,15 +9,6 @@ import {
   } from 'prop-types';
 
 class FileList extends Component {
-    state = {
-        files: []
-    }
-
-    componentWillMount() {
-        console.log(this.props.files);
-        this.setState({files: this.props.files});
-    }
-
     render() {
         const listStyle = {
             position: 'relative',
@@ -27,7 +18,7 @@ class FileList extends Component {
         return (
             <List style={listStyle}>
                 {
-                    this.state.files.map((file, index) => {
+                    this.props.files.map((file, index) => {
                         return <FileListItem key={index} file={file} />
                     })
                 }
