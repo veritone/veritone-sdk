@@ -35,7 +35,7 @@ const StoryForm = reduxForm({
 storiesOf('Form Components', module).add('TextField', () => (
   <Provider store={store}>
     <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
-      <p>
+      <div>
         <Field
           name="text-field"
           label="Plain TextField"
@@ -50,7 +50,7 @@ storiesOf('Form Components', module).add('TextField', () => (
             />
           </Tooltip>
         </FormHelperText>
-      </p>
+      </div>
 
       <FormControl>
         <InputLabel htmlFor="adorned-input">Adorned TextField</InputLabel>
@@ -70,7 +70,7 @@ storiesOf('Form Components', module).add('TextField', () => (
         <FormHelperText>{'Adorned input'}</FormHelperText>
       </FormControl>
 
-      <p>
+      <div>
         <Field
           error
           name="text-field-error"
@@ -78,9 +78,9 @@ storiesOf('Form Components', module).add('TextField', () => (
           component={TextField}
         />
         <FormHelperText error>error: value must be different</FormHelperText>
-      </p>
+      </div>
 
-      <p>
+      <div>
         <Field
           disabled
           name="text-field-disabled"
@@ -88,7 +88,7 @@ storiesOf('Form Components', module).add('TextField', () => (
           component={TextField}
         />
         <FormHelperText disabled>this field is disabled</FormHelperText>
-      </p>
+      </div>
     </StoryForm>
   </Provider>
 ));
