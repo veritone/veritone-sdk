@@ -4,7 +4,14 @@ import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
 import { storiesOf } from '@storybook/react';
 import { InputLabel, InputAdornment } from 'material-ui/Input';
-import { FormHelperText, FormControl } from 'material-ui/Form';
+import {
+  FormHelperText,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  FormGroup
+} from 'material-ui/Form';
+import Radio from 'material-ui/Radio';
 import { MenuItem } from 'material-ui/Menu';
 import Visibility from 'material-ui-icons/Visibility';
 import InfoIcon from 'material-ui-icons/Info';
@@ -14,6 +21,8 @@ import Tooltip from 'material-ui/Tooltip';
 import TextField from './TextField';
 import Input from './Input';
 import Select from './Select';
+import Checkbox from './Checkbox';
+import RadioGroup from './RadioGroup';
 
 const store = createStore(
   combineReducers({
@@ -24,9 +33,7 @@ const store = createStore(
 
 const StoryForm = reduxForm({
   form: 'story',
-  initialValues: {
-    'age-field-error': "20"
-  }
+  initialValues: {}
 })(({ handleSubmit, children, submitting, pristine }) => (
   <form onSubmit={handleSubmit}>
     {children}
@@ -147,7 +154,7 @@ storiesOf('Form Components', module)
           <FormHelperText>This is an error input</FormHelperText>
         </FormControl>
 
-        <br/>
+        <br />
 
         <FormControl>
           <InputLabel>Age</InputLabel>
@@ -166,6 +173,139 @@ storiesOf('Form Components', module)
           </Field>
           <FormHelperText disabled>This is a disabled input</FormHelperText>
         </FormControl>
+      </StoryForm>
+    </Provider>
+  ))
+  .add('Checkbox', () => {
+    return (
+      <Provider store={store}>
+        <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Select Options:</FormLabel>
+            <FormGroup>
+              <Field component={Checkbox} label="Option A" name="option-A" />
+              <Field component={Checkbox} label="Option B" name="option-B" />
+              <Field component={Checkbox} label="Option C" name="option-C" />
+            </FormGroup>
+          </FormControl>
+
+          <br />
+          <br />
+
+          <FormControl component="fieldset">
+            <FormLabel component="legend" error>
+              Error group:
+            </FormLabel>
+            <FormGroup>
+              <Field component={Checkbox} label="Option A" name="option-A" />
+              <Field component={Checkbox} label="Option B" name="option-B" />
+              <Field component={Checkbox} label="Option C" name="option-C" />
+            </FormGroup>
+            <FormHelperText error>
+              selected options fail validation
+            </FormHelperText>
+          </FormControl>
+
+          <br />
+          <br />
+
+          <FormControl component="fieldset">
+            <FormLabel component="legend" disabled>
+              Disabled group:
+            </FormLabel>
+            <FormGroup>
+              <Field
+                component={Checkbox}
+                label="Option A"
+                name="option-A"
+                disabled
+              />
+              <Field
+                component={Checkbox}
+                label="Option B"
+                name="option-B"
+                disabled
+              />
+              <Field
+                component={Checkbox}
+                label="Option C"
+                name="option-C"
+                disabled
+              />
+            </FormGroup>
+            <FormHelperText disabled>this form is disabled</FormHelperText>
+          </FormControl>
+        </StoryForm>
+      </Provider>
+    );
+  })
+  .add('RadioGroup', () => (
+    <Provider store={store}>
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+        <Field component={RadioGroup} name="animal">
+          <FormLabel component="legend">Favorite Pet</FormLabel>
+          <FormControlLabel value="dog" control={<Radio />} label="Dog" />
+          <FormControlLabel value="cat" control={<Radio />} label="Cat" />
+          <FormControlLabel value="other" control={<Radio />} label="Other" />
+          <FormControlLabel
+            value="disabled"
+            disabled
+            control={<Radio />}
+            label="Disabled"
+          />
+        </Field>
+
+        <br />
+        <br />
+
+        <FormGroup>
+          <FormLabel component="legend" error>
+            Favorite Pet (error)
+          </FormLabel>
+          <Field component={RadioGroup} name="animal">
+            <FormControlLabel value="dog" control={<Radio />} label="Dog" />
+            <FormControlLabel value="cat" control={<Radio />} label="Cat" />
+            <FormControlLabel value="other" control={<Radio />} label="Other" />
+            <FormControlLabel value="disabled" label="Disabled" disabled control={<Radio />} />
+          </Field>
+          <FormHelperText error>This form has an error</FormHelperText>
+        </FormGroup>
+
+        <br />
+        <br />
+
+        <FormGroup>
+          <FormLabel component="legend" disabled>
+            Favorite Pet (disabled)
+          </FormLabel>
+          <Field component={RadioGroup} name="animal">
+            <FormControlLabel
+              value="dog"
+              control={<Radio />}
+              label="Dog"
+              disabled
+            />
+            <FormControlLabel
+              value="cat"
+              control={<Radio />}
+              label="Cat"
+              disabled
+            />
+            <FormControlLabel
+              value="other"
+              control={<Radio />}
+              label="Other"
+              disabled
+            />
+            <FormControlLabel
+              value="disabled"
+              disabled
+              control={<Radio />}
+              label="Disabled"
+            />
+          </Field>
+          <FormHelperText disabled>This form is disabled</FormHelperText>
+        </FormGroup>
       </StoryForm>
     </Provider>
   ));
