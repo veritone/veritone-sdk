@@ -27,8 +27,12 @@ class FileListItem extends Component {
             <div className={styles.fileListItem}>
                 <img src={this.state.dataUrl} className={styles.fileListItemImage}></img>
                 <div className={styles.fileListItemText}>
-                    {this.props.file.name}
-                    {this.props.file.size}
+                    <span className={styles.fileListItemNameText}>
+                        {this.props.file.name}
+                    </span>
+                    <span className={styles.fileListItemFileSizeText}>
+                        {this.formatBytes(this.props.file.size)}
+                    </span>
                 </div>
                 <IconButton className={styles.fileListItemDeleteIcon} 
                             aria-label="Delete">

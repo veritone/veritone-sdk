@@ -27,7 +27,7 @@ export default class FilePicker extends Component {
 
     render () {
         return (
-            <Paper className={styles.filePicker}>
+            <Paper>
                 File Picker
                 <Tabs value={this.state.value}
                       indicatorColor="primary"
