@@ -75,7 +75,7 @@ storiesOf('DiscoverySideBar', module)
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
           onClearAllFilters={action('clear all filters')}
-          sections={exampleSectionTree}
+          filtersSections={exampleSectionTree}
           formComponents={{
             'select-station-form': <div>select a station</div>
           }}
@@ -94,7 +94,7 @@ storiesOf('DiscoverySideBar', module)
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
           onClearAllFilters={action('clear all filters')}
-          sections={exampleSectionTree}
+          filtersSections={exampleSectionTree}
           formComponents={{
             'select-station-form': <div>select a station</div>
           }}
