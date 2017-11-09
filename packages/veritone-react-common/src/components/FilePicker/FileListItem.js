@@ -11,15 +11,31 @@ class FileListItem extends Component {
         dataUrl: ""
     }
 
-    componentWillMount() {
+    // taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+    formatBytes = (bytes) => {
+        if(bytes == 0) return '0 Bytes';
+        var k = 1024,
+            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+     }
+
+    readImageFile = file => {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
             this.setState({
-                file: this.props.file,
                 dataUrl: fileReader.result
             });
         }
-        fileReader.readAsDataURL(this.props.file);
+        fileReader.readAsDataURL(file);
+    }
+
+    componentWillReceiveProps = nextProps => {
+        this.readImageFile(nextProps.file);
+    }
+
+    componentWillMount() {
+        this.readImageFile(this.props.file);
     }
 
     render() {
