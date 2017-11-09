@@ -6,7 +6,9 @@ import { storiesOf } from '@storybook/react';
 import { InputLabel, InputAdornment } from 'material-ui/Input';
 import { FormHelperText, FormControl } from 'material-ui/Form';
 import Visibility from 'material-ui-icons/Visibility';
+import InfoIcon from 'material-ui-icons/Info';
 import IconButton from 'material-ui/IconButton';
+import Tooltip from 'material-ui/Tooltip';
 
 import TextField from './TextField';
 import Input from './Input';
@@ -39,13 +41,18 @@ storiesOf('Form Components', module).add('TextField', () => (
           placeholder="add your text here"
           component={TextField}
         />
-        <FormHelperText>{"here's some help text"}</FormHelperText>
+        <FormHelperText>
+          {"here's some help text "}
+          <Tooltip title="this is a tooltip">
+            <InfoIcon
+              style={{ width: 12, height: 12, verticalAlign: 'bottom' }}
+            />
+          </Tooltip>
+        </FormHelperText>
       </p>
 
       <FormControl>
-        <InputLabel htmlFor="adorned-input">
-          Adorned TextField
-        </InputLabel>
+        <InputLabel htmlFor="adorned-input">Adorned TextField</InputLabel>
         <Field
           component={Input}
           name="input-adorned"
@@ -54,12 +61,12 @@ storiesOf('Form Components', module).add('TextField', () => (
           endAdornment={
             <InputAdornment position="end">
               <IconButton>
-                <Visibility/>
+                <Visibility />
               </IconButton>
             </InputAdornment>
           }
         />
-        <FormHelperText>{"Adorned input"}</FormHelperText>
+        <FormHelperText>{'Adorned input'}</FormHelperText>
       </FormControl>
 
       <p>
