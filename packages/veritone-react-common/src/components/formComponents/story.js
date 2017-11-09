@@ -5,6 +5,7 @@ import { reducer as formReducer, reduxForm, Field } from 'redux-form';
 import { storiesOf } from '@storybook/react';
 import { InputLabel, InputAdornment } from 'material-ui/Input';
 import { FormHelperText, FormControl } from 'material-ui/Form';
+import { MenuItem } from 'material-ui/Menu';
 import Visibility from 'material-ui-icons/Visibility';
 import InfoIcon from 'material-ui-icons/Info';
 import IconButton from 'material-ui/IconButton';
@@ -12,6 +13,7 @@ import Tooltip from 'material-ui/Tooltip';
 
 import TextField from './TextField';
 import Input from './Input';
+import Select from './Select';
 
 const store = createStore(
   combineReducers({
@@ -21,7 +23,10 @@ const store = createStore(
 );
 
 const StoryForm = reduxForm({
-  form: 'story'
+  form: 'story',
+  initialValues: {
+    'age-field-error': "20"
+  }
 })(({ handleSubmit, children, submitting, pristine }) => (
   <form onSubmit={handleSubmit}>
     {children}
@@ -32,68 +37,135 @@ const StoryForm = reduxForm({
   </form>
 ));
 
-storiesOf('Form Components', module).add('TextField', () => (
-  <Provider store={store}>
-    <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
-      <div>
-        <Field
-          name="text-field"
-          label="Plain TextField"
-          placeholder="add your text here"
-          component={TextField}
-        />
-        <FormHelperText>
-          {"here's some help text "}
-          {
-            // fixme: this results in "<div> descendant of <p>" error
-            false &&
-            <Tooltip title="this is a tooltip">
-              <InfoIcon
-                style={{ width: 12, height: 12, verticalAlign: 'bottom' }}
-              />
-            </Tooltip>
-          }
+storiesOf('Form Components', module)
+  .add('TextField', () => (
+    <Provider store={store}>
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+        <div>
+          <Field
+            name="text-field"
+            label="Plain TextField"
+            placeholder="add your text here"
+            component={TextField}
+          />
+          <FormHelperText>
+            {"here's some help text "}
+            {// fixme: this results in "<div> descendant of <p>" error
+            false && (
+              <Tooltip title="this is a tooltip">
+                <InfoIcon
+                  style={{ width: 12, height: 12, verticalAlign: 'bottom' }}
+                />
+              </Tooltip>
+            )}
+          </FormHelperText>
+        </div>
 
-        </FormHelperText>
-      </div>
+        <FormControl>
+          <InputLabel htmlFor="adorned-input">Adorned TextField</InputLabel>
+          <Field
+            component={Input}
+            name="input-adorned"
+            id="adorned-input"
+            placeholder="add your text here"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton>
+                  <Visibility />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+          <FormHelperText>{'Adorned input'}</FormHelperText>
+        </FormControl>
 
-      <FormControl>
-        <InputLabel htmlFor="adorned-input">Adorned TextField</InputLabel>
-        <Field
-          component={Input}
-          name="input-adorned"
-          id="adorned-input"
-          placeholder="add your text here"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton>
-                <Visibility />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-        <FormHelperText>{'Adorned input'}</FormHelperText>
-      </FormControl>
+        <div>
+          <Field
+            error
+            name="text-field-error"
+            label="Error state"
+            component={TextField}
+          />
+          <FormHelperText error>error: value must be different</FormHelperText>
+        </div>
 
-      <div>
-        <Field
-          error
-          name="text-field-error"
-          label="Error state"
-          component={TextField}
-        />
-        <FormHelperText error>error: value must be different</FormHelperText>
-      </div>
+        <div>
+          <Field
+            disabled
+            name="text-field-disabled"
+            label="disabled state"
+            component={TextField}
+          />
+          <FormHelperText disabled>this field is disabled</FormHelperText>
+        </div>
 
-      <div>
-        <Field
-          disabled
-          name="text-field-disabled"
-          label="disabled state"
-          component={TextField}
-        />
-        <FormHelperText disabled>this field is disabled</FormHelperText>
-      </div>
-    </StoryForm>
-  </Provider>
-));
+        <div>
+          <Field
+            type="number"
+            name="text-field-number"
+            label="Numeric input"
+            component={TextField}
+          />
+        </div>
+      </StoryForm>
+    </Provider>
+  ))
+  .add('Select', () => (
+    <Provider store={store}>
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+        <FormControl>
+          <InputLabel>Age</InputLabel>
+          <Field component={Select} name="age-field" style={{ width: 250 }}>
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Field>
+          <FormHelperText>This is a basic input</FormHelperText>
+        </FormControl>
+
+        <br />
+
+        {/* fixme-- figure out how to get the Field into an error state without using FormControl props.error */}
+        <FormControl error>
+          <InputLabel>Age</InputLabel>
+          <Field
+            component={Select}
+            name="age-field-error"
+            style={{ width: 250 }}
+            renderValue={value => `⚠️  - ${value}`}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Field>
+          <FormHelperText>This is an error input</FormHelperText>
+        </FormControl>
+
+        <br/>
+
+        <FormControl>
+          <InputLabel>Age</InputLabel>
+          <Field
+            component={Select}
+            name="age-field-disabled"
+            style={{ width: 250 }}
+            disabled
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>Ten</MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem>
+          </Field>
+          <FormHelperText disabled>This is a disabled input</FormHelperText>
+        </FormControl>
+      </StoryForm>
+    </Provider>
+  ));
