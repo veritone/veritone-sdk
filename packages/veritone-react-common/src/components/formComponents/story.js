@@ -44,11 +44,16 @@ storiesOf('Form Components', module).add('TextField', () => (
         />
         <FormHelperText>
           {"here's some help text "}
-          <Tooltip title="this is a tooltip">
-            <InfoIcon
-              style={{ width: 12, height: 12, verticalAlign: 'bottom' }}
-            />
-          </Tooltip>
+          {
+            // fixme: this results in "<div> descendant of <p>" error
+            false &&
+            <Tooltip title="this is a tooltip">
+              <InfoIcon
+                style={{ width: 12, height: 12, verticalAlign: 'bottom' }}
+              />
+            </Tooltip>
+          }
+
         </FormHelperText>
       </div>
 
