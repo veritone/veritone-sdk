@@ -119,7 +119,9 @@ storiesOf('Form Components', module)
   ))
   .add('Select', () => (
     <Provider store={store}>
-      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}
+                 initialValues={{ 'age-field-error': "10" }}
+      >
         <FormControl>
           <InputLabel>Age</InputLabel>
           <Field component={Select} name="age-field" style={{ width: 250 }}>
