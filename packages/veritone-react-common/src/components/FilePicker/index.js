@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
+import IconButton from 'material-ui/IconButton';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 import _ from 'lodash';
@@ -39,7 +40,10 @@ export default class FilePicker extends Component {
     render () {
         return (
             <Paper>
-                File Picker
+                <div className={styles.filePickerHeader}>
+                    <span>File Picker</span>
+                    <IconButton style={{height:'28px', width: '28px'}}><i className='icon-close-exit'></i></IconButton>
+                </div>
                 <Tabs value={this.state.value}
                       indicatorColor="primary"
                       onChange={this.handleTabChange} 
