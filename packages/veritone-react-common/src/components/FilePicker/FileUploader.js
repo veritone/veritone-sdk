@@ -3,14 +3,10 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 
 import {
-    objectOf,
-    any,
     string,
-    bool,
     func,
     arrayOf,
-    shape,
-    number
+    oneOfType
   } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -20,7 +16,7 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 export default class FileUploader extends Component {
     static propTypes = {
-        acceptedFileTypes: arrayOf(string),
+        acceptedFileTypes: oneOfType([arrayOf(string), string]),
         onFilesSelected: func
     }
 
@@ -40,6 +36,9 @@ export default class FileUploader extends Component {
     }
 
     render () {
+        let accept = typeof this.state.acceptedFileTypes === 'string' ?
+            this.state.acceptedFileTypes :
+            this.state.acceptedFileTypes.join(',');
         return (
             <div className={styles.fileUploader}>
                 <span className={styles.fileUploadIcon}>
@@ -48,7 +47,7 @@ export default class FileUploader extends Component {
                 <span className={styles.fileUploaderSubtext}>
                     Drag & Drop file(s) to upload or
                 </span>
-                <input accept={this.state.acceptedFileTypes.join(',')} 
+                <input accept={accept} 
                        id="file" 
                        multiple 
                        type="file"
