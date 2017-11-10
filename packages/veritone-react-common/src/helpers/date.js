@@ -19,7 +19,7 @@ export class Interval {
 
   get start() {
     if (this._window) {
-      return Interval._translateBucket(this._window).start;
+      return Interval._translateWidow(this._window).start;
     }
 
     return this._start;
@@ -27,7 +27,7 @@ export class Interval {
 
   get end() {
     if (this._window) {
-      return Interval._translateBucket(this._window).end;
+      return Interval._translateWidow(this._window).end;
     }
 
     return this._end;
@@ -110,7 +110,7 @@ export class Interval {
     }
   }
 
-  static _translateBucket(window) {
+  static _translateWidow(window) {
     const subFn = {
       h: subHours,
       d: subDays,

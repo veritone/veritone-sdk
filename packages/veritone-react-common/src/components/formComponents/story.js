@@ -18,11 +18,14 @@ import InfoIcon from 'material-ui-icons/Info';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
 
+import { defaultIntervals } from 'helpers/date';
 import TextField from './TextField';
 import Input from './Input';
 import Select from './Select';
 import Checkbox from './Checkbox';
 import RadioGroup from './RadioGroup';
+import DateIntervalSelect from './DateIntervalSelect';
+import DateRangePicker from './DateRangePicker';
 
 const store = createStore(
   combineReducers({
@@ -314,6 +317,32 @@ storiesOf('Form Components', module)
           </Field>
           <FormHelperText disabled>This form is disabled</FormHelperText>
         </FormGroup>
+      </StoryForm>
+    </Provider>
+  ))
+  .add('DateIntervalSelect', () => (
+    <Provider store={store}>
+      <StoryForm
+        onSubmit={values => alert(JSON.stringify(values))}
+        initialValues={{ 'date-interval': defaultIntervals.day }}
+      >
+        <Field
+          component={DateIntervalSelect}
+          name="date-interval"
+          onChange={(a, inter) => console.log(inter.toString())}
+        />
+      </StoryForm>
+    </Provider>
+  ))
+  .add('DateRangePicker', () => (
+    <Provider store={store}>
+      <StoryForm
+        onSubmit={values => alert(JSON.stringify(values))}
+      >
+        <Field
+          component={DateRangePicker}
+          name="date"
+        />
       </StoryForm>
     </Provider>
   ));
