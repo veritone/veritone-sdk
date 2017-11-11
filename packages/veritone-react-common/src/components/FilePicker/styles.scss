@@ -109,3 +109,59 @@
     @include file-picker-round-image(40px, 4px);
     border-radius: 50%;
 }
+
+.urlUploader {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    width:100%;
+    height: 100%;
+}
+
+.urlUploaderInfoBox {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $grey-1;
+    border: 4px dashed $grey-4;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 100%;
+    flex: auto;
+    text-align: center
+}
+
+.urlTextField {
+    @include mui-text('menu');
+    margin-top: 0;
+    margin-bottom: 5px;
+    width: 75%;
+    .fileUrlInputFocused {
+        color: #2597EC;
+    }
+    
+    .fileUrlInputInkbar:after {
+        background-color: #2597EC;
+    }
+}
+
+.fileUrlPickerInput {
+    margin-top: 13px;
+    input {
+        padding: 5px 0;
+    }
+}
+
+.correctUrlText {
+    @include mui-text('body1');
+    margin-bottom: 15px;
+}
+
+.confirmLicenseText {
+    @include mui-text('caption');
+    color: $grey-5;
+}
