@@ -12,7 +12,8 @@ import {
     shape,
     string,
     arrayOf,
-    oneOfType
+    oneOfType,
+    number
   } from 'prop-types';
 
 @withMuiThemeProvider
@@ -81,8 +82,8 @@ class FilePicker extends Component {
 
 FilePicker.propTypes = {
     options: shape({
-        width: string,
-        height: string,
+        width: number,
+        height: number,
         accept: oneOfType([arrayOf(string), string])
     })
 }
