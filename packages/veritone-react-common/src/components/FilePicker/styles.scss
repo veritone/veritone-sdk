@@ -101,6 +101,10 @@
     color: $grey-5;
 }
 
+.fileListItemDeleteIcon {
+    margin-left: auto;
+}
+
 .fileListItemImage {
     @include file-picker-round-image(40px, 4px);
     border-radius: 50%;
