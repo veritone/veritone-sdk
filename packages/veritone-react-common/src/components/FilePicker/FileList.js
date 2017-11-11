@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import FileListItem from './FileListItem';
-import List from 'material-ui/List';
 import styles from './styles.scss';
 
 import {
@@ -13,10 +12,10 @@ class FileList extends Component {
         const listStyle = {
             position: 'relative',
             overflowY: 'auto',
-            maxHeight: this.props.height || 200,
+            maxHeight: this.props.height,
         };
         return (
-            <List style={listStyle}>
+            <div style={listStyle} className={styles.fileList}>
                 {
                     this.props.files.map((file, index) => {
                         return <FileListItem key={index} 
@@ -24,7 +23,7 @@ class FileList extends Component {
                                              onRemoveFile={this.props.onRemoveFile}/>
                     })
                 }
-            </List>
+            </div>
         );
     }
 }

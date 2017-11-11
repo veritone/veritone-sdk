@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
-import Paper from 'material-ui/Paper';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
-import IconButton from 'material-ui/IconButton';
+import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
+import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 import _ from 'lodash';
 
+import {
+    shape,
+    string,
+    arrayOf,
+    oneOfType
+  } from 'prop-types';
+
 @withMuiThemeProvider
-export default class FilePicker extends Component {
+class FilePicker extends Component {
     state = {
-        value: 0,
+        selectedTab: "upload",
         selectedFiles: []
     };
 
@@ -33,47 +37,53 @@ export default class FilePicker extends Component {
         this.setState({selectedFiles: files});
     }
 
-    handleTabChange = (event, value) => {
-        this.setState({ value });
+    handleTabChange = value => {
+        this.setState({selectedTab: value});
     }
 
     render () {
+        let pickerOptions = this.props.options || {};
         return (
-            <Paper>
-                <div className={styles.filePickerHeader}>
-                    <span>File Picker</span>
-                    <IconButton style={{height:'28px', width: '28px'}}><i className='icon-close-exit'></i></IconButton>
-                </div>
-                <Tabs value={this.state.value}
-                      indicatorColor="primary"
-                      onChange={this.handleTabChange} 
-                      className={styles.filePickerTabs}>
-                    <Tab label="Upload"></Tab>
-                    <Tab label="By URL"></Tab>
-                </Tabs>
-                <div className={styles.filePickerBody}>
+            <div>
+                <div className={styles.filePicker}
+                     style={{
+                         height: pickerOptions.height || 400,
+                         width: pickerOptions.width || 600
+                     }}>
+                    <FilePickerHeader selectedTab={this.state.selectedTab}
+                                      onSelectTab={this.handleTabChange}/>
                     { 
-                        this.state.value === 0 && 
-                            <Grid container>
-                                <Grid item xs={12} sm={this.state.selectedFiles.length > 1 ? 6 : 12}>
-                                    <FileUploader onFilesSelected={this.handleFilesSelected}/>
-                                </Grid>
+                        this.state.selectedTab === "upload" && 
+                            <div className={styles.filePickerBody}>
+                                <FileUploader onFilesSelected={this.handleFilesSelected}
+                                                acceptedFileTypes={pickerOptions.accept}/>
                                 { 
                                     this.state.selectedFiles.length > 1  &&
-                                        <Grid item xs={12} sm={6}>
-                                            <FileList files={this.state.selectedFiles}
-                                                      onRemoveFile={this.handleRemoveFile}/>
-                                        </Grid>
+                                        <FileList files={this.state.selectedFiles}
+                                                  onRemoveFile={this.handleRemoveFile}/>
                                 }
-                            </Grid>
+                            </div>
                     }
-                    { this.state.value === 1 && <div>Url Upload</div> }
+                    { 
+                        this.state.selectedTab === "by-url" && 
+                            <div className={styles.filePickerBody}>
+                                Url Upload
+                            </div> 
+                    }
+                    <FilePickerFooter />
                 </div>
-                <div className={styles.filePickerButtons}>
-                    <Button>Cancel</Button>
-                    <Button raised color="primary">Upload</Button>
-                </div>
-            </Paper>
+                <div className={styles.overlay}></div>
+            </div>
         );
     }
+};
+
+FilePicker.propTypes = {
+    options: shape({
+        width: string,
+        height: string,
+        accept: oneOfType([arrayOf(string), string])
+    })
 }
+
+export default FilePicker;
