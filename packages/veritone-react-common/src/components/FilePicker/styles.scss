@@ -165,3 +165,28 @@
     @include mui-text('caption');
     color: $grey-5;
 }
+
+.imageContainer {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    margin-top: 45px;
+    padding: 10px;
+    background-color: #777777;
+}
+
+.fileImage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    img {
+        align-self: center;
+        width: auto;
+        height: 100%;
+        display: block;
+    }
+}
