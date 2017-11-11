@@ -3,6 +3,7 @@ import FileUploader from './FileUploader';
 import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
+import UrlUploader from './UrlUploader';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 import _ from 'lodash';
@@ -67,7 +68,7 @@ class FilePicker extends Component {
                     { 
                         this.state.selectedTab === "by-url" && 
                             <div className={styles.filePickerBody}>
-                                Url Upload
+                                <UrlUploader />
                             </div> 
                     }
                     <FilePickerFooter />
