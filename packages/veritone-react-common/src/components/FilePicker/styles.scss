@@ -1,58 +1,58 @@
 @import 'src/styles/modules/variables';
 @import 'src/styles/modules/muiTypography';
 
-$file-picker-margin: 20px;
-
 @mixin file-picker-round-image($size: 40px, $margin: 5px) {
-    width: $size;
-    height: $size;
-    margin: $margin;
-    border-radius: 50%;
+  width: $size;
+  height: $size;
+  margin: $margin;
+  border-radius: 50%;
 }
 
-.filePickerHeader {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    padding: $file-picker-margin $file-picker-margin 0 $file-picker-margin;
-    span {
-        @include mui-text('title');
-        flex: auto;
-    }
-    > i {
-        font-size: 24px;
-        font-weight: 400;
-        color: $grey-5;
-    }
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0; bottom: 0; right: 0;
+  z-index: 2;
+  opacity: 0.2;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.filePicker {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  background-color: $grey-1;
 }
 
 .filePickerBody {
-    padding: $file-picker-margin;
-}
-
-.filePickerTabs {
-    border-bottom: 1px solid $grey-4;
-}
-
-.filePickerButtons {
+    flex: 1;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: row;
     flex-direction: row;
-    -webkit-justify-content: flex-end;
-    justify-content: flex-end;
-    padding: 0 $file-picker-margin $file-picker-margin $file-picker-margin;
+    padding: $file-picker-margin;
 }
 
 .fileUploader {
+    display: -webkit-flex;
     display: flex;
+    -webkit-flex-direction: column;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: $grey-1;
     border: 4px dashed $grey-4;
-    min-height: 200px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    height: 100%;
+    width: 100%;
     input {
         display: none;
     }
@@ -68,11 +68,16 @@ $file-picker-margin: 20px;
     margin-bottom: $file-picker-margin;
 }
 
+.fileList {
+    flex: 0 0 50%;
+}
+
 .fileListItem {
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: row;
     flex-direction: row;
+    height: 50px;
 }
 
 .fileListItemText {
@@ -99,8 +104,4 @@ $file-picker-margin: 20px;
 .fileListItemImage {
     @include file-picker-round-image(40px, 4px);
     border-radius: 50%;
-}
-
-.fileListItemDeleteIcon {
-    margin-left: auto;
 }

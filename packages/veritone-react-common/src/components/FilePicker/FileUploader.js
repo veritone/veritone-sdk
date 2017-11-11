@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
-import Typography from 'material-ui/Typography';
 
 import {
     string,
