@@ -29,8 +29,8 @@ export default class DateRangePicker extends React.Component {
   static defaultProps = {
     minViewableDate: startOfMonth(subYears(new Date(), 3)),
     maxViewableDate: endOfDay(new Date()),
-    minDate: startOfDay(subDays(new Date(), 6)),
-    maxDate: endOfDay(new Date()),
+    // minDate: startOfDay(subDays(new Date(), 6)),
+    // maxDate: endOfDay(new Date()),
   };
 
   handleSelectCustomDate = ({ eventType, start, end }) => {
@@ -53,8 +53,8 @@ export default class DateRangePicker extends React.Component {
     return (
       <InfiniteCalendar
         Component={RangedCalendar}
-        min={this.props.minDate}
-        max={this.props.maxDate}
+        min={this.props.minViewableDate}
+        max={this.props.maxViewableDate}
         minDate={this.props.minDate}
         maxDate={this.props.maxDate}
         selected={this.props.input.value /*|| defaultCalendarDate*/}
