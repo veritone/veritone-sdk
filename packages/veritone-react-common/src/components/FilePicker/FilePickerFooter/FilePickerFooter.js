@@ -6,12 +6,16 @@ import Button from 'material-ui/Button';
 import styles from './styles.scss';
 import _ from 'lodash';
 
+import {
+    func
+  } from 'prop-types';
+
 @withMuiThemeProvider
 class FilePickerFooter extends Component {
     render () {
         return (
             <div className={styles.filePickerFooter}>
-                <Button>Cancel</Button>
+                <Button onClick={this.props.onCloseModal}>Cancel</Button>
                 <Button raised color="primary">Upload</Button>
             </div>
         );
@@ -19,6 +23,7 @@ class FilePickerFooter extends Component {
 };
 
 FilePickerFooter.propTypes = {
+    onCloseModal: func
 }
 
 export default FilePickerFooter;
