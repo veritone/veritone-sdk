@@ -23,23 +23,23 @@ class FilePicker extends Component {
     state = {
         isOpen: this.props.isOpen,
         selectedTab: "upload",
-        selectedFiles: []
+        files: []
     };
 
     handleRemoveFile = file => {
-        let array = this.state.selectedFiles;
-        let fileIndex = _.findIndex(this.state.selectedFiles, {
+        let array = this.state.files;
+        let fileIndex = _.findIndex(this.state.files, {
             'name': file.name,
             'size': file.size,
             'lastModified': file.lastModified,
             'type': file.type
         });
         array.splice(fileIndex, 1);
-        this.setState({selectedFiles: array});
+        this.setState({files: array});
     }
 
     handleFilesSelected = files => {
-        this.setState({selectedFiles: files});
+        this.setState({files: files});
     }
 
     handleTabChange = value => {
@@ -47,7 +47,7 @@ class FilePicker extends Component {
     }
 
     handleUrlUpload = file => {
-        this.setState({selectedFiles: [file]});
+        this.setState({files: [file]});
         console.log(this.state);
     }
 
@@ -62,8 +62,7 @@ class FilePicker extends Component {
             pickerOptions.accept;
         return (
             <Modal isOpen={this.state.isOpen}
-                   className={styles.modalContainer}
-                   overlayClassName={styles.overlay}>
+                   className={styles.modalContainer}>
                 <div
                   className={styles.filePicker}
                   style={{
@@ -80,8 +79,8 @@ class FilePicker extends Component {
                                 <FileUploader onFilesSelected={this.handleFilesSelected}
                                               acceptedFileTypes={acceptedFileTypes}/>
                                 { 
-                                    this.state.selectedFiles.length > 1  &&
-                                        <FileList files={this.state.selectedFiles}
+                                    this.state.files.length > 1  &&
+                                        <FileList files={this.state.files}
                                                     onRemoveFile={this.handleRemoveFile}/>
                                 }
                             </div>
