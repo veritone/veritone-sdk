@@ -21,6 +21,7 @@ import {
 @withMuiThemeProvider
 class FilePicker extends Component {
     state = {
+        isOpen: this.props.isOpen,
         selectedTab: "upload",
         selectedFiles: []
     };
@@ -50,13 +51,17 @@ class FilePicker extends Component {
         console.log(this.state);
     }
 
+    handleCloseModal = () => {
+        this.setState({isOpen:false});
+    } 
+
     render () {
         let pickerOptions = this.props.options || {};
         let acceptedFileTypes = typeof pickerOptions.accept === 'string' ?
             [pickerOptions.accept] :
             pickerOptions.accept;
         return (
-            <Modal isOpen={this.props.isOpen}
+            <Modal isOpen={this.state.isOpen}
                    className={styles.modalContainer}
                    overlayClassName={styles.overlay}>
                 <div
@@ -67,7 +72,8 @@ class FilePicker extends Component {
                   }}
                 >
                     <FilePickerHeader selectedTab={this.state.selectedTab}
-                                        onSelectTab={this.handleTabChange}/>
+                                      onSelectTab={this.handleTabChange}
+                                      onCloseModal={this.handleCloseModal}/>
                     { 
                         this.state.selectedTab === "upload" && 
                             <div className={styles.filePickerBody}>
@@ -87,7 +93,7 @@ class FilePicker extends Component {
                                                 accept={acceptedFileTypes}/>
                             </div> 
                     }
-                    <FilePickerFooter /> 
+                    <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
                 </div>
             </Modal>
         );

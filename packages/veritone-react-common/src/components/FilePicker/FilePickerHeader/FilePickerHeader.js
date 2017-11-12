@@ -27,7 +27,8 @@ class FilePickerHeader extends Component {
                         position: 'fixed',
                         top: 15,
                         right: 15
-                    }}>
+                    }}
+                    onClick={this.props.onCloseModal}>
                     <i className='icon-close-exit'></i>
                 </IconButton>
                 <Tabs value={this.props.selectedTab}
@@ -44,7 +45,8 @@ class FilePickerHeader extends Component {
 
 FilePickerHeader.propTypes = {
     selectedTab: string,
-    onSelectTab: func
+    onSelectTab: func,
+    onCloseModal: func
 }
 
 export default FilePickerHeader;
