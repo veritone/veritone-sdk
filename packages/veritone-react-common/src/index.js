@@ -20,3 +20,4 @@ export {
   TranscriptDisplay,
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
+export FilePicker from './components/FilePicker';
