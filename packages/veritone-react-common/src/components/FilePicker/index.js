@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Modal from 'react-modal';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
@@ -13,7 +14,8 @@ import {
     string,
     arrayOf,
     oneOfType,
-    number
+    number,
+    bool
   } from 'prop-types';
 
 @withMuiThemeProvider
@@ -43,44 +45,57 @@ class FilePicker extends Component {
         this.setState({selectedTab: value});
     }
 
+    handleUrlUpload = file => {
+        this.setState({selectedFiles: [file]});
+        console.log(this.state);
+    }
+
     render () {
         let pickerOptions = this.props.options || {};
+        let acceptedFileTypes = typeof pickerOptions.accept === 'string' ?
+            [pickerOptions.accept] :
+            pickerOptions.accept;
         return (
-            <div>
-                <div className={styles.filePicker}
-                     style={{
-                         height: pickerOptions.height || 400,
-                         width: pickerOptions.width || 600
-                     }}>
+            <Modal isOpen={this.props.isOpen}
+                   className={styles.modalContainer}
+                   overlayClassName={styles.overlay}>
+                <div
+                  className={styles.filePicker}
+                  style={{
+                    height: pickerOptions.height || 400,
+                    width: pickerOptions.width || 600
+                  }}
+                >
                     <FilePickerHeader selectedTab={this.state.selectedTab}
-                                      onSelectTab={this.handleTabChange}/>
+                                        onSelectTab={this.handleTabChange}/>
                     { 
                         this.state.selectedTab === "upload" && 
                             <div className={styles.filePickerBody}>
                                 <FileUploader onFilesSelected={this.handleFilesSelected}
-                                                acceptedFileTypes={pickerOptions.accept}/>
+                                              acceptedFileTypes={acceptedFileTypes}/>
                                 { 
                                     this.state.selectedFiles.length > 1  &&
                                         <FileList files={this.state.selectedFiles}
-                                                  onRemoveFile={this.handleRemoveFile}/>
+                                                    onRemoveFile={this.handleRemoveFile}/>
                                 }
                             </div>
                     }
                     { 
                         this.state.selectedTab === "by-url" && 
                             <div className={styles.filePickerBody}>
-                                <UrlUploader />
+                                <UrlUploader onUrlUpload={this.handleUrlUpload}
+                                                accept={acceptedFileTypes}/>
                             </div> 
                     }
-                    <FilePickerFooter />
+                    <FilePickerFooter /> 
                 </div>
-                <div className={styles.overlay}></div>
-            </div>
+            </Modal>
         );
     }
 };
 
 FilePicker.propTypes = {
+    isOpen: bool,
     options: shape({
         width: number,
         height: number,

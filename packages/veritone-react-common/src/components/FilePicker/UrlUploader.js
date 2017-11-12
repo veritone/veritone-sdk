@@ -3,7 +3,10 @@ import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 
 import {
-    func
+    func,
+    oneOfType,
+    arrayOf,
+    string
   } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -43,6 +46,7 @@ class UrlUploader extends Component {
                 });
             };
             fileReader.readAsDataURL(responseBlob);
+            this.props.onUrlUpload(responseBlob);
         }, (error) => {
             this.setState({
                 fetchingImage: false
@@ -90,5 +94,10 @@ class UrlUploader extends Component {
         );
     }
 }
+
+UrlUploader.propTypes = {
+    onUrlUpload: func.isRequired,
+    accept: oneOfType([arrayOf(string), string])
+};
 
 export default UrlUploader;
