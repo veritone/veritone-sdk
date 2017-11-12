@@ -16,7 +16,8 @@
     "react-dom": "^16.0.0",
     "react-infinite-calendar": "^2.3.1",
     "redux-form": "^7.1.2",
-    "redux-form-material-ui": "^5.0.0-beta.1"
+    "redux-form-material-ui": "^5.0.0-beta.1",
+    "react-modal": "^3.1.2"
   },
   "scripts": {
     "start": "start-storybook -p 9001 -c .storybook",
