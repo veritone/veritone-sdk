@@ -11,5 +11,5 @@ const pickerOptions = {
 
 storiesOf('FilePicker', module)
     .add('Base', () => (
-        <FilePicker options={pickerOptions}/>
+        <FilePicker isOpen={true} options={pickerOptions} accept={["image/*"]}/>
     ));
