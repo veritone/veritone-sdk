@@ -26,6 +26,12 @@ class FilePicker extends Component {
         files: []
     };
 
+    componentWillReceiveProps = (nextProps) => {
+        if (this.state.isOpen !== nextProps.isOpen) {
+            this.setState({isOpen: nextProps.isOpen});
+        }
+    }
+
     handleRemoveFile = file => {
         let array = this.state.files;
         let fileIndex = _.findIndex(this.state.files, {
@@ -48,7 +54,6 @@ class FilePicker extends Component {
 
     handleUrlUpload = file => {
         this.setState({files: [file]});
-        console.log(this.state);
     }
 
     handleCloseModal = () => {
