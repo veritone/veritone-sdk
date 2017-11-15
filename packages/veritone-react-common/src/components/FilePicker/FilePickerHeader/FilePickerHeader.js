@@ -24,7 +24,7 @@ class FilePickerHeader extends Component {
                 <IconButton style={{
                         height:'28px', 
                         width: '28px',
-                        position: 'fixed',
+                        position: 'absolute',
                         top: 15,
                         right: 15
                     }}
