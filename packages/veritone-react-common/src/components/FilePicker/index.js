@@ -92,7 +92,7 @@ class FilePicker extends Component {
                             <div className={styles.filePickerBody}>
                                 <DragDropContextProvider backend={HTML5Backend}>
                                     <FileUploader onFilesSelected={this.handleFilesSelected}
-                                                  acceptedFileTypes={acceptedFileTypes}
+                                                  acceptedFileTypes={pickerOptions.accept}
                                                   onDrop={this.handleFileDrop}
                                                   accept={[FILE]}/>
                                 </DragDropContextProvider>
