@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Modal from 'react-modal';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
@@ -10,6 +9,7 @@ import styles from './styles.scss';
 import _ from 'lodash';
 import { DragDropContext, DragDropContextProvider } from 'react-dnd';
 import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
+import Dialog from 'material-ui/Dialog';
 
 import {
     shape,
@@ -79,8 +79,7 @@ class FilePicker extends Component {
         let pickerOptions = this.props.options || {};
         const { FILE } = NativeTypes;
         return (
-            <Modal isOpen={this.state.isOpen}
-                   className={styles.modalContainer}>
+            <Dialog open={this.state.isOpen}>
                 <div
                   className={styles.filePicker}
                   style={{
@@ -116,7 +115,7 @@ class FilePicker extends Component {
                     }
                     <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
                 </div>
-            </Modal>
+            </Dialog>
         );
     }
 };
