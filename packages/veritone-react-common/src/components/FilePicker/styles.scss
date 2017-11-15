@@ -2,25 +2,10 @@
 @import 'src/styles/modules/muiTypography';
 
 @mixin file-picker-round-image($size: 40px, $margin: 5px) {
-  width: $size;
-  height: $size;
-  margin: $margin;
-  border-radius: 50%;
-}
-
-.modalContainer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    overflow: auto;
-    -webkit-box-shadow: 0 0 10px #777;
-    -moz-box-shadow: 0 0 10px #777;
-    box-shadow: 0 0 10px #777;
-
-    &:focus {
-        outline: none;
-    }
+    width: $size;
+    height: $size;
+    margin: $margin;
+    border-radius: 50%;
 }
 
 .filePicker {
@@ -51,7 +36,6 @@
     border: 4px dashed $grey-4;
     padding-top: 15px;
     padding-bottom: 15px;
-    height: 100%;
     width: 100%;
     input {
         display: none;
