@@ -21,7 +21,7 @@ class FileListItem extends Component {
     }
 
     handleRemoveFile = () => {
-        this.props.onRemoveFile(this.props.file);
+        this.props.onRemoveFile(this.props.index);
     }
 
     readImageFile = file => {

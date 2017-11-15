@@ -34,15 +34,9 @@ class FilePicker extends Component {
         }
     }
 
-    handleRemoveFile = file => {
-        let array = this.state.files;
-        let fileIndex = _.findIndex(this.state.files, {
-            'name': file.name,
-            'size': file.size,
-            'lastModified': file.lastModified,
-            'type': file.type
-        });
-        array.splice(fileIndex, 1);
+    handleRemoveFile = index => {
+        let array = this.state.files.slice();
+        array.splice(index, 1);
         this.setState({files: array});
     }
 
