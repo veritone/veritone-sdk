@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
+import { DropTarget } from 'react-dnd';
 
 import {
     string,
@@ -12,8 +13,24 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 
+const boxTarget = {
+	drop(props, monitor) {
+		if (props.onDrop) {
+			props.onDrop(props, monitor)
+		}
+	}
+}
+
+const collect = (connect, monitor) => {
+    return {
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop()
+    };
+}
+
 @withMuiThemeProvider
-export default class FileUploader extends Component {
+class FileUploader extends Component {
     static propTypes = {
         acceptedFileTypes: oneOfType([arrayOf(string), string]),
         onFilesSelected: func
@@ -35,10 +52,11 @@ export default class FileUploader extends Component {
     }
 
     render () {
+        const { canDrop, isOver, connectDropTarget } = this.props;
         let accept = typeof this.state.acceptedFileTypes === 'string' ?
             this.state.acceptedFileTypes :
             this.state.acceptedFileTypes.join(',');
-        return (
+        return connectDropTarget(
             <div className={styles.fileUploader}>
                 <span className={styles.fileUploadIcon}>
                     <i className="icon-cloud_upload"></i>
@@ -61,3 +79,5 @@ export default class FileUploader extends Component {
         );
     }
 }
+
+export default DropTarget((props) => props.accept, boxTarget, collect)(FileUploader);

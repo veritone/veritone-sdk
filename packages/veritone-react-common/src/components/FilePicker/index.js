@@ -8,6 +8,8 @@ import UrlUploader from './UrlUploader';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 import _ from 'lodash';
+import { DragDropContext, DragDropContextProvider } from 'react-dnd';
+import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
 
 import {
     shape,
@@ -60,11 +62,18 @@ class FilePicker extends Component {
         this.setState({isOpen:false});
     } 
 
+    handleFileDrop = (item, monitor) => {
+        if (monitor) {
+			const droppedFiles = [];
+            monitor.getItem().files.forEach((file) => {
+                let extension = file.name.replace(/.*\./, '');
+            })
+		}
+    }
+
     render () {
         let pickerOptions = this.props.options || {};
-        let acceptedFileTypes = typeof pickerOptions.accept === 'string' ?
-            [pickerOptions.accept] :
-            pickerOptions.accept;
+        const { FILE } = NativeTypes;
         return (
             <Modal isOpen={this.state.isOpen}
                    className={styles.modalContainer}>
@@ -81,12 +90,16 @@ class FilePicker extends Component {
                     { 
                         this.state.selectedTab === "upload" && 
                             <div className={styles.filePickerBody}>
-                                <FileUploader onFilesSelected={this.handleFilesSelected}
-                                              acceptedFileTypes={acceptedFileTypes}/>
+                                <DragDropContextProvider backend={HTML5Backend}>
+                                    <FileUploader onFilesSelected={this.handleFilesSelected}
+                                                  acceptedFileTypes={acceptedFileTypes}
+                                                  onDrop={this.handleFileDrop}
+                                                  accept={[FILE]}/>
+                                </DragDropContextProvider>
                                 { 
                                     this.state.files.length > 1  &&
                                         <FileList files={this.state.files}
-                                                    onRemoveFile={this.handleRemoveFile}/>
+                                                onRemoveFile={this.handleRemoveFile}/>
                                 }
                             </div>
                     }
@@ -94,7 +107,7 @@ class FilePicker extends Component {
                         this.state.selectedTab === "by-url" && 
                             <div className={styles.filePickerBody}>
                                 <UrlUploader onUrlUpload={this.handleUrlUpload}
-                                                accept={acceptedFileTypes}/>
+                                             accept={acceptedFileTypes}/>
                             </div> 
                     }
                     <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
@@ -113,4 +126,4 @@ FilePicker.propTypes = {
     })
 }
 
-export default FilePicker;
+export default DragDropContext(HTML5Backend)(FilePicker);
