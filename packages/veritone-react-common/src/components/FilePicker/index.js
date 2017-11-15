@@ -91,7 +91,7 @@ class FilePicker extends Component {
                                                   accept={[FILE]}/>
                                 </DragDropContextProvider>
                                 { 
-                                    this.state.files.length > 1  &&
+                                    this.state.files.length > 0  &&
                                         <FileList files={this.state.files}
                                                 onRemoveFile={this.handleRemoveFile}/>
                                 }
@@ -101,7 +101,7 @@ class FilePicker extends Component {
                         this.state.selectedTab === "by-url" && 
                             <div className={styles.filePickerBody}>
                                 <UrlUploader onUrlUpload={this.handleUrlUpload}
-                                             accept={acceptedFileTypes}/>
+                                             accept={pickerOptions.accept}/>
                             </div> 
                     }
                     <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
