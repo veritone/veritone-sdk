@@ -48,7 +48,10 @@ export default {
 		return {
 			method: 'get',
 			path: `${endpoints.job}/recording/${options.recordingId}`,
-			query: { offset: options.offset, limit: options.limit }
+			query: { offset: options.offset, limit: options.limit },
+			_requestOptions: {
+				tokenType: 'api'
+			}
 		};
 	},
 
