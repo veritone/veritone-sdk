@@ -58,10 +58,20 @@ class FilePicker extends Component {
 
     handleFileDrop = (item, monitor) => {
         if (monitor) {
-			const droppedFiles = [];
-            monitor.getItem().files.forEach((file) => {
-                let extension = file.name.replace(/.*\./, '');
-            })
+            let newFiles = this.state.files.slice();
+            if (this.props.options && this.props.options.accept) {
+                monitor.getItem().files.forEach((file) => {
+                    // TODO: validate mime types.
+                    newFiles.push(file);
+                });
+                this.setState({
+                    files: newFiles
+                });
+            } else {
+                this.setState({
+                    files: newFiles.concat(monitor.getItem().files)
+                });
+            }
 		}
     }
 
