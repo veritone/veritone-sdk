@@ -31,11 +31,6 @@ const collect = (connect, monitor) => {
 
 @withMuiThemeProvider
 class FileUploader extends Component {
-    static propTypes = {
-        acceptedFileTypes: oneOfType([arrayOf(string), string]),
-        onFilesSelected: func
-    }
-
     state = {
         files: [],
         acceptedFileTypes: this.props.acceptedFileTypes || []
@@ -78,6 +73,11 @@ class FileUploader extends Component {
             </div>
         );
     }
+}
+
+FileUploader.propTypes = {
+    acceptedFileTypes: oneOfType([arrayOf(string), string]),
+    onFilesSelected: func
 }
 
 export default DropTarget((props) => props.accept, boxTarget, collect)(FileUploader);
