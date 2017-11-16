@@ -16,6 +16,11 @@
     background-color: $grey-1;
 }
 
+.filePickerPaperOverride {
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
 .filePickerBody {
     flex: 1;
     display: -webkit-flex;
