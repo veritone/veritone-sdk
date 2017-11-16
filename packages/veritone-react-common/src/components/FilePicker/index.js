@@ -76,15 +76,22 @@ class FilePicker extends Component {
     }
 
     render () {
-        let pickerOptions = this.props.options || {};
+        let pickerOptions = this.props.options || {
+            height: 400,
+            width: 600
+        };
         const { FILE } = NativeTypes;
         return (
-            <Dialog open={this.state.isOpen}>
+            <Dialog open={this.state.isOpen} 
+                    classes={{
+                        paper: styles.filePickerPaperOverride
+                    }}>
                 <div
                   className={styles.filePicker}
                   style={{
                     height: pickerOptions.height || 400,
-                    width: pickerOptions.width || 600
+                    width: pickerOptions.width || 600,
+                    maxWidth: '100%',
                   }}
                 >
                     <FilePickerHeader selectedTab={this.state.selectedTab}
