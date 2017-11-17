@@ -336,13 +336,8 @@ storiesOf('Form Components', module)
   ))
   .add('DateRangePicker', () => (
     <Provider store={store}>
-      <StoryForm
-        onSubmit={values => alert(JSON.stringify(values))}
-      >
-        <Field
-          component={DateRangePicker}
-          name="date"
-        />
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+        <Field component={DateRangePicker} name="date" />
       </StoryForm>
     </Provider>
   ));

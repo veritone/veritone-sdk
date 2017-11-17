@@ -1,6 +1,10 @@
-import React from 'react'
+import React from 'react';
 import { instanceOf, func, shape } from 'prop-types';
-import InfiniteCalendar, { Calendar, withRange, EVENT_TYPE } from 'react-infinite-calendar';
+import InfiniteCalendar, {
+  Calendar,
+  withRange,
+  EVENT_TYPE
+} from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import {
   differenceInHours,
@@ -13,7 +17,6 @@ import {
 
 import { Interval } from '../../helpers/date';
 const RangedCalendar = withRange(Calendar);
-
 
 export default class DateRangePicker extends React.Component {
   static propTypes = {
@@ -28,7 +31,7 @@ export default class DateRangePicker extends React.Component {
   };
   static defaultProps = {
     minViewableDate: startOfMonth(subYears(new Date(), 3)),
-    maxViewableDate: endOfDay(new Date()),
+    maxViewableDate: endOfDay(new Date())
     // minDate: startOfDay(subDays(new Date(), 6)),
     // maxDate: endOfDay(new Date()),
   };
@@ -39,7 +42,7 @@ export default class DateRangePicker extends React.Component {
         differenceInHours(end, start) > 0
           ? new Interval({ start, end })
           : // single day selection is full day
-          new Interval({ start, end: endOfDay(end) })
+            new Interval({ start, end: endOfDay(end) })
       );
     }
   };

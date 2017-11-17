@@ -28,9 +28,7 @@ const DateIntervalSelect = ({
         </MenuItem>
       ))}
       {allowCustomInterval && (
-        <ListItem value="custom">
-          {customIntervalLabel}
-        </ListItem>
+        <ListItem value="custom">{customIntervalLabel}</ListItem>
       )}
     </Select>
   );

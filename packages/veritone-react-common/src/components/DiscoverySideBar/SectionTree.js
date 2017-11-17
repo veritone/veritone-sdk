@@ -73,16 +73,16 @@ class SectionTree extends React.Component {
         {visibleFormComponentIdAtLeaf
           ? this.props.formComponents[visibleFormComponentIdAtLeaf]
           : currentVisibleSection.children.map(
-              ({ visible, label, formComponentId, children }, i) => (
-                visible !== false &&
-                <SectionTreeTab
-                  label={label}
-                  rightIcon={<ChevronRightIcon />}
-                  key={`${label}-${i}`}
-                  id={i}
-                  onClick={this.handleNavigateForward}
-                />
-              )
+              ({ visible, label, formComponentId, children }, i) =>
+                visible !== false && (
+                  <SectionTreeTab
+                    label={label}
+                    rightIcon={<ChevronRightIcon />}
+                    key={`${label}-${i}`}
+                    id={i}
+                    onClick={this.handleNavigateForward}
+                  />
+                )
             )}
       </div>
     );

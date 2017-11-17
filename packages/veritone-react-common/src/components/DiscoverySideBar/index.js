@@ -27,7 +27,6 @@ import AllFiltersList from './AllFiltersList';
 
 // animations
 
-
 export { sectionsShape } from './SectionTree';
 
 export class DiscoverySideBarContainerPure extends React.Component {
