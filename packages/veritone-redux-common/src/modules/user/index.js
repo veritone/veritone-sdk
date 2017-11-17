@@ -282,6 +282,14 @@ export function loginFailureMessage(state) {
   return local(state).loginFailureMessage;
 }
 
+export function isFetching(state) {
+  return local(state).isFetching;
+}
+
+export function fetchingFailed(state) {
+  return local(state).fetchingFailed;
+}
+
 export function selectUser(state) {
   return local(state).user;
 }
