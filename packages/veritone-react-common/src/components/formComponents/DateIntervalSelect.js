@@ -14,7 +14,6 @@ import { ListItem } from 'material-ui/List';
 import { Interval, defaultIntervals } from 'helpers/date';
 import Select from './Select';
 
-
 const DateIntervalSelect = ({
   intervals,
   allowCustomInterval,
@@ -29,7 +28,7 @@ const DateIntervalSelect = ({
         </MenuItem>
       ))}
       {allowCustomInterval && (
-        <ListItem button onClick={() => console.log('clicked custom')} value="custom">
+        <ListItem value="custom">
           {customIntervalLabel}
         </ListItem>
       )}
