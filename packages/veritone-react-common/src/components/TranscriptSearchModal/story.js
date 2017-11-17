@@ -7,7 +7,7 @@ import TranscriptSearchModal from './';
 storiesOf('TranscriptSearchModal', module).add('Base', () =>
 {
   return(
-    <TranscriptSearchModal open={ true } applyFilter={ (value) => console.log("filter value", value) }>
+    <TranscriptSearchModal open={ true } state={ { value: "Lakers" } } applyFilter={ (value) => console.log("filter value", value) }>
 
     </TranscriptSearchModal>
   );
