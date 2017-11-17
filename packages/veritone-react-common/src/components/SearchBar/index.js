@@ -95,26 +95,6 @@ const SearchBar = ( { color, query, supportedEngineCategories, onSearch, onChang
   </div>
 );
 
-
-const filterType = {
-  // name of the field to apply the search filter against:
-  // GIVEN an engine category data { transcript: { transcript: "The Lakers used to have Kobe and Shaq" }, language: 'english' } }
-  // and the search query ( Transcript.language = "English"  AND Transcript.transcript CONTAINS "Kobe" ), the first filter's field_name would be "language"
-  key: number,
-  field_name: string.isRequired,
-  // given the above example, the filter_value for the first filter would be "English"
-  filter_value: oneOf(string, bool, number).isRequired,
-  // query_string, term, >, <, =, >=, <=
-  operator: string.isRequired,
-  boolean_operator: bool,
-  // operators that should apply to the filter: GIVEN ( 3 + 4 ), ( would be a prefix operator
-  prefix_operator: string,
-  // operator used to join the next filter: GIVEN ( 3 + 4 ), + would be the joining operator
-  joining_operator: string,
-  // operator used to end the filter: GIVEN ( 3 + 4 ), ) would be the suffix operator
-  suffix_operator: string,
-};
-
 const supportedEngineCategoryType = {
   id: string.isRequired,
   name: string.isRequired,
@@ -125,24 +105,24 @@ const supportedEngineCategoryType = {
   addPilll: func
 };
 
+const operator = {
+  operator: string.isRequired
+}
+
+const condition = {
+  id: string.isRequired,
+  openModal: bool,
+  condition: object.isRequired,
+  state: object.isRequired,
+  abbreviation: string.isRequired,
+  thumbnail: string,
+  engineId: string.isRequired
+}
+
 SearchBar.propTypes = {
   color: string.isRequired,
   supportedEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
-  query: shape({
-    prefixOperators: string,
-    searchEngineCategories: arrayOf(shape({
-      engineId: string.isRequired,
-      thumbnail: string,
-      searchAbbreviation: string.isRequired,
-      filters: oneOf( arrayOf(shape(filterType)), shape(filterType) ),
-      remove: func.isRequired,
-      openModal: func.isRequired,
-      applyFilter: func.isRequired,
-      prefixOperators: arrayOf(string),
-      joiningOperator: bool,
-      suffixOperators: arrayOf(string)
-    }))
-  }),
+  symbols: arrayOf( shape(operator), shape(condition) ),
   onSearch: func,
   onChangePill: func,
 };
@@ -152,4 +132,4 @@ SearchBar.defaultProps = {
   query: {}
 };
 
-export { SearchBar, supportedEngineCategoryType, filterType } ;
+export { SearchBar, supportedEngineCategoryType } ;
