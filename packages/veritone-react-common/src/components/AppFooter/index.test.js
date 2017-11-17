@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import AppFooter, { AppFooterHeightShort, AppFooterHeightTall } from './';
+import AppFooter, { appFooterHeightShort, appFooterHeightTall } from './';
 
 describe('AppFooter', () => {
   it('Should be a footer tag', () => {
@@ -31,15 +31,15 @@ describe('AppFooter', () => {
     expect(wrapper.children().props().style.marginLeft).toBe(100);
   });
 
-  it('exports and uses AppFooterHeightShort/Tall with props.height', function() {
+  it('exports and uses appFooterHeightShort/Tall with props.height', function() {
     // default short
     let wrapper = mount(<AppFooter />);
-    expect(wrapper.children().props().style.height).toBe(AppFooterHeightShort);
+    expect(wrapper.children().props().style.height).toBe(appFooterHeightShort);
 
     wrapper = mount(<AppFooter height="short" />);
-    expect(wrapper.children().props().style.height).toBe(AppFooterHeightShort);
+    expect(wrapper.children().props().style.height).toBe(appFooterHeightShort);
 
     wrapper = mount(<AppFooter height="tall" />);
-    expect(wrapper.children().props().style.height).toBe(AppFooterHeightTall);
+    expect(wrapper.children().props().style.height).toBe(appFooterHeightTall);
   });
 });

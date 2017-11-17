@@ -12,7 +12,7 @@ const defaultProps = {
   onFiltersNavigate: noop,
   onClearAllFilters: noop,
   onClearFilter: noop,
-  sections: {
+  filtersSections: {
     children: []
   },
   formComponents: {},
