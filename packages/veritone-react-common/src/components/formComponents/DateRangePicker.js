@@ -8,10 +8,8 @@ import InfiniteCalendar, {
 import 'react-infinite-calendar/styles.css';
 import {
   differenceInHours,
-  startOfDay,
   startOfMonth,
   endOfDay,
-  subDays,
   subYears
 } from 'date-fns';
 
@@ -32,8 +30,6 @@ export default class DateRangePicker extends React.Component {
   static defaultProps = {
     minViewableDate: startOfMonth(subYears(new Date(), 3)),
     maxViewableDate: endOfDay(new Date())
-    // minDate: startOfDay(subDays(new Date(), 6)),
-    // maxDate: endOfDay(new Date()),
   };
 
   handleSelectCustomDate = ({ eventType, start, end }) => {
