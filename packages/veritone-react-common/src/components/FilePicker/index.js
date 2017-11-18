@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import FileUploader from './FileUploader';
+import FileUploader from './FileUploader/FileUploader';
 import FileList from './FileList/FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
@@ -27,12 +27,6 @@ class FilePicker extends Component {
         selectedTab: "upload",
         files: []
     };
-
-    componentWillReceiveProps = (nextProps) => {
-        if (this.state.isOpen !== nextProps.isOpen) {
-            this.setState({isOpen: nextProps.isOpen});
-        }
-    }
 
     handleRemoveFile = index => {
         let array = this.state.files.slice();
@@ -79,53 +73,52 @@ class FilePicker extends Component {
     }
 
     render () {
-        let pickerOptions = this.props.options || {
-            height: 400,
-            width: 600
-        };
+        const { isOpen, options } = this.props;
         const { FILE } = NativeTypes;
         return (
-            <Dialog open={this.state.isOpen} 
-                    classes={{
-                        paper: styles.filePickerPaperOverride
-                    }}>
-                <div
-                  className={styles.filePicker}
-                  style={{
-                    height: pickerOptions.height || 400,
-                    width: pickerOptions.width || 600,
-                    maxWidth: '100%',
-                  }}
-                >
-                    <FilePickerHeader selectedTab={this.state.selectedTab}
-                                      onSelectTab={this.handleTabChange}
-                                      onCloseModal={this.handleCloseModal}/>
-                    { 
-                        this.state.selectedTab === "upload" && 
-                            <div className={styles.filePickerBody}>
-                                <DragDropContextProvider backend={HTML5Backend}>
-                                    <FileUploader onFilesSelected={this.handleFilesSelected}
-                                                  acceptedFileTypes={pickerOptions.accept}
-                                                  onDrop={this.handleFileDrop}
-                                                  accept={[FILE]}/>
-                                </DragDropContextProvider>
-                                { 
-                                    this.state.files.length > 0  &&
-                                        <FileList files={this.state.files}
-                                                onRemoveFile={this.handleRemoveFile}/>
-                                }
-                            </div>
-                    }
-                    { 
-                        this.state.selectedTab === "by-url" && 
-                            <div className={styles.filePickerBody}>
-                                <UrlUploader onUrlUpload={this.handleUrlUpload}
-                                             accept={pickerOptions.accept}/>
-                            </div> 
-                    }
-                    <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
-                </div>
-            </Dialog>
+            <div>
+                <Dialog open={isOpen} 
+                        classes={{
+                            paper: styles.filePickerPaperOverride
+                        }}>
+                    <div
+                    className={styles.filePicker}
+                    style={{
+                        height: options.height || 400,
+                        width: options.width || 600,
+                        maxWidth: '100%',
+                    }}
+                    >
+                        <FilePickerHeader selectedTab={this.state.selectedTab}
+                                        onSelectTab={this.handleTabChange}
+                                        onCloseModal={this.handleCloseModal}/>
+                        { 
+                            this.state.selectedTab === "upload" && 
+                                <div className={styles.filePickerBody}>
+                                    <DragDropContextProvider backend={HTML5Backend}>
+                                        <FileUploader onFilesSelected={this.handleFilesSelected}
+                                                    acceptedFileTypes={options.accept}
+                                                    onDrop={this.handleFileDrop}
+                                                    accept={[FILE]}/>
+                                    </DragDropContextProvider>
+                                    { 
+                                        this.state.files.length > 0  &&
+                                            <FileList files={this.state.files}
+                                                    onRemoveFile={this.handleRemoveFile}/>
+                                    }
+                                </div>
+                        }
+                        { 
+                            this.state.selectedTab === "by-url" && 
+                                <div className={styles.filePickerBody}>
+                                    <UrlUploader onUrlUpload={this.handleUrlUpload}
+                                                accept={options.accept}/>
+                                </div> 
+                        }
+                        <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
+                    </div>
+                </Dialog>
+            </div>
         );
     }
 };
@@ -137,6 +130,13 @@ FilePicker.propTypes = {
         height: number,
         accept: oneOfType([arrayOf(string), string])
     })
+}
+
+FilePicker.defaultProps = {
+    options: {
+        height: 400,
+        width: 600
+    }
 }
 
 export default DragDropContext(HTML5Backend)(FilePicker);
