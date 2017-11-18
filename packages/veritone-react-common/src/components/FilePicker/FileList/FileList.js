@@ -18,7 +18,8 @@ class FileList extends Component {
             <div style={listStyle} className={styles.fileList}>
                 {
                     this.props.files.map((file, index) => {
-                        return <FileListItem key={index} 
+                        return <FileListItem key={index}
+                                             index={index} 
                                              file={file} 
                                              onRemoveFile={this.props.onRemoveFile}/>
                     })
