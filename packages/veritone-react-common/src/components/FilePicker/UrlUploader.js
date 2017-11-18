@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
+import mime from 'mime-types';
 
 import {
     func,
@@ -15,16 +16,19 @@ import styles from './styles.scss';
 
 @withMuiThemeProvider
 class UrlUploader extends Component {
-    state = {
-        image: "",
-        fetchingImage: false
+    constructor() {
+        super();
+        this.state = {
+            image: "",
+            fetchingImage: false
+        }
     }
 
-    preventInput = (evt) => {
+    preventInput(evt) {
         evt.preventDefault();
     }
 
-    handlePaste = (evt) => {
+    handlePaste(evt) {
         this.setState({
             image: "",
             fetchingImage: true
@@ -34,7 +38,7 @@ class UrlUploader extends Component {
             if (response.status === 200 || response.status === 0) {
                 return response.blob();
             } else {
-                return Promise.reject(new Error('Error loading: ' + evt.clipboardData.getData('Text')))
+                throw new Error('Error loading: ' + evt.clipboardData.getData('Text'));
             }
         })
         .then((responseBlob) => {
@@ -47,7 +51,8 @@ class UrlUploader extends Component {
             };
             fileReader.readAsDataURL(responseBlob);
             this.props.onUrlUpload(responseBlob);
-        }, (error) => {
+        })
+        .catch((error) => {
             this.setState({
                 fetchingImage: false
             });
