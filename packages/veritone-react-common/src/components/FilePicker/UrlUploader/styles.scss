@@ -14,21 +14,31 @@
     @include mui-text('menu');
     margin-top: 0;
     margin-bottom: 5px;
-    width: 75%;
+    display: inline-block !important;
+    .fileUrlInputError {
+        color: #FF1744 !important;
+    }
+
     .fileUrlInputFocused {
-        color: #2597EC;
+        color: $blue-1;
     }
     
-    .fileUrlInputInkbar:after {
-        background-color: #2597EC;
+    .fileUrlInputInkbar {
+        background-color: $blue-1;
+    }
+
+    .fileUrlInputInkbarError {
+        background-color: #FF1744;
     }
 }
 
-.fileUrlPickerInput {
-    margin-top: 13px;
-    input {
-        padding: 5px 0;
-    }
+.fileUrlPickerInputRoot {
+    width: 90%;
+    margin-top: 13px !important;
+}
+
+.fileUlrPickerInput {
+    padding: 5px 0;
 }
 
 .urlUploaderInfoBox {
@@ -42,6 +52,7 @@
     border: 4px dashed $grey-4;
     padding-top: 15px;
     padding-bottom: 15px;
+    margin-top: 3px;
     width: 100%;
     flex: auto;
     text-align: center
@@ -63,8 +74,7 @@
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
-
-    margin-top: 45px;
+    margin-top: 3px;
     padding: 10px;
     background-color: #777777;
 }
