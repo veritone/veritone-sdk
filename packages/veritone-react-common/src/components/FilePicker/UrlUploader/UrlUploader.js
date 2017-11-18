@@ -19,7 +19,9 @@ class UrlUploader extends Component {
         super();
         this.state = {
             image: "",
-            fetchingImage: false
+            fetchingImage: false,
+            uploadError: false,
+            uploadSuccess: false
         }
     }
 
@@ -45,7 +47,8 @@ class UrlUploader extends Component {
             fileReader.onload = () => {
                 this.setState({
                     image: fileReader.result,
-                    fetchingImage: false
+                    fetchingImage: false,
+                    uploadSuccess: true
                 });
             };
             fileReader.readAsDataURL(responseBlob);
@@ -53,17 +56,34 @@ class UrlUploader extends Component {
         })
         .catch((error) => {
             this.setState({
-                fetchingImage: false
+                fetchingImage: false,
+                uploadError: true,
+                uploadSuccess: false
             });
         });
     }
 
+    handleChange(evt) {
+        if(this.state.uploadError && !evt.target.value.length) {
+            this.setState({
+                image: "",
+                uploadError: false,
+                uploadSuccess: false
+            });
+        }
+    }
+
     render () {
+        const inkbarStyle = this.state.uploadError ?
+            styles.fileUrlInputInkbarError :
+            styles.urlTextField.fileUrlInputInkbar
         return (
             <div className={styles.urlUploader}>
-                <FormControl className={styles.urlTextField}>
+                <FormControl className={styles.urlTextField}
+                             error={this.state.uploadError}>
                     <InputLabel
                         FormControlClasses={{
+                            error: styles.fileUrlInputError,
                             focused: styles.fileUrlInputFocused
                         }}
                         htmlFor="url-input"
@@ -71,17 +91,19 @@ class UrlUploader extends Component {
                         Paste an Image URL here
                     </InputLabel>
                     <Input
-                        className={styles.fileUrlPickerInput}
                         classes={{
-                            inkbar: styles.fileUrlInputInkbar,
+                            root: styles.fileUrlPickerInputRoot,
+                            input: styles.fileUlrPickerInput,
+                            inkbar: styles.inkbarStyle
                         }}
                         id="url-input"
                         onKeyPress={this.preventInput.bind(this)}
                         onPaste={this.handlePaste.bind(this)}
+                        onChange={this.handleChange.bind(this)}
                     />
                 </FormControl>
                 {
-                    this.state.image.length || this.state.fetchingImage ? 
+                    this.state.image.length ? 
                         <div className={styles.imageContainer}>
                             <div className={styles.fileImage}>
                                 <img src={this.state.image}></img>
