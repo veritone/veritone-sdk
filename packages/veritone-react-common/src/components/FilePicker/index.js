@@ -3,7 +3,7 @@ import FileUploader from './FileUploader/FileUploader';
 import FileList from './FileList/FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
-import UrlUploader from './UrlUploader';
+import UrlUploader from './UrlUploader/UrlUploader';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 import _ from 'lodash';
