@@ -40,7 +40,6 @@ class FileUploader extends Component {
         this.setState({files: event.target.files});
         let target = event.target || event.srcElement;
         if (target.files.length > 0) {
-            console.log(Array.from(target.files));
             this.props.onFilesSelected(Array.from(target.files));
         }
 
@@ -61,6 +60,7 @@ class FileUploader extends Component {
                     Drag & Drop file(s) to upload or
                 </span>
                 <input accept={accept} 
+                       style={{display:"none"}}
                        id="file" 
                        multiple 
                        type="file"
@@ -71,6 +71,7 @@ class FileUploader extends Component {
                         Choose File
                     </Button>
                 </label>
+                {isOver && <div className={styles.uploaderOverlay}></div>}
             </div>
         );
     }
