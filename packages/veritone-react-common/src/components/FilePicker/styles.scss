@@ -24,33 +24,6 @@
     padding: $file-picker-margin;
 }
 
-.fileUploader {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: $grey-1;
-    border: 4px dashed $grey-4;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    width: 100%;
-    input {
-        display: none;
-    }
-}
-
-.fileUploadIcon {
-    color: #9a9a9a;
-    @include mui-text('display2');
-}
-
-.fileUploaderSubtext {
-    @include mui-text('subhead');
-    margin-bottom: $file-picker-margin;
-}
-
 .urlUploader {
     display: -webkit-flex;
     display: flex;
