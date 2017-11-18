@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
-import mime from 'mime-types';
 
 import {
     func,
