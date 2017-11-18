@@ -7,6 +7,7 @@ import styles from './styles.scss';
 import _ from 'lodash';
 
 import {
+    number,
     func
   } from 'prop-types';
 
@@ -16,14 +17,23 @@ class FilePickerFooter extends Component {
         return (
             <div className={styles.filePickerFooter}>
                 <Button onClick={this.props.onCloseModal}>Cancel</Button>
-                <Button raised color="primary">Upload</Button>
+                <Button raised
+                        disabled={this.props.fileCount < 1}
+                        color="primary" 
+                        onClick={this.props.onUploadFiles}>Upload</Button>
             </div>
         );
     }
 };
 
 FilePickerFooter.propTypes = {
-    onCloseModal: func
+    fileCount: number,
+    onCloseModal: func,
+    onUploadFiles: func
+}
+
+FilePickerFooter.defaultProps = {
+    fileCount: 0
 }
 
 export default FilePickerFooter;

@@ -17,7 +17,8 @@ import {
     arrayOf,
     oneOfType,
     number,
-    bool
+    bool,
+    func
   } from 'prop-types';
 
 @withMuiThemeProvider
@@ -51,7 +52,19 @@ class FilePicker extends Component {
 
     handleCloseModal = () => {
         this.setState({isOpen:false});
-    } 
+        this.props.onCloseModal();
+    }
+
+    handleUploadFiles = () => {
+        this.setState({isOpen:false});
+        this.props.onUploadFiles(this.state.files);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isOpen !== this.state.isOpen) {
+            this.setState({isOpen: nextProps.isOpen});
+        }
+    }
 
     handleFileDrop = (item, monitor) => {
         if (monitor) {
@@ -73,11 +86,11 @@ class FilePicker extends Component {
     }
 
     render () {
-        const { isOpen, options } = this.props;
+        const { options } = this.props;
         const { FILE } = NativeTypes;
         return (
             <div>
-                <Dialog open={isOpen} 
+                <Dialog open={this.state.isOpen} 
                         classes={{
                             paper: styles.filePickerPaperOverride
                         }}>
@@ -115,7 +128,9 @@ class FilePicker extends Component {
                                                 accept={options.accept}/>
                                 </div> 
                         }
-                        <FilePickerFooter onCloseModal={this.handleCloseModal}/> 
+                        <FilePickerFooter onCloseModal={this.handleCloseModal}
+                                          onUploadFiles={this.handleUploadFiles}
+                                          fileCount={this.state.files.length}/> 
                     </div>
                 </Dialog>
             </div>
@@ -129,14 +144,17 @@ FilePicker.propTypes = {
         width: number,
         height: number,
         accept: oneOfType([arrayOf(string), string])
-    })
+    }),
+    onUploadFiles: func.isRequired,
+    onCloseModal: func
 }
 
 FilePicker.defaultProps = {
     options: {
         height: 400,
         width: 600
-    }
+    },
+    onCloseModal: () => {}
 }
 
 export default DragDropContext(HTML5Backend)(FilePicker);
