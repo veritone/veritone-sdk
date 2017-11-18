@@ -1,0 +1,51 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+@mixin file-picker-round-image($size: 40px, $margin: 5px) {
+    width: $size;
+    height: $size;
+    margin: $margin;
+    border-radius: 50%;
+}
+
+.fileList {
+    flex: 0 0 50%;
+}
+
+.fileListItem {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    height: 50px;
+}
+
+.fileListItemImage {
+    @include file-picker-round-image(40px, 4px);
+    border-radius: 50%;
+}
+
+.fileListItemText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display:block;
+    padding: 4px;
+    span {
+        width: 100%;
+        white-space:nowrap;
+        display: inline-block;
+    }
+}
+
+.fileListItemNameText {
+    @include mui-text('body1');
+}
+
+.fileListItemFileSizeText {
+    @include mui-text('body1');
+    color: $grey-5;
+}
+
+.fileListItemDeleteIcon {
+    margin-left: auto;
+}

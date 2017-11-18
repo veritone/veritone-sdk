@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import FileUploader from './FileUploader';
-import FileList from './FileList';
+import FileList from './FileList/FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
 import UrlUploader from './UrlUploader';
