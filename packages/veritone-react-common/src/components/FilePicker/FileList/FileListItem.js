@@ -3,28 +3,31 @@ import styles from './styles.scss';
 import DeleteIcon from 'material-ui-icons/Delete';
 import IconButton from 'material-ui/IconButton';
 import {
-    object
+    object,
+    func
   } from 'prop-types';
 
+export const formatBytes = bytes => {
+    if(bytes == 0) return '0 Bytes';
+    var k = 1000,
+        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+        i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
 class FileListItem extends Component {
-    state = {
-        dataUrl: ""
+    constructor() {
+        super();
+        this.state = {
+            dataUrl: ""
+        }
     }
 
-    // taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
-    formatBytes = bytes => {
-        if(bytes == 0) return '0 Bytes';
-        var k = 1000,
-            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-            i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    handleRemoveFile = () => {
+    handleRemoveFile() {
         this.props.onRemoveFile(this.props.index);
     }
 
-    readImageFile = file => {
+    readImageFile(file) {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
             this.setState({
@@ -34,7 +37,7 @@ class FileListItem extends Component {
         fileReader.readAsDataURL(file);
     }
 
-    componentWillReceiveProps = nextProps => {
+    componentWillReceiveProps(nextProps) {
         this.readImageFile(nextProps.file);
     }
 
@@ -51,12 +54,12 @@ class FileListItem extends Component {
                         {this.props.file.name}
                     </span>
                     <span className={styles.fileListItemFileSizeText}>
-                        {this.formatBytes(this.props.file.size)}
+                        {formatBytes(this.props.file.size)}
                     </span>
                 </div>
                 <IconButton className={styles.fileListItemDeleteIcon} 
                             aria-label="Delete"
-                            onClick={this.handleRemoveFile}>
+                            onClick={this.handleRemoveFile.bind(this)}>
                     <DeleteIcon />
                 </IconButton>
             </div>
@@ -65,6 +68,7 @@ class FileListItem extends Component {
 }
 
 FileListItem.propTypes = {
+    onRemoveFile: func,
     file: object.isRequired
 }
 
