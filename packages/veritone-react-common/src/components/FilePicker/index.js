@@ -45,7 +45,10 @@ class FilePicker extends Component {
     }
 
     handleTabChange = value => {
-        this.setState({selectedTab: value});
+        this.setState({
+            selectedTab: value,
+            files: []
+        });
     }
 
     handleUrlUpload = file => {
