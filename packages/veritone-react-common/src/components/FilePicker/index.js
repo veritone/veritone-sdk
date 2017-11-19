@@ -100,7 +100,7 @@ class FilePicker extends Component {
         const { options } = this.props;
         const { FILE } = NativeTypes;
         return (
-            <Dialog open={this.state.isOpen} 
+            <Dialog open={this.state.isOpen}
                     classes={{
                         paper: styles.filePickerPaperOverride
                     }}>
