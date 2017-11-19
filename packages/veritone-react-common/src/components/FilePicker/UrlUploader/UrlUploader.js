@@ -25,11 +25,11 @@ class UrlUploader extends Component {
         }
     }
 
-    preventInput(evt) {
+    preventInput = (evt) => {
         evt.preventDefault();
     }
 
-    handlePaste(evt) {
+    handlePaste = (evt) => {
         this.setState({
             image: "",
             fetchingImage: true
@@ -48,11 +48,13 @@ class UrlUploader extends Component {
                 this.setState({
                     image: fileReader.result,
                     fetchingImage: false,
+                    uploadError: false,
                     uploadSuccess: true
                 });
             };
             fileReader.readAsDataURL(responseBlob);
             this.props.onUrlUpload(responseBlob);
+            return responseBlob;
         })
         .catch((error) => {
             this.setState({
@@ -63,7 +65,7 @@ class UrlUploader extends Component {
         });
     }
 
-    handleChange(evt) {
+    handleChange = (evt) => {
         if(this.state.uploadError && !evt.target.value.length) {
             this.setState({
                 image: "",
@@ -74,9 +76,6 @@ class UrlUploader extends Component {
     }
 
     render () {
-        const inkbarStyle = this.state.uploadError ?
-            styles.fileUrlInputInkbarError :
-            styles.urlTextField.fileUrlInputInkbar
         return (
             <div className={styles.urlUploader}>
                 <FormControl className={styles.urlTextField}
@@ -97,16 +96,16 @@ class UrlUploader extends Component {
                             inkbar: styles.inkbarStyle
                         }}
                         id="url-input"
-                        onKeyPress={this.preventInput.bind(this)}
-                        onPaste={this.handlePaste.bind(this)}
-                        onChange={this.handleChange.bind(this)}
+                        onKeyPress={this.preventInput}
+                        onPaste={this.handlePaste}
+                        onChange={this.handleChange}
                     />
                 </FormControl>
                 {
                     this.state.image.length ? 
                         <div className={styles.imageContainer}>
                             <div className={styles.fileImage}>
-                                <img src={this.state.image}></img>
+                                <img src={this.state.image} />
                             </div>
                         </div> :
                         <div className={styles.urlUploaderInfoBox}>

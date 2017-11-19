@@ -12,12 +12,12 @@ const pickerOptions = {
 
 storiesOf('FilePicker', module)
     .add('Base', () => (
-        <FilePicker isOpen={true} 
+        <FilePicker isOpen 
                     onUploadFiles={action('upload files')}
                     onCloseModal={action('close modal')}/>
     ))
     .add('With Options', () => (
-        <FilePicker isOpen={true} 
+        <FilePicker isOpen 
                     options={pickerOptions}
                     onUploadFiles={action('upload files')}
                     onCloseModal={action('close modal')}/>

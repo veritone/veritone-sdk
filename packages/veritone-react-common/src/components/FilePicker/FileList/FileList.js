@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
-import FileListItem from './FileListItem';
-import styles from './styles.scss';
-
 import {
     arrayOf,
-    object
+    object,
+    func
   } from 'prop-types';
+import FileListItem from './FileListItem';
+import styles from './styles.scss';
 
 class FileList extends Component {
     render() {
         const listStyle = {
             position: 'relative',
-            overflowY: 'auto',
-            maxHeight: this.props.height,
+            overflowY: 'auto'
         };
         return (
             <div style={listStyle} className={styles.fileList}>
@@ -30,7 +29,8 @@ class FileList extends Component {
 }
 
 FileList.propTypes = {
-    files: arrayOf(object).isRequired
+    files: arrayOf(object).isRequired,
+    onRemoveFile: func
 }
 
 export default FileList;

@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import IconButton from 'material-ui/IconButton';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from 'material-ui/Button';
-import styles from './styles.scss';
-import _ from 'lodash';
-
 import {
     number,
     func
   } from 'prop-types';
+import styles from './styles.scss';
 
 @withMuiThemeProvider
 class FilePickerFooter extends Component {
@@ -19,7 +15,7 @@ class FilePickerFooter extends Component {
                 <Button onClick={this.props.onCloseModal}>Cancel</Button>
                 <Button raised
                         disabled={this.props.fileCount < 1}
-                        color="primary" 
+                        color="primary"
                         onClick={this.props.onUploadFiles}>Upload</Button>
             </div>
         );
