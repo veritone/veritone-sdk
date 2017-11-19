@@ -44,7 +44,7 @@ class FileUploader extends Component {
             this.props.onFilesSelected(Array.from(target.files));
         }
 
-        this.fileInput.value = null;
+        this.target.value = null;
     }
 
     render () {
@@ -65,7 +65,6 @@ class FileUploader extends Component {
                        id="file" 
                        multiple 
                        type="file"
-                       ref={ele => this.fileInput = ele}
                        onChange={this.handleFileSelection}/>
                 <label htmlFor="file">
                     <Button raised color="primary" component="span">
