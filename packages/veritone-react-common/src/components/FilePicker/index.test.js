@@ -1,10 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import  ReactTestUtils from 'react-dom/test-utils';
-import { shallow, mount } from 'enzyme';
-import Dialog from 'material-ui/Dialog';
-
 import FilePicker from './';
-import FileUploader from './FileUploader/FileUploader';
 
 
 // I believe the Dialog library uses react portals which aren't supported by
@@ -17,7 +13,7 @@ describe('FilePicker', () => {
     let onClose = jest.fn();
     let onUploadFiles = jest.fn();
     let filePickerComponent =  ReactTestUtils.renderIntoDocument(
-        <FilePicker isOpen={true} 
+        <FilePicker isOpen
                     onUploadFiles={onUploadFiles} 
                     onCloseModal={onClose}/>
     );
@@ -25,21 +21,21 @@ describe('FilePicker', () => {
     it('should have a header', () => {
         ReactTestUtils.findRenderedComponentWithType(filePickerComponent, FilePicker);
         
-        var filePickerHeader = document.body.getElementsByClassName('filePickerHeader');
+        let filePickerHeader = document.body.getElementsByClassName('filePickerHeader');
         expect(filePickerHeader.length).toEqual(1);
     });
 
     it('should have a footer', () => {
         ReactTestUtils.findRenderedComponentWithType(filePickerComponent, FilePicker);
         
-        var filePickerFooter = document.body.getElementsByClassName('filePickerFooter');
+        let filePickerFooter = document.body.getElementsByClassName('filePickerFooter');
         expect(filePickerFooter.length).toEqual(1);
     });
 
     it('should have a body', () => {
         ReactTestUtils.findRenderedComponentWithType(filePickerComponent, FilePicker);
         
-        var filePickerBody = document.body.getElementsByClassName('filePickerBody');
+        let filePickerBody = document.body.getElementsByClassName('filePickerBody');
         expect(filePickerBody.length).toEqual(1);
     });
 })

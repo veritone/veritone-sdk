@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import mime from 'mime-types';
-import styles from './styles.scss';
 import DeleteIcon from 'material-ui-icons/Delete';
 import IconButton from 'material-ui/IconButton';
 import {
-    object,
-    func
+    shape,
+    func,
+    number,
+    string
   } from 'prop-types';
+import styles from './styles.scss';
 
 export const formatBytes = bytes => {
     if(bytes == 0) return '0 Bytes';
-    var k = 1000,
+    let k = 1000,
         sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
         i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
@@ -24,11 +26,15 @@ class FileListItem extends Component {
         }
     }
 
-    handleRemoveFile() {
-        this.props.onRemoveFile(this.props.index);
+    componentWillMount() {
+        this.readImageFile(this.props.file);
     }
 
-    readImageFile(file) {
+    componentWillReceiveProps(nextProps) {
+        this.readImageFile(nextProps.file);
+    }
+
+    readImageFile = (file) => {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
             this.setState({
@@ -40,12 +46,8 @@ class FileListItem extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.readImageFile(nextProps.file);
-    }
-
-    componentWillMount() {
-        this.readImageFile(this.props.file);
+    handleRemoveFile = () => {
+        this.props.onRemoveFile(this.props.index);
     }
 
     render() {
@@ -54,10 +56,9 @@ class FileListItem extends Component {
                 {
                     this.state.dataUrl.length ?
                     <img src={this.state.dataUrl} 
-                         className={styles.fileListItemImage}>
-                    </img>:
+                         className={styles.fileListItemImage} />:
                     <div className={styles.fileListItemFolderIcon}>
-                        <i className="icon-empty-folder"></i>
+                        <i className="icon-empty-folder" />
                     </div>
                 }
                 
@@ -71,7 +72,7 @@ class FileListItem extends Component {
                 </div>
                 <IconButton className={styles.fileListItemDeleteIcon} 
                             aria-label="Delete"
-                            onClick={this.handleRemoveFile.bind(this)}>
+                            onClick={this.handleRemoveFile}>
                     <DeleteIcon />
                 </IconButton>
             </div>
@@ -81,7 +82,14 @@ class FileListItem extends Component {
 
 FileListItem.propTypes = {
     onRemoveFile: func,
-    file: object.isRequired
+    file: shape({
+        lastModified: number,
+        name: string,
+        size: number,
+        type: string,
+        webkitRelativePath: string
+    }).isRequired,
+    index: number
 }
 
 export default FileListItem;

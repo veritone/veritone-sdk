@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import IconButton from 'material-ui/IconButton';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import styles from './styles.scss';
-import _ from 'lodash';
-
 import {
     string,
     func
   } from 'prop-types';
+import styles from './styles.scss';
 
 
 @withMuiThemeProvider
@@ -29,14 +27,14 @@ class FilePickerHeader extends Component {
                         right: 15
                     }}
                     onClick={this.props.onCloseModal}>
-                    <i className='icon-close-exit'></i>
+                    <i className='icon-close-exit' />
                 </IconButton>
                 <Tabs value={this.props.selectedTab}
                     indicatorColor="primary"
                     onChange={this.handleTabChange} 
                     className={styles.filePickerTabs}>
-                    <Tab label="Upload" value="upload"></Tab>
-                    <Tab label="By URL" value="by-url"></Tab>
+                    <Tab label="Upload" value="upload" />
+                    <Tab label="By URL" value="by-url" />
                 </Tabs>
             </div>
         );

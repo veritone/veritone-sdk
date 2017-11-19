@@ -4,14 +4,7 @@ import { DragDropContext, DragDropContextProvider } from 'react-dnd';
 import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
 import Dialog from 'material-ui/Dialog';
 import mime from 'mime-types';
-import FileUploader from './FileUploader/FileUploader';
-import FileList from './FileList/FileList';
-import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
-import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
-import UrlUploader from './UrlUploader/UrlUploader';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import styles from './styles.scss';
-
 import {
     shape,
     string,
@@ -21,12 +14,18 @@ import {
     bool,
     func
   } from 'prop-types';
+import FileUploader from './FileUploader/FileUploader';
+import FileList from './FileList/FileList';
+import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
+import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
+import UrlUploader from './UrlUploader/UrlUploader';
+import styles from './styles.scss';
 
 const validateFileType = (fileType, accepted) => {
-    let accept = typeof accepted === "string" ? accepted.split(',') : accepted;
+    let accept = _.isString(accepted) ? accepted.split(',') : accepted;
     accept = _.map((a) => a.toLowerCase());
     let ext = mime.extension(fileType).toLowerCase;
-    return _.includes(accepted, ext) || _.includes(accepted, '.' + ext);
+    return _.includes(accept, ext) || _.includes(accept, '.' + ext);
 };
 
 @withMuiThemeProvider
@@ -36,6 +35,12 @@ class FilePicker extends Component {
         selectedTab: "upload",
         files: []
     };
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isOpen !== this.state.isOpen) {
+            this.setState({isOpen: nextProps.isOpen});
+        }
+    }
 
     handleRemoveFile = index => {
         let array = this.state.files.slice();
@@ -65,13 +70,8 @@ class FilePicker extends Component {
 
     handleUploadFiles = () => {
         this.setState({isOpen:false});
+        console.log(this.state.files);
         this.props.onUploadFiles(this.state.files);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.isOpen !== this.state.isOpen) {
-            this.setState({isOpen: nextProps.isOpen});
-        }
     }
 
     handleFileDrop = (item, monitor) => {

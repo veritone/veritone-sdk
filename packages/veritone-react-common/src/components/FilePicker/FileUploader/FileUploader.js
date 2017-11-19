@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
 import { DropTarget } from 'react-dnd';
-
+import _ from 'lodash';
 import {
     string,
     func,
     arrayOf,
-    oneOfType
+    oneOfType,
+    bool
   } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -47,14 +48,14 @@ class FileUploader extends Component {
     }
 
     render () {
-        const { canDrop, isOver, connectDropTarget } = this.props;
-        let accept = typeof this.state.acceptedFileTypes === 'string' ?
+        const { isOver, connectDropTarget } = this.props;
+        let accept = _.isString(this.state.acceptedFileTypes) ?
             this.state.acceptedFileTypes :
             this.state.acceptedFileTypes.join(',');
         return connectDropTarget(
             <div className={styles.fileUploader}>
                 <span className={styles.fileUploadIcon}>
-                    <i className="icon-cloud_upload"></i>
+                    <i className="icon-cloud_upload" />
                 </span>
                 <span className={styles.fileUploaderSubtext}>
                     Drag & Drop file(s) to upload or
@@ -71,7 +72,7 @@ class FileUploader extends Component {
                         Choose File
                     </Button>
                 </label>
-                {isOver && <div className={styles.uploaderOverlay}></div>}
+                {isOver && <div className={styles.uploaderOverlay} />}
             </div>
         );
     }
@@ -79,7 +80,9 @@ class FileUploader extends Component {
 
 FileUploader.propTypes = {
     acceptedFileTypes: oneOfType([arrayOf(string), string]),
-    onFilesSelected: func
+    onFilesSelected: func,
+    isOver: bool,
+    connectDropTarget: func
 }
 
 export default DropTarget((props) => props.accept, boxTarget, collect)(FileUploader);
