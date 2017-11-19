@@ -44,7 +44,7 @@ class FileUploader extends Component {
             this.props.onFilesSelected(Array.from(target.files));
         }
 
-        this.target.value = null;
+        event.target.value = null;
     }
 
     render () {
