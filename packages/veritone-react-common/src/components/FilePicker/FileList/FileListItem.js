@@ -57,7 +57,7 @@ class FileListItem extends Component {
                          className={styles.fileListItemImage}>
                     </img>:
                     <div className={styles.fileListItemFolderIcon}>
-                        <i className="icon-open-folder"></i>
+                        <i className="icon-empty-folder"></i>
                     </div>
                 }
                 
