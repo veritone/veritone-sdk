@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
+import { DragDropContext, DragDropContextProvider } from 'react-dnd';
+import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
+import Dialog from 'material-ui/Dialog';
+import mime from 'mime-types';
 import FileUploader from './FileUploader/FileUploader';
 import FileList from './FileList/FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
@@ -6,10 +11,6 @@ import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
 import UrlUploader from './UrlUploader/UrlUploader';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
-import _ from 'lodash';
-import { DragDropContext, DragDropContextProvider } from 'react-dnd';
-import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
-import Dialog from 'material-ui/Dialog';
 
 import {
     shape,
@@ -20,6 +21,13 @@ import {
     bool,
     func
   } from 'prop-types';
+
+const validateFileType = (fileType, accepted) => {
+    let accept = typeof accepted === "string" ? accepted.split(',') : accepted;
+    accept = _.map((a) => a.toLowerCase());
+    let ext = mime.extension(fileType).toLowerCase;
+    return _.includes(accepted, ext) || _.includes(accepted, '.' + ext);
+};
 
 @withMuiThemeProvider
 class FilePicker extends Component {
@@ -71,8 +79,11 @@ class FilePicker extends Component {
             let newFiles = this.state.files.slice();
             if (this.props.options && this.props.options.accept) {
                 monitor.getItem().files.forEach((file) => {
-                    // TODO: validate mime types.
-                    newFiles.push(file);
+                    if (validateFileType(file.type, this.props.options.accept)) {
+                        newFiles.push(file);
+                    } else {
+                        console.error(file.name + " is not an accepted file type.");
+                    }
                 });
                 this.setState({
                     files: newFiles

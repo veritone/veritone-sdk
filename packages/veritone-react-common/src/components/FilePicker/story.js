@@ -5,7 +5,7 @@ import { action } from '@storybook/addon-actions';
 import FilePicker from './';
 
 const pickerOptions = {
-    accept: 'image/*',
+    accept: ['.png', 'png'],
     height: 400,
     width: 600
 }
