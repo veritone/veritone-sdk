@@ -1,6 +1,5 @@
 import { CALL_API } from 'redux-api-middleware-fixed';
 import { get, isEmpty } from 'lodash';
-import cookie from 'react-cookie';
 import {
   permissions as perms,
   util as permissionUtil
@@ -321,13 +320,13 @@ export function enabledAppsFailureMessage(state) {
 export function selectEnabledApps(state) {
   // fixme: how should migrations work without the cookie in external apps?
   const apps = local(state).enabledApps;
-  let migrated = cookie.load('veritone-migrated-to-discovery') === 'true';
+  // let migrated = cookie.get('veritone-migrated-to-discovery') === 'true';
 
   return apps
     .map(app => {
       const migrations = {
-        advertiser: migrated ? 'Discovery' : 'Advertiser',
-        broadcaster: migrated ? 'Discovery' : 'Media'
+        // advertiser: migrated ? 'Discovery' : 'Advertiser',
+        // broadcaster: migrated ? 'Discovery' : 'Media'
       };
 
       return {
