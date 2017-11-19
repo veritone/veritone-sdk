@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import mime from 'mime-types';
 import styles from './styles.scss';
 import DeleteIcon from 'material-ui-icons/Delete';
 import IconButton from 'material-ui/IconButton';
@@ -34,7 +35,9 @@ class FileListItem extends Component {
                 dataUrl: fileReader.result
             });
         }
-        fileReader.readAsDataURL(file);
+        if (/^image\//gi.test(mime.lookup(file.name))) {
+            fileReader.readAsDataURL(file);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -48,7 +51,16 @@ class FileListItem extends Component {
     render() {
         return (
             <div className={styles.fileListItem}>
-                <img src={this.state.dataUrl} className={styles.fileListItemImage}></img>
+                {
+                    this.state.dataUrl.length ?
+                    <img src={this.state.dataUrl} 
+                         className={styles.fileListItemImage}>
+                    </img>:
+                    <div className={styles.fileListItemFolderIcon}>
+                        <i className="icon-open-folder"></i>
+                    </div>
+                }
+                
                 <div className={styles.fileListItemText}>
                     <span className={styles.fileListItemNameText}>
                         {this.props.file.name}

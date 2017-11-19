@@ -22,7 +22,15 @@
 
 .fileListItemImage {
     @include file-picker-round-image(40px, 4px);
-    border-radius: 50%;
+}
+
+.fileListItemFolderIcon {
+    @include file-picker-round-image(40px, 4px);
+    color: $grey-3;
+    background-color: $grey-5;
+    text-align: center;
+    font-size: 30px;
+    padding-top:5px;
 }
 
 .fileListItemText {
