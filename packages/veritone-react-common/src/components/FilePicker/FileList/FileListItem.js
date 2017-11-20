@@ -93,7 +93,7 @@ FileListItem.propTypes = {
         type: string,
         webkitRelativePath: string
     }).isRequired,
-    index: number
+    index: number.isRequired
 }
 
 export default FileListItem;

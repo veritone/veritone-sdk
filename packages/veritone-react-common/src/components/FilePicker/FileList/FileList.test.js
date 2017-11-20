@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 
 import FileList from './FileList';
 import FileListItem, { formatBytes } from './FileListItem';
@@ -39,26 +39,27 @@ describe('FileList', () => {
 
 describe('FileListItem', () => {
     it('should display the file name', () => {
-        let wrapper = mount(<FileListItem file={mockFiles[0]} />);
+        let wrapper = mount(<FileListItem file={mockFiles[0]} index={0}/>);
         expect(wrapper.find('.fileListItemNameText').text()).toEqual(mockFiles[0].name);
     });
 
     it('should display the size of the file', () => {
-        let wrapper = mount(<FileListItem file={mockFiles[0]} />);
+        let wrapper = mount(<FileListItem file={mockFiles[0]} index={0}/>);
         expect(wrapper.find('.fileListItemFileSizeText').text()).toEqual(formatBytes(mockFiles[0].size));
     });
 
     it('should display a remove button', () => {
-        let wrapper = mount(<FileListItem file={mockFiles[0]} />);
+        let wrapper = mount(<FileListItem file={mockFiles[0]} index={0}/>);
         expect(wrapper.find('button').exists()).toEqual(true);
     });
 
     it('handleRemoveFile should be called when the remove button is clicked', () => {
-        // TODO: redo this test.
-        // const spy = jest.spyOn(FileListItem.prototype, 'handleRemoveFile');
-        // const onRemoveFile = jest.fn();
-        // let removeButton = mount(<FileListItem file={mockFiles[0]} onRemoveFile={onRemoveFile}/>).find('button');
-        // removeButton.simulate('click');
-        // expect(spy).toHaveBeenCalled();
+        const onRemoveFile = jest.fn();
+        let removeButton = mount(<FileListItem file={mockFiles[0]} 
+                                               onRemoveFile={onRemoveFile}
+                                               index={0}/>).find('button');
+        removeButton.simulate('click');
+        // Should return index 0
+        expect(onRemoveFile).lastCalledWith(0);
     });
 });
