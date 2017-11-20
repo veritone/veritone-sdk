@@ -58,7 +58,11 @@ class FileUploader extends Component {
                     <i className="icon-cloud_upload" />
                 </span>
                 <span className={styles.fileUploaderSubtext}>
-                    Drag & Drop file(s) to upload or
+                    {
+                        accept.length ?
+                            'Drag & Drop <' + accept + '> file to upload to' :
+                            'Drag & Drop file(s) to upload or'
+                    }
                 </span>
                 <input accept={accept} 
                        style={{display:"none"}}
