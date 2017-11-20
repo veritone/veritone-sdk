@@ -25,6 +25,7 @@
 .fileUploaderSubtext {
   @include mui-text('subhead');
   margin-bottom: $file-picker-margin;
+  text-align: center;
 }
 
 .uploaderOverlay {
