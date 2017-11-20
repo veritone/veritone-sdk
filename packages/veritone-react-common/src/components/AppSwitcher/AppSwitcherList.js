@@ -1,10 +1,8 @@
 import React from 'react';
-import { MenuItem } from 'material-ui/Menu';
-import { ListItemIcon, ListItemText } from 'material-ui/List';
-import { string, arrayOf, shape } from 'prop-types';
+import { string, arrayOf, shape, func } from 'prop-types';
 import { sortBy } from 'lodash';
-import cx from 'classnames';
 
+import AppSwitcherItem from './AppSwitcherItem';
 import styles from './styles.scss';
 
 export default class AppSwitcherList extends React.Component {
@@ -16,7 +14,8 @@ export default class AppSwitcherList extends React.Component {
         applicationIconSvg: string,
         applicationIconUrl: string
       })
-    )
+    ),
+    onSwitchApp: func.isRequired
   };
   static defaultProps = {
     enabledApps: []
@@ -26,38 +25,13 @@ export default class AppSwitcherList extends React.Component {
     const apps = sortBy(this.props.enabledApps, 'applicationName');
     return apps.length ? (
       <div>
-        {apps.map(app => {
-          const appListButtonIconClasses = cx(styles['appListButtonIcon'], {
-            [`${styles['hasSvg']}`]: app.applicationIconSvg
-          });
-
-          return (
-            <MenuItem
-              button
-              className={styles['appListButton']}
-              key={app.applicationId}
-              href={`/switch-app/${app.applicationId}`}
-              target={app.applicationId}
-            >
-              <ListItemIcon>
-                {app.applicationIconUrl || app.applicationIconSvg ? (
-                  <img
-                    className={appListButtonIconClasses}
-                    src={app.applicationIconUrl || app.applicationIconSvg}
-                  />
-                ) : (
-                  <span
-                    className={cx(
-                      appListButtonIconClasses,
-                      'icon-applications'
-                    )}
-                  />
-                )}
-              </ListItemIcon>
-              <ListItemText primary={app.applicationName} />
-            </MenuItem>
-          );
-        })}
+        {apps.map(app => (
+          <AppSwitcherItem
+            app={app}
+            onSelect={this.props.onSwitchApp}
+            key={app.applicationId}
+          />
+        ))}
       </div>
     ) : (
       <div className={styles['appListButtonNullstate']}>
