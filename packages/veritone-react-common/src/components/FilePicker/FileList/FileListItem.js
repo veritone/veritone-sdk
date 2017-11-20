@@ -43,6 +43,10 @@ class FileListItem extends Component {
         }
         if (/^image\//gi.test(mime.lookup(file.name))) {
             fileReader.readAsDataURL(file);
+        } else {
+            this.setState({
+                dataUrl: ""
+            });
         }
     }
 
