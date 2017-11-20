@@ -69,7 +69,10 @@ class FilePicker extends Component {
     }
 
     handleUploadFiles = () => {
-        this.setState({isOpen:false});
+        this.setState({
+            isOpen:false,
+            files: []
+        });
         this.props.onUploadFiles(this.state.files);
     }
 
