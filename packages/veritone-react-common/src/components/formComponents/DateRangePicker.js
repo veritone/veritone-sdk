@@ -1,5 +1,5 @@
 import React from 'react';
-import { instanceOf, func, shape } from 'prop-types';
+import { instanceOf, func, shape, number, string, oneOfType } from 'prop-types';
 import InfiniteCalendar, {
   Calendar,
   withRange,
@@ -9,6 +9,7 @@ import 'react-infinite-calendar/styles.css';
 import {
   differenceInHours,
   startOfMonth,
+  endOfMonth,
   endOfDay,
   subYears
 } from 'date-fns';
@@ -22,15 +23,13 @@ export default class DateRangePicker extends React.Component {
     maxViewableDate: instanceOf(Date),
     minDate: instanceOf(Date),
     maxDate: instanceOf(Date),
+    maxSelectionSizeMs: number, // todo
     input: shape({
-      value: instanceOf(Interval),
+      value: oneOfType([instanceOf(Interval), string]), // string to handle null "empty-string" value
       onChange: func
     })
   };
-  static defaultProps = {
-    minViewableDate: startOfMonth(subYears(new Date(), 3)),
-    maxViewableDate: endOfDay(new Date())
-  };
+  static defaultProps = {};
 
   handleSelectCustomDate = ({ eventType, start, end }) => {
     if (eventType === EVENT_TYPE.END) {
@@ -43,6 +42,18 @@ export default class DateRangePicker extends React.Component {
     }
   };
 
+  get minViewableDate() {
+    return this.props.minViewableDate || this.props.minDate
+      ? startOfMonth(this.props.minDate)
+      : startOfMonth(subYears(new Date(), 3));
+  }
+
+  get maxViewableDate() {
+    return this.props.maxViewableDate || this.props.maxDate
+      ? endOfMonth(this.props.maxDate)
+      : endOfMonth(new Date());
+  }
+
   render() {
     // const defaultCalendarDate = {
     //   start: subDays(new Date(), 2),
@@ -52,11 +63,11 @@ export default class DateRangePicker extends React.Component {
     return (
       <InfiniteCalendar
         Component={RangedCalendar}
-        min={this.props.minViewableDate}
-        max={this.props.maxViewableDate}
+        min={this.minViewableDate}
+        max={this.maxViewableDate}
         minDate={this.props.minDate}
         maxDate={this.props.maxDate}
-        selected={this.props.input.value /*|| defaultCalendarDate*/}
+        selected={this.props.input.value || false}
         onSelect={this.handleSelectCustomDate}
         locale={{
           headerFormat: 'MMM Do'
