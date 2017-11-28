@@ -51,13 +51,13 @@ const exampleSectionTree = {
   ]
 };
 
-
 const exampleSelectedFilters = [
   {
     label: 'filter category one',
     number: 5,
     id: '1'
-  },  {
+  },
+  {
     label: 'filter category 2',
     number: 10,
     id: '2'
@@ -75,7 +75,7 @@ storiesOf('DiscoverySideBar', module)
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
           onClearAllFilters={action('clear all filters')}
-          sections={exampleSectionTree}
+          filtersSections={exampleSectionTree}
           formComponents={{
             'select-station-form': <div>select a station</div>
           }}
@@ -94,7 +94,7 @@ storiesOf('DiscoverySideBar', module)
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
           onClearAllFilters={action('clear all filters')}
-          sections={exampleSectionTree}
+          filtersSections={exampleSectionTree}
           formComponents={{
             'select-station-form': <div>select a station</div>
           }}

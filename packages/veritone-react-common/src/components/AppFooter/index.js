@@ -4,8 +4,8 @@ import { node, number, oneOf } from 'prop-types';
 
 import styles from './styles.scss';
 
-export const AppFooterHeightShort = 40;
-export const AppFooterHeightTall = 65;
+export const appFooterHeightShort = 40;
+export const appFooterHeightTall = 65;
 const AppFooter = ({
   children,
   elevation = 2,
@@ -13,8 +13,8 @@ const AppFooter = ({
   height = 'short'
 }) => {
   const footerHeight = {
-    short: AppFooterHeightShort,
-    tall: AppFooterHeightTall
+    short: appFooterHeightShort,
+    tall: appFooterHeightTall
   }[height];
 
   return (

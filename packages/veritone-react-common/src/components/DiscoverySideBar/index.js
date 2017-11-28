@@ -18,7 +18,6 @@ import Header from './header/Header';
 import SectionTree, { sectionsShape } from './SectionTree';
 import AllFiltersList from './AllFiltersList';
 
-
 // todo:
 // figure out how state will come from redux-form and how to transform that
 // into filters counts for each section/subsection
@@ -28,10 +27,12 @@ import AllFiltersList from './AllFiltersList';
 
 // animations
 
+export { sectionsShape } from './SectionTree';
+
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
-    sections: sectionsShape.isRequired,
+    filtersSections: sectionsShape.isRequired,
     selectedFilters: arrayOf(object).isRequired, // see AllFiltersList.filters
     onClearAllFilters: func,
     onClearFilter: func,
@@ -44,7 +45,9 @@ export class DiscoverySideBarContainerPure extends React.Component {
     filtersActivePath: arrayOf(number).isRequired,
     onFiltersNavigate: func.isRequired
   };
-  static defaultProps = {};
+  static defaultProps = {
+    selectedFilters: []
+  };
 
   render() {
     return (
@@ -73,7 +76,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
 
             <SectionTree
               // todo: add filters
-              sections={this.props.sections}
+              sections={this.props.filtersSections}
               activePath={this.props.filtersActivePath}
               onNavigate={this.props.onFiltersNavigate}
               formComponents={this.props.formComponents}

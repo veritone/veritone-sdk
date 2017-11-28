@@ -119,6 +119,57 @@ describe('SectionTree', function() {
 
     expect(handler).toHaveBeenCalledWith([0, 0]);
   });
+
+  it('does not show tabs with visible === false', function() {
+    const visibleTestTree = {
+      children: [
+        {
+          label: 'Section 1',
+          children: [
+            {
+              label: 'SubSection 1',
+              children: []
+            },
+            {
+              visible: false,
+              label: 'SubSection 2',
+              children: []
+            }
+          ]
+        },
+        {
+          visible: false,
+          label: 'Section 2',
+          children: []
+        },
+        {
+          visible: true,
+          label: 'Section 3',
+          children: []
+        }
+      ]
+    };
+
+    const wrapper = mount(
+      <SectionTree {...defaultProps} sections={visibleTestTree} />
+    );
+
+    expect(
+      wrapper.containsAllMatchingElements([
+        <SectionTreeTab label="Section 1" />,
+        <SectionTreeTab label="Section 3" />
+      ])
+    ).toBe(true);
+
+    wrapper.setProps({ activePath: [0] });
+
+    expect(
+      wrapper.containsMatchingElement(<SectionTreeTab label="SubSection 1" />)
+    ).toBe(true);
+    expect(
+      wrapper.containsMatchingElement(<SectionTreeTab label="SubSection 2" />)
+    ).toBe(false);
+  });
 });
 
 describe('SectionTreeTab', function() {
