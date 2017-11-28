@@ -44,6 +44,10 @@ export default class AppSwitcher extends React.Component {
     });
   };
 
+  handleSwitchApp = id => {
+    window.location = `/switch-app/${id}`;
+  };
+
   render() {
     // todo: loading state
     return (
@@ -61,7 +65,10 @@ export default class AppSwitcher extends React.Component {
           {this.props.enabledAppsFailedLoading ? (
             <AppSwitcherErrorState onRefresh={this.props.handleRefresh} />
           ) : (
-            <AppSwitcherList enabledApps={this.props.enabledApps} />
+            <AppSwitcherList
+              onSwitchApp={this.handleSwitchApp}
+              enabledApps={this.props.enabledApps}
+            />
           )}
         </Menu>
         <span className={styles['appSwitcher__title']}>

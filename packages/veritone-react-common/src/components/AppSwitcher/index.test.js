@@ -1,5 +1,5 @@
 import React from 'react';
-import { sortBy } from 'lodash';
+import { sortBy, noop } from 'lodash';
 import { mount } from 'enzyme';
 
 import AppSwitcherErrorState from './AppSwitcherErrorState';
@@ -63,7 +63,9 @@ describe('AppSwitcherList', () => {
   ];
 
   it('Should show each application name', () => {
-    const wrapper = mount(<AppSwitcherList enabledApps={sampleApps} />);
+    const wrapper = mount(
+      <AppSwitcherList enabledApps={sampleApps} onSwitchApp={noop} />
+    );
 
     sampleApps.forEach(({ applicationName }) =>
       expect(wrapper.text().match(applicationName)).toBeTruthy()
@@ -71,18 +73,24 @@ describe('AppSwitcherList', () => {
   });
 
   it('Should sort apps by name', function() {
-    const wrapper = mount(<AppSwitcherList enabledApps={sampleApps} />);
+    const wrapper = mount(
+      <AppSwitcherList enabledApps={sampleApps} onSwitchApp={noop} />
+    );
     expect(wrapper.text()).toMatch(/.*CMS.*Discovery.*Test App/i);
   });
 
   it('Should link each app to its switch-app href', function() {
-    const wrapper = mount(<AppSwitcherList enabledApps={sampleApps} />);
+    const handleSwitchApp = jest.fn();
+    const wrapper = mount(
+      <AppSwitcherList onSwitchApp={handleSwitchApp} enabledApps={sampleApps} />
+    );
     const buttons = wrapper.find('MenuItem');
     expect(buttons).toHaveLength(3);
 
     const sortedApps = sortBy(sampleApps, 'applicationName');
     buttons.forEach((b, i) => {
-      expect(b.props().href).toBe(`/switch-app/${sortedApps[i].applicationId}`);
+      b.simulate('click');
+      expect(handleSwitchApp).toHaveBeenCalledWith(sortedApps[i].applicationId);
     });
   });
 
@@ -97,6 +105,7 @@ describe('AppSwitcherList', () => {
             applicationIconSvg: 'https://app-icon-svg'
           }
         ]}
+        onSwitchApp={noop}
       />
     );
     expect(
@@ -112,6 +121,7 @@ describe('AppSwitcherList', () => {
             applicationIconSvg: 'https://app-icon-svg'
           }
         ]}
+        onSwitchApp={noop}
       />
     );
     expect(
@@ -126,13 +136,14 @@ describe('AppSwitcherList', () => {
             applicationName: 'Discovery'
           }
         ]}
+        onSwitchApp={noop}
       />
     );
     expect(wrapper.find('span.icon-applications')).toHaveLength(1);
   });
 
   it('should show a message if no apps exist', function() {
-    let wrapper = mount(<AppSwitcherList />);
+    let wrapper = mount(<AppSwitcherList onSwitchApp={noop} />);
     expect(wrapper.text()).toMatch(/no applications/i);
   });
 });
