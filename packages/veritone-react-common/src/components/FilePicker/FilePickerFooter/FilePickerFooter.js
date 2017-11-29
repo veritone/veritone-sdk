@@ -9,7 +9,7 @@ class FilePickerFooter extends Component {
   render() {
     return (
       <div className={styles.filePickerFooter}>
-        <Button onClick={this.props.onCloseModal}>Cancel</Button>
+        <Button onClick={this.props.onCancel}>Cancel</Button>
         <Button
           raised
           disabled={this.props.fileCount < 1}
@@ -25,7 +25,7 @@ class FilePickerFooter extends Component {
 
 FilePickerFooter.propTypes = {
   fileCount: number,
-  onCloseModal: func,
+  onCancel: func,
   onUploadFiles: func
 };
 

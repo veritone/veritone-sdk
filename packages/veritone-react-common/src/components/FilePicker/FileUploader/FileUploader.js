@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
 import { DropTarget } from 'react-dnd';
-import _ from 'lodash';
-import { string, func, arrayOf, oneOfType, bool } from 'prop-types';
+import { string, func, arrayOf, bool } from 'prop-types';
+import mime from 'mime-types';
+import { NativeTypes } from 'react-dnd-html5-backend';
+const { FILE } = NativeTypes;
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -10,9 +12,14 @@ import styles from './styles.scss';
 
 const boxTarget = {
   drop(props, monitor) {
-    if (props.onDrop) {
-      props.onDrop(props, monitor);
-    }
+    const droppedFiles = monitor.getItem().files;
+
+    props.onFilesSelected(
+      props.acceptedFileTypes.length
+        ? // only accept dropped files of the correct type.
+          droppedFiles.filter(f => props.acceptedFileTypes.includes(f.type))
+        : droppedFiles
+    );
   }
 };
 
@@ -25,44 +32,53 @@ const collect = (connect, monitor) => {
 };
 
 @withMuiThemeProvider
+@DropTarget(FILE, boxTarget, collect)
 class FileUploader extends Component {
-  state = {
-    files: [],
-    acceptedFileTypes: this.props.acceptedFileTypes || []
+  static propTypes = {
+    acceptedFileTypes: arrayOf(string),
+    onFilesSelected: func.isRequired,
+    isOver: bool.isRequired,
+    connectDropTarget: func.isRequired
   };
 
-  handleFileSelection = event => {
-    this.setState({ files: event.target.files });
-    let target = event.target || event.srcElement;
-    if (target.files.length > 0) {
-      this.props.onFilesSelected(Array.from(target.files));
+  static defaultProps = {
+    acceptedFileTypes: []
+  };
+
+  handleFileSelection = () => {
+    if (this._input.files.length > 0) {
+      this.props.onFilesSelected(Array.from(this._input.files));
     }
 
-    event.target.value = null;
+    this._input.value = null;
   };
 
+  setInputRef = r => (this._input = r);
+
   render() {
-    const { isOver, connectDropTarget } = this.props;
-    let accept = _.isString(this.state.acceptedFileTypes)
-      ? this.state.acceptedFileTypes
-      : this.state.acceptedFileTypes.join(',');
+    const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
+
+    const acceptMessage = acceptedFileTypes.length
+      ? `Drag & Drop <${acceptedFileTypes
+          .map(mime.extension)
+          .filter(Boolean)
+          .join(', ')}> files to upload, or`
+      : 'Drag & Drop file(s) to upload, or';
+
     return connectDropTarget(
       <div className={styles.fileUploader}>
         <span className={styles.fileUploadIcon}>
           <i className="icon-cloud_upload" />
         </span>
-        <span className={styles.fileUploaderSubtext}>
-          {accept.length
-            ? 'Drag & Drop <' + accept + '> file to upload to'
-            : 'Drag & Drop file(s) to upload or'}
-        </span>
+        <span className={styles.fileUploaderSubtext}>{acceptMessage}</span>
         <input
-          accept={accept}
+          accept={acceptedFileTypes.join(',')}
           style={{ display: 'none' }}
           id="file"
           multiple
           type="file"
           onChange={this.handleFileSelection}
+          ref={this.setInputRef}
         />
         <label htmlFor="file">
           <Button raised color="primary" component="span">
@@ -75,13 +91,4 @@ class FileUploader extends Component {
   }
 }
 
-FileUploader.propTypes = {
-  acceptedFileTypes: oneOfType([arrayOf(string), string]),
-  onFilesSelected: func,
-  isOver: bool,
-  connectDropTarget: func
-};
-
-export default DropTarget(props => props.accept, boxTarget, collect)(
-  FileUploader
-);
+export default FileUploader;

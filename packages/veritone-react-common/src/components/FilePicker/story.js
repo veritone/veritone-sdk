@@ -4,25 +4,21 @@ import { action } from '@storybook/addon-actions';
 
 import FilePicker from './';
 
-const pickerOptions = {
-  accept: ['.png', 'png'],
-  height: 400,
-  width: 600
-};
-
 storiesOf('FilePicker', module)
   .add('Base', () => (
     <FilePicker
       isOpen
       onUploadFiles={action('upload files')}
-      onCloseModal={action('close modal')}
+      onRequestClose={action('close modal')}
     />
   ))
   .add('With Options', () => (
     <FilePicker
       isOpen
-      options={pickerOptions}
+      accept={['image/svg+xml', '.png']}
+      height={400}
+      width={600}
       onUploadFiles={action('upload files')}
-      onCloseModal={action('close modal')}
+      onRequestClose={action('close modal')}
     />
   ));

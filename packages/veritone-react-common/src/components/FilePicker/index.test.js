@@ -8,6 +8,8 @@ import FilePicker from './';
 // will look into other ways of testing.
 // Not sure if this is the best way to test this but it is better than nothing
 // I suppose.
+
+// fixme-- dialog as outer component
 describe('FilePicker', () => {
   let onClose = jest.fn();
   let onUploadFiles = jest.fn();
