@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
-import { DragDropContext, DragDropContextProvider } from 'react-dnd';
-import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
-import Dialog from 'material-ui/Dialog';
+import { isString } from 'lodash';
+import { DragDropContextProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import mime from 'mime-types';
+import Dialog from 'material-ui/Dialog';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import {
-  shape,
-  string,
-  arrayOf,
-  oneOfType,
-  number,
-  bool,
-  func
-} from 'prop-types';
+import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
 import FileUploader from './FileUploader/FileUploader';
 import FileList from './FileList/FileList';
 import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
@@ -21,89 +13,78 @@ import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
 import UrlUploader from './UrlUploader/UrlUploader';
 import styles from './styles.scss';
 
-const validateFileType = (fileType, accepted) => {
-  let accept = _.isString(accepted) ? accepted.split(',') : accepted;
-  accept = _.map(a => a.toLowerCase());
-  let ext = mime.extension(fileType).toLowerCase;
-  return _.includes(accept, ext) || _.includes(accept, '.' + ext);
-};
-
 @withMuiThemeProvider
 class FilePicker extends Component {
+  static propTypes = {
+    isOpen: bool,
+    width: number,
+    height: number,
+    accept: oneOfType([arrayOf(string), string]), // extension or mimetype
+    onUploadFiles: func.isRequired,
+    onRequestClose: func.isRequired
+  };
+
+  static defaultProps = {
+    height: 400,
+    width: 600,
+    accept: []
+  };
+
   state = {
-    isOpen: this.props.isOpen,
     selectedTab: 'upload',
     files: []
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.isOpen !== this.state.isOpen) {
-      this.setState({ isOpen: nextProps.isOpen });
-    }
-  }
-
   handleRemoveFile = index => {
-    let array = this.state.files.slice();
-    array.splice(index, 1);
-    this.setState({ files: array });
+    this.setState({
+      files: [
+        ...this.state.files.slice(0, index),
+        ...this.state.files.slice(index + 1)
+      ]
+    });
   };
 
   handleFilesSelected = files => {
+    // fixme: merge in multiple-selection mode
     this.setState({ files: files });
   };
 
   handleTabChange = value => {
     this.setState({
       selectedTab: value,
+      // fixme -- do we want to lose files between modes?
       files: []
     });
   };
 
   handleUrlUpload = file => {
+    // fixme: handle multiple
     this.setState({ files: [file] });
   };
 
   handleCloseModal = () => {
-    this.setState({ isOpen: false });
-    this.props.onCloseModal();
+    this.props.onRequestClose();
   };
 
   handleUploadFiles = () => {
+    this.props.onRequestClose();
+    this.props.onUploadFiles(this.state.files);
+
     this.setState({
-      isOpen: false,
       files: []
     });
-    this.props.onUploadFiles(this.state.files);
-  };
-
-  handleFileDrop = (item, monitor) => {
-    if (monitor) {
-      let newFiles = this.state.files.slice();
-      if (this.props.options && this.props.options.accept) {
-        monitor.getItem().files.forEach(file => {
-          if (validateFileType(file.type, this.props.options.accept)) {
-            newFiles.push(file);
-          } else {
-            console.error(file.name + ' is not an accepted file type.');
-          }
-        });
-        this.setState({
-          files: newFiles
-        });
-      } else {
-        this.setState({
-          files: newFiles.concat(monitor.getItem().files)
-        });
-      }
-    }
   };
 
   render() {
-    const { options } = this.props;
-    const { FILE } = NativeTypes;
+
+    const acceptedFileTypes = (isString(this.props.accept)
+      ? [this.props.accept]
+      : this.props.accept
+    ).map(t => mime.lookup(t) || t); // use full mimetype when possible
+
     return (
       <Dialog
-        open={this.state.isOpen}
+        open={this.props.isOpen}
         classes={{
           paper: styles.filePickerPaperOverride
         }}
@@ -111,24 +92,22 @@ class FilePicker extends Component {
         <div
           className={styles.filePicker}
           style={{
-            height: options.height || 400,
-            width: options.width || 600,
+            height: this.props.height,
+            width: this.props.width,
             maxWidth: '100%'
           }}
         >
           <FilePickerHeader
             selectedTab={this.state.selectedTab}
             onSelectTab={this.handleTabChange}
-            onCloseModal={this.handleCloseModal}
+            onClose={this.handleCloseModal}
           />
           {this.state.selectedTab === 'upload' && (
             <div className={styles.filePickerBody}>
               <DragDropContextProvider backend={HTML5Backend}>
                 <FileUploader
                   onFilesSelected={this.handleFilesSelected}
-                  acceptedFileTypes={options.accept}
-                  onDrop={this.handleFileDrop}
-                  accept={[FILE]}
+                  acceptedFileTypes={acceptedFileTypes}
                 />
               </DragDropContextProvider>
               {this.state.files.length > 0 && (
@@ -143,12 +122,12 @@ class FilePicker extends Component {
             <div className={styles.filePickerBody}>
               <UrlUploader
                 onUrlUpload={this.handleUrlUpload}
-                accept={options.accept}
+                accept={acceptedFileTypes}
               />
             </div>
           )}
           <FilePickerFooter
-            onCloseModal={this.handleCloseModal}
+            onCancel={this.handleCloseModal}
             onUploadFiles={this.handleUploadFiles}
             fileCount={this.state.files.length}
           />
@@ -158,23 +137,4 @@ class FilePicker extends Component {
   }
 }
 
-FilePicker.propTypes = {
-  isOpen: bool,
-  options: shape({
-    width: number,
-    height: number,
-    accept: oneOfType([arrayOf(string), string])
-  }),
-  onUploadFiles: func.isRequired,
-  onCloseModal: func
-};
-
-FilePicker.defaultProps = {
-  options: {
-    height: 400,
-    width: 600
-  },
-  onCloseModal: () => {}
-};
-
-export default DragDropContext(HTML5Backend)(FilePicker);
+export default FilePicker;
