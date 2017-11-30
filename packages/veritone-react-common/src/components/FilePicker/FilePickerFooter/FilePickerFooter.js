@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from 'material-ui/Button';
 import { number, func } from 'prop-types';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class FilePickerFooter extends Component {
   render() {
     return (

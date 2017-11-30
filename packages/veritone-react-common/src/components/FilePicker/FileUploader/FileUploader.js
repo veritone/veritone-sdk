@@ -7,8 +7,6 @@ import mime from 'mime-types';
 import { NativeTypes } from 'react-dnd-html5-backend';
 const { FILE } = NativeTypes;
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-
 import styles from './styles.scss';
 
 const boxTarget = {
@@ -42,7 +40,6 @@ const collect = (connect, monitor) => {
   };
 };
 
-@withMuiThemeProvider
 @DropTarget(FILE, boxTarget, collect)
 class FileUploader extends Component {
   static propTypes = {
