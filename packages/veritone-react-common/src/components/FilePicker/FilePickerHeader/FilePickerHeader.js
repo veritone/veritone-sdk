@@ -14,12 +14,8 @@ class FilePickerHeader extends Component {
       <div className={styles.filePickerHeader}>
         <span className={styles.filePickerTitle}>File Picker</span>
         <IconButton
-          style={{
-            height: '28px',
-            width: '28px',
-            position: 'absolute',
-            top: 15,
-            right: 15
+          classes={{
+            root: styles.filePickerCloseButton
           }}
           onClick={this.props.onClose}
         >

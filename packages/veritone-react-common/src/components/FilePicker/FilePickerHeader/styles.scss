@@ -1,5 +1,4 @@
 @import 'src/styles/modules/variables';
-@import 'src/styles/modules/muiTypography';
 
 .filePickerHeader {
   width: 100%;
@@ -16,4 +15,10 @@
   font-size: 18px;
   padding-left: 20px;
   padding-top: 20px;
+}
+
+.filePickerCloseButton {
+  position: absolute !important;
+  top: 8px;
+  right: 5px;
 }

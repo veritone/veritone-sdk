@@ -5,13 +5,8 @@ import styles from './styles.scss';
 
 class FileList extends Component {
   render() {
-    // fixme -- put into css
-    const listStyle = {
-      position: 'relative',
-      overflowY: 'auto'
-    };
     return (
-      <div style={listStyle} className={styles.fileList}>
+      <div className={styles.fileList}>
         {this.props.files.map((file, index) => {
           return (
             <FileListItem

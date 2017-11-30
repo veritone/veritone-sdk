@@ -115,8 +115,7 @@ class FilePicker extends Component {
           className={styles.filePicker}
           style={{
             height: this.props.height,
-            width: this.props.width,
-            maxWidth: '100%'
+            width: this.props.width
           }}
         >
           <FilePickerHeader
