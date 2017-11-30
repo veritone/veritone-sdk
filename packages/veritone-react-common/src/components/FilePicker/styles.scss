@@ -1,9 +1,7 @@
 @import 'src/styles/modules/variables';
 
 .filePicker {
-  display: -webkit-flex;
   display: flex;
-  -webkit-flex-direction: column;
   flex-direction: column;
   background-color: $grey-1;
   max-width: 100%;
@@ -17,9 +15,7 @@
 
 .filePickerBody {
   flex: 1;
-  display: -webkit-flex;
   display: flex;
-  -webkit-flex-direction: row;
   flex-direction: row;
   padding: $file-picker-margin;
 }
