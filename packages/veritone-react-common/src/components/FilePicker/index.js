@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { isString } from 'lodash';
+import pluralize from 'pluralize';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import mime from 'mime-types';
@@ -32,7 +33,8 @@ class FilePicker extends Component {
 
   state = {
     selectedTab: 'upload',
-    files: []
+    files: [],
+    errorMessage: ''
   };
 
   handleRemoveFile = index => {
@@ -42,11 +44,23 @@ class FilePicker extends Component {
         ...this.state.files.slice(index + 1)
       ]
     });
+    this.clearErrorMessage();
   };
 
   handleFilesSelected = files => {
     // fixme: merge in multiple-selection mode
     this.setState({ files: files });
+    this.clearErrorMessage();
+  };
+
+  handleFilesRejected = num => {
+    const files = pluralize('file', num);
+    const were = pluralize('was', num);
+
+    this.setState({
+      // prettier-ignore
+      errorMessage: `${num} ${files} ${were} rejected due to filetype restrictions.`
+    });
   };
 
   handleTabChange = value => {
@@ -55,11 +69,14 @@ class FilePicker extends Component {
       // fixme -- do we want to lose files between modes?
       files: []
     });
+
+    this.clearErrorMessage();
   };
 
   handleUrlUpload = file => {
     // fixme: handle multiple
     this.setState({ files: [file] });
+    this.clearErrorMessage();
   };
 
   handleCloseModal = () => {
@@ -73,10 +90,17 @@ class FilePicker extends Component {
     this.setState({
       files: []
     });
+
+    this.clearErrorMessage();
   };
 
-  render() {
+  clearErrorMessage() {
+    this.setState({
+      errorMessage: ''
+    });
+  }
 
+  render() {
     const acceptedFileTypes = (isString(this.props.accept)
       ? [this.props.accept]
       : this.props.accept
@@ -107,6 +131,7 @@ class FilePicker extends Component {
               <DragDropContextProvider backend={HTML5Backend}>
                 <FileUploader
                   onFilesSelected={this.handleFilesSelected}
+                  onFilesRejected={this.handleFilesRejected}
                   acceptedFileTypes={acceptedFileTypes}
                 />
               </DragDropContextProvider>
@@ -126,6 +151,7 @@ class FilePicker extends Component {
               />
             </div>
           )}
+          <div>{this.state.errorMessage}</div>
           <FilePickerFooter
             onCancel={this.handleCloseModal}
             onUploadFiles={this.handleUploadFiles}

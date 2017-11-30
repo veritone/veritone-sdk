@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { noop } from 'lodash';
 import Button from 'material-ui/Button';
 import { DropTarget } from 'react-dnd';
 import { string, func, arrayOf, bool } from 'prop-types';
@@ -13,13 +14,23 @@ import styles from './styles.scss';
 const boxTarget = {
   drop(props, monitor) {
     const droppedFiles = monitor.getItem().files;
-
-    props.onFilesSelected(
-      props.acceptedFileTypes.length
-        ? // only accept dropped files of the correct type.
-          droppedFiles.filter(f => props.acceptedFileTypes.includes(f.type))
-        : droppedFiles
+    const allowableDroppedFiles = droppedFiles.filter(f =>
+      // only accept dropped files of the correct type.
+      props.acceptedFileTypes.includes(f.type)
     );
+
+    if (props.acceptedFileTypes.length) {
+      if (allowableDroppedFiles.length) {
+        props.onFilesSelected(allowableDroppedFiles);
+      }
+    } else {
+      props.onFilesSelected(droppedFiles);
+    }
+
+    const numRejectedFiles = droppedFiles.length - allowableDroppedFiles.length;
+    if (numRejectedFiles > 0) {
+      props.onFilesRejected(numRejectedFiles);
+    }
   }
 };
 
@@ -37,12 +48,14 @@ class FileUploader extends Component {
   static propTypes = {
     acceptedFileTypes: arrayOf(string),
     onFilesSelected: func.isRequired,
+    onFilesRejected: func,
     isOver: bool.isRequired,
     connectDropTarget: func.isRequired
   };
 
   static defaultProps = {
-    acceptedFileTypes: []
+    acceptedFileTypes: [],
+    onFileRejected: noop
   };
 
   handleFileSelection = () => {
@@ -58,11 +71,13 @@ class FileUploader extends Component {
   render() {
     const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
 
+    const readableTypes = acceptedFileTypes
+      .map(mime.extension)
+      .filter(Boolean)
+      .join(', ');
+
     const acceptMessage = acceptedFileTypes.length
-      ? `Drag & Drop <${acceptedFileTypes
-          .map(mime.extension)
-          .filter(Boolean)
-          .join(', ')}> files to upload, or`
+      ? `Drag & Drop <${readableTypes}> files to upload, or`
       : 'Drag & Drop file(s) to upload, or';
 
     return connectDropTarget(
