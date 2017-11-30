@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import IconButton from 'material-ui/IconButton';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { string, func } from 'prop-types';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class FilePickerHeader extends Component {
   handleTabChange = (event, value) => {
     this.props.onSelectTab(value);

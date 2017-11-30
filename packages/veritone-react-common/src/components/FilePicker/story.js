@@ -15,7 +15,7 @@ storiesOf('FilePicker', module)
   .add('With Options', () => (
     <FilePicker
       isOpen
-      accept={['image/svg+xml', '.png']}
+      accept={['image/svg+xml', '.png', '.jpg']}
       height={400}
       width={600}
       onUploadFiles={action('upload files')}

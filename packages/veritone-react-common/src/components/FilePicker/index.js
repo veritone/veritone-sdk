@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { isString } from 'lodash';
+import { isString, isArray } from 'lodash';
 import pluralize from 'pluralize';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -17,10 +17,11 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class FilePicker extends Component {
   static propTypes = {
+    accept: oneOfType([arrayOf(string), string]), // extension or mimetype
+    multiple: bool,
     isOpen: bool,
     width: number,
     height: number,
-    accept: oneOfType([arrayOf(string), string]), // extension or mimetype
     onUploadFiles: func.isRequired,
     onRequestClose: func.isRequired
   };
@@ -28,7 +29,8 @@ class FilePicker extends Component {
   static defaultProps = {
     height: 400,
     width: 600,
-    accept: []
+    accept: [],
+    multiple: false
   };
 
   state = {
@@ -44,12 +46,16 @@ class FilePicker extends Component {
         ...this.state.files.slice(index + 1)
       ]
     });
+
     this.clearErrorMessage();
   };
 
-  handleFilesSelected = files => {
-    // fixme: merge in multiple-selection mode
-    this.setState({ files: files });
+  handleFilesSelected = fileOrFiles => {
+    const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
+    this.setState({
+      files: [...this.state.files, ...files]
+    });
+
     this.clearErrorMessage();
   };
 
@@ -65,17 +71,9 @@ class FilePicker extends Component {
 
   handleTabChange = value => {
     this.setState({
-      selectedTab: value,
-      // fixme -- do we want to lose files between modes?
-      files: []
+      selectedTab: value
     });
 
-    this.clearErrorMessage();
-  };
-
-  handleUrlUpload = file => {
-    // fixme: handle multiple
-    this.setState({ files: [file] });
     this.clearErrorMessage();
   };
 
@@ -126,6 +124,7 @@ class FilePicker extends Component {
             onSelectTab={this.handleTabChange}
             onClose={this.handleCloseModal}
           />
+
           {this.state.selectedTab === 'upload' && (
             <div className={styles.filePickerBody}>
               <DragDropContextProvider backend={HTML5Backend}>
@@ -143,11 +142,12 @@ class FilePicker extends Component {
               )}
             </div>
           )}
+
           {this.state.selectedTab === 'by-url' && (
             <div className={styles.filePickerBody}>
               <UrlUploader
-                onUrlUpload={this.handleUrlUpload}
-                accept={acceptedFileTypes}
+                onUpload={this.handleFilesSelected}
+                acceptedFileTypes={acceptedFileTypes}
               />
             </div>
           )}

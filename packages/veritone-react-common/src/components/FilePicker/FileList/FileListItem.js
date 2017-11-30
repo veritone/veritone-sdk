@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import mime from 'mime-types';
 import DeleteIcon from 'material-ui-icons/Delete';
 import IconButton from 'material-ui/IconButton';
 import { shape, func, number, string } from 'prop-types';
 import styles from './styles.scss';
 
 export const formatBytes = bytes => {
-  if (bytes == 0) return '0 Bytes';
+  if (bytes === 0) return '0 Bytes';
   let k = 1000,
     sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
     i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -14,12 +13,21 @@ export const formatBytes = bytes => {
 };
 
 class FileListItem extends Component {
-  constructor() {
-    super();
-    this.state = {
-      dataUrl: ''
-    };
-  }
+  static propTypes = {
+    onRemoveFile: func.isRequired,
+    file: shape({
+      lastModified: number,
+      name: string,
+      size: number,
+      type: string,
+      webkitRelativePath: string
+    }).isRequired,
+    index: number.isRequired
+  };
+
+  state = {
+    dataUrl: ''
+  };
 
   componentWillMount() {
     this.readImageFile(this.props.file);
@@ -31,12 +39,13 @@ class FileListItem extends Component {
 
   readImageFile = file => {
     const fileReader = new FileReader();
-    fileReader.onload = e => {
+    fileReader.onload = () => {
       this.setState({
         dataUrl: fileReader.result
       });
     };
-    if (/^image\//gi.test(mime.lookup(file.name))) {
+
+    if (/^image\//i.test(file.type)) {
       fileReader.readAsDataURL(file);
     } else {
       this.setState({
@@ -53,6 +62,7 @@ class FileListItem extends Component {
     return (
       <div className={styles.fileListItem}>
         {this.state.dataUrl.length ? (
+          // fixme- <Avatar>
           <img src={this.state.dataUrl} className={styles.fileListItemImage} />
         ) : (
           <div className={styles.fileListItemFolderIcon}>
@@ -79,17 +89,5 @@ class FileListItem extends Component {
     );
   }
 }
-
-FileListItem.propTypes = {
-  onRemoveFile: func,
-  file: shape({
-    lastModified: number,
-    name: string,
-    size: number,
-    type: string,
-    webkitRelativePath: string
-  }).isRequired,
-  index: number.isRequired
-};
 
 export default FileListItem;

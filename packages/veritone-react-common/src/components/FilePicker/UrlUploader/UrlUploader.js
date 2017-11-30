@@ -1,42 +1,54 @@
 import React, { Component } from 'react';
 import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
-
-import { func, oneOfType, arrayOf, string } from 'prop-types';
-
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import mime from 'mime-types';
+import { func, arrayOf, string } from 'prop-types';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class UrlUploader extends Component {
-  constructor() {
-    super();
-    this.state = {
-      image: '',
-      fetchingImage: false,
-      uploadError: false,
-      uploadSuccess: false
-    };
-  }
+  static propTypes = {
+    onUpload: func.isRequired,
+    acceptedFileTypes: arrayOf(string)
+  };
+
+  static defaultProps = {
+    acceptedFileTypes: []
+  };
+
+  state = {
+    image: '',
+    fetchingImage: false,
+    uploadError: false
+  };
 
   preventInput = evt => {
+    // todo: a "retrieve" button so we can have manual input without pasting
     evt.preventDefault();
   };
 
   handlePaste = evt => {
+    // todo: handle fetchingImage state -- set to a timestamp, show loading > 200ms?
     this.setState({
       image: '',
       fetchingImage: true
     });
-    fetch(evt.clipboardData.getData('Text'))
+
+    const imageUrl = evt.clipboardData.getData('Text');
+
+    fetch(imageUrl)
       .then(response => {
         if (response.status === 200 || response.status === 0) {
           return response.blob();
         } else {
-          throw new Error(
-            'Error loading: ' + evt.clipboardData.getData('Text')
-          );
+          throw new Error(`Error loading: ${imageUrl}`);
+        }
+      })
+      .then(responseBlob => {
+        if (this.validateFileType(responseBlob.type)) {
+          return responseBlob;
+        } else {
+          throw new Error(`${imageUrl} did match any of the allowed fileTypes`);
         }
       })
       .then(responseBlob => {
@@ -45,19 +57,37 @@ class UrlUploader extends Component {
           this.setState({
             image: fileReader.result,
             fetchingImage: false,
-            uploadError: false,
-            uploadSuccess: true
+            uploadError: false
           });
         };
+
         fileReader.readAsDataURL(responseBlob);
-        this.props.onUrlUpload(responseBlob);
+        return responseBlob;
+      })
+      .then(responseBlob => {
+        const fileType = responseBlob.type;
+        const extension = mime.extension(fileType);
+        // make an attempt to extract a useful filename (if url has an extension),
+        // otherwise use the URL.
+        // https://stackoverflow.com/questions/14473180/regex-to-get-a-filename-from-a-url
+        const tryFilename = /(?=\w+\.\w{3,4}$).+/;
+        const urlFileName = imageUrl.match(tryFilename);
+        const fileName = urlFileName || `${imageUrl}.${extension}`;
+
+        this.props.onUpload(
+          new File([responseBlob], fileName, {
+            type: fileType
+          })
+        );
+
         return responseBlob;
       })
       .catch(error => {
+        console.log(error);
+        // todo: better errors
         this.setState({
           fetchingImage: false,
-          uploadError: true,
-          uploadSuccess: false
+          uploadError: true
         });
       });
   };
@@ -66,9 +96,17 @@ class UrlUploader extends Component {
     if (this.state.uploadError && !evt.target.value.length) {
       this.setState({
         image: '',
-        uploadError: false,
-        uploadSuccess: false
+        uploadError: false
       });
+    }
+  };
+
+  validateFileType = fileType => {
+    console.log(this.props.acceptedFileTypes)
+    if (this.props.acceptedFileTypes.length) {
+      return this.props.acceptedFileTypes.includes(fileType);
+    } else {
+      return true;
     }
   };
 
@@ -121,10 +159,5 @@ class UrlUploader extends Component {
     );
   }
 }
-
-UrlUploader.propTypes = {
-  onUrlUpload: func.isRequired,
-  accept: oneOfType([arrayOf(string), string])
-};
 
 export default UrlUploader;

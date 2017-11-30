@@ -5,6 +5,7 @@ import styles from './styles.scss';
 
 class FileList extends Component {
   render() {
+    // fixme -- put into css
     const listStyle = {
       position: 'relative',
       overflowY: 'auto'
