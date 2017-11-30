@@ -1,5 +1,4 @@
 @import 'src/styles/modules/variables';
-@import 'src/styles/modules/muiTypography';
 
 .filePicker {
   display: -webkit-flex;
@@ -7,6 +6,7 @@
   -webkit-flex-direction: column;
   flex-direction: column;
   background-color: $grey-1;
+  max-width: 100%;
 }
 
 .filePickerPaperOverride {
