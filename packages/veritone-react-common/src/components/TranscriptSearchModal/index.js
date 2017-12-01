@@ -11,56 +11,100 @@ import Dialog, {
 
 import { bool, func, object } from 'prop-types';
 
-const TranscriptSearchModal = ({ open, state, applyFilter, closeFilter }) => {
-  let filterValue;
+export default class TranscriptSearchModal extends React.Component {
+  static propTypes = {
+    open: bool,
+    modalState: object,
+    applyFilter: func,
+    cancel: func
+  };
+  static defaultProps = {
+    applyFilter: (value) => console.log("Search transcript by value", value),
+    cancel: () => console.log("You clicked cancel")
+  };
+
+  state = {
+    filterValue: null || this.props.modalState.value
+  };
+
+  onChange = (event) => {
+    this.setState({
+      filterValue: event.target.value
+    })
+  }
+
+  onEnter = (event) => {
+    if (event.key === 'Enter') {
+      this.applyFilterIfValue();
+    }
+  }
+
+  applyFilterIfValue = () => {
+    this.props.applyFilter({value: this.state.filterValue ? this.state.filterValue.trim() : null});
+  }
+
+  render() {
+    return (
+      <Dialog
+        open={this.props.open}
+        onRequestClose={this.props.cancel}
+        onEscapeKeyUp={this.props.cancel}
+      >
+        <DialogTitle>Search By Keyword</DialogTitle>
+        <DialogContent style={{ width: '500px', margin: 'none' }}>
+          <TextField
+            id="full-width"
+            InputLabelProps={{
+              shrink: true
+            }}
+            autoFocus
+            margin="none"
+            defaultValue={this.props.modalState.value}
+            onChange={ this.onChange }
+            onKeyPress={ this.onEnter }
+            placeholder="Keyword(s)"
+            helperText="Searches within our database of media transcripts."
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={ this.props.cancel } color="primary">
+            Cancel
+          </Button>
+          <Button
+            disabled={ !this.state.filterValue && !this.props.modalState.value }
+            onClick={ this.applyFilterIfValue }
+            color="primary"
+            raised={true}
+          >
+            Search
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+};
+
+TranscriptSearchModal.defaultProps = {
+  modalState: { value: "" },
+}
+
+const TranscriptConditionGenerator = ( modalState ) => {
   return (
-    <Dialog
-      open={open}
-      onRequestClose={closeFilter}
-      onEscapeKeyUp={closeFilter}
-    >
-      <DialogTitle>Search By Keyword</DialogTitle>
-      <DialogContent style={{ width: '500px', margin: 'none' }}>
-        <TextField
-          id="full-width"
-          InputLabelProps={{
-            shrink: true
-          }}
-          margin="none"
-          defaultValue={state.value}
-          onChange={value => (filterValue = value.target.value)}
-          placeholder="Keyword(s)"
-          helperText="Searches within our database of media transcripts."
-          fullWidth
-          margin="normal"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={closeFilter} color="primary">
-          Cancel
-        </Button>
-        <Button
-          onClick={() =>
-            applyFilter({
-              operator: 'query_string',
-              field: 'transcript.transcript',
-              value: filterValue
-            })}
-          color="primary"
-          raised={true}
-        >
-          Search
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+    {
+      operator: "query_string",
+      field: "transcript.transcript",
+      value: modalState.value
+    }
+  )
+}
 
-TranscriptSearchModal.prototype = {
-  open: bool,
-  state: object.isRequired,
-  applyFilter: func.isRequired,
-  closeFilter: func.isRequired
-};
+const TranscriptDisplay = ( modalState ) => {
+  return {
+    abbreviation: modalState.value.substring(0, 10),
+    thumbnail: null
+  }
+}
 
-export default TranscriptSearchModal;
+export { TranscriptSearchModal, TranscriptConditionGenerator, TranscriptDisplay } ;

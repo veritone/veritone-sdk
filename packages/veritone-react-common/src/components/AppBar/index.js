@@ -9,6 +9,7 @@ import {
   string,
   bool,
   func,
+  object,
   arrayOf,
   shape,
   number
@@ -17,7 +18,9 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
-import { SearchBar, supportedEngineCategoryType } from 'components/SearchBar';
+import TranscriptSearchModal from 'components/TranscriptSearchModal';
+import { supportedEngineCategoryType } from 'components/SearchBar';
+import SearchBarContainer from 'components/SearchBar/SearchBarContainer';
 
 import styles from './styles.scss';
 
@@ -41,7 +44,12 @@ export default class AppBar extends React.Component {
         onClick: func
       })
     ),
-    supportedEngineCategories: arrayOf( shape(supportedEngineCategoryType) ),
+    enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
+    addOrModifySearchParameter: func,
+    removeSearchParameter: func,
+    onSearch: func,
+    searchParameters: arrayOf(object),
+
     elevation: number,
     profileMenu: bool,
     appSwitcher: bool,
@@ -52,8 +60,7 @@ export default class AppBar extends React.Component {
     isFetchingApps: bool,
     logout: func,
     fetchEnabledApps: func,
-    user: objectOf(any),
-
+    user: objectOf(any)
   };
   static defaultProps = {
     logo: true,
@@ -85,7 +92,14 @@ export default class AppBar extends React.Component {
           )}
 
           <div className={styles['title']}>{this.props.title}</div>
-          <SearchBar color={ this.props.backgroundColor } supportedEngineCategories={ this.props.supportedEngineCategories }/>
+          <SearchBarContainer
+            color={this.props.backgroundColor}
+            enabledEngineCategories={this.props.enabledEngineCategories}
+            searchParameters={this.props.searchParameters}
+            addOrModifySearchParameter={this.props.addOrModifySearchParameter}
+            removeSearchParameter={this.props.removeSearchParameter}
+
+          />
           <div className={styles['iconGroup']}>
             {this.props.rightActions.map(({ label, onClick }) => (
               <div className={styles['iconGroup__icon']} key={label}>

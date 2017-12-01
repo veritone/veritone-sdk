@@ -1,14 +1,16 @@
 import React from 'react';
 import cx from 'classnames';
-import { string, bool, arrayOf, shape, func, object, oneOf, number } from 'prop-types';
+import { string, bool, arrayOf, shape, func, object, oneOf, oneOfType, number } from 'prop-types';
 import Tooltip from 'material-ui/Tooltip';
 import Chip from 'material-ui/Chip';
+import SearchBarContainer from './SearchBarContainer';
+import update from 'immutability-helper';
 
 import styles from './styles.scss';
 
-const getEngineCategoryIcon = (supportedEngineCategories, engineCategoryId) => {
-  let engineCategory = supportedEngineCategories.filter( (x) => x.id === engineCategoryId )[0];
-  if ( engineCategoryId ) { return engineCategory.iconClass; }
+const getEngineCategoryIcon = (enabledEngineCategories, engineCategoryId) => {
+  let engineCategory = enabledEngineCategories.filter( (x) => x.id === engineCategoryId )[0];
+  if ( engineCategory ) { return engineCategory.iconClass; }
 }
 
 const searchPillClass = cx(
@@ -40,14 +42,16 @@ const Icon = ( { iconClass, color, size } ) => (
   />
 );
 
-const EngineCategoryButton = ( { engineCategory, color } ) => {
+const EngineCategoryButton = ( { engineCategory, addPill, color } ) => {
   const engineCategoryIconClasses = cx(
     styles['engineCategoryPill']
   );
 
+  const onAddPill = () => addPill(engineCategory.id);
+
   return (
     <Tooltip title={engineCategory.tooltip} placement="bottom" key={engineCategory.id}>
-      <div className={ cx(engineCategoryIconClasses) } onClick={engineCategory.addPill}>
+      <div className={ cx(engineCategoryIconClasses) } onClick={ onAddPill }>
         <Icon iconClass={ engineCategory.iconClass } color={ color } />
       </div>
     </Tooltip>
@@ -66,31 +70,48 @@ const supportedCategoriesClass = cx(
   styles['supportedCategories'],
 );
 
-const SearchBar = ( { color, query, supportedEngineCategories, onSearch, onChangePill } ) => (
+const SearchBar = ({
+  color,
+  searchParameters,
+  enabledEngineCategories,
+  addPill,
+  openPill,
+  removePill,
+  onSearch,
+  onChangePill
+}) => (
   <div className={containerClasses}>
     <div className={searchInputContainerClass} onClick={onSearch}>
-      {
-        query && query.searchEngineCategories && query.searchEngineCategories.map( (searchEngineCategory) =>
-          (
-            <SearchPill
-              key={ searchEngineCategory.key }
-              engineIconClass={ getEngineCategoryIcon(supportedEngineCategories, searchEngineCategory.engineId) }
-              label={ searchEngineCategory.searchAbbreviation }
-              remove={ searchEngineCategory.remove }
-              open={ searchEngineCategory.openModal }
-            />
-          )
-        )
-      }
+      {searchParameters.map(searchPill => {
+        // get the functions associated with the search pill's engine category
+        const searchParameterEngine = enabledEngineCategories.find(
+          engineCategory => engineCategory.id === searchPill.engineId
+        );
+        const { abbreviation, thumbnail } = searchParameterEngine.getLabel(searchPill);
+        const remove = () => removePill(searchPill.id);
+        const open = () => openPill(searchPill);
+
+        return (
+          <SearchPill
+            key={searchPill.id}
+            engineIconClass={searchParameterEngine.iconClass}
+            label={ abbreviation + searchPill.id}
+            open={ open }
+            remove={ remove }
+          />
+        );
+      })}
     </div>
     <div className={supportedCategoriesClass}>
-      {
-        supportedEngineCategories && supportedEngineCategories.map( (supportedEngineCategory) =>
-          (
-            <EngineCategoryButton key={ supportedEngineCategory.id } engineCategory={ supportedEngineCategory } color={ color } />
-          )
-        )
-      }
+      {enabledEngineCategories &&
+        enabledEngineCategories.map(engineCategory => (
+          <EngineCategoryButton
+            key={engineCategory.id}
+            engineCategory={engineCategory}
+            color={color}
+            addPill={addPill}
+          />
+        ))}
     </div>
   </div>
 );
@@ -112,7 +133,6 @@ const operator = {
 const condition = {
   id: string.isRequired,
   openModal: bool,
-  condition: object.isRequired,
   state: object.isRequired,
   abbreviation: string.isRequired,
   thumbnail: string,
@@ -121,15 +141,18 @@ const condition = {
 
 SearchBar.propTypes = {
   color: string.isRequired,
-  supportedEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
-  symbols: arrayOf( shape(operator), shape(condition) ),
+  searchParameters: arrayOf( oneOfType([shape(operator), shape(condition)]) ),
+  enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
   onSearch: func,
+  openPill: func,
   onChangePill: func,
 };
 
 SearchBar.defaultProps = {
+  color: "#eeeeee",
   enabledEngineCategories: [],
-  query: {}
+  searchParameters: [],
+  addPill: id => console.log("Open search pill modal", id)
 };
 
 export { SearchBar, supportedEngineCategoryType } ;
