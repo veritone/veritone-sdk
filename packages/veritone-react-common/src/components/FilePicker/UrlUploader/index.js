@@ -102,7 +102,6 @@ class UrlUploader extends Component {
   };
 
   validateFileType = fileType => {
-    console.log(this.props.acceptedFileTypes)
     if (this.props.acceptedFileTypes.length) {
       return this.props.acceptedFileTypes.includes(fileType);
     } else {
