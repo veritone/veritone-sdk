@@ -1,8 +1,9 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
+import { noop } from 'lodash';
 
-import FileList from './';
 import FileListItem, { formatBytes } from './FileListItem';
+import FileList from './';
 
 let createMockFile = (name, size, mimeType) => {
   let blobName = name || 'mock.txt';
@@ -36,32 +37,36 @@ const mockFiles = [
 
 describe('FileList', () => {
   it('should render a list of files if an array of files are passed to it', () => {
-    let wrapper = mount(<FileList files={mockFiles} />);
+    let wrapper = mount(<FileList files={mockFiles} onRemoveFile={noop} />);
     expect(wrapper.find(FileListItem).length).toEqual(mockFiles.length);
   });
 });
 
 describe('FileListItem', () => {
   it('should display the file name', () => {
-    let wrapper = mount(<FileListItem file={mockFiles[0]} index={0} />);
-    expect(wrapper.find('.fileListItemNameText').text()).toEqual(
-      mockFiles[0].name
+    let wrapper = mount(
+      <FileListItem file={mockFiles[0]} index={0} onRemoveFile={noop} />
     );
+    expect(wrapper.find('.itemNameText').text()).toEqual(mockFiles[0].name);
   });
 
   it('should display the size of the file', () => {
-    let wrapper = mount(<FileListItem file={mockFiles[0]} index={0} />);
-    expect(wrapper.find('.fileListItemFileSizeText').text()).toEqual(
+    let wrapper = mount(
+      <FileListItem file={mockFiles[0]} index={0} onRemoveFile={noop} />
+    );
+    expect(wrapper.find('.itemFileSizeText').text()).toEqual(
       formatBytes(mockFiles[0].size)
     );
   });
 
   it('should display a remove button', () => {
-    let wrapper = mount(<FileListItem file={mockFiles[0]} index={0} />);
+    let wrapper = mount(
+      <FileListItem file={mockFiles[0]} index={0} onRemoveFile={noop} />
+    );
     expect(wrapper.find('button').exists()).toEqual(true);
   });
 
-  it('handleRemoveFile should be called when the remove button is clicked', () => {
+  it('onRemoveFIle should be called when the remove button is clicked', () => {
     const onRemoveFile = jest.fn();
     let removeButton = mount(
       <FileListItem file={mockFiles[0]} onRemoveFile={onRemoveFile} index={0} />
