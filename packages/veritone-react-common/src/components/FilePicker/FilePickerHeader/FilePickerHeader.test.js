@@ -12,7 +12,7 @@ describe('FilePickerHeader', () => {
       <FilePickerHeader
         selectedTab="upload"
         onSelectTab={onSelectTab}
-        onCloseModal={onCloseModal}
+        onClose={onCloseModal}
       />
     );
   });
@@ -40,7 +40,7 @@ describe('FilePickerHeader', () => {
     expect(xButton.exists()).toEqual(true);
   });
 
-  it('onCloseModal should be called when the close button is clicked', () => {
+  it('should call onCloseModal when the close button is clicked', () => {
     const xButton = wrapper.find('.icon-close-exit');
     xButton.simulate('click');
     expect(onCloseModal).toHaveBeenCalled();
