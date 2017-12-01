@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import DeleteIcon from 'material-ui-icons/Delete';
 import IconButton from 'material-ui/IconButton';
 import { shape, func, number, string } from 'prop-types';
+
 import styles from './styles.scss';
 
 export const formatBytes = bytes => {
@@ -60,31 +61,36 @@ class FileListItem extends Component {
 
   render() {
     return (
-      <div className={styles.fileListItem}>
-        {this.state.dataUrl.length ? (
-          // fixme- <Avatar>
-          <img src={this.state.dataUrl} className={styles.fileListItemImage} />
-        ) : (
-          <div className={styles.fileListItemFolderIcon}>
-            <i className="icon-empty-folder" />
-          </div>
-        )}
+      <div className={styles.item}>
+        <div className={styles.itemPreviewContainer}>
+          {this.state.dataUrl.length ? (
+            <div
+              style={{ backgroundImage: `url(${this.state.dataUrl})` }}
+              className={styles.itemImage}
+            />
+          ) : (
+            <div className={styles.itemFolderIcon}>
+              <i className="icon-empty-folder" />
+            </div>
+          )}
+        </div>
 
-        <div className={styles.fileListItemText}>
-          <span className={styles.fileListItemNameText}>
-            {this.props.file.name}
-          </span>
-          <span className={styles.fileListItemFileSizeText}>
+        <div className={styles.itemTextContainer}>
+          <span className={styles.itemNameText}>{this.props.file.name}</span>
+          <span className={styles.itemFileSizeText}>
             {formatBytes(this.props.file.size)}
           </span>
         </div>
-        <IconButton
-          className={styles.fileListItemDeleteIcon}
-          aria-label="Delete"
-          onClick={this.handleRemoveFile}
-        >
-          <DeleteIcon />
-        </IconButton>
+
+        <div className={styles.itemActionContainer}>
+          <IconButton
+            className={styles.itemDeleteIcon}
+            aria-label="Delete"
+            onClick={this.handleRemoveFile}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </div>
       </div>
     );
   }
