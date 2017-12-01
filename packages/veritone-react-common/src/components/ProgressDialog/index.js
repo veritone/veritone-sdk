@@ -7,7 +7,7 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
-export default class FileUploadProgressDialog extends React.Component {
+export default class ProgressDialog extends React.Component {
   static propTypes = {
     percentComplete: number,
     progressMessage: string,
