@@ -18,7 +18,7 @@ import styles from './styles.scss';
 class FilePicker extends Component {
   static propTypes = {
     accept: oneOfType([arrayOf(string), string]), // extension or mimetype
-    multiple: bool,
+    multiple: bool, // todo
     isOpen: bool,
     width: number,
     height: number,
@@ -150,7 +150,7 @@ class FilePicker extends Component {
               />
             </div>
           )}
-          <div>{this.state.errorMessage}</div>
+          <div className={styles.errorMessage}>{this.state.errorMessage}</div>
           <FilePickerFooter
             onCancel={this.handleCloseModal}
             onUploadFiles={this.handleUploadFiles}

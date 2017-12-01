@@ -18,3 +18,8 @@
   display: flex;
   padding: $file-picker-margin;
 }
+
+.errorMessage {
+  text-align: center;
+  color: red;
+}
