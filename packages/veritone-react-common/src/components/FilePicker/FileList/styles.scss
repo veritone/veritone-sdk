@@ -1,7 +1,9 @@
 @import 'src/styles/modules/variables';
 @import 'src/styles/modules/muiTypography';
 
-@mixin file-picker-round-image($size: 40px, $margin: 5px) {
+$preview-size: 40px;
+
+@mixin file-picker-round-image($size, $margin: 4px) {
   width: $size;
   height: $size;
   margin: $margin;
@@ -11,21 +13,31 @@
 .fileList {
   flex: 0 0 50%;
   position: relative;
-  overflow-y: auto;
+  overflow-y: scroll;
+  margin-left: 15px;
 }
 
-.fileListItem {
+.item {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
   height: 50px;
+  border-bottom: 1px solid $grey-4;
 }
 
-.fileListItemImage {
-  @include file-picker-round-image(40px, 4px);
+.itemPreviewContainer {
+  width: $preview-size;
+  margin-right: 15px;
 }
 
-.fileListItemFolderIcon {
-  @include file-picker-round-image(40px, 4px);
+.itemImage {
+  @include file-picker-round-image($preview-size);
+  background-position: center;
+  background-size: $preview-size auto;
+  background-repeat: no-repeat;
+}
+
+.itemFolderIcon {
+  @include file-picker-round-image($preview-size);
   color: white;
   background-color: #b9b9b9;
   text-align: center;
@@ -34,28 +46,26 @@
   padding-left: 4px;
 }
 
-.fileListItemText {
+.itemTextContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.itemNameText {
+  @include mui-text('body1');
   overflow: hidden;
   text-overflow: ellipsis;
-  display: block;
-  padding: 4px;
-
-  span {
-    width: 100%;
-    white-space: nowrap;
-    display: inline-block;
-  }
+  white-space: nowrap;
 }
 
-.fileListItemNameText {
-  @include mui-text('body1');
-}
-
-.fileListItemFileSizeText {
+.itemFileSizeText {
   @include mui-text('body1');
   color: $grey-5;
 }
 
-.fileListItemDeleteIcon {
-  margin-left: auto;
+.itemDeleteIcon {
+  width: $preview-size;
 }
