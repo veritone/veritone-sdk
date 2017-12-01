@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 
-import FileList from './FileList';
+import FileList from './';
 import FileListItem, { formatBytes } from './FileListItem';
 
 let createMockFile = (name, size, mimeType) => {

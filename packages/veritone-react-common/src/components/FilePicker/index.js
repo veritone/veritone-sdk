@@ -7,11 +7,11 @@ import mime from 'mime-types';
 import Dialog from 'material-ui/Dialog';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
-import FileUploader from './FileUploader/FileUploader';
-import FileList from './FileList/FileList';
-import FilePickerHeader from './FilePickerHeader/FilePickerHeader';
-import FilePickerFooter from './FilePickerFooter/FilePickerFooter';
-import UrlUploader from './UrlUploader/UrlUploader';
+import FileUploader from './FileUploader';
+import FileList from './FileList';
+import FilePickerHeader from './FilePickerHeader';
+import FilePickerFooter from './FilePickerFooter';
+import UrlUploader from './UrlUploader';
 import styles from './styles.scss';
 
 @withMuiThemeProvider

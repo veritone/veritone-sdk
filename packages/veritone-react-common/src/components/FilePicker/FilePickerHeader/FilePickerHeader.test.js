@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import FilePickerHeader from './FilePickerHeader';
+import FilePickerHeader from './';
 
 describe('FilePickerHeader', () => {
   let wrapper, onSelectTab, onCloseModal;

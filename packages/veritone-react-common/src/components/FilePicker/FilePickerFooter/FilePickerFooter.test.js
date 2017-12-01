@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import _ from 'lodash';
 import Button from 'material-ui/Button';
-import FilePickerFooter from './FilePickerFooter';
+import FilePickerFooter from './';
 
 describe('FilePickerFooter', () => {
   let wrapper;
