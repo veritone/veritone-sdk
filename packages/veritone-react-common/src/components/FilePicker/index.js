@@ -4,7 +4,7 @@ import pluralize from 'pluralize';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import mime from 'mime-types';
-import Dialog from 'material-ui/Dialog';
+import Paper from 'material-ui/Paper';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
 import FileUploader from './FileUploader';
@@ -19,7 +19,6 @@ class FilePicker extends Component {
   static propTypes = {
     accept: oneOfType([arrayOf(string), string]), // extension or mimetype
     multiple: bool, // todo
-    isOpen: bool,
     width: number,
     height: number,
     onUploadFiles: func.isRequired,
@@ -105,17 +104,19 @@ class FilePicker extends Component {
     ).map(t => mime.lookup(t) || t); // use full mimetype when possible
 
     return (
-      <Dialog
-        open={this.props.isOpen}
+      <Paper
         classes={{
-          paper: styles.filePickerPaperOverride
+          root: styles.filePickerPaperOverride
+        }}
+        style={{
+          height: this.props.height,
+          width: this.props.width
         }}
       >
         <div
           className={styles.filePicker}
           style={{
-            height: this.props.height,
-            width: this.props.width
+            height: '100%'
           }}
         >
           <FilePickerHeader
@@ -157,7 +158,7 @@ class FilePicker extends Component {
             fileCount={this.state.files.length}
           />
         </div>
-      </Dialog>
+      </Paper>
     );
   }
 }
