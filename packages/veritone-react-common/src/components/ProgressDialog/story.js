@@ -1,11 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import FileUploadProgressDialog from './';
+import ProgressDialog from './';
 
-storiesOf('FileUploadProgressDialog', module)
+storiesOf('ProgressDialog', module)
   .add('Base', () => (
-    <FileUploadProgressDialog
+    <ProgressDialog
       percentComplete={20}
       progressMessage="getting urls"
     />
