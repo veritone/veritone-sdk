@@ -65,6 +65,8 @@ export default class ProgressDialog extends React.Component {
   }
 
   render() {
+    // todo: error message, close button (when error is present)
+
     return (
       <Paper
         classes={{ root: styles.container }}
