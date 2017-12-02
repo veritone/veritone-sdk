@@ -90,14 +90,23 @@ export default class VeritoneApp {
   }
 
   setWidgetRef = (id, ref) => {
-    // try to get at the base component for @connected widgets.
-    // fixme: generic solution (hoisting specified instance methods?)
-    // https://github.com/elado/hoist-non-react-methods
     if (!ref) {
       // protect against errors when destroying the app
       return;
     }
 
+
+    if (isFunction(ref.getWrappedInstance) && !ref.wrappedInstance) {
+      return console.warn(
+        `Warning: widget with id "${id}" looks like it's wrapped with a
+         @connect decorator, but the withRef option is not set to true.
+         { withRef: true } should be set as the fourth argument to @connect`
+      )
+    }
+
+    // try to get at the base component for @connected widgets.
+    // fixme: generic solution (hoisting specified instance methods?)
+    // https://github.com/elado/hoist-non-react-methods
     this._refs[id] = isFunction(ref.getWrappedInstance)
       ? ref.getWrappedInstance()
       : ref;
