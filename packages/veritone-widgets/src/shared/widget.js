@@ -1,10 +1,13 @@
+import { guid } from './util';
+
 export default function widget(Component) {
   return class Widget {
     static displayName = Component.displayName || Component.name;
 
-    constructor({ elId, ...props }) {
+    constructor({ elId, widgetId, ...props }) {
       this._elId = elId;
       this._props = props;
+      this._id = widgetId || guid();
     }
 
     init() {
@@ -16,6 +19,10 @@ export default function widget(Component) {
       }
 
       this.el = el;
+    }
+
+    get id() {
+      return this._id;
     }
 
     get Component() {

@@ -2,6 +2,7 @@ import 'babel-polyfill'; // fixme
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { isFunction } from 'lodash';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
 import { object, arrayOf } from 'prop-types';
@@ -16,6 +17,7 @@ export default class VeritoneApp {
   _store = configureStore();
   _containerEl = null;
   _token = null;
+  _refs = {};
 
   constructor(widgets) {
     this._widgets = widgets;
@@ -83,30 +85,64 @@ export default class VeritoneApp {
     }
   }
 
+  getWidget(id) {
+    return this._refs[id];
+  }
+
+  setWidgetRef = (id, ref) => {
+    // try to get at the base component for @connected widgets.
+    // fixme: generic solution (hoisting specified instance methods?)
+    // https://github.com/elado/hoist-non-react-methods
+    if (!ref) {
+      // protect against errors when destroying the app
+      return;
+    }
+
+    this._refs[id] = isFunction(ref.getWrappedInstance)
+      ? ref.getWrappedInstance()
+      : ref;
+  };
+
   _renderReactApp() {
     ReactDOM.render(
       <Provider store={this._store}>
-        <VeritoneRootComponent store={this._store} widgets={this._widgets} />
+        <div>
+          {this._widgets.map(w =>
+            ReactDOM.createPortal(
+              <w.Component
+                {...w.props}
+                // bind is OK because this isn't a component -- only renders
+                // when mount() is called.
+                // eslint-disable-next-line
+                ref={this.setWidgetRef.bind(this, w.id)}
+              />,
+              w.el
+            )
+          )}
+        </div>
       </Provider>,
       this._containerEl
     );
   }
 }
 
-// todo:
-// @connect VeritoneRootComponent to provide auth info/dispatch auth/boot actions.
-function VeritoneRootComponent({ widgets }) {
-  return (
-    <div>
-      {widgets.map(w =>
-        ReactDOM.createPortal(<w.Component {...w.props} />, w.el)
-      )}
-    </div>
-  );
-}
-
-VeritoneRootComponent.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  store: object.isRequired, // redux store
-  widgets: arrayOf(object)
-};
+// either
+// const app = new VeritoneApp([new ModalWidget({ widgetId: 'something' })]);
+// app.getWidget('something').open();
+//
+// // or
+// const myWidget = new ModalWidget();
+// const app = new VeritoneApp([myWidget]);
+// myWidget.open();
+// // but what if its in multiple apps? refs only apply to an app,
+// // because thats where the widget's rendered instance lives.
+//
+// // so instead
+// const myWidget = new ModalWidget();
+// const app = new VeritoneApp([
+//   myWidget,
+//   new OtherWidget({ widgetId: 'something' })
+// ]);
+// // widget sets its own GUID when instantiated, or one can be specified.
+// app.getWidget(myWidget.instanceId).open();
+// app.getWidget('something').open();
