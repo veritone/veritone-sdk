@@ -132,10 +132,7 @@ const operator = {
 
 const condition = {
   id: string.isRequired,
-  openModal: bool,
   state: object.isRequired,
-  abbreviation: string.isRequired,
-  thumbnail: string,
   engineId: string.isRequired
 }
 
