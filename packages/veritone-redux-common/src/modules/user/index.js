@@ -190,7 +190,7 @@ export function fetchUser({ token } = {}) {
   let apiCall = {
     [CALL_API]: {
       types: [FETCH_USER, FETCH_USER_SUCCESS, FETCH_USER_FAILURE],
-      endpoint: state => `${getConfig(state).apiRoot}/admin/current-user`,
+      endpoint: state => `${getConfig(state).apiRoot}/v1/admin/current-user`,
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -211,7 +211,7 @@ export function login({ userName, password }) {
   return {
     [CALL_API]: {
       types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAILURE],
-      endpoint: state => `${getConfig(state).apiRoot}/admin/login`,
+      endpoint: state => `${getConfig(state).apiRoot}/v1/admin/login`,
       method: 'POST',
       body: JSON.stringify({
         userName,
@@ -232,7 +232,7 @@ export function logout() {
       types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAILURE],
       endpoint: state =>
         // prettier-ignore
-        `${getConfig(state).apiRoot}/admin/token/${selectSessionToken(state)}/logout`,
+        `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/logout`,
       method: 'GET',
       headers: commonHeaders
     }
@@ -245,7 +245,7 @@ export function refreshApiToken() {
       types: [REFRESH_TOKEN, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE],
       endpoint: state =>
         // prettier-ignore
-        `${getConfig(state).apiRoot}/admin/token/${selectSessionToken(state)}/refresh`,
+        `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/refresh`,
       method: 'GET',
       headers: commonHeaders
     }
@@ -261,7 +261,7 @@ export function fetchEnabledApps() {
         FETCH_USER_APPLICATIONS_FAILURE
       ],
       endpoint: state =>
-        `${getConfig(state).apiRoot}/admin/current-user/applications`,
+        `${getConfig(state).apiRoot}/v1/admin/current-user/applications`,
       method: 'GET',
       headers: commonHeaders,
       credentials: 'include'
