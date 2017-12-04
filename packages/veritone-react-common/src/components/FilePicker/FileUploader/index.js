@@ -21,13 +21,13 @@ const boxTarget = {
       if (allowableDroppedFiles.length) {
         props.onFilesSelected(allowableDroppedFiles);
       }
+
+      const numRejectedFiles = droppedFiles.length - allowableDroppedFiles.length;
+      if (numRejectedFiles > 0) {
+        props.onFilesRejected(numRejectedFiles);
+      }
     } else {
       props.onFilesSelected(droppedFiles);
-    }
-
-    const numRejectedFiles = droppedFiles.length - allowableDroppedFiles.length;
-    if (numRejectedFiles > 0) {
-      props.onFilesRejected(numRejectedFiles);
     }
   }
 };
