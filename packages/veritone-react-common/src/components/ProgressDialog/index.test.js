@@ -8,8 +8,6 @@ describe('ProgressDialog', function() {
     const wrapper = mount(
       <ProgressDialog
         percentComplete={50}
-        doneSuccess={false}
-        doneFailure={false}
       />
     );
 
@@ -24,17 +22,27 @@ describe('ProgressDialog', function() {
     expect(wrapper.text().match(/test-progress/)).toBeTruthy();
   });
 
-  it('shows the success icon with props.doneSuccess', function() {
-    const wrapper = mount(<ProgressDialog doneSuccess />);
+  it('shows the success icon with props.completeStatus == "success"', function() {
+    const wrapper = mount(<ProgressDialog completeStatus="success" />);
 
     expect(wrapper.find('[data-testtarget="failureIcon"]')).toHaveLength(0);
+    expect(wrapper.find('[data-testtarget="warnIcon"]')).toHaveLength(0);
     expect(wrapper.find('[data-testtarget="successIcon"]').length).toBeTruthy();
   });
 
-  it('shows the failure icon with props.doneFailure', function() {
-    const wrapper = mount(<ProgressDialog doneFailure />);
+  it('shows the failure icon with props.completeStatus == "failure"', function() {
+    const wrapper = mount(<ProgressDialog completeStatus="failure"/>);
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
+    expect(wrapper.find('[data-testtarget="warnIcon"]')).toHaveLength(0);
     expect(wrapper.find('[data-testtarget="failureIcon"]').length).toBeTruthy();
+  });
+
+  it('shows the failure icon with props.completeStatus == "warning"', function() {
+    const wrapper = mount(<ProgressDialog completeStatus="warning"/>);
+
+    expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
+    expect(wrapper.find('[data-testtarget="failureIcon"]')).toHaveLength(0);
+    expect(wrapper.find('[data-testtarget="warnIcon"]').length).toBeTruthy();
   });
 });

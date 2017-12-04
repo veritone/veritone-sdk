@@ -1,14 +1,22 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { number, boolean, text } from '@storybook/addon-knobs';
+import { number, select, text, boolean } from '@storybook/addon-knobs';
 
 import ProgressDialog from './';
 
-storiesOf('ProgressDialog', module).add('Base', () => (
-  <ProgressDialog
-    percentComplete={number('percentComplete', 20)}
-    progressMessage={text('progressMessage', 'retrieving signed URLs')}
-    doneSuccess={boolean('doneSuccess', false)}
-    doneFailure={boolean('doneFailure', false)}
-  />
-));
+storiesOf('ProgressDialog', module).add('Base', () => {
+  const complete = boolean('complete');
+  const completeStatus = select('completeStatus', {
+    success: 'success',
+    failure: 'failure',
+    warning: 'warning'
+  });
+
+  return (
+    <ProgressDialog
+      percentComplete={number('percentComplete', 20)}
+      progressMessage={text('progressMessage', 'retrieving signed URLs')}
+      completeStatus={complete ? completeStatus : null}
+    />
+  );
+});
