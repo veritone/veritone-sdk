@@ -1,13 +1,15 @@
 import React from 'react';
-import { arrayOf, shape, func, object } from 'prop-types';
+import { arrayOf, func, object, string } from 'prop-types';
 import { SearchBar } from '.';
 
 export default class SearchBarContainer extends React.Component {
   static propTypes = {
+    color: string,
     searchParameters: arrayOf(object),
     addOrModifySearchParameter: func,
     removeSearchParameter: func,
-    //enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
+    enabledEngineCategories: arrayOf(object),
+
   };
 
   state = {
@@ -24,7 +26,7 @@ export default class SearchBarContainer extends React.Component {
   applyFilter = (engineId) => {
     return (parameter) => {
       console.log("Add filter", parameter);
-      if( !!parameter.value) {
+      if( parameter.value) {
         this.props.addOrModifySearchParameter({...parameter, engineId: engineId, id: this.state.selectedPill });
       } else {
         this.props.removeSearchParameter( this.state.selectedPill );
@@ -57,7 +59,7 @@ export default class SearchBarContainer extends React.Component {
       <div style= { { width: "100%", marginRight: "1em", padding: 0 } }>
         <SearchBar color={ this.props.color } enabledEngineCategories={ this.props.enabledEngineCategories } searchParameters={ this.props.searchParameters } addPill={ this.addPill } removePill={ this.props.removeSearchParameter } openPill={this.openPill}/>
         {
-          Modal ? <Modal open={ true } modalState={ this.state.openModal.modalState } cancel={ this.cancelModal } applyFilter={ this.applyFilter(this.state.openModal.modalId) } /> : null
+          Modal ? <Modal open modalState={ this.state.openModal.modalState } cancel={ this.cancelModal } applyFilter={ this.applyFilter(this.state.openModal.modalId) } /> : null
         }
       </div>
     );

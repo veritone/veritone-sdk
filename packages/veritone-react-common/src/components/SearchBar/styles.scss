@@ -4,7 +4,7 @@
   background-color: white;
   display: flex;
   align-items: center;
-  border-radius:4px;
+  border-radius: 4px;
 }
 
 .searchBarContainer {
@@ -37,13 +37,13 @@
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(0,0,0,.05);
+    background-color: rgba(0, 0, 0, 0.05);
   }
 }
 
 .engineCategoryIcon {
   svg {
-    color: #222222 !important;
+    color: #222 !important;
   }
 }
 
@@ -57,5 +57,5 @@
 }
 
 .searchPillLabel {
-  padding-left: 0em !important;
+  padding-left: 0 !important;
 }

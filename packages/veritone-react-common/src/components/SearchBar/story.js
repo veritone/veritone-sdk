@@ -1,12 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
 
 import update from 'immutability-helper';
 
-import { SearchBar } from '.';
-import SearchBarContainer from './SearchBarContainer';
 import { TranscriptSearchModal, TranscriptDisplay, TranscriptConditionGenerator  } from 'components/TranscriptSearchModal';
+import SearchBarContainer from './SearchBarContainer';
+import { SearchBar } from '.';
 
 const transcript = {
   id: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
@@ -131,9 +130,7 @@ storiesOf('SearchBar', module).add('Base', () =>
       <div style={{ margin: '0 1em 0 1em', padding: 0 }}>
           <h3>Logo</h3>
       </div>
-      <SearchBar color={appBarColor} enabledEngineCategories={ enabledEngineCategories }>
-
-      </SearchBar>
+      <SearchBar color={appBarColor} enabledEngineCategories={ enabledEngineCategories } />
     </div>
   );
 }

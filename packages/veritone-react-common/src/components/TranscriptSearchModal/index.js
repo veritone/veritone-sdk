@@ -5,16 +5,15 @@ import TextField from 'material-ui/TextField';
 import Dialog, {
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle
 } from 'material-ui/Dialog';
 
-import { bool, func, object } from 'prop-types';
+import { bool, func, string, shape } from 'prop-types';
 
 export default class TranscriptSearchModal extends React.Component {
   static propTypes = {
     open: bool,
-    modalState: object,
+    modalState: shape({ value: string }),
     applyFilter: func,
     cancel: func
   };
@@ -54,9 +53,6 @@ export default class TranscriptSearchModal extends React.Component {
         <DialogContent style={{ width: '500px', margin: 'none' }}>
           <TextField
             id="full-width"
-            InputLabelProps={{
-              shrink: true
-            }}
             autoFocus
             margin="none"
             defaultValue={this.props.modalState.value}
@@ -65,7 +61,6 @@ export default class TranscriptSearchModal extends React.Component {
             placeholder="Keyword(s)"
             helperText="Searches within our database of media transcripts."
             fullWidth
-            margin="normal"
           />
         </DialogContent>
         <DialogActions>
@@ -76,7 +71,7 @@ export default class TranscriptSearchModal extends React.Component {
             disabled={ !this.state.filterValue && !this.props.modalState.value }
             onClick={ this.applyFilterIfValue }
             color="primary"
-            raised={true}
+            raised
           >
             Search
           </Button>

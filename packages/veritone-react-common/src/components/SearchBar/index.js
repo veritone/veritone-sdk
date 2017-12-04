@@ -1,46 +1,13 @@
 import React from 'react';
 import cx from 'classnames';
-import { string, bool, arrayOf, shape, func, object, oneOf, oneOfType, number } from 'prop-types';
+import { string, bool, arrayOf, shape, func, object } from 'prop-types';
+
 import Tooltip from 'material-ui/Tooltip';
-import Chip from 'material-ui/Chip';
-import SearchBarContainer from './SearchBarContainer';
-import update from 'immutability-helper';
+
+import Icon from './Icon';
+import SearchPill from './SearchPill';
 
 import styles from './styles.scss';
-
-const getEngineCategoryIcon = (enabledEngineCategories, engineCategoryId) => {
-  let engineCategory = enabledEngineCategories.filter( (x) => x.id === engineCategoryId )[0];
-  if ( engineCategory ) { return engineCategory.iconClass; }
-}
-
-const searchPillClass = cx(
-  styles['searchPill'],
-);
-
-const deleteIconClass = cx(
-  styles['deleteIcon'],
-);
-
-const searchPillLabelClass = cx(
-  styles['searchPillLabel'],
-);
-
-const SearchPill = ( { engineIconClass, label, remove, open } ) => (
-  <Chip
-    avatar={<Icon iconClass={ engineIconClass } color={ 'grey '} size={ '1.5em' } />}
-    label={ label }
-    className={ searchPillClass }
-    classes={ { label: searchPillLabelClass, deleteIcon: deleteIconClass } }
-    onRequestDelete={ remove }
-    onClick={ open }
-  />
-);
-
-const Icon = ( { iconClass, color, size } ) => (
-  <span
-    className={ iconClass } style={ { padding: '0.25em', color: color, display: 'block', fontSize: size } }
-  />
-);
 
 const EngineCategoryButton = ( { engineCategory, addPill, color } ) => {
   const engineCategoryIconClasses = cx(
@@ -57,6 +24,12 @@ const EngineCategoryButton = ( { engineCategory, addPill, color } ) => {
     </Tooltip>
   )
 }
+EngineCategoryButton.propTypes = {
+  engineCategory: shape(supportedEngineCategoryType),
+  addPill: func,
+  color: string,
+}
+
 
 const containerClasses = cx(
   styles['searchBar'],
@@ -115,6 +88,16 @@ const SearchBar = ({
     </div>
   </div>
 );
+SearchBar.propTypes = {
+  color: string.isRequired,
+  searchParameters: arrayOf(shape(condition)),
+  enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
+  onSearch: func,
+  addPill: func,
+  openPill: func,
+  removePill: func,
+  onChangePill: func,
+};
 
 const supportedEngineCategoryType = {
   id: string.isRequired,
@@ -126,24 +109,11 @@ const supportedEngineCategoryType = {
   addPilll: func
 };
 
-const operator = {
-  operator: string.isRequired
-}
-
 const condition = {
   id: string.isRequired,
-  state: object.isRequired,
+  value: object.isRequired,
   engineId: string.isRequired
 }
-
-SearchBar.propTypes = {
-  color: string.isRequired,
-  searchParameters: arrayOf( oneOfType([shape(operator), shape(condition)]) ),
-  enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
-  onSearch: func,
-  openPill: func,
-  onChangePill: func,
-};
 
 SearchBar.defaultProps = {
   color: "#eeeeee",

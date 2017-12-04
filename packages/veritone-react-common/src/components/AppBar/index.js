@@ -18,7 +18,6 @@ import {
 import veritoneLogo from 'images/veritone-logo-white.svg';
 import AppSwitcher from 'components/AppSwitcher';
 import ProfileMenu from 'components/ProfileMenu';
-import TranscriptSearchModal from 'components/TranscriptSearchModal';
 import { supportedEngineCategoryType } from 'components/SearchBar';
 import SearchBarContainer from 'components/SearchBar/SearchBarContainer';
 
