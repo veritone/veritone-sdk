@@ -14,7 +14,12 @@ storiesOf('ProgressDialog', module).add('Base', () => {
 
   return (
     <ProgressDialog
-      percentComplete={number('percentComplete', 20)}
+      percentComplete={number('percentComplete', 20, {
+        range: true,
+        min: 0,
+        max: 100,
+        step: 1
+      })}
       progressMessage={text('progressMessage', 'retrieving signed URLs')}
       completeStatus={complete ? completeStatus : null}
     />
