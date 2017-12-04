@@ -4,6 +4,16 @@ import { number, func } from 'prop-types';
 import styles from './styles.scss';
 
 class FilePickerFooter extends Component {
+  static propTypes = {
+    fileCount: number,
+    onCancel: func,
+    onSubmit: func
+  };
+
+  static defaultProps = {
+    fileCount: 0
+  };
+
   render() {
     return (
       <div className={styles.filePickerFooter}>
@@ -12,7 +22,7 @@ class FilePickerFooter extends Component {
           raised
           disabled={this.props.fileCount < 1}
           color="primary"
-          onClick={this.props.onUploadFiles}
+          onClick={this.props.onSubmit}
         >
           Upload
         </Button>
@@ -20,15 +30,5 @@ class FilePickerFooter extends Component {
     );
   }
 }
-
-FilePickerFooter.propTypes = {
-  fileCount: number,
-  onCancel: func,
-  onUploadFiles: func
-};
-
-FilePickerFooter.defaultProps = {
-  fileCount: 0
-};
 
 export default FilePickerFooter;
