@@ -154,7 +154,7 @@ class FilePicker extends Component {
           <div className={styles.errorMessage}>{this.state.errorMessage}</div>
           <FilePickerFooter
             onCancel={this.handleCloseModal}
-            onUploadFiles={this.handleUploadFiles}
+            onSubmit={this.handleUploadFiles}
             fileCount={this.state.files.length}
           />
         </div>
