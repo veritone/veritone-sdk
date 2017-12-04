@@ -18,29 +18,31 @@ export default class TranscriptSearchModal extends React.Component {
     cancel: func
   };
   static defaultProps = {
-    applyFilter: (value) => console.log("Search transcript by value", value),
-    cancel: () => console.log("You clicked cancel")
+    applyFilter: value => console.log('Search transcript by value', value),
+    cancel: () => console.log('You clicked cancel')
   };
 
   state = {
     filterValue: null || this.props.modalState.value
   };
 
-  onChange = (event) => {
+  onChange = event => {
     this.setState({
       filterValue: event.target.value
-    })
-  }
+    });
+  };
 
-  onEnter = (event) => {
+  onEnter = event => {
     if (event.key === 'Enter') {
       this.applyFilterIfValue();
     }
-  }
+  };
 
   applyFilterIfValue = () => {
-    this.props.applyFilter({value: this.state.filterValue ? this.state.filterValue.trim() : null});
-  }
+    this.props.applyFilter({
+      value: this.state.filterValue ? this.state.filterValue.trim() : null
+    });
+  };
 
   render() {
     return (
@@ -56,20 +58,20 @@ export default class TranscriptSearchModal extends React.Component {
             autoFocus
             margin="none"
             defaultValue={this.props.modalState.value}
-            onChange={ this.onChange }
-            onKeyPress={ this.onEnter }
+            onChange={this.onChange}
+            onKeyPress={this.onEnter}
             placeholder="Keyword(s)"
             helperText="Searches within our database of media transcripts."
             fullWidth
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={ this.props.cancel } color="primary">
+          <Button onClick={this.props.cancel} color="primary">
             Cancel
           </Button>
           <Button
-            disabled={ !this.state.filterValue && !this.props.modalState.value }
-            onClick={ this.applyFilterIfValue }
+            disabled={!this.state.filterValue && !this.props.modalState.value}
+            onClick={this.applyFilterIfValue}
             color="primary"
             raised
           >
@@ -77,29 +79,31 @@ export default class TranscriptSearchModal extends React.Component {
           </Button>
         </DialogActions>
       </Dialog>
-    )
+    );
   }
-};
+}
 
 TranscriptSearchModal.defaultProps = {
-  modalState: { value: "" },
-}
+  modalState: { value: '' }
+};
 
-const TranscriptConditionGenerator = ( modalState ) => {
-  return (
-    {
-      operator: "query_string",
-      field: "transcript.transcript",
-      value: modalState.value
-    }
-  )
-}
+const TranscriptConditionGenerator = modalState => {
+  return {
+    operator: 'query_string',
+    field: 'transcript.transcript',
+    value: modalState.value
+  };
+};
 
-const TranscriptDisplay = ( modalState ) => {
+const TranscriptDisplay = modalState => {
   return {
     abbreviation: modalState.value.substring(0, 10),
     thumbnail: null
-  }
-}
+  };
+};
 
-export { TranscriptSearchModal, TranscriptConditionGenerator, TranscriptDisplay } ;
+export {
+  TranscriptSearchModal,
+  TranscriptConditionGenerator,
+  TranscriptDisplay
+};

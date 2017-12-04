@@ -8,7 +8,7 @@ storiesOf('TranscriptSearchModal', module).add('Base', () => {
     <TranscriptSearchModal
       open
       state={{ value: 'Lakers' }}
-      applyFilter={ logFilter }
+      applyFilter={logFilter}
     />
   );
 });

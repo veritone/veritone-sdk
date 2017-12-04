@@ -81,14 +81,14 @@ storiesOf('AppBar', module)
   });
 
 const transcriptEngine = {
-  id: "guid-1",
-  name: "Transcript",
-  iconClass: "icon-engine-transcription",
-  tooltip: "Search by Keyword",
+  id: 'guid-1',
+  name: 'Transcript',
+  iconClass: 'icon-engine-transcription',
+  tooltip: 'Search by Keyword',
   enablePill: true,
   showPill: true,
-  addPill: () => console.log("show transcript modal")
-}
+  addPill: () => console.log('show transcript modal')
+};
 
 const sampleApps = [
   {

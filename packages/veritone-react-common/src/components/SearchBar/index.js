@@ -9,39 +9,34 @@ import SearchPill from './SearchPill';
 
 import styles from './styles.scss';
 
-const EngineCategoryButton = ( { engineCategory, addPill, color } ) => {
-  const engineCategoryIconClasses = cx(
-    styles['engineCategoryPill']
-  );
+const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
+  const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
 
   const onAddPill = () => addPill(engineCategory.id);
 
   return (
-    <Tooltip title={engineCategory.tooltip} placement="bottom" key={engineCategory.id}>
-      <div className={ cx(engineCategoryIconClasses) } onClick={ onAddPill }>
-        <Icon iconClass={ engineCategory.iconClass } color={ color } />
+    <Tooltip
+      title={engineCategory.tooltip}
+      placement="bottom"
+      key={engineCategory.id}
+    >
+      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill}>
+        <Icon iconClass={engineCategory.iconClass} color={color} />
       </div>
     </Tooltip>
-  )
-}
+  );
+};
 EngineCategoryButton.propTypes = {
   engineCategory: shape(supportedEngineCategoryType),
   addPill: func,
-  color: string,
-}
+  color: string
+};
 
+const containerClasses = cx(styles['searchBar']);
 
-const containerClasses = cx(
-  styles['searchBar'],
-);
+const searchInputContainerClass = cx(styles['searchInput']);
 
-const searchInputContainerClass = cx(
-  styles['searchInput']
-);
-
-const supportedCategoriesClass = cx(
-  styles['supportedCategories'],
-);
+const supportedCategoriesClass = cx(styles['supportedCategories']);
 
 const SearchBar = ({
   color,
@@ -60,7 +55,9 @@ const SearchBar = ({
         const searchParameterEngine = enabledEngineCategories.find(
           engineCategory => engineCategory.id === searchPill.engineId
         );
-        const { abbreviation, thumbnail } = searchParameterEngine.getLabel(searchPill);
+        const { abbreviation, thumbnail } = searchParameterEngine.getLabel(
+          searchPill
+        );
         const remove = () => removePill(searchPill.id);
         const open = () => openPill(searchPill);
 
@@ -68,9 +65,9 @@ const SearchBar = ({
           <SearchPill
             key={searchPill.id}
             engineIconClass={searchParameterEngine.iconClass}
-            label={ abbreviation + searchPill.id}
-            open={ open }
-            remove={ remove }
+            label={abbreviation + searchPill.id}
+            open={open}
+            remove={remove}
           />
         );
       })}
@@ -96,7 +93,7 @@ SearchBar.propTypes = {
   addPill: func,
   openPill: func,
   removePill: func,
-  onChangePill: func,
+  onChangePill: func
 };
 
 const supportedEngineCategoryType = {
@@ -113,13 +110,13 @@ const condition = {
   id: string.isRequired,
   value: object.isRequired,
   engineId: string.isRequired
-}
-
-SearchBar.defaultProps = {
-  color: "#eeeeee",
-  enabledEngineCategories: [],
-  searchParameters: [],
-  addPill: id => console.log("Open search pill modal", id)
 };
 
-export { SearchBar, supportedEngineCategoryType } ;
+SearchBar.defaultProps = {
+  color: '#eeeeee',
+  enabledEngineCategories: [],
+  searchParameters: [],
+  addPill: id => console.log('Open search pill modal', id)
+};
+
+export { SearchBar, supportedEngineCategoryType };

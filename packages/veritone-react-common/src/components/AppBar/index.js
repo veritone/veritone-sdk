@@ -97,7 +97,6 @@ export default class AppBar extends React.Component {
             searchParameters={this.props.searchParameters}
             addOrModifySearchParameter={this.props.addOrModifySearchParameter}
             removeSearchParameter={this.props.removeSearchParameter}
-
           />
           <div className={styles['iconGroup']}>
             {this.props.rightActions.map(({ label, onClick }) => (
