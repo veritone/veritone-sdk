@@ -1,11 +1,13 @@
 import React from 'react';
-import { number, string, bool } from 'prop-types';
+import { number, string, oneOf } from 'prop-types';
 import Paper from 'material-ui/Paper';
 import { CircularProgress } from 'material-ui/Progress';
 import CheckCircle from 'material-ui-icons/CheckCircle';
 import RemoveCircle from 'material-ui-icons/RemoveCircle';
+import Warning from 'material-ui-icons/Warning';
 import green from 'material-ui/colors/green';
 import red from 'material-ui/colors/red';
+import yellow from 'material-ui/colors/yellow';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
@@ -17,8 +19,7 @@ export default class ProgressDialog extends React.Component {
     progressMessage: string,
     height: number,
     width: number,
-    doneSuccess: bool,
-    doneFailure: bool
+    completeStatus: oneOf(['success', 'failure', 'warning'])
   };
 
   static defaultProps = {
@@ -37,31 +38,45 @@ export default class ProgressDialog extends React.Component {
   }
 
   renderComplete() {
-    return (
-      <div className={styles.resolutionIconContainer}>
-        {this.props.doneSuccess ? (
-          <CheckCircle
-            classes={{
-              root: styles.resolutionIcon
-            }}
-            style={{
-              fill: green[500]
-            }}
-            data-testtarget="successIcon"
-          />
-        ) : (
-          <RemoveCircle
-            classes={{
-              root: styles.resolutionIcon
-            }}
-            style={{
-              fill: red[500]
-            }}
-            data-testtarget="failureIcon"
-          />
-        )}
-      </div>
-    );
+    const icon = {
+      success: (
+        <CheckCircle
+          classes={{
+            root: styles.resolutionIcon
+          }}
+          style={{
+            fill: green[500]
+          }}
+          data-testtarget="successIcon"
+        />
+      ),
+
+      failure: (
+        <RemoveCircle
+          classes={{
+            root: styles.resolutionIcon
+          }}
+          style={{
+            fill: red[500]
+          }}
+          data-testtarget="failureIcon"
+        />
+      ),
+
+      warning: (
+        <Warning
+          classes={{
+            root: styles.resolutionIcon
+          }}
+          style={{
+            fill: yellow[500]
+          }}
+          data-testtarget="warnIcon"
+        />
+      )
+    }[this.props.completeStatus];
+
+    return <div className={styles.resolutionIconContainer}>{icon}</div>;
   }
 
   render() {
@@ -73,7 +88,7 @@ export default class ProgressDialog extends React.Component {
         style={{ height: this.props.height, width: this.props.width }}
       >
         <div className={styles.circularProgressContainer}>
-          {!(this.props.doneSuccess || this.props.doneFailure) && (
+          {!this.props.completeStatus && (
             <CircularProgress
               className={styles.circularProgress}
               size={125}
@@ -83,7 +98,7 @@ export default class ProgressDialog extends React.Component {
         </div>
 
         <div className={styles.textContainer}>
-          {this.props.doneSuccess || this.props.doneFailure
+          {this.props.completeStatus
             ? this.renderComplete()
             : this.renderProgress()}
 

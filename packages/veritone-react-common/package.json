@@ -38,8 +38,8 @@
     "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
   "devDependencies": {
-    "@storybook/addon-knobs": "3.3.0-alpha.2",
-    "@storybook/react": "v3.3.0-alpha.2",
+    "@storybook/addon-knobs": "3.3.0-alpha.4",
+    "@storybook/react": "v3.3.0-alpha.4",
     "babel-eslint": "^8.0.1",
     "babel-jest": "^21.2.0",
     "babel-minify-webpack-plugin": "^0.2.0",
