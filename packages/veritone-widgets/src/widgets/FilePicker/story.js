@@ -32,7 +32,9 @@ storiesOf('FilePickerWidget', module).add('Base', () => {
       <button onClick={destroyApp}>destroy</button>
 
       <br />
-      <button onClick={() => app.getWidget('picker').open()}>3. pick files</button>
+      <button onClick={() => app.getWidget('picker').open()}>
+        3. pick files
+      </button>
     </div>
   );
 });

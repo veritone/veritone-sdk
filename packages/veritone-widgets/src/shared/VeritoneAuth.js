@@ -32,7 +32,7 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
         removeAuthWindowListener();
         cleanupAuthWindow();
         reject(new Error('Veritone OAuth2 Error'));
-        return
+        return;
       }
 
       // resolve the login promise if a token is present
@@ -41,7 +41,7 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
         removeAuthWindowListener();
         cleanupAuthWindow();
         resolve({ OAuthToken: _OAuthToken });
-        return
+        return;
       }
     }
   };
