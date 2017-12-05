@@ -3,7 +3,7 @@
 
 import { buffers, channel, END } from 'redux-saga';
 
-export function uploadFiles(uploadDescriptors, files, method = 'PUT') {
+export default function uploadFilesChannel(uploadDescriptors, files, method = 'PUT') {
   if (uploadDescriptors.length !== files.length) {
     throw new Error('Need an upload descriptor for each file to be uploaded!');
   }
