@@ -64,7 +64,7 @@ export default class SearchBarContainer extends React.Component {
     );
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     return (
-      <div style={{ width: '100%', marginRight: '1em', padding: 0 }}>
+      <div style={{ width: '100%', marginLeft: '1em', padding: 0 }}>
         <SearchBar
           color={this.props.color}
           enabledEngineCategories={this.props.enabledEngineCategories}
