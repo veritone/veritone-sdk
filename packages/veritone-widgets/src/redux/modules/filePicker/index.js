@@ -73,7 +73,7 @@ export const pick = () => ({
   type: PICK_START
 });
 
-export const cancelPick = () => ({
+export const endPick = () => ({
   type: PICK_END
 });
 
