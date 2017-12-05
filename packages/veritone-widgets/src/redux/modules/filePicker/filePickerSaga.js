@@ -5,10 +5,8 @@ import {
   put,
   take,
   takeEvery,
-  select,
-  join
+  select
 } from 'redux-saga/effects';
-import { END } from 'redux-saga';
 import { isArray } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
@@ -16,23 +14,7 @@ const { user: userModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
-import {
-  UPLOAD_REQUEST,
-  uploadProgress,
-  uploadSuccess,
-  uploadFailure,
-  progressPercentByFileKey
-} from '.';
-
-function resultObject({ name, size, type }, url, error = false) {
-  return {
-    name,
-    size,
-    type,
-    error,
-    url
-  };
-}
+import { UPLOAD_REQUEST, uploadProgress, uploadComplete } from '.';
 
 function* setAllFilesProgress(uploadDescriptors, percentage) {
   for (const { key } of uploadDescriptors) {
@@ -56,17 +38,22 @@ export function* uploadFileSaga(fileOrFiles) {
   const token = yield select(userModule.selectSessionToken);
 
   // get a signed URL for each object to be uploaded
-  const signedWritableUrlResponses = yield all(
-    files.map(({ name }) =>
-      call(callGraphQLApi, {
-        endpoint: graphQLUrl,
-        query: getUrlQuery,
-        // todo: add uuid to $name to prevent naming conflicts
-        variables: { name },
-        token
-      })
-    )
-  );
+  let signedWritableUrlResponses;
+  try {
+    signedWritableUrlResponses = yield all(
+      files.map(({ name }) =>
+        call(callGraphQLApi, {
+          endpoint: graphQLUrl,
+          query: getUrlQuery,
+          // todo: add uuid to $name to prevent naming conflicts
+          variables: { name },
+          token
+        })
+      )
+    );
+  } catch (error) {
+    return yield put(uploadComplete(null, { error }));
+  }
 
   // todo: handle graphql errors
   const uploadDescriptors = signedWritableUrlResponses.map(
@@ -82,37 +69,46 @@ export function* uploadFileSaga(fileOrFiles) {
   let resultChan;
   try {
     resultChan = yield call(uploadFilesChannel, uploadDescriptors, files);
-  } catch (e) {
-    yield put(uploadFailure(e));
+  } catch (error) {
+    return yield put(uploadComplete(null, { error }));
   }
 
   let result = [];
 
-  while (true) {
-    if (result.length === files.length) {
-      break;
-    }
-
+  while (result.length !== files.length) {
     const {
       progress = 0,
-      err,
+      error,
       success,
       file,
       descriptor: { key, bucket }
     } = yield take(resultChan);
 
-    if (success || err) {
+    if (success || error) {
       yield put(uploadProgress(key, 100));
 
-      // todo: figure out how to get object URL from descriptor.key/bucket
-      result.push(resultObject(file, null, !!err));
+      result.push({
+        name: key,
+        size: file.size,
+        type: file.type,
+        error: error || false,
+        url: error ? null : `https://${bucket}.s3.amazonaws.com/${key}`
+      });
       continue;
     }
 
     yield put(uploadProgress(key, progress));
   }
 
-  yield put(uploadSuccess(result)); // fixme -- verify result val
+  const isError = result.every(e => e.error);
+  const isWarning = !isError && result.some(e => e.error);
+
+  yield put(
+    uploadComplete(result, {
+      warn: isWarning ? 'Some files failed to upload.' : false,
+      error: isError ? 'All files failed to upload.' : false
+    })
+  );
 }
 
 export function* watchUploadRequest() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { bool, func, oneOf, number } from 'prop-types';
+import { bool, func, oneOf, number, string } from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
 import {
@@ -31,7 +31,9 @@ class FilePickerDialog extends React.Component {
     pickerState: filePickerModule.state(state),
     progressPercent: filePickerModule.progressPercent(state),
     success: filePickerModule.didSucceed(state),
-    failure: filePickerModule.didFail(state)
+    error: filePickerModule.didError(state),
+    warning: filePickerModule.didWarn(state),
+    statusMessage: filePickerModule.statusMessage(state),
   }),
   {
     pick: filePickerModule.pick,
@@ -48,7 +50,11 @@ class FilePickerWidget extends React.Component {
     cancelPick: func,
     uploadRequest: func,
     pickerState: oneOf(['selecting', 'uploading', 'complete']),
-    progressPercent: number
+    progressPercent: number,
+    success: bool,
+    error: bool,
+    warning: bool,
+    statusMessage: string
   };
 
   open = () => {
@@ -75,12 +81,17 @@ class FilePickerWidget extends React.Component {
   };
 
   renderProgressDialog = () => {
+    let completeStatus = {
+      [this.props.success]: 'success',
+      [this.props.error]: 'failure',
+      [this.props.warning]: 'warning'
+    }[true];
+
     return (
       <ProgressDialog
         percentComplete={this.props.progressPercent}
-        progressMessage="test"
-        doneSuccess={false}
-        doneFailure={false}
+        progressMessage={this.props.statusMessage}
+        completeStatus={completeStatus}
       />
     );
   };
