@@ -7,6 +7,7 @@ import {
   takeEvery,
   select
 } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import { isArray } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
@@ -14,7 +15,7 @@ const { user: userModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
-import { UPLOAD_REQUEST, uploadProgress, uploadComplete } from '.';
+import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
 
 function* setAllFilesProgress(uploadDescriptors, percentage) {
   for (const { key } of uploadDescriptors) {
@@ -109,6 +110,10 @@ export function* uploadFileSaga(fileOrFiles) {
       error: isError ? 'All files failed to upload.' : false
     })
   );
+
+  // fixme -- only do this on success. on failure, wait for user to ack.
+  yield call(delay, 3000);
+  yield put(endPick());
 }
 
 export function* watchUploadRequest() {

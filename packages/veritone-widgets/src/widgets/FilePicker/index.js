@@ -16,6 +16,7 @@ class FilePickerDialog extends React.Component {
   };
 
   render() {
+    // fixme -- kill this wrapper?
     const { open, ...pickerProps } = this.props;
     return (
       <Dialog open={open}>
@@ -37,7 +38,7 @@ class FilePickerDialog extends React.Component {
   }),
   {
     pick: filePickerModule.pick,
-    cancelPick: filePickerModule.cancelPick,
+    endPick: filePickerModule.endPick,
     uploadRequest: filePickerModule.uploadRequest
   },
   null,
@@ -47,7 +48,7 @@ class FilePickerWidget extends React.Component {
   static propTypes = {
     open: bool,
     pick: func,
-    cancelPick: func,
+    endPick: func,
     uploadRequest: func,
     pickerState: oneOf(['selecting', 'uploading', 'complete']),
     progressPercent: number,
@@ -62,7 +63,7 @@ class FilePickerWidget extends React.Component {
   };
 
   cancel = () => {
-    this.props.cancelPick();
+    this.props.endPick();
   };
 
   _onFilesSelected = files => {
@@ -74,6 +75,7 @@ class FilePickerWidget extends React.Component {
       <FilePickerDialog
         {...this.props}
         open={this.props.open}
+        // fixme -- differentiate between cancel and closing because picking is done
         onRequestClose={this.cancel}
         onUploadFiles={this._onFilesSelected}
       />
@@ -88,11 +90,13 @@ class FilePickerWidget extends React.Component {
     }[true];
 
     return (
-      <ProgressDialog
-        percentComplete={this.props.progressPercent}
-        progressMessage={this.props.statusMessage}
-        completeStatus={completeStatus}
-      />
+      <Dialog open={this.props.open}>
+        <ProgressDialog
+          percentComplete={this.props.progressPercent}
+          progressMessage={this.props.statusMessage}
+          completeStatus={completeStatus}
+        />
+      </Dialog>
     );
   };
 
