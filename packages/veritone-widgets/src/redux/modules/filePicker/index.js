@@ -28,9 +28,11 @@ export default createReducer(defaultState, {
       state: 'selecting'
     };
   },
-  [PICK_END]() {
-    // fixme - why is this being called early?
-    return defaultState;
+  [PICK_END](state) {
+    return {
+      ...state,
+      open: false
+    };
   },
   [UPLOAD_REQUEST](state) {
     // todo: status message
@@ -96,8 +98,6 @@ export const uploadComplete = (result, { warn, error }) => ({
 
 export const isOpen = state => local(state).open;
 export const state = state => local(state).state;
-export const progressPercentByFileKey = (state, key) =>
-  local(state).progressPercentByFileKey[key];
 export const progressPercent = state => {
   const meanProgress = mean(
     Object.values(local(state).progressPercentByFileKey)
