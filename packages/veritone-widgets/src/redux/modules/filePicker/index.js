@@ -1,4 +1,4 @@
-import { clamp, mean } from 'lodash';
+import { clamp, mean, isNaN } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -87,7 +87,7 @@ export const uploadProgress = (fileKey, progressPercent) => ({
   meta: { fileKey }
 });
 
-export const uploadSuccess = (result) => ({
+export const uploadSuccess = result => ({
   type: UPLOAD_SUCCESS,
   payload: result
 });
@@ -107,7 +107,8 @@ export const progressPercent = state => {
   const meanProgress = mean(
     Object.values(local(state).progressPercentByFileKey)
   );
-  return Math.round(meanProgress);
+  const rounded = Math.round(meanProgress);
+  return isNaN(rounded) ? 0 : rounded;
 };
 export const didSucceed = state => local(state).success;
 export const didFail = state => local(state).failure;
