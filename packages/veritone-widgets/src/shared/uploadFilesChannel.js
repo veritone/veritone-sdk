@@ -23,7 +23,10 @@ export default function uploadFilesChannel(uploadDescriptors, files, method = 'P
   };
 
   const onFileFailure = (file, descriptor) => {
-    chan.put({ err: new Error('Upload failed'), file, descriptor });
+    chan.put({ error: new Error('Upload failed'), file, descriptor });
+  };
+  const onXHRError = (file, descriptor, e) => {
+    console.log('xhr error', e)
   };
 
   const onFileReadyStateChange = (
@@ -56,7 +59,7 @@ export default function uploadFilesChannel(uploadDescriptors, files, method = 'P
     );
     xhr.upload.addEventListener(
       'error',
-      onFileFailure.bind(null, file, descriptor)
+      onXHRError.bind(null, file, descriptor)
     );
     xhr.onreadystatechange = onFileReadyStateChange.bind(
       null,
