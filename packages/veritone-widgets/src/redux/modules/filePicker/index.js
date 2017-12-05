@@ -1,59 +1,113 @@
+import { clamp, mean } from 'lodash';
 import { helpers } from 'veritone-redux-common';
-
 const { createReducer } = helpers;
 
-export const FILE_PICKER_OPEN = 'FILE_PICKER_OPEN';
-export const FILE_PICKER_CLOSE = 'FILE_PICKER_CLOSE';
+export const PICK_START = 'PICK_START';
+export const PICK_END = 'PICK_END';
+export const UPLOAD_REQUEST = 'UPLOAD_REQUEST';
+export const UPLOAD_SUCCESS = 'UPLOAD_SUCCESS';
+export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
+export const UPLOAD_FAILURE = 'UPLOAD_FAILURE';
 
 export const namespace = 'filePicker';
 
 const defaultState = {
-  open: false
+  open: false,
+  state: 'selecting', // selecting | uploading | complete
+  progressPercentByFileKey: {},
+  success: false,
+  failure: false
 };
 
 export default createReducer(defaultState, {
-  [FILE_PICKER_OPEN](state, action) {
+  [PICK_START]() {
     return {
-      ...state,
+      ...defaultState,
       open: true
     };
   },
-
-  [FILE_PICKER_CLOSE](state, action) {
+  [PICK_END]() {
+    return defaultState;
+  },
+  [UPLOAD_REQUEST](state) {
     return {
       ...state,
-      open: false
+      state: 'uploading',
+      progressPercentByFileKey: {},
+      success: false,
+      failure: false
+    };
+  },
+  [UPLOAD_PROGRESS](state, action) {
+    return {
+      ...state,
+      progressPercentByFileKey: {
+        ...state.progressPercentByFileKey,
+        [action.meta.fileKey]: action.payload
+      }
+    };
+  },
+  [UPLOAD_SUCCESS](state, action) {
+    return {
+      ...state,
+      success: true,
+      failure: false,
+      state: 'complete'
+    };
+  },
+  [UPLOAD_FAILURE](state, action) {
+    // todo: warning state for partial uploads
+    return {
+      ...state,
+      success: false,
+      failure: true,
+      state: 'complete'
     };
   }
 });
 
 const local = state => state[namespace];
 
-export function setPickerOpen(state) {
-  return {
-    type: state ? FILE_PICKER_OPEN : FILE_PICKER_CLOSE
-  };
-}
+export const pick = () => ({
+  type: PICK_START
+});
 
-export const pickerOpen = state => local(state).open;
+export const cancelPick = () => ({
+  type: PICK_END
+});
 
-// open FilePicker in a dialog, receive files in callback
-// open ProgressDialog in a dialog
-// get a signed URL for each object to be uploaded (key=filename)
-//   update progress by (20% / num filess) as each resolves
-// PUT each object to its respective URL
-//   update progress by (80% / num files) as each resolves
-// if all successful, show doneSuccess on progress modal for a second, then close.
-// if any failed, show doneFailure on progress modal with an error message (which ones failed, which succeeded, why) + close button.
+export const uploadRequest = files => ({
+  type: UPLOAD_REQUEST,
+  payload: files
+});
 
-// widget should have an onSuccess callback which returns a list of objects
-// object = { url: 's3-url.com/my-file.jpg', filename: 'my-file.jpg', size, type, etc }
+export const uploadProgress = (fileKey, progressPercent) => ({
+  type: UPLOAD_PROGRESS,
+  payload: clamp(Math.round(progressPercent), 100),
+  meta: { fileKey }
+});
 
-// const picker = new FilePicker({
-//   elId: '#file-picker',
-//   accept: ['.jpg', '.png']
-// });
-// new VeritoneApp([picker]).mount();
-//
-// // how do i open the modal?
-// picker.open();
+export const uploadSuccess = (result) => ({
+  type: UPLOAD_SUCCESS,
+  payload: result
+});
+
+export const uploadFailure = err => ({
+  type: UPLOAD_FAILURE,
+  payload: err,
+  error: true
+  // meta: { file }
+});
+
+export const isOpen = state => local(state).open;
+export const state = state => local(state).state;
+export const progressPercentByFileKey = (state, key) =>
+  local(state).progressPercentByFileKey[key];
+export const progressPercent = state => {
+  const meanProgress = mean(
+    Object.values(local(state).progressPercentByFileKey)
+  );
+  return Math.round(meanProgress);
+};
+export const didSucceed = state => local(state).success;
+export const didFail = state => local(state).failure;

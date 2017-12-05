@@ -2,7 +2,7 @@ import 'babel-polyfill'; // fixme
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isFunction } from 'lodash';
+import { isFunction, isObject } from 'lodash';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
 import { object, arrayOf } from 'prop-types';
@@ -85,7 +85,8 @@ export default class VeritoneApp {
     }
   }
 
-  getWidget(id) {
+  getWidget(widgetOrId) {
+    const id = isObject(widgetOrId) ? widgetOrId.id : widgetOrId;
     return this._refs[id];
   }
 
@@ -95,13 +96,12 @@ export default class VeritoneApp {
       return;
     }
 
-
     if (isFunction(ref.getWrappedInstance) && !ref.wrappedInstance) {
       return console.warn(
         `Warning: widget with id "${id}" looks like it's wrapped with a
          @connect decorator, but the withRef option is not set to true.
          { withRef: true } should be set as the fourth argument to @connect`
-      )
+      );
     }
 
     // try to get at the base component for @connected widgets.
