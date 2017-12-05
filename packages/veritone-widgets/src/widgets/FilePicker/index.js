@@ -33,7 +33,7 @@ class FilePickerDialog extends React.Component {
     success: filePickerModule.didSucceed(state),
     error: filePickerModule.didError(state),
     warning: filePickerModule.didWarn(state),
-    statusMessage: filePickerModule.statusMessage(state),
+    statusMessage: filePickerModule.statusMessage(state)
   }),
   {
     pick: filePickerModule.pick,
