@@ -3,7 +3,11 @@
 
 import { buffers, channel, END } from 'redux-saga';
 
-export default function uploadFilesChannel(uploadDescriptors, files, method = 'PUT') {
+export default function uploadFilesChannel(
+  uploadDescriptors,
+  files,
+  method = 'PUT'
+) {
   if (uploadDescriptors.length !== files.length) {
     throw new Error('Need an upload descriptor for each file to be uploaded!');
   }
@@ -22,11 +26,13 @@ export default function uploadFilesChannel(uploadDescriptors, files, method = 'P
     }
   };
 
-  const onFileFailure = (file, descriptor) => {
+  const onStatusCodeFailure = (file, descriptor) => {
     chan.put({ error: new Error('Upload failed'), file, descriptor });
   };
   const onXHRError = (file, descriptor, e) => {
-    console.log('xhr error', e)
+    // todo: does this need to go onto the channel, or do we always handle
+    // via onStatusCodeFailure?
+    console.log('xhr error', e);
   };
 
   const onFileReadyStateChange = (
@@ -40,7 +46,7 @@ export default function uploadFilesChannel(uploadDescriptors, files, method = 'P
       if (status === 200) {
         chan.put({ success: true, file, descriptor });
       } else {
-        onFileFailure(file, descriptor);
+        onStatusCodeFailure(file, descriptor);
       }
 
       if (remainingFiles === 0) {
