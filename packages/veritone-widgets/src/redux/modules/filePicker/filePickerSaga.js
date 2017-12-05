@@ -15,7 +15,7 @@ import { modules } from 'veritone-redux-common';
 const { user: userModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
-import { uploadFiles } from '../../../shared/createUploadFileChannel';
+import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   UPLOAD_REQUEST,
   uploadProgress,
@@ -81,7 +81,7 @@ export function* uploadFileSaga(fileOrFiles) {
 
   let resultChan;
   try {
-    resultChan = yield call(uploadFiles, uploadDescriptors, files);
+    resultChan = yield call(uploadFilesChannel, uploadDescriptors, files);
   } catch (e) {
     yield put(uploadFailure(e));
   }
