@@ -65,7 +65,7 @@ const SearchBar = ({
           <SearchPill
             key={searchPill.id}
             engineIconClass={searchParameterEngine.iconClass}
-            label={abbreviation + searchPill.id}
+            label={abbreviation}
             open={open}
             remove={remove}
           />

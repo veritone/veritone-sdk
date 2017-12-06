@@ -91,7 +91,7 @@ const TranscriptConditionGenerator = modalState => {
   return {
     operator: 'query_string',
     field: 'transcript.transcript',
-    value: modalState.value
+    value: modalState.value.toLowerCase()
   };
 };
 
