@@ -6,5 +6,5 @@
 ## 1.0.1
 * fix importing: use node require
 
-## 1.0.1
+## 1.0.2
 * add config for stylelint
