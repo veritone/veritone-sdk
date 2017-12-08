@@ -24,7 +24,6 @@ export default class SearchBarContainer extends React.Component {
 
   applyFilter = engineId => {
     return parameter => {
-      console.log('Add filter', parameter);
       if (parameter.value) {
         this.props.addOrModifySearchParameter({
           ...parameter,

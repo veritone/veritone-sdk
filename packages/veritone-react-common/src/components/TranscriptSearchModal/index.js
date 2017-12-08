@@ -51,37 +51,52 @@ export default class TranscriptSearchModal extends React.Component {
         onRequestClose={this.props.cancel}
         onEscapeKeyUp={this.props.cancel}
       >
-        <DialogTitle>Search By Keyword</DialogTitle>
-        <DialogContent style={{ width: '500px', margin: 'none' }}>
-          <TextField
-            id="full-width"
-            autoFocus
-            margin="none"
-            defaultValue={this.props.modalState.value}
-            onChange={this.onChange}
-            onKeyPress={this.onEnter}
-            placeholder="Keyword(s)"
-            helperText="Searches within our database of media transcripts."
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.props.cancel} color="primary">
-            Cancel
-          </Button>
-          <Button
-            disabled={!this.state.filterValue && !this.props.modalState.value}
-            onClick={this.applyFilterIfValue}
-            color="primary"
-            raised
-          >
-            Search
-          </Button>
-        </DialogActions>
+        <TranscriptSearchForm
+          cancel={ this.props.cancel }
+          defaultValue={ this.props.modalState.value }
+          onSubmit={ this.applyFilterIfValue }
+          onChange={ this.onChange }
+          onKeyPress={ this.onEnter }
+          inputValue={ this.state.filterValue }
+        />
       </Dialog>
     );
   }
 }
+
+export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
+  return (
+  <div>
+    <DialogTitle>Search Transcript</DialogTitle>
+    <DialogContent style={{ width: '500px', margin: 'none' }}>
+      <TextField
+        id="transcript_search_field"
+        autoFocus
+        margin="none"
+        defaultValue={ defaultValue }
+        onChange={ onChange }
+        onKeyPress={ onKeyPress }
+        placeholder="Phrase to search"
+        helperText="Searches within our database of transcripts."
+        fullWidth
+      />
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={ cancel } color="primary" className="transcriptCancel">
+        Cancel
+      </Button>
+      <Button
+        disabled={!inputValue && !defaultValue}
+        onClick={ onSubmit }
+        color="primary"
+        className="transcriptSubmit"
+        raised
+      >
+        Search
+      </Button>
+    </DialogActions>
+  </div>
+)}
 
 TranscriptSearchModal.defaultProps = {
   modalState: { value: '' }

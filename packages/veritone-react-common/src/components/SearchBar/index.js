@@ -55,9 +55,10 @@ const SearchBar = ({
         const searchParameterEngine = enabledEngineCategories.find(
           engineCategory => engineCategory.id === searchPill.engineId
         );
-        const { abbreviation, thumbnail } = searchParameterEngine.getLabel(
+
+        const { abbreviation, thumbnail } = searchParameterEngine ? searchParameterEngine.getLabel(
           searchPill
-        );
+        ) : { abbreviation: undefined, thumbnail: undefined };
         const remove = () => removePill(searchPill.id);
         const open = () => openPill(searchPill);
 
