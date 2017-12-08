@@ -6,6 +6,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
+    "immutability-helper": "^2.5.1",
     "lodash": "^4.17.4",
     "material-ui": "v1.0.0-beta.20",
     "material-ui-icons": "^1.0.0-beta.17",

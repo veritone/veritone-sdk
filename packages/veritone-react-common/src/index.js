@@ -15,3 +15,8 @@ export ProfileMenu from './components/ProfileMenu';
 export RaisedTextField from './components/RaisedTextField';
 export TopBar, { topBarHeight } from './components/TopBar';
 export * as formComponents from './components/formComponents';
+export {
+  TranscriptSearchModal,
+  TranscriptDisplay,
+  TranscriptConditionGenerator
+} from 'components/TranscriptSearchModal';
