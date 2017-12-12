@@ -36,7 +36,8 @@ class FilePickerWidget extends React.Component {
     success: bool,
     error: bool,
     warning: bool,
-    statusMessage: string
+    statusMessage: string,
+    onUpload: func // external callback API
   };
 
   open = () => {
@@ -48,10 +49,10 @@ class FilePickerWidget extends React.Component {
   };
 
   _onFilesSelected = files => {
-    this.props.uploadRequest(files);
+    this.props.uploadRequest(files, this.props.onUpload);
   };
 
-  renderPickerDialog = () => {
+  _renderPickerDialog = () => {
     return (
       <Dialog open={this.props.open}>
         <FilePicker
@@ -64,7 +65,7 @@ class FilePickerWidget extends React.Component {
     );
   };
 
-  renderProgressDialog = () => {
+  _renderProgressDialog = () => {
     let completeStatus = {
       [this.props.success]: 'success',
       [this.props.error]: 'failure',
@@ -84,9 +85,9 @@ class FilePickerWidget extends React.Component {
 
   render() {
     return {
-      selecting: this.renderPickerDialog,
-      uploading: this.renderProgressDialog,
-      complete: this.renderProgressDialog
+      selecting: this._renderPickerDialog,
+      uploading: this._renderProgressDialog,
+      complete: this._renderProgressDialog
     }[this.props.pickerState]();
   }
 }
