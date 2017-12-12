@@ -21,7 +21,7 @@ export default function uploadFilesChannel(
     { lengthComputable, loaded, total }
   ) => {
     if (lengthComputable) {
-      const progress = loaded / total;
+      const progress = (loaded / total) * 100;
       chan.put({ progress, file, descriptor });
     }
   };

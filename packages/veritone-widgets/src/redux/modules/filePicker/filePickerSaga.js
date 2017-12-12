@@ -17,12 +17,6 @@ import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
 
-function* setAllFilesProgress(uploadDescriptors, percentage) {
-  for (const { key } of uploadDescriptors) {
-    yield put(uploadProgress(key, percentage));
-  }
-}
-
 export function* uploadFileSaga(fileOrFiles) {
   const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
   const getUrlQuery = `query urls($name: String!){
@@ -64,8 +58,6 @@ export function* uploadFileSaga(fileOrFiles) {
       bucket
     })
   );
-
-  yield* setAllFilesProgress(uploadDescriptors, 20);
 
   let resultChan;
   try {
