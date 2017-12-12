@@ -2,29 +2,10 @@ import React from 'react';
 import { bool, func, oneOf, number, string } from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
-import {
-  FilePicker as LibFilePicker,
-  ProgressDialog
-} from 'veritone-react-common';
+import { FilePicker, ProgressDialog } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/filePicker';
 import widget from '../../shared/widget';
-
-class FilePickerDialog extends React.Component {
-  static propTypes = {
-    open: bool
-  };
-
-  render() {
-    // fixme -- kill this wrapper?
-    const { open, ...pickerProps } = this.props;
-    return (
-      <Dialog open={open}>
-        <LibFilePicker {...pickerProps} />
-      </Dialog>
-    );
-  }
-}
 
 @connect(
   state => ({
@@ -72,13 +53,14 @@ class FilePickerWidget extends React.Component {
 
   renderPickerDialog = () => {
     return (
-      <FilePickerDialog
-        {...this.props}
-        open={this.props.open}
-        // fixme -- differentiate between cancel and closing because picking is done
-        onRequestClose={this.cancel}
-        onUploadFiles={this._onFilesSelected}
-      />
+      <Dialog open={this.props.open}>
+        <FilePicker
+          {...this.props}
+          // fixme -- differentiate between cancel and closing because picking is done
+          onRequestClose={this.cancel}
+          onPickFiles={this._onFilesSelected}
+        />
+      </Dialog>
     );
   };
 
