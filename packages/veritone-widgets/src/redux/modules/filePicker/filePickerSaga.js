@@ -50,14 +50,22 @@ export function* uploadFileSaga(fileOrFiles) {
     return yield put(uploadComplete(null, { error }));
   }
 
-  // todo: handle graphql errors
-  const uploadDescriptors = signedWritableUrlResponses.map(
-    ({ data: { getSignedWritableUrl: { url, key, bucket } }, errors }) => ({
-      url,
-      key,
-      bucket
-    })
-  );
+  let uploadDescriptors; // { url, key, bucket }
+  try {
+    uploadDescriptors = signedWritableUrlResponses.map(
+      ({ data: { getSignedWritableUrl }, errors }) => {
+        if (errors && errors.length) {
+          throw new Error(
+            `Call to getSignedWritableUrl returned error: ${errors[0].message}`
+          );
+        }
+
+        return getSignedWritableUrl;
+      }
+    );
+  } catch (e) {
+    return yield put(uploadComplete(null, { error: e.message }));
+  }
 
   let resultChan;
   try {
