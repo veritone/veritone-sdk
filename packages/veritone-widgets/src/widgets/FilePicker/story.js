@@ -20,6 +20,7 @@ storiesOf('FilePickerWidget', module).add('Base', () => {
   const loginApp = app.login.bind(app);
 
   text('session token', 'fixme');
+  /* eslint-disable react/jsx-no-bind */
 
   return (
     <div>
