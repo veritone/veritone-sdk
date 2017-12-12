@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { noop } from 'lodash';
+import { noop, startsWith, endsWith } from 'lodash';
 import Button from 'material-ui/Button';
 import { DropTarget } from 'react-dnd';
 import { string, func, arrayOf, bool } from 'prop-types';
@@ -12,17 +12,30 @@ import styles from './styles.scss';
 const boxTarget = {
   drop(props, monitor) {
     const droppedFiles = monitor.getItem().files;
-    const allowableDroppedFiles = droppedFiles.filter(f =>
+    const allowableDroppedFiles = droppedFiles.filter(({ type }) => {
       // only accept dropped files of the correct type.
-      props.acceptedFileTypes.includes(f.type)
-    );
+
+      return (
+        props.acceptedFileTypes.includes(type) ||
+        props.acceptedFileTypes.some(acceptedType => {
+          // deal with video/*, audio/* etc
+          if (endsWith(acceptedType, '/*')) {
+            const typePrefix = acceptedType.match(/(.*)\/\*/)[1];
+            return startsWith(type, typePrefix);
+          }
+
+          return false;
+        })
+      );
+    });
 
     if (props.acceptedFileTypes.length) {
       if (allowableDroppedFiles.length) {
         props.onFilesSelected(allowableDroppedFiles);
       }
 
-      const numRejectedFiles = droppedFiles.length - allowableDroppedFiles.length;
+      const numRejectedFiles =
+        droppedFiles.length - allowableDroppedFiles.length;
       if (numRejectedFiles > 0) {
         props.onFilesRejected(numRejectedFiles);
       }
