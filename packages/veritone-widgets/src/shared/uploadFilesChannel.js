@@ -21,7 +21,13 @@ export default function uploadFilesChannel(
     { lengthComputable, loaded, total }
   ) => {
     if (lengthComputable) {
-      const progress = (loaded / total) * 100;
+      // todo: if multiple files with drastically different sizes are
+      // uploaded at the same time, the mean percentage isn't a good
+      // representation of remaining time.
+      // ie. given files of size [1, 1, 10], with progress [100, 100, 20]%,
+      // mean(100, 100, 20) ~= 75%, but the true remaining time should be
+      // calculated on remaining/total size (1+1+2) / (1+1+10) = 33%
+      const progress = loaded / total * 100;
       chan.put({ progress, file, descriptor });
     }
   };
@@ -29,6 +35,7 @@ export default function uploadFilesChannel(
   const onStatusCodeFailure = (file, descriptor) => {
     chan.put({ error: new Error('Upload failed'), file, descriptor });
   };
+
   const onXHRError = (file, descriptor, e) => {
     // todo: does this need to go onto the channel, or do we always handle
     // via onStatusCodeFailure?
