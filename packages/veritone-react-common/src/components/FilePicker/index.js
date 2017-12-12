@@ -21,7 +21,7 @@ class FilePicker extends Component {
     multiple: bool, // todo
     width: number,
     height: number,
-    onUploadFiles: func.isRequired,
+    onPickFiles: func.isRequired,
     onRequestClose: func.isRequired
   };
 
@@ -80,8 +80,8 @@ class FilePicker extends Component {
     this.props.onRequestClose();
   };
 
-  handleUploadFiles = () => {
-    this.props.onUploadFiles(this.state.files);
+  handlePickFiles = () => {
+    this.props.onPickFiles(this.state.files);
 
     this.setState({
       files: []
@@ -153,7 +153,7 @@ class FilePicker extends Component {
           <div className={styles.errorMessage}>{this.state.errorMessage}</div>
           <FilePickerFooter
             onCancel={this.handleCloseModal}
-            onSubmit={this.handleUploadFiles}
+            onSubmit={this.handlePickFiles}
             fileCount={this.state.files.length}
           />
         </div>
