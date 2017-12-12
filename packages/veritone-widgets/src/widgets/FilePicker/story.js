@@ -19,7 +19,7 @@ storiesOf('FilePickerWidget', module).add('Base', () => {
   const destroyApp = app.destroy.bind(app);
   const loginApp = app.login.bind(app);
 
-  const apiKey = text('session token', 'fixme');
+  text('session token', 'fixme');
 
   return (
     <div>
