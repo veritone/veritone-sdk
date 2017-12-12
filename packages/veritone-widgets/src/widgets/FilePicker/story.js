@@ -11,7 +11,7 @@ storiesOf('FilePickerWidget', module).add('Base', () => {
       elId: 'file-picker-widget',
       widgetId: 'picker',
       accept: ['video/*'],
-      onPickFiles: files => console.log(files)
+      onUpload: files => console.log(files)
     })
   ]);
 

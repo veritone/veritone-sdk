@@ -8,7 +8,7 @@ import {
   select
 } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
-import { isArray } from 'lodash';
+import { isArray, noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { user: userModule, config: configModule } = modules;
@@ -17,7 +17,12 @@ import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
 
-export function* uploadFileSaga(fileOrFiles) {
+function* finishUpload(result, { warn, error }, callback) {
+  yield put(uploadComplete(result, { warn, error }));
+  yield call(callback, result);
+}
+
+export function* uploadFileSaga(fileOrFiles, callback = noop) {
   const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
   const getUrlQuery = `query urls($name: String!){
         getSignedWritableUrl(key: $name) {
@@ -47,7 +52,7 @@ export function* uploadFileSaga(fileOrFiles) {
       )
     );
   } catch (error) {
-    return yield put(uploadComplete(null, { error }));
+    return yield* finishUpload(null, { error }, callback);
   }
 
   let uploadDescriptors; // { url, key, bucket }
@@ -64,14 +69,14 @@ export function* uploadFileSaga(fileOrFiles) {
       }
     );
   } catch (e) {
-    return yield put(uploadComplete(null, { error: e.message }));
+    return yield* finishUpload(null, { error: e.message }, callback);
   }
 
   let resultChan;
   try {
     resultChan = yield call(uploadFilesChannel, uploadDescriptors, files);
   } catch (error) {
-    return yield put(uploadComplete(null, { error }));
+    return yield* finishUpload(null, { error }, callback);
   }
 
   let result = [];
@@ -104,11 +109,13 @@ export function* uploadFileSaga(fileOrFiles) {
   const isError = result.every(e => e.error);
   const isWarning = !isError && result.some(e => e.error);
 
-  yield put(
-    uploadComplete(result, {
+  yield* finishUpload(
+    result,
+    {
       warn: isWarning ? 'Some files failed to upload.' : false,
       error: isError ? 'All files failed to upload.' : false
-    })
+    },
+    callback
   );
 
   // fixme -- only do this on success. on failure, wait for user to ack.
@@ -118,8 +125,8 @@ export function* uploadFileSaga(fileOrFiles) {
 
 export function* watchUploadRequest() {
   yield takeEvery(UPLOAD_REQUEST, function*(action) {
-    const files = action.payload;
-    yield call(uploadFileSaga, files);
+    const { files, callback } = action.payload;
+    yield call(uploadFileSaga, files, callback);
   });
 }
 
