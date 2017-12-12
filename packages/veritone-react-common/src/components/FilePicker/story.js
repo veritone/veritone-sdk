@@ -7,7 +7,7 @@ import FilePicker from './';
 storiesOf('FilePicker', module)
   .add('Base', () => (
     <FilePicker
-      onUploadFiles={action('upload files')}
+      onPickFiles={action('upload files')}
       onRequestClose={action('close modal')}
     />
   ))
@@ -16,7 +16,7 @@ storiesOf('FilePicker', module)
       accept={['image/svg+xml', '.png', '.jpg']}
       height={800}
       width={800}
-      onUploadFiles={action('upload files')}
+      onPickFiles={action('upload files')}
       onRequestClose={action('close modal')}
     />
   ));

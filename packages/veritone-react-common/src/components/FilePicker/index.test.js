@@ -4,9 +4,9 @@ import FilePicker from './';
 
 describe('FilePicker', () => {
   let onClose = jest.fn();
-  let onUploadFiles = jest.fn();
+  let onPickFiles = jest.fn();
   let filePickerComponent = mount(
-    <FilePicker onUploadFiles={onUploadFiles} onRequestClose={onClose} />
+    <FilePicker onPickFiles={onPickFiles} onRequestClose={onClose} />
   );
 
   it('should have a header', () => {

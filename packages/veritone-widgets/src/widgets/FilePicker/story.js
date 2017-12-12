@@ -3,14 +3,15 @@ import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
-import FilePicker from './';
+import FilePicker from '.';
 
 storiesOf('FilePickerWidget', module).add('Base', () => {
   const app = new VeritoneApp([
     new FilePicker({
       elId: 'file-picker-widget',
       widgetId: 'picker',
-      onUploadFiles: files => console.log(files)
+      accept: ['video/*'],
+      onPickFiles: files => console.log(files)
     })
   ]);
 
