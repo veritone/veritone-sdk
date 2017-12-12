@@ -81,7 +81,7 @@ export const endPick = () => ({
 
 export const uploadRequest = (files, callback) => ({
   type: UPLOAD_REQUEST,
-  payload: {files, callback}
+  payload: { files, callback }
 });
 
 export const uploadProgress = (fileKey, progressPercent) => ({
