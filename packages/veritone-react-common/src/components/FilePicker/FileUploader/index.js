@@ -68,8 +68,12 @@ class FileUploader extends Component {
   render() {
     const { acceptedFileTypes, connectDropTarget, isOver } = this.props;
 
+    const readableTypeNames = {
+      'video/*': 'video',
+      'audio/*': 'audio',
+    };
     const readableTypes = acceptedFileTypes
-      .map(mime.extension)
+      .map(t => readableTypeNames[t] || mime.extension(t) || t)
       .filter(Boolean)
       .join(', ');
 
