@@ -17,6 +17,7 @@ const app = new VeritoneApp([
 storiesOf('AppBar', module).add('Base', () => {
   const token = text('Api Session Token', 'fixme');
 
+  /* eslint-disable react/jsx-no-bind */
   return (
     <div>
       this is where the widget should go:

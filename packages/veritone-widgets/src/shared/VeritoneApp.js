@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import { isFunction, isObject } from 'lodash';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
-import { object, arrayOf } from 'prop-types';
 
 import { modules } from 'veritone-redux-common';
 const { user: userModule, config: configModule } = modules;
@@ -134,24 +133,3 @@ export default class VeritoneApp {
     );
   }
 }
-
-// either
-// const app = new VeritoneApp([new ModalWidget({ widgetId: 'something' })]);
-// app.getWidget('something').open();
-//
-// // or
-// const myWidget = new ModalWidget();
-// const app = new VeritoneApp([myWidget]);
-// myWidget.open();
-// // but what if its in multiple apps? refs only apply to an app,
-// // because thats where the widget's rendered instance lives.
-//
-// // so instead
-// const myWidget = new ModalWidget();
-// const app = new VeritoneApp([
-//   myWidget,
-//   new OtherWidget({ widgetId: 'something' })
-// ]);
-// // widget sets its own GUID when instantiated, or one can be specified.
-// app.getWidget(myWidget.instanceId).open();
-// app.getWidget('something').open();
