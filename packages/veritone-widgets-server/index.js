@@ -9,7 +9,7 @@ const app = express();
 dotenv.config({ path: '.env.development' });
 
 const settings = {
-  host: process.env.host || '127.0.0.1',
+  host: process.env.HOST || '127.0.0.1',
   port: process.env.NODE_PORT || 5001,
   clientOrigin: process.env.CLIENT_ORIGIN,
   clientId: process.env.CLIENT_ID,
