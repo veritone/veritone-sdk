@@ -5,7 +5,6 @@ import { appBarHeight } from '../AppBar';
 import { topBarHeight } from '../TopBar';
 import { appFooterHeightShort, appFooterHeightTall } from '../AppFooter';
 
-
 // fixme -- there seem to be double scrollbars on firefox with small screen width,
 // but only in the story-- related to storybook's markup?
 const AppContainer = ({
