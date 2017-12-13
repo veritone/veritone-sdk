@@ -32,7 +32,7 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
         removeAuthWindowListener();
         cleanupAuthWindow();
         reject(new Error('Veritone OAuth2 Error'));
-        return
+        return;
       }
 
       // resolve the login promise if a token is present
@@ -41,7 +41,6 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
         removeAuthWindowListener();
         cleanupAuthWindow();
         resolve({ OAuthToken: _OAuthToken });
-        return
       }
     }
   };
@@ -49,7 +48,6 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
 
 const askOAuthServerForToken = (OAuthURI, resolve, reject) => {
   setTimeout(() => {
-    let uri = ParseURI(OAuthURI);
     // keep polling until we receive a response
     if (!_OAuthToken) {
       if (_authWindow) {
@@ -78,7 +76,7 @@ const login = async OAuthURI => {
   }
 
   if (_OAuthToken) {
-    const loggedOut = await logout();
+    await logout();
   }
 
   _authWindow = window.open(OAuthURI, '_auth', 'width=550px,height=650px');

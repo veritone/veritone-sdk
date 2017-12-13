@@ -2,9 +2,9 @@ import 'babel-polyfill'; // fixme
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { isFunction, isObject } from 'lodash';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
-import { object, arrayOf } from 'prop-types';
 
 import { modules } from 'veritone-redux-common';
 const { user: userModule, config: configModule } = modules;
@@ -16,6 +16,7 @@ export default class VeritoneApp {
   _store = configureStore();
   _containerEl = null;
   _token = null;
+  _refs = {};
 
   constructor(widgets) {
     this._widgets = widgets;
@@ -83,30 +84,52 @@ export default class VeritoneApp {
     }
   }
 
+  getWidget(widgetOrId) {
+    const id = isObject(widgetOrId) ? widgetOrId.id : widgetOrId;
+    return this._refs[id];
+  }
+
+  setWidgetRef = (id, ref) => {
+    if (!ref) {
+      // protect against errors when destroying the app
+      return;
+    }
+
+    if (isFunction(ref.getWrappedInstance) && !ref.wrappedInstance) {
+      return console.warn(
+        `Warning: widget with id "${id}" looks like it's wrapped with a
+         @connect decorator, but the withRef option is not set to true.
+         { withRef: true } should be set as the fourth argument to @connect`
+      );
+    }
+
+    // try to get at the base component for @connected widgets.
+    // fixme: generic solution (hoisting specified instance methods?)
+    // https://github.com/elado/hoist-non-react-methods
+    this._refs[id] = isFunction(ref.getWrappedInstance)
+      ? ref.getWrappedInstance()
+      : ref;
+  };
+
   _renderReactApp() {
     ReactDOM.render(
       <Provider store={this._store}>
-        <VeritoneRootComponent store={this._store} widgets={this._widgets} />
+        <div>
+          {this._widgets.map(w =>
+            ReactDOM.createPortal(
+              <w.Component
+                {...w.props}
+                // bind is OK because this isn't a component -- only renders
+                // when mount() is called.
+                // eslint-disable-next-line
+                ref={this.setWidgetRef.bind(this, w.id)}
+              />,
+              w.el
+            )
+          )}
+        </div>
       </Provider>,
       this._containerEl
     );
   }
 }
-
-// todo:
-// @connect VeritoneRootComponent to provide auth info/dispatch auth/boot actions.
-function VeritoneRootComponent({ widgets }) {
-  return (
-    <div>
-      {widgets.map(w =>
-        ReactDOM.createPortal(<w.Component {...w.props} />, w.el)
-      )}
-    </div>
-  );
-}
-
-VeritoneRootComponent.propTypes = {
-  /* eslint-disable react/forbid-prop-types */
-  store: object.isRequired, // redux store
-  widgets: arrayOf(object)
-};

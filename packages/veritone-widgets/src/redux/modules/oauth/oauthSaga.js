@@ -6,8 +6,8 @@ import {
   REQUEST_OAUTH_GRANT,
   OAUTH_GRANT_FLOW_FAILED,
   OAuthGrantSuccess
-} from '../modules/oauth';
-import { login } from '../../shared/VeritoneAuth';
+} from '.';
+import { login } from '../../../shared/VeritoneAuth';
 
 function* requestOAuthGrant({ payload: { OAuthURI } }) {
   let token;
