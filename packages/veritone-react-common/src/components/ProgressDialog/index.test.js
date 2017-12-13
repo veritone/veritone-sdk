@@ -5,11 +5,7 @@ import ProgressDialog from './';
 
 describe('ProgressDialog', function() {
   it('shows the percentComplete when not done', function() {
-    const wrapper = mount(
-      <ProgressDialog
-        percentComplete={50}
-      />
-    );
+    const wrapper = mount(<ProgressDialog percentComplete={50} />);
 
     expect(wrapper.text()).toBe('50%');
   });
@@ -31,7 +27,7 @@ describe('ProgressDialog', function() {
   });
 
   it('shows the failure icon with props.completeStatus == "failure"', function() {
-    const wrapper = mount(<ProgressDialog completeStatus="failure"/>);
+    const wrapper = mount(<ProgressDialog completeStatus="failure" />);
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
     expect(wrapper.find('[data-testtarget="warnIcon"]')).toHaveLength(0);
@@ -39,7 +35,7 @@ describe('ProgressDialog', function() {
   });
 
   it('shows the failure icon with props.completeStatus == "warning"', function() {
-    const wrapper = mount(<ProgressDialog completeStatus="warning"/>);
+    const wrapper = mount(<ProgressDialog completeStatus="warning" />);
 
     expect(wrapper.find('[data-testtarget="successIcon"]')).toHaveLength(0);
     expect(wrapper.find('[data-testtarget="failureIcon"]')).toHaveLength(0);
