@@ -5,9 +5,9 @@ this is a monorepo managed by Yarn's workspaces feature (https://yarnpkg.com/blo
 Heavily WIP docs/examples for the various packages are available at https://veritone.github.io/veritone-sdk
 
 # Development
-if you don't have `yarn`, install it here: https://yarnpkg.com/en/docs/install
-
-`yarn install` in either the veritone-sdk root, or an individual project's directory. packages can be `yarn publish`ed to npm from their own root directory.
+1. if you don't have `yarn`, install it here: https://yarnpkg.com/en/docs/install
+2. `yarn install` in the veritone-sdk root.
+3. run `yarn buildall` from the veritone-sdk root. This will bundle all the packages so that cross-dependencies can resolve correctly.
 
 # Releasing
 _This is WIP and may change as we find a better process_
