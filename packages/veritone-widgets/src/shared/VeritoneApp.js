@@ -1,5 +1,3 @@
-import 'babel-polyfill'; // fixme
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { isFunction, isObject } from 'lodash';
