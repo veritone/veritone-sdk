@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-#shopt -s nullglob
 for dir in ./packages/*;do
-t=$(echo $dir | sed -e "s/\.\/packages\///g")
-yarn workspace $t run build &
+d=$(basename $dir)
+yarn workspace $d run build &
 done
 wait
