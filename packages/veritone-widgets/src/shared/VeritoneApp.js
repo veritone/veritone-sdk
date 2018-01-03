@@ -2,7 +2,7 @@ import 'babel-polyfill'; // fixme
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isFunction, isObject } from 'lodash';
+import { isFunction, isObject, without } from 'lodash';
 // import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
 import { Provider } from 'react-redux';
 
@@ -12,16 +12,27 @@ const { user: userModule, config: configModule } = modules;
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 
-export default class VeritoneApp {
+class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
-  _token = null;
   _refs = {};
+  _widgets = [];
 
-  constructor(widgets) {
-    this._widgets = widgets;
+  constructor(config) {
+    // this._widgets = widgets;
 
-    this._store.dispatch(configModule.setConfig(appConfig));
+    // todo: allow config override in constructor
+    this._store.dispatch(configModule.setConfig(config));
+  }
+
+  _register(widget) {
+    this._widgets.push(widget);
+    this._renderReactApp();
+  }
+
+  _unregister(widget) {
+    this._widgets = without(this._widgets, widget);
+    this._renderReactApp();
   }
 
   // auth can follow two paths:
@@ -38,7 +49,6 @@ export default class VeritoneApp {
     // todo: handle promise result
     // make sure it rejects on bad auth
     if (token) {
-      this._token = token;
       return this._store
         .dispatch(userModule.fetchUser({ token }))
         .then(this._handleLoginResponse);
@@ -67,7 +77,6 @@ export default class VeritoneApp {
     this._containerEl.setAttribute('id', 'veritone-react-app');
     document.body.appendChild(this._containerEl);
 
-    this._widgets.forEach(w => w.init());
     this._renderReactApp();
 
     return this;
@@ -112,6 +121,8 @@ export default class VeritoneApp {
   };
 
   _renderReactApp() {
+    this._widgets.forEach(w => w._init());
+
     ReactDOM.render(
       <Provider store={this._store}>
         <div>
@@ -133,3 +144,21 @@ export default class VeritoneApp {
     );
   }
 }
+
+let _appSingleton;
+export default function VeritoneApp(config, { _isWidget } = {}) {
+  // client calls this on init to configure the app:
+  // import VeritoneApp from 'veritone-widgets';
+  // VeritoneApp({ ...myConfig })
+  if (!_appSingleton) {
+    if (_isWidget) {
+      console.warn(`A widget was registered to an app which hasn't yet been authenticated. import VeritoneApp first and call login().`);
+      return;
+    }
+
+    _appSingleton = new _VeritoneApp(config);
+  }
+
+  return _appSingleton;
+}
+

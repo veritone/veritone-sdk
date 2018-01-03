@@ -1,4 +1,5 @@
 import { guid } from './util';
+import VeritoneApp from './VeritoneApp';
 
 export default function widget(Component) {
   return class Widget {
@@ -8,9 +9,12 @@ export default function widget(Component) {
       this._elId = elId;
       this._props = props;
       this._id = widgetId || guid();
+
+      this._app = VeritoneApp(null, { _isWidget: true });
+      this._app._register(this);
     }
 
-    init() {
+    _init() {
       const el = document.getElementById(this._elId);
       if (!el) {
         return console.warn(
@@ -19,6 +23,10 @@ export default function widget(Component) {
       }
 
       this.el = el;
+    }
+
+    destroy() {
+      this._app._unregister(this);
     }
 
     get id() {
