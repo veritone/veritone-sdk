@@ -15,14 +15,10 @@ import configureStore from '../redux/configureStore';
 class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
-  _refs = {};
   _widgets = [];
 
-  constructor(config) {
-    // this._widgets = widgets;
-
-    // todo: allow config override in constructor
-    this._store.dispatch(configModule.setConfig(config));
+  constructor(config = appConfig) {
+    this._store.dispatch(configModule.setConfig({ ...appConfig, ...config }));
   }
 
   _register(widget) {
@@ -63,25 +59,6 @@ class _VeritoneApp {
     return action.error ? Promise.reject(action) : action;
   }
 
-  mount() {
-    const existingApp = document.getElementById('veritone-react-app');
-    if (existingApp) {
-      // todo: should this be an error?
-      return console.warn(
-        'The DOM element from a VeritoneApp instance already exists on this page. ' +
-          'Destroy it before mounting a new one.'
-      );
-    }
-
-    this._containerEl = document.createElement('div');
-    this._containerEl.setAttribute('id', 'veritone-react-app');
-    document.body.appendChild(this._containerEl);
-
-    this._renderReactApp();
-
-    return this;
-  }
-
   destroy() {
     if (this._containerEl) {
       ReactDOM.unmountComponentAtNode(this._containerEl);
@@ -93,35 +70,43 @@ class _VeritoneApp {
     }
   }
 
-  getWidget(widgetOrId) {
-    const id = isObject(widgetOrId) ? widgetOrId.id : widgetOrId;
-    return this._refs[id];
-  }
+  // getWidget(widgetOrId) {
+  //   const id = isObject(widgetOrId) ? widgetOrId.id : widgetOrId;
+  //   return this._refs[id];
+  // }
 
-  setWidgetRef = (id, ref) => {
+  setWidgetRef = (widget, ref) => {
     if (!ref) {
       // protect against errors when destroying the app
       return;
     }
 
     if (isFunction(ref.getWrappedInstance) && !ref.wrappedInstance) {
-      return console.warn(
-        `Warning: widget with id "${id}" looks like it's wrapped with a
+      console.warn(
+        `Warning: the following widget looks like it's wrapped with a
          @connect decorator, but the withRef option is not set to true.
          { withRef: true } should be set as the fourth argument to @connect`
       );
+      console.warn(widget);
+
+      return;
     }
 
     // try to get at the base component for @connected widgets.
     // fixme: generic solution (hoisting specified instance methods?)
     // https://github.com/elado/hoist-non-react-methods
-    this._refs[id] = isFunction(ref.getWrappedInstance)
+    widget.ref = isFunction(ref.getWrappedInstance)
       ? ref.getWrappedInstance()
       : ref;
   };
 
   _renderReactApp() {
-    this._widgets.forEach(w => w._init());
+    this._containerEl = document.getElementById('veritone-react-app');
+    if (!this._containerEl) {
+      this._containerEl = document.createElement('div');
+      this._containerEl.setAttribute('id', 'veritone-react-app');
+      document.body.appendChild(this._containerEl);
+    }
 
     ReactDOM.render(
       <Provider store={this._store}>
@@ -133,9 +118,9 @@ class _VeritoneApp {
                 // bind is OK because this isn't a component -- only renders
                 // when mount() is called.
                 // eslint-disable-next-line
-                ref={this.setWidgetRef.bind(this, w.id)}
+                ref={this.setWidgetRef.bind(this, w)}
               />,
-              w.el
+              document.getElementById(w._elId)
             )
           )}
         </div>
@@ -152,7 +137,9 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
   // VeritoneApp({ ...myConfig })
   if (!_appSingleton) {
     if (_isWidget) {
-      console.warn(`A widget was registered to an app which hasn't yet been authenticated. import VeritoneApp first and call login().`);
+      console.warn(
+        `A widget was registered to an app which hasn't yet been authenticated. import VeritoneApp first and call login().`
+      );
       return;
     }
 

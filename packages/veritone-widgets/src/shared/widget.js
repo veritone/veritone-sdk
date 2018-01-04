@@ -1,37 +1,43 @@
-import { guid } from './util';
+import { forEach } from 'lodash';
 import VeritoneApp from './VeritoneApp';
 
 export default function widget(Component) {
   return class Widget {
-    static displayName = Component.displayName || Component.name;
-
     constructor({ elId, widgetId, ...props }) {
       this._elId = elId;
       this._props = props;
-      this._id = widgetId || guid();
+      // this._id = widgetId || guid();
+      this._ref = null; // set by VeritoneApp
 
       this._app = VeritoneApp(null, { _isWidget: true });
-      this._app._register(this);
-    }
 
-    _init() {
-      const el = document.getElementById(this._elId);
-      if (!el) {
-        return console.warn(
-          `Element with ID ${this._elId} was not found in the document.`
-        );
+      if (this._app) {
+        this._app._register(this);
       }
-
-      this.el = el;
     }
 
     destroy() {
       this._app._unregister(this);
     }
 
-    get id() {
-      return this._id;
+    set ref(val) {
+      this._ref = val;
+
+      // allow access of ref properties on the widget itself
+      // (should only be used by consumers to call component's API)
+      forEach(val, (value, key) => {
+        Object.defineProperty(this, key, { value });
+      });
+
+      console.log(this);
+
+      // todo: go through and defineProperty getters for each of
+      // the ref's ownProps
     }
+
+    // get id() {
+    //   return this._id;
+    // }
 
     get Component() {
       return Component;
