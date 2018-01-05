@@ -21,10 +21,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         include: path.resolve('./src'),
-        loader: 'babel-loader',
-        query: {
-          plugins: ['transform-runtime']
-        }
+        loader: 'babel-loader'
       },
       {
         test: /\.scss$/,
