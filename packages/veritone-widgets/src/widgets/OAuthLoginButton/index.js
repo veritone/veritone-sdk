@@ -12,7 +12,9 @@ import widget from '../../shared/widget';
   state => ({
     userIsAuthenticated: userIsAuthenticated(state)
   }),
-  { requestOAuthGrant }
+  { requestOAuthGrant },
+  null,
+  { withRef: true }
 )
 class OAuthLoginButton extends React.Component {
   static propTypes = {
