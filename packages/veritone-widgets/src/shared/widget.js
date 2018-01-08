@@ -6,9 +6,6 @@ export default function widget(Component) {
     constructor({ elId, widgetId, ...props }) {
       this._elId = elId;
       this._props = props;
-      // this._id = widgetId || guid();
-      this._ref = null; // set by VeritoneApp
-
       this._app = VeritoneApp(null, { _isWidget: true });
 
       if (this._app) {
