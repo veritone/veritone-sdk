@@ -23,6 +23,26 @@ _This is WIP and may change as we find a better process_
 6. On your local machine, checkout the `master` branch and `git pull`.
 7. Run `npm publish` in each package directory as needed to push your release to NPM.
 
+# Creating development/integration bundles (for internal Veritone use)
+Occasionally you may need to integrate unfinished work on an SDK package with another project. In cases where that project must be deployed or shared, we cannot rely on `yarn link`. Rather than cluttering our ecosystem with with prerelease package versions, you can publish a tar archive to an S3 bucket and reference that archive in the package.json of your project (using yarn's ability to download tarball dependencies).
+
+1. Obtain S3 user permissions to PUT to the `dev-sdk-build-artifacts` bucket.
+2. Make changes to an SDK package locally. The changes do not need to be pushed or even committed. The only requirement is that the SDK package can be built.
+3. From the veritone-sdk root directory, run `yarn publish-dev <packageName>`. ie. `yarn publish-dev veritone-react-common`
+4. Copy the resulting s3 resource url, ie. https://dev-sdk-build-artifacts.s3.amazonaws.com/veritone-react-common-[timestamp].tar.gz
+5. Reference the s3 url in the package.json of your sdk-using project. ie.
+```
+{
+  "dependencies": {
+    ...,
+    "veritone-react-common": "https://dev-sdk-build-artifacts.s3.amazonaws.com/veritone-react-common-[timestamp].tar.gz",
+    ...
+  }
+}
+```
+6. run `yarn install` in your project to pull in the new dependency.
+
+
 # License
 Copyright 2017, Veritone Inc.
 
