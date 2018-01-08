@@ -1,4 +1,4 @@
-import { forEach } from 'lodash';
+import { forOwn } from 'lodash';
 import VeritoneApp from './VeritoneApp';
 
 export default function widget(Component) {
@@ -21,23 +21,14 @@ export default function widget(Component) {
     }
 
     set ref(val) {
-      this._ref = val;
-
       // allow access of ref properties on the widget itself
       // (should only be used by consumers to call component's API)
-      forEach(val, (value, key) => {
-        Object.defineProperty(this, key, { value });
+      forOwn(val, (value, key) => {
+        try {
+          Object.defineProperty(this, key, { value });
+        } catch (e) { /* */ }
       });
-
-      console.log(this);
-
-      // todo: go through and defineProperty getters for each of
-      // the ref's ownProps
     }
-
-    // get id() {
-    //   return this._id;
-    // }
 
     get Component() {
       return Component;
