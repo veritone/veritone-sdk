@@ -18,11 +18,14 @@
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-test-backend": "^2.5.4",
     "react-dom": "^16.2.0",
+    "react-dotdotdot": "^1.1.0",
     "react-infinite-calendar": "^2.3.1",
+    "react-truncate": "^2.3.0",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
-    "redux-form-material-ui": "^5.0.0-beta.1"
+    "redux-form-material-ui": "^5.0.0-beta.1",
+    "veritone-react-common": "^1.0.2"
   },
   "scripts": {
     "start": "start-storybook -p 9001 -c .storybook",

@@ -1,0 +1,33 @@
+@import 'src/styles/modules/variables';
+
+.symbol {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.price {
+  display: flex;
+  align-items: flex-start;
+  color: $dark-black;
+}
+
+.dollars {
+  font-size: 36px;
+  font-weight: 500;
+  margin-left: 3px;
+}
+
+.cents {
+  margin-left: 3px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.text {
+  align-self: flex-end;
+  font-size: 10px;
+  color: $light-black;
+  margin-bottom: 12px;
+}

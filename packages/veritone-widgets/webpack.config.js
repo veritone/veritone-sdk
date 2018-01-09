@@ -9,6 +9,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      styles: path.join(__dirname, 'src/styles'),
       // helpers: path.join(__dirname, 'src/helpers'),
       // components: path.join(__dirname, 'src/components'),
       // images: path.join(__dirname, 'src/resources/images'),
