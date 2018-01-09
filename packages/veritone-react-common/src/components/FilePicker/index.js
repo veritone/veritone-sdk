@@ -22,14 +22,16 @@ class FilePicker extends Component {
     width: number,
     height: number,
     onPickFiles: func.isRequired,
-    onRequestClose: func.isRequired
+    onRequestClose: func.isRequired,
+    allowUrlUpload: bool
   };
 
   static defaultProps = {
     height: 400,
     width: 600,
     accept: [],
-    multiple: false
+    multiple: false,
+    allowUrlUpload: true
   };
 
   state = {
@@ -122,6 +124,7 @@ class FilePicker extends Component {
             selectedTab={this.state.selectedTab}
             onSelectTab={this.handleTabChange}
             onClose={this.handleCloseModal}
+            allowUrlUpload={this.props.allowUrlUpload}
           />
 
           {this.state.selectedTab === 'upload' && (

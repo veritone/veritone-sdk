@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import IconButton from 'material-ui/IconButton';
-import { string, func } from 'prop-types';
+import { string, func, bool } from 'prop-types';
+
 import styles from './styles.scss';
 
 class FilePickerHeader extends Component {
+  static propTypes = {
+    selectedTab: string,
+    onSelectTab: func,
+    onClose: func,
+    allowUrlUpload: bool
+  };
+
   handleTabChange = (event, value) => {
     this.props.onSelectTab(value);
   };
@@ -28,17 +36,11 @@ class FilePickerHeader extends Component {
           className={styles.filePickerTabs}
         >
           <Tab label="Upload" value="upload" />
-          <Tab label="By URL" value="by-url" />
+          {this.props.allowUrlUpload && <Tab label="By URL" value="by-url" />}
         </Tabs>
       </div>
     );
   }
 }
-
-FilePickerHeader.propTypes = {
-  selectedTab: string,
-  onSelectTab: func,
-  onClose: func
-};
 
 export default FilePickerHeader;
