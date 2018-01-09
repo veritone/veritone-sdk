@@ -63,20 +63,20 @@ class FilePicker extends Component {
       return this.clearErrorMessage();
     } else {
       // single mode
-      this.setState({
-        files: [files[0]]
-      });
-
       if (this.state.files.length >= 1 || files.length > 1) {
         // if a file was already staged, or user tried to add more than one file
         this.setState({
           errorMessage:
-            'Only a single file is supported for this input;' +
-            ' the first selected file has been staged.'
+          'Only a single file is supported for this input;' +
+          ' the first selected file has been staged.'
         });
       } else {
         this.clearErrorMessage();
       }
+
+      this.setState({
+        files: [files[0]]
+      });
     }
   };
 
