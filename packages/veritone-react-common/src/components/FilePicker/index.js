@@ -12,6 +12,7 @@ import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
+import DragDropContext from './DragDropContext';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -148,14 +149,12 @@ class FilePicker extends Component {
 
           {this.state.selectedTab === 'upload' && (
             <div className={styles.filePickerBody}>
-              <DragDropContextProvider backend={HTML5Backend}>
-                <FileUploader
-                  onFilesSelected={this.handleFilesSelected}
-                  onFilesRejected={this.handleFilesRejected}
-                  acceptedFileTypes={acceptedFileTypes}
-                  multiple={this.props.multiple}
-                />
-              </DragDropContextProvider>
+              <FileUploader
+                onFilesSelected={this.handleFilesSelected}
+                onFilesRejected={this.handleFilesRejected}
+                acceptedFileTypes={acceptedFileTypes}
+                multiple={this.props.multiple}
+              />
               {this.state.files.length > 0 && (
                 <FileList
                   files={this.state.files}
@@ -185,4 +184,4 @@ class FilePicker extends Component {
   }
 }
 
-export default FilePicker;
+export default DragDropContext(FilePicker);
