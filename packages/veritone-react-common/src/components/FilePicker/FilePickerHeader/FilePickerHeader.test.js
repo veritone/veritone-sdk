@@ -13,6 +13,7 @@ describe('FilePickerHeader', () => {
         selectedTab="upload"
         onSelectTab={onSelectTab}
         onClose={onCloseModal}
+        allowUrlUpload
       />
     );
   });
