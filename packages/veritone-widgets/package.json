@@ -12,7 +12,8 @@
     "react-redux-saga": "^1.0.2",
     "redux": "^3.7.2",
     "redux-saga": "^0.15.6",
-    "veritone-react-common": "^1.1.0"
+    "veritone-react-common": "^1.1.0",
+    "veritone-redux-common": "^2.0.0"
   },
   "main": "dist/bundle.js",
   "scripts": {
