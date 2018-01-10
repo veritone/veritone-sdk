@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isFunction, isObject } from 'lodash';
-// import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
+import { isFunction, without } from 'lodash';
 import { Provider } from 'react-redux';
 
 import { modules } from 'veritone-redux-common';
@@ -10,16 +9,23 @@ const { user: userModule, config: configModule } = modules;
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 
-export default class VeritoneApp {
+class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
-  _token = null;
-  _refs = {};
+  _widgets = [];
 
-  constructor(widgets) {
-    this._widgets = widgets;
+  constructor(config = appConfig) {
+    this._store.dispatch(configModule.setConfig({ ...appConfig, ...config }));
+  }
 
-    this._store.dispatch(configModule.setConfig(appConfig));
+  _register(widget) {
+    this._widgets.push(widget);
+    this._renderReactApp();
+  }
+
+  _unregister(widget) {
+    this._widgets = without(this._widgets, widget);
+    this._renderReactApp();
   }
 
   // auth can follow two paths:
@@ -28,15 +34,9 @@ export default class VeritoneApp {
   // 2. oauth apps, popup window flow. must be initiated by user action (clicking a button).
   //    oauth apps must add an OAuthLoginButtonWidget and do not need to call login()
   login({ token } = {}) {
-    // new VeritoneApp(...widgets)
-    //   .login() // try to use an existing cookie
-    // or
-    //   .login({ token }); // use provided token in header
-
     // todo: handle promise result
     // make sure it rejects on bad auth
     if (token) {
-      this._token = token;
       return this._store
         .dispatch(userModule.fetchUser({ token }))
         .then(this._handleLoginResponse);
@@ -51,26 +51,6 @@ export default class VeritoneApp {
     return action.error ? Promise.reject(action) : action;
   }
 
-  mount() {
-    const existingApp = document.getElementById('veritone-react-app');
-    if (existingApp) {
-      // todo: should this be an error?
-      return console.warn(
-        'The DOM element from a VeritoneApp instance already exists on this page. ' +
-          'Destroy it before mounting a new one.'
-      );
-    }
-
-    this._containerEl = document.createElement('div');
-    this._containerEl.setAttribute('id', 'veritone-react-app');
-    document.body.appendChild(this._containerEl);
-
-    this._widgets.forEach(w => w.init());
-    this._renderReactApp();
-
-    return this;
-  }
-
   destroy() {
     if (this._containerEl) {
       ReactDOM.unmountComponentAtNode(this._containerEl);
@@ -82,34 +62,39 @@ export default class VeritoneApp {
     }
   }
 
-  getWidget(widgetOrId) {
-    const id = isObject(widgetOrId) ? widgetOrId.id : widgetOrId;
-    return this._refs[id];
-  }
-
-  setWidgetRef = (id, ref) => {
+  setWidgetRef = (widget, ref) => {
     if (!ref) {
       // protect against errors when destroying the app
       return;
     }
 
     if (isFunction(ref.getWrappedInstance) && !ref.wrappedInstance) {
-      return console.warn(
-        `Warning: widget with id "${id}" looks like it's wrapped with a
+      console.warn(
+        `Warning: the following widget looks like it's wrapped with a
          @connect decorator, but the withRef option is not set to true.
          { withRef: true } should be set as the fourth argument to @connect`
       );
+      console.warn(widget);
+
+      return;
     }
 
     // try to get at the base component for @connected widgets.
     // fixme: generic solution (hoisting specified instance methods?)
     // https://github.com/elado/hoist-non-react-methods
-    this._refs[id] = isFunction(ref.getWrappedInstance)
+    widget.ref = isFunction(ref.getWrappedInstance)
       ? ref.getWrappedInstance()
       : ref;
   };
 
   _renderReactApp() {
+    this._containerEl = document.getElementById('veritone-react-app');
+    if (!this._containerEl) {
+      this._containerEl = document.createElement('div');
+      this._containerEl.setAttribute('id', 'veritone-react-app');
+      document.body.appendChild(this._containerEl);
+    }
+
     ReactDOM.render(
       <Provider store={this._store}>
         <div>
@@ -120,9 +105,9 @@ export default class VeritoneApp {
                 // bind is OK because this isn't a component -- only renders
                 // when mount() is called.
                 // eslint-disable-next-line
-                ref={this.setWidgetRef.bind(this, w.id)}
+                ref={this.setWidgetRef.bind(this, w)}
               />,
-              w.el
+              document.getElementById(w._elId)
             )
           )}
         </div>
@@ -131,3 +116,23 @@ export default class VeritoneApp {
     );
   }
 }
+
+let _appSingleton;
+export default function VeritoneApp(config, { _isWidget } = {}) {
+  // client calls this on init to configure the app:
+  // import VeritoneApp from 'veritone-widgets';
+  // VeritoneApp({ ...myConfig })
+  if (!_appSingleton) {
+    if (_isWidget) {
+      console.warn(
+        `A widget was registered to an app which hasn't yet been authenticated. import VeritoneApp first and call login().`
+      );
+      return;
+    }
+
+    _appSingleton = new _VeritoneApp(config);
+  }
+
+  return _appSingleton;
+}
+

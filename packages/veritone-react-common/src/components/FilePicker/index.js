@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { isString, isArray } from 'lodash';
 import pluralize from 'pluralize';
-import { DragDropContextProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import mime from 'mime-types';
 import Paper from 'material-ui/Paper';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -12,24 +10,27 @@ import FileList from './FileList';
 import FilePickerHeader from './FilePickerHeader';
 import FilePickerFooter from './FilePickerFooter';
 import UrlUploader from './UrlUploader';
+import DragDropContext from './DragDropContext';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
 class FilePicker extends Component {
   static propTypes = {
     accept: oneOfType([arrayOf(string), string]), // extension or mimetype
-    multiple: bool, // todo
+    multiple: bool,
     width: number,
     height: number,
     onPickFiles: func.isRequired,
-    onRequestClose: func.isRequired
+    onRequestClose: func.isRequired,
+    allowUrlUpload: bool
   };
 
   static defaultProps = {
     height: 400,
     width: 600,
     accept: [],
-    multiple: false
+    multiple: false,
+    allowUrlUpload: true
   };
 
   state = {
@@ -51,11 +52,30 @@ class FilePicker extends Component {
 
   handleFilesSelected = fileOrFiles => {
     const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
-    this.setState({
-      files: [...this.state.files, ...files]
-    });
 
-    this.clearErrorMessage();
+    if (this.props.multiple) {
+      this.setState({
+        files: [...this.state.files, ...files]
+      });
+
+      return this.clearErrorMessage();
+    } else {
+      // single mode
+      if (this.state.files.length >= 1 || files.length > 1) {
+        // if a file was already staged, or user tried to add more than one file
+        this.setState({
+          errorMessage:
+          'Only a single file is supported for this input;' +
+          ' the first selected file has been staged.'
+        });
+      } else {
+        this.clearErrorMessage();
+      }
+
+      this.setState({
+        files: [files[0]]
+      });
+    }
   };
 
   handleFilesRejected = num => {
@@ -122,17 +142,17 @@ class FilePicker extends Component {
             selectedTab={this.state.selectedTab}
             onSelectTab={this.handleTabChange}
             onClose={this.handleCloseModal}
+            allowUrlUpload={this.props.allowUrlUpload}
           />
 
           {this.state.selectedTab === 'upload' && (
             <div className={styles.filePickerBody}>
-              <DragDropContextProvider backend={HTML5Backend}>
-                <FileUploader
-                  onFilesSelected={this.handleFilesSelected}
-                  onFilesRejected={this.handleFilesRejected}
-                  acceptedFileTypes={acceptedFileTypes}
-                />
-              </DragDropContextProvider>
+              <FileUploader
+                onFilesSelected={this.handleFilesSelected}
+                onFilesRejected={this.handleFilesRejected}
+                acceptedFileTypes={acceptedFileTypes}
+                multiple={this.props.multiple}
+              />
               {this.state.files.length > 0 && (
                 <FileList
                   files={this.state.files}
@@ -162,4 +182,4 @@ class FilePicker extends Component {
   }
 }
 
-export default FilePicker;
+export default DragDropContext(FilePicker);

@@ -2,18 +2,19 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import VeritoneApp from '../../shared/VeritoneApp';
-import OAuthLoginButtonWidget from './';
+import OAuthLoginButtonWidget from '.';
 
 storiesOf('OAuthLoginButtonWidget', module).add('Base', () => {
-  const app = new VeritoneApp([
+  VeritoneApp({
+    apiRoot: 'https://api.aws-dev.veritone.com'
+  });
+
+  function makeApp() {
     new OAuthLoginButtonWidget({
       elId: 'login-button-widget',
       OAuthURI: 'http://localhost:5001/auth/veritone'
-    })
-  ]);
-
-  const mountApp = app.mount.bind(app);
-  const destroyApp = app.destroy.bind(app);
+    });
+  }
 
   return (
     <div>
@@ -22,8 +23,7 @@ storiesOf('OAuthLoginButtonWidget', module).add('Base', () => {
       <br />
       <br />
       <br />
-      <button onClick={mountApp}>Mount</button>
-      <button onClick={destroyApp}>destroy</button>
+      <button onClick={makeApp}>1. Make app</button>
     </div>
   );
 });

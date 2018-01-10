@@ -60,7 +60,8 @@ class FileUploader extends Component {
     onFilesSelected: func.isRequired,
     onFilesRejected: func,
     isOver: bool.isRequired,
-    connectDropTarget: func.isRequired
+    connectDropTarget: func.isRequired,
+    multiple: bool
   };
 
   static defaultProps = {
@@ -104,7 +105,7 @@ class FileUploader extends Component {
           accept={acceptedFileTypes.join(',')}
           style={{ display: 'none' }}
           id="file"
-          multiple
+          multiple={this.props.multiple}
           type="file"
           onChange={this.handleFileSelection}
           ref={this.setInputRef}

@@ -6,22 +6,27 @@ import VeritoneApp from '../../shared/VeritoneApp';
 import FilePicker from '.';
 
 storiesOf('FilePickerWidget', module).add('Base', () => {
-  const app = new VeritoneApp([
-    new FilePicker({
-      elId: 'file-picker-widget',
-      widgetId: 'picker',
-      accept: ['video/*'],
-      onUpload: files => console.log(files)
+  const token = text('Api Session Token', 'fixme');
+  let pickerWidget;
+
+  function makeApp() {
+    return VeritoneApp({
+      apiRoot: 'https://api.aws-dev.veritone.com'
     })
-  ]);
+      .login({ token })
+      .then(() => { // fixme -- try with OauthLoginButton
+        pickerWidget = new FilePicker({
+          elId: 'file-picker-widget',
+          accept: ['image/*'],
+          // allowUrlUpload: false
+          multiple: false
+        });
 
-  const mountApp = app.mount.bind(app);
-  const destroyApp = app.destroy.bind(app);
-  const loginApp = app.login.bind(app);
+        return null;
+      });
+  }
 
-  text('session token', 'fixme');
   /* eslint-disable react/jsx-no-bind */
-
   return (
     <div>
       <div id="file-picker-widget" />
@@ -29,14 +34,10 @@ storiesOf('FilePickerWidget', module).add('Base', () => {
       <br />
       <br />
       <br />
-      <button onClick={mountApp}>1. Mount</button>
-      <button onClick={loginApp}>2. login</button>
-      <button onClick={destroyApp}>destroy</button>
+      <button onClick={makeApp}>1. make</button>
 
       <br />
-      <button onClick={() => app.getWidget('picker').open()}>
-        3. pick files
-      </button>
+      <button onClick={() => pickerWidget.pick((...args) => console.log(args))}>2. pick files</button>
     </div>
   );
 });
