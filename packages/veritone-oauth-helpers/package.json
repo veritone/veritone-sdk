@@ -9,7 +9,6 @@
   "author": "Andrew Tung",
   "license": "Apache-2.0",
   "dependencies": {
-    "es6-promise": "^4.2.2",
-    "express": "^4.16.1"
+    "es6-promise": "^4.2.2"
   }
 }
