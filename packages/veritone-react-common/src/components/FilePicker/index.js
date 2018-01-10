@@ -31,7 +31,7 @@ class FilePicker extends Component {
     height: 400,
     width: 600,
     accept: [],
-    multiple: true,
+    multiple: false,
     allowUrlUpload: true
   };
 
