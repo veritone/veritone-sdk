@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { isString, isArray } from 'lodash';
 import pluralize from 'pluralize';
-import { DragDropContextProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import mime from 'mime-types';
 import Paper from 'material-ui/Paper';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isFunction, isObject, without } from 'lodash';
-// import { Sagas } from 'react-redux-saga'; // fixme -- need to fork this and make compatible with react16
+import { isFunction, without } from 'lodash';
 import { Provider } from 'react-redux';
 
 import { modules } from 'veritone-redux-common';
@@ -35,11 +34,6 @@ class _VeritoneApp {
   // 2. oauth apps, popup window flow. must be initiated by user action (clicking a button).
   //    oauth apps must add an OAuthLoginButtonWidget and do not need to call login()
   login({ token } = {}) {
-    // new VeritoneApp(...widgets)
-    //   .login() // try to use an existing cookie
-    // or
-    //   .login({ token }); // use provided token in header
-
     // todo: handle promise result
     // make sure it rejects on bad auth
     if (token) {
@@ -67,11 +61,6 @@ class _VeritoneApp {
       }
     }
   }
-
-  // getWidget(widgetOrId) {
-  //   const id = isObject(widgetOrId) ? widgetOrId.id : widgetOrId;
-  //   return this._refs[id];
-  // }
 
   setWidgetRef = (widget, ref) => {
     if (!ref) {

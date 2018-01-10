@@ -5,7 +5,6 @@ import { text } from '@storybook/addon-knobs';
 import VeritoneApp from '../../shared/VeritoneApp';
 import AppBarWidget from './';
 
-
 storiesOf('AppBar', module).add('Base', () => {
   const token = text('Api Session Token', 'fixme');
 
@@ -14,13 +13,15 @@ storiesOf('AppBar', module).add('Base', () => {
       apiRoot: 'https://api.aws-dev.veritone.com'
     })
       .login({ token })
-      .then(() => { // fixme -- try with OauthLoginButton
-         new AppBarWidget({
+      .then(() => {
+        // fixme -- try with OauthLoginButton
+        new AppBarWidget({
           elId: 'appbar-widget',
           title: 'test',
           profileMenu: true,
           appSwitcher: true
         });
+        return null;
       });
   }
   /* eslint-disable react/jsx-no-bind */

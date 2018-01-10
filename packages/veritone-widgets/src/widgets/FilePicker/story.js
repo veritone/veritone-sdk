@@ -17,11 +17,16 @@ storiesOf('FilePickerWidget', module).add('Base', () => {
       .then(() => { // fixme -- try with OauthLoginButton
         pickerWidget = new FilePicker({
           elId: 'file-picker-widget',
-          accept: ['image/*']
+          accept: ['image/*'],
+          // allowUrlUpload: false
+          multiple: false
         });
+
+        return null;
       });
   }
 
+  /* eslint-disable react/jsx-no-bind */
   return (
     <div>
       <div id="file-picker-widget" />

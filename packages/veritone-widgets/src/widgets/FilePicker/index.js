@@ -37,8 +37,7 @@ class FilePickerWidget extends React.Component {
     success: bool,
     error: bool,
     warning: bool,
-    statusMessage: string,
-    // onUpload: func // external callback API
+    statusMessage: string
   };
 
   pickCallback = noop;
