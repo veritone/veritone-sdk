@@ -18,7 +18,7 @@ import veritoneApi from 'veritone-client-js/dist/bundle-browser'
 // in Node:
 import veritoneApi from 'veritone-client-js/dist/bundle-node'
 
-const client = VeritoneApi({
+const client = veritoneApi({
 	// requires either session AND api tokens (from user object):
 	token: 'my-session-token',
 	apiToken: 'my-api-token',
