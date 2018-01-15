@@ -1,0 +1,14 @@
+{
+  "name": "veritone-oauth-helpers",
+  "version": "1.0.0",
+  "description": "Helper functions for authenticating to Veritone via OAuth",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Andrew Tung",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "es6-promise": "^4.2.2"
+  }
+}

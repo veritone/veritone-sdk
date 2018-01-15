@@ -7,7 +7,7 @@ import {
   OAUTH_GRANT_FLOW_FAILED,
   OAuthGrantSuccess
 } from '.';
-import { login } from '../../../shared/VeritoneAuth';
+import { login } from 'veritone-oauth-helpers';
 
 function* requestOAuthGrant({ payload: { OAuthURI } }) {
   let token;
