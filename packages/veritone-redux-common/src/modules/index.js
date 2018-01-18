@@ -15,3 +15,11 @@ export const config = {
   reducer: configReducer,
   ...configModule
 };
+
+import authRootSaga from './auth/oauthSaga'
+import authReducer, * as authModule from './auth';
+export const auth = {
+  reducer: authReducer,
+  ...authModule,
+  authRootSaga
+};
