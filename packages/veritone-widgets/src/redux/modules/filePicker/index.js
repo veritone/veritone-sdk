@@ -10,7 +10,7 @@ export const UPLOAD_COMPLETE = 'UPLOAD_COMPLETE';
 
 export const namespace = 'filePicker';
 
-const defaultState = {
+const defaultPickerState = {
   open: false,
   state: 'selecting', // selecting | uploading | complete
   progressPercentByFileKey: {},
@@ -20,94 +20,120 @@ const defaultState = {
   uploadResult: null
 };
 
+const defaultState = {
+  // populated like:
+  // [pickerId]: { ...defaultPickerState }
+};
+
 export default createReducer(defaultState, {
-  [PICK_START]() {
+  [PICK_START](state, { meta: { id } }) {
     return {
-      ...defaultState,
-      open: true,
-      state: 'selecting'
-    };
-  },
-  [PICK_END](state) {
-    return {
-      ...state,
-      open: false
-    };
-  },
-  [UPLOAD_REQUEST](state) {
-    // todo: status message
-    return {
-      ...state,
-      state: 'uploading',
-      progressPercentByFileKey: {},
-      success: null,
-      error: null,
-      warning: null,
-      uploadResult: null
-    };
-  },
-  [UPLOAD_PROGRESS](state, action) {
-    // todo: status message
-    return {
-      ...state,
-      progressPercentByFileKey: {
-        ...state.progressPercentByFileKey,
-        [action.meta.fileKey]: action.payload
+      [id]: {
+        ...defaultPickerState,
+        open: true,
+        state: 'selecting'
       }
     };
   },
-  [UPLOAD_COMPLETE](state, { payload, meta: { warn, error } }) {
+  [PICK_END](state, { meta: { id } }) {
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        open: false
+      }
+    };
+  },
+  [UPLOAD_REQUEST](state, { meta: { id } }) {
+    // todo: status message
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        state: 'uploading',
+        progressPercentByFileKey: {},
+        success: null,
+        error: null,
+        warning: null,
+        uploadResult: null
+      }
+    };
+  },
+  [UPLOAD_PROGRESS](state, { payload, meta: { fileKey, id } }) {
+    // todo: status message
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        progressPercentByFileKey: {
+          ...state.progressPercentByFileKey,
+          [fileKey]: payload
+        }
+      }
+    };
+  },
+  [UPLOAD_COMPLETE](state, { payload, meta: { warn, error, id } }) {
     const errorMessage = get(error, 'message', error); // Error or string
     return {
       ...state,
-      success: !(warn || error) || null,
-      error: error ? errorMessage : null,
-      warning: warn || null,
-      state: 'complete',
-      uploadResult: payload
+      [id]: {
+        ...state[id],
+        success: !(warn || error) || null,
+        error: error ? errorMessage : null,
+        warning: warn || null,
+        state: 'complete',
+        uploadResult: payload
+      }
     };
   }
 });
 
 const local = state => state[namespace];
 
-export const pick = () => ({
-  type: PICK_START
+export const pick = id => ({
+  type: PICK_START,
+  meta: { id }
 });
 
-export const endPick = () => ({
-  type: PICK_END
+export const endPick = id => ({
+  type: PICK_END,
+  meta: { id }
 });
 
-export const uploadRequest = (files, callback) => ({
+export const uploadRequest = (id, files, callback) => ({
   type: UPLOAD_REQUEST,
-  payload: { files, callback }
+  payload: { files, callback },
+  meta: { id }
 });
 
-export const uploadProgress = (fileKey, progressPercent) => ({
+export const uploadProgress = (id, fileKey, progressPercent) => ({
   type: UPLOAD_PROGRESS,
   payload: clamp(Math.round(progressPercent), 100),
-  meta: { fileKey }
+  meta: { fileKey, id }
 });
 
-export const uploadComplete = (result, { warn, error }) => ({
+export const uploadComplete = (id, result, { warn, error }) => ({
   type: UPLOAD_COMPLETE,
   payload: result,
-  meta: { warn, error }
+  meta: { warn, error, id }
 });
 
-export const isOpen = state => local(state).open;
-export const state = state => local(state).state;
-export const progressPercent = state => {
-  const meanProgress = mean(
-    Object.values(local(state).progressPercentByFileKey)
-  );
+export const isOpen = (state, id) => get(local(state), [id, 'open']);
+export const state = (state, id) =>
+  get(local(state), [id, 'state'], 'selecting');
+export const progressPercent = (state, id) => {
+  const currentProgress = get(local(state), [id, 'progressPercentByFileKey']);
+  if (!currentProgress) {
+    return 0;
+  }
+
+  const meanProgress = mean(Object.values(currentProgress));
   const rounded = Math.round(meanProgress);
   return isNaN(rounded) ? 0 : rounded;
 };
-export const didSucceed = state => !!local(state).success;
-export const didError = state => !!local(state).error;
-export const didWarn = state => !!local(state).warning;
+export const didSucceed = (state, id) => !!get(local(state), [id, 'success']);
+export const didError = (state, id) => !!get(local(state), [id, 'error']);
+export const didWarn = (state, id) => !!get(local(state), [id, 'warning']);
 // todo: status message for normal cases
-export const statusMessage = state =>
-  local(state).warning || local(state).error || '';
+export const statusMessage = (state, id) =>
+  get(local(state), [id, 'warning']) || get(local(state), [id, 'error']) || '';

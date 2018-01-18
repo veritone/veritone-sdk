@@ -4,7 +4,7 @@ import { isFunction, without } from 'lodash';
 import { Provider } from 'react-redux';
 
 import { modules } from 'veritone-redux-common';
-const { user: userModule, config: configModule } = modules;
+const { auth: authModule, user: userModule, config: configModule } = modules;
 
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
@@ -28,23 +28,20 @@ class _VeritoneApp {
     this._renderReactApp();
   }
 
-  // auth can follow two paths:
-  // 1. internal apps, make /current-user api call with appInstance.login().
-  //    this can happen automatically.
-  // 2. oauth apps, popup window flow. must be initiated by user action (clicking a button).
-  //    oauth apps must add an OAuthLoginButtonWidget and do not need to call login()
-  login({ token } = {}) {
+  login({ sessionToken, OAuthToken } = {}) {
     // todo: handle promise result
     // make sure it rejects on bad auth
-    if (token) {
-      return this._store
-        .dispatch(userModule.fetchUser({ token }))
-        .then(this._handleLoginResponse);
-    } else {
-      return this._store
-        .dispatch(userModule.fetchUser())
-        .then(this._handleLoginResponse);
+    if (sessionToken) {
+      this._store.dispatch(authModule.setSessionToken(sessionToken));
     }
+
+    if (OAuthToken) {
+      this._store.dispatch(authModule.setOAuthToken(OAuthToken));
+    }
+
+    return this._store
+      .dispatch(userModule.fetchUser())
+      .then(this._handleLoginResponse);
   }
 
   _handleLoginResponse(action) {
@@ -82,9 +79,11 @@ class _VeritoneApp {
     // try to get at the base component for @connected widgets.
     // fixme: generic solution (hoisting specified instance methods?)
     // https://github.com/elado/hoist-non-react-methods
-    widget.ref = isFunction(ref.getWrappedInstance)
+    const r = isFunction(ref.getWrappedInstance)
       ? ref.getWrappedInstance()
       : ref;
+
+    widget.setRefProperties(r);
   };
 
   _renderReactApp() {

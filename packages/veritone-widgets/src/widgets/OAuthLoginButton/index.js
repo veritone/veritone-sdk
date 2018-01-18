@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import { func, bool, string } from 'prop-types';
 
 import { modules } from 'veritone-redux-common';
-const { user: { userIsAuthenticated } } = modules;
+const { user: { userIsAuthenticated }, auth: { requestOAuthGrant }  } = modules;
 
-import { requestOAuthGrant } from '../../redux/modules/oauth';
 import widget from '../../shared/widget';
 
 @connect(

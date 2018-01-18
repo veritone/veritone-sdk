@@ -9,14 +9,14 @@ import * as filePickerModule from '../../redux/modules/filePicker';
 import widget from '../../shared/widget';
 
 @connect(
-  state => ({
-    open: filePickerModule.isOpen(state),
-    pickerState: filePickerModule.state(state),
-    progressPercent: filePickerModule.progressPercent(state),
-    success: filePickerModule.didSucceed(state),
-    error: filePickerModule.didError(state),
-    warning: filePickerModule.didWarn(state),
-    statusMessage: filePickerModule.statusMessage(state)
+  (state, { id }) => ({
+    open: filePickerModule.isOpen(state, id),
+    pickerState: filePickerModule.state(state, id),
+    progressPercent: filePickerModule.progressPercent(state, id),
+    success: filePickerModule.didSucceed(state, id),
+    error: filePickerModule.didError(state, id),
+    warning: filePickerModule.didWarn(state, id),
+    statusMessage: filePickerModule.statusMessage(state, id)
   }),
   {
     pick: filePickerModule.pick,
@@ -28,6 +28,7 @@ import widget from '../../shared/widget';
 )
 class FilePickerWidget extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     open: bool,
     pick: func,
     endPick: func,
@@ -41,18 +42,21 @@ class FilePickerWidget extends React.Component {
   };
 
   pickCallback = noop;
+  onCancelCallback = noop;
 
-  pick = (callback = noop) => {
+  pick = (callback = noop, onCancelCallback = noop) => {
     this.pickCallback = callback;
-    this.props.pick();
+    this.onCancelCallback = onCancelCallback;
+    this.props.pick(this.props.id);
   };
 
   cancel = () => {
-    this.props.endPick();
+    this.props.endPick(this.props.id);
+    this.onCancelCallback();
   };
 
   _onFilesSelected = files => {
-    this.props.uploadRequest(files, this.pickCallback);
+    this.props.uploadRequest(this.props.id, files, this.pickCallback);
   };
 
   _renderPickerDialog = () => {
