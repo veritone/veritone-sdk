@@ -17,13 +17,14 @@ export default function widget(Component) {
       this._app._unregister(this);
     }
 
-    set ref(val) {
+    setRefProperties(ref) {
       // allow access of ref properties on the widget itself
       // (should only be used by consumers to call component's API)
-      forOwn(val, (value, key) => {
+      forOwn(ref, (value, key) => {
         try {
           Object.defineProperty(this, key, { value });
-        } catch (e) { /* */ }
+        } catch (e) { /* */
+        }
       });
     }
 
