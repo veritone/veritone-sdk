@@ -39,13 +39,18 @@ class _VeritoneApp {
       this._store.dispatch(authModule.setOAuthToken(OAuthToken));
     }
 
-    return this._store
-      .dispatch(userModule.fetchUser())
-      .then(this._handleLoginResponse);
+
+    // fixme -- can we be smarter about this? maybe each widget has a saga
+    // to define its login dependencies?
+    return Promise.all([
+      this._store.dispatch(userModule.fetchUser()),
+      this._store.dispatch(userModule.fetchEnabledApps())
+    ]).then(this._handleLoginResponse);
   }
 
-  _handleLoginResponse(action) {
-    return action.error ? Promise.reject(action) : action;
+  _handleLoginResponse(actions) {
+    console.log(actions, actions.some(a => a.error))
+    return actions.some(a => a.error) ? Promise.reject(actions) : actions;
   }
 
   destroy() {
