@@ -60,5 +60,5 @@ app.listen(settings.port, err => {
     console.log(err);
     return;
   }
-  console.log('🐬  Veritone-widgets-server is listening at http://%s:%s', settings.host, settings.port);
+  console.log('🐬  Veritone-widgets-server is listening at on port %s', settings.port);
 });
