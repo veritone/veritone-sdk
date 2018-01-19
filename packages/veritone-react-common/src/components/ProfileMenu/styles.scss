@@ -1,6 +1,15 @@
 @import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
 
+.userNullState {
+  @include mui-text('body1');
+  padding: 20px 0 !important;
+  margin: 0 auto;
+  width: 200px;
+  text-align: center;
+  cursor: default !important;
+}
+
 .header {
   display: flex;
 

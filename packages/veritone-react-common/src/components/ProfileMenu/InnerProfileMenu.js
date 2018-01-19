@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { get } from 'lodash';
 import PowerIcon from 'material-ui-icons/PowerSettingsNew';
 import { MenuItem } from 'material-ui/Menu';
@@ -25,48 +25,54 @@ export default class InnerProfileMenu extends React.Component {
   };
 
   render() {
-    return [
-      <ListSubheader className={styles['header']} key="header">
-        <div className={styles['user-avatar']}>
-          <Avatar
-            src={get(
-              this.props.user,
-              'kvp.image',
-              '//static.veritone.com/veritone-ui/default-avatar-2.png'
-            )}
-          />
-        </div>
-        <div className={styles['user-profile']}>
-          <div className={styles['full-name']}>
-            {get(this.props.user, 'kvp.firstName')}&nbsp;
-            {get(this.props.user, 'kvp.lastName')}
+    const userExists = !!Object.keys(this.props.user).length;
+    if (!userExists) {
+      return <div className={styles.userNullState}>No user found</div>;
+    }
+    return (
+      <Fragment>
+        <ListSubheader className={styles['header']} key="header">
+          <div className={styles['user-avatar']}>
+            <Avatar
+              src={get(
+                this.props.user,
+                'kvp.image',
+                '//static.veritone.com/veritone-ui/default-avatar-2.png'
+              )}
+            />
           </div>
-          <div className={styles['username']}>
-            {get(this.props.user, 'userName')}
+          <div className={styles['user-profile']}>
+            <div className={styles['full-name']}>
+              {get(this.props.user, 'kvp.firstName')}&nbsp;
+              {get(this.props.user, 'kvp.lastName')}
+            </div>
+            <div className={styles['username']}>
+              {get(this.props.user, 'userName')}
+            </div>
+            <div className={styles['editButton']}>
+              <Button
+                raised
+                color="primary"
+                onClick={this.props.onEditProfile}
+                className="editProfileButton"
+              >
+                Edit Profile
+              </Button>
+            </div>
           </div>
-          <div className={styles['editButton']}>
-            <Button
-              raised
-              color="primary"
-              onClick={this.props.onEditProfile}
-              className="editProfileButton"
-            >
-              Edit Profile
-            </Button>
-          </div>
-        </div>
-      </ListSubheader>,
+        </ListSubheader>
 
-      <MenuItem
-        onClick={this.props.onLogout}
-        key="logout"
-        className="logoutButton"
-      >
-        <ListItemIcon>
-          <PowerIcon />
-        </ListItemIcon>
-        <ListItemText primary="Log out" />
-      </MenuItem>
-    ];
+        <MenuItem
+          onClick={this.props.onLogout}
+          key="logout"
+          className="logoutButton"
+        >
+          <ListItemIcon>
+            <PowerIcon />
+          </ListItemIcon>
+          <ListItemText primary="Log out" />
+        </MenuItem>
+      </Fragment>
+    );
   }
 }
