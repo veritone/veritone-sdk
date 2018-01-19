@@ -1,18 +1,34 @@
 <html>
-    <body>
-        <script>
-            var self = this;
-            window.onload = function() {
-                self.bindToContext = (event) => {
-                    if(event.origin === '<%= clientOrigin %>' || ( event.origin + '/' ) === '<%= clientOrigin %>') {
-                        self.origin = event.origin;
-                        self.source = event.source;
-                        event.source.postMessage({ token: '<%= oauthToken %>' }, self.origin);
-                    }
-                }
-
-                window.addEventListener('message', self.bindToContext, false);
-            }
-        </script>
-    </body>
+  <body>
+    <script>
+      var self = this;
+      window.onload = function() {
+        self.bindToContext = event => {
+          if (
+            event.origin === "<%= clientOrigin %>" ||
+            event.origin + "/" === "<%= clientOrigin %>"
+          ) {
+            self.origin = event.origin;
+            self.source = event.source;
+            event.source.postMessage({ token: "<%= oauthToken %>" }, self.origin);
+          } else if ("<%= environment %>" === "development") {
+            self.origin = event.origin;
+            self.source = event.source;
+            event.source.postMessage(
+              {
+                error: "oauth2_warning",
+                data: `There was an OAuth response, but it was rejected because the app trying to call the widget server originated at: ${
+                  event.origin
+                }. If you recognize the client trying to call the widget server, set CLIENT_ORIGIN=${
+                  event.origin
+                } in your .env.development file`
+              },
+              self.origin
+            );
+          }
+        };
+        window.addEventListener("message", self.bindToContext, false);
+      };
+    </script>
+  </body>
 </html>
