@@ -1,5 +1,5 @@
 import React from 'react';
-import { bool } from 'prop-types';
+import { bool, string } from 'prop-types';
 import { connect } from 'react-redux';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
@@ -9,13 +9,19 @@ const { user } = modules;
 import VeritoneApp from '../../shared/VeritoneApp';
 import FilePicker from '.';
 
-const app = VeritoneApp({
-  apiRoot: 'https://api.aws-dev.veritone.com'
-});
-
-class _Story extends React.Component {
+@connect(state => ({
+  userIsAuthenticated: user.userIsAuthenticated(state),
+  fetchUserFailed: user.fetchingFailed(state)
+}))
+class Story extends React.Component {
   static propTypes = {
-    userIsAuthenticated: bool
+    userIsAuthenticated: bool,
+    fetchUserFailed: bool,
+    sessionToken: string
+  };
+
+  state = {
+    result: null
   };
 
   componentDidMount() {
@@ -24,16 +30,21 @@ class _Story extends React.Component {
       id: 'p1',
       accept: ['image/*'],
       // allowUrlUpload: false
-      multiple: false
+      multiple: true
     });
   }
+
+  handleLogin = () => {
+    return app.login({ sessionToken: this.props.sessionToken });
+  };
 
   handlePick = () => {
     this._picker.pick(this.handlePickResult, this.handleCancelledPick);
   };
 
-  handlePickResult = (...args) => {
-    console.log('Result: ', args);
+  handlePickResult = files => {
+    this.setState({ result: files });
+    console.log('Result: ', files);
   };
 
   handleCancelledPick = () => {
@@ -41,44 +52,57 @@ class _Story extends React.Component {
   };
 
   render() {
-    const disabled = !this.props.userIsAuthenticated;
-
     return (
       <span>
+        {this.props.fetchUserFailed &&
+          'failed to log in-- is your token wrong?'}
+        {!this.props.userIsAuthenticated && (
+          <button
+            onClick={this.handleLogin}
+            disabled={!this.props.sessionToken}
+          >
+            {this.props.sessionToken
+              ? 'Log In'
+              : 'Log In (Please set a token in the "Knobs" panel below)'}
+          </button>
+        )}
+
         <span id="file-picker-widget" />
-        <button disabled={disabled} onClick={this.handlePick}>
-          {disabled ? 'Pick files (Log in first)' : 'Pick files'}
-        </button>
+
+        {this.props.userIsAuthenticated && (
+          <button
+            disabled={!this.props.userIsAuthenticated}
+            onClick={this.handlePick}
+          >
+            Pick files
+          </button>
+        )}
+
+        {this.state.result && (
+          <pre>
+            Result:
+            {JSON.stringify(this.state.result, null, '\t')}
+          </pre>
+        )}
       </span>
     );
   }
 }
 
-const Story = connect(state => ({
-  userIsAuthenticated: user.userIsAuthenticated(state)
-}))(_Story);
+
+const app = VeritoneApp({
+  apiRoot: 'https://api.aws-dev.veritone.com'
+});
+
+
 
 storiesOf('FilePickerWidget', module).add('Base', () => {
   const sessionToken = text('Api Session Token', '');
 
-  function login() {
-    return app.login({ sessionToken });
-  }
-
   return (
-    <div>
-      <p>
-        1.&nbsp;
-        <button onClick={login} disabled={!sessionToken}>
-          {sessionToken
-            ? 'Log In'
-            : 'Log In (Please set a token in the "Knobs" panel below)'}
-        </button>
-      </p>
-      <p>
-        2.&nbsp;
-        <Story disabled={!!sessionToken} store={app._store} />
-      </p>
-    </div>
+    <Story
+      sessionToken={sessionToken}
+      store={app._store}
+    />
   );
 });
