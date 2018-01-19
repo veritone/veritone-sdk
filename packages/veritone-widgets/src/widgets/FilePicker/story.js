@@ -27,7 +27,6 @@ class Story extends React.Component {
   componentDidMount() {
     this._picker = new FilePicker({
       elId: 'file-picker-widget',
-      id: 'p1',
       accept: ['image/*'],
       // allowUrlUpload: false
       multiple: true

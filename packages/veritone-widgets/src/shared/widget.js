@@ -1,4 +1,5 @@
 import { forOwn } from 'lodash';
+import { guid } from './util';
 import VeritoneApp from './VeritoneApp';
 
 export default function widget(Component) {
@@ -7,6 +8,7 @@ export default function widget(Component) {
       this._elId = elId;
       this._props = props;
       this._app = VeritoneApp(null, { _isWidget: true });
+      this._id = guid();
 
       if (this._app) {
         this._app._register(this);
@@ -33,7 +35,10 @@ export default function widget(Component) {
     }
 
     get props() {
-      return this._props;
+      return {
+        ...this._props,
+        _widgetId: this._id
+      };
     }
   };
 }

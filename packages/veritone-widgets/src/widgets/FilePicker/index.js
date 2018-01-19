@@ -9,14 +9,14 @@ import * as filePickerModule from '../../redux/modules/filePicker';
 import widget from '../../shared/widget';
 
 @connect(
-  (state, { id }) => ({
-    open: filePickerModule.isOpen(state, id),
-    pickerState: filePickerModule.state(state, id),
-    progressPercent: filePickerModule.progressPercent(state, id),
-    success: filePickerModule.didSucceed(state, id),
-    error: filePickerModule.didError(state, id),
-    warning: filePickerModule.didWarn(state, id),
-    statusMessage: filePickerModule.statusMessage(state, id)
+  (state, { _widgetId }) => ({
+    open: filePickerModule.isOpen(state, _widgetId),
+    pickerState: filePickerModule.state(state, _widgetId),
+    progressPercent: filePickerModule.progressPercent(state, _widgetId),
+    success: filePickerModule.didSucceed(state, _widgetId),
+    error: filePickerModule.didError(state, _widgetId),
+    warning: filePickerModule.didWarn(state, _widgetId),
+    statusMessage: filePickerModule.statusMessage(state, _widgetId)
   }),
   {
     pick: filePickerModule.pick,
@@ -28,7 +28,7 @@ import widget from '../../shared/widget';
 )
 class FilePickerWidget extends React.Component {
   static propTypes = {
-    id: string.isRequired,
+    _widgetId: string.isRequired,
     open: bool,
     pick: func,
     endPick: func,
@@ -47,16 +47,16 @@ class FilePickerWidget extends React.Component {
   pick = (callback = noop, onCancelCallback = noop) => {
     this.pickCallback = callback;
     this.onCancelCallback = onCancelCallback;
-    this.props.pick(this.props.id);
+    this.props.pick(this.props._widgetId);
   };
 
   cancel = () => {
-    this.props.endPick(this.props.id);
+    this.props.endPick(this.props._widgetId);
     this.onCancelCallback();
   };
 
   _onFilesSelected = files => {
-    this.props.uploadRequest(this.props.id, files, this.pickCallback);
+    this.props.uploadRequest(this.props._widgetId, files, this.pickCallback);
   };
 
   _renderPickerDialog = () => {
@@ -64,7 +64,6 @@ class FilePickerWidget extends React.Component {
       <Dialog open={this.props.open}>
         <FilePicker
           {...this.props}
-          // fixme -- differentiate between cancel and closing because picking is done
           onRequestClose={this.cancel}
           onPickFiles={this._onFilesSelected}
         />
