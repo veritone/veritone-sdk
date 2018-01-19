@@ -127,7 +127,7 @@ export default class AppBar extends React.Component {
               </div>
             )}
           </div>
-        </div>.
+        </div>
       </Paper>
     );
   }
