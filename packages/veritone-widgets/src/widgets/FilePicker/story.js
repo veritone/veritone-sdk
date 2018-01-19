@@ -34,6 +34,10 @@ class Story extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    this._picker.destroy();
+  }
+
   handleLogin = () => {
     return app.login({ sessionToken: this.props.sessionToken });
   };
@@ -93,7 +97,6 @@ class Story extends React.Component {
 const app = VeritoneApp({
   apiRoot: 'https://api.aws-dev.veritone.com'
 });
-
 
 
 storiesOf('FilePickerWidget', module).add('Base', () => {
