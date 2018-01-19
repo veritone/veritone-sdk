@@ -49,7 +49,6 @@ class _VeritoneApp {
   }
 
   _handleLoginResponse(actions) {
-    console.log(actions, actions.some(a => a.error))
     return actions.some(a => a.error) ? Promise.reject(actions) : actions;
   }
 
