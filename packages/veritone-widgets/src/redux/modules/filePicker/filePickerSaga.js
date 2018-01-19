@@ -20,7 +20,7 @@ import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
 function* finishUpload(id, result, { warn, error }, callback) {
   yield put(uploadComplete(id, result, { warn, error }));
   // fixme -- handle this better
-  yield call(delay, 1500);
+  yield call(delay, warn || error ? 1500 : 500);
   yield put(endPick(id));
   yield call(callback, result);
 }
