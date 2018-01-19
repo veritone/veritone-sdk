@@ -16,7 +16,7 @@ See the docs on authentication at https://veritone-developer.atlassian.net/
 // in a browser:
 import veritoneApi from 'veritone-client-js/dist/bundle-browser'
 // in Node:
-import veritoneApi from 'veritone-client-js/dist/bundle-node'
+const veritoneApi = require('veritone-client-js/dist/bundle-node')
 
 const client = veritoneApi({
 	// requires either session AND api tokens (from user object):
