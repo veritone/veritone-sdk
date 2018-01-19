@@ -29,7 +29,7 @@ passport.use(new Strategy({
 }));
 
 const oauthError = (err, req, res, next) => {
-  const errorMessage = err.message || 'Unknown OAuth2 error from the Veritone backend';
+  const errorMessage = err.message || err.toString() || 'Unknown Passport-Veritone error';
   res.render('oauth_error', { clientOrigin: settings.clientOrigin, environment: settings.environment, error: errorMessage });
   next();
 };
