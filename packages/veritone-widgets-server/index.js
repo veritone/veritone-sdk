@@ -9,7 +9,7 @@ const app = express();
 dotenv.config({ path: '.env.development' });
 
 const settings = {
-  host: process.env.HOST || '127.0.0.1',
+  environment: process.env.NODE_ENV || 'development',
   port: process.env.NODE_PORT || 5001,
   clientOrigin: process.env.CLIENT_ORIGIN,
   clientId: process.env.CLIENT_ID,
@@ -27,9 +27,10 @@ passport.use(new Strategy({
 }, function(accessToken, refreshToken, profile, done) {
   return done(null, profile);
 }));
+
 const oauthError = (err, req, res, next) => {
-  console.log("Passport-Veritone OAuth2 Error", err);
-  res.render('oauth_error', { clientOrigin: settings.clientOrigin });
+  const errorMessage = err.message || err.toString() || 'Unknown Passport-Veritone error';
+  res.render('oauth_error', { clientOrigin: settings.clientOrigin, environment: settings.environment, error: errorMessage });
   next();
 };
 
@@ -44,7 +45,8 @@ app.get(
     }
     res.render('oauth', {
       oauthToken: req.user.oauthToken,
-      clientOrigin: settings.clientOrigin
+      clientOrigin: settings.clientOrigin,
+      environment: settings.environment,
     });
   }
 );
@@ -53,10 +55,10 @@ app.use(oauthError);
 
 // start server
 // --------------------------------
-app.listen(settings.port, settings.host, err => {
+app.listen(settings.port, err => {
   if (err) {
     console.log(err);
     return;
   }
-  console.log('🐬  Veritone-widgets-server is listening at http://%s:%s', settings.host, settings.port);
+  console.log('🐬  Veritone-widgets-server is listening at on port %s', settings.port);
 });
