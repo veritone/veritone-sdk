@@ -31,7 +31,7 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
       if (message && message.error) {
         removeAuthWindowListener();
         cleanupAuthWindow();
-        reject(new Error('Veritone OAuth2 Error'));
+        reject(new Error('Veritone OAuth2 Error: ' + message.data));
         return;
       }
 
@@ -41,6 +41,7 @@ const createAuthWindowListener = (OAuthURI, resolve, reject) => {
         removeAuthWindowListener();
         cleanupAuthWindow();
         resolve({ OAuthToken: _OAuthToken });
+        return;
       }
     }
   };

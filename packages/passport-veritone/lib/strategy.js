@@ -48,7 +48,7 @@ Strategy.prototype.userProfile = function(accessToken, done) {
     try {
       json = JSON.parse(body)
     } catch (ex) {
-      return done(new Error('Failed to parse current user'))
+      return done(new Error('Failed to parse current user', ex))
     }
 
     var profile = json
