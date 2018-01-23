@@ -4,11 +4,7 @@ export const getBaseMiddlewares = () => [apiMiddleware(fetch)];
 
 export const getDevOnlyMiddlewares = () => {
   if (process.env.NODE_ENV !== 'production') {
-    return [
-      require('redux-validate-fsa')(),
-      require('redux-immutable-state-invariant').default(),
-      require('redux-logger').createLogger({ collapsed: true })
-    ];
+    return [require('redux-logger').createLogger({ collapsed: true })];
   }
 };
 

@@ -8,6 +8,7 @@ import { modules } from 'veritone-redux-common';
 const { user } = modules;
 
 import VeritoneApp from '../../shared/VeritoneApp';
+import OAuthLoginButton from '../OAuthLoginButton';
 import AppBarWidget from './';
 
 @connect(state => ({
@@ -22,6 +23,11 @@ class Story extends React.Component {
   };
 
   componentDidMount() {
+    this._oauthButton = new OAuthLoginButton({
+      elId: 'login-button-widget',
+      OAuthURI: 'http://localhost:5001/auth/veritone'
+    });
+
     this._appBar = new AppBarWidget({
       elId: 'appBar-widget',
       title: 'AppBar Widget',
@@ -32,6 +38,7 @@ class Story extends React.Component {
 
   componentWillUnmount() {
     this._appBar.destroy();
+    this._oauthButton.destroy();
   }
 
   handleLogin = () => {
@@ -48,14 +55,22 @@ class Story extends React.Component {
             'failed to log in-- is your token wrong?'}
 
           {!this.props.userIsAuthenticated && (
-            <button
-              onClick={this.handleLogin}
-              disabled={!this.props.sessionToken}
-            >
-              {this.props.sessionToken
-                ? 'Log In'
-                : 'Log In (Please set a token in the "Knobs" panel below)'}
-            </button>
+            <div>
+              <p>
+                <button
+                  onClick={this.handleLogin}
+                  disabled={!this.props.sessionToken}
+                >
+                  {this.props.sessionToken
+                    ? 'Log In via session token'
+                    : 'Log In via session token (Please set a token in the "Knobs" panel below)'}
+                </button>
+              </p>
+              or log in via oauth:
+              <p>
+                <span id="login-button-widget" />
+              </p>
+            </div>
           )}
         </AppContainer>
       </div>
@@ -63,9 +78,7 @@ class Story extends React.Component {
   }
 }
 
-const app = VeritoneApp({
-  apiRoot: 'https://api.aws-dev.veritone.com'
-});
+const app = VeritoneApp();
 
 storiesOf('AppBar', module).add('Base', () => {
   const sessionToken = text('Api Session Token', '');

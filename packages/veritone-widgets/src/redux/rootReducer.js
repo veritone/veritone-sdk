@@ -8,8 +8,10 @@ import filePickerReducer, {
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
-  auth: { reducer: authReducer, namespace: authNamespace },
+  auth: { reducer: authReducer, namespace: authNamespace }
 } = modules;
+
+import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
 
 export default function createReducer(asyncReducers) {
   return combineReducers({
@@ -17,6 +19,7 @@ export default function createReducer(asyncReducers) {
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
+    [appNamespace]: appReducer,
     ...asyncReducers
   });
 }

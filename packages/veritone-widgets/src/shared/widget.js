@@ -25,7 +25,8 @@ export default function widget(Component) {
       forOwn(ref, (value, key) => {
         try {
           Object.defineProperty(this, key, { value });
-        } catch (e) { /* */
+        } catch (e) {
+          /* */
         }
       });
     }

@@ -17,15 +17,15 @@ import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
 
-function* finishUpload(id, result, { warn, error }, callback) {
-  yield put(uploadComplete(id, result, { warn, error }));
+function* finishUpload(id, result, { warning, error }, callback) {
+  yield put(uploadComplete(id, result, { warning, error }));
   // fixme -- handle this better
-  yield call(delay, warn || error ? 1500 : 500);
+  yield call(delay, warning || error ? 1500 : 500);
   yield put(endPick(id));
-  yield call(callback, result);
+  yield call(callback, result, { warning, error, cancelled: false });
 }
 
-export function* uploadFileSaga(id, fileOrFiles, callback = noop) {
+function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
   const getUrlQuery = `query urls($name: String!){
         getSignedWritableUrl(key: $name) {
@@ -119,14 +119,14 @@ export function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     id,
     result,
     {
-      warn: isWarning ? 'Some files failed to upload.' : false,
+      warning: isWarning ? 'Some files failed to upload.' : false,
       error: isError ? 'All files failed to upload.' : false
     },
     callback
   );
 }
 
-export function* watchUploadRequest() {
+function* watchUploadRequest() {
   yield takeEvery(UPLOAD_REQUEST, function*(action) {
     const { files, callback } = action.payload;
     const { id } = action.meta;

@@ -1,30 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isFunction, without } from 'lodash';
+import { isFunction } from 'lodash';
 import { Provider } from 'react-redux';
 
 import { modules } from 'veritone-redux-common';
-const { auth: authModule, user: userModule, config: configModule } = modules;
+const { auth: authModule, config: configModule } = modules;
 
+import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 
 class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
-  _widgets = [];
 
-  constructor(config = appConfig) {
+  constructor(config) {
     this._store.dispatch(configModule.setConfig({ ...appConfig, ...config }));
   }
 
   _register(widget) {
-    this._widgets.push(widget);
+    this._store.dispatch(appModule.widgetAdded(widget));
     this._renderReactApp();
   }
 
   _unregister(widget) {
-    this._widgets = without(this._widgets, widget);
+    this._store.dispatch(appModule.widgetRemoved(widget));
     this._renderReactApp();
   }
 
@@ -38,18 +38,6 @@ class _VeritoneApp {
     if (OAuthToken) {
       this._store.dispatch(authModule.setOAuthToken(OAuthToken));
     }
-
-
-    // fixme -- can we be smarter about this? maybe each widget has a saga
-    // to define its login dependencies?
-    return Promise.all([
-      this._store.dispatch(userModule.fetchUser()),
-      this._store.dispatch(userModule.fetchEnabledApps())
-    ]).then(this._handleLoginResponse);
-  }
-
-  _handleLoginResponse(actions) {
-    return actions.some(a => a.error) ? Promise.reject(actions) : actions;
   }
 
   destroy() {
@@ -101,18 +89,20 @@ class _VeritoneApp {
     ReactDOM.render(
       <Provider store={this._store}>
         <div>
-          {this._widgets.map(w =>
-            ReactDOM.createPortal(
-              <w.Component
-                {...w.props}
-                // bind is OK because this isn't a component -- only renders
-                // when mount() is called.
-                // eslint-disable-next-line
-                ref={this.setWidgetRef.bind(this, w)}
-              />,
-              document.getElementById(w._elId)
-            )
-          )}
+          {appModule.widgets(this._store.getState()).map(w => {
+            if (document.getElementById(w._elId)) {
+              return ReactDOM.createPortal(
+                <w.Component
+                  {...w.props}
+                  // bind is OK because this isn't a component -- only renders
+                  // when mount() is called.
+                  // eslint-disable-next-line
+                  ref={this.setWidgetRef.bind(this, w)}
+                />,
+                document.getElementById(w._elId)
+              );
+            }
+          })}
         </div>
       </Provider>,
       this._containerEl
@@ -138,4 +128,3 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
 
   return _appSingleton;
 }
-

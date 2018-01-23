@@ -1,5 +1,5 @@
 import React from 'react';
-import { noop } from 'lodash'
+import { noop } from 'lodash';
 import { bool, func, oneOf, number, string } from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
@@ -42,17 +42,15 @@ class FilePickerWidget extends React.Component {
   };
 
   pickCallback = noop;
-  onCancelCallback = noop;
 
-  pick = (callback = noop, onCancelCallback = noop) => {
+  pick = (callback = noop) => {
     this.pickCallback = callback;
-    this.onCancelCallback = onCancelCallback;
     this.props.pick(this.props._widgetId);
   };
 
   cancel = () => {
     this.props.endPick(this.props._widgetId);
-    this.onCancelCallback();
+    this.pickCallback(null, { cancelled: true });
   };
 
   _onFilesSelected = files => {

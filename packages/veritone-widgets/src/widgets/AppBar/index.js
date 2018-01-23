@@ -1,10 +1,12 @@
+import React from 'react';
+import { func } from 'prop-types';
 import { connect } from 'react-redux';
-import { AppBar } from 'veritone-react-common';
-import { modules } from 'veritone-redux-common'
+import { AppBar as LibAppBar } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
 const { user } = modules;
 import widget from '../../shared/widget';
 
-const connectedAppBar = connect(
+@connect(
   state => ({
     user: user.selectUser(state),
     enabledApps: user.selectEnabledApps(state),
@@ -14,6 +16,23 @@ const connectedAppBar = connect(
   { fetchEnabledApps: user.fetchEnabledApps },
   null,
   { withRef: true }
-)(AppBar);
+)
+class AppBar extends React.Component {
+  static propTypes = {
+    fetchEnabledApps: func
+  };
 
-export default widget(connectedAppBar);
+  componentDidMount() {
+    this.props.fetchEnabledApps();
+  }
+
+  veritoneAppDidAuthenticate = () => {
+    this.props.fetchEnabledApps();
+  };
+
+  render() {
+    return <LibAppBar {...this.props} />;
+  }
+}
+
+export default widget(AppBar);
