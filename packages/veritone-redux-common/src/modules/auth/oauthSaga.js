@@ -2,7 +2,6 @@
 import { login } from 'veritone-oauth-helpers';
 import { call, put, takeLatest, fork, all } from 'redux-saga/effects';
 
-import * as userModule from '../user'
 import * as authModule from '../auth'
 
 
@@ -18,7 +17,6 @@ function* requestOAuthGrant({ payload: { OAuthURI } }) {
     return;
   }
 
-  yield put.resolve(userModule.fetchUser({ token }));
   yield put(authModule.OAuthGrantSuccess({ OAuthToken: token }));
 }
 
