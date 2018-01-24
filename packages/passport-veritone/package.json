@@ -1,6 +1,6 @@
 {
   "name": "passport-veritone",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Passport auth strategy for Veritone oauth.",
   "keywords": [
     "passport",
