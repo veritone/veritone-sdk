@@ -23,7 +23,7 @@
   
   * Trying to render a widget with its elId set to an element that is not currently in the document will no longer throw an error. This should help in cases where the element needs to be shown or hidden by app code.
   
-  * VeritoneApp will now call the method veritoneAppDidAuthenticare() on a widget, if such a method exists, when the app (re-)authenticates. This gives widgets a hook from
+  * VeritoneApp will now call the method veritoneAppDidAuthenticate() on a widget, if such a method exists, when the app (re-)authenticates. This gives widgets a hook from
     which they can fetch data depencies, knowing auth is available or has changed. Widgets should also do this in componentDidMount(), to handle the case where the app is already authenticated. (see widgets/AppBar for an example)
 
 * rework stories to make them more useable and instructive.
