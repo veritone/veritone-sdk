@@ -5,3 +5,29 @@
 
 ## 1.0.1
 * fix bad publish in 1.0.0
+
+## 2.0.0
+* FilePicker: 
+  * ensure endPick() is always called to close the dialog, even when file uploads fail.
+  * include original filenames (without server-added UUID) in result payload at the fileName key.
+  * (breaking) encode resulting s3 resource URLs with encodeUri
+  * change signature of result callback to include information about warnings (some file(s) failed to upload), errors (all files failed to upload), and whether the user cancelled the picking flow by closing the dialog:
+
+    ```
+    (results: object[], { warning: string, error: string, cancelled: bool })
+    ```
+  * refactor to allow multiple instances of a filepicker to share the same page and app.
+
+* VeritoneApp:
+  * (breaking) rework veritoneApp.login. It should now be called with either { sessionToken } or { OAuthToken }, instead of the generic { token } param before. If called without a token, the request will be made using a cookie, if one exists. If you need an OAuth token, use the OAuthLoginButton widget (see the various stories in the widgets/ folder for examples)
+  
+  * Trying to render a widget with its elId set to an element that is not currently in the document will no longer throw an error. This should help in cases where the element needs to be shown or hidden by app code.
+  
+  * VeritoneApp will now call the method veritoneAppDidAuthenticare() on a widget, if such a method exists, when the app (re-)authenticates. This gives widgets a hook from
+    which they can fetch data depencies, knowing auth is available or has changed. Widgets should also do this in componentDidMount(), to handle the case where the app is already authenticated. (see widgets/AppBar for an example)
+
+* rework stories to make them more useable and instructive.
+
+* refactor to use the new redux-common auth reducer move oauth grant flow code into redux-common so it can be reused.
+
+

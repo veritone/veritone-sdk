@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "dependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.26.0",
