@@ -18,6 +18,10 @@
     ```
   * refactor to allow multiple instances of a filepicker to share the same page and app.
 
+* AppBar:
+  * fetch the user's applications (in appswitcher) correctly.
+  * render the profile menu correctly when no user is present.
+
 * VeritoneApp:
   * (breaking) rework veritoneApp.login. It should now be called with either { sessionToken } or { OAuthToken }, instead of the generic { token } param before. If called without a token, the request will be made using a cookie, if one exists. If you need an OAuth token, use the OAuthLoginButton widget (see the various stories in the widgets/ folder for examples)
   
