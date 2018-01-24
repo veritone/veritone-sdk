@@ -22,3 +22,12 @@ This allows redux-common to use more than one version of the API.
 > Previously: apiRoot: 'https://api.veritone.com/v1'
 
 > Now: apiRoot: 'https://api.veritone.com‘
+
+## 2.1.0
+* add an auth reducer to handle session and oauth tokens. Refactors stuff to use that rather than the user module.
+
+* add oauth grant flow that was previously in veritone-widgets
+
+* bump React to 16.2.0
+
+* remove minification from bundle for easier dev and debugging.

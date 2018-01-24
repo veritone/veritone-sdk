@@ -137,6 +137,9 @@ describe('user module actions', function() {
       const store = mockStore({
         config: {
           apiRoot: 'http://www.test.com'
+        },
+        auth: {
+          sessionToken: '123'
         }
       });
 
@@ -145,26 +148,6 @@ describe('user module actions', function() {
         .reply(200);
 
       return store.dispatch(userModule.fetchUser()).then(() => api.done());
-    });
-
-    it('passes a session token through headers.Authorization if provided', function() {
-      const store = mockStore({
-        config: {
-          apiRoot: 'http://www.test.com'
-        }
-      });
-
-      const api = nock('http://www.test.com', {
-        reqheaders: {
-          authorization: 'Bearer my-test-token'
-        }
-      })
-        .get(/user/)
-        .reply(200);
-
-      return store
-        .dispatch(userModule.fetchUser({ token: 'my-test-token' }))
-        .then(() => api.done());
     });
   });
 });
