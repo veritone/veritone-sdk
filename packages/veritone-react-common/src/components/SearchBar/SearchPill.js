@@ -20,6 +20,8 @@ const SearchPill = ({ engineIconClass, label, remove, open }) => (
     className={searchPillClass}
     classes={{ label: searchPillLabelClass, deleteIcon: deleteIconClass }}
     onRequestDelete={remove}
+    onFocus={ () => console.log("focused") }
+    onKeyPress={ () => console.log("should delete the pill") }
     onClick={open}
   />
 );

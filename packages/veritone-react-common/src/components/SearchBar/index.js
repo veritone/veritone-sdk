@@ -38,6 +38,17 @@ const searchInputContainerClass = cx(styles['searchInput']);
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
+
+const InputCursor = () => {
+  const keyPress = (event) => {
+    console.log(event.keyCode);
+  }
+  return (
+    <input value="" onKeyDown={ keyPress } type="text" size="1" style={ { width: "10px", border: "1px solid black" } } />
+  )
+};
+
+
 const SearchBar = ({
   color,
   searchParameters,
@@ -45,11 +56,11 @@ const SearchBar = ({
   addPill,
   openPill,
   removePill,
-  onSearch,
   onChangePill
 }) => (
   <div className={containerClasses}>
-    <div className={searchInputContainerClass} onClick={onSearch}>
+    <div className={searchInputContainerClass}>
+      <InputCursor />
       {searchParameters.map(searchPill => {
         // get the functions associated with the search pill's engine category
         const searchParameterEngine = enabledEngineCategories.find(
@@ -62,15 +73,17 @@ const SearchBar = ({
         const remove = () => removePill(searchPill.id);
         const open = () => openPill(searchPill);
 
-        return (
+        return [
           <SearchPill
+            onFocus={(evt) => console.log(evt)}
             key={searchPill.id}
             engineIconClass={searchParameterEngine.iconClass}
             label={abbreviation}
             open={open}
             remove={remove}
-          />
-        );
+          />,
+          <InputCursor />
+        ];
       })}
     </div>
     <div className={supportedCategoriesClass}>
