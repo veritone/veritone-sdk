@@ -34,4 +34,9 @@
 
 * refactor to use the new redux-common auth reducer move oauth grant flow code into redux-common so it can be reused.
 
+## 2.0.1
+* FilePicker:
+  * fix s3 bucket url in result.
+  * add `bucket` param to result objects.
+
 
