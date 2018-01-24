@@ -102,9 +102,10 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
         size: file.size,
         type: file.type,
         error: error || false,
+        bucket,
         url: error
           ? null
-          : window.encodeURI(`https://${bucket}.s3.amazonaws.com/${key}`)
+          : window.encodeURI(`https://s3.amazonaws.com/${bucket}/${key}`)
       });
       continue;
     }
