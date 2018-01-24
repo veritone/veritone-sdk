@@ -27,7 +27,7 @@ class Story extends React.Component {
 
   componentDidMount() {
     this._oauthButton = new OAuthLoginButton({
-      elId: 'login-button-widget-asdf',
+      elId: 'login-button-widget',
       OAuthURI: 'http://localhost:5001/auth/veritone'
     });
 
@@ -100,7 +100,7 @@ class Story extends React.Component {
             </p>
             or log in via oauth:
             <p>
-              <span id="login-button-widget-asdf" />
+              <span id="login-button-widget" />
             </p>
           </div>
         )}
