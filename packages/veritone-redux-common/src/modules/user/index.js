@@ -8,6 +8,7 @@ import {
 import { commonHeaders } from 'helpers/api';
 import { createReducer } from 'helpers/redux';
 import { getConfig } from 'modules/config';
+import { selectSessionToken } from 'modules/auth';
 
 export const namespace = 'user';
 
@@ -186,25 +187,15 @@ function local(state) {
   return state[namespace];
 }
 
-export function fetchUser({ token } = {}) {
-  let apiCall = {
+export function fetchUser() {
+  return {
     [CALL_API]: {
       types: [FETCH_USER, FETCH_USER_SUCCESS, FETCH_USER_FAILURE],
       endpoint: state => `${getConfig(state).apiRoot}/v1/admin/current-user`,
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
+      headers: commonHeaders
     }
   };
-
-  if (token) {
-    apiCall[CALL_API].headers.Authorization = `Bearer ${token}`;
-  }
-
-  return apiCall;
 }
 
 export function login({ userName, password }) {
@@ -295,14 +286,6 @@ export function selectUser(state) {
 
 export function selectUserOrganizationKvp(state) {
   return get(local(state).user, 'organization.kvp');
-}
-
-export function selectSessionToken(state) {
-  return get(local(state), 'user.token');
-}
-
-export function selectApiToken(state) {
-  return get(local(state), 'user.apiToken');
 }
 
 export function enabledAppsFailedLoading(state) {

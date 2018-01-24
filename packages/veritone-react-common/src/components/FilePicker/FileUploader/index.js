@@ -13,7 +13,8 @@ const boxTarget = {
   drop(props, monitor) {
     const droppedFiles = monitor.getItem().files;
     const allowableDroppedFiles = droppedFiles.filter(({ type }) => {
-      // only accept dropped files of the correct type.
+      // only accept dropped files of the correct type. This tries to duplicate
+      // the functionality of the html5 file input.
 
       return (
         props.acceptedFileTypes.includes(type) ||
@@ -84,7 +85,8 @@ class FileUploader extends Component {
 
     const readableTypeNames = {
       'video/*': 'video',
-      'audio/*': 'audio'
+      'audio/*': 'audio',
+      'image/*': 'image',
     };
     const readableTypes = acceptedFileTypes
       .map(t => readableTypeNames[t] || mime.extension(t) || t)

@@ -11,18 +11,21 @@ import { delay } from 'redux-saga';
 import { isArray, noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
-const { user: userModule, config: configModule } = modules;
+const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
 
-function* finishUpload(result, { warn, error }, callback) {
-  yield put(uploadComplete(result, { warn, error }));
-  yield call(callback, result);
+function* finishUpload(id, result, { warning, error }, callback) {
+  yield put(uploadComplete(id, result, { warning, error }));
+  // fixme -- handle this better
+  yield call(delay, warning || error ? 1500 : 500);
+  yield put(endPick(id));
+  yield call(callback, result, { warning, error, cancelled: false });
 }
 
-export function* uploadFileSaga(fileOrFiles, callback = noop) {
+function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
   const getUrlQuery = `query urls($name: String!){
         getSignedWritableUrl(key: $name) {
@@ -35,7 +38,7 @@ export function* uploadFileSaga(fileOrFiles, callback = noop) {
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(userModule.selectSessionToken);
+  const token = yield select(authModule.selectSessionToken);
 
   // get a signed URL for each object to be uploaded
   let signedWritableUrlResponses;
@@ -52,7 +55,7 @@ export function* uploadFileSaga(fileOrFiles, callback = noop) {
       )
     );
   } catch (error) {
-    return yield* finishUpload(null, { error }, callback);
+    return yield* finishUpload(id, null, { error }, callback);
   }
 
   let uploadDescriptors; // { url, key, bucket }
@@ -69,14 +72,14 @@ export function* uploadFileSaga(fileOrFiles, callback = noop) {
       }
     );
   } catch (e) {
-    return yield* finishUpload(null, { error: e.message }, callback);
+    return yield* finishUpload(id, null, { error: e.message }, callback);
   }
 
   let resultChan;
   try {
     resultChan = yield call(uploadFilesChannel, uploadDescriptors, files);
   } catch (error) {
-    return yield* finishUpload(null, { error }, callback);
+    return yield* finishUpload(id, null, { error }, callback);
   }
 
   let result = [];
@@ -91,42 +94,43 @@ export function* uploadFileSaga(fileOrFiles, callback = noop) {
     } = yield take(resultChan);
 
     if (success || error) {
-      yield put(uploadProgress(key, 100));
+      yield put(uploadProgress(id, key, 100));
 
       result.push({
         name: key,
+        fileName: file.name,
         size: file.size,
         type: file.type,
         error: error || false,
-        url: error ? null : `https://${bucket}.s3.amazonaws.com/${key}`
+        url: error
+          ? null
+          : window.encodeURI(`https://${bucket}.s3.amazonaws.com/${key}`)
       });
       continue;
     }
 
-    yield put(uploadProgress(key, progress));
+    yield put(uploadProgress(id, key, progress));
   }
 
   const isError = result.every(e => e.error);
   const isWarning = !isError && result.some(e => e.error);
 
   yield* finishUpload(
+    id,
     result,
     {
-      warn: isWarning ? 'Some files failed to upload.' : false,
+      warning: isWarning ? 'Some files failed to upload.' : false,
       error: isError ? 'All files failed to upload.' : false
     },
     callback
   );
-
-  // fixme -- only do this on success. on failure, wait for user to ack.
-  yield call(delay, 3000);
-  yield put(endPick());
 }
 
-export function* watchUploadRequest() {
+function* watchUploadRequest() {
   yield takeEvery(UPLOAD_REQUEST, function*(action) {
     const { files, callback } = action.payload;
-    yield call(uploadFileSaga, files, callback);
+    const { id } = action.meta;
+    yield call(uploadFileSaga, id, files, callback);
   });
 }
 

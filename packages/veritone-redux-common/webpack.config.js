@@ -1,5 +1,4 @@
 const path = require('path');
-const MinifyPlugin = require("babel-minify-webpack-plugin");
 
 module.exports = {
   entry: { 'veritone-redux-common': path.join(__dirname, './src/index.js') },
@@ -17,7 +16,6 @@ module.exports = {
     },
   },
   plugins: [
-    new MinifyPlugin()
   ],
   module: {
     // noParse: [],

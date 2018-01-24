@@ -1,54 +1,43 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { isFunction, without } from 'lodash';
+import { isFunction } from 'lodash';
 import { Provider } from 'react-redux';
 
 import { modules } from 'veritone-redux-common';
-const { user: userModule, config: configModule } = modules;
+const { auth: authModule, config: configModule } = modules;
 
+import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 
 class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
-  _widgets = [];
 
-  constructor(config = appConfig) {
+  constructor(config) {
     this._store.dispatch(configModule.setConfig({ ...appConfig, ...config }));
   }
 
   _register(widget) {
-    this._widgets.push(widget);
+    this._store.dispatch(appModule.widgetAdded(widget));
     this._renderReactApp();
   }
 
   _unregister(widget) {
-    this._widgets = without(this._widgets, widget);
+    this._store.dispatch(appModule.widgetRemoved(widget));
     this._renderReactApp();
   }
 
-  // auth can follow two paths:
-  // 1. internal apps, make /current-user api call with appInstance.login().
-  //    this can happen automatically.
-  // 2. oauth apps, popup window flow. must be initiated by user action (clicking a button).
-  //    oauth apps must add an OAuthLoginButtonWidget and do not need to call login()
-  login({ token } = {}) {
+  login({ sessionToken, OAuthToken } = {}) {
     // todo: handle promise result
     // make sure it rejects on bad auth
-    if (token) {
-      return this._store
-        .dispatch(userModule.fetchUser({ token }))
-        .then(this._handleLoginResponse);
-    } else {
-      return this._store
-        .dispatch(userModule.fetchUser())
-        .then(this._handleLoginResponse);
+    if (sessionToken) {
+      this._store.dispatch(authModule.setSessionToken(sessionToken));
     }
-  }
 
-  _handleLoginResponse(action) {
-    return action.error ? Promise.reject(action) : action;
+    if (OAuthToken) {
+      this._store.dispatch(authModule.setOAuthToken(OAuthToken));
+    }
   }
 
   destroy() {
@@ -82,9 +71,11 @@ class _VeritoneApp {
     // try to get at the base component for @connected widgets.
     // fixme: generic solution (hoisting specified instance methods?)
     // https://github.com/elado/hoist-non-react-methods
-    widget.ref = isFunction(ref.getWrappedInstance)
+    const r = isFunction(ref.getWrappedInstance)
       ? ref.getWrappedInstance()
       : ref;
+
+    widget.setRefProperties(r);
   };
 
   _renderReactApp() {
@@ -98,18 +89,20 @@ class _VeritoneApp {
     ReactDOM.render(
       <Provider store={this._store}>
         <div>
-          {this._widgets.map(w =>
-            ReactDOM.createPortal(
-              <w.Component
-                {...w.props}
-                // bind is OK because this isn't a component -- only renders
-                // when mount() is called.
-                // eslint-disable-next-line
-                ref={this.setWidgetRef.bind(this, w)}
-              />,
-              document.getElementById(w._elId)
-            )
-          )}
+          {appModule.widgets(this._store.getState()).map(w => {
+            if (document.getElementById(w._elId)) {
+              return ReactDOM.createPortal(
+                <w.Component
+                  {...w.props}
+                  // bind is OK because this isn't a component -- only renders
+                  // when mount() is called.
+                  // eslint-disable-next-line
+                  ref={this.setWidgetRef.bind(this, w)}
+                />,
+                document.getElementById(w._elId)
+              );
+            }
+          })}
         </div>
       </Provider>,
       this._containerEl
@@ -135,4 +128,3 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
 
   return _appSingleton;
 }
-

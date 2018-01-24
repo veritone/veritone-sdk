@@ -41,7 +41,7 @@ app.get(
   passport.authenticate('veritone', { session: false }),
   (req, res) => {
     if (!settings.clientOrigin) {
-      console.error('Must specifiy the client origin for safety');
+      console.error('Must specify the client origin for safety');
     }
     res.render('oauth', {
       oauthToken: req.user.oauthToken,
