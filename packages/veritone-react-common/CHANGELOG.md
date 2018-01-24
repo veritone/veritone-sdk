@@ -20,3 +20,13 @@
   * (breaking) The filepicker now supports single-file mode and uses it by default. Set `multiple: true` to allow multi file upload
   * URL uploads can be disabled with `allowUrlUpload: false`
   * Update veritone icon stylesheet to latest version
+
+# 2.1.0
+* Appbar
+  * removes a rogue period from the component
+
+* ProfileMenu
+  * Render a "not found" menu when the user object is not available.
+
+* FilePicker
+  * add human-readable name for "image/*" accept type
