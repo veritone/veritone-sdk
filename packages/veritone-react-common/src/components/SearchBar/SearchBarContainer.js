@@ -22,16 +22,46 @@ export default class SearchBarContainer extends React.Component {
     });
   };
 
-  applyFilter = engineId => {
+  addJoiningOperator = operator => {
+    this.props.addOrModifySearchParameter({
+      value: 'AND',
+      conditionType: 'join'
+    });
+  };
+
+  removePill = (searchParameterId, searchParameters) => {
+    let index = searchParameters.findIndex(x => x.id === searchParameterId);
+    let nextJoiningParameterId =
+      searchParameters[index + 1] && searchParameters[index + 1].id;
+    this.props.removeSearchParameter(searchParameterId);
+
+    if (nextJoiningParameterId) {
+      this.props.removeSearchParameter(nextJoiningParameterId);
+    }
+  };
+
+  getRemovePill = searchParameters => {
+    return searchParameterId => {
+      this.removePill(searchParameterId, searchParameters);
+    };
+  };
+
+  getApplyFilter = (engineId, searchParameters) => {
     return parameter => {
-      if (parameter.value) {
+      if (parameter) {
         this.props.addOrModifySearchParameter({
-          ...parameter,
-          engineId: engineId,
+          value: parameter,
+          conditionType: engineId,
           id: this.state.selectedPill
         });
+
+        // if there's no selected pill, we're adding a new search parameter so add a joining operator
+        if (!this.state.selectedPill) {
+          this.addJoiningOperator('AND');
+        }
       } else {
-        this.props.removeSearchParameter(this.state.selectedPill);
+        // if there is no value in the modal, remove the search parameter and the joining operator after it
+        this.removePill(this.state.selectedPill, searchParameters);
       }
       this.setState({
         openModal: { modalId: null },
@@ -41,10 +71,11 @@ export default class SearchBarContainer extends React.Component {
   };
 
   openPill = pillState => {
+    console.log('Open pill with ', pillState);
     this.setState({
       openModal: {
-        modalId: pillState.engineId,
-        modalState: { value: pillState.value }
+        modalId: pillState.conditionType,
+        modalState: pillState.value
       },
       selectedPill: pillState.id
     });
@@ -68,8 +99,9 @@ export default class SearchBarContainer extends React.Component {
           color={this.props.color}
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
+          addJoiningOperator={this.props.addJoiningOperator}
           addPill={this.addPill}
-          removePill={this.props.removeSearchParameter}
+          removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
         />
         {Modal ? (
@@ -77,7 +109,10 @@ export default class SearchBarContainer extends React.Component {
             open
             modalState={this.state.openModal.modalState}
             cancel={this.cancelModal}
-            applyFilter={this.applyFilter(this.state.openModal.modalId)}
+            applyFilter={this.getApplyFilter(
+              this.state.openModal.modalId,
+              this.props.searchParameters
+            )}
           />
         ) : null}
       </div>

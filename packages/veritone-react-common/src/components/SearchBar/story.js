@@ -60,8 +60,9 @@ export default class SampleSearchBar extends React.Component {
         searchParameters: newSearchParameters
       }));
     } else {
-      console.log('Adding a new search parameter', parameter);
+      console.log('Existing search parameters', this.state.searchParameters);
       const newSearchParameter = { ...parameter, id: guid() };
+      console.log('Adding a new search parameter', newSearchParameter);
       this.setState(prevState => ({
         searchParameters: [...prevState.searchParameters, newSearchParameter]
       }));
@@ -96,7 +97,7 @@ export default class SampleSearchBar extends React.Component {
 
     this.state.searchParameters.map(searchParameter => {
       searchCategoryFilters.conditions.push(
-        engineCategoryMapping[searchParameter.engineId].generateCondition(
+        engineCategoryMapping[searchParameter.conditionType].generateCondition(
           searchParameter
         )
       );
