@@ -67,7 +67,7 @@ export default class TranscriptSearchModal extends React.Component {
 export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
   return (
   <div>
-    <DialogTitle>Search Transcript</DialogTitle>
+    <DialogTitle>Search by Keyword</DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <TextField
         id="transcript_search_field"
@@ -77,7 +77,7 @@ export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange
         onChange={ onChange }
         onKeyPress={ onKeyPress }
         placeholder="Phrase to search"
-        helperText="Searches within our database of transcripts."
+        helperText="Searches within our database of media transcripts."
         fullWidth
       />
     </DialogContent>
