@@ -24,7 +24,7 @@ export default class SearchBarContainer extends React.Component {
 
   addJoiningOperator = operator => {
     this.props.addOrModifySearchParameter({
-      value: 'AND',
+      value: operator || 'AND',
       conditionType: 'join'
     });
   };
@@ -46,22 +46,37 @@ export default class SearchBarContainer extends React.Component {
     };
   };
 
-  getApplyFilter = (engineId, searchParameters) => {
+
+  getLastJoiningOperator = (searchParameters) => {
+
+    for(let i = searchParameters.length - 1; i >= 0; i--) {
+      if(searchParameters[i].conditionType === 'join') {
+        console.log("Last joining operator", searchParameters[i]);
+        return searchParameters[i].value;
+      }
+    }
+    return null;
+  }
+
+  getApplyFilter = (engineId, searchParameters, searchParameterId) => {
     return parameter => {
       if (parameter) {
+        const lastJoiningOperator = this.getLastJoiningOperator(searchParameters);
+
         this.props.addOrModifySearchParameter({
           value: parameter,
           conditionType: engineId,
-          id: this.state.selectedPill
+          id: searchParameterId
         });
 
         // if there's no selected pill, we're adding a new search parameter so add a joining operator
-        if (!this.state.selectedPill) {
-          this.addJoiningOperator('AND');
+
+        if (!searchParameterId) {
+          this.addJoiningOperator(lastJoiningOperator);
         }
       } else {
         // if there is no value in the modal, remove the search parameter and the joining operator after it
-        this.removePill(this.state.selectedPill, searchParameters);
+        this.removePill(searchParameterId, searchParameters);
       }
       this.setState({
         openModal: { modalId: null },
@@ -103,6 +118,7 @@ export default class SearchBarContainer extends React.Component {
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
+          modifyPill={ this.props.addOrModifySearchParameter }
         />
         {Modal ? (
           <Modal
@@ -111,7 +127,8 @@ export default class SearchBarContainer extends React.Component {
             cancel={this.cancelModal}
             applyFilter={this.getApplyFilter(
               this.state.openModal.modalId,
-              this.props.searchParameters
+              this.props.searchParameters,
+              this.state.openModal.selectedPill
             )}
           />
         ) : null}

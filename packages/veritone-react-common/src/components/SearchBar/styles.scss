@@ -2,7 +2,7 @@
 
 .searchBar {
   width: 100%;
-  height: 38px;
+  height: 45px;
   background-color: white;
   display: flex;
   align-items: center;
@@ -28,7 +28,7 @@
   overflow-x: auto;
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 45px;
 }
 
 .engineCategoryPill {
@@ -52,6 +52,7 @@
 }
 
 .searchPill {
+  height: 30px;
   border-radius: 3px !important;
   margin-right: 3px;
   margin-left: 3px;
@@ -66,10 +67,38 @@
 }
 
 .joinOperator {
+  margin-left: 0.5em;
   padding: 0 22px 2px 0 !important;
   line-height: calc(1em + 18px) !important;
+  color: lightgrey;
+}
+
+.joinOperatorRoot {
+  border-left: 2px dashed lightgrey;
 }
 
 .joinOperatorDisabled {
   color: $grey-5;
+  align-items: center;
+  display: flex;
+}
+
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  //border-left: 2px solid blue;
+  //border-right: 2px solid blue;
+  //border-bottom: 2px solid blue;
+}
+
+.searchGroup {
+  //width: 100%;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  display: flex;
+  border-bottom: 2px solid blue;
+  align-items: center;
+  //border-right: 2px solid blue;
+  //background-color: rgba(0, 20, 60, 0.35);
 }
