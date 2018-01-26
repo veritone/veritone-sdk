@@ -11,6 +11,7 @@ import styles from './styles.scss';
 
 const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
   const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
+  const tooltipClasses = cx(styles['searchPillTooltip']);
 
   const onAddPill = () => addPill(engineCategory.id);
 
@@ -19,6 +20,7 @@ const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
       title={engineCategory.tooltip}
       placement="bottom"
       key={engineCategory.id}
+      className={cx(tooltipClasses)}
     >
       <div className={cx(engineCategoryIconClasses)} onClick={onAddPill}>
         <Icon iconClass={engineCategory.iconClass} color={color} />

@@ -6,6 +6,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
+    "downshift": "^1.25.0",
     "immutability-helper": "^2.5.1",
     "lodash": "^4.17.4",
     "material-ui": "v1.0.0-beta.20",
@@ -20,11 +21,12 @@
     "react-dnd-test-backend": "^2.5.4",
     "react-dom": "^16.2.0",
     "react-infinite-calendar": "^2.3.1",
+    "react-modal": "^3.1.2",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
     "redux-form-material-ui": "^5.0.0-beta.1",
-    "react-modal": "^3.1.2"
+    "rxjs": "^5.5.6"
   },
   "scripts": {
     "start": "start-storybook -p 9001 -c .storybook",

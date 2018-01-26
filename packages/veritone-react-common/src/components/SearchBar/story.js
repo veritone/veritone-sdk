@@ -8,6 +8,11 @@ import {
   TranscriptDisplay,
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
+import {
+  FaceSearchModal,
+  FaceDisplay,
+  FaceConditionGenerator
+} from 'components/FaceSearchModal';
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -19,16 +24,29 @@ const transcript = {
   enablePill: true,
   showPill: true
 };
+const face = {
+  id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
+  name: 'Face',
+  iconClass: 'icon-face',
+  tooltip: 'Search by Face',
+  enablePill: true,
+  showPill: true
+};
 
 const appBarColor = '#4caf50';
 
-const enabledEngineCategories = [transcript];
+const enabledEngineCategories = [transcript, face];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
     modal: TranscriptSearchModal,
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator
+  },
+  '6faad6b7-0837-45f9-b161-2f6bf31b7a07': {
+    modal: FaceSearchModal,
+    getLabel: FaceDisplay,
+    generateCondition: FaceConditionGenerator
   }
 };
 
@@ -174,6 +192,6 @@ storiesOf('SearchBar', module)
       </div>
     );
   })
-  .add('WithTranscriptPill', () => {
+  .add('WithAllPills', () => {
     return <SampleSearchBar />;
   });
