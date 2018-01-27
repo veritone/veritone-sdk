@@ -16,6 +16,8 @@ export default class FaceSearchModal extends React.Component {
   static propTypes = {
     open: bool,
     modalState: shape({
+      error: bool,
+      queryString: string,
       queryResults: arrayOf(
         shape({
           header: string,
@@ -51,6 +53,12 @@ export default class FaceSearchModal extends React.Component {
       this.setState(Object.assign({}, this.state, {
         queryResults: response
       }));
+    }).catch(err => {
+      console.log('Autocomplete error: ', err);
+      this.setState(Object.assign({}, this.state, {
+        error: true,
+        queryResults: []
+      }));
     })
   };
 
@@ -62,15 +70,31 @@ export default class FaceSearchModal extends React.Component {
 
   deselectPill = pill => {
     console.log('Deselected ', pill);
+    if (pill) {
+      let newState = {
+        selectedResults: this.state.selectedResults.slice(0)
+      };
+      let removeIndex = newState.selectedResults.findIndex(result => {
+        return result.id === pill.id;
+      });
+      if (removeIndex !== -1) {
+        newState.selectedResults.splice(removeIndex, 1);
+        this.setState(newState);
+      }
+    }
   };
 
   selectPill = pill => {
     console.log('Selected ', pill);
-    if (pill) {
+    let notSelected = this.state.selectedResults.findIndex(result => {
+      return result.id === pill.id;
+    }) === -1;
+    if (pill && notSelected) {
       let newState = update(this.state, {
+        queryString: { $set: '' },
         selectedResults: { $push: [pill] }
       });
-      console.log(newState);
+      console.log(newState)
       this.setState(newState);
     }
   };
@@ -122,7 +146,7 @@ export const FaceSearchForm = ( { cancel, onSubmit, onChange, onKeyPress, modalS
 )}
 
 FaceSearchModal.defaultProps = {
-  modalState: { queryResults: [], selectedResults: [] },
+  modalState: { queryResults: [], selectedResults: [], queryString: '' },
   applyFilter: value => console.log('Search faces by entityId', value),
   cancel: () => console.log('You clicked cancel')
 };

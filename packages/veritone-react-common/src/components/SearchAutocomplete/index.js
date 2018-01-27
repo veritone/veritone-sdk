@@ -95,12 +95,11 @@ class SearchAutocompleteContainer extends React.Component {
         </div>
         <div>
           <SearchAutocompleteTextField
-            defaultValue={ this.props.componentState.queryString }
             cancel={ this.props.cancel }
             applyFilter={ this.props.applyFilter }
             onChange={ this.props.onChange }
             onKeyPress={ this.onEnter }
-            inputValue={ this.state.queryString }
+            inputValue={ this.props.componentState.queryString }
           />
         </div>
         <div>
@@ -114,21 +113,21 @@ class SearchAutocompleteContainer extends React.Component {
   }
 }
 
-const SearchAutocompleteTextField = ({ defaultValue, cancel, applyFilter, onChange, onKeyPress, inputValue }) => {
+const SearchAutocompleteTextField = ({ cancel, applyFilter, onChange, onKeyPress, inputValue }) => {
   return (
     <div>
       <TextField
         id="search_autocomplete_input"
         autoFocus
         margin="none"
-        defaultValue={ defaultValue }
         onChange={ onChange }
         onKeyPress={ onKeyPress }
         placeholder="Type to search"
         helperText="Searches within our database"
+        value={ inputValue }
       />
       <Button
-        disabled={!inputValue && !defaultValue}
+        disabled={!inputValue}
         onClick={ applyFilter }
         color="primary"
         raised
