@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
+import { isArray } from 'lodash';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 
 import Dialog, {
@@ -29,14 +30,7 @@ export default class FaceSearchModal extends React.Component {
             description: string
           }))
         })
-      ),
-      selectedResults: arrayOf(shape({ 
-        id: string,
-        type: string,
-        image: string,
-        label: string,
-        description: string
-      }))
+      )
     }),
     fetchAutocompleteResults: func,
     applyFilter: func,
@@ -46,63 +40,42 @@ export default class FaceSearchModal extends React.Component {
   state = Object.assign({}, this.props.modalState);
 
   onChange = event => {
-    // // TODO: Make autocomplete http call
     let text = event.target.value;
-    console.log('Make autocomplete http call', text);
-    this.props.fetchAutocompleteResults(text).then(response => {
-      this.setState(Object.assign({}, this.state, {
-        queryResults: response
-      }));
-    }).catch(err => {
-      console.log('Autocomplete error: ', err);
-      this.setState(Object.assign({}, this.state, {
-        error: true,
+    if (text) {
+      this.props.fetchAutocompleteResults(text).then(response => {
+        this.setState(Object.assign({}, this.state, {
+          queryResults: response
+        }));
+      }).catch(err => {
+        this.setState({
+          error: true,
+          queryResults: []
+        });
+      })
+    } else {
+      this.setState({
         queryResults: []
-      }));
-    })
-  };
-
-  onEnter = event => {
-    if (event.key === 'Enter') {
-      this.applyFilterIfValue();
+      });
     }
   };
 
-  deselectPill = pill => {
-    console.log('Deselected ', pill);
-    if (pill) {
-      let newState = {
-        selectedResults: this.state.selectedResults.slice(0)
-      };
-      let removeIndex = newState.selectedResults.findIndex(result => {
-        return result.id === pill.id;
-      });
-      if (removeIndex !== -1) {
-        newState.selectedResults.splice(removeIndex, 1);
-        this.setState(newState);
-      }
-    }
-  };
-
-  selectPill = pill => {
-    console.log('Selected ', pill);
-    let notSelected = this.state.selectedResults.findIndex(result => {
-      return result.id === pill.id;
-    }) === -1;
-    if (pill && notSelected) {
-      let newState = update(this.state, {
-        queryString: { $set: '' },
-        selectedResults: { $push: [pill] }
-      });
-      console.log(newState)
-      this.setState(newState);
+  selectResult = result => {
+    console.log('Selected ', result);
+    if (result) {
+      this.props.applyFilter(result);
+      this.props.cancel();
     }
   };
  
   applyFilterIfValue = () => {
-    this.props.applyFilter({
-      value: this.state.selectedResults
-    });
+    if (isArray(this.state.queryResults) && this.state.queryResults.length) {
+      let firstSection = this.state.queryResults[0];
+      if (isArray(firstSection.items) && firstSection.items.length) {
+        let filterToApply = firstSection.items[0];
+        this.props.applyFilter(filterToApply);
+        this.props.cancel();
+      }
+    }
   };
 
   render() {
@@ -116,17 +89,15 @@ export default class FaceSearchModal extends React.Component {
           cancel={ this.props.cancel }
           onSubmit={ this.applyFilterIfValue }
           onChange={ this.onChange }
-          onKeyPress={ this.onEnter }
           modalState={ this.state }
-          deselectPill={ this.deselectPill }
-          selectPill={ this.selectPill }
+          selectResult={ this.selectResult }
         />
       </Dialog>
     );
   }
 }
 
-export const FaceSearchForm = ( { cancel, onSubmit, onChange, onKeyPress, modalState, deselectPill, selectPill } ) => {
+export const FaceSearchForm = ( { cancel, onSubmit, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
     <DialogTitle>Search by Face</DialogTitle>
@@ -138,15 +109,14 @@ export const FaceSearchForm = ( { cancel, onSubmit, onChange, onKeyPress, modalS
         cancel={ cancel }
         applyFilter={ onSubmit }
         componentState={ modalState }
-        deselectPill={ deselectPill }
-        selectPill={ selectPill }
+        selectResult={ selectResult }
       />
     </DialogContent>
   </div>
 )}
 
 FaceSearchModal.defaultProps = {
-  modalState: { queryResults: [], selectedResults: [], queryString: '' },
+  modalState: { queryResults: [], queryString: '' },
   applyFilter: value => console.log('Search faces by entityId', value),
   cancel: () => console.log('You clicked cancel')
 };

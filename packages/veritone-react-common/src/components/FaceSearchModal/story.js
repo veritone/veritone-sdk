@@ -8,14 +8,6 @@ import { boolean, object } from '@storybook/addon-knobs';
 storiesOf('FaceSearchModal', module).add('withOpenDialogAndDefaultValue', () => {
   const logFilter = value => console.log('filter value', value);
   const cancel = () => console.log("cancel pressed");
-  const testImage = 'http://odditymall.com/includes/content/upload/hank-hill-tripping-balls-t-shirt-1020.jpg';
-  const testEntity = {
-    id: 'some entityId',
-    type: 'entity',
-    label: 'Some entity',
-    image: testImage,
-    description: 'dude got arrest man'
-  };
   const fakeAutocompleteFunc = text => {
     return new Promise((resolve, reject) => {
       resolve([{

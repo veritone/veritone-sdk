@@ -14,11 +14,9 @@ const deleteIconClass = cx(styles['deleteIcon']);
 
 class SearchAutocompleteContainer extends React.Component {
   static propTypes = {
-    selectPill: func,
-    deselectPill: func,
+    selectResult: func,
     componentState: shape({
       error: bool,
-      queryString: string,
       queryResults: arrayOf(
         shape({
           header: string,
@@ -29,15 +27,6 @@ class SearchAutocompleteContainer extends React.Component {
             label: string,
             description: string
           }))
-        })
-      ),
-      selectedResults: arrayOf(
-        shape({
-          id: string,
-          type: string,
-          image: string,
-          label: string,
-          description: string
         })
       )
     }),
@@ -50,61 +39,28 @@ class SearchAutocompleteContainer extends React.Component {
 
   onEnter = event => {
     if (event.key === 'Enter') {
-      console.log('Pressed Enter');
-      if (this.state.queryString) {
-        this.selectResult();
-      } else if (this.state.selectedResults) {
+      if (isArray(this.props.componentState.queryResults) && this.props.componentState.queryResults.length) {
         this.props.applyFilter();
       }
-      // TODO: Select the first queryResults' element's item
-    }
-  };
-
-  selectResult = result => {
-    if (result) {
-      this.props.selectPill(result);
-    } else {
-      let queryResults = this.state.queryResults;
-      if (isArray(queryResults) && queryResults.length) {
-        console.log('Pick top result');
-        result = queryResults[0];
-        if (result) {
-          this.props.selectPill(result);
-        }
-      } 
     }
   };
 
   render() {
-    console.log('auto props', this.props);
-    console.log('auto state', this.state);
     return (
       <div>
-        <div>
-          {this.props.componentState.selectedResults.map(result => {
-            const remove = () => this.props.deselectPill(result);
-            return (
-              <SearchAutocompletePill
-                key={ result.id }
-                image={ result.image }
-                label={ result.label }
-                remove={ remove }
-              />
-            );
-          })}
-        </div>
         <div>
           <SearchAutocompleteTextField
             cancel={ this.props.cancel }
             applyFilter={ this.props.applyFilter }
             onChange={ this.props.onChange }
             onKeyPress={ this.onEnter }
-            inputValue={ this.props.componentState.queryString }
+            queryString={ this.props.componentState.queryString }
+            results={ this.props.componentState.queryResults }
           />
         </div>
         <div>
           <SearchAutocompleteResults
-            select={ this.props.selectPill }
+            selectResult={ this.props.selectResult }
             results={ this.props.componentState.queryResults }
           />
         </div>
@@ -113,21 +69,21 @@ class SearchAutocompleteContainer extends React.Component {
   }
 }
 
-const SearchAutocompleteTextField = ({ cancel, applyFilter, onChange, onKeyPress, inputValue }) => {
+const SearchAutocompleteTextField = ({ cancel, applyFilter, onChange, onKeyPress, inputValue, queryString, results }) => {
   return (
     <div>
       <TextField
         id="search_autocomplete_input"
         autoFocus
+        defaultValue={ queryString }
         margin="none"
         onChange={ onChange }
         onKeyPress={ onKeyPress }
         placeholder="Type to search"
         helperText="Searches within our database"
-        value={ inputValue }
       />
       <Button
-        disabled={!inputValue}
+        disabled={ !results.length || !results[0].items || !results[0].items.length }
         onClick={ applyFilter }
         color="primary"
         raised
@@ -138,19 +94,7 @@ const SearchAutocompleteTextField = ({ cancel, applyFilter, onChange, onKeyPress
   );
 }
 
-const SearchAutocompletePill = ({ label, remove, image }) => {
-  return (
-    <Chip
-      avatar={<Avatar src={ image } />}
-      label={ label }
-      className={ autocompletePillClass }
-      classes={{ label: autocompletePillLabelClass, deleteIcon: deleteIconClass }}
-      onRequestDelete={ remove }
-    />
-  );
-}
-
-const SearchAutocompleteResults = ({ select, results }) => {
+const SearchAutocompleteResults = ({ selectResult, results }) => {
   return (
     <div>
       {results.map(result => {
@@ -159,9 +103,9 @@ const SearchAutocompleteResults = ({ select, results }) => {
             <div>{ result.header }</div>
             <div>
               { result.items.map(item => {
-                const add = () => { select(item) };
+                const select = () => { selectResult(item) };
                 return (
-                  <div key="item.id" onClick={ add }>
+                  <div key="item.id" onClick={ select }>
                     <Avatar src={ item.image } />
                     <div>{ item.label }</div>
                     <div>{ item.description }</div>
@@ -181,12 +125,9 @@ SearchAutocompleteContainer.defaultProps = {
     error: false,
     queryString: '',
     queryResults: [],
-    selectedResults: [],
     inputValue: []
   },
   onChange: value => console.log('Autocomplete field changed', value),
-  selectPill: value => console.log('Selected autocomplete result', value),
-  deselectPill: value => console.log('Removed autocomplete result', value),
   applyFilter: value => console.log('Search by autocomplete result', value),
   cancel: () => console.log('You clicked cancel')
 };
