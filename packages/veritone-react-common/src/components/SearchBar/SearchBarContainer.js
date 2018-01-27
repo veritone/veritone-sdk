@@ -22,16 +22,61 @@ export default class SearchBarContainer extends React.Component {
     });
   };
 
-  applyFilter = engineId => {
+  addJoiningOperator = operator => {
+    this.props.addOrModifySearchParameter({
+      value: operator || 'AND',
+      conditionType: 'join'
+    });
+  };
+
+  removePill = (searchParameterId, searchParameters) => {
+    let index = searchParameters.findIndex(x => x.id === searchParameterId);
+    let nextJoiningParameterId =
+      searchParameters[index + 1] && searchParameters[index + 1].id;
+    this.props.removeSearchParameter(searchParameterId);
+
+    if (nextJoiningParameterId) {
+      this.props.removeSearchParameter(nextJoiningParameterId);
+    }
+  };
+
+  getRemovePill = searchParameters => {
+    return searchParameterId => {
+      this.removePill(searchParameterId, searchParameters);
+    };
+  };
+
+
+  getLastJoiningOperator = (searchParameters) => {
+
+    for(let i = searchParameters.length - 1; i >= 0; i--) {
+      if(searchParameters[i].conditionType === 'join') {
+        console.log("Last joining operator", searchParameters[i]);
+        return searchParameters[i].value;
+      }
+    }
+    return null;
+  }
+
+  getApplyFilter = (engineId, searchParameters, searchParameterId) => {
     return parameter => {
-      if (parameter.value) {
+      if (parameter) {
+        const lastJoiningOperator = this.getLastJoiningOperator(searchParameters);
+
         this.props.addOrModifySearchParameter({
-          ...parameter,
-          engineId: engineId,
-          id: this.state.selectedPill
+          value: parameter,
+          conditionType: engineId,
+          id: searchParameterId
         });
+
+        // if there's no selected pill, we're adding a new search parameter so add a joining operator
+
+        if (!searchParameterId) {
+          this.addJoiningOperator(lastJoiningOperator);
+        }
       } else {
-        this.props.removeSearchParameter(this.state.selectedPill);
+        // if there is no value in the modal, remove the search parameter and the joining operator after it
+        this.removePill(searchParameterId, searchParameters);
       }
       this.setState({
         openModal: { modalId: null },
@@ -41,10 +86,11 @@ export default class SearchBarContainer extends React.Component {
   };
 
   openPill = pillState => {
+    console.log('Open pill with ', pillState);
     this.setState({
       openModal: {
-        modalId: pillState.engineId,
-        modalState: { value: pillState.value }
+        modalId: pillState.conditionType,
+        modalState: pillState.value
       },
       selectedPill: pillState.id
     });
@@ -68,16 +114,22 @@ export default class SearchBarContainer extends React.Component {
           color={this.props.color}
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
+          addJoiningOperator={this.props.addJoiningOperator}
           addPill={this.addPill}
-          removePill={this.props.removeSearchParameter}
+          removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
+          modifyPill={ this.props.addOrModifySearchParameter }
         />
         {Modal ? (
           <Modal
             open
             modalState={this.state.openModal.modalState}
             cancel={this.cancelModal}
-            applyFilter={this.applyFilter(this.state.openModal.modalId)}
+            applyFilter={this.getApplyFilter(
+              this.state.openModal.modalId,
+              this.props.searchParameters,
+              this.state.openModal.selectedPill
+            )}
           />
         ) : null}
       </div>

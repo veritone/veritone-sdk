@@ -13,7 +13,7 @@ import { bool, func, string, shape } from 'prop-types';
 export default class TranscriptSearchModal extends React.Component {
   static propTypes = {
     open: bool,
-    modalState: shape({ value: string }),
+    modalState: shape({ search: string, language: string }),
     applyFilter: func,
     cancel: func
   };
@@ -23,7 +23,7 @@ export default class TranscriptSearchModal extends React.Component {
   };
 
   state = {
-    filterValue: null || this.props.modalState.value
+    filterValue: null || this.props.modalState.search
   };
 
   onChange = event => {
@@ -39,9 +39,9 @@ export default class TranscriptSearchModal extends React.Component {
   };
 
   applyFilterIfValue = () => {
-    this.props.applyFilter({
-      value: this.state.filterValue ? this.state.filterValue.trim() : null
-    });
+    this.props.applyFilter(
+      { search: this.state.filterValue ? this.state.filterValue.trim() : null, language: 'en' }
+    );
   };
 
   render() {
@@ -53,7 +53,7 @@ export default class TranscriptSearchModal extends React.Component {
       >
         <TranscriptSearchForm
           cancel={ this.props.cancel }
-          defaultValue={ this.props.modalState.value }
+          defaultValue={ this.props.modalState.search }
           onSubmit={ this.applyFilterIfValue }
           onChange={ this.onChange }
           onKeyPress={ this.onEnter }
@@ -99,20 +99,20 @@ export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange
 )}
 
 TranscriptSearchModal.defaultProps = {
-  modalState: { value: '' }
+  modalState: { search: '', language: 'en' }
 };
 
 const TranscriptConditionGenerator = modalState => {
   return {
     operator: 'query_string',
     field: 'transcript.transcript',
-    value: modalState.value.toLowerCase()
+    value: modalState.search.toLowerCase()
   };
 };
 
 const TranscriptDisplay = modalState => {
   return {
-    abbreviation: modalState.value.substring(0, 10),
+    abbreviation: modalState.search.length > 10 ? modalState.search.substring(0, 10) + '...' : modalState.search,
     thumbnail: null
   };
 };
