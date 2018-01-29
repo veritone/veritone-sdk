@@ -39,9 +39,13 @@ export default class RecognizedTextSearchModal extends React.Component {
   };
 
   applyFilterIfValue = () => {
-    this.props.applyFilter(
-      { search: this.state.filterValue ? this.state.filterValue.trim() : null }
-    );
+    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+      this.props.applyFilter();
+    } else {
+      this.props.applyFilter(
+        { search: this.state.filterValue ? this.state.filterValue.trim() : null }
+      );
+    }
   };
 
   render() {
@@ -113,7 +117,7 @@ const RecognizedTextConditionGenerator = modalState => {
 
 const RecognizedTextDisplay = modalState => {
   return {
-    abbreviation: modalState.search.length > 10 ? modalState.search.substring(0, 10) + '...' : modalState.search,
+    abbreviation: modalState.search && modalState.search.length > 10 ? modalState.search.substring(0, 10) + '...' : modalState.search,
     thumbnail: null
   };
 };
