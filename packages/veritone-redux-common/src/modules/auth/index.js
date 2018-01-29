@@ -87,10 +87,10 @@ export function setOAuthToken(token) {
   };
 }
 
-export function requestOAuthGrant(OAuthURI) {
+export function requestOAuthGrant(OAuthURI, onSuccess, onFailure) {
   return {
     type: REQUEST_OAUTH_GRANT,
-    payload: { OAuthURI }
+    payload: { OAuthURI, onSuccess, onFailure }
   };
 }
 

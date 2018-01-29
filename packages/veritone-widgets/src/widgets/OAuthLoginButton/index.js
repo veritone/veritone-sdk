@@ -19,11 +19,13 @@ class OAuthLoginButton extends React.Component {
   static propTypes = {
     requestOAuthGrant: func.isRequired,
     userIsAuthenticated: bool.isRequired,
-    OAuthURI: string.isRequired
+    OAuthURI: string.isRequired,
+    onAuthSuccess: func,
+    onAuthFailure: func
   };
 
   handleLogin = () => {
-    this.props.requestOAuthGrant(this.props.OAuthURI);
+    this.props.requestOAuthGrant(this.props.OAuthURI, this.props.onAuthSuccess, this.props.onAuthFailure);
   };
 
   render() {

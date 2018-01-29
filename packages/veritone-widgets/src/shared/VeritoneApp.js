@@ -90,6 +90,15 @@ class _VeritoneApp {
       <Provider store={this._store}>
         <div>
           {appModule.widgets(this._store.getState()).map(w => {
+            if (!w._elId) {
+              console.warn(
+                'The widget',
+                w,
+                'needs to specify an elId that references an existing dom node.'
+              );
+              return null;
+            }
+
             if (document.getElementById(w._elId)) {
               return ReactDOM.createPortal(
                 <w.Component
