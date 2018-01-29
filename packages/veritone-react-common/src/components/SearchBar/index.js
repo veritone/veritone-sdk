@@ -133,6 +133,7 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
             lastJoin={searchParameters.length === 0}
           />
           <SearchParameters
+          key={`search_parameters_grouping_${searchParameters[i].id}`}
           searchParameters={searchParameters.slice(i + 1)}
           lastJoin={searchParameters[i+1].value}
           openPill={openPill}
