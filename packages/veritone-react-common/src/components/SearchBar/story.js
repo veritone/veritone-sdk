@@ -87,21 +87,6 @@ export default class SampleSearchBar extends React.Component {
     }
   };
 
-  fakeAutocompleteFunc = text => {
-    return new Promise((resolve, reject) => {
-      resolve([{
-        header: 'Libraries',
-        items: [{
-          id: 'some libraryId',
-          type: 'library',
-          label: 'Hank Hill',
-          image: 'http://odditymall.com/includes/content/upload/hank-hill-tripping-balls-t-shirt-1020.jpg',
-          description: 'I tell you whut'
-        }] 
-      }]);
-    });
-  }
-
   removeSearchParameter = id => {
     this.setState(prevState => ({
       searchParameters: prevState.searchParameters.filter(x => x.id !== id)

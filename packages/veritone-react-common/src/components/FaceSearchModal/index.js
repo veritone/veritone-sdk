@@ -12,8 +12,63 @@ import Dialog, {
 
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import update from 'immutability-helper';
+import 'whatwg-fetch';
 
+function attachAutocomplete(url, config) {
+  return function(target) {
+    const fetchAutocomplete = (queryString) => {
+      // TODO: Remove this fank hill promise code and integrate with autocomplete
+      return new Promise((resolve, reject) => {
+        resolve([{
+          header: 'Libraries',
+          items: [{
+            id: 'some libraryId',
+            type: 'library',
+            label: 'Hank Hill',
+            image: 'http://odditymall.com/includes/content/upload/hank-hill-tripping-balls-t-shirt-1020.jpg',
+            description: 'I tell you whut'
+          }] 
+        }]);
+      });
+
+      // TODO: Figure out some way to generate the category config-driven autocomplete payload
+
+      return fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+        // TODO: Massage the response data into the following format
+        // response.data = [{
+        //   header: 'Section Title',
+        //   items: [{
+        //     id: string,
+        //     type: 'library/entity/fullText',
+        //     label: string,
+        //     image: string,
+        //     description: string
+        //   }]
+        // }]
+      });
+    }
+    target.defaultProps = { ...target.defaultProps, fetchAutocomplete: fetchAutocomplete };
+    return target;
+  };
+}
+
+@attachAutocomplete('https://api.aws-dev.veritone.com/api/search/autocomplete', {})
 export default class FaceSearchModal extends React.Component {
+  static defaultProps = {
+    modalState: { queryResults: [], queryString: '' },
+    applyFilter: value => console.log('Search faces by entityId', value),
+    cancel: () => console.log('You clicked cancel')
+  }
+
+  constructor(props, defaultProps) {
+    super(props, defaultProps);
+  }
+
   static propTypes = {
     open: bool,
     modalState: shape({
@@ -32,26 +87,26 @@ export default class FaceSearchModal extends React.Component {
         })
       )
     }),
-    fetchAutocompleteResults: func,
+    fetchAutocomplete: func,
     applyFilter: func,
     cancel: func
   };
 
   state = Object.assign({}, this.props.modalState);
 
-  onChange = event => {
-    let text = event.target.value;
-    if (text) {
-      this.props.fetchAutocompleteResults(text).then(response => {
-        this.setState(Object.assign({}, this.state, {
+  onChange = debouncedQueryString => {
+    if (debouncedQueryString) {
+      this.props.fetchAutocomplete(debouncedQueryString).then(response => {
+        let newState = Object.assign({}, this.state, {
           queryResults: response
-        }));
+        });
+        this.setState(newState);
       }).catch(err => {
         this.setState({
           error: true,
           queryResults: []
         });
-      })
+      });
     } else {
       this.setState({
         queryResults: []
@@ -62,8 +117,10 @@ export default class FaceSearchModal extends React.Component {
   selectResult = result => {
     console.log('Selected ', result);
     if (result) {
-      this.props.applyFilter(result);
-      this.props.cancel();
+      this.setState(Object.assign({}, this.state, { selectedResult: result }), () => {
+        this.props.applyFilter(result);
+        this.props.cancel();
+      });
     }
   };
  
@@ -87,7 +144,7 @@ export default class FaceSearchModal extends React.Component {
       >
         <FaceSearchForm
           cancel={ this.props.cancel }
-          onSubmit={ this.applyFilterIfValue }
+          applyFilter={ this.applyFilterIfValue }
           onChange={ this.onChange }
           modalState={ this.state }
           selectResult={ this.selectResult }
@@ -97,7 +154,7 @@ export default class FaceSearchModal extends React.Component {
   }
 }
 
-export const FaceSearchForm = ( { cancel, onSubmit, onChange, onKeyPress, modalState, selectResult } ) => {
+export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
     <DialogTitle>Search by Face</DialogTitle>
@@ -107,19 +164,13 @@ export const FaceSearchForm = ( { cancel, onSubmit, onChange, onKeyPress, modalS
         onChange={ onChange }
         onKeyPress={ onKeyPress }
         cancel={ cancel }
-        applyFilter={ onSubmit }
+        applyFilter={ applyFilter }
         componentState={ modalState }
         selectResult={ selectResult }
       />
     </DialogContent>
   </div>
 )}
-
-FaceSearchModal.defaultProps = {
-  modalState: { queryResults: [], queryString: '' },
-  applyFilter: value => console.log('Search faces by entityId', value),
-  cancel: () => console.log('You clicked cancel')
-};
 
 const FaceConditionGenerator = modalState => {
   // TODO: implement translator
@@ -128,8 +179,8 @@ const FaceConditionGenerator = modalState => {
 
 const FaceDisplay = modalState => {
   return {
-    abbreviation: modalState.value.substring(0, 10),
-    thumbnail: null
+    abbreviation: modalState.label.substring(0, 10),
+    thumbnail: modalState.image
   };
 };
 

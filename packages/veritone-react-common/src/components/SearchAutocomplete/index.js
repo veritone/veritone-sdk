@@ -1,9 +1,8 @@
 import React from 'react';
 import { Avatar, Button, Chip, TextField } from 'material-ui';
 import Downshift from 'downshift';
-import Rx from 'rxjs/Rx';
 import { isArray } from 'lodash';
-
+import Rx from 'rxjs/Rx';
 import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import styles from './styles.scss';
@@ -37,6 +36,16 @@ class SearchAutocompleteContainer extends React.Component {
 
   state = JSON.parse(JSON.stringify(this.props.componentState));
 
+  debouncedOnChange = event => {
+    let text = event.target.value;
+    let thisModal = this;
+    let debouncer = Rx.Observable.fromEvent(event.target, 'keyup').map(i => i.currentTarget.value);
+    let debouncedInput = debouncer.debounceTime(500);
+    debouncedInput.subscribe(debouncedText => {
+      this.props.onChange(debouncedText)
+    });
+  };
+
   onEnter = event => {
     if (event.key === 'Enter') {
       if (isArray(this.props.componentState.queryResults) && this.props.componentState.queryResults.length) {
@@ -52,7 +61,7 @@ class SearchAutocompleteContainer extends React.Component {
           <SearchAutocompleteTextField
             cancel={ this.props.cancel }
             applyFilter={ this.props.applyFilter }
-            onChange={ this.props.onChange }
+            onChange={ this.debouncedOnChange }
             onKeyPress={ this.onEnter }
             queryString={ this.props.componentState.queryString }
             results={ this.props.componentState.queryResults }
