@@ -9,6 +9,13 @@ import {
   TranscriptDisplay,
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
+
+import {
+  SentimentSearchModal,
+  SentimentDisplay,
+  SentimentConditionGenerator
+} from 'components/SentimentSearchModal';
+
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -20,16 +27,30 @@ const transcript = {
   enablePill: true,
   showPill: true
 };
+const sentiment = {
+  id: 'searchbar-sentiment-id',
+  name: 'Sentiment',
+  iconClass: 'icon-sentiment',
+  tooltip: 'Search by Sentiment',
+  enablePill: true,
+  showPill: true
+};
+
 
 const appBarColor = '#4caf50';
 
-const enabledEngineCategories = [transcript];
+const enabledEngineCategories = [transcript, sentiment];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
     modal: TranscriptSearchModal,
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator
+  },
+  'searchbar-sentiment-id': {
+    modal: SentimentSearchModal,
+    getLabel: SentimentDisplay,
+    generateCondition: SentimentConditionGenerator
   }
 };
 
