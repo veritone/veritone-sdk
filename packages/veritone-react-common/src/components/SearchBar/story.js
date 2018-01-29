@@ -49,7 +49,7 @@ export default class SampleSearchBar extends React.Component {
   }
 
   state = {
-    searchParameters: this.props.searchParameters && this.props.searchParameters.csp || []
+    searchParameters: this.props.searchParameters || []
   };
 
   convertSearchParametersToCSP = searchParameters => {
@@ -62,7 +62,7 @@ export default class SampleSearchBar extends React.Component {
 
     for(let i = 0; i < searchParameters.length - 1; i++) {
       const searchParameter = searchParameters[i];
-      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin) {
+      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin && i !== searchParameters.length - 2) {
         const nextNode = {};
         nextNode[searchParameters[i+1].value] = [ CSP(searchParameters[i]) ];
         lastNode.push( nextNode );
@@ -76,7 +76,6 @@ export default class SampleSearchBar extends React.Component {
     }
     return baseQuery;
   }
-
 
   addOrModifySearchParameter = parameter => {
     const index = this.state.searchParameters.findIndex(
@@ -137,7 +136,6 @@ export default class SampleSearchBar extends React.Component {
     let queryConditions = newBooleanSubtree.conditions;
 
     for(let i = 0; i < conditions.length; i++) {
-      console.log('current condition', conditions[i]);
       if('engineCategoryId' in conditions[i]) {
         // add an additional condition
         const newCondition = engineCategoryMapping[conditions[i].engineCategoryId].generateCondition(
@@ -146,7 +144,6 @@ export default class SampleSearchBar extends React.Component {
         queryConditions.push( newCondition );
       } else {
         // different boolean operator, add a new subtree
-        console.log("new subtree", conditions[i]);
         const newBooleanSubtree = {
           operator: getJoinOperator(conditions[i]),
           conditions: []
@@ -268,7 +265,9 @@ storiesOf('SearchBar', module)
           const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
           searchParameters.push( newSearchPill );
           const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-          searchParameters.push( newJoinOperator );
+          if(newJoinOperator) {
+            searchParameters.push( newJoinOperator );
+          }
         } else {
           searchParameters.pop();
           joinOperator = getJoinOperator(conditions[i])
@@ -277,11 +276,6 @@ storiesOf('SearchBar', module)
           conditions = conditions[i][joinOperator];
           i = -1;
         }
-      }
-
-      // make sure there's always a joining parameter at the end
-      if(searchParameters[searchParameters.length -1].conditionType !== 'join') {
-        lastNode.push({ id: guid(), conditionType: 'join', value: joinOperator });
       }
 
       return searchParameters;
@@ -293,7 +287,7 @@ storiesOf('SearchBar', module)
     console.log(JSON.stringify(searchParameters));
 
     return [<SampleSearchBar
-      searchParameters={ object("CSP", {csp: searchParameters}) }
+      searchParameters={ CSPToSearchParameters( object("CSP", csp) ) }
       setSearch={ searchCallback => setSearchHandler(searchCallback) }
       toCSP={ toCSPCallback => setToCSPHandler(toCSPCallback) }
       />,
