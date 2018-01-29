@@ -10,15 +10,15 @@ import Dialog, {
 
 import { bool, func, string, shape } from 'prop-types';
 
-export default class TranscriptSearchModal extends React.Component {
+export default class RecognizedTextSearchModal extends React.Component {
   static propTypes = {
     open: bool,
-    modalState: shape({ search: string, language: string }),
+    modalState: shape({ search: string }),
     applyFilter: func,
     cancel: func
   };
   static defaultProps = {
-    applyFilter: value => console.log('Search transcript by value', value),
+    applyFilter: value => console.log('Search text by value', value),
     cancel: () => console.log('You clicked cancel')
   };
 
@@ -43,7 +43,7 @@ export default class TranscriptSearchModal extends React.Component {
       this.props.applyFilter();
     } else {
       this.props.applyFilter(
-        { search: this.state.filterValue ? this.state.filterValue.trim() : null, language: 'en' }
+        { search: this.state.filterValue ? this.state.filterValue.trim() : null }
       );
     }
   };
@@ -55,7 +55,7 @@ export default class TranscriptSearchModal extends React.Component {
         onRequestClose={this.props.cancel}
         onEscapeKeyUp={this.props.cancel}
       >
-        <TranscriptSearchForm
+        <RecognizedTextSearchForm
           cancel={ this.props.cancel }
           defaultValue={ this.props.modalState.search }
           onSubmit={ this.applyFilterIfValue }
@@ -68,53 +68,54 @@ export default class TranscriptSearchModal extends React.Component {
   }
 }
 
-export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
+export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
   return (
-  <div>
-    <DialogTitle>Search by Keyword</DialogTitle>
-    <DialogContent style={{ width: '500px', margin: 'none' }}>
-      <TextField
-        id="transcript_search_field"
-        autoFocus
-        margin="none"
-        defaultValue={ defaultValue }
-        onChange={ onChange }
-        onKeyPress={ onKeyPress }
-        placeholder="Phrase to search"
-        helperText="Searches within our database of media transcripts."
-        fullWidth
-      />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={ cancel } color="primary" className="transcriptCancel">
-        Cancel
-      </Button>
-      <Button
-        disabled={!inputValue && !defaultValue}
-        onClick={ onSubmit }
-        color="primary"
-        className="transcriptSubmit"
-        raised
-      >
-        Search
-      </Button>
-    </DialogActions>
-  </div>
-)}
+    <div>
+      <DialogTitle>Search by Recognized Text</DialogTitle>
+      <DialogContent style={{ width: '500px', margin: 'none' }}>
+        <TextField
+          id="text_search_field"
+          autoFocus
+          margin="none"
+          defaultValue={ defaultValue }
+          onChange={ onChange }
+          onKeyPress={ onKeyPress }
+          placeholder="Text to search"
+          helperText="Searches within our database for recognized text."
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={ cancel } color="primary" className="textSearchCancel">
+          Cancel
+        </Button>
+        <Button
+          disabled={!inputValue && !defaultValue}
+          onClick={ onSubmit }
+          color="primary"
+          className="textSearchSubmit"
+          raised
+        >
+          Search
+        </Button>
+      </DialogActions>
+    </div>
+  )};
 
-TranscriptSearchModal.defaultProps = {
-  modalState: { search: '', language: 'en' }
+RecognizedTextSearchModal.defaultProps = {
+  modalState: { search: '' }
 };
 
-const TranscriptConditionGenerator = modalState => {
+const RecognizedTextConditionGenerator = modalState => {
+  // orc exact text query
   return {
     operator: 'query_string',
-    field: 'transcript.transcript',
+    field: 'text-recognition.series.ocrtext',
     value: modalState.search.toLowerCase()
   };
 };
 
-const TranscriptDisplay = modalState => {
+const RecognizedTextDisplay = modalState => {
   return {
     abbreviation: modalState.search && modalState.search.length > 10 ? modalState.search.substring(0, 10) + '...' : modalState.search,
     thumbnail: null
@@ -122,7 +123,7 @@ const TranscriptDisplay = modalState => {
 };
 
 export {
-  TranscriptSearchModal,
-  TranscriptConditionGenerator,
-  TranscriptDisplay
+  RecognizedTextSearchModal,
+  RecognizedTextConditionGenerator,
+  RecognizedTextDisplay
 };

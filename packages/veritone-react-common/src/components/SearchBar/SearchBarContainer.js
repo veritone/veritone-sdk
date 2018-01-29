@@ -125,7 +125,7 @@ export default class SearchBarContainer extends React.Component {
             applyFilter={this.getApplyFilter(
               this.state.openModal.modalId,
               this.props.searchParameters,
-              this.state.openModal.selectedPill
+              this.state.selectedPill
             )}
           />
         ) : null}
