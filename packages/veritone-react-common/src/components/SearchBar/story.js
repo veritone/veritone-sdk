@@ -9,6 +9,12 @@ import {
   TranscriptDisplay,
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
+import {
+  RecognizedTextSearchModal,
+  RecognizedTextDisplay,
+  RecognizedTextConditionGenerator
+} from 'components/RecognizedTextSearchModal';
+
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -21,15 +27,29 @@ const transcript = {
   showPill: true
 };
 
+const recognizedText = {
+  id: 'searchbar-recognized-text-id',
+  name: 'RecognizedText',
+  iconClass: 'icon-ocr',
+  tooltip: 'Search by Recognized Text',
+  enablePill: true,
+  showPill: true
+};
+
 const appBarColor = '#4caf50';
 
-const enabledEngineCategories = [transcript];
+const enabledEngineCategories = [transcript, recognizedText];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
     modal: TranscriptSearchModal,
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator
+  },
+  'searchbar-recognized-text-id': {
+    modal: RecognizedTextSearchModal,
+    getLabel: RecognizedTextDisplay,
+    generateCondition: RecognizedTextConditionGenerator
   }
 };
 
