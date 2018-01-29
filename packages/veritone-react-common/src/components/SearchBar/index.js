@@ -21,7 +21,7 @@ const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
   return (
     <Tooltip
       title={engineCategory.tooltip}
-      placement="bottom"
+      placement="left"
       key={engineCategory.id}
       className={cx(tooltipClasses)}
     >
@@ -44,16 +44,21 @@ const searchInputContainerClass = cx(styles['searchInput']);
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
 const InputCursor = () => (
-  <input type="textbox" size="1" style={ {width: "10px", border: 0, display: "flex" } } />
+  <input className={ cx(styles['afterCursor'])} type="textbox" size="1" />
 )
 
 const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) => {
   const joinOperatorClass = cx(styles['joinOperator']);
-  const joinOperatorRootClass = cx(styles['joinOperatorRoot']);
+  const joinOperatorRootClass = ( lastJoiningOperator === operator || !lastJoiningOperator ) ? cx(styles['joinOperatorRootRight']) : null;
+
+  console.log("Last operator", lastJoiningOperator);
+  console.log("This operator", operator);
+
   return (
     <Select
     classes={ { 'selectMenu': joinOperatorClass, 'root': joinOperatorRootClass } }
     value={operator}
+    disableUnderline={ lastJoiningOperator === operator }
     onChange={ onChange }
     >
       <MenuItem value={'AND'}>AND</MenuItem>
@@ -75,7 +80,6 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
   if( searchParameter.conditionType === 'join' ) {
     const onChangePill = (modifyPill, id) =>
       evt => {
-        console.log("Same group?", lastJoiningOperator === evt.target.value);
         modifyPill({
           value: evt.target.value,
           conditionType: 'join',
@@ -97,7 +101,7 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
     const remove = () => removePill(searchParameter.id);
     const open = () => openPill(searchParameter);
 
-    return (
+    return [
       <SearchPill
         key={searchParameter.id}
         engineIconClass={searchParameterEngine.iconClass}
@@ -105,131 +109,57 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
         open={open}
         remove={remove}
       />
-    );
+    ];
   }
 }
 
+const SearchParameters = ({searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin}) => {
+  let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'AND';
 
-const SearchParametersWithGrouping = ({ searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin }) => {
-  if (!searchParameters || searchParameters.length === 0) {
-    return null;
-  }
-  console.log("Search parameters", searchParameters);
-  if (searchParameters.length === 1) {
-    console.log("Last entry", searchParameters[0]);
-    return [
-      <SearchParameter
-        openPill={openPill}
-        removePill={removePill}
-        modifyPill={modifyPill}
-        key={`search_parameter_${searchParameters[0].id}`}
-        enabledEngineCategories={enabledEngineCategories}
-        searchParameter={searchParameters[0]}
-        isLast
-      />,
-      <InputCursor key={`after_${searchParameters[0].id}_input_cursor`} />
-    ];
-  }
-
-  const lastJoiningOperator = lastJoin || searchParameters[1].value;
-  const parametersInGroup = []
-
-  for(let i = 0; i < searchParameters.length; i++) {
-    let searchParameter = searchParameters[i];
-
-    if ( searchParameter.conditionType !== 'join' && searchParameters[i + 1] !== lastJoiningOperator && i != 0) {
-      // this will always be an engine category
-      parametersInGroup.push(
-        <SearchParameter
+  let output = [];
+  for (let i = 0; i < searchParameters.length; i++ ) {
+  	if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoiner) {
+    	// recursive descent
+      output.push([
+      <span className={cx(styles['searchContainer'])}>
+          <SearchParameter
+            openPill={openPill}
+            removePill={removePill}
+            modifyPill={modifyPill}
+            key={`search_parameter_${searchParameters[i].id}`}
+            isLast={ searchParameters.length-1 === i}
+            enabledEngineCategories={enabledEngineCategories}
+            searchParameter={searchParameters[i]}
+            lastJoin={searchParameters.length === 0}
+          />
+          <SearchParameters
+          searchParameters={searchParameters.slice(i + 1)}
+          lastJoin={searchParameters[i+1].value}
           openPill={openPill}
+          enabledEngineCategories={enabledEngineCategories}
           removePill={removePill}
           modifyPill={modifyPill}
-          key={`search_parameter_${searchParameter.id}`}
-          enabledEngineCategories={enabledEngineCategories}
-          searchParameter={searchParameter}
-          isLast={i === searchParameters.length - 1}
-        />
-      );
-      // this will always be the trailing joining operator
-      parametersInGroup.push(
-        <SearchParameter
-          openPill={openPill}
-          removePill={removePill}
-          modifyPill={modifyPill}
-          key={`search_parameter_${searchParameters[i+1].id}`}
-          enabledEngineCategories={enabledEngineCategories}
-          searchParameter={searchParameters[i+1]}
-          isLast={i === searchParameters.length - 2}
-          lastJoiningOperator={lastJoiningOperator}
-        />
-      );
-
-      if(i+2 < searchParameters.length) {
-        parametersInGroup.push(
-        <SearchParametersWithGrouping
-        key={`search_parameter_group_${1 + level}`}
-        searchParameters={searchParameters.slice(i + 2)}
-        level={1 + level}
-        enabledEngineCategories={enabledEngineCategories}
-        lastJoin={searchParameters[i + 2 ].value}
-        openPill={openPill}
-        removePill={removePill}
-        modifyPill={modifyPill}
-        />
-        );
-      }
+          />
+        </span>]);
       break;
     } else {
-      parametersInGroup.push(
+    	output.push(
         <SearchParameter
         openPill={openPill}
         removePill={removePill}
         modifyPill={modifyPill}
-        key={`search_parameter_${searchParameter.id}`}
+        key={`search_parameter_${searchParameters[i].id}`}
         enabledEngineCategories={enabledEngineCategories}
-        searchParameter={searchParameter}
-        isLast={i === searchParameters.length - 1}
-      />)
-    }
-  }
-
-  return (<span className={ level > 0 ? cx(styles["searchGroup"]) :  cx(styles["searchContainer"])  }>{parametersInGroup}</span>);
-    /*
-    if (
-      searchParameter.conditionType === 'join' && searchParameter.value !== lastJoiningOperator && i != 0)
-    {
-      console.log("new group from", i);
-      console.log("New group", searchParameters.slice(i));
-      parametersInGroup.push(
-        <SearchParametersWithGrouping key={`search_parameter_group_${1+level}` }
-          searchParameters={searchParameters.slice(i)}
-          level={1+level}
-          enabledEngineCategories={enabledEngineCategories}
-          lastJoin={ searchParameter.value }
-          openPill={ openPill }
-          removePill={ removePill }
-          modifyPill={ modifyPill }
-        />
-      );
-      break;
-    } else {
-      parametersInGroup.push(
-        <SearchParameter
-        openPill={openPill}
-        removePill={removePill}
-        modifyPill={modifyPill}
-        key={`search_parameter_${searchParameter.id}`}
-        enabledEngineCategories={enabledEngineCategories}
-        searchParameter={searchParameter}
-        isLast={i === searchParameters.length - 1}
+        searchParameter={searchParameters[i]}
+        lastJoin={searchParameters.length === 0}
+        isLast={ searchParameters.length-1 === i}
       />
-      )
+    );
     }
   }
-  */
-  //return (<span className={ level > 0 ? cx(styles["searchGroup"]) :  cx(styles["searchContainer"])  }>{parametersInGroup}</span>);
-};
 
+  return (output);
+}
 
 const SearchBar = ({
   color,
@@ -241,13 +171,11 @@ const SearchBar = ({
   modifyPill,
   onSearch,
 }) => {
-  // const pillActions = { openPill, removePill };
-  // console.log(pillActions);
   return (
     <div className={containerClasses}>
       <div className={searchInputContainerClass} onClick={onSearch}>
         { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" /> : null }
-        { <SearchParametersWithGrouping searchParameters={ searchParameters }
+        { <SearchParameters searchParameters={ searchParameters }
         level={0}
         enabledEngineCategories={enabledEngineCategories}
         addPill={ addPill }
@@ -255,27 +183,7 @@ const SearchBar = ({
         removePill={ removePill }
         modifyPill={ modifyPill }
          /> }
-        {/*
-        {searchParameters.map( (searchParameter, index) => {
-          index === searchParameters.length - 1 ? [
-            <SearchParameter
-              openPill={openPill}
-              removePill={removePill}
-              key={ `search_parameter_${searchParameter.id}` }
-              enabledEngineCategories={enabledEngineCategories}
-              searchParameter={searchParameter}
-              isLast={ index === searchParameters.length - 1 } />,
-            <InputCursor key={ `after_${searchParameter.id}_input_cursor` } />
-          ] : <SearchParameter
-          openPill={openPill}
-          removePill={removePill}
-          key={ `search_parameter_${searchParameter.id}` }
-          enabledEngineCategories={enabledEngineCategories}
-          searchParameter={searchParameter}
-          isLast={ index === searchParameters.length - 1 } />
-        })}
-
-      */ }
+        { searchParameters.length > 0 ? <InputCursor className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
       <div className={supportedCategoriesClass}>
         {enabledEngineCategories &&

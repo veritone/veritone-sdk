@@ -73,8 +73,16 @@
   color: lightgrey;
 }
 
-.joinOperatorRoot {
+.joinOperatorRootLeft {
   border-left: 2px dashed lightgrey;
+  width: 2px;
+  color: #727272;
+  height: calc(1em + 14px);
+  margin-left: 0.25em;
+}
+
+.joinOperatorRootRight {
+  border-right: 2px dashed lightgrey;
 }
 
 .joinOperatorDisabled {
@@ -89,7 +97,15 @@
   align-items: center;
   //border-left: 2px solid blue;
   //border-right: 2px solid blue;
-  //border-bottom: 2px solid blue;
+  border-bottom: 2px solid blue;
+}
+
+.afterCursor {
+  width: 100%;
+  border: 0px;
+  display: flex;
+  height: 100%;
+  margin-left: 0.5em;
 }
 
 .searchGroup {
@@ -101,4 +117,8 @@
   align-items: center;
   //border-right: 2px solid blue;
   //background-color: rgba(0, 20, 60, 0.35);
+}
+
+.removeUnderline {
+  content: none;
 }

@@ -46,9 +46,7 @@ export default class SearchBarContainer extends React.Component {
     };
   };
 
-
   getLastJoiningOperator = (searchParameters) => {
-
     for(let i = searchParameters.length - 1; i >= 0; i--) {
       if(searchParameters[i].conditionType === 'join') {
         console.log("Last joining operator", searchParameters[i]);
@@ -70,7 +68,6 @@ export default class SearchBarContainer extends React.Component {
         });
 
         // if there's no selected pill, we're adding a new search parameter so add a joining operator
-
         if (!searchParameterId) {
           this.addJoiningOperator(lastJoiningOperator);
         }
@@ -109,7 +106,7 @@ export default class SearchBarContainer extends React.Component {
     );
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     return (
-      <div style={{ width: '100%', marginLeft: '1em', padding: 0 }}>
+      <div style={{ width: '100%', marginLeft: '1em', marginRight: '1em', overflowY: 'hidden', padding: 0 }}>
         <SearchBar
           color={this.props.color}
           enabledEngineCategories={this.props.enabledEngineCategories}

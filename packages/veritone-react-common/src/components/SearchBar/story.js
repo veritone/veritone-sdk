@@ -1,5 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { object } from '@storybook/addon-knobs/react';
 
 import update from 'immutability-helper';
 
@@ -60,9 +61,40 @@ const guid = () => {
 };
 
 export default class SampleSearchBar extends React.Component {
+  componentDidMount() {
+    if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
+    if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
+  }
+
   state = {
-    searchParameters: []
+    searchParameters: this.props.searchParameters && this.props.searchParameters.csp || []
   };
+
+  convertSearchParametersToCSP = searchParameters => {
+    const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
+
+    const baseQuery = {}
+    let lastJoin = searchParameters[1].value || 'AND';
+    let lastNode = [];
+    baseQuery[searchParameters[1].value] = lastNode;
+
+    for(let i = 0; i < searchParameters.length - 1; i++) {
+      const searchParameter = searchParameters[i];
+      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin) {
+        const nextNode = {};
+        nextNode[searchParameters[i+1].value] = [ CSP(searchParameters[i]) ];
+        lastNode.push( nextNode );
+        lastNode = nextNode[searchParameters[i+1].value];
+        lastJoin = searchParameters[i+1].value;
+      } else {
+        if(searchParameters[i].conditionType !== 'join') {
+          lastNode.push(CSP(searchParameter))
+        }
+      }
+    }
+    return baseQuery;
+  }
+
 
   addOrModifySearchParameter = parameter => {
     const index = this.state.searchParameters.findIndex(
@@ -163,7 +195,6 @@ export default class SampleSearchBar extends React.Component {
           addOrModifySearchParameter={this.addOrModifySearchParameter}
           removeSearchParameter={this.removeSearchParameter}
         />
-        <button onClick={this.searchQueryGenerator}>Search</button>
       </div>
     );
   }
@@ -193,6 +224,75 @@ storiesOf('SearchBar', module)
       </div>
     );
   })
-  .add('WithAllPills', () => {
-    return <SampleSearchBar />;
+  .add('WithTranscriptPill', () => {
+    var searchCallback;
+    var toCSPCallback;
+
+    let setSearchHandler = returnedFunction => {
+      searchCallback = returnedFunction;
+
+      // bind to the outside world here
+      document.getElementById("searchButton").onclick = searchCallback;
+    };
+
+    let setToCSPHandler = returnedFunction => {
+      toCSPCallback = returnedFunction;
+
+      // bind to the outside world here
+      document.getElementById("generateCSPButton").onclick = () => {
+        let csp = toCSPCallback();
+        console.log(csp);
+        console.log(JSON.stringify(csp));
+      };
+    };
+
+    const CSPToSearchParameters = cognitiveSearchProfile => {
+      const getJoinOperator = ( query ) => {
+        const operators = Object.keys(query);
+        return operators[0];
+      }
+
+      const searchParameters = [];
+      let joinOperator = getJoinOperator(cognitiveSearchProfile);
+      let conditions = cognitiveSearchProfile[joinOperator];
+
+      for(let i = 0; i < conditions.length; i++) {
+
+        if('engineCategoryId' in conditions[i]) {
+          const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
+          searchParameters.push( newSearchPill );
+          const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
+          searchParameters.push( newJoinOperator );
+        } else {
+          searchParameters.pop();
+          joinOperator = getJoinOperator(conditions[i])
+          const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
+          searchParameters.push( newJoinOperator );
+          conditions = conditions[i][joinOperator];
+          i = -1;
+        }
+      }
+
+      // make sure there's always a joining parameter at the end
+      if(searchParameters[searchParameters.length -1].conditionType !== 'join') {
+        lastNode.push({ id: guid(), conditionType: 'join', value: joinOperator });
+      }
+
+      return searchParameters;
+    }
+
+    let csp = {"AND":[{"state":{"search":"Lakers","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Celtics","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"OR":[{"state":{"search":"Kobe","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Shaq","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"}]}]};
+    let searchParameters = CSPToSearchParameters(csp);
+
+    console.log(JSON.stringify(searchParameters));
+
+    return [<SampleSearchBar
+      searchParameters={ object("CSP", {csp: searchParameters}) }
+      setSearch={ searchCallback => setSearchHandler(searchCallback) }
+      toCSP={ toCSPCallback => setToCSPHandler(toCSPCallback) }
+      />,
+      <button id="searchButton">Search</button>,
+      <button id="generateCSPButton">GenerateCSP</button>,
+
+    ] ;
   });
