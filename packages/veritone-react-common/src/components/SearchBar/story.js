@@ -18,6 +18,10 @@ import {
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
+
+// a lot of this information should come from this endpoint
+// https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
+// hardcoded for now to help setup storybook.
 const transcript = {
   id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
   name: 'Transcript',
@@ -28,7 +32,7 @@ const transcript = {
 };
 
 const recognizedText = {
-  id: 'searchbar-recognized-text-id',
+  id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
   name: 'RecognizedText',
   iconClass: 'icon-ocr',
   tooltip: 'Search by Recognized Text',
@@ -46,7 +50,7 @@ const engineCategoryMapping = {
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator
   },
-  'searchbar-recognized-text-id': {
+  '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
     modal: RecognizedTextSearchModal,
     getLabel: RecognizedTextDisplay,
     generateCondition: RecognizedTextConditionGenerator
