@@ -177,7 +177,6 @@ export default class SampleSearchBar extends React.Component {
           addOrModifySearchParameter={this.addOrModifySearchParameter}
           removeSearchParameter={this.removeSearchParameter}
         />
-        <button onClick={this.searchQueryGenerator}>Search</button>
       </div>
     );
   }
