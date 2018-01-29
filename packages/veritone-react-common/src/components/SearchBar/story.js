@@ -119,24 +119,48 @@ export default class SampleSearchBar extends React.Component {
       offset: 0
     };
 
-    const searchEngineCategoriesQuery = {
-      operator: 'and',
+
+    const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
+    const getJoinOperator = ( query ) => {
+      const operators = Object.keys(query);
+      return operators[0];
+    }
+
+    let joinOperator = getJoinOperator(csp);
+    let conditions = csp[joinOperator];
+
+    const newBooleanSubtree = {
+      operator: joinOperator,
       conditions: []
     };
+    baseQuery.query.conditions.push(newBooleanSubtree);
+    let queryConditions = newBooleanSubtree.conditions;
 
-    let searchCall = { ...baseQuery };
-    let searchCategoryFilters = { ...searchEngineCategoriesQuery };
-
-    this.state.searchParameters.map(searchParameter => {
-      searchCategoryFilters.conditions.push(
-        engineCategoryMapping[searchParameter.conditionType].generateCondition(
-          searchParameter
+    for(let i = 0; i < conditions.length; i++) {
+      console.log('current condition', conditions[i]);
+      if('engineCategoryId' in conditions[i]) {
+        // add an additional condition
+        const newCondition = engineCategoryMapping[conditions[i].engineCategoryId].generateCondition(
+          conditions[i].state
         )
-      );
-    });
-    searchCall.query.conditions.push(searchCategoryFilters);
+        queryConditions.push( newCondition );
+      } else {
+        // different boolean operator, add a new subtree
+        console.log("new subtree", conditions[i]);
+        const newBooleanSubtree = {
+          operator: getJoinOperator(conditions[i]),
+          conditions: []
+        };
+        queryConditions.push(newBooleanSubtree);
+        queryConditions = newBooleanSubtree.conditions;
+        debugger;
+        joinOperator = getJoinOperator(conditions[i]);
+        conditions = conditions[i][joinOperator];
+        i = -1;
+      }
+    }
 
-    console.log('V3 Query', searchCall);
+    console.log(baseQuery);
   };
 
   extendEngineCategories = engineCategories => {
