@@ -12,10 +12,17 @@ const autocompletePillClass = cx(styles['autocompletePill']);
 const deleteIconClass = cx(styles['deleteIcon']);
 
 class SearchAutocompleteContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.debouncedOnChange$ = new Rx.Subject();
+    this.debouncedOnChange = this.debouncedOnChange.bind(this);
+  }
+
   static propTypes = {
     selectResult: func,
     componentState: shape({
       error: bool,
+      queryString: string,
       queryResults: arrayOf(
         shape({
           header: string,
@@ -30,20 +37,31 @@ class SearchAutocompleteContainer extends React.Component {
       )
     }),
     onChange: func,
+    updateQueryString: func,
     applyFilter: func,
     cancel: func
   };
 
   state = JSON.parse(JSON.stringify(this.props.componentState));
 
+  componentDidMount() {
+      this.subscription = this.debouncedOnChange$
+        .debounceTime(500)
+        .subscribe(debouncedText => {
+          this.props.onChange(debouncedText)
+        });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
   debouncedOnChange = event => {
     let text = event.target.value;
-    let thisModal = this;
-    let debouncer = Rx.Observable.fromEvent(event.target, 'keyup').map(i => i.currentTarget.value);
-    let debouncedInput = debouncer.debounceTime(500);
-    debouncedInput.subscribe(debouncedText => {
-      this.props.onChange(debouncedText)
-    });
+    this.debouncedOnChange$.next(text);
+    this.props.updateQueryString(text);
   };
 
   onEnter = event => {
@@ -73,7 +91,16 @@ class SearchAutocompleteContainer extends React.Component {
   }
 }
 
-const SearchAutocompleteDownshift = ({ cancel, applyFilter, debouncedOnChange, onKeyPress, inputValue, queryString, results, selectResult }) => {
+const SearchAutocompleteDownshift = ({ 
+  cancel,
+  applyFilter,
+  debouncedOnChange,
+  onKeyPress,
+  inputValue,
+  queryString,
+  results,
+  selectResult
+}) => {
   const itemToString = (item) => item && item.label;
   return (
     <Downshift
@@ -117,7 +144,10 @@ const SearchAutocompleteDownshift = ({ cancel, applyFilter, debouncedOnChange, o
                                 selected: highlightedIndex === indexAcc
                               })}
                             >
-                              <Avatar src={ item.image } />
+                              { item.image
+                                ? <Avatar src={ item.image } />
+                                : null
+                              }
                               <div>{ item.label }</div>
                               <div>{ item.description }</div>
                             </MenuItem>

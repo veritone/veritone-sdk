@@ -106,26 +106,33 @@ export default class FaceSearchModal extends React.Component {
     cancel: func
   };
 
-  state = Object.assign({}, this.props.modalState);
+  state = JSON.parse(JSON.stringify(this.props.modalState));
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       this.props.fetchAutocomplete(debouncedQueryString).then(response => {
         let newState = Object.assign({}, this.state, {
+          queryString: debouncedQueryString,
           queryResults: response
         });
         this.setState(newState);
       }).catch(err => {
         this.setState({
           error: true,
+          queryString: debouncedQueryString,
           queryResults: []
         });
       });
     } else {
       this.setState({
+        queryString: '',
         queryResults: []
       });
     }
+  };
+
+  updateQueryString = text => {
+    this.setState(Object.assign({}, this.state, { queryString: text }));
   };
 
   selectResult = result => {
@@ -162,13 +169,14 @@ export default class FaceSearchModal extends React.Component {
           onChange={ this.onChange }
           modalState={ this.state }
           selectResult={ this.selectResult }
+          updateQueryString= { this.updateQueryString }
         />
       </Dialog>
     );
   }
 }
 
-export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, updateQueryString } ) => {
   return (
   <div>
     <DialogTitle>Search by Face</DialogTitle>
@@ -181,6 +189,7 @@ export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
         applyFilter={ applyFilter }
         componentState={ modalState }
         selectResult={ selectResult }
+        updateQueryString={ updateQueryString }
       />
     </DialogContent>
   </div>

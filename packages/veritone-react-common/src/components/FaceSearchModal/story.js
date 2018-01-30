@@ -11,7 +11,7 @@ storiesOf('FaceSearchModal', module).add('withOpenDialogAndDefaultValue', () => 
   return (
     <FaceSearchModal
       open={ boolean("Open", true) }
-      modalState={ object( "Search condition state", { queryResults: [], selectedResults: [] } ) }
+      modalState={ object( "Search condition state", { queryResults: [] } ) }
       cancel={ cancel }
       applyFilter={ logFilter }
     />
@@ -19,7 +19,7 @@ storiesOf('FaceSearchModal', module).add('withOpenDialogAndDefaultValue', () => 
 }).add( 'withoutDialog', () => {
   return (
     <FaceSearchForm
-      defaultValue={ [object( "Search condition state", [{ "libraryId": ('Some libraryId'), "entityId": ('Some entityId') }] )] }
+      modalState={ object( "Search condition state", { queryResults: [] } ) }
     />
   );
 });
