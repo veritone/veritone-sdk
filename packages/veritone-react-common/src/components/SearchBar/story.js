@@ -14,9 +14,24 @@ import {
   FaceDisplay,
   FaceConditionGenerator
 } from 'components/FaceSearchModal';
+import {
+  SentimentSearchModal,
+  SentimentDisplay,
+  SentimentConditionGenerator
+} from 'components/SentimentSearchModal';
+import {
+  RecognizedTextSearchModal,
+  RecognizedTextDisplay,
+  RecognizedTextConditionGenerator
+} from 'components/RecognizedTextSearchModal';
+
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
+
+// a lot of this information should come from this endpoint
+// https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
+// hardcoded for now to help setup storybook.
 const transcript = {
   id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
   name: 'Transcript',
@@ -33,16 +48,41 @@ const face = {
   enablePill: true,
   showPill: true
 };
+const sentiment = {
+  id: 'f2554098-f14b-4d81-9be1-41d0f992a22f',
+  name: 'Sentiment',
+  iconClass: 'icon-sentiment',
+  tooltip: 'Search by Sentiment',
+  enablePill: true,
+  showPill: true
+};
+const recognizedText = {
+  id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
+  name: 'RecognizedText',
+  iconClass: 'icon-ocr',
+  tooltip: 'Search by Recognized Text',
+  enablePill: true,
+  showPill: true
+};
 
 const appBarColor = '#4caf50';
-
-const enabledEngineCategories = [transcript, face];
+const enabledEngineCategories = [transcript, sentiment, face, recognizedText];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
     modal: TranscriptSearchModal,
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator
+  },
+  'f2554098-f14b-4d81-9be1-41d0f992a22f': {
+    modal: SentimentSearchModal,
+    getLabel: SentimentDisplay,
+    generateCondition: SentimentConditionGenerator
+  },
+  '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
+    modal: RecognizedTextSearchModal,
+    getLabel: RecognizedTextDisplay,
+    generateCondition: RecognizedTextConditionGenerator
   },
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': {
     modal: FaceSearchModal,
@@ -67,7 +107,7 @@ export default class SampleSearchBar extends React.Component {
   }
 
   state = {
-    searchParameters: this.props.searchParameters && this.props.searchParameters.csp || []
+    searchParameters: this.props.searchParameters || []
   };
 
   convertSearchParametersToCSP = searchParameters => {
@@ -80,7 +120,7 @@ export default class SampleSearchBar extends React.Component {
 
     for(let i = 0; i < searchParameters.length - 1; i++) {
       const searchParameter = searchParameters[i];
-      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin) {
+      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin && i !== searchParameters.length - 2) {
         const nextNode = {};
         nextNode[searchParameters[i+1].value] = [ CSP(searchParameters[i]) ];
         lastNode.push( nextNode );
@@ -94,7 +134,6 @@ export default class SampleSearchBar extends React.Component {
     }
     return baseQuery;
   }
-
 
   addOrModifySearchParameter = parameter => {
     const index = this.state.searchParameters.findIndex(
@@ -155,7 +194,6 @@ export default class SampleSearchBar extends React.Component {
     let queryConditions = newBooleanSubtree.conditions;
 
     for(let i = 0; i < conditions.length; i++) {
-      console.log('current condition', conditions[i]);
       if('engineCategoryId' in conditions[i]) {
         // add an additional condition
         const newCondition = engineCategoryMapping[conditions[i].engineCategoryId].generateCondition(
@@ -164,7 +202,6 @@ export default class SampleSearchBar extends React.Component {
         queryConditions.push( newCondition );
       } else {
         // different boolean operator, add a new subtree
-        console.log("new subtree", conditions[i]);
         const newBooleanSubtree = {
           operator: getJoinOperator(conditions[i]),
           conditions: []
@@ -286,7 +323,9 @@ storiesOf('SearchBar', module)
           const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
           searchParameters.push( newSearchPill );
           const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-          searchParameters.push( newJoinOperator );
+          if(newJoinOperator) {
+            searchParameters.push( newJoinOperator );
+          }
         } else {
           searchParameters.pop();
           joinOperator = getJoinOperator(conditions[i])
@@ -295,11 +334,6 @@ storiesOf('SearchBar', module)
           conditions = conditions[i][joinOperator];
           i = -1;
         }
-      }
-
-      // make sure there's always a joining parameter at the end
-      if(searchParameters[searchParameters.length -1].conditionType !== 'join') {
-        lastNode.push({ id: guid(), conditionType: 'join', value: joinOperator });
       }
 
       return searchParameters;
@@ -311,7 +345,7 @@ storiesOf('SearchBar', module)
     console.log(JSON.stringify(searchParameters));
 
     return [<SampleSearchBar
-      searchParameters={ object("CSP", {csp: searchParameters}) }
+      searchParameters={ CSPToSearchParameters( object("CSP", csp) ) }
       setSearch={ searchCallback => setSearchHandler(searchCallback) }
       toCSP={ toCSPCallback => setToCSPHandler(toCSPCallback) }
       />,

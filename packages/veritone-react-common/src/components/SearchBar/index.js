@@ -49,10 +49,9 @@ const InputCursor = () => (
 
 const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) => {
   const joinOperatorClass = cx(styles['joinOperator']);
-  const joinOperatorRootClass = ( lastJoiningOperator === operator || !lastJoiningOperator ) ? cx(styles['joinOperatorRootRight']) : null;
-
-  console.log("Last operator", lastJoiningOperator);
-  console.log("This operator", operator);
+  // uncomment the following line if you want a dashed line at the end;
+  //const joinOperatorRootClass = ( lastJoiningOperator === operator || !lastJoiningOperator ) ? cx(styles['joinOperatorRootRight']) : null;
+  const joinOperatorRootClass = null;
 
   return (
     <Select
@@ -74,7 +73,7 @@ const StaticJoiningOperator = ( {operator} ) => {
   );
 }
 
-const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, openPill, removePill, modifyPill, lastJoiningOperator} ) => {
+const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, openPill, removePill, modifyPill, lastJoiningOperator, level} ) => {
   // assume strings are always AND or OR operators for now
 
   if( searchParameter.conditionType === 'join' ) {
@@ -86,7 +85,8 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
           id: id
         })
       };
-    return isLast ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value} /> )
+    // level < 1 is the feature toggle for maximum tree depth
+    return isLast && level < 1 ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value} /> )
   }
   // otherwise it's a search engine category
   else
@@ -118,10 +118,11 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
 
   let output = [];
   for (let i = 0; i < searchParameters.length; i++ ) {
-  	if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoiner) {
+    // i !== searchParameters.length - 2 makes it so if the last operator is different from the last joining operator (aka it would normally be parsed as a new subtree, the last joining operator is ignored)
+  	if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoiner && i !== searchParameters.length - 2) {
     	// recursive descent
       output.push([
-      <span className={cx(styles['searchContainer'])}>
+      <span className={cx(styles['searchContainer'])} key={`search_container_${searchParameters[i]}`}>
           <SearchParameter
             openPill={openPill}
             removePill={removePill}
@@ -130,12 +131,14 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
             isLast={ searchParameters.length-1 === i}
             enabledEngineCategories={enabledEngineCategories}
             searchParameter={searchParameters[i]}
+            level={level}
             lastJoin={searchParameters.length === 0}
           />
           <SearchParameters
-          key={`search_parameters_grouping_${searchParameters[i].id}`}
+          key={`search_parameters_grouping_${searchParameters[i].id}_${level}`}
           searchParameters={searchParameters.slice(i + 1)}
           lastJoin={searchParameters[i+1].value}
+          level={level+1}
           openPill={openPill}
           enabledEngineCategories={enabledEngineCategories}
           removePill={removePill}
@@ -151,6 +154,7 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
         modifyPill={modifyPill}
         key={`search_parameter_${searchParameters[i].id}`}
         enabledEngineCategories={enabledEngineCategories}
+        level={level}
         searchParameter={searchParameters[i]}
         lastJoin={searchParameters.length === 0}
         isLast={ searchParameters.length-1 === i}
@@ -176,7 +180,9 @@ const SearchBar = ({
     <div className={containerClasses}>
       <div className={searchInputContainerClass} onClick={onSearch}>
         { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" /> : null }
-        { <SearchParameters searchParameters={ searchParameters }
+        { <SearchParameters
+        key={'top_level_search_parameters'}
+        searchParameters={ searchParameters }
         level={0}
         enabledEngineCategories={enabledEngineCategories}
         addPill={ addPill }
