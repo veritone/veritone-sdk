@@ -20,10 +20,24 @@ function attachAutocomplete(url, config) {
       // TODO: Remove this fank hill promise code and integrate with autocomplete
       return new Promise((resolve, reject) => {
         resolve([{
+          header: 'Full Text',
+          items: [{
+            type: 'fullText'
+          }] 
+        }, {
           header: 'Libraries',
           items: [{
             id: 'some libraryId',
             type: 'library',
+            label: 'King of the Hill',
+            image: 'http://www.gstatic.com/tv/thumb/tvbanners/184316/p184316_b_v8_ac.jpg',
+            description: '\'Merica'
+          }] 
+        }, {
+          header: 'Entities',
+          items: [{
+            id: 'some entityId',
+            type: 'entity',
             label: 'Hank Hill',
             image: 'http://odditymall.com/includes/content/upload/hank-hill-tripping-balls-t-shirt-1020.jpg',
             description: 'I tell you whut'

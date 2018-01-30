@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Button, Chip, TextField } from 'material-ui';
+import { Avatar, Button, Chip, MenuItem, Paper, TextField } from 'material-ui';
 import Downshift from 'downshift';
 import { isArray } from 'lodash';
 import Rx from 'rxjs/Rx';
@@ -58,19 +58,14 @@ class SearchAutocompleteContainer extends React.Component {
     return (
       <div>
         <div>
-          <SearchAutocompleteTextField
+          <SearchAutocompleteDownshift
             cancel={ this.props.cancel }
             applyFilter={ this.props.applyFilter }
-            onChange={ this.debouncedOnChange }
+            debouncedOnChange={ this.debouncedOnChange }
             onKeyPress={ this.onEnter }
             queryString={ this.props.componentState.queryString }
             results={ this.props.componentState.queryResults }
-          />
-        </div>
-        <div>
-          <SearchAutocompleteResults
             selectResult={ this.props.selectResult }
-            results={ this.props.componentState.queryResults }
           />
         </div>
       </div>
@@ -78,54 +73,68 @@ class SearchAutocompleteContainer extends React.Component {
   }
 }
 
-const SearchAutocompleteTextField = ({ cancel, applyFilter, onChange, onKeyPress, inputValue, queryString, results }) => {
+const SearchAutocompleteDownshift = ({ cancel, applyFilter, debouncedOnChange, onKeyPress, inputValue, queryString, results, selectResult }) => {
+  const itemToString = (item) => item && item.label;
   return (
-    <div>
-      <TextField
-        id="search_autocomplete_input"
-        autoFocus
-        defaultValue={ queryString }
-        margin="none"
-        onChange={ onChange }
-        onKeyPress={ onKeyPress }
-        placeholder="Type to search"
-        helperText="Searches within our database"
-      />
-      <Button
-        disabled={ !results.length || !results[0].items || !results[0].items.length }
-        onClick={ applyFilter }
-        color="primary"
-        raised
-      >
-        Search
-      </Button>
-    </div>
-  );
-}
-
-const SearchAutocompleteResults = ({ selectResult, results }) => {
-  return (
-    <div>
-      {results.map(result => {
-        return (
-          <div key={result.header}>
-            <div>{ result.header }</div>
-            <div>
-              { result.items.map(item => {
-                const select = () => { selectResult(item) };
-                return (
-                  <div key="item.id" onClick={ select }>
-                    <Avatar src={ item.image } />
-                    <div>{ item.label }</div>
-                    <div>{ item.description }</div>
-                  </div>
-                )
-              }) }
-            </div>
-          </div>
-        )
-      })}
-    </div>
+    <Downshift
+      itemToString={ itemToString }
+      onSelect={ selectResult }
+      render={({
+        getInputProps,
+        getItemProps,
+        selectedItem,
+        inputValue,
+        highlightedIndex,
+        isOpen
+      }) => (
+        <div>
+          <TextField
+            {...getInputProps({
+              value: queryString,
+              placeholder: "Type to search",
+              autoFocus: true,
+              onChange: debouncedOnChange,
+              onKeyPress: onKeyPress
+            })}
+          />
+          { isOpen ? 
+            <Paper square>
+              {
+                results && results.reduce((result, section, sectionIndex) => {
+                  result.sections.push(
+                    <div key={ 'section_' + sectionIndex }>
+                      <div>{ section.header }</div>
+                      <div>
+                        { section.items.slice(0, 4).map((item, index) => {
+                          const indexAcc = result.itemIndex++;
+                          return (
+                            <MenuItem
+                              key={ 'item' + indexAcc }
+                              component="div"
+                              {...getItemProps({
+                                item: item,
+                                index: indexAcc,
+                                selected: highlightedIndex === indexAcc
+                              })}
+                            >
+                              <Avatar src={ item.image } />
+                              <div>{ item.label }</div>
+                              <div>{ item.description }</div>
+                            </MenuItem>
+                          )
+                        }) }
+                      </div>
+                    </div>
+                  );
+                  return result;
+                }, { sections: [], itemIndex: 0 } ).sections
+              }
+            </Paper>
+            : null 
+          }
+        </div>
+      )} 
+    />
   );
 };
 
