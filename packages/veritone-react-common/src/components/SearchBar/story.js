@@ -36,7 +36,7 @@ const transcript = {
   showPill: true
 };
 const sentiment = {
-  id: 'searchbar-sentiment-id',
+  id: 'f2554098-f14b-4d81-9be1-41d0f992a22f',
   name: 'Sentiment',
   iconClass: 'icon-sentiment',
   tooltip: 'Search by Sentiment',
@@ -61,7 +61,7 @@ const engineCategoryMapping = {
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator
   },
-  'searchbar-sentiment-id': {
+  'f2554098-f14b-4d81-9be1-41d0f992a22f': {
     modal: SentimentSearchModal,
     getLabel: SentimentDisplay,
     generateCondition: SentimentConditionGenerator
