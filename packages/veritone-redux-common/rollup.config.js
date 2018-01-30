@@ -4,7 +4,7 @@ import babel from 'rollup-plugin-babel';
 import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
 import analyze from 'rollup-analyzer-plugin';
-import uglify from 'rollup-plugin-uglify';
+// import uglify from 'rollup-plugin-uglify';
 
 import PropTypes from 'prop-types';
 
@@ -47,9 +47,11 @@ export default [
       }),
 
       json(),
-      uglify({
-        compress: { passes: 4, toplevel: true }
-      }),
+      // uglify({
+      //   compress: { passes: 4, toplevel: true, keep_fnames: true },
+      //   mangle: { keep_fnames: true },
+      //   beautify: true
+      // }),
       analyze({
         limit: 5,
         stdout: true
