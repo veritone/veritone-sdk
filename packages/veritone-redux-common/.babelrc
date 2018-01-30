@@ -1,6 +1,39 @@
 {
-  "presets": ["env", "react"],
+  "env": {
+    "test": {
+      "presets": [["env"]]
+    },
+    "production": {
+      "plugins": ["external-helpers"]
+    }
+  },
+
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "targets": {
+          "browsers": ["last 2 versions"]
+        },
+        "exclude": ["transform-regenerator"],
+        "useBuiltIns": false
+      }
+    ],
+    "react"
+  ],
   "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": "./src",
+        "alias": {
+          "helpers": "./src/helpers",
+          "modules": "./src/modules",
+          "util": "./src/util"
+        }
+      }
+    ],
     "transform-export-extensions",
     "transform-decorators-legacy",
     "transform-class-properties",

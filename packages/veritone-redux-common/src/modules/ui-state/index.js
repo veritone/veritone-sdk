@@ -1,5 +1,4 @@
 // reducer supporting shared-components/withUIState decorator
-
 import { createReducer } from 'helpers/redux';
 // import { } from 'lodash';
 
