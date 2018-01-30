@@ -14,10 +14,8 @@
       {
         "modules": false,
         "targets": {
-          "browsers": ["last 2 versions"]
-        },
-        "exclude": ["transform-regenerator"],
-        "useBuiltIns": false
+          "browsers": ["> 5%"]
+        }
       }
     ],
     "react"
