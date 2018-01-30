@@ -18,7 +18,7 @@ export default [
         exports: 'named'
       }
     ],
-    external: ['react', 'react-dom', 'react-redux'],
+    external: ['react', 'react-dom', 'react-redux', 'redux-saga', 'redux-saga/effects', 'lodash'],
     plugins: [
       replace({
         'process.env.NODE_ENV': JSON.stringify('production')
