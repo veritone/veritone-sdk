@@ -37,7 +37,6 @@ class SearchAutocompleteContainer extends React.Component {
       )
     }),
     onChange: func,
-    updateQueryString: func,
     applyFilter: func,
     cancel: func
   };
@@ -47,6 +46,8 @@ class SearchAutocompleteContainer extends React.Component {
   componentDidMount() {
       this.subscription = this.debouncedOnChange$
         .debounceTime(500)
+        .distinctUntilChanged()
+        .switchMap( debouncedText => this.props.onChange(debouncedText) )
         .subscribe(debouncedText => {
           this.props.onChange(debouncedText)
         });
@@ -61,7 +62,7 @@ class SearchAutocompleteContainer extends React.Component {
   debouncedOnChange = event => {
     let text = event.target.value;
     this.debouncedOnChange$.next(text);
-    this.props.updateQueryString(text);
+    this.setState(Object.assign({}, this.state, { queryString: text }));
   };
 
   onEnter = event => {
@@ -81,7 +82,7 @@ class SearchAutocompleteContainer extends React.Component {
             applyFilter={ this.props.applyFilter }
             debouncedOnChange={ this.debouncedOnChange }
             onKeyPress={ this.onEnter }
-            queryString={ this.props.componentState.queryString }
+            queryString={ this.state.queryString }
             results={ this.props.componentState.queryResults }
             selectResult={ this.props.selectResult }
           />

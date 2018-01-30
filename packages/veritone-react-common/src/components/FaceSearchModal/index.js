@@ -66,7 +66,8 @@ function attachAutocomplete(url, config) {
         // }]
       });
     }
-    target.defaultProps = { ...target.defaultProps, fetchAutocomplete: fetchAutocomplete };
+    let defaultProps = { ...target.defaultProps, fetchAutocomplete: fetchAutocomplete };
+    target.defaultProps = defaultProps;
     return target;
   };
 }
@@ -77,7 +78,7 @@ export default class FaceSearchModal extends React.Component {
     modalState: { queryResults: [], queryString: '' },
     applyFilter: value => console.log('Search faces by entityId', value),
     cancel: () => console.log('You clicked cancel')
-  }
+  };
 
   constructor(props, defaultProps) {
     super(props, defaultProps);
@@ -110,12 +111,13 @@ export default class FaceSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
-      this.props.fetchAutocomplete(debouncedQueryString).then(response => {
+      return this.props.fetchAutocomplete(debouncedQueryString).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
           queryResults: response
         });
         this.setState(newState);
+        return debouncedQueryString;
       }).catch(err => {
         this.setState({
           error: true,
@@ -129,10 +131,6 @@ export default class FaceSearchModal extends React.Component {
         queryResults: []
       });
     }
-  };
-
-  updateQueryString = text => {
-    this.setState(Object.assign({}, this.state, { queryString: text }));
   };
 
   selectResult = result => {
@@ -169,14 +167,13 @@ export default class FaceSearchModal extends React.Component {
           onChange={ this.onChange }
           modalState={ this.state }
           selectResult={ this.selectResult }
-          updateQueryString= { this.updateQueryString }
         />
       </Dialog>
     );
   }
 }
 
-export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, updateQueryString } ) => {
+export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
     <DialogTitle>Search by Face</DialogTitle>
@@ -189,7 +186,6 @@ export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
         applyFilter={ applyFilter }
         componentState={ modalState }
         selectResult={ selectResult }
-        updateQueryString={ updateQueryString }
       />
     </DialogContent>
   </div>
