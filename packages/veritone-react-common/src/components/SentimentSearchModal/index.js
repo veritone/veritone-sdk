@@ -35,9 +35,13 @@ export default class SentimentSearchModal extends React.Component {
   };
 
   applyFilterIfValue = () => {
-    this.props.applyFilter(
-      { search: this.state.filterValue ? this.state.filterValue.trim() : null }
-    );
+    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+      this.props.applyFilter();
+    } else {
+      this.props.applyFilter(
+        { search: this.state.filterValue ? this.state.filterValue.trim() : null }
+      );
+    }
   };
 
   render() {
