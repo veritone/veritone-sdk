@@ -104,7 +104,7 @@ const engineCategoryMapping = {
   },
   '088a31be-9bd6-4628-a6f0-e4004e362ea0': {
     modal: ObjectSearchModal,
-    getLabel: FaceDisplay,
+    getLabel: ObjectDisplay,
     generateCondition: ObjectConditionGenerator
   }
 };
