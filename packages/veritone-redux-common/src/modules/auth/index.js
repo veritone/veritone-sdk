@@ -3,13 +3,9 @@ import {
   LOGIN_SUCCESS,
   FETCH_USER_SUCCESS,
   REFRESH_TOKEN_SUCCESS
-} from '../user';
+} from '../user/constants';
 
-export const REQUEST_OAUTH_GRANT = 'REQUEST_OAUTH_GRANT';
-export const OAUTH_GRANT_FLOW_FAILED = 'OAUTH_GRANT_FLOW_FAILED';
-export const OAUTH_GRANT_FLOW_SUCCESS = 'OAUTH_GRANT_FLOW_SUCCESS';
-export const SET_SESSION_TOKEN = 'vtn/user/SET_SESSION_TOKEN';
-export const SET_OAUTH_TOKEN = 'vtn/user/SET_OAUTH_TOKEN';
+import * as constants from './constants';
 
 export const namespace = 'auth';
 
@@ -19,7 +15,7 @@ const defaultState = {
 };
 
 const reducer = createReducer(defaultState, {
-  [OAUTH_GRANT_FLOW_SUCCESS](state, { payload: { OAuthToken } }) {
+  [constants.OAUTH_GRANT_FLOW_SUCCESS](state, { payload: { OAuthToken } }) {
     return {
       ...state,
       OAuthToken
@@ -47,14 +43,14 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [SET_SESSION_TOKEN](state, { payload }) {
+  [constants.SET_SESSION_TOKEN](state, { payload }) {
     return {
       ...state,
       sessionToken: payload
     };
   },
 
-  [SET_OAUTH_TOKEN](state, { payload }) {
+  [constants.SET_OAUTH_TOKEN](state, { payload }) {
     return {
       ...state,
       oauthToken: payload
@@ -73,7 +69,7 @@ export function setSessionToken(token) {
   // is fetched, it will be replaced with the one from the server. Should be
   // used for initial fetchUser calls when the token is already known.
   return {
-    type: SET_SESSION_TOKEN,
+    type: constants.SET_SESSION_TOKEN,
     payload: token
   };
 }
@@ -82,21 +78,21 @@ export function setOAuthToken(token) {
   // put an OAuth token into state. For when an OAuthToken is provided
   // outside the OAUTH_GRANT flow
   return {
-    type: SET_OAUTH_TOKEN,
+    type: constants.SET_OAUTH_TOKEN,
     payload: token
   };
 }
 
 export function requestOAuthGrant(OAuthURI, onSuccess, onFailure) {
   return {
-    type: REQUEST_OAUTH_GRANT,
+    type: constants.REQUEST_OAUTH_GRANT,
     payload: { OAuthURI, onSuccess, onFailure }
   };
 }
 
 export function OAuthGrantSuccess({ OAuthToken }) {
   return {
-    type: OAUTH_GRANT_FLOW_SUCCESS,
+    type: constants.OAUTH_GRANT_FLOW_SUCCESS,
     payload: { OAuthToken }
   };
 }
