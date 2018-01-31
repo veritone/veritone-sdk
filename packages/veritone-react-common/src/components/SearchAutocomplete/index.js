@@ -15,7 +15,6 @@ class SearchAutocompleteContainer extends React.Component {
   constructor(props) {
     super(props);
     this.debouncedOnChange$ = new Rx.Subject();
-    this.debouncedOnChange = this.debouncedOnChange.bind(this);
   }
 
   static propTypes = {

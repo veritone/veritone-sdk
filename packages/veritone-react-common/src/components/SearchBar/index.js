@@ -43,8 +43,8 @@ const searchInputContainerClass = cx(styles['searchInput']);
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
-const InputCursor = () => (
-  <input className={ cx(styles['afterCursor'])} type="textbox" size="1" />
+const InputCursor = ({onKeyPress}) => (
+  <input onKeyPress={onKeyPress} maxlength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1" />
 )
 
 const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) => {
@@ -176,9 +176,16 @@ const SearchBar = ({
   modifyPill,
   onSearch,
 }) => {
+  const getOnEnter = (onSearch) => (evt) => {
+    console.log(onSearch);
+    if(evt.key === 'Enter') {
+      onSearch();
+    }
+  }
+
   return (
     <div className={containerClasses}>
-      <div className={searchInputContainerClass} onClick={onSearch}>
+      <div className={searchInputContainerClass}>
         { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" /> : null }
         { <SearchParameters
         key={'top_level_search_parameters'}
@@ -190,7 +197,7 @@ const SearchBar = ({
         removePill={ removePill }
         modifyPill={ modifyPill }
          /> }
-        { searchParameters.length > 0 ? <InputCursor className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
+        { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
       <div className={supportedCategoriesClass}>
         {enabledEngineCategories &&
@@ -208,6 +215,7 @@ const SearchBar = ({
 };
 SearchBar.propTypes = {
   color: string.isRequired,
+  libraries: arrayOf(string),
   searchParameters: arrayOf(shape(condition)),
   enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
   onSearch: func,

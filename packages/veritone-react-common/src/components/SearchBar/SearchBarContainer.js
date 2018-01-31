@@ -5,11 +5,24 @@ import { SearchBar } from '.';
 export default class SearchBarContainer extends React.Component {
   static propTypes = {
     color: string,
+    api: string,
+    libraries: arrayOf(string),
     searchParameters: arrayOf(object),
     addOrModifySearchParameter: func,
     removeSearchParameter: func,
     enabledEngineCategories: arrayOf(object)
   };
+
+  componentDidMount() {
+    this.getAuth();
+  }
+
+  getAuth() {
+    console.log(this.props.api);
+    if(this.props.api) {
+      fetch(`${this.props.api}admin/current-user`, {credentials: 'include'}).then( x => x.json()).then(y => console.log(y));
+    }
+  }
 
   state = {
     openModal: { modalId: null },
@@ -106,9 +119,10 @@ export default class SearchBarContainer extends React.Component {
     );
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     return (
-      <div style={{ width: '100%', marginLeft: '1em', marginRight: '1em', overflowY: 'hidden', padding: 0 }}>
+      <div style={{ width: '100%', marginLeft: '0em', marginRight: '0em', overflowY: 'hidden', padding: 0 }}>
         <SearchBar
           color={this.props.color}
+          libraries={this.props.libraries}
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
           addJoiningOperator={this.props.addJoiningOperator}
@@ -120,6 +134,7 @@ export default class SearchBarContainer extends React.Component {
         {Modal ? (
           <Modal
             open
+            libraries={this.props.libraries}
             modalState={this.state.openModal.modalState}
             cancel={this.cancelModal}
             applyFilter={this.getApplyFilter(

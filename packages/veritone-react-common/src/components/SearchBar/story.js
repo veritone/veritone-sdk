@@ -323,29 +323,17 @@ export default class SampleSearchBar extends React.Component {
 
   render() {
     return (
-      <div
-        style={{
-          height: '100%',
-          width: '100%',
-          background: appBarColor,
-          padding: '0px',
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        <div style={{ margin: '0 1em 0 1em', padding: 0 }}>
-          <h3>Logo</h3>
-        </div>
-        <SearchBarContainer
-          color={appBarColor}
-          enabledEngineCategories={this.extendEngineCategories(
-            enabledEngineCategories
-          )}
-          searchParameters={this.state.searchParameters}
-          addOrModifySearchParameter={this.addOrModifySearchParameter}
-          removeSearchParameter={this.removeSearchParameter}
-        />
-      </div>
+      <SearchBarContainer
+        color={this.props.color}
+        enabledEngineCategories={this.extendEngineCategories(
+          enabledEngineCategories
+        )}
+        api={this.props.api}
+        libraries={this.props.libraries}
+        searchParameters={this.state.searchParameters}
+        addOrModifySearchParameter={this.addOrModifySearchParameter}
+        removeSearchParameter={this.removeSearchParameter}
+      />
     );
   }
 }
@@ -424,7 +412,6 @@ storiesOf('SearchBar', module)
           i = -1;
         }
       }
-
       return searchParameters;
     }
 
@@ -433,11 +420,25 @@ storiesOf('SearchBar', module)
 
     console.log(JSON.stringify(searchParameters));
 
-    return [<SampleSearchBar
+    return [
+      <div
+        style={{
+          height: '45px',
+          width: '100%',
+          padding: '5px',
+          background: appBarColor,
+          padding: '5px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+      <SampleSearchBar
+      api="https://api.aws-dev.veritone.com/v1/"
+      color={appBarColor}
       searchParameters={ CSPToSearchParameters( object("CSP", csp) ) }
       setSearch={ searchCallback => setSearchHandler(searchCallback) }
       toCSP={ toCSPCallback => setToCSPHandler(toCSPCallback) }
-      />,
+      /></div>,
       <button id="searchButton">Search</button>,
       <button id="generateCSPButton">GenerateCSP</button>,
 

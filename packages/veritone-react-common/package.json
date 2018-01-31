@@ -30,7 +30,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
-    "start": "start-storybook -p 9001 -c .storybook",
+    "start": "start-storybook -p 9000 -c .storybook",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
     "clean:build": "rimraf build",
     "prebuild": "npm run clean:build",
