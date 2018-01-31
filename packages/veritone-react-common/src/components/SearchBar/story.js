@@ -216,21 +216,8 @@ export default class SampleSearchBar extends React.Component {
 
   render() {
     return (
-      <div
-        style={{
-          height: '100%',
-          width: '100%',
-          background: appBarColor,
-          padding: '0px',
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        <div style={{ margin: '0 1em 0 1em', padding: 0 }}>
-          <h3>Logo</h3>
-        </div>
         <SearchBarContainer
-          color={appBarColor}
+          color={ this.props.color }
           enabledEngineCategories={this.extendEngineCategories(
             enabledEngineCategories
           )}
@@ -238,7 +225,6 @@ export default class SampleSearchBar extends React.Component {
           addOrModifySearchParameter={this.addOrModifySearchParameter}
           removeSearchParameter={this.removeSearchParameter}
         />
-      </div>
     );
   }
 }
