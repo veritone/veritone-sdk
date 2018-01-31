@@ -44,6 +44,11 @@ import {
   LogoDisplay,
   LogoConditionGenerator
 } from 'components/LogoSearchModal';
+import {
+  TagSearchModal,
+  TagDisplay,
+  TagConditionGenerator
+} from 'components/TagSearchModal';
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -115,9 +120,17 @@ const logo = {
   enablePill: true,
   showPill: true
 };
+const tag = {
+  id: 'tag-search-id',
+  name: 'Tag Search',
+  iconClass: 'icon-tag',
+  tooltip: 'Search by Tag',
+  enablePill: true,
+  showPill: true
+}
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -159,6 +172,11 @@ const engineCategoryMapping = {
     modal: LogoSearchModal,
     getLabel: LogoDisplay,
     generateCondition: LogoConditionGenerator
+  },
+  'tag-search-id': {
+    modal: TagSearchModal,
+    getLabel: TagDisplay,
+    generateCondition: TagConditionGenerator
   }
 };
 
