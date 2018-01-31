@@ -10,15 +10,20 @@ import {
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
 import {
-  FaceSearchModal,
-  FaceDisplay,
-  FaceConditionGenerator
-} from 'components/FaceSearchModal';
-import {
   SentimentSearchModal,
   SentimentDisplay,
   SentimentConditionGenerator
 } from 'components/SentimentSearchModal';
+import {
+  FingerprintSearchModal,
+  FingerprintDisplay,
+  FingerprintConditionGenerator
+} from 'components/FingerprintSearchModal';
+import {
+  FaceSearchModal,
+  FaceDisplay,
+  FaceConditionGenerator
+} from 'components/FaceSearchModal';
 import {
   ObjectSearchModal,
   ObjectDisplay,
@@ -45,6 +50,22 @@ const transcript = {
   enablePill: true,
   showPill: true
 };
+const sentiment = {
+  id: 'f2554098-f14b-4d81-9be1-41d0f992a22f',
+  name: 'Sentiment',
+  iconClass: 'icon-sentiment',
+  tooltip: 'Search by Sentiment',
+  enablePill: true,
+  showPill: true
+};
+const fingerprint = {
+  id: '17d62b84-8b49-465b-a6be-fe3ea3bc8f05',
+  name: 'Fingerprint',
+  iconClass: 'icon-finger_print3',
+  tooltip: 'Search by Fingerprint',
+  enablePill: true,
+  showPill: true
+};
 const face = {
   id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
   name: 'Face',
@@ -61,14 +82,6 @@ const obj = {
   enablePill: true,
   showPill: true
 };
-const sentiment = {
-  id: 'f2554098-f14b-4d81-9be1-41d0f992a22f',
-  name: 'Sentiment',
-  iconClass: 'icon-sentiment',
-  tooltip: 'Search by Sentiment',
-  enablePill: true,
-  showPill: true
-};
 const recognizedText = {
   id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
   name: 'RecognizedText',
@@ -79,7 +92,7 @@ const recognizedText = {
 };
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, face, obj, recognizedText];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -106,6 +119,11 @@ const engineCategoryMapping = {
     modal: ObjectSearchModal,
     getLabel: ObjectDisplay,
     generateCondition: ObjectConditionGenerator
+  },
+  '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': {
+    modal: FingerprintSearchModal,
+    getLabel: FingerprintDisplay,
+    generateCondition: FingerprintConditionGenerator
   }
 };
 
