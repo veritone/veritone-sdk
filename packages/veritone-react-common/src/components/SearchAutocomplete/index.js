@@ -103,6 +103,7 @@ const SearchAutocompleteDownshift = ({
   selectResult
 }) => {
   const itemToString = (item) => item && item.label;
+  const onFocus = (event) => event.target.select();
   return (
     <Downshift
       itemToString={ itemToString }
@@ -121,6 +122,7 @@ const SearchAutocompleteDownshift = ({
               value: queryString,
               placeholder: "Type to search",
               autoFocus: true,
+              onFocus: onFocus,
               onChange: debouncedOnChange,
               onKeyPress: onKeyPress
             })}

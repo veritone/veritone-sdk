@@ -165,7 +165,7 @@ export default class FaceSearchModal extends React.Component {
     cancel: func
   };
 
-  state = JSON.parse(JSON.stringify(this.props.modalState));
+  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label } )));
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
