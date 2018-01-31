@@ -102,6 +102,7 @@ const SearchAutocompleteDownshift = ({
   results,
   selectResult
 }) => {
+  const RESULT_COUNT_PER_CATEGORY = 10;
   const itemToString = (item) => item && item.label;
   const onFocus = (event) => event.target.select();
   return (
@@ -137,7 +138,7 @@ const SearchAutocompleteDownshift = ({
                       <div>
                         {
                           section.items && section.items.length
-                          ? section.items.slice(0, 4).map((item, index) => {
+                          ? section.items.slice(0, RESULT_COUNT_PER_CATEGORY).map((item, index) => {
                               const indexAcc = result.itemIndex++;
                               return (
                                 <MenuItem

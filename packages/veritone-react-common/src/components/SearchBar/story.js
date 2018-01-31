@@ -39,6 +39,11 @@ import {
   RecognizedTextDisplay,
   RecognizedTextConditionGenerator
 } from 'components/RecognizedTextSearchModal';
+import {
+  LogoSearchModal,
+  LogoDisplay,
+  LogoConditionGenerator
+} from 'components/LogoSearchModal';
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -96,15 +101,23 @@ const sound = {
 };
 const recognizedText = {
   id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
-  name: 'RecognizedText',
+  name: 'Recognized Text',
   iconClass: 'icon-ocr',
   tooltip: 'Search by Recognized Text',
   enablePill: true,
   showPill: true
 };
+const logo = {
+  id: '5a511c83-2cbd-4f2d-927e-cd03803a8a9c',
+  name: 'Logo Recognition',
+  iconClass: 'icon-logo-detection',
+  tooltip: 'Search by Logo',
+  enablePill: true,
+  showPill: true
+};
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -141,6 +154,11 @@ const engineCategoryMapping = {
     modal: SoundSearchModal,
     getLabel: SoundDisplay,
     generateCondition: SoundConditionGenerator
+  },
+  '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
+    modal: LogoSearchModal,
+    getLabel: LogoDisplay,
+    generateCondition: LogoConditionGenerator
   }
 };
 
