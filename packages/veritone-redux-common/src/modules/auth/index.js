@@ -57,7 +57,7 @@ const reducer = createReducer(defaultState, {
   [SET_OAUTH_TOKEN](state, { payload }) {
     return {
       ...state,
-      oauthToken: payload
+      OAuthToken: payload
     };
   }
 });
