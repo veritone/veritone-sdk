@@ -133,27 +133,31 @@ const SearchAutocompleteDownshift = ({
                     <div key={ 'section_' + sectionIndex }>
                       <div>{ section.header }</div>
                       <div>
-                        { section.items.slice(0, 4).map((item, index) => {
-                          const indexAcc = result.itemIndex++;
-                          return (
-                            <MenuItem
-                              key={ 'item' + indexAcc }
-                              component="div"
-                              {...getItemProps({
-                                item: item,
-                                index: indexAcc,
-                                selected: highlightedIndex === indexAcc
-                              })}
-                            >
-                              { item.image
-                                ? <Avatar src={ item.image } />
-                                : null
-                              }
-                              <div>{ item.label }</div>
-                              <div>{ item.description }</div>
-                            </MenuItem>
-                          )
-                        }) }
+                        {
+                          section.items && section.items.length
+                          ? section.items.slice(0, 4).map((item, index) => {
+                              const indexAcc = result.itemIndex++;
+                              return (
+                                <MenuItem
+                                  key={ 'item' + indexAcc }
+                                  component="div"
+                                  {...getItemProps({
+                                    item: item,
+                                    index: indexAcc,
+                                    selected: highlightedIndex === indexAcc
+                                  })}
+                                >
+                                  { item.image
+                                    ? <Avatar src={ item.image } />
+                                    : null
+                                  }
+                                  <div>{ item.label }</div>
+                                  <div>{ item.description }</div>
+                                </MenuItem>
+                              )
+                            })
+                          : <div>No Results</div>
+                        }
                       </div>
                     </div>
                   );
