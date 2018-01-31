@@ -4,12 +4,16 @@
   "dependencies": {
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "redux-saga": "^0.16.0",
     "react-redux": "^5.0.6",
     "redux-api-middleware-fixed": "^1.2.0",
     "veritone-functional-permissions": "^1.0.1",
     "veritone-oauth-helpers": "^1.0.0"
   },
-  "main": "dist/bundle.js",
+  "module": "dist/bundle-es.js",
+  "jsnext:main": "dist/bundle-es.js",
   "scripts": {
     "start": "",
     "test": "BABEL_ENV=test jest",
@@ -70,10 +74,5 @@
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
     ]
-  },
-  "peerDependencies": {
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "redux-saga": "^0.16.0"
   }
 }
