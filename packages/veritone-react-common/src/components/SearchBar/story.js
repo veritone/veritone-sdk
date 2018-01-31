@@ -20,6 +20,11 @@ import {
   SentimentConditionGenerator
 } from 'components/SentimentSearchModal';
 import {
+  ObjectSearchModal,
+  ObjectDisplay,
+  ObjectConditionGenerator
+} from 'components/ObjectSearchModal';
+import {
   RecognizedTextSearchModal,
   RecognizedTextDisplay,
   RecognizedTextConditionGenerator
@@ -48,6 +53,14 @@ const face = {
   enablePill: true,
   showPill: true
 };
+const obj = {
+  id: '088a31be-9bd6-4628-a6f0-e4004e362ea0',
+  name: 'Object',
+  iconClass: 'icon-object_detection',
+  tooltip: 'Search by Object',
+  enablePill: true,
+  showPill: true
+};
 const sentiment = {
   id: 'f2554098-f14b-4d81-9be1-41d0f992a22f',
   name: 'Sentiment',
@@ -66,7 +79,7 @@ const recognizedText = {
 };
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, face, recognizedText];
+const enabledEngineCategories = [transcript, sentiment, face, obj, recognizedText];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -88,6 +101,11 @@ const engineCategoryMapping = {
     modal: FaceSearchModal,
     getLabel: FaceDisplay,
     generateCondition: FaceConditionGenerator
+  },
+  '088a31be-9bd6-4628-a6f0-e4004e362ea0': {
+    modal: ObjectSearchModal,
+    getLabel: FaceDisplay,
+    generateCondition: ObjectConditionGenerator
   }
 };
 
