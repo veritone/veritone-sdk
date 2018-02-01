@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
+import { FormHelperText } from 'material-ui/Form';
 
 import Dialog, {
   DialogActions,
@@ -71,7 +72,10 @@ export default class TranscriptSearchModal extends React.Component {
 export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
   return (
   <div>
-    <DialogTitle>Search by Keyword</DialogTitle>
+    <DialogTitle>
+      Search by Keyword
+      <FormHelperText>Searches within our database of media transcripts.</FormHelperText>
+    </DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <TextField
         id="transcript_search_field"
@@ -81,7 +85,6 @@ export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange
         onChange={ onChange }
         onKeyPress={ onKeyPress }
         placeholder="Phrase to search"
-        helperText="Searches within our database of media transcripts."
         fullWidth
       />
     </DialogContent>

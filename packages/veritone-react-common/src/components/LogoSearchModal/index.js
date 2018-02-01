@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
+import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -131,7 +132,10 @@ export default class LogoSearchModal extends React.Component {
 export const LogoSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
-    <DialogTitle>Search by Logo</DialogTitle>
+    <DialogTitle>
+      Search by Logo
+      <FormHelperText>Searches within our database for logos.</FormHelperText>
+    </DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <SearchAutocompleteContainer
         id="logo_autocomplete_container"
@@ -144,11 +148,14 @@ export const LogoSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
       />
     </DialogContent>
   </div>
-)}
+)};
 
 const LogoConditionGenerator = modalState => {
-  // TODO: implement translator
-  return {};
+  return {
+    operator: 'term',
+    field: 'logo-recognition.series.found',
+    value: modalState.id
+  };
 };
 
 const LogoDisplay = modalState => {
