@@ -120,6 +120,7 @@ export default class SearchBarContainer extends React.Component {
   };
 
   cancelModal = () => {
+    console.log("Close modal");
     this.setState({
       openModal: { modalId: null },
       selectedPill: null
@@ -140,6 +141,8 @@ export default class SearchBarContainer extends React.Component {
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
           addJoiningOperator={this.props.addJoiningOperator}
+          onRequestClose={ this.cancelModal }
+          onEscapeKeyUp={ this.cancelModal }
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
