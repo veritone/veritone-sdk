@@ -39,6 +39,7 @@ export default class FaceSearchModal extends React.Component {
 
   static propTypes = {
     open: bool,
+    auth: string,
     modalState: shape({
       error: bool,
       queryString: string,
@@ -64,7 +65,7 @@ export default class FaceSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
-      return this.props.fetchAutocomplete(debouncedQueryString, 'd1b49845-0cad-4cac-a34b-2d7a81cb791e').then(response => {
+      return this.props.fetchAutocomplete(debouncedQueryString, the.props.auth).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
           queryResults: response
@@ -97,7 +98,7 @@ export default class FaceSearchModal extends React.Component {
       });
     }
   };
- 
+
   applyFilterIfValue = () => {
     if (isArray(this.state.queryResults) && this.state.queryResults.length) {
       let firstSection = this.state.queryResults[0];
@@ -133,7 +134,7 @@ export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
   <div>
     <DialogTitle>Search by Face</DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
-      <SearchAutocompleteContainer 
+      <SearchAutocompleteContainer
         id="face_autocomplete_container"
         onChange={ onChange }
         onKeyPress={ onKeyPress }
