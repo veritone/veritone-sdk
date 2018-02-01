@@ -189,7 +189,7 @@ const guid = () => {
   return `${s4()}-${s4()}-${s4()}`;
 };
 
-export default class SampleSearchBar extends React.Component {
+export class SampleSearchBar extends React.Component {
   componentDidMount() {
     if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
     if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
