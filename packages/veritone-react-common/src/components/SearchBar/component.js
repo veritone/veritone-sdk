@@ -46,6 +46,11 @@ import {
   TagDisplay,
   TagConditionGenerator
 } from 'components/TagSearchModal';
+import {
+  TimeSearchModal,
+  TimeDisplay,
+  TimeConditionGenerator
+} from 'components/TimeSearchModal';
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -124,10 +129,18 @@ const tag = {
   tooltip: 'Search by Tag',
   enablePill: true,
   showPill: true
-}
+};
+const time = {
+  id: 'time-search-id',
+  name: 'Time Search',
+  iconClass: 'icon-calendar',
+  tooltip: 'Search by Time',
+  enablePill: true,
+  showPill: true
+};
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -174,6 +187,11 @@ const engineCategoryMapping = {
     modal: TagSearchModal,
     getLabel: TagDisplay,
     generateCondition: TagConditionGenerator
+  },
+  'time-search-id': {
+    modal: TimeSearchModal,
+    getLabel: TimeDisplay,
+    generateCondition: TimeConditionGenerator
   }
 };
 
