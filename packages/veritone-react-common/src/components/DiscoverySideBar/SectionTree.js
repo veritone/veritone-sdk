@@ -11,7 +11,7 @@ import {
   element,
   bool
 } from 'prop-types';
-import Button from 'material-ui/Button';
+import Button from 'material-ui/es/Button';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import ChevronRightIcon from 'material-ui-icons/ChevronRight';
 

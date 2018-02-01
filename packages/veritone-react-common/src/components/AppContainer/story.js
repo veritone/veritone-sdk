@@ -2,8 +2,8 @@ import React, { Fragment } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { range } from 'lodash';
-import Drawer from 'material-ui/Drawer';
-import List from 'material-ui/List';
+import Drawer from 'material-ui/es/Drawer';
+import List from 'material-ui/es/List';
 
 import AppBar from '../AppBar';
 import AppFooter from '../AppFooter';

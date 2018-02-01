@@ -1,5 +1,5 @@
 import React from 'react';
-import LibChip from 'material-ui/Chip';
+import LibChip from 'material-ui/es/Chip';
 import { string, node } from 'prop-types';
 
 import styles from './styles.scss';

@@ -1,11 +1,59 @@
 {
-  "presets": ["env", "react"],
-  "plugins": [
-    "add-react-displayname",
-    "transform-export-extensions",
-    "transform-decorators-legacy",
-    "transform-class-properties",
-    "transform-object-rest-spread",
-    "lodash"
-  ]
+  "env": {
+    "test": {
+      "presets": ["env", "react"],
+      "plugins": [
+        [
+          "module-resolver",
+          {
+            "root": "./src",
+            "alias": {
+              "helpers": "./src/helpers",
+              "images": "./src/resources/images",
+              "components": "./src/components"
+            }
+          }
+        ],
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash"
+      ]
+    },
+    "production": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": ["> 5%"]
+            }
+          }
+        ],
+        "react"
+      ],
+      "plugins": [
+        "external-helpers",
+        [
+          "module-resolver",
+          {
+            "alias": {
+              "helpers": "./src/helpers",
+              "images": "./src/resources/images",
+              "components": "./src/components"
+            }
+          }
+        ],
+        "add-react-displayname",
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash",
+        "date-fns"
+      ]
+    }
+  }
 }

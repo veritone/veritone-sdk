@@ -3,20 +3,20 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
 import { storiesOf } from '@storybook/react';
-import { InputLabel, InputAdornment } from 'material-ui/Input';
+import { InputLabel, InputAdornment } from 'material-ui/es/Input';
 import {
   FormHelperText,
   FormControl,
   FormControlLabel,
   FormLabel,
   FormGroup
-} from 'material-ui/Form';
-import Radio from 'material-ui/Radio';
-import { MenuItem } from 'material-ui/Menu';
+} from 'material-ui/es/Form';
+import Radio from 'material-ui/es/Radio';
+import { MenuItem } from 'material-ui/es/Menu';
 import Visibility from 'material-ui-icons/Visibility';
 import InfoIcon from 'material-ui-icons/Info';
-import IconButton from 'material-ui/IconButton';
-import Tooltip from 'material-ui/Tooltip';
+import IconButton from 'material-ui/es/IconButton';
+import Tooltip from 'material-ui/es/Tooltip';
 
 import { defaultIntervals } from 'helpers/date';
 import TextField from './TextField';

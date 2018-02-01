@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Tabs, { Tab } from 'material-ui/Tabs';
+import Tabs, { Tab } from 'material-ui/es/Tabs';
 import FilePickerHeader from './';
 
 describe('FilePickerHeader', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { func } from 'prop-types';
-import Button from 'material-ui/Button';
+import Button from 'material-ui/es/Button';
 
 import styles from './styles.scss';
 

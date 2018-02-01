@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DeleteIcon from 'material-ui-icons/Delete';
-import IconButton from 'material-ui/IconButton';
+import IconButton from 'material-ui/es/IconButton';
 import { shape, func, number, string } from 'prop-types';
 
 import styles from './styles.scss';

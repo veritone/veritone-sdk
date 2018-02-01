@@ -1,13 +1,13 @@
 import React from 'react';
 import { number, string, oneOf } from 'prop-types';
-import Paper from 'material-ui/Paper';
-import { CircularProgress } from 'material-ui/Progress';
+import Paper from 'material-ui/es/Paper';
+import { CircularProgress } from 'material-ui/es/Progress';
 import CheckCircle from 'material-ui-icons/CheckCircle';
 import RemoveCircle from 'material-ui-icons/RemoveCircle';
 import Warning from 'material-ui-icons/Warning';
-import green from 'material-ui/colors/green';
-import red from 'material-ui/colors/red';
-import yellow from 'material-ui/colors/yellow';
+import green from 'material-ui/es/colors/green';
+import red from 'material-ui/es/colors/red';
+import yellow from 'material-ui/es/colors/yellow';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';

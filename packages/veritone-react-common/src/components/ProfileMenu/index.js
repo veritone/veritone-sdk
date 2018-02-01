@@ -1,7 +1,7 @@
 import React from 'react';
 import AccountIcon from 'material-ui-icons/AccountCircle';
-import Menu from 'material-ui/Menu';
-import IconButton from 'material-ui/IconButton';
+import Menu from 'material-ui/es/Menu';
+import IconButton from 'material-ui/es/IconButton';
 import { string, func, shape } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';

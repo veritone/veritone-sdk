@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Button from 'material-ui/Button';
+import Button from 'material-ui/es/Button';
 import { number, func } from 'prop-types';
 import styles from './styles.scss';
 

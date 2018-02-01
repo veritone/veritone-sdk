@@ -9,7 +9,7 @@ import {
   element,
   object
 } from 'prop-types';
-import IconButton from 'material-ui/IconButton';
+import IconButton from 'material-ui/es/IconButton';
 import ClearFiltersIconFixme from 'material-ui-icons/FormatClear';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 

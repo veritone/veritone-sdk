@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { noop, startsWith, endsWith } from 'lodash';
-import Button from 'material-ui/Button';
+import Button from 'material-ui/es/Button';
 import { DropTarget } from 'react-dnd';
 import { string, func, arrayOf, bool } from 'prop-types';
 import mime from 'mime-types';

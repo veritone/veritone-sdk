@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import Paper from 'material-ui/Paper';
-import IconButton from 'material-ui/IconButton';
+import Paper from 'material-ui/es/Paper';
+import IconButton from 'material-ui/es/IconButton';
 import ArrowRightIcon from 'material-ui-icons/KeyboardArrowRight';
 import EditIcon from 'material-ui-icons/ModeEdit';
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { isString, isArray } from 'lodash';
 import pluralize from 'pluralize';
 import mime from 'mime-types';
-import Paper from 'material-ui/Paper';
+import Paper from 'material-ui/es/Paper';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
 import FileUploader from './FileUploader';

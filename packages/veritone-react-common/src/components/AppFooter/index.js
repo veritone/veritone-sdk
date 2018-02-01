@@ -1,5 +1,5 @@
 import React from 'react';
-import Paper from 'material-ui/Paper';
+import Paper from 'material-ui/es/Paper';
 import { node, number, oneOf } from 'prop-types';
 
 import styles from './styles.scss';
