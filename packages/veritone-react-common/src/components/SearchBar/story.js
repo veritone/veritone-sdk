@@ -14,6 +14,11 @@ import {
   RecognizedTextDisplay,
   RecognizedTextConditionGenerator
 } from 'components/RecognizedTextSearchModal';
+import {
+  TimeSearchModal,
+  TimeDisplay,
+  TimeConditionGenerator
+} from 'components/TimeSearchModal';
 
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
@@ -40,9 +45,18 @@ const recognizedText = {
   showPill: true
 };
 
+const time = {
+  id: 'fake_id_-6cd4-12dd-1c19-81be5398b70e',
+  name: 'Time',
+  iconClass: 'icon-calendar',
+  tooltip: 'Search by Time',
+  enablePill: true,
+  showPill: true
+};
+
 const appBarColor = '#4caf50';
 
-const enabledEngineCategories = [transcript, recognizedText];
+const enabledEngineCategories = [transcript, recognizedText, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -54,6 +68,11 @@ const engineCategoryMapping = {
     modal: RecognizedTextSearchModal,
     getLabel: RecognizedTextDisplay,
     generateCondition: RecognizedTextConditionGenerator
+  },
+  'fake_id_-6cd4-12dd-1c19-81be5398b70e': {
+    modal: TimeSearchModal,
+    getLabel: TimeDisplay,
+    generateCondition: TimeConditionGenerator
   }
 };
 
@@ -99,7 +118,7 @@ export default class SampleSearchBar extends React.Component {
       }
     }
     return baseQuery;
-  }
+  };
 
   addOrModifySearchParameter = parameter => {
     const index = this.state.searchParameters.findIndex(
