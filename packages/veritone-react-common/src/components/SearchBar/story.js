@@ -49,6 +49,12 @@ import {
   TagDisplay,
   TagConditionGenerator
 } from 'components/TagSearchModal';
+import {
+  TimeSearchModal,
+  TimeDisplay,
+  TimeConditionGenerator
+} from 'components/TimeSearchModal';
+
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
@@ -127,10 +133,18 @@ const tag = {
   tooltip: 'Search by Tag',
   enablePill: true,
   showPill: true
-}
+};
+const time = {
+  id: 'time-search-id',
+  name: 'Time',
+  iconClass: 'icon-calendar',
+  tooltip: 'Search by Time',
+  enablePill: true,
+  showPill: true
+};
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -142,11 +156,6 @@ const engineCategoryMapping = {
     modal: SentimentSearchModal,
     getLabel: SentimentDisplay,
     generateCondition: SentimentConditionGenerator
-  },
-  '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
-    modal: RecognizedTextSearchModal,
-    getLabel: RecognizedTextDisplay,
-    generateCondition: RecognizedTextConditionGenerator
   },
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': {
     modal: FaceSearchModal,
@@ -168,6 +177,11 @@ const engineCategoryMapping = {
     getLabel: SoundDisplay,
     generateCondition: SoundConditionGenerator
   },
+  '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
+    modal: RecognizedTextSearchModal,
+    getLabel: RecognizedTextDisplay,
+    generateCondition: RecognizedTextConditionGenerator
+  },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
     getLabel: LogoDisplay,
@@ -177,6 +191,11 @@ const engineCategoryMapping = {
     modal: TagSearchModal,
     getLabel: TagDisplay,
     generateCondition: TagConditionGenerator
+  },
+  'time-search-id': {
+    modal: TimeSearchModal,
+    getLabel: TimeDisplay,
+    generateCondition: TimeConditionGenerator
   }
 };
 
