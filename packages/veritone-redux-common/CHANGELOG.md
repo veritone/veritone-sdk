@@ -31,3 +31,8 @@ This allows redux-common to use more than one version of the API.
 * bump React to 16.2.0
 
 * remove minification from bundle for easier dev and debugging.
+
+## 2.1.1
+* Fix incorrect key name in reducer causing oauth to fail
+
+* Add callbacks to oauth saga to support behavior needed in veritone-widgets
