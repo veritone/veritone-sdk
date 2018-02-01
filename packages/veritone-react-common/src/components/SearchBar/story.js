@@ -177,7 +177,8 @@ const engineCategoryMapping = {
     modal: TagSearchModal,
     getLabel: TagDisplay,
     generateCondition: TagConditionGenerator
-  }
+  },
+  'station-playout-id': {}
 };
 
 const guid = () => {
