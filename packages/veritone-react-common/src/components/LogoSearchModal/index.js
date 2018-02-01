@@ -64,7 +64,7 @@ export default class LogoSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
-      return this.props.fetchAutocomplete(debouncedQueryString, 'd1b49845-0cad-4cac-a34b-2d7a81cb791e').then(response => {
+      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
           queryResults: response
@@ -97,7 +97,7 @@ export default class LogoSearchModal extends React.Component {
       });
     }
   };
- 
+
   applyFilterIfValue = () => {
     if (isArray(this.state.queryResults) && this.state.queryResults.length) {
       let firstSection = this.state.queryResults[0];
@@ -133,7 +133,7 @@ export const LogoSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
   <div>
     <DialogTitle>Search by Logo</DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
-      <SearchAutocompleteContainer 
+      <SearchAutocompleteContainer
         id="logo_autocomplete_container"
         onChange={ onChange }
         onKeyPress={ onKeyPress }

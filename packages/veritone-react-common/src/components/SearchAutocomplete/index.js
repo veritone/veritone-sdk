@@ -91,7 +91,7 @@ class SearchAutocompleteContainer extends React.Component {
   }
 }
 
-const SearchAutocompleteDownshift = ({ 
+const SearchAutocompleteDownshift = ({
   cancel,
   applyFilter,
   debouncedOnChange,
@@ -127,7 +127,7 @@ const SearchAutocompleteDownshift = ({
               onKeyPress: onKeyPress
             })}
           />
-          { isOpen ? 
+          { isOpen ?
             <Paper square>
               {
                 results && results.reduce((result, section, sectionIndex) => {
@@ -167,10 +167,10 @@ const SearchAutocompleteDownshift = ({
                 }, { sections: [], itemIndex: 0 } ).sections
               }
             </Paper>
-            : null 
+            : null
           }
         </div>
-      )} 
+      )}
     />
   );
 };
