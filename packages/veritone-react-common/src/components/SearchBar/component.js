@@ -5,47 +5,47 @@ import {
   TranscriptSearchModal,
   TranscriptDisplay,
   TranscriptConditionGenerator
-} from 'components/TranscriptSearchModal';
+} from '../TranscriptSearchModal';
 import {
   SentimentSearchModal,
   SentimentDisplay,
   SentimentConditionGenerator
-} from 'components/SentimentSearchModal';
+} from '../SentimentSearchModal';
 import {
   FingerprintSearchModal,
   FingerprintDisplay,
   FingerprintConditionGenerator
-} from 'components/FingerprintSearchModal';
+} from '../FingerprintSearchModal';
 import {
   FaceSearchModal,
   FaceDisplay,
   FaceConditionGenerator
-} from 'components/FaceSearchModal';
+} from '../FaceSearchModal';
 import {
   ObjectSearchModal,
   ObjectDisplay,
   ObjectConditionGenerator
-} from 'components/ObjectSearchModal';
+} from '../ObjectSearchModal';
 import {
   SoundSearchModal,
   SoundDisplay,
   SoundConditionGenerator
-} from 'components/SoundSearchModal'
+} from '../SoundSearchModal'
 import {
   RecognizedTextSearchModal,
   RecognizedTextDisplay,
   RecognizedTextConditionGenerator
-} from 'components/RecognizedTextSearchModal';
+} from '../RecognizedTextSearchModal';
 import {
   LogoSearchModal,
   LogoDisplay,
   LogoConditionGenerator
-} from 'components/LogoSearchModal';
+} from '../LogoSearchModal';
 import {
   TagSearchModal,
   TagDisplay,
   TagConditionGenerator
-} from 'components/TagSearchModal';
+} from '../TagSearchModal';
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 

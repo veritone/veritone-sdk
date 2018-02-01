@@ -9,7 +9,7 @@ import Dialog, {
   DialogTitle
 } from 'material-ui/Dialog';
 
-import { bool, func, string, shape, arrayOf } from 'prop-types';
+import { bool, func, string, shape, arrayOf, isArray } from 'prop-types';
 import update from 'immutability-helper';
 
 // Object Autocomplete config:
