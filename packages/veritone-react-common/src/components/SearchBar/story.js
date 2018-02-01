@@ -198,6 +198,10 @@ export default class SampleSearchBar extends React.Component {
     }
   }
 
+  componentWillReceiveProps(prev, next) {
+    console.log(next);
+  }
+
   state = {
     searchParameters: this.props.searchParameters || []
   };
@@ -241,29 +245,33 @@ export default class SampleSearchBar extends React.Component {
     return searchParameters;
   }
 
-  convertSearchParametersToCSP = searchParameters => {
-    const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
+  CSPToSearchParameters = cognitiveSearchProfile => {
+    const getJoinOperator = ( query ) => {
+      const operators = Object.keys(query);
+      return operators[0];
+    }
 
-    const baseQuery = {}
-    let lastJoin = searchParameters[1].value || 'and';
-    let lastNode = [];
-    baseQuery[searchParameters[1].value] = lastNode;
+    const searchParameters = [];
+    let joinOperator = getJoinOperator(cognitiveSearchProfile);
+    console.log("first join operator", joinOperator);
+    let conditions = cognitiveSearchProfile[joinOperator];
 
-    for(let i = 0; i < searchParameters.length - 1; i++) {
-      const searchParameter = searchParameters[i];
-      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin && i !== searchParameters.length - 2) {
-        const nextNode = {};
-        nextNode[searchParameters[i+1].value] = [ CSP(searchParameters[i]) ];
-        lastNode.push( nextNode );
-        lastNode = nextNode[searchParameters[i+1].value];
-        lastJoin = searchParameters[i+1].value;
-      } else {
-        if(searchParameters[i].conditionType !== 'join') {
-          lastNode.push(CSP(searchParameter))
+    for(let i = 0; i < conditions.length; i++) {
+
+      if('engineCategoryId' in conditions[i]) {
+        const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
+        searchParameters.push( newSearchPill );
+        const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
+        if(newJoinOperator) {
+          searchParameters.push( newJoinOperator );
         }
+      } else {
+        joinOperator = getJoinOperator(conditions[i])
+        conditions = conditions[i][joinOperator];
+        i = -1;
       }
     }
-    return baseQuery;
+    return searchParameters;
   }
 
   addOrModifySearchParameter = parameter => {
@@ -427,42 +435,9 @@ storiesOf('SearchBar', module)
       };
     };
 
-    const CSPToSearchParameters = cognitiveSearchProfile => {
-      const getJoinOperator = ( query ) => {
-        const operators = Object.keys(query);
-        return operators[0];
-      }
+    let csp = {"and":[{"state":{"search":"Lakers","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"or":[{"state":{"search":"Kobe","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Lebron","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Shaq","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"}]}]};
 
-      const searchParameters = [];
-      let joinOperator = getJoinOperator(cognitiveSearchProfile);
-      let conditions = cognitiveSearchProfile[joinOperator];
-
-      for(let i = 0; i < conditions.length; i++) {
-
-        if('engineCategoryId' in conditions[i]) {
-          const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
-          searchParameters.push( newSearchPill );
-          const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-          if(newJoinOperator) {
-            searchParameters.push( newJoinOperator );
-          }
-        } else {
-          searchParameters.pop();
-          joinOperator = getJoinOperator(conditions[i])
-          const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-          searchParameters.push( newJoinOperator );
-          conditions = conditions[i][joinOperator];
-          i = -1;
-        }
-      }
-      return searchParameters;
-    }
-
-    let csp = {"and":[{"state":{"search":"Lakers","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Celtics","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"or":[{"state":{"search":"Kobe","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Shaq","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"}]}]};
-    let searchParameters = CSPToSearchParameters(csp);
-
-
-    const onSearch = (csps) => console.log("User submitted a search", csps);
+    const onSearch = (csps) => console.log("User submitted a search", JSON.stringify(csps));
 
     return [
       <div
