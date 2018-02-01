@@ -72,8 +72,8 @@ export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } 
           margin="none"
           value={ inputValue }
           onChange={ onChange }>
-          <MenuItem value={'Positive'}>Positive</MenuItem>
-          <MenuItem value={'Negative'}>Negative</MenuItem>
+          <MenuItem value={'positive'}>Positive</MenuItem>
+          <MenuItem value={'negative'}>Negative</MenuItem>
         </Select>
         <FormHelperText>Discover positive and negative sentiment inside of audio and video files.</FormHelperText>
       </DialogContent>
@@ -94,7 +94,7 @@ export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } 
   )};
 
 SentimentSearchModal.defaultProps = {
-  modalState: { search: 'Positive' }
+  modalState: { search: 'positive' }
 };
 
 const SentimentConditionGenerator = modalState => {
@@ -102,7 +102,7 @@ const SentimentConditionGenerator = modalState => {
     operator: "range",
     field: "sentiment-veritone.series.score"
   };
-  if (modalState.search == 'Positive') {
+  if (modalState.search == 'positive') {
     sentimentOperator.gte = "0.5";
   } else {
     sentimentOperator.lt = "0.5";
@@ -112,7 +112,7 @@ const SentimentConditionGenerator = modalState => {
 
 const SentimentDisplay = modalState => {
   return {
-    abbreviation: modalState.search,
+    abbreviation: modalState.search === 'positive' ? 'Positive' : 'Negative',
     thumbnail: null
   };
 };
