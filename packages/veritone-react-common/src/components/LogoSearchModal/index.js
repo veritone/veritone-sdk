@@ -113,8 +113,7 @@ export default class LogoSearchModal extends React.Component {
     return (
       <Dialog
         open={this.props.open}
-        onRequestClose={this.props.cancel}
-        onEscapeKeyUp={this.props.cancel}
+        onClose={this.props.cancel}
       >
         <LogoSearchForm
           cancel={ this.props.cancel }

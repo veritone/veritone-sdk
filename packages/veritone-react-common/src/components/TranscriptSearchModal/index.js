@@ -52,8 +52,7 @@ export default class TranscriptSearchModal extends React.Component {
     return (
       <Dialog
         open={this.props.open}
-        onRequestClose={this.props.cancel}
-        onEscapeKeyUp={this.props.cancel}
+        onClose={this.props.cancel}
       >
         <TranscriptSearchForm
           cancel={ this.props.cancel }

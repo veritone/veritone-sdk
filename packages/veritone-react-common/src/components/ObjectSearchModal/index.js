@@ -111,8 +111,7 @@ export default class ObjectSearchModal extends React.Component {
     return (
       <Dialog
         open={this.props.open}
-        onRequestClose={this.props.cancel}
-        onEscapeKeyUp={this.props.cancel}
+        onClose={this.props.cancel}
       >
         <ObjectSearchForm
           cancel={ this.props.cancel }

@@ -48,8 +48,7 @@ export default class SentimentSearchModal extends React.Component {
     return (
       <Dialog
         open={this.props.open}
-        onRequestClose={this.props.cancel}
-        onEscapeKeyUp={this.props.cancel}
+        onClose={this.props.cancel}
       >
         <SentimentSearchForm
           cancel={ this.props.cancel }
