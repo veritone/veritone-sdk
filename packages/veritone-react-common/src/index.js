@@ -23,3 +23,8 @@ export {
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
 export AppContainer from './components/AppContainer';
+export {
+  FaceSearchModal,
+  FaceDisplay,
+  FaceConditionGenerator
+} from 'components/FaceSearchModal';
