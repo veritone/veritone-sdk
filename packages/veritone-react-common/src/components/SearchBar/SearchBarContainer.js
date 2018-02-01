@@ -120,7 +120,6 @@ export default class SearchBarContainer extends React.Component {
   };
 
   cancelModal = () => {
-    console.log("Close modal");
     this.setState({
       openModal: { modalId: null },
       selectedPill: null

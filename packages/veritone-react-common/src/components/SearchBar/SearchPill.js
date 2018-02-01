@@ -19,7 +19,7 @@ const SearchPill = ({ engineIconClass, label, remove, open }) => (
     label={label}
     className={searchPillClass}
     classes={{ label: searchPillLabelClass, deleteIcon: deleteIconClass }}
-    onRequestDelete={remove}
+    onDelete={remove}
     onClick={open}
   />
 );
