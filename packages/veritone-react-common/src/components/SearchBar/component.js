@@ -203,6 +203,34 @@ export class SampleSearchBar extends React.Component {
     searchParameters: this.props.searchParameters || []
   };
 
+
+  convertSearchParametersToCSP = searchParameters => {
+    console.log("Search parameters", searchParameters);
+    const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
+
+    const baseQuery = {}
+    let lastJoin = searchParameters[1].value || 'and';
+    let lastNode = [];
+    baseQuery[searchParameters[1].value] = lastNode;
+
+    for(let i = 0; i < searchParameters.length - 1; i++) {
+      const searchParameter = searchParameters[i];
+      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin && i !== searchParameters.length - 2) {
+        const nextNode = {};
+        nextNode[searchParameters[i+1].value] = [ CSP(searchParameters[i]) ];
+        lastNode.push( nextNode );
+        lastNode = nextNode[searchParameters[i+1].value];
+        lastJoin = searchParameters[i+1].value;
+      } else {
+        if(searchParameters[i].conditionType !== 'join') {
+          lastNode.push(CSP(searchParameter))
+        }
+      }
+    }
+
+    return baseQuery;
+  }
+
   onSearch = () => {
     if (this.props.onSearch) {
       this.props.onSearch(this.convertSearchParametersToCSP(this.state.searchParameters));
