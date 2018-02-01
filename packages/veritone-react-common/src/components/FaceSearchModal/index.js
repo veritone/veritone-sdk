@@ -114,8 +114,7 @@ export default class FaceSearchModal extends React.Component {
     return (
       <Dialog
         open={this.props.open}
-        onRequestClose={this.props.cancel}
-        onEscapeKeyUp={this.props.cancel}
+        onClose={this.props.cancel}
       >
         <FaceSearchForm
           cancel={ this.props.cancel }
