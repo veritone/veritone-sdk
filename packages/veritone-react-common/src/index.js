@@ -17,12 +17,14 @@ export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
-<<<<<<< HEAD
 export {
   TranscriptSearchModal,
   TranscriptDisplay,
   TranscriptConditionGenerator
 } from 'components/TranscriptSearchModal';
-=======
 export AppContainer from './components/AppContainer';
->>>>>>> add AppContainer component
+export {
+  FaceSearchModal,
+  FaceDisplay,
+  FaceConditionGenerator
+} from 'components/FaceSearchModal';

@@ -14,6 +14,7 @@ import { MenuItem } from 'material-ui/Menu';
 
 const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
   const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
+  const tooltipClasses = cx(styles['searchPillTooltip']);
 
   const onAddPill = () => addPill(engineCategory.id);
 
@@ -22,6 +23,7 @@ const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
       title={engineCategory.tooltip}
       placement="left"
       key={engineCategory.id}
+      className={cx(tooltipClasses)}
     >
       <div className={cx(engineCategoryIconClasses)} onClick={onAddPill}>
         <Icon iconClass={engineCategory.iconClass} color={color} />
@@ -41,8 +43,8 @@ const searchInputContainerClass = cx(styles['searchInput']);
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
-const InputCursor = () => (
-  <input className={ cx(styles['afterCursor'])} type="textbox" size="1" />
+const InputCursor = ({onKeyPress}) => (
+  <input onKeyPress={onKeyPress} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1" />
 )
 
 const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) => {
@@ -58,8 +60,8 @@ const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) 
     disableUnderline={ lastJoiningOperator === operator }
     onChange={ onChange }
     >
-      <MenuItem value={'AND'}>AND</MenuItem>
-      <MenuItem value={'OR'}>OR</MenuItem>
+      <MenuItem value={'and'}>AND</MenuItem>
+      <MenuItem value={'or'}>OR</MenuItem>
     </Select>
   );
 }
@@ -84,7 +86,7 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
         })
       };
     // level < 1 is the feature toggle for maximum tree depth
-    return isLast && level < 1 ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value} /> )
+    return isLast && level < 1 ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value.toUpperCase()} /> )
   }
   // otherwise it's a search engine category
   else
@@ -112,7 +114,7 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
 }
 
 const SearchParameters = ({searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin}) => {
-  let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'AND';
+  let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'and';
 
   let output = [];
   for (let i = 0; i < searchParameters.length; i++ ) {
@@ -174,9 +176,15 @@ const SearchBar = ({
   modifyPill,
   onSearch,
 }) => {
+  const getOnEnter = (onSearch) => (evt) => {
+    if(evt.key === 'Enter') {
+      onSearch();
+    }
+  }
+
   return (
     <div className={containerClasses}>
-      <div className={searchInputContainerClass} onClick={onSearch}>
+      <div className={searchInputContainerClass}>
         { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" /> : null }
         { <SearchParameters
         key={'top_level_search_parameters'}
@@ -188,7 +196,7 @@ const SearchBar = ({
         removePill={ removePill }
         modifyPill={ modifyPill }
          /> }
-        { searchParameters.length > 0 ? <InputCursor className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
+        { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
       <div className={supportedCategoriesClass}>
         {enabledEngineCategories &&
@@ -206,6 +214,7 @@ const SearchBar = ({
 };
 SearchBar.propTypes = {
   color: string.isRequired,
+  libraries: arrayOf(string),
   searchParameters: arrayOf(shape(condition)),
   enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
   onSearch: func,

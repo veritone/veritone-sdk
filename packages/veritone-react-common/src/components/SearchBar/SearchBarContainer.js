@@ -5,11 +5,37 @@ import { SearchBar } from '.';
 export default class SearchBarContainer extends React.Component {
   static propTypes = {
     color: string,
+    api: string,
+    libraries: arrayOf(string),
     searchParameters: arrayOf(object),
     addOrModifySearchParameter: func,
     removeSearchParameter: func,
     enabledEngineCategories: arrayOf(object)
   };
+
+  componentDidMount() {
+    if(this.props.api) {
+      this.getAuth();
+    }
+  }
+
+  getAuth() {
+    if (this.props.api) {
+      return fetch(`${this.props.api}admin/current-user`, {
+        credentials: 'include'
+      })
+      .then(
+        response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return false;
+          }
+        }
+      )
+      .then(y => y && this.setState({authToken: y.token}));
+    }
+  }
 
   state = {
     openModal: { modalId: null },
@@ -24,7 +50,7 @@ export default class SearchBarContainer extends React.Component {
 
   addJoiningOperator = operator => {
     this.props.addOrModifySearchParameter({
-      value: operator || 'AND',
+      value: operator || 'and',
       conditionType: 'join'
     });
   };
@@ -104,10 +130,12 @@ export default class SearchBarContainer extends React.Component {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
     );
+
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     return (
-      <div style={{ width: '100%', marginLeft: '1em', marginRight: '1em', overflowY: 'hidden', padding: 0 }}>
+      <div style={{ width: '100%', marginLeft: '0em', marginRight: '0em', overflowY: 'hidden', padding: 0 }}>
         <SearchBar
+          onSearch={this.props.onSearch}
           color={this.props.color}
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
@@ -120,6 +148,8 @@ export default class SearchBarContainer extends React.Component {
         {Modal ? (
           <Modal
             open
+            auth={this.state.authToken}
+            libraries={this.props.libraries}
             modalState={this.state.openModal.modalState}
             cancel={this.cancelModal}
             applyFilter={this.getApplyFilter(

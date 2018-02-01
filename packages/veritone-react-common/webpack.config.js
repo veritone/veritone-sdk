@@ -2,7 +2,7 @@ const path = require('path');
 const MinifyPlugin = require("babel-minify-webpack-plugin");
 
 module.exports = {
-  entry: { 'veritone-react-common': path.join(__dirname, './src/index.js') },
+  entry: { 'veritone-react-common': ['whatwg-fetch', path.join(__dirname, './src/index.js')] },
   output: {
     filename: 'dist/bundle.js',
     libraryTarget: 'umd',
@@ -35,7 +35,7 @@ module.exports = {
             loader: 'css-loader',
             options: {
               modules: true,
-              localIdentName: '[local]--[hash:base64:5]'
+              localIdentName: 'vsdk[local]--[hash:base64:5]'
             }
           },
           'sass-loader'
