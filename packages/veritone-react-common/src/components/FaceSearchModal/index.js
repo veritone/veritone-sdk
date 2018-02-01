@@ -65,7 +65,7 @@ export default class FaceSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
-      return this.props.fetchAutocomplete(debouncedQueryString, the.props.auth).then(response => {
+      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
           queryResults: response
