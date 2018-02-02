@@ -2,7 +2,11 @@ import React from 'react';
 import { Avatar, Button, Chip, MenuItem, Paper, TextField } from 'material-ui';
 import Downshift from 'downshift';
 import { isArray } from 'lodash';
-import Rx from 'rxjs/Rx';
+import { Subject } from 'rxjs/Subject';
+import { subscribe } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/add/operator/debounceTime';
+import { distinctUntilChanged } from 'rxjs/add/operator/distinctUntilChanged';
+import { switchMap } from 'rxjs/add/operator/switchMap';
 import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import styles from './styles.scss';
@@ -14,7 +18,7 @@ const deleteIconClass = cx(styles['deleteIcon']);
 class SearchAutocompleteContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.debouncedOnChange$ = new Rx.Subject();
+    this.debouncedOnChange$ = new Subject();
   }
 
   static propTypes = {
