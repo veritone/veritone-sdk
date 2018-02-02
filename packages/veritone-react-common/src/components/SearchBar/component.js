@@ -27,11 +27,6 @@ import {
   ObjectConditionGenerator
 } from 'components/ObjectSearchModal';
 import {
-  SoundSearchModal,
-  SoundDisplay,
-  SoundConditionGenerator
-} from 'components/SoundSearchModal'
-import {
   RecognizedTextSearchModal,
   RecognizedTextDisplay,
   RecognizedTextConditionGenerator
@@ -98,14 +93,6 @@ const obj = {
   enablePill: true,
   showPill: true
 };
-const sound = {
-  id: 'c6e07fe3-f15f-48a7-8914-951b852d54d0',
-  name: 'Audio Detection',
-  iconClass: 'icon-audio_det',
-  tooltip: 'Search by Sound',
-  enablePill: true,
-  showPill: true
-};
 const recognizedText = {
   id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
   name: 'Recognized Text',
@@ -140,7 +127,7 @@ const time = {
 };
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag, time];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -172,11 +159,6 @@ const engineCategoryMapping = {
     modal: FingerprintSearchModal,
     getLabel: FingerprintDisplay,
     generateCondition: FingerprintConditionGenerator
-  },
-  'c6e07fe3-f15f-48a7-8914-951b852d54d0': {
-    modal: SoundSearchModal,
-    getLabel: SoundDisplay,
-    generateCondition: SoundConditionGenerator
   },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
