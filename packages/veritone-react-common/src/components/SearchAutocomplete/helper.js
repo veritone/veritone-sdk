@@ -6,9 +6,9 @@ export default function attachAutocomplete(url, config) {
     let autcompleteFunctions = [];
 
     const fetchAutocomplete = (sectionHeader, queryPayload, searchType) => {
-      return (queryString, token) => {
+      return (queryString, token, baseAPIUri) => {
         queryPayload.text = queryString;
-        return fetch(url, {
+        return fetch(baseAPIUri + url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default function attachAutocomplete(url, config) {
     };
 
     if (config.enableFullTextSearch) {
-      autcompleteFunctions.push( queryString => 
+      autcompleteFunctions.push( queryString =>
         new Promise((resolve, reject) => {
           resolve({
             header: 'Full-text Search',
@@ -94,7 +94,7 @@ export default function attachAutocomplete(url, config) {
               id: queryString,
               type: 'fullText',
               label: queryString
-            }] 
+            }]
           });
         })
       );
@@ -109,7 +109,7 @@ export default function attachAutocomplete(url, config) {
       autcompleteFunctions.push(generateFetch('Results', 'custom'));
     }
     let defaultProps = { ...target.defaultProps };
-    defaultProps.fetchAutocomplete = (queryString, token) => Promise.all(autcompleteFunctions.map(func => func(queryString, token)));
+    defaultProps.fetchAutocomplete = (queryString, token, api) => Promise.all(autcompleteFunctions.map(func => func(queryString, token, api)));
     target.defaultProps = defaultProps;
     return target;
   };

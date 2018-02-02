@@ -4,29 +4,6 @@ import { object } from '@storybook/addon-knobs/react';
 import { SampleSearchBar } from './component';
 
 storiesOf('SearchBar', module)
-  .add('Base', () => {
-    return (
-      <div
-        style={{
-          height: '100%',
-          width: '100%',
-          margin: '5px',
-          background: "blue",
-          padding: '0px',
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        <div style={{ margin: '0 1em 0 1em', padding: 0 }}>
-          <h3>Logo</h3>
-        </div>
-        <SearchBar
-          color={"blue"}
-          enabledEngineCategories={enabledEngineCategories}
-        />
-      </div>
-    );
-  })
   .add('WithTranscriptPill', () => {
     var searchCallback;
     var toCSPCallback;
@@ -66,7 +43,7 @@ storiesOf('SearchBar', module)
         }}
       >
       <SampleSearchBar
-      api="https://api.aws-dev.veritone.com/v1/"
+      api="https://api.aws-dev.veritone.com/"
       color={"blue"}
       csp={ object("CSP", csp) }
       onSearch={ onSearch }
