@@ -21,7 +21,7 @@ export default class SearchBarContainer extends React.Component {
 
   getAuth() {
     if (this.props.api) {
-      return fetch(`${this.props.api}admin/current-user`, {
+      return fetch(`${this.props.api}v1/admin/current-user`, {
         credentials: 'include'
       })
       .then(
@@ -150,6 +150,7 @@ export default class SearchBarContainer extends React.Component {
         {Modal ? (
           <Modal
             open
+            api={this.props.api}
             auth={this.state.authToken}
             libraries={this.props.libraries}
             modalState={this.state.openModal.modalState}

@@ -25,7 +25,7 @@ const logoConfig = {
   enableFullTextSearch: true
 };
 
-@attachAutocomplete('https://api.aws-dev.veritone.com/api/search/autocomplete', logoConfig)
+@attachAutocomplete('api/search/autocomplete', logoConfig)
 export default class LogoSearchModal extends React.Component {
   static defaultProps = {
     modalState: { queryResults: [], queryString: '' },
@@ -39,6 +39,8 @@ export default class LogoSearchModal extends React.Component {
 
   static propTypes = {
     open: bool,
+    auth: string,
+    api: string,
     modalState: shape({
       error: bool,
       queryString: string,
@@ -64,7 +66,7 @@ export default class LogoSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
-      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth).then(response => {
+      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
           queryResults: response
