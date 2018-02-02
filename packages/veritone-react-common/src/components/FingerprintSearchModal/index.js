@@ -154,7 +154,7 @@ export const FingerprintSearchForm = ( { cancel, applyFilter, onChange, onKeyPre
 const FingerprintConditionGenerator = modalState => {
   return {
     operator: 'term',
-    field: 'fingerprint.series.libraryId',
+    field: 'fingerprint.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
     value: modalState.id
   };
 };

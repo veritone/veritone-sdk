@@ -154,7 +154,7 @@ export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
 const FaceConditionGenerator = modalState => {
   return {
     operator: 'term',
-    field: 'face-recognition.series.entityId',
+    field: 'face-recognition.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
     value: modalState.id
   };
 };
