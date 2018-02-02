@@ -43,13 +43,11 @@ class SearchAutocompleteContainer extends React.Component {
   state = JSON.parse(JSON.stringify(this.props.componentState));
 
   componentDidMount() {
-      this.subscription = this.debouncedOnChange$
-        .debounceTime(500)
-        .distinctUntilChanged()
-        .switchMap( debouncedText => this.props.onChange(debouncedText) )
-        .subscribe(debouncedText => {
-          this.props.onChange(debouncedText)
-        });
+    this.subscription = this.debouncedOnChange$
+      .debounceTime(500)
+      .distinctUntilChanged()
+      .switchMap( debouncedText => this.props.onChange(debouncedText) )
+      .subscribe();
   }
 
   componentWillUnmount() {
