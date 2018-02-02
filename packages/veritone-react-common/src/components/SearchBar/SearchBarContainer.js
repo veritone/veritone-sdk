@@ -14,7 +14,9 @@ export default class SearchBarContainer extends React.Component {
   };
 
   componentDidMount() {
+    console.log("Did we pass an api?", this.props)
     if(this.props.api) {
+      console.log("Call get auth", this.getAuth);
       this.getAuth();
     }
   }
@@ -140,8 +142,6 @@ export default class SearchBarContainer extends React.Component {
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
           addJoiningOperator={this.props.addJoiningOperator}
-          onRequestClose={ this.cancelModal }
-          onEscapeKeyUp={ this.cancelModal }
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
