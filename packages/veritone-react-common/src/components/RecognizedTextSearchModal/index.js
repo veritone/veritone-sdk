@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
+import { FormHelperText } from 'material-ui/Form';
 
 import Dialog, {
   DialogActions,
@@ -70,7 +71,10 @@ export default class RecognizedTextSearchModal extends React.Component {
 export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
   return (
     <div>
-      <DialogTitle>Search by Recognized Text</DialogTitle>
+      <DialogTitle>
+        Search by Recognized Text
+        <FormHelperText>Searches within our database for recognized text.</FormHelperText>
+      </DialogTitle>
       <DialogContent style={{ width: '500px', margin: 'none' }}>
         <TextField
           id="text_search_field"
@@ -80,7 +84,6 @@ export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onCh
           onChange={ onChange }
           onKeyPress={ onKeyPress }
           placeholder="Text to search"
-          helperText="Searches within our database for recognized text."
           fullWidth
         />
       </DialogContent>
