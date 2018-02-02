@@ -188,7 +188,7 @@ const guid = () => {
 
 export class SampleSearchBar extends React.Component {
   componentDidMount() {
-    if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
+    //if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
     if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
     if(this.props.csp) {
       this.setState( { searchParameters: this.CSPToSearchParameters(this.props.csp) });
@@ -259,37 +259,6 @@ export class SampleSearchBar extends React.Component {
           searchParameters.push( newJoinOperator );
         }
       } else {
-        searchParameters.pop();
-        joinOperator = getJoinOperator(conditions[i])
-        const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-        searchParameters.push( newJoinOperator );
-        conditions = conditions[i][joinOperator];
-        i = -1;
-      }
-    }
-    return searchParameters;
-  }
-
-  CSPToSearchParameters = cognitiveSearchProfile => {
-    const getJoinOperator = ( query ) => {
-      const operators = Object.keys(query);
-      return operators[0];
-    }
-
-    const searchParameters = [];
-    let joinOperator = getJoinOperator(cognitiveSearchProfile);
-    let conditions = cognitiveSearchProfile[joinOperator];
-
-    for(let i = 0; i < conditions.length; i++) {
-
-      if('engineCategoryId' in conditions[i]) {
-        const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
-        searchParameters.push( newSearchPill );
-        const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-        if(newJoinOperator) {
-          searchParameters.push( newJoinOperator );
-        }
-      } else {
         joinOperator = getJoinOperator(conditions[i])
         conditions = conditions[i][joinOperator];
         i = -1;
@@ -326,59 +295,6 @@ export class SampleSearchBar extends React.Component {
       searchParameters: prevState.searchParameters.filter(x => x.id !== id)
     }));
     console.log('Removing search parameter', id);
-  };
-
-  searchQueryGenerator = () => {
-    const baseQuery = {
-      index: ['mine', 'global'],
-      query: {
-        operator: 'and',
-        conditions: []
-      },
-      limit: 20,
-      offset: 0
-    };
-
-
-    const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-    const getJoinOperator = ( query ) => {
-      const operators = Object.keys(query);
-      return operators[0];
-    }
-
-    let joinOperator = getJoinOperator(csp);
-    let conditions = csp[joinOperator];
-
-    const newBooleanSubtree = {
-      operator: joinOperator,
-      conditions: []
-    };
-    baseQuery.query.conditions.push(newBooleanSubtree);
-    let queryConditions = newBooleanSubtree.conditions;
-
-    for(let i = 0; i < conditions.length; i++) {
-      if('engineCategoryId' in conditions[i]) {
-        // add an additional condition
-        const newCondition = engineCategoryMapping[conditions[i].engineCategoryId].generateCondition(
-          conditions[i].state
-        )
-        queryConditions.push( newCondition );
-      } else {
-        // different boolean operator, add a new subtree
-        const newBooleanSubtree = {
-          operator: getJoinOperator(conditions[i]),
-          conditions: []
-        };
-        queryConditions.push(newBooleanSubtree);
-        queryConditions = newBooleanSubtree.conditions;
-        debugger;
-        joinOperator = getJoinOperator(conditions[i]);
-        conditions = conditions[i][joinOperator];
-        i = -1;
-      }
-    }
-
-    console.log(baseQuery);
   };
 
   extendEngineCategories = engineCategories => {

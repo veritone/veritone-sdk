@@ -1,0 +1,17 @@
+{
+  "name": "veritone-csp-generator",
+  "version": "3.1.4",
+  "description": "converts CSP -> V3 Query",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrew Tung",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "user": "0.0.0"
+  }
+}
