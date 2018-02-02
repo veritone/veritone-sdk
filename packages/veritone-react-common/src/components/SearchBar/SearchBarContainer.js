@@ -14,9 +14,7 @@ export default class SearchBarContainer extends React.Component {
   };
 
   componentDidMount() {
-    console.log("Did we pass an api?", this.props)
     if(this.props.api) {
-      console.log("Call get auth", this.getAuth);
       this.getAuth();
     }
   }
