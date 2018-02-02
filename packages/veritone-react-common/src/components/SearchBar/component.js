@@ -296,7 +296,6 @@ export class SampleSearchBar extends React.Component {
 
     const searchParameters = [];
     let joinOperator = getJoinOperator(cognitiveSearchProfile);
-    console.log("first join operator", joinOperator);
     let conditions = cognitiveSearchProfile[joinOperator];
 
     for(let i = 0; i < conditions.length; i++) {
