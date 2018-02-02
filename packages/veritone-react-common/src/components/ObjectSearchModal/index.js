@@ -150,11 +150,19 @@ export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, m
 )};
 
 const ObjectConditionGenerator = modalState => {
-  return {
-    operator: 'term',
-    field: 'object-recognition.series.found',
-    value: modalState.id
-  };
+  if(modalState.type === 'fullText') {
+    return {
+      operator: 'query_string',
+      field: 'object-recognition.series.found.fulltext',
+      value: `*${modalState.id}*`
+    }
+  } else {
+    return {
+      operator: 'term',
+      field: 'object-recognition.series.found',
+      value: modalState.id
+    };
+  }
 };
 
 const ObjectDisplay = modalState => {

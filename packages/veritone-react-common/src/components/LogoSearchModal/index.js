@@ -152,11 +152,19 @@ export const LogoSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
 )};
 
 const LogoConditionGenerator = modalState => {
-  return {
-    operator: 'term',
-    field: 'logo-recognition.series.found',
-    value: modalState.id
-  };
+  if(modalState.type === 'fullText') {
+    return {
+      operator: 'query_string',
+      field: 'logo-recognition.series.found.fulltext',
+      value: `*${modalState.id}*`
+    }
+  } else {
+    return {
+      operator: 'term',
+      field: 'logo-recognition.series.found',
+      value: modalState.id
+    };
+  }
 };
 
 const LogoDisplay = modalState => {
