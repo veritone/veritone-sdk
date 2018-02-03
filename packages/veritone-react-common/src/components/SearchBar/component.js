@@ -203,15 +203,14 @@ export class SampleSearchBar extends React.Component {
     searchParameters: this.props.searchParameters || []
   };
 
-
   convertSearchParametersToCSP = searchParameters => {
     console.log("Search parameters", searchParameters);
     const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
 
     const baseQuery = {}
-    let lastJoin = searchParameters[1].value || 'and';
+    let lastJoin = searchParameters[1] && searchParameters[1].value || 'and';
     let lastNode = [];
-    baseQuery[searchParameters[1].value] = lastNode;
+    baseQuery[lastJoin] = lastNode;
 
     for(let i = 0; i < searchParameters.length - 1; i++) {
       const searchParameter = searchParameters[i];
@@ -231,11 +230,11 @@ export class SampleSearchBar extends React.Component {
     return baseQuery;
   }
 
-  onSearch = () => {
+  onSearch = (searchParameters) => {
     if (this.props.onSearch) {
-      this.props.onSearch(this.convertSearchParametersToCSP(this.state.searchParameters));
+      this.props.onSearch(this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters));
     } else {
-      return this.convertSearchParametersToCSP(this.state.searchParameters);
+      return this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters);
     }
   }
 
@@ -316,7 +315,7 @@ export class SampleSearchBar extends React.Component {
       <SearchBarContainer
         color={this.props.color}
         enabledEngineCategories={this.extendEngineCategories(
-          enabledEngineCategories
+          this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
         )}
         onSearch={this.onSearch}
         api={this.props.api}

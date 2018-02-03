@@ -43,8 +43,8 @@ const searchInputContainerClass = cx(styles['searchInput']);
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
-const InputCursor = ({onKeyPress}) => (
-  <input onKeyPress={onKeyPress} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1" />
+const InputCursor = ({onKeyPress, onFocus}) => (
+  <input onFocus={onFocus} onKeyPress={onKeyPress} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1" />
 )
 
 const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) => {
@@ -182,10 +182,16 @@ const SearchBar = ({
     }
   }
 
+  const addTranscript = () => {
+    if(searchParameters.length === 0) {
+      addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
+    }
+  }
+
   return (
     <div className={containerClasses}>
       <div className={searchInputContainerClass}>
-        { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" /> : null }
+        { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" onFocus={ addTranscript }/> : null }
         { <SearchParameters
         key={'top_level_search_parameters'}
         searchParameters={ searchParameters }
