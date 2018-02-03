@@ -67,7 +67,7 @@ export default class LogoSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
-      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api).then(response => {
+      return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
           queryResults: response

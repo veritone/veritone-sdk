@@ -6,8 +6,11 @@ export default function attachAutocomplete(url, config) {
     let autcompleteFunctions = [];
 
     const fetchAutocomplete = (sectionHeader, queryPayload, searchType) => {
-      return (queryString, token, baseAPIUri) => {
+      return (queryString, token, baseAPIUri, libraries) => {
         queryPayload.text = queryString;
+        if (isArray(libraries) && !queryPayload.index) {
+          queryPayload.index = libraries.map((library) => 'library:' + library);
+        }
         return fetch(baseAPIUri + url, {
           method: 'POST',
           headers: {
@@ -109,7 +112,7 @@ export default function attachAutocomplete(url, config) {
       autcompleteFunctions.push(generateFetch('Results', 'custom'));
     }
     let defaultProps = { ...target.defaultProps };
-    defaultProps.fetchAutocomplete = (queryString, token, api) => Promise.all(autcompleteFunctions.map(func => func(queryString, token, api)));
+    defaultProps.fetchAutocomplete = (queryString, token, api, libraries) => Promise.all(autcompleteFunctions.map(func => func(queryString, token, api, libraries)));
     target.defaultProps = defaultProps;
     return target;
   };
