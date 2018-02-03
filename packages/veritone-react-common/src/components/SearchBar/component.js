@@ -49,6 +49,11 @@ import {
 import SearchBarContainer from './SearchBarContainer';
 import { SearchBar } from '.';
 
+import {
+  GeolocationModal,
+  GeolocationDisplay,
+  GeolocationGenerator
+} from '../GeolocationModal';
 
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
@@ -125,6 +130,14 @@ const time = {
   enablePill: true,
   showPill: true
 };
+const geolocation = {
+  id: 'geolocation-id',
+  name: 'Geolocation',
+  iconClass: 'icon-gps',
+  tooltip: 'Search by Geolocation',
+  enablePill: true,
+  showPill: true
+}
 
 const appBarColor = '#4caf50';
 const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time];
@@ -174,6 +187,11 @@ const engineCategoryMapping = {
     modal: TimeSearchModal,
     getLabel: TimeDisplay,
     generateCondition: TimeConditionGenerator
+  },
+  'geolocation-id': {
+    modal: GeolocationModal,
+    getLabel: GeolocationDisplay,
+    generateCondition: GeolocationGenerator
   }
 };
 
