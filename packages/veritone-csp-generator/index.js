@@ -1,7 +1,7 @@
 const FaceConditionGenerator = modalState => {
   return {
     operator: 'term',
-    field: 'face-recognition.series.entityId',
+    field: 'face-recognition.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
     value: modalState.id
   };
 };
@@ -9,7 +9,7 @@ const FaceConditionGenerator = modalState => {
 const FingerprintConditionGenerator = modalState => {
   return {
     operator: 'term',
-    field: 'fingerprint.series.libraryId',
+    field: 'fingerprint.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
     value: modalState.id
   };
 };
