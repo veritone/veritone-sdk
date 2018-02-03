@@ -27,6 +27,7 @@ module.exports = {
         include: path.resolve('./src'),
         loader: 'babel-loader'
       },
+      { test: /\.csss$/, loader: 'css-to-string-loader!css-loader' },
       {
         test: /\.scss$/,
         loaders: [
