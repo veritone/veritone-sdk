@@ -191,7 +191,7 @@ export default class SearchBarContainer extends React.Component {
             open
             api={this.props.api}
             auth={this.state.authToken}
-            libraries={this.props.libraries}
+            libraries={this.state.libraries}
             modalState={this.state.openModal.modalState}
             cancel={this.cancelModal}
             applyFilter={this.getApplyFilter(
