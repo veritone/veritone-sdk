@@ -71,7 +71,11 @@ export default class GeolocationModal extends React.Component {
         let map = new Map(element).setView(position, 13);
         const provider = new OpenStreetMapProvider();
         const searchControl = new GeoSearchControl({
+          style: 'bar',
           provider: provider,
+          showMarker: true,
+          keepResult: true,
+          autoClose: true
         });
 
         tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -101,7 +105,9 @@ export default class GeolocationModal extends React.Component {
 
           console.log("Drawn items", event);
           var layer = event.layer;
-          
+          layer.on('click', function(evt) {
+            console.log("clicked on circle");
+          });
           drawnItems.addLayer(layer);
           setTimeout( () => layer.remove(), 5000 );
         });

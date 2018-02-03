@@ -4,7 +4,7 @@ import { GeolocationModal } from './';
 
 import { boolean, object } from '@storybook/addon-knobs';
 
-storiesOf('GeolocationGenerator', module).add('withOpenDialogAndDefaultValue', () => {
+storiesOf('GeolocationModal', module).add('withOpenDialogAndDefaultValue', () => {
   const logFilter = value => console.log('filter value', value);
   const cancel = () => console.log("cancel pressed");
   return (
