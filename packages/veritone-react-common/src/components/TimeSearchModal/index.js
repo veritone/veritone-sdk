@@ -207,6 +207,13 @@ TimeSearchModal.defaultProps = {
 };
 
 const TimeConditionGenerator = modalState => {
+  const dayPartTimeToMinutes = function (hourMinuteTime) {
+    if (!hourMinuteTime || typeof hourMinuteTime !== 'string' || hourMinuteTime.length != 5) {
+      return 0;
+    }
+    const hourMinute = hourMinuteTime.split(':');
+    return parseInt(hourMinute[0]) * 60 + parseInt(hourMinute[1]);
+  };
   const startMinutes = dayPartTimeToMinutes(modalState.search.dayPartStartTime);
   const endMinutes = dayPartTimeToMinutes(modalState.search.dayPartEndTime);
   const dayMinuteField = (modalState.search.stationBroadcastTime) ? 'dayMinuteLocal' : 'dayMinuteUTC';
@@ -253,14 +260,6 @@ const TimeConditionGenerator = modalState => {
     operator: 'and',
     conditions: conditions
   };
-};
-
-const dayPartTimeToMinutes = function (hourMinuteTime) {
-  if (!hourMinuteTime || typeof hourMinuteTime !== 'string' || hourMinuteTime.length != 5) {
-    return 0;
-  }
-  const hourMinute = hourMinuteTime.split(':');
-  return parseInt(hourMinute[0]) * 60 + parseInt(hourMinute[1]);
 };
 
 const TimeDisplay = modalState => {

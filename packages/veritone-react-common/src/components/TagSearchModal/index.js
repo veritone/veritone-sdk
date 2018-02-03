@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
+import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -132,7 +133,10 @@ export default class TagSearchModal extends React.Component {
 export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
-    <DialogTitle>Search by Tag</DialogTitle>
+    <DialogTitle>
+      Search by Tag
+      <FormHelperText>Searches within our database for tags.</FormHelperText>
+    </DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <SearchAutocompleteContainer
         id="tag_autocomplete_container"
@@ -145,11 +149,19 @@ export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, moda
       />
     </DialogContent>
   </div>
-)}
+)};
 
 const TagConditionGenerator = modalState => {
-  // TODO: implement translator
-  return {};
+  return {
+    operator: 'query_object',
+    field: 'tags',
+    query: {
+      operator: 'term',
+      field: 'tags.value',
+      value: modalState.id,
+      dotNotation: true
+    }
+  };
 };
 
 const TagDisplay = modalState => {

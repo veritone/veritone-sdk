@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
+import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -132,7 +133,10 @@ export default class FaceSearchModal extends React.Component {
 export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
-    <DialogTitle>Search by Face</DialogTitle>
+    <DialogTitle>
+      Search by Face
+      <FormHelperText>Searches within our database of known images of people.</FormHelperText>
+    </DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <SearchAutocompleteContainer
         id="face_autocomplete_container"
@@ -145,11 +149,14 @@ export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, mod
       />
     </DialogContent>
   </div>
-)}
+)};
 
 const FaceConditionGenerator = modalState => {
-  // TODO: implement translator
-  return {};
+  return {
+    operator: 'term',
+    field: 'face-recognition.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
+    value: modalState.id
+  };
 };
 
 const FaceDisplay = modalState => {

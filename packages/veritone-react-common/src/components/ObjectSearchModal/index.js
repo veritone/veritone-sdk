@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
+import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -130,7 +131,10 @@ export default class ObjectSearchModal extends React.Component {
 export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
-    <DialogTitle>Search by Object</DialogTitle>
+    <DialogTitle>
+      Search by Object
+      <FormHelperText>Searches within our database for objects.</FormHelperText>
+    </DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <SearchAutocompleteContainer
         id="object_autocomplete_container"
@@ -143,11 +147,22 @@ export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, m
       />
     </DialogContent>
   </div>
-)}
+)};
 
 const ObjectConditionGenerator = modalState => {
-  // TODO: implement translator
-  return {};
+  if(modalState.type === 'fullText') {
+    return {
+      operator: 'query_string',
+      field: 'object-recognition.series.found.fulltext',
+      value: `*${modalState.id}*`
+    }
+  } else {
+    return {
+      operator: 'term',
+      field: 'object-recognition.series.found',
+      value: modalState.id
+    };
+  }
 };
 
 const ObjectDisplay = modalState => {

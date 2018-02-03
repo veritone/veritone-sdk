@@ -13,15 +13,46 @@ export default class SearchBarContainer extends React.Component {
     enabledEngineCategories: arrayOf(object)
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     if(this.props.api) {
-      this.getAuth();
+      let auth = await this.getAuth();
+      let libraries = await this.getLibraries(auth);
+      this.setState( { authToken: auth, libraries: libraries });
     }
   }
 
-  getAuth() {
+  async getLibraries(auth) {
+    if(auth) {
+      return await fetch(`${this.props.api}v3/graphql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + auth
+        },
+        body: JSON.stringify({query:
+          `query {
+            libraries {
+              records {
+                id
+              }
+            }
+          }`
+        })
+      }).then(
+        response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return false;
+          }
+        }
+      ).then( y => y.data.libraries.records.map( x => x['id']) )
+    }
+  }
+
+  async getAuth() {
     if (this.props.api) {
-      return fetch(`${this.props.api}v1/admin/current-user`, {
+      return await fetch(`${this.props.api}v1/admin/current-user`, {
         credentials: 'include'
       })
       .then(
@@ -33,7 +64,7 @@ export default class SearchBarContainer extends React.Component {
           }
         }
       )
-      .then(y => y && this.setState({authToken: y.token}));
+      .then(y => y.token);
     }
   }
 
@@ -63,6 +94,10 @@ export default class SearchBarContainer extends React.Component {
 
     if (nextJoiningParameterId) {
       this.props.removeSearchParameter(nextJoiningParameterId);
+    }
+
+    if(this.props.onSearch) {
+      this.props.onSearch( searchParameters.filter( x => x.id !== searchParameterId && x.id !== nextJoiningParameterId));
     }
   };
 
@@ -97,13 +132,19 @@ export default class SearchBarContainer extends React.Component {
         if (!searchParameterId) {
           this.addJoiningOperator(lastJoiningOperator);
         }
+
       } else {
         // if there is no value in the modal, remove the search parameter and the joining operator after it
         this.removePill(searchParameterId, searchParameters);
+
       }
       this.setState({
         openModal: { modalId: null },
         selectedPill: null
+      }, () => {
+        if(this.props.onSearch) {
+          this.props.onSearch();
+        }
       });
     };
   };

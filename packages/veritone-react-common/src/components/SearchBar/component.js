@@ -27,11 +27,6 @@ import {
   ObjectConditionGenerator
 } from '../ObjectSearchModal';
 import {
-  SoundSearchModal,
-  SoundDisplay,
-  SoundConditionGenerator
-} from '../SoundSearchModal'
-import {
   RecognizedTextSearchModal,
   RecognizedTextDisplay,
   RecognizedTextConditionGenerator
@@ -98,14 +93,6 @@ const obj = {
   enablePill: true,
   showPill: true
 };
-const sound = {
-  id: 'c6e07fe3-f15f-48a7-8914-951b852d54d0',
-  name: 'Audio Detection',
-  iconClass: 'icon-audio_det',
-  tooltip: 'Search by Sound',
-  enablePill: true,
-  showPill: true
-};
 const recognizedText = {
   id: '3b4ac603-9bfa-49d3-96b3-25ca3b502325',
   name: 'Recognized Text',
@@ -140,7 +127,7 @@ const time = {
 };
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, sound, recognizedText, logo, tag, time];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -173,11 +160,6 @@ const engineCategoryMapping = {
     getLabel: FingerprintDisplay,
     generateCondition: FingerprintConditionGenerator
   },
-  'c6e07fe3-f15f-48a7-8914-951b852d54d0': {
-    modal: SoundSearchModal,
-    getLabel: SoundDisplay,
-    generateCondition: SoundConditionGenerator
-  },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
     getLabel: LogoDisplay,
@@ -206,7 +188,7 @@ const guid = () => {
 
 export class SampleSearchBar extends React.Component {
   componentDidMount() {
-    if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
+    //if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
     if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
     if(this.props.csp) {
       this.setState( { searchParameters: this.CSPToSearchParameters(this.props.csp) });
@@ -221,15 +203,14 @@ export class SampleSearchBar extends React.Component {
     searchParameters: this.props.searchParameters || []
   };
 
-
   convertSearchParametersToCSP = searchParameters => {
     console.log("Search parameters", searchParameters);
     const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
 
     const baseQuery = {}
-    let lastJoin = searchParameters[1].value || 'and';
+    let lastJoin = searchParameters[1] && searchParameters[1].value || 'and';
     let lastNode = [];
-    baseQuery[searchParameters[1].value] = lastNode;
+    baseQuery[lastJoin] = lastNode;
 
     for(let i = 0; i < searchParameters.length - 1; i++) {
       const searchParameter = searchParameters[i];
@@ -249,43 +230,12 @@ export class SampleSearchBar extends React.Component {
     return baseQuery;
   }
 
-  onSearch = () => {
+  onSearch = (searchParameters) => {
     if (this.props.onSearch) {
-      this.props.onSearch(this.convertSearchParametersToCSP(this.state.searchParameters));
+      this.props.onSearch(this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters));
     } else {
-      return this.convertSearchParametersToCSP(this.state.searchParameters);
+      return this.convertSearchParametersToCSP(searchParameters || this.state.searchParameters);
     }
-  }
-
-  CSPToSearchParameters = cognitiveSearchProfile => {
-    const getJoinOperator = ( query ) => {
-      const operators = Object.keys(query);
-      return operators[0];
-    }
-
-    const searchParameters = [];
-    let joinOperator = getJoinOperator(cognitiveSearchProfile);
-    let conditions = cognitiveSearchProfile[joinOperator];
-
-    for(let i = 0; i < conditions.length; i++) {
-
-      if('engineCategoryId' in conditions[i]) {
-        const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
-        searchParameters.push( newSearchPill );
-        const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-        if(newJoinOperator) {
-          searchParameters.push( newJoinOperator );
-        }
-      } else {
-        searchParameters.pop();
-        joinOperator = getJoinOperator(conditions[i])
-        const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-        searchParameters.push( newJoinOperator );
-        conditions = conditions[i][joinOperator];
-        i = -1;
-      }
-    }
-    return searchParameters;
   }
 
   CSPToSearchParameters = cognitiveSearchProfile => {
@@ -346,59 +296,6 @@ export class SampleSearchBar extends React.Component {
     console.log('Removing search parameter', id);
   };
 
-  searchQueryGenerator = () => {
-    const baseQuery = {
-      index: ['mine', 'global'],
-      query: {
-        operator: 'and',
-        conditions: []
-      },
-      limit: 20,
-      offset: 0
-    };
-
-
-    const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-    const getJoinOperator = ( query ) => {
-      const operators = Object.keys(query);
-      return operators[0];
-    }
-
-    let joinOperator = getJoinOperator(csp);
-    let conditions = csp[joinOperator];
-
-    const newBooleanSubtree = {
-      operator: joinOperator,
-      conditions: []
-    };
-    baseQuery.query.conditions.push(newBooleanSubtree);
-    let queryConditions = newBooleanSubtree.conditions;
-
-    for(let i = 0; i < conditions.length; i++) {
-      if('engineCategoryId' in conditions[i]) {
-        // add an additional condition
-        const newCondition = engineCategoryMapping[conditions[i].engineCategoryId].generateCondition(
-          conditions[i].state
-        )
-        queryConditions.push( newCondition );
-      } else {
-        // different boolean operator, add a new subtree
-        const newBooleanSubtree = {
-          operator: getJoinOperator(conditions[i]),
-          conditions: []
-        };
-        queryConditions.push(newBooleanSubtree);
-        queryConditions = newBooleanSubtree.conditions;
-        debugger;
-        joinOperator = getJoinOperator(conditions[i]);
-        conditions = conditions[i][joinOperator];
-        i = -1;
-      }
-    }
-
-    console.log(baseQuery);
-  };
-
   extendEngineCategories = engineCategories => {
     const engineCategoriesWithFunctions = engineCategories.map(
       engineCategory => {
@@ -418,7 +315,7 @@ export class SampleSearchBar extends React.Component {
       <SearchBarContainer
         color={this.props.color}
         enabledEngineCategories={this.extendEngineCategories(
-          enabledEngineCategories
+          this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
         )}
         onSearch={this.onSearch}
         api={this.props.api}

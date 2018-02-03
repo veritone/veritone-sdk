@@ -1,0 +1,15 @@
+{
+  "presets": ["es2016", "env", "react"],
+  "plugins": [
+    "add-react-displayname",
+    "transform-export-extensions",
+    "transform-decorators-legacy",
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    "lodash",
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }]
+  ]
+}

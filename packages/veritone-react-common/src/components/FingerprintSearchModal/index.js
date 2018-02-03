@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
+import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -132,7 +133,10 @@ export default class FingerprintSearchModal extends React.Component {
 export const FingerprintSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
-    <DialogTitle>Search by Fingerprint</DialogTitle>
+    <DialogTitle>
+      Search by Fingerprint
+      <FormHelperText>Locate a certain song or advertisement inside of audio and video files.</FormHelperText>
+    </DialogTitle>
     <DialogContent style={{ width: '500px', margin: 'none' }}>
       <SearchAutocompleteContainer
         id="fingerprint_autocomplete_container"
@@ -145,11 +149,14 @@ export const FingerprintSearchForm = ( { cancel, applyFilter, onChange, onKeyPre
       />
     </DialogContent>
   </div>
-)}
+)};
 
 const FingerprintConditionGenerator = modalState => {
-  // TODO: implement translator
-  return {};
+  return {
+    operator: 'term',
+    field: 'fingerprint.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
+    value: modalState.id
+  };
 };
 
 const FingerprintDisplay = modalState => {
