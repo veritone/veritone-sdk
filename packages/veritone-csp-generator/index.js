@@ -220,5 +220,5 @@ const searchQueryGenerator = (csp) => {
     return baseQuery;
   };
 
-  exports.CSPToV3Query = searchQueryGenerator;
-  exports.engineCategoryMapping = engineCategoryMapping;
+
+module.exports = {CSPToV3Query: searchQueryGenerator, engineCategoryMapping: engineCategoryMapping};
