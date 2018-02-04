@@ -4,69 +4,15 @@ import { SearchBar } from '.';
 
 export default class SearchBarContainer extends React.Component {
   static propTypes = {
+    auth: string,
     color: string,
     api: string,
-    libraries: arrayOf(string),
+    libraries: arrayOf(object),
     searchParameters: arrayOf(object),
     addOrModifySearchParameter: func,
     removeSearchParameter: func,
     enabledEngineCategories: arrayOf(object)
   };
-
-  async componentDidMount() {
-    if(this.props.api) {
-      let auth = await this.getAuth();
-      let libraries = await this.getLibraries(auth);
-      this.setState( { authToken: auth, libraries: libraries });
-    }
-  }
-
-  async getLibraries(auth) {
-    if(auth) {
-      return await fetch(`${this.props.api}v3/graphql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + auth
-        },
-        body: JSON.stringify({query:
-          `query {
-            libraries {
-              records {
-                id
-              }
-            }
-          }`
-        })
-      }).then(
-        response => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            return false;
-          }
-        }
-      ).then( y => y.data.libraries.records.map( x => x['id']) )
-    }
-  }
-
-  async getAuth() {
-    if (this.props.api) {
-      return await fetch(`${this.props.api}v1/admin/current-user`, {
-        credentials: 'include'
-      })
-      .then(
-        response => {
-          if (response.status === 200) {
-            return response.json();
-          } else {
-            return false;
-          }
-        }
-      )
-      .then(y => y.token);
-    }
-  }
 
   state = {
     openModal: { modalId: null },
@@ -173,6 +119,8 @@ export default class SearchBarContainer extends React.Component {
     );
 
     const Modal = openModal && openModal.modal ? openModal.modal : null;
+    const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
+
     return (
       <div style={{ width: '100%', marginLeft: '0em', marginRight: '0em', overflowY: 'hidden', padding: 0 }}>
         <SearchBar
@@ -181,6 +129,7 @@ export default class SearchBarContainer extends React.Component {
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
           addJoiningOperator={this.props.addJoiningOperator}
+          libraries={ this.props.libraries }
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
           openPill={this.openPill}
@@ -190,8 +139,8 @@ export default class SearchBarContainer extends React.Component {
           <Modal
             open
             api={this.props.api}
-            auth={this.state.authToken}
-            libraries={this.state.libraries}
+            auth={this.props.auth}
+            libraries={libraryIds}
             modalState={this.state.openModal.modalState}
             cancel={this.cancelModal}
             applyFilter={this.getApplyFilter(

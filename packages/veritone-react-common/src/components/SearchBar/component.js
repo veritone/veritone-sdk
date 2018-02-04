@@ -187,11 +187,114 @@ const guid = () => {
 };
 
 export class SampleSearchBar extends React.Component {
-  componentDidMount() {
+  async componentDidMount() {
+    const auth = await this.getAuth();
+    const getEntity = this.getEntityFetch(auth);
+    const libraries = await this.getLibraries(auth);
+    let searchParameters = [];
+
     //if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
     if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
     if(this.props.csp) {
-      this.setState( { searchParameters: this.CSPToSearchParameters(this.props.csp) });
+      searchParameters = this.CSPToSearchParameters(this.props.csp);
+      searchParameters = await Promise.all(searchParameters.map(async searchParameter => {
+        if (typeof searchParameter.value === 'object') {
+          if (searchParameter.value.type === 'entity') {
+            let entity = await getEntity(searchParameter.value.id);
+            searchParameter.value.label = entity.name;
+            searchParameter.value.image = entity.profileImageUrl;
+          } else if (searchParameter.value.type === 'library') {
+            let library = libraries.find(library => library.id === searchParameter.value.id);
+            if (library) {
+              searchParameter.value.label = library.name;
+              searchParameter.value.image = library.coverImageUrl;
+            }
+          }
+        }
+        return searchParameter;
+      }))
+    }
+    this.setState( { auth: auth, searchParameters: searchParameters, libraries: libraries });
+  }
+
+  async getAuth() {
+    if (this.props.api) {
+      return await fetch(`${this.props.api}v1/admin/current-user`, {
+        credentials: 'include'
+      })
+      .then(
+        response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return false;
+          }
+        }
+      )
+      .then(y => y.token);
+    }
+  }
+
+  async getLibraries(auth) {
+    if(auth) {
+      return await fetch(`${this.props.api}v3/graphql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + auth
+        },
+        body: JSON.stringify({query:
+          `query {
+            libraries {
+              records {
+                id
+                name
+                description
+                coverImageUrl
+              }
+            }
+          }`
+        })
+      }).then(
+        response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return false;
+          }
+        }
+      ).then( y => y.data.libraries.records )
+    }
+  }
+
+  getEntityFetch = (auth) => {
+    if(auth) {
+      return async (entityId) => {
+        return await fetch(`${this.props.api}v3/graphql`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + auth
+          },
+          body: JSON.stringify({query:
+            `query {
+              entity(id: "${entityId}") {
+                id
+                name
+                profileImageUrl
+              }
+            }`
+          })
+        }).then(
+          response => {
+            if (response.status === 200) {
+              return response.json();
+            } else {
+              return false;
+            }
+          }
+        ).then( y => y.data.entity )
+      }
     }
   }
 
@@ -313,13 +416,14 @@ export class SampleSearchBar extends React.Component {
   render() {
     return (
       <SearchBarContainer
+        auth={this.state.auth}
         color={this.props.color}
         enabledEngineCategories={this.extendEngineCategories(
           this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
         )}
         onSearch={this.onSearch}
         api={this.props.api}
-        libraries={this.props.libraries}
+        libraries={this.state.libraries}
         searchParameters={this.state.searchParameters}
         addOrModifySearchParameter={this.addOrModifySearchParameter}
         removeSearchParameter={this.removeSearchParameter}

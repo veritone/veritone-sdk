@@ -73,7 +73,7 @@ const StaticJoiningOperator = ( {operator} ) => {
   );
 }
 
-const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, openPill, removePill, modifyPill, lastJoiningOperator, level} ) => {
+const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, openPill, removePill, modifyPill, lastJoiningOperator, level, libraries} ) => {
   // assume strings are always AND or OR operators for now
 
   if( searchParameter.conditionType === 'join' ) {
@@ -113,7 +113,7 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
   }
 }
 
-const SearchParameters = ({searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin}) => {
+const SearchParameters = ({searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
   let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'and';
 
   let output = [];
@@ -132,6 +132,7 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
             enabledEngineCategories={enabledEngineCategories}
             searchParameter={searchParameters[i]}
             level={level}
+            libraries={libraries}
             lastJoin={searchParameters.length === 0}
           />
           <SearchParameters
@@ -143,6 +144,7 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
           enabledEngineCategories={enabledEngineCategories}
           removePill={removePill}
           modifyPill={modifyPill}
+          libraries={libraries}
           />
         </span>]);
       break;
@@ -155,6 +157,7 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
         key={`search_parameter_${searchParameters[i].id}`}
         enabledEngineCategories={enabledEngineCategories}
         level={level}
+        libraries={libraries}
         searchParameter={searchParameters[i]}
         lastJoin={searchParameters.length === 0}
         isLast={ searchParameters.length-1 === i}
@@ -175,6 +178,7 @@ const SearchBar = ({
   removePill,
   modifyPill,
   onSearch,
+  libraries
 }) => {
   const getOnEnter = (onSearch) => (evt) => {
     if(evt.key === 'Enter') {
@@ -201,6 +205,7 @@ const SearchBar = ({
         openPill={ openPill }
         removePill={ removePill }
         modifyPill={ modifyPill }
+        libraries={ libraries }
          /> }
         { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
@@ -220,7 +225,7 @@ const SearchBar = ({
 };
 SearchBar.propTypes = {
   color: string.isRequired,
-  libraries: arrayOf(string),
+  libraries: arrayOf(object),
   searchParameters: arrayOf(shape(condition)),
   enabledEngineCategories: arrayOf(shape(supportedEngineCategoryType)),
   onSearch: func,
