@@ -145,6 +145,18 @@ const TranscriptConditionGenerator = modalState => {
   };
 };
 
+const GeolocationGenerator = modalState => {
+  return {
+    operator: 'geo_distance',
+    field: "geolocation.series.location",
+    latitude: modalState.latitude || 0,
+    longitude: modalState.longitude || 0,
+    distance: modalState.distance || 0,
+    units: 'm'
+  };
+};
+
+
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': TranscriptConditionGenerator,
   'f2554098-f14b-4d81-9be1-41d0f992a22f': SentimentConditionGenerator,
@@ -154,7 +166,8 @@ const engineCategoryMapping = {
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': FingerprintConditionGenerator,
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': LogoConditionGenerator,
   'tag-search-id': TagConditionGenerator,
-  'time-search-id': TimeConditionGenerator
+  'time-search-id': TimeConditionGenerator,
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator
 };
 
 searchQueryGenerator = (csp) => {

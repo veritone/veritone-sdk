@@ -131,7 +131,7 @@ const time = {
   showPill: true
 };
 const geolocation = {
-  id: 'geolocation-id',
+  id: '203ad7c2-3dbd-45f9-95a6-855f911563d0',
   name: 'Geolocation',
   iconClass: 'icon-gps',
   tooltip: 'Search by Geolocation',
@@ -188,7 +188,7 @@ const engineCategoryMapping = {
     getLabel: TimeDisplay,
     generateCondition: TimeConditionGenerator
   },
-  'geolocation-id': {
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': {
     modal: GeolocationModal,
     getLabel: GeolocationDisplay,
     generateCondition: GeolocationGenerator

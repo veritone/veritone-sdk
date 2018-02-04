@@ -10,7 +10,7 @@ storiesOf('GeolocationModal', module).add('withOpenDialogAndDefaultValue', () =>
   return (
     <GeolocationModal
       open={boolean("Open", true)}
-      modalState={ object( "Search condition state", { "value": ('Lakers') } ) }
+      modalState={ object( "Search condition state") }
       cancel={ cancel }
       applyFilter={logFilter}
     />

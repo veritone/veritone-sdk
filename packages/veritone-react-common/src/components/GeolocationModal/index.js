@@ -127,7 +127,7 @@ export default class GeolocationModal extends React.Component {
         });
 
         // add a geolocation distance filter when a circle is drawn
-        map.on(L.Draw.Event.CREATED, function (event) {
+        map.on('draw:created', function (event) {
           removeExistingSelections(map);
 
           let layer = event.layer;
