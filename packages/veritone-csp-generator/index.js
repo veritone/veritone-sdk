@@ -170,7 +170,7 @@ const engineCategoryMapping = {
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator
 };
 
-searchQueryGenerator = (csp) => {
+const searchQueryGenerator = (csp) => {
     const baseQuery = {
       index: ['mine', 'global'],
       query: {
