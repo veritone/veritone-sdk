@@ -198,7 +198,6 @@ searchQueryGenerator = (csp) => {
         };
         queryConditions.push(newBooleanSubtree);
         queryConditions = newBooleanSubtree.conditions;
-        debugger;
         joinOperator = getJoinOperator(conditions[i]);
         conditions = conditions[i][joinOperator];
         i = -1;
