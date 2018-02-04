@@ -156,7 +156,7 @@
   position: relative;
   display: block;
   height: auto;
-  width: 400px;
+  width: 600px;
   margin: 10px auto 0;
   cursor: auto;
   z-index: 1000;

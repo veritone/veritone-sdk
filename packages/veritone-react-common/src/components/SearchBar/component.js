@@ -46,14 +46,14 @@ import {
   TimeDisplay,
   TimeConditionGenerator
 } from '../TimeSearchModal';
-import SearchBarContainer from './SearchBarContainer';
-import { SearchBar } from '.';
-
 import {
   GeolocationModal,
   GeolocationDisplay,
   GeolocationGenerator
 } from '../GeolocationModal';
+
+import SearchBarContainer from './SearchBarContainer';
+import { SearchBar } from '.';
 
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
@@ -140,7 +140,7 @@ const geolocation = {
 }
 
 const appBarColor = '#4caf50';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time];
+const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time, geolocation];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
