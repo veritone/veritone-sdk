@@ -192,7 +192,7 @@ const GeolocationDisplay = modalState => {
   const roundLocation = (num) => num ? Math.round(num * 100) / 100 : '?';
 
   return {
-    abbreviation: `${roundLocation(modalState.longitude)} : ${roundLocation(modalState.latitude)}`,
+    abbreviation: `${roundLocation(modalState.latitude)} : ${roundLocation(modalState.longitude)}`,
     thumbnail: null
   };
 };
