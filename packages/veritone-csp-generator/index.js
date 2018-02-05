@@ -193,7 +193,10 @@ const searchQueryGenerator = (csp) => {
       operator: joinOperator,
       conditions: []
     };
-    baseQuery.query.conditions.push(newBooleanSubtree);
+
+    if(conditions.length > 0) {
+        baseQuery.query.conditions.push(newBooleanSubtree);
+    }
     let queryConditions = newBooleanSubtree.conditions;
 
     for(let i = 0; i < conditions.length; i++) {
