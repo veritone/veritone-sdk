@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from 'material-ui/Button';
 import Select from 'material-ui/Select';
-import MenuItem from 'material-ui/Menu';
 import { FormHelperText } from 'material-ui/Form';
 
 import Dialog, {
@@ -69,14 +68,14 @@ export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } 
         <FormHelperText>Discover positive and negative sentiment inside of audio and video files.</FormHelperText>
       </DialogTitle>
       <DialogContent style={{ width: '500px', margin: 'none' }}>
-        <Select
-          id="sentiment_search_field"
-          margin="none"
-          value={ inputValue }
-          onChange={ onChange }>
-          <MenuItem value={'positive'}>Positive</MenuItem>
-          <MenuItem value={'negative'}>Negative</MenuItem>
-        </Select>
+            <Select
+              native
+              value={ inputValue }
+              onChange={ onChange }
+            >
+              <option value={'positive'}>Positive</option>
+              <option value={'negative'}>Negative</option>
+            </Select>
       </DialogContent>
       <DialogActions>
         <Button onClick={ cancel } color="primary" className="sentimentSearchCancel">

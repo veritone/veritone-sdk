@@ -244,9 +244,9 @@ const TimeConditionGenerator = modalState => {
 
   if (modalState.search.stationBroadcastTime) {
     const selectedIsoWeekdays = [];
-    daysOfTheWeek.forEach(weekday => {
-      if (modalState.search.selectedDays[weekday.isoWeekday - 1]) {
-        selectedIsoWeekdays.push(String(weekday.isoWeekday));
+    modalState.search.forEach((item, index) => {
+      if (item) {
+        selectedIsoWeekdays.push(String(index + 1));
       }
     });
     conditions.push({
