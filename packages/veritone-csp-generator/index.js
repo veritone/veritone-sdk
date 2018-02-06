@@ -172,13 +172,10 @@ const engineCategoryMapping = {
 
 const searchQueryGenerator = (csp) => {
     const baseQuery = {
-      index: ['mine', 'global'],
       query: {
         operator: 'and',
         conditions: []
-      },
-      limit: 20,
-      offset: 0
+      }
     };
 
     const getJoinOperator = ( query ) => {
