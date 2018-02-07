@@ -1,11 +1,38 @@
 {
-  "presets": ["env", "react"],
-  "plugins": [
-    "transform-export-extensions",
-    "transform-decorators-legacy",
-    "transform-class-properties",
-    "transform-object-rest-spread",
-    "transform-runtime",
-    "lodash"
-  ]
+  "env": {
+    "test": {
+      "presets": ["env", "react"],
+      "plugins": [
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash"
+      ]
+    },
+    "production": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": ["> 5%"]
+            }
+          }
+        ],
+        "react"
+      ],
+      "plugins": [
+        "external-helpers",
+        "add-react-displayname",
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash",
+        "date-fns"
+      ]
+    }
+  }
 }
