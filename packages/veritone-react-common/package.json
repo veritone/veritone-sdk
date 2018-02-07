@@ -33,8 +33,8 @@
     "build": "cross-env NODE_ENV=production rollup -c",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook": "build-storybook -c .storybook -o docs-static",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "NODE_ENV=test jest --watch",
     "lint": "npm run lint:js; npm run lint:styles",
     "lint:js": "eslint src/** --ext .js",
     "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
@@ -96,7 +96,8 @@
       "jsx"
     ],
     "moduleDirectories": [
-      "node_modules"
+      "node_modules",
+      "../../node_modules"
     ],
     "moduleNameMapper": {
       "^helpers(.*)$": "<rootDir>/src/helpers$1",
