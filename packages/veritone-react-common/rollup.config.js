@@ -6,7 +6,7 @@ import replace from 'rollup-plugin-replace';
 import url from "rollup-plugin-url"
 import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
-import uglify from 'rollup-plugin-uglify';
+// import uglify from 'rollup-plugin-uglify';
 
 import PropTypes from 'prop-types';
 import * as rfmui from 'redux-form-material-ui';
@@ -72,9 +72,9 @@ export default [
 
       url(),
 
-      uglify({
-        compress: { passes: 4, toplevel: true },
-      }),
+      // uglify({
+      //   compress: { passes: 4, toplevel: true },
+      // }),
 
       analyze({
         limit: 5,
