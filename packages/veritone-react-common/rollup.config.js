@@ -68,7 +68,7 @@ export default [
       postcss({
         modules: true,
         loaders: [sass],
-        extract: true
+        extract: 'dist/bundle.css'
       }),
 
       json(),
