@@ -31,7 +31,7 @@
     "clean:build": "rimraf build",
     "prebuild": "npm run clean:build",
     "build": "cross-env NODE_ENV=production rollup -c",
-    "build:watch": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress --watch",
+    "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook": "build-storybook -c .storybook -o docs-static",
     "test": "jest",
     "test:watch": "jest --watch",
