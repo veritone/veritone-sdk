@@ -3,6 +3,7 @@ import { Button, TextField } from 'material-ui';
 import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
+import ModalSubtitle from '../ModalSubtitle';
 
 import Dialog, {
   DialogActions,
@@ -26,7 +27,6 @@ const faceConfig = {
   // enableFullTextSearch: true
 };
 
-import ModalSubtitle from '../ModalSubtitle';
 
 @attachAutocomplete('api/search/autocomplete', faceConfig)
 export default class FaceSearchModal extends React.Component {
