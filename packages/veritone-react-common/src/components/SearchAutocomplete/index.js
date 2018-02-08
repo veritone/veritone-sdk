@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Button, Chip, MenuItem, Paper, TextField } from 'material-ui';
+import { Avatar, Button, Chip, ListItemSecondaryAction, Paper, TextField, ListItem, ListItemText, MenuItem } from 'material-ui';
 import Downshift from 'downshift';
 import { isArray } from 'lodash';
 import Rx from 'rxjs/Rx';
@@ -7,9 +7,13 @@ import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import styles from './styles.scss';
 
+import Typography from 'material-ui/Typography';
+
 const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
 const autocompletePillClass = cx(styles['autocompletePill']);
 const deleteIconClass = cx(styles['deleteIcon']);
+
+
 
 class SearchAutocompleteContainer extends React.Component {
   constructor(props) {
@@ -19,6 +23,7 @@ class SearchAutocompleteContainer extends React.Component {
 
   static propTypes = {
     selectResult: func,
+    defaultIsOpen: bool,
     componentState: shape({
       error: bool,
       queryString: string,
@@ -75,6 +80,7 @@ class SearchAutocompleteContainer extends React.Component {
       <div>
         <div>
           <SearchAutocompleteDownshift
+            defaultIsOpen={ this.props.defaultIsOpen }
             cancel={ this.props.cancel }
             applyFilter={ this.props.applyFilter }
             debouncedOnChange={ this.debouncedOnChange }
@@ -90,6 +96,7 @@ class SearchAutocompleteContainer extends React.Component {
 }
 
 const SearchAutocompleteDownshift = ({
+  defaultIsOpen,
   cancel,
   applyFilter,
   debouncedOnChange,
@@ -106,13 +113,14 @@ const SearchAutocompleteDownshift = ({
     <Downshift
       itemToString={ itemToString }
       onSelect={ selectResult }
+      isOpen={ defaultIsOpen }
       render={({
         getInputProps,
         getItemProps,
         selectedItem,
         inputValue,
         highlightedIndex,
-        isOpen
+        isOpen,
       }) => (
         <div>
           <TextField
@@ -120,6 +128,7 @@ const SearchAutocompleteDownshift = ({
               value: queryString,
               placeholder: "Type to search",
               autoFocus: true,
+              fullWidth: true,
               onFocus: onFocus,
               onChange: debouncedOnChange,
               onKeyPress: onKeyPress
@@ -131,7 +140,7 @@ const SearchAutocompleteDownshift = ({
                 results && results.reduce((result, section, sectionIndex) => {
                   result.sections.push(
                     <div key={ 'section_' + sectionIndex }>
-                      <div>{ section.header }</div>
+                      <MenuItem><Typography color="textSecondary">{ section.header }</Typography></MenuItem>
                       <div>
                         {
                           section.items && section.items.length
@@ -151,12 +160,12 @@ const SearchAutocompleteDownshift = ({
                                     ? <Avatar src={ item.image } />
                                     : null
                                   }
-                                  <div>{ item.label }</div>
-                                  <div>{ item.description }</div>
+                                  <Typography style={{ paddingLeft: "1em" }}>{ item.label }</Typography>
+                                  <Typography style={{ paddingLeft: "1em" }} color="textSecondary">{ item.description }</Typography>
                                 </MenuItem>
                               )
                             })
-                          : <div>No Results</div>
+                          : <MenuItem><Typography style={{ paddingLeft: "1em" }}>No Results</Typography></MenuItem>
                         }
                       </div>
                     </div>

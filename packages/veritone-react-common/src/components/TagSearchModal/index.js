@@ -26,6 +26,8 @@ const tagConfig = {
   // enableFullTextSearch: true
 };
 
+import ModalSubtitle from '../ModalSubtitle';
+
 @attachAutocomplete('api/search/autocomplete', tagConfig)
 export default class TagSearchModal extends React.Component {
   static defaultProps = {
@@ -117,6 +119,8 @@ export default class TagSearchModal extends React.Component {
       <Dialog
         open={this.props.open}
         onClose={this.props.cancel}
+        maxWidth={ 'sm' }
+        fullWidth={ true }
       >
         <TagSearchForm
           cancel={ this.props.cancel }
@@ -135,9 +139,9 @@ export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, moda
   <div>
     <DialogTitle>
       Search by Tag
-      <FormHelperText>Searches within our database for tags.</FormHelperText>
+      <ModalSubtitle>Searches within our database for tags.</ModalSubtitle>
     </DialogTitle>
-    <DialogContent style={{ width: '500px', margin: 'none' }}>
+    <DialogContent>
       <SearchAutocompleteContainer
         id="tag_autocomplete_container"
         onChange={ onChange }
@@ -148,6 +152,11 @@ export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, moda
         selectResult={ selectResult }
       />
     </DialogContent>
+    <DialogActions>
+        <Button onClick={ cancel } color="primary">
+          Cancel
+        </Button>
+      </DialogActions>
   </div>
 )};
 

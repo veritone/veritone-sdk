@@ -109,7 +109,7 @@ export default function attachAutocomplete(url, config) {
       autcompleteFunctions.push(generateFetch('Entities', 'entity'));
     }
     if (isArray(config.customFields)) {
-      autcompleteFunctions.push(generateFetch('Results', 'custom'));
+      autcompleteFunctions.push(generateFetch('Library Results', 'custom'));
     }
     let defaultProps = { ...target.defaultProps };
     defaultProps.fetchAutocomplete = (queryString, token, api, libraries) => Promise.all(autcompleteFunctions.map(func => func(queryString, token, api, libraries)));

@@ -65,12 +65,19 @@ export default class FingerprintSearchModal extends React.Component {
 
   state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
 
+  componentWillMount() {
+    if (this.props.modalState.label) {
+      this.onChange(this.props.modalState.label);
+    }
+  }
+
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
-          queryResults: response
+          queryResults: response,
+          showAutocomplete: true
         });
         this.setState(newState);
         return debouncedQueryString;
@@ -78,14 +85,16 @@ export default class FingerprintSearchModal extends React.Component {
         this.setState({
           error: true,
           queryString: debouncedQueryString,
-          queryResults: []
+          queryResults: [],
+          showAutocomplete: true
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryString: '',
-        queryResults: []
+        queryResults: [],
+        showAutocomplete: true
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -115,6 +124,8 @@ export default class FingerprintSearchModal extends React.Component {
   render() {
     return (
       <Dialog
+        maxWidth={ 'sm' }
+        fullWidth={ true }
         open={this.props.open}
         onClose={this.props.cancel}
       >
@@ -123,6 +134,7 @@ export default class FingerprintSearchModal extends React.Component {
           applyFilter={ this.applyFilterIfValue }
           onChange={ this.onChange }
           modalState={ this.state }
+          showAutocomplete={ this.state.showAutocomplete }
           selectResult={ this.selectResult }
         />
       </Dialog>
@@ -130,17 +142,18 @@ export default class FingerprintSearchModal extends React.Component {
   }
 }
 
-export const FingerprintSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
     <DialogTitle>
       Search by Fingerprint
       <FormHelperText>Locate a certain song or advertisement inside of audio and video files.</FormHelperText>
     </DialogTitle>
-    <DialogContent style={{ width: '500px', margin: 'none' }}>
+    <DialogContent>
       <SearchAutocompleteContainer
         id="fingerprint_autocomplete_container"
         onChange={ onChange }
+        defaultIsOpen={showAutocomplete}
         onKeyPress={ onKeyPress }
         cancel={ cancel }
         applyFilter={ applyFilter }
@@ -148,6 +161,11 @@ export const FingerprintSearchForm = ( { cancel, applyFilter, onChange, onKeyPre
         selectResult={ selectResult }
       />
     </DialogContent>
+    <DialogActions>
+      <Button onClick={ cancel } color="primary">
+        Cancel
+      </Button>
+    </DialogActions>
   </div>
 )};
 

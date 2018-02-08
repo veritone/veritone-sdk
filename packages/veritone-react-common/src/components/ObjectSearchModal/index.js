@@ -13,6 +13,8 @@ import Dialog, {
 import { bool, func, string, shape, arrayOf, isArray } from 'prop-types';
 import update from 'immutability-helper';
 
+import ModalSubtitle from '../ModalSubtitle';
+
 // Object Autocomplete config:
 const objectConfig = {
   identifierType: 'object',
@@ -63,12 +65,20 @@ export default class ObjectSearchModal extends React.Component {
 
   state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
 
+  componentWillMount() {
+    if(this.props.modalState.label) {
+      this.onChange( this.props.modalState.label );
+    }
+  }
+
+
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
-          queryResults: response
+          queryResults: response,
+          showAutocomplete: true
         });
         this.setState(newState);
         return debouncedQueryString;
@@ -76,14 +86,16 @@ export default class ObjectSearchModal extends React.Component {
         this.setState({
           error: true,
           queryString: debouncedQueryString,
-          queryResults: []
+          queryResults: [],
+          showAutocomplete: true
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryString: '',
-        queryResults: []
+        queryResults: [],
+        showAutocomplete: true
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -113,6 +125,8 @@ export default class ObjectSearchModal extends React.Component {
   render() {
     return (
       <Dialog
+        maxWidth={ 'sm' }
+        fullWidth={ true }
         open={this.props.open}
         onClose={this.props.cancel}
       >
@@ -120,6 +134,7 @@ export default class ObjectSearchModal extends React.Component {
           cancel={ this.props.cancel }
           applyFilter={ this.applyFilterIfValue }
           onChange={ this.onChange }
+          showAutocomplete={ this.state.showAutocomplete }
           modalState={ this.state }
           selectResult={ this.selectResult }
         />
@@ -128,17 +143,18 @@ export default class ObjectSearchModal extends React.Component {
   }
 }
 
-export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const ObjectSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
     <DialogTitle>
       Search by Object
-      <FormHelperText>Searches within our database for objects.</FormHelperText>
+      <ModalSubtitle>Search within our database for objects.</ModalSubtitle>
     </DialogTitle>
-    <DialogContent style={{ width: '500px', margin: 'none' }}>
+    <DialogContent>
       <SearchAutocompleteContainer
         id="object_autocomplete_container"
         onChange={ onChange }
+        defaultIsOpen={showAutocomplete}
         onKeyPress={ onKeyPress }
         cancel={ cancel }
         applyFilter={ applyFilter }
@@ -146,6 +162,11 @@ export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, m
         selectResult={ selectResult }
       />
     </DialogContent>
+    <DialogActions>
+      <Button onClick={ cancel } color="primary">
+        Cancel
+      </Button>
+    </DialogActions>
   </div>
 )};
 

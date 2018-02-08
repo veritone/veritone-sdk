@@ -11,6 +11,8 @@ import Dialog, {
 
 import { bool, func, string, shape } from 'prop-types';
 
+import ModalSubtitle from '../ModalSubtitle';
+
 export default class RecognizedTextSearchModal extends React.Component {
   static propTypes = {
     open: bool,
@@ -54,6 +56,8 @@ export default class RecognizedTextSearchModal extends React.Component {
       <Dialog
         open={this.props.open}
         onClose={this.props.cancel}
+        maxWidth={ 'sm' }
+        fullWidth={ true }
       >
         <RecognizedTextSearchForm
           cancel={ this.props.cancel }
@@ -73,9 +77,9 @@ export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onCh
     <div>
       <DialogTitle>
         Search by Recognized Text
-        <FormHelperText>Searches within our database for recognized text.</FormHelperText>
+        <ModalSubtitle>Searches within our database for recognized text.</ModalSubtitle>
       </DialogTitle>
-      <DialogContent style={{ width: '500px', margin: 'none' }}>
+      <DialogContent>
         <TextField
           id="text_search_field"
           autoFocus

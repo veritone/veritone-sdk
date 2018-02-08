@@ -18,7 +18,10 @@ import Dialog, {
 
 import { bool, func, string, shape } from 'prop-types';
 
-export default class GeolocationModal extends React.Component {
+import ModalSubtitle from '../ModalSubtitle';
+import { withTheme } from 'material-ui/styles'
+
+class GeolocationModalComponent extends React.Component {
   static propTypes = {
     open: bool,
     modalState: shape({ search: string, language: string }),
@@ -47,16 +50,22 @@ export default class GeolocationModal extends React.Component {
     }
   };
 
-  applyFilterIfValue = () => {
+
+  getFilterValue = () => {
     const mostRecent = (a, b) => a._createdTime > b._createdTime  ? a._createdTime : b._createdTime;
     let lastCreated = Object.values(this.state.renderedMap._layers).filter( x => x._type === 'geolocationModal' ).reduce( mostRecent );
 
     if(lastCreated) {
       let filterValue = { latitude: lastCreated._latlng.lat , longitude: lastCreated._latlng.lng, distance: lastCreated._mRadius, units: 'm'}
-      this.props.applyFilter(filterValue);
+      return filterValue;
     } else {
-      this.props.applyFilter();
+      return;
     }
+  }
+
+  applyFilterIfValue = () => {
+    const filterValue = this.getFilterValue();
+    this.props.applyFilter(filterValue);
   };
 
   renderMap(element) {
@@ -144,18 +153,18 @@ export default class GeolocationModal extends React.Component {
   render() {
     return (
       <Dialog
-        paperProps={ { style: {width: '1000px', height:'650px', maxWidth: '1000px'}} }
+        maxWidth={'md'}
+        fullWidth={true}
         open={this.props.open}
-        maxWidth={false}
         onClose={this.props.cancel}
       >
         <DialogTitle>
           Search by Geolocation
-          <FormHelperText>Locate by City, Zicode or DMA.</FormHelperText>
+          <ModalSubtitle>Locate by City, Zicode or DMA.</ModalSubtitle>
         </DialogTitle>
         <DialogContent>
           <style dangerouslySetInnerHTML={ {__html: controlStyles + leafletStyles + leafletdrawStyles } } />
-          <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "720px", height: "400px", border: "1px solid #3f51b5"}}>
+          <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", height: "60vh", border: `2px solid ${this.props.theme.palette.primary.main}`}}>
 
           </div>
         </DialogContent>
@@ -197,8 +206,11 @@ const GeolocationDisplay = modalState => {
   };
 };
 
+const GeolocationModal = withTheme()(GeolocationModalComponent)
+
 export {
   GeolocationModal,
   GeolocationGenerator,
   GeolocationDisplay
 };
+

@@ -11,6 +11,8 @@ import Dialog, {
 
 import { bool, func, string, shape } from 'prop-types';
 
+import ModalSubtitle from '../ModalSubtitle';
+
 export default class SentimentSearchModal extends React.Component {
   static propTypes = {
     open: bool,
@@ -48,6 +50,8 @@ export default class SentimentSearchModal extends React.Component {
       <Dialog
         open={this.props.open}
         onClose={this.props.cancel}
+        maxWidth={ 'sm' }
+        fullWidth={ true }
       >
         <SentimentSearchForm
           cancel={ this.props.cancel }
@@ -65,9 +69,9 @@ export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } 
     <div>
       <DialogTitle>
         Search by Sentiment
-        <FormHelperText>Discover positive and negative sentiment inside of audio and video files.</FormHelperText>
+        <ModalSubtitle>Search by positive and negative sentiment in media.</ModalSubtitle>
       </DialogTitle>
-      <DialogContent style={{ width: '500px', margin: 'none' }}>
+      <DialogContent>
             <Select
               native
               value={ inputValue }

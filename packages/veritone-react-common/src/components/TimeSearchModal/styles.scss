@@ -7,7 +7,6 @@
     margin-bottom: 10px;
   }
 }
-
 .timeSelectSection {
   display: flex;
   flex-direction: row;
@@ -15,6 +14,7 @@
 
   .timeInputSection {
     flex: 50%;
+    padding-right: 2em;
   }
 }
 

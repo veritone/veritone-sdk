@@ -10,6 +10,8 @@ import Dialog, {
 } from 'material-ui/Dialog';
 
 import { bool, func, string, shape } from 'prop-types';
+import Typography from 'material-ui/Typography';
+import ModalSubtitle from '../ModalSubtitle';
 
 export default class TranscriptSearchModal extends React.Component {
   static propTypes = {
@@ -52,6 +54,8 @@ export default class TranscriptSearchModal extends React.Component {
   render() {
     return (
       <Dialog
+        maxWidth={ 'sm' }
+        fullWidth={ true }
         open={this.props.open}
         onClose={this.props.cancel}
       >
@@ -73,9 +77,9 @@ export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange
   <div>
     <DialogTitle>
       Search by Keyword
-      <FormHelperText>Searches within our database of media transcripts.</FormHelperText>
+      <ModalSubtitle>Search within our database of media transcripts.</ModalSubtitle>
     </DialogTitle>
-    <DialogContent style={{ width: '500px', margin: 'none' }}>
+    <DialogContent>
       <TextField
         id="transcript_search_field"
         autoFocus

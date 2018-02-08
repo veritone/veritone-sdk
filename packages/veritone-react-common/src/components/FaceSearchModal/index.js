@@ -26,6 +26,8 @@ const faceConfig = {
   // enableFullTextSearch: true
 };
 
+import ModalSubtitle from '../ModalSubtitle';
+
 @attachAutocomplete('api/search/autocomplete', faceConfig)
 export default class FaceSearchModal extends React.Component {
   static defaultProps = {
@@ -65,13 +67,20 @@ export default class FaceSearchModal extends React.Component {
 
   state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
 
+  componentWillMount() {
+    if(this.props.modalState.label) {
+      this.onChange( this.props.modalState.label );
+    }
+  }
+
   onChange = debouncedQueryString => {
     var modal = this;
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         let newState = Object.assign({}, this.state, {
           queryString: debouncedQueryString,
-          queryResults: response
+          queryResults: response,
+          showAutocomplete: true
         });
         this.setState(newState);
         return debouncedQueryString;
@@ -79,14 +88,16 @@ export default class FaceSearchModal extends React.Component {
         this.setState({
           error: true,
           queryString: debouncedQueryString,
-          queryResults: []
+          queryResults: [],
+          showAutocomplete: true
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryString: '',
-        queryResults: []
+        queryResults: [],
+        showAutocomplete: true
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -118,6 +129,8 @@ export default class FaceSearchModal extends React.Component {
       <Dialog
         open={this.props.open}
         onClose={this.props.cancel}
+        maxWidth={ 'sm' }
+        fullWidth={ true }
       >
         <FaceSearchForm
           cancel={ this.props.cancel }
@@ -125,30 +138,37 @@ export default class FaceSearchModal extends React.Component {
           onChange={ this.onChange }
           modalState={ this.state }
           selectResult={ this.selectResult }
+          showAutocomplete={ this.state.showAutocomplete }
         />
       </Dialog>
     );
   }
 }
 
-export const FaceSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const FaceSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
     <DialogTitle>
       Search by Face
-      <FormHelperText>Searches within our database of known images of people.</FormHelperText>
+      <ModalSubtitle>Search within our database of known images of people.</ModalSubtitle>
     </DialogTitle>
-    <DialogContent style={{ width: '500px', margin: 'none' }}>
+    <DialogContent>
       <SearchAutocompleteContainer
         id="face_autocomplete_container"
         onChange={ onChange }
         onKeyPress={ onKeyPress }
         cancel={ cancel }
+        defaultIsOpen={showAutocomplete}
         applyFilter={ applyFilter }
         componentState={ modalState }
         selectResult={ selectResult }
       />
     </DialogContent>
+    <DialogActions>
+      <Button onClick={ cancel } color="primary">
+        Cancel
+      </Button>
+    </DialogActions>
   </div>
 )};
 
