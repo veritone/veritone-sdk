@@ -34,7 +34,8 @@ export default [
       ...Object.keys(mui).map(name => `material-ui/${name}`),
       'material-ui/styles',
       'material-ui/Form',
-      'material-ui/Progress'
+      'material-ui/Progress',
+      'redux-form-material-ui'
     ],
     plugins: [
       replace({
