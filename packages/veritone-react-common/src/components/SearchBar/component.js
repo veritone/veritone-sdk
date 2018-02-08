@@ -1,5 +1,6 @@
 import React from 'react';
 import update from 'immutability-helper';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
 import {
   TranscriptSearchModal,
@@ -139,7 +140,7 @@ const geolocation = {
   showPill: true
 }
 
-const appBarColor = '#4caf50';
+const appBarColor = '#ff2200';
 const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time, geolocation];
 
 const engineCategoryMapping = {
@@ -316,16 +317,11 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
-  componentWillReceiveProps(prev, next) {
-    console.log(next);
-  }
-
   state = {
     searchParameters: this.props.searchParameters || []
   };
 
   convertSearchParametersToCSP = searchParameters => {
-    console.log("Search parameters", searchParameters);
     const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
 
     const baseQuery = {}
@@ -395,15 +391,11 @@ export class SampleSearchBar extends React.Component {
       const newSearchParameters = update(this.state.searchParameters, {
         $splice: [[index, 1, parameter]]
       });
-      console.log('Modifying search parameter at index', index);
-      console.log('New search parameters', newSearchParameters);
       this.setState(prevState => ({
         searchParameters: newSearchParameters
       }));
     } else {
-      console.log('Existing search parameters', this.state.searchParameters);
       const newSearchParameter = { ...parameter, id: guid() };
-      console.log('Adding a new search parameter', newSearchParameter);
       this.setState(prevState => ({
         searchParameters: [...prevState.searchParameters, newSearchParameter]
       }));
@@ -414,7 +406,6 @@ export class SampleSearchBar extends React.Component {
     this.setState(prevState => ({
       searchParameters: prevState.searchParameters.filter(x => x.id !== id)
     }));
-    console.log('Removing search parameter', id);
   };
 
   extendEngineCategories = engineCategories => {
@@ -431,21 +422,42 @@ export class SampleSearchBar extends React.Component {
     return engineCategoriesWithFunctions;
   };
 
+  getTheme = ( { color, relativeSize } ) => {
+    const theme = createMuiTheme({
+      typography: {
+        htmlFontSize: relativeSize || 13,
+        subheading: {
+          fontSize: "1.2em"
+        }
+      },
+      palette: {
+        primary: {
+          light: color,
+          main: color,
+        }
+      }
+    });
+
+    return theme;
+  }
+
   render() {
     return (
-      <SearchBarContainer
-        auth={this.state.auth}
-        color={this.props.color}
-        enabledEngineCategories={this.extendEngineCategories(
-          this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-        )}
-        onSearch={this.onSearch}
-        api={this.props.api}
-        libraries={this.state.libraries}
-        searchParameters={this.state.searchParameters}
-        addOrModifySearchParameter={this.addOrModifySearchParameter}
-        removeSearchParameter={this.removeSearchParameter}
-      />
+      <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
+        <SearchBarContainer
+          auth={this.state.auth}
+          color={this.props.color}
+          enabledEngineCategories={this.extendEngineCategories(
+            this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
+          )}
+          onSearch={this.onSearch}
+          api={this.props.api}
+          libraries={this.state.libraries}
+          searchParameters={this.state.searchParameters}
+          addOrModifySearchParameter={this.addOrModifySearchParameter}
+          removeSearchParameter={this.removeSearchParameter}
+        />
+      </MuiThemeProvider>
     );
   }
 }

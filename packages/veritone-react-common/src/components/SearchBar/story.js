@@ -36,7 +36,7 @@ storiesOf('SearchBar', module)
           height: '45px',
           width: '100%',
           padding: '5px',
-          background: "blue",
+          background: "#2196f3",
           padding: '5px',
           display: 'flex',
           alignItems: 'center'
@@ -44,7 +44,7 @@ storiesOf('SearchBar', module)
       >
       <SampleSearchBar
       api="https://api.aws-dev.veritone.com/"
-      color={"blue"}
+      color={"#2196f3"}
       csp={ object("CSP", csp) }
       onSearch={ onSearch }
       setSearch={ searchCallback => setSearchHandler(searchCallback) }

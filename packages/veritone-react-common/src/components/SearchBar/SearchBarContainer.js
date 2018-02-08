@@ -56,7 +56,6 @@ export default class SearchBarContainer extends React.Component {
   getLastJoiningOperator = (searchParameters) => {
     for(let i = searchParameters.length - 1; i >= 0; i--) {
       if(searchParameters[i].conditionType === 'join') {
-        console.log("Last joining operator", searchParameters[i]);
         return searchParameters[i].value;
       }
     }
@@ -96,7 +95,6 @@ export default class SearchBarContainer extends React.Component {
   };
 
   openPill = pillState => {
-    console.log('Open pill with ', pillState);
     this.setState({
       openModal: {
         modalId: pillState.conditionType,

@@ -11,6 +11,7 @@ import styles from './styles.scss';
 import Select from 'material-ui/Select';
 
 import { MenuItem } from 'material-ui/Menu';
+import { withTheme } from 'material-ui/styles';
 
 const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
   const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
@@ -113,16 +114,15 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
   }
 }
 
-const SearchParameters = ({searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
+const SearchParameters = withTheme()(({theme, searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
   let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'and';
-
   let output = [];
   for (let i = 0; i < searchParameters.length; i++ ) {
     // i !== searchParameters.length - 2 makes it so if the last operator is different from the last joining operator (aka it would normally be parsed as a new subtree, the last joining operator is ignored)
   	if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoiner && i !== searchParameters.length - 2) {
     	// recursive descent
       output.push([
-      <span className={cx(styles['searchContainer'])} key={`search_container_${searchParameters[i]}`}>
+      <span style={ { borderBottom: `2px solid ${theme.palette.primary.main}` } } className={cx(styles['searchContainer'])} key={`search_container_${searchParameters[i]}`}>
           <SearchParameter
             openPill={openPill}
             removePill={removePill}
@@ -167,7 +167,7 @@ const SearchParameters = ({searchParameters, level, enabledEngineCategories, ope
   }
 
   return (output);
-}
+})
 
 const SearchBar = ({
   color,
