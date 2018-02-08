@@ -89,6 +89,8 @@ const TimeConditionGenerator = modalState => {
     const hourMinute = hourMinuteTime.split(':');
     return parseInt(hourMinute[0]) * 60 + parseInt(hourMinute[1]);
   };
+
+  const daysOfTheWeek = [{"isoWeekday":1,"name":"Mon"},{"isoWeekday":2,"name":"Tue"},{"isoWeekday":3,"name":"Wed"},{"isoWeekday":4,"name":"Thu"},{"isoWeekday":5,"name":"Fri"},{"isoWeekday":6,"name":"Sat"},{"isoWeekday":7,"name":"Sun"}];
   const startMinutes = dayPartTimeToMinutes(modalState.search.dayPartStartTime);
   const endMinutes = dayPartTimeToMinutes(modalState.search.dayPartEndTime);
   const dayMinuteField = (modalState.search.stationBroadcastTime) ? 'dayMinuteLocal' : 'dayMinuteUTC';
