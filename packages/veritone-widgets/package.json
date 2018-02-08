@@ -15,7 +15,8 @@
     "veritone-react-common": "^2.2.0-beta-1",
     "veritone-redux-common": "^2.2.0-beta-1"
   },
-  "main": "dist/bundle.js",
+  "module": "dist/bundle-es.js",
+  "jsnext:main": "dist/bundle-es.js",
   "scripts": {
     "start": "yarn run start:widget-server; yarn run start:storybook",
     "start:widget-server": "yarn workspace veritone-widgets-server run start &",
