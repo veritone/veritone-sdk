@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "2.1.0",
+  "version": "2.2.0-beta-1",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
   "dependencies": {
@@ -31,10 +31,10 @@
     "clean:build": "rimraf build",
     "prebuild": "npm run clean:build",
     "build": "cross-env NODE_ENV=production rollup -c",
-    "build:watch": "cross-env NODE_ENV=production webpack --config ./webpack.config.js --progress --watch",
+    "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook": "build-storybook -c .storybook -o docs-static",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "NODE_ENV=test jest --watch",
     "lint": "npm run lint:js; npm run lint:styles",
     "lint:js": "eslint src/** --ext .js",
     "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
@@ -96,7 +96,8 @@
       "jsx"
     ],
     "moduleDirectories": [
-      "node_modules"
+      "node_modules",
+      "../../node_modules"
     ],
     "moduleNameMapper": {
       "^helpers(.*)$": "<rootDir>/src/helpers$1",
