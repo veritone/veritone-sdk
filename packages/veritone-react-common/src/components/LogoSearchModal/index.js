@@ -4,6 +4,8 @@ import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
+import ModalSubtitle from '../ModalSubtitle';
+
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -25,8 +27,6 @@ const logoConfig = {
   customFields: ['logo-recognition.series.found'], // For object/logo/tags
   enableFullTextSearch: true
 };
-
-import ModalSubtitle from '../ModalSubtitle';
 
 @attachAutocomplete('api/search/autocomplete', logoConfig)
 export default class LogoSearchModal extends React.Component {

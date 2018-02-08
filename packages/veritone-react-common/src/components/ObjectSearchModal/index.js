@@ -4,6 +4,8 @@ import { FormHelperText } from 'material-ui/Form';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
+import ModalSubtitle from '../ModalSubtitle';
+
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -12,8 +14,6 @@ import Dialog, {
 
 import { bool, func, string, shape, arrayOf, isArray } from 'prop-types';
 import update from 'immutability-helper';
-
-import ModalSubtitle from '../ModalSubtitle';
 
 // Object Autocomplete config:
 const objectConfig = {

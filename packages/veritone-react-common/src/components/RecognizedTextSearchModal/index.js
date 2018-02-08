@@ -3,6 +3,8 @@ import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { FormHelperText } from 'material-ui/Form';
 
+import ModalSubtitle from '../ModalSubtitle';
+
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -10,8 +12,6 @@ import Dialog, {
 } from 'material-ui/Dialog';
 
 import { bool, func, string, shape } from 'prop-types';
-
-import ModalSubtitle from '../ModalSubtitle';
 
 export default class RecognizedTextSearchModal extends React.Component {
   static propTypes = {
