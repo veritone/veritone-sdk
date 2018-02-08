@@ -29,7 +29,10 @@ export default [
       'redux-saga',
       'redux-saga/effects',
       'lodash',
-      ...Object.keys(mui).map(name => `material-ui/es/${name}`)
+      ...Object.keys(mui).map(name => `material-ui/${name}`),
+      'material-ui/styles',
+      'material-ui/Form',
+      'material-ui/Progress'
     ],
     plugins: [
       replace({
