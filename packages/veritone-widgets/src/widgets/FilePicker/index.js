@@ -2,7 +2,7 @@ import React from 'react';
 import { noop } from 'lodash';
 import { bool, func, oneOf, number, string } from 'prop-types';
 import { connect } from 'react-redux';
-import Dialog from 'material-ui/es/Dialog';
+import Dialog from 'material-ui/Dialog';
 import { FilePicker, ProgressDialog } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/filePicker';
