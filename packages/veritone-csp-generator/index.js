@@ -201,10 +201,10 @@ const searchQueryGenerator = (csp) => {
     for(let i = 0; i < conditions.length; i++) {
       if('engineCategoryId' in conditions[i]) {
         // add an additional condition
-        const newCondition = engineCategoryMapping[conditions[i].engineCategoryId](
-          conditions[i].state
-        )
-        queryConditions.push( newCondition );
+        if (typeof engineCategoryMapping[conditions[i].engineCategoryId] === 'function') {
+          const newCondition = engineCategoryMapping[conditions[i].engineCategoryId](state);
+          queryConditions.push(newCondition);
+        }
       } else {
         // different boolean operator, add a new subtree
         const newBooleanSubtree = {
