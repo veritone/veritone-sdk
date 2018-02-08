@@ -202,7 +202,7 @@ const searchQueryGenerator = (csp) => {
       if('engineCategoryId' in conditions[i]) {
         // add an additional condition
         if (typeof engineCategoryMapping[conditions[i].engineCategoryId] === 'function') {
-          const newCondition = engineCategoryMapping[conditions[i].engineCategoryId](state);
+          const newCondition = engineCategoryMapping[conditions[i].engineCategoryId](conditions[i].state);
           queryConditions.push(newCondition);
         }
       } else {
