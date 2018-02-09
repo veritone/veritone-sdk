@@ -12,6 +12,8 @@ import Dialog, {
 } from 'material-ui/Dialog';
 
 import { bool, func, string, shape } from 'prop-types';
+import styles from './styles.scss';
+import cx from 'classnames';
 
 export default class SentimentSearchModal extends React.Component {
   static propTypes = {
@@ -65,6 +67,7 @@ export default class SentimentSearchModal extends React.Component {
 }
 
 export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } ) => {
+  const selectHackClass = cx(styles['selectHack']);
   return (
     <div>
       <DialogTitle>
@@ -73,6 +76,7 @@ export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } 
       </DialogTitle>
       <DialogContent>
         <Select
+          classes={{ select: selectHackClass }}
           native
           style={ {width: "200px", boxShadow: "none" } }
           value={ inputValue }
