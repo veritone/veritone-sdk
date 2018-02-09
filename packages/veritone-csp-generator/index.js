@@ -19,12 +19,7 @@ const FingerprintConditionGenerator = modalState => {
 };
 
 const RecognizedTextConditionGenerator = modalState => {
-  // orc exact text query
-  return {
-    operator: 'query_string',
-    field: 'text-recognition.series.ocrtext',
-    value: modalState.search.toLowerCase()
-  };
+  return V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
 };
 
 const LogoConditionGenerator = modalState => {
@@ -157,8 +152,8 @@ const TimeConditionGenerator = modalState => {
   };
 };
 
-// most of this logic comes from https://github.com/veritone/core-search-server/blob/develop/model/util/legacy.search.js#L162
-const TranscriptConditionGenerator = modalState => {
+
+const V2QueryStringParser = (field, queryString) => {
   function buildOrOperator(conditions) {
     return {
       operator: 'or',
@@ -334,7 +329,13 @@ const TranscriptConditionGenerator = modalState => {
     );
   }
 
-  return buildStringQuery('transcript.transcript', modalState.search);
+
+  return buildStringQuery(field, queryString);
+}
+
+// most of this logic comes from https://github.com/veritone/core-search-server/blob/develop/model/util/legacy.search.js#L162
+const TranscriptConditionGenerator = modalState => {
+  return V2QueryStringParser('transcript.transcript', modalState.search);
 };
 
 const GeolocationGenerator = modalState => {
