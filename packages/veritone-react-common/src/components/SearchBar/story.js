@@ -2,6 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { object } from '@storybook/addon-knobs/react';
 import { SampleSearchBar } from './component';
+import searchQueryGenerator from '../../../../veritone-csp-generator/index'
+
 
 storiesOf('SearchBar', module)
   .add('WithTranscriptPill', () => {
@@ -28,7 +30,7 @@ storiesOf('SearchBar', module)
 
     let csp = {"and":[{"state":{"search":"Lakers","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"or":[{"state":{"search":"Kobe","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Lebron","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Shaq","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"}]}]};
 
-    const onSearch = (csps) => console.log("User submitted a search", JSON.stringify(csps));
+    const onSearch = (csp) => console.log(searchQueryGenerator(csp))
 
     return [
       <div

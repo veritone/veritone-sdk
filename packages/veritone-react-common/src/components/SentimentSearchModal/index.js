@@ -72,14 +72,15 @@ export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } 
         <ModalSubtitle>Search by positive and negative sentiment in media.</ModalSubtitle>
       </DialogTitle>
       <DialogContent>
-            <Select
-              native
-              value={ inputValue }
-              onChange={ onChange }
-            >
-              <option value={'positive'}>Positive</option>
-              <option value={'negative'}>Negative</option>
-            </Select>
+        <Select
+          native
+          style={ {width: "200px", boxShadow: "none" } }
+          value={ inputValue }
+          onChange={ onChange }
+        >
+          <option value={'positive'}>Positive</option>
+          <option value={'negative'}>Negative</option>
+        </Select>
       </DialogContent>
       <DialogActions>
         <Button onClick={ cancel } color="primary" className="sentimentSearchCancel">
