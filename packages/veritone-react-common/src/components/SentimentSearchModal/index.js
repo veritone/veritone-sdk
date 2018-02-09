@@ -67,7 +67,7 @@ export default class SentimentSearchModal extends React.Component {
 }
 
 export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } ) => {
-  const selectHackClass = cx(styles['selectHack']);
+  const selectHackClass = cx(styles['material']);
   return (
     <div>
       <DialogTitle>
