@@ -73,7 +73,7 @@
   padding: 0 22px 2px 0 !important;
   line-height: calc(1em + 18px) !important;
   color: lightgrey;
-  font-weight: normal;
+  font-weight: normal !important;
 }
 
 .joinOperatorRootLeft {
@@ -92,7 +92,7 @@
   color: $grey-5;
   align-items: center;
   display: flex;
-  font-weight: normal;
+  font-weight: normal !important;
 }
 
 
