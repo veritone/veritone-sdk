@@ -40,7 +40,8 @@ export default [
       }),
 
       babel({
-        include: ['src/**/*.js']
+        include: ['src/**/*.js'],
+        runtimeHelpers: true
       }),
 
       resolve({
