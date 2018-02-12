@@ -27,7 +27,7 @@
     "build": "cross-env NODE_ENV=production rollup -c",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "lint": "eslint src/** --ext .js",
-    "clean:build": "rimraf build",
+    "clean:build": "rimraf dist",
     "prebuild": "npm run clean:build",
     "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
