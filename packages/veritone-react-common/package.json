@@ -26,7 +26,7 @@
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
-    "clean:build": "rimraf build",
+    "clean:build": "rimraf dist",
     "prebuild": "npm run clean:build",
     "build": "cross-env NODE_ENV=production rollup -c",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
