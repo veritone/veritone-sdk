@@ -5,3 +5,10 @@
 
 ## 1.1.0
 * Use babel to transform es6 code and async/await 
+
+## 1.1.1
+* Fix botched 1.1.0 release
+ 
+## 1.1.2
+* Include babelHelpers in the bundle to prevent "babelHelpers is not defined" error
+ 
