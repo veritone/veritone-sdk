@@ -11,7 +11,7 @@
     "redux-api-middleware-fixed": "^1.2.0",
     "redux-saga": "^0.16.0",
     "veritone-functional-permissions": "^1.0.1",
-    "veritone-oauth-helpers": "^1.0.0"
+    "veritone-oauth-helpers": "^1.1.2"
   },
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
