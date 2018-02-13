@@ -11300,24 +11300,6 @@ vendors@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.1.tgz#37ad73c8ee417fb3d580e785312307d274847f22"
 
-veritone-oauth-helpers@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/veritone-oauth-helpers/-/veritone-oauth-helpers-1.1.2.tgz#902ee951ca509ecb071d1d98fbc7b3bec957533e"
-
-veritone-redux-common@^2.2.0-beta-1:
-  version "2.2.0-beta-1"
-  resolved "https://registry.yarnpkg.com/veritone-redux-common/-/veritone-redux-common-2.2.0-beta-1.tgz#fc5aa70f2b43b429d16a6f520182a632eff86e64"
-  dependencies:
-    lodash "^4.17.4"
-    prop-types "^15.6.0"
-    react "^16.2.0"
-    react-dom "^16.2.0"
-    react-redux "^5.0.6"
-    redux-api-middleware-fixed "^1.2.0"
-    redux-saga "^0.16.0"
-    veritone-functional-permissions "^1.0.1"
-    veritone-oauth-helpers "^1.0.0"
-
 verror@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/verror/-/verror-1.10.0.tgz#3a105ca17053af55d6e270c1f8288682e18da400"
@@ -11472,7 +11454,7 @@ webpack-sources@^1.0.1:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^3.5.2, webpack@^3.6.0, webpack@^3.8.1:
+webpack@^3.5.2, webpack@^3.8.1:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.10.0.tgz#5291b875078cf2abf42bdd23afe3f8f96c17d725"
   dependencies:

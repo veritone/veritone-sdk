@@ -11,6 +11,8 @@ import postcss from 'rollup-plugin-postcss';
 import PropTypes from 'prop-types';
 import * as rfmui from 'redux-form-material-ui';
 import * as mui from 'material-ui';
+import * as datefns from 'date-fns';
+import * as lodash from 'lodash';
 
 import sass from './rollup-postcss-sass-loader';
 
@@ -31,11 +33,21 @@ export default [
       'redux-saga',
       'redux-saga/effects',
       'lodash',
-      ...Object.keys(mui).map(name => `material-ui/${name}`),
       'material-ui/styles',
       'material-ui/Form',
       'material-ui/Progress',
-      'redux-form-material-ui'
+      'redux-form-material-ui',
+      'react-dnd',
+      'react-dnd-html5-backend',
+      'react-infinite-calendar',
+      'redux',
+      'redux-form',
+      'pluralize',
+      'mime-types',
+      'classnames',
+      ...Object.keys(mui).map(name => `material-ui/${name}`),
+      ...Object.keys(datefns).map(name => `date-fns/${name}`),
+      ...Object.keys(lodash).map(name => `lodash/${name}`),
     ],
     plugins: [
       replace({
@@ -61,8 +73,7 @@ export default [
         include: ['../../node_modules/**', 'node_modules/**', '../**'],
         namedExports: {
           'prop-types': Object.keys(PropTypes),
-          'react-dnd': ['DropTarget', 'DragDropContext'],
-          'redux-form-material-ui/es': Object.keys(rfmui)
+          // 'react-dnd': ['DropTarget', 'DragDropContext']
         }
       }),
 
