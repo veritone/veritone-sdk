@@ -6,14 +6,12 @@ import replace from 'rollup-plugin-replace';
 import url from "rollup-plugin-url"
 import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
-// import uglify from 'rollup-plugin-uglify';
+import { snakeCase } from 'lodash';
 
 import PropTypes from 'prop-types';
-import * as rfmui from 'redux-form-material-ui';
 import * as mui from 'material-ui';
 import * as datefns from 'date-fns';
 import * as lodash from 'lodash';
-
 import sass from './rollup-postcss-sass-loader';
 
 export default [
@@ -46,7 +44,7 @@ export default [
       'mime-types',
       'classnames',
       ...Object.keys(mui).map(name => `material-ui/${name}`),
-      ...Object.keys(datefns).map(name => `date-fns/${name}`),
+      ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
       ...Object.keys(lodash).map(name => `lodash/${name}`),
     ],
     plugins: [
@@ -72,15 +70,14 @@ export default [
       commonjs({
         include: ['../../node_modules/**', 'node_modules/**', '../**'],
         namedExports: {
-          'prop-types': Object.keys(PropTypes),
-          // 'react-dnd': ['DropTarget', 'DragDropContext']
+          'prop-types': Object.keys(PropTypes)
         }
       }),
 
       postcss({
         modules: true,
-        loaders: [sass],
-        extract: 'dist/bundle.css'
+        loaders: [sass]
+        // extract: 'dist/styles.css'
       }),
 
       json(),
