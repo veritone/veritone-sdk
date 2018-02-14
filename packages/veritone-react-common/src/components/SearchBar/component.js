@@ -207,9 +207,16 @@ const guid = () => {
 
 export class SampleSearchBar extends React.Component {
   async componentDidMount() {
-    const auth = await this.getAuth();
-    const getEntity = this.getEntityFetch(auth);
-    const libraries = await this.getLibraries(auth);
+
+    let auth = null;
+    let libraries = [];
+    try {
+      auth = await this.getAuth();
+      const getEntity = this.getEntityFetch(auth);
+      libraries = await this.getLibraries(auth);
+    } catch (e) {
+      console.error(e);
+    }
     let searchParameters = [];
 
     //if (this.props.setSearch) this.props.setSearch(this.searchQueryGenerator);
@@ -383,18 +390,31 @@ export class SampleSearchBar extends React.Component {
     return searchParameters;
   }
 
-  addOrModifySearchParameter = parameter => {
-    const index = this.state.searchParameters.findIndex(
+  addOrModifySearchParameter = (parameter, index) => {
+    const existing = this.state.searchParameters.findIndex(
       searchParameter => searchParameter.id === parameter.id
     );
-    if (index !== -1) {
+    // existing parameters are modified
+    if (existing !== -1) {
       const newSearchParameters = update(this.state.searchParameters, {
-        $splice: [[index, 1, parameter]]
+        $splice: [[existing, 1, parameter]]
+      });
+      this.setState(prevState => ({
+        searchParameters: newSearchParameters
+      }));
+    } else if (existing === -1 && typeof(index) === 'number' ) {
+      console.log("insert at ", index)
+      console.log("new parameter", parameter);
+      // not existing, index given, insert at a given position
+      const newSearchParameter = { ...parameter, id: guid() };
+      const newSearchParameters = update(this.state.searchParameters, {
+        $splice: [[index, 0, newSearchParameter]]
       });
       this.setState(prevState => ({
         searchParameters: newSearchParameters
       }));
     } else {
+      // add a new parameter
       const newSearchParameter = { ...parameter, id: guid() };
       this.setState(prevState => ({
         searchParameters: [...prevState.searchParameters, newSearchParameter]

@@ -20,6 +20,50 @@ export default class SearchBarContainer extends React.Component {
     highlightedPills: []
   };
 
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleGroupingKeyPress);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleGroupingKeyPress);
+  }
+
+  handleGroupingKeyPress = (event) => {
+    // let the user use esc to deselect all highlighted pills
+    if(event.code === 'Escape' && this.state.highlightedPills.length > 0 && !this.state.selectedPill && !this.state.openModal.modalId) {
+      event.preventDefault();
+      this.setState( { highlightedPills: [] });
+    } else if(event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 0) {
+      event.preventDefault();
+      let first = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]);
+      console.log("First highlightedPill index", first);
+      let last = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
+      console.log("Last highlightedPill index", last);
+
+      const before = this.props.searchParameters[first - 1];
+      const after = this.props.searchParameters[last + 1];
+      if( before && before.conditionType === 'group' && before.value === '(' 
+      && after && after.conditionType === 'group' && after.value === ')') {
+        // already an existing group
+        console.log("Existing group, should probably remove it");
+        this.props.removeSearchParameter( before.id );
+        this.props.removeSearchParameter( after.id );
+      } else {
+        this.props.addOrModifySearchParameter({
+          value: ')',
+          conditionType: 'group'
+        }, last + 1 );
+
+        this.props.addOrModifySearchParameter({
+          value: '(',
+          conditionType: 'group'
+        }, first );
+
+        console.log("Added parenthesis");
+      }
+    }
+  }
+
   addPill = modalId => {
     this.setState({
       openModal: { modalId: modalId }
@@ -46,13 +90,13 @@ export default class SearchBarContainer extends React.Component {
       }
 
       // if there are pills already highlighted, we can only highlight their neighbors
-      let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group' );
-
-      console.log("Just the pills", pills);
+      let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
+      // x.conditionType !== 'group' (add this back if you want them to be able to group neighbors who are already in groups)
+      //console.log("Just the pills", pills);
       let pillToHighlightIndex = pills.findIndex( x => x.id === searchParameterId);
-      console.log("Pill to highlight index", pillToHighlightIndex);
+      //console.log("Pill to highlight index", pillToHighlightIndex);
       let firstHighlightedPillIndex = pills.findIndex( x => x.id === this.state.highlightedPills[0]);
-      console.log("First highlightedPill index", firstHighlightedPillIndex);
+      //console.log("First highlightedPill index", firstHighlightedPillIndex);
       let lastHighlightedPillIndex = pills.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
       console.log("Last highlighted pill index", lastHighlightedPillIndex);
       if (pillToHighlightIndex === firstHighlightedPillIndex - 1) {
@@ -72,22 +116,26 @@ export default class SearchBarContainer extends React.Component {
       let highlightedPills = [ searchParameterId ];
       this.setState( { highlightedPills: highlightedPills });
     }
-
-    console.log(this.state.highlightedPills);
   }
 
   removePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
-    let nextJoiningParameterId =
-      searchParameters[index + 1] && searchParameters[index + 1].id;
-    this.props.removeSearchParameter(searchParameterId);
+    
+    let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
+    //searchParameters[index + 1] && searchParameters[index + 1].id;
+      //this.props.removeSearchParameter(searchParameterId);
 
-    if (nextJoiningParameterId) {
-      this.props.removeSearchParameter(nextJoiningParameterId);
-    }
-
-    if(this.props.onSearch) {
-      this.props.onSearch( searchParameters.filter( x => x.id !== searchParameterId && x.id !== nextJoiningParameterId));
+    if (lastJoiningParameter) {
+      this.props.removeSearchParameter(lastJoiningParameter.id);
+      this.props.removeSearchParameter(searchParameterId);
+      if (this.props.onSearch) {
+        this.props.onSearch( searchParameters.filter( x => x.id !== searchParameterId && x.id !== lastJoiningParameter.id));
+      }
+    } else {
+      this.props.removeSearchParameter(searchParameterId);
+      if (this.props.onSearch) {
+        this.props.onSearch( searchParameters.filter( x => x.id !== searchParameterId) );      
+      }
     }
   };
 
@@ -112,16 +160,17 @@ export default class SearchBarContainer extends React.Component {
       if (parameter) {
         const lastJoiningOperator = this.getLastJoiningOperator(searchParameters);
 
+        let numberOfPills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
+        // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
+        if(!searchParameterId && numberOfPills.length > 0) {
+          this.addJoiningOperator(lastJoiningOperator);
+        }
+
         this.props.addOrModifySearchParameter({
           value: parameter,
           conditionType: engineId,
           id: searchParameterId
         });
-
-        // if there's no selected pill, we're adding a new search parameter so add a joining operator
-        if (!searchParameterId) {
-          this.addJoiningOperator(lastJoiningOperator);
-        }
 
       } else {
         // if there is no value in the modal, remove the search parameter and the joining operator after it

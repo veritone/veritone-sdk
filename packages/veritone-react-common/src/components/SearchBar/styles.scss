@@ -30,7 +30,6 @@
   overflow-x: auto;
   display: flex;
   align-items: center;
-  height: 50px;
 }
 
 .engineCategoryPill {
@@ -110,6 +109,7 @@
 
 .afterCursor {
   width: 100%;
+  min-width: 25px;
   border: 0px;
   display: flex;
   height: 100%;

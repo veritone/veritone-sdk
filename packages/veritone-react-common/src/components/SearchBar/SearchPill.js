@@ -13,7 +13,7 @@ const searchPillLabelClass = cx(styles['searchPillLabel']);
 const searchPillClass = cx(styles['searchPill']);
 const deleteIconClass = cx(styles['deleteIcon']);
 
-const SearchPill = ({ engineIconClass, label, remove, open, toggle, highlighted }) => {
+const SearchPill = ({ engineIconClass, label, remove, onClick, highlighted }) => {
   var searchPillClasses = cx( { [`${styles['highlighted']}`] : highlighted } )
   return (
   <Chip
@@ -22,7 +22,7 @@ const SearchPill = ({ engineIconClass, label, remove, open, toggle, highlighted 
     className={ searchPillClasses }
     classes={{ root: searchPillClass ,label: searchPillLabelClass, deleteIcon: deleteIconClass }}
     onDelete={remove}
-    onClick={toggle}
+    onClick={onClick}
   />
   )
 };

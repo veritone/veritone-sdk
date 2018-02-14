@@ -117,7 +117,6 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
 
 
 const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
-  console.log(searchParameters);
   let output = [];
   for (let i = 0; i < searchParameters.length; i++ ) {
     let searchParameter = searchParameters[i];
@@ -133,22 +132,32 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
       output.push(
         <JoiningOperator onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />
       )
+    } else if (searchParameter.conditionType === 'group') {
+      output.push(<span>{searchParameter.value}</span>);
     } else if (searchParameter.conditionType !== 'join') {
       const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
 
       const { abbreviation, thumbnail } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
       const remove = () => removePill(searchParameter.id);
-      const open = () => openPill(searchParameter);
-      const toggle = () => togglePill(searchParameter.id, searchParameters);
+      
+      const onClick= (e) => {
+        if(e.shiftKey) {
+          togglePill(searchParameter.id, searchParameters);
+        } else {
+          openPill(searchParameter);
+        }
+      }
+      //const open = () => openPill(searchParameter);
+      //const toggle = () => togglePill(searchParameter.id, searchParameters);
 
       output.push(
         <SearchPill
-          id={searchParameter.id}
+          key={searchParameter.id}
           engineIconClass={searchParameterEngine.iconClass}
-          toggle={ toggle }
+          onClick={ onClick }
           highlighted={ highlightedPills.indexOf(searchParameter.id) !== -1 }
           label={abbreviation}
-          open={open}
+          
           remove={remove}
         />);
     }
