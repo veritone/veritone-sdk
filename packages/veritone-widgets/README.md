@@ -1,3 +1,30 @@
+## Quick Start
+
+```javascript
+import { VeritoneApp } from 'veritone-widgets'
+const app = VeritoneApp();
+
+// a "log in with veritone" button
+const oauthButton = new OAuthLoginButton({
+  // the ID of an existing element in your document where the button will appear
+  elId: 'login-button-widget',
+  // your app server's authentication endpoint (required):
+  OAuthURI: 'http://localhost:5001/auth/veritone',
+  // optional callbacks to retrieve the OAuth token for using outside of VeritoneApp:
+  onAuthSuccess: ({ OAuthToken }) => console.log(OAuthToken),
+  onAuthFailure: (error) => console.log(error)
+});
+
+// the Veritone app bar, which will receive auth after the user completes
+// the oauth flow using the OAuthLoginButton
+const appBar = new AppBarWidget({
+  elId: 'appBar-widget',
+  title: 'My App',
+  profileMenu: true,
+  appSwitcher: true
+});
+```
+
 ## Getting started
 Before using any widgets, first import and call `VeritoneApp`. Typically this will be done when your application is loaded and initialized.
 
