@@ -328,6 +328,7 @@ export class SampleSearchBar extends React.Component {
     searchParameters: this.props.searchParameters || []
   };
 
+  //Pratt parsing algorithm adapted from https://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing
   convertSearchParametersToCSP = searchParameters => {
     const operators = {
       'pill': (object) => {
@@ -456,7 +457,11 @@ export class SampleSearchBar extends React.Component {
         if(type === 'join' || type === 'group') {
           token = operators[nextSearchParameter.value.value]();
         } else {
-          token = operators['pill'](nextSearchParameter.value.value);
+          const cspNode = {
+            state: nextSearchParameter.value.value,
+            engineCategoryId: nextSearchParameter.value.conditionType
+          };
+          token = operators['pill'](cspNode);
         }
       }
       return token;
