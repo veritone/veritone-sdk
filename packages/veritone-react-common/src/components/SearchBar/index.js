@@ -87,7 +87,8 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
         })
       };
     // level < 1 is the feature toggle for maximum tree depth
-    return isLast && level < 1 ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value.toUpperCase()} /> )
+    return (<JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />);
+    //return isLast && level < 1 ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value.toUpperCase()} /> )
   }
   // otherwise it's a search engine category
   else
@@ -113,6 +114,49 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
     ];
   }
 }
+
+
+const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
+  console.log(searchParameters);
+  let output = [];
+  for (let i = 0; i < searchParameters.length; i++ ) {
+    let searchParameter = searchParameters[i];
+    if (searchParameter.conditionType === 'join' && i !== searchParameters.length - 1 ) {
+      const onChangePill = (modifyPill, id) =>
+        evt => {
+          modifyPill({
+            value: evt.target.value,
+            conditionType: 'join',
+            id: id
+          })
+        };
+      output.push(
+        <JoiningOperator onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />
+      )
+    } else if (searchParameter.conditionType !== 'join') {
+      const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
+
+      const { abbreviation, thumbnail } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
+      const remove = () => removePill(searchParameter.id);
+      const open = () => openPill(searchParameter);
+      const toggle = () => togglePill(searchParameter.id, searchParameters);
+
+      output.push(
+        <SearchPill
+          id={searchParameter.id}
+          engineIconClass={searchParameterEngine.iconClass}
+          toggle={ toggle }
+          highlighted={ highlightedPills.indexOf(searchParameter.id) !== -1 }
+          label={abbreviation}
+          open={open}
+          remove={remove}
+        />);
+    }
+  }
+  return output;
+});
+
+/*
 
 const SearchParameters = withTheme()(({theme, searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
   let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'and';
@@ -169,6 +213,8 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, enabledEn
   return (output);
 })
 
+*/
+
 const SearchBar = ({
   color,
   searchParameters,
@@ -176,11 +222,14 @@ const SearchBar = ({
   addPill,
   openPill,
   removePill,
+  highlightedPills,
+  togglePill,
   modifyPill,
   onSearch,
   libraries
 }) => {
   const getOnEnter = (onSearch) => (evt) => {
+    console.log(evt);
     if(evt.key === 'Enter') {
       onSearch();
     }
@@ -201,7 +250,10 @@ const SearchBar = ({
         searchParameters={ searchParameters }
         level={0}
         enabledEngineCategories={enabledEngineCategories}
+        highlightedPills={ highlightedPills }
+        togglePill={ togglePill }
         addPill={ addPill }
+        togglePill={ togglePill }
         openPill={ openPill }
         removePill={ removePill }
         modifyPill={ modifyPill }

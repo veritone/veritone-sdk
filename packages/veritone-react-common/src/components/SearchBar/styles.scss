@@ -64,6 +64,10 @@
   }
 }
 
+.highlighted {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+}
+
 .searchPillLabel {
   padding-left: 0 !important;
 }
@@ -72,7 +76,7 @@
   margin-left: 0.5em;
   padding: 0 22px 2px 0 !important;
   line-height: calc(1em + 18px) !important;
-  color: lightgrey;
+  color: $grey-5;
   font-weight: normal !important;
 }
 

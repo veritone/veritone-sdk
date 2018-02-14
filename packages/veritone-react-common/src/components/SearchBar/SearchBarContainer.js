@@ -16,7 +16,8 @@ export default class SearchBarContainer extends React.Component {
 
   state = {
     openModal: { modalId: null },
-    selectedPill: null
+    selectedPill: null,
+    highlightedPills: []
   };
 
   addPill = modalId => {
@@ -31,6 +32,49 @@ export default class SearchBarContainer extends React.Component {
       conditionType: 'join'
     });
   };
+
+  togglePill = (searchParameterId, searchParameters) => {
+    if (this.state.highlightedPills.length > 0) {
+      // if the pill is already highlighted, unhighlight it
+      let alreadyHighlightedIndex = this.state.highlightedPills.indexOf(searchParameterId);
+      if( alreadyHighlightedIndex !== -1 ) {
+        if( alreadyHighlightedIndex === 0 || alreadyHighlightedIndex === (this.state.highlightedPills.length - 1) ) {
+          let highlightedPills = this.state.highlightedPills.filter( x => x !== searchParameterId);
+          this.setState( { highlightedPills: highlightedPills });
+        }
+        return;
+      }
+
+      // if there are pills already highlighted, we can only highlight their neighbors
+      let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group' );
+
+      console.log("Just the pills", pills);
+      let pillToHighlightIndex = pills.findIndex( x => x.id === searchParameterId);
+      console.log("Pill to highlight index", pillToHighlightIndex);
+      let firstHighlightedPillIndex = pills.findIndex( x => x.id === this.state.highlightedPills[0]);
+      console.log("First highlightedPill index", firstHighlightedPillIndex);
+      let lastHighlightedPillIndex = pills.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
+      console.log("Last highlighted pill index", lastHighlightedPillIndex);
+      if (pillToHighlightIndex === firstHighlightedPillIndex - 1) {
+        let highlightedPills = [...this.state.highlightedPills];
+        highlightedPills.unshift(searchParameterId);
+        this.setState( { highlightedPills: highlightedPills });
+      }  else if (pillToHighlightIndex === lastHighlightedPillIndex + 1) {
+        let highlightedPills = [...this.state.highlightedPills];
+        highlightedPills.push(searchParameterId);
+        this.setState( { highlightedPills: highlightedPills });
+      } else {
+        // BOOP! you tried to group a non adjacent pill
+        console.warn('You tried to highlight a non-adjacent pill');
+      }
+    } else {
+      // if there are no pills highlighted yet, we can highlight any of the pills
+      let highlightedPills = [ searchParameterId ];
+      this.setState( { highlightedPills: highlightedPills });
+    }
+
+    console.log(this.state.highlightedPills);
+  }
 
   removePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
@@ -56,6 +100,7 @@ export default class SearchBarContainer extends React.Component {
   getLastJoiningOperator = (searchParameters) => {
     for(let i = searchParameters.length - 1; i >= 0; i--) {
       if(searchParameters[i].conditionType === 'join') {
+        console.log("Last joining operator", searchParameters[i]);
         return searchParameters[i].value;
       }
     }
@@ -95,6 +140,7 @@ export default class SearchBarContainer extends React.Component {
   };
 
   openPill = pillState => {
+    console.log('Open pill with ', pillState);
     this.setState({
       openModal: {
         modalId: pillState.conditionType,
@@ -127,6 +173,8 @@ export default class SearchBarContainer extends React.Component {
           enabledEngineCategories={this.props.enabledEngineCategories}
           searchParameters={this.props.searchParameters}
           addJoiningOperator={this.props.addJoiningOperator}
+          highlightedPills={this.state.highlightedPills}
+          togglePill={ this.togglePill }
           libraries={ this.props.libraries }
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
