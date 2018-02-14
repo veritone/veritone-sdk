@@ -124,16 +124,63 @@ oauthButton.destroy();
 
 ## Available widgets
 The current widgets are:
-* *AppBar*: The title and navigation bar common between all Veritone applications. Includes a logo, title, the Veritone app switcher and profile menu.
 
-* *OAuthLoginButton*: The "Log in with Veritone" button and corresponding frontend logic to handle the OAuth2 authentication flow.
+**AppBar**
 
-* *FilePicker*: The Veritone file upload dialog. Handles selecting and uploading files to S3 for use on the Veritone platform.
+The title and navigation bar common between all Veritone applications. Includes a logo, title, the Veritone app switcher and profile menu.
+
+*Options:*
+
+* title: string, a title to show in the center of the AppBar
+* backgroundColor: string, a color (in hex) to use for the AppBar background
+* profileMenu: bool, whether or not to show the profile menu
+* appSwitcher: bool, whether or not to show the app switcher menu
+* logo: bool, whether or not to show the veritone logo on the left side of the AppBar
+
+**OAuthLoginButton**
+The "Log in with Veritone" button and corresponding frontend logic to handle the OAuth2 authentication flow.
+
+*Options:*
+
+* OAuthURI: string (required), the URL of your app server's OAuth authentication endpoint
+* onAuthSuccess: function, a callback that will be called with the OAuth token when the OAuth flow is completed successfully.
+* onAuthFailure: function, a callback that will be called with the error when the OAuth flow fails.
+
+
+**FilePicker**
+
+The Veritone file upload dialog. Handles selecting and uploading files to S3 for use on the Veritone platform.
+
+*Options:*
+
+* accept: oneOfType([arrayOf(string), string]), file extension(s) or mimetype(s) which the file picker will accept
+* multiple: bool, whether the picker will accept multiple files to upload in a batch
+* width: number, the width of the filepicker dialog
+* height: number, the height of the filepicker dialog
+* allowUrlUpload: bool, whether the filepicker will allow files to be selected by URL
+
+*Instance methods*
+
+* pick(callback): open the filepicker dialog.
+  * callback signature is (result, { warning, error, cancelled })
+    * result: array of result objects, one for each file uploaded
+      * name: string, the filename as stored on the server (may include a UUID)
+      * fileName: string, the original filename
+      * size: number, the file size in bytes
+      * type: string, the mime type of the file
+      * error: string or `false`, the error that prevented the file from uploading, if any
+      * bucket: string, the S3 bucket to which the file was uploaded
+      * url: string or `null`, the resulting S3 URL, if successful
+    * warning: string or `false`, a warning message if some (but not all) files failed to upload. A warning indicates that `result` contains some successful upload result objects, and some that were not successful (unsuccessful objects will have `error` populated with an error message, as noted above)
+    * error: string or `false`, an error message, if all files failed to upload.
+    * cancelled: bool, whether or not the filepicker interaction was cancelled (by the user, or by calling cancel()).
+
+* cancel(): close the filepicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
 
 ## Serverside requirements
 The OAuth2 flow requires both frontend and serverside components. An example server implementation can be found in the `veritone-widgets-server` package. The responsibility of the server is primarily to manage the application's OAuth secret during the token exchange with Veritone's servers. Please see the `veritone-widgets-server` readme for more information. 
 
-# License
+## License
 Copyright 2017, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
