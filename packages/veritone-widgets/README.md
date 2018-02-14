@@ -86,6 +86,23 @@ const oauthButton = new OAuthLoginButton({
 
 When `new OAuthLoginButton({ ... })` runs, the widget will appear on your page.
 
+#### Example: Using the AppBar widget
+All Veritone apps should also include the AppBar widget.
+
+```javascript
+<body>
+  <div id="appBar-widget" />
+  ...
+</body>
+
+import { AppBar } from 'veritone-widgets'
+const appBar = new AppBarWidget({
+  elId: 'appBar-widget',
+  title: 'My App',
+  profileMenu: true,
+  appSwitcher: true
+});
+```
 
 ## Configuring widgets
 Note that the OAuthLoginButton widget in the example above is being configured with four properties: elId, OAuthURI, onAuthSuccess and onAuthFailure. As mentioned earlier, an elId is required for every widget. OAuthURI, onAuthSuccess and onAuthFailure are specific configurable properties on the OAuthLoginButton. As it is in the example, configuration is always provided to the widget constructor.
