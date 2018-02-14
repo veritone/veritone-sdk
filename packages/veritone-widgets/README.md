@@ -19,6 +19,7 @@ const oauthButton = new OAuthLoginButton({
 const appBar = new AppBarWidget({
   elId: 'appBar-widget',
   title: 'My App',
+  backgroundColor: '#4caf50',
   profileMenu: true,
   appSwitcher: true
 });
@@ -99,6 +100,7 @@ import { AppBar } from 'veritone-widgets'
 const appBar = new AppBarWidget({
   elId: 'appBar-widget',
   title: 'My App',
+  backgroundColor: '#4caf50',
   profileMenu: true,
   appSwitcher: true
 });
@@ -196,6 +198,12 @@ The Veritone file upload dialog. Handles selecting and uploading files to S3 for
 
 ## Serverside requirements
 The OAuth2 flow requires both frontend and serverside components. An example server implementation can be found in the `veritone-widgets-server` package. The responsibility of the server is primarily to manage the application's OAuth secret during the token exchange with Veritone's servers. Please see the `veritone-widgets-server` readme for more information. 
+
+## Running the development environment (storybook)
+1. Set up your local clone of veritone-sdk, following the instructions in the [main readme](https://github.com/veritone/veritone-sdk#development)
+2. In the `packages/veritone-widgets-server` folder, fill in the missing fields in the `env.development` file with your own app's information (see our [application quick-start guide](http://docs.veritone.com/applications/quick-start/) for more info on how to create an app)
+3. In the `packages/veritone-widgets` folder, run `yarn start`.
+4. When the build finishes, access the storybook at the url provided in your terminal.
 
 ## License
 Copyright 2017, Veritone Inc.
