@@ -329,29 +329,143 @@ export class SampleSearchBar extends React.Component {
   };
 
   convertSearchParametersToCSP = searchParameters => {
-    const CSP = (parameter) => { return { state: parameter.value, engineCategoryId: parameter.conditionType } }
+    const operators = {
+      'pill': (object) => {
+        return {
+          nud: () => {
+            return object;
+          }
+        };
+      },
+      'and': () => {
+        return {
+          lbp: 20,
+          led: (left) => {
+            let right = expression(20);
+            return resolveGroup('and', left, right);
+          }
+        };
+      },
+      'or': () => {
+        return {
+          lbp: 10,
+          led: (left) => {
+            let right = expression(10);
+            return resolveGroup('or', left, right);
+          }
+        };
+      },
+      '(': () => {
+        return {
+          lbp: 0,
+          nud: () => {
+            const expr = expression();
+            match();
+            if(expr['and']) {
+              return {
+                'and(': expr['and']
+              };
+            } else if(expr['or']) {
+              return {
+                'or(': expr['or']
+              };
+            } else {
+              return expr;
+            }
+          }
+        };
+      },
+      ')': () => {
+        return {
+          lbp: 0
+        };
+      },
+      'end': () => {
+        return {
+          lbp: 0
+        };
+      }
+    };
 
-    const baseQuery = {}
-    let lastJoin = searchParameters[1] && searchParameters[1].value || 'and';
-    let lastNode = [];
-    baseQuery[lastJoin] = lastNode;
-
-    for(let i = 0; i < searchParameters.length - 1; i++) {
-      const searchParameter = searchParameters[i];
-      if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoin && i !== searchParameters.length - 2) {
-        const nextNode = {};
-        nextNode[searchParameters[i+1].value] = [ CSP(searchParameters[i]) ];
-        lastNode.push( nextNode );
-        lastNode = nextNode[searchParameters[i+1].value];
-        lastJoin = searchParameters[i+1].value;
+    const resolveGroup = (operator, left, right) => {
+      if(!right) {
+        return left;
+      }
+      const leftType = getNodeType(left);
+      const rightType = getNodeType(right);
+      let resultGroup;
+      if(leftType === 'implicitGroup' && rightType === 'pill' && left[operator]) {
+        resultGroup = {
+          [operator]: [...left[operator], right]
+        };
+      } else if(leftType === 'pill' && rightType === 'implicitGroup' && right[operator]) {
+        resultGroup = {
+          [operator]: [left, ...right[operator]]
+        };
+      } else if(leftType === 'implicitGroup' && rightType === 'implicitGroup' && left[operator] && right[operator]) {
+        resultGroup = {
+          [operator]: [...left[operator], ...right[operator]]
+        };
       } else {
-        if(searchParameters[i].conditionType !== 'join') {
-          lastNode.push(CSP(searchParameter))
+        resultGroup = {
+          [operator]: [left, right]
         }
       }
+      return resultGroup;
     }
 
-    return baseQuery;
+    const getNodeType = (node) => {
+      if(!node) {
+        return null;
+      }
+      if(node['and'] || node['or']) {
+        return 'implicitGroup';
+      } else if(node['and('] || node['or(']) {
+        return 'explicitGroup';
+      } else {
+        return 'pill';
+      }
+    };
+
+    const match = () => {
+      token = getNextToken();
+    }
+
+    const expression = (rbp = 0) => {
+      let t = token;
+      if(!t.nud) {
+        return null;
+      }
+      token = getNextToken();
+      let left = t.nud();
+      while(rbp < token.lbp) {
+        t = token;
+        token = getNextToken();
+        left = t.led(left);
+      }
+      return left;
+    }
+
+    const getNextToken = () => {
+      const nextSearchParameter = tokenIterable.next();
+      let token;
+      if(nextSearchParameter.done) {
+        token = operators['end']();
+      } else {
+        const type = nextSearchParameter.value.conditionType;
+        if(type === 'join' || type === 'group') {
+          token = operators[nextSearchParameter.value.value]();
+        } else {
+          token = operators['pill'](nextSearchParameter.value.value);
+        }
+      }
+      return token;
+    }
+
+    let tokenIterable = searchParameters[Symbol.iterator]();
+    let token = getNextToken();
+    const csp = expression();
+    return csp;
   }
 
   onSearch = (searchParameters) => {
