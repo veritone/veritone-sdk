@@ -33,7 +33,7 @@ const withUIState = (
       return function mapStateToProps(state, ownProps) {
         const stateKey = ownProps.uiStateKey || key || randomKey;
 
-        if (process.env.NODE_ENV === 'dev' && persist && !ownProps.uiStateKey) {
+        if (process.env.NODE_ENV !== 'production' && persist && !ownProps.uiStateKey) {
           console.warn("Warning: persist won't work without a uiStateKey");
         }
 

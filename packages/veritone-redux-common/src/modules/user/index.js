@@ -10,29 +10,8 @@ import { createReducer } from 'helpers/redux';
 import { getConfig } from 'modules/config';
 import { selectSessionToken } from 'modules/auth';
 
+import * as constants from './constants';
 export const namespace = 'user';
-
-export const FETCH_USER = 'vtn/user/FETCH_USER';
-export const FETCH_USER_SUCCESS = 'vtn/user/FETCH_USER_SUCCESS';
-export const FETCH_USER_FAILURE = 'vtn/user/FETCH_USER_FAILURE';
-
-export const LOGIN = 'vtn/user/LOGIN';
-export const LOGIN_SUCCESS = 'vtn/user/LOGIN_SUCCESS';
-export const LOGIN_FAILURE = 'vtn/user/LOGIN_FAILURE';
-
-export const LOGOUT = 'vtn/user/LOGOUT';
-export const LOGOUT_SUCCESS = 'vtn/user/LOGOUT_SUCCESS';
-export const LOGOUT_FAILURE = 'vtn/user/LOGOUT_FAILURE';
-
-export const REFRESH_TOKEN = 'vtn/user/REFRESH_TOKEN';
-export const REFRESH_TOKEN_SUCCESS = 'vtn/user/REFRESH_TOKEN_SUCCESS';
-export const REFRESH_TOKEN_FAILURE = 'vtn/user/REFRESH_TOKEN_FAILURE';
-
-export const FETCH_USER_APPLICATIONS = 'vtn/user/FETCH_USER_APPLICATIONS';
-export const FETCH_USER_APPLICATIONS_SUCCESS =
-  'vtn/user/FETCH_USER_APPLICATIONS_SUCCESS';
-export const FETCH_USER_APPLICATIONS_FAILURE =
-  'vtn/user/FETCH_USER_APPLICATIONS_FAILURE';
 
 const defaultState = {
   user: {},
@@ -51,7 +30,7 @@ const defaultState = {
 };
 
 const reducer = createReducer(defaultState, {
-  [FETCH_USER](state, action) {
+  [constants.FETCH_USER](state, action) {
     const requestSuccessState = {
       ...state,
       isFetching: true,
@@ -60,11 +39,11 @@ const reducer = createReducer(defaultState, {
 
     return action.error
       ? // handle requestError ie. offline
-        this[FETCH_USER_FAILURE](state, action)
+        this[constants.FETCH_USER_FAILURE](state, action)
       : requestSuccessState;
   },
 
-  [FETCH_USER_SUCCESS](state, action) {
+  [constants.FETCH_USER_SUCCESS](state, action) {
     return {
       ...state,
       isFetching: false,
@@ -73,7 +52,7 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [FETCH_USER_FAILURE](state, action) {
+  [constants.FETCH_USER_FAILURE](state, action) {
     return {
       ...state,
       isFetching: false,
@@ -82,7 +61,7 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [LOGIN](state, action) {
+  [constants.LOGIN](state, action) {
     const requestSuccessState = {
       ...state,
       isLoggingIn: true,
@@ -91,11 +70,11 @@ const reducer = createReducer(defaultState, {
     };
 
     return action.error
-      ? this[LOGIN_FAILURE](state, action)
+      ? this[constants.LOGIN_FAILURE](state, action)
       : requestSuccessState;
   },
 
-  [LOGIN_SUCCESS](state, action) {
+  [constants.LOGIN_SUCCESS](state, action) {
     return {
       ...state,
       isLoggingIn: false,
@@ -105,7 +84,7 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [LOGIN_FAILURE](state, action) {
+  [constants.LOGIN_FAILURE](state, action) {
     const statusErrors = {
       404: "Couldn't login, please double check your username and password.",
       default: "Couldn't login, please try again."
@@ -127,7 +106,7 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [FETCH_USER_APPLICATIONS](state, action) {
+  [constants.FETCH_USER_APPLICATIONS](state, action) {
     const requestSuccessState = {
       ...state,
       isFetchingApplications: true,
@@ -137,11 +116,11 @@ const reducer = createReducer(defaultState, {
     };
 
     return action.error
-      ? this[FETCH_USER_APPLICATIONS_FAILURE](state, action)
+      ? this[constants.FETCH_USER_APPLICATIONS_FAILURE](state, action)
       : requestSuccessState;
   },
 
-  [FETCH_USER_APPLICATIONS_SUCCESS](state, action) {
+  [constants.FETCH_USER_APPLICATIONS_SUCCESS](state, action) {
     return {
       ...state,
       isFetchingApplications: false,
@@ -151,7 +130,7 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [FETCH_USER_APPLICATIONS_FAILURE](state, action) {
+  [constants.FETCH_USER_APPLICATIONS_FAILURE](state, action) {
     const statusErrors = {
       404: "Couldn't get application list.",
       default: "Couldn't get application list. Please login."
@@ -173,7 +152,7 @@ const reducer = createReducer(defaultState, {
     };
   },
 
-  [REFRESH_TOKEN_SUCCESS](state, action) {
+  [constants.REFRESH_TOKEN_SUCCESS](state, action) {
     return {
       ...state,
       user: action.payload
@@ -190,7 +169,11 @@ function local(state) {
 export function fetchUser() {
   return {
     [CALL_API]: {
-      types: [FETCH_USER, FETCH_USER_SUCCESS, FETCH_USER_FAILURE],
+      types: [
+        constants.FETCH_USER,
+        constants.FETCH_USER_SUCCESS,
+        constants.FETCH_USER_FAILURE
+      ],
       endpoint: state => `${getConfig(state).apiRoot}/v1/admin/current-user`,
       method: 'GET',
       headers: commonHeaders
@@ -201,7 +184,11 @@ export function fetchUser() {
 export function login({ userName, password }) {
   return {
     [CALL_API]: {
-      types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAILURE],
+      types: [
+        constants.LOGIN,
+        constants.LOGIN_SUCCESS,
+        constants.LOGIN_FAILURE
+      ],
       endpoint: state => `${getConfig(state).apiRoot}/v1/admin/login`,
       method: 'POST',
       body: JSON.stringify({
@@ -220,7 +207,11 @@ export function login({ userName, password }) {
 export function logout() {
   return {
     [CALL_API]: {
-      types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAILURE],
+      types: [
+        constants.LOGOUT,
+        constants.LOGOUT_SUCCESS,
+        constants.LOGOUT_FAILURE
+      ],
       endpoint: state =>
         // prettier-ignore
         `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/logout`,
@@ -233,7 +224,11 @@ export function logout() {
 export function refreshApiToken() {
   return {
     [CALL_API]: {
-      types: [REFRESH_TOKEN, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE],
+      types: [
+        constants.REFRESH_TOKEN,
+        constants.REFRESH_TOKEN_SUCCESS,
+        constants.REFRESH_TOKEN_FAILURE
+      ],
       endpoint: state =>
         // prettier-ignore
         `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/refresh`,
@@ -247,9 +242,9 @@ export function fetchEnabledApps() {
   return {
     [CALL_API]: {
       types: [
-        FETCH_USER_APPLICATIONS,
-        FETCH_USER_APPLICATIONS_SUCCESS,
-        FETCH_USER_APPLICATIONS_FAILURE
+        constants.FETCH_USER_APPLICATIONS,
+        constants.FETCH_USER_APPLICATIONS_SUCCESS,
+        constants.FETCH_USER_APPLICATIONS_FAILURE
       ],
       endpoint: state =>
         `${getConfig(state).apiRoot}/v1/admin/current-user/applications`,

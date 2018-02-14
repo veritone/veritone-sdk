@@ -2,7 +2,6 @@ import React from 'react';
 import { configure, addDecorator } from '@storybook/react';
 import { withKnobs } from '@storybook/addon-knobs';
 
-import 'normalize.css';
 import '../src/styles/global.scss';
 
 const req = require.context('../src', true, /story.js$/);
