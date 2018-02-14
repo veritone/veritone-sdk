@@ -36,7 +36,7 @@ const app = VeritoneApp();
 _Note_: `VeritoneApp` creates a singleton, so you do not need to manage the constructed app instance yourself. As long as VeritoneApp() has been imported and called at least once, you can retrieve the same instance by importing and calling VeritoneApp() again elsewhere in your app, if needed.
 
 ### 2. Authenticate with Veritone via OAuth
-If you already have an OAuth token (beacuse your app handles the client-side OAuth flow on its own), provide it by calling `login()` on the returned app instance.
+If you already have an OAuth token (because your app handles the client-side OAuth flow on its own), provide it by calling `login()` on the returned app instance.
 
 ```javascript
 import { VeritoneApp } from 'veritone-widgets'
