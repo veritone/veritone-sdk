@@ -481,18 +481,18 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
-  CSPToSearchParameters = cognitiveSearchProfile => {
+  CSPToSearchParameters = (cognitiveSearchProfile, parentJoinOperator) => {
     const getJoinOperator = ( query ) => {
       const operators = Object.keys(query);
       return operators[0];
     }
-    
+
     let searchParameters = [];
     const cspJoinOperator = getJoinOperator(cognitiveSearchProfile);
     const joinOperator = cspJoinOperator.replace('(', '');
     const conditions = cognitiveSearchProfile[cspJoinOperator];
-
-    if(cspJoinOperator.endsWith('(')) {
+    const shouldAddParens = cspJoinOperator.endsWith('(') || (parentJoinOperator === 'and' && cspJoinOperator === 'or');
+    if(shouldAddParens) {
       searchParameters.push({id: guid(), conditionType: 'group', value: '(' });
     }
 
@@ -501,14 +501,14 @@ export class SampleSearchBar extends React.Component {
         const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
         searchParameters.push( newSearchPill );
       } else {
-        const subSearchParameters = this.CSPToSearchParameters(conditions[i]);
+        const subSearchParameters = this.CSPToSearchParameters(conditions[i], cspJoinOperator);
         searchParameters = [...searchParameters, ...subSearchParameters];
       }
       if(i < conditions.length - 1) {
         searchParameters.push( { id: guid(), conditionType: 'join', value: joinOperator } );
       }
     }
-    if(cspJoinOperator.endsWith('(')) {
+    if(shouldAddParens) {
       searchParameters.push({id: guid(), conditionType: 'group', value: ')' });
     }
     return searchParameters;
