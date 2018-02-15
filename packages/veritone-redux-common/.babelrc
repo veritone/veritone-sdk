@@ -43,8 +43,7 @@
             "alias": {
               "helpers": "./src/helpers",
               "modules": "./src/modules",
-              "util": "./src/util",
-              "lodash": "lodash-es"
+              "util": "./src/util"
             }
           }
         ],
