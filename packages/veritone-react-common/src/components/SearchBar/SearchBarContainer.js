@@ -145,7 +145,6 @@ export default class SearchBarContainer extends React.Component {
 
   removePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
-
     // removes the last joining operator when a search pill is removed
     let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
     if (lastJoiningParameter) {
@@ -160,9 +159,11 @@ export default class SearchBarContainer extends React.Component {
         this.props.onSearch( simplifiedParameters );
       }
     } else {
-      this.props.removeSearchParameter(searchParameterId);
+      let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== searchParameters[index + 1].id);
 
-      let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId);
+      this.props.removeSearchParameter(searchParameterId);
+      this.props.removeSearchParameter(searchParameters[index + 1].id);
+
       let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
       extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
 
