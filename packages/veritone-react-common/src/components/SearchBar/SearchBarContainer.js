@@ -72,11 +72,11 @@ export default class SearchBarContainer extends React.Component {
     });
   };
 
-  addJoiningOperator = operator => {
+  addJoiningOperator = (operator, index) => {
     this.props.addOrModifySearchParameter({
       value: operator || 'and',
       conditionType: 'join'
-    });
+    }, index);
   };
 
   togglePill = (searchParameterId, searchParameters) => {
@@ -199,17 +199,40 @@ export default class SearchBarContainer extends React.Component {
         const lastJoiningOperator = this.getLastJoiningOperator(searchParameters);
 
         let numberOfPills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
-        // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
-        if(!searchParameterId && numberOfPills.length > 0) {
-          this.addJoiningOperator(lastJoiningOperator);
+        const insertAt = this.state.highlightedPills.length === 1 ? searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]) : undefined;
+
+        // adding a pill before another pill
+        if(insertAt !== undefined) {
+          this.props.addOrModifySearchParameter([{
+            value: parameter,
+            conditionType: engineId
+          },
+          {
+            value: "and",
+            conditionType: "join",
+          }]
+          , insertAt);
+
+          this.setState({
+            openModal: { modalId: null },
+            selectedPill: null
+          }, () => {
+            if(this.props.onSearch) {
+              this.props.onSearch();
+            }
+          });
+        } else {
+          // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
+          if(!searchParameterId && numberOfPills.length > 0) {
+            this.addJoiningOperator(lastJoiningOperator);
+          } 
+
+          this.props.addOrModifySearchParameter({
+            value: parameter,
+            conditionType: engineId,
+            id: searchParameterId
+          });
         }
-
-        this.props.addOrModifySearchParameter({
-          value: parameter,
-          conditionType: engineId,
-          id: searchParameterId
-        });
-
       } else {
         // if there is no value in the modal, remove the search parameter and the joining operator after it
         this.removePill(searchParameterId, searchParameters);

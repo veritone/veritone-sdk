@@ -530,10 +530,14 @@ export class SampleSearchBar extends React.Component {
       console.log("insert at ", index)
       console.log("new parameter", parameter);
       // not existing, index given, insert at a given position
-      const newSearchParameter = { ...parameter, id: guid() };
+      const newSearchParameter = Array.isArray(parameter) ? parameter.map( x => ({ ...x, id: guid() }) ) : { ...parameter, id: guid() };
+      
+      console.log("new search parameter", newSearchParameter);
       const newSearchParameters = update(this.state.searchParameters, {
-        $splice: [[index, 0, newSearchParameter]]
+        $splice: [[index, 0, ...newSearchParameter]]
       });
+
+      console.log("After insertion", newSearchParameters);
       this.setState(prevState => ({
         searchParameters: newSearchParameters
       }));
