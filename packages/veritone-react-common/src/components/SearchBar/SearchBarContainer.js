@@ -33,8 +33,10 @@ export default class SearchBarContainer extends React.Component {
     if(event.code === 'Escape' && this.state.highlightedPills.length > 0 && !this.state.selectedPill && !this.state.openModal.modalId) {
       event.preventDefault();
       this.setState( { highlightedPills: [] });
-    } else if(event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 0) {
+    } else if(event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 1) {
       event.preventDefault();
+      console.log( "Search parameters", this.props.searchParameters );
+
       let first = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]);
       console.log("First highlightedPill index", first);
       let last = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
@@ -42,7 +44,7 @@ export default class SearchBarContainer extends React.Component {
 
       const before = this.props.searchParameters[first - 1];
       const after = this.props.searchParameters[last + 1];
-      if( before && before.conditionType === 'group' && before.value === '(' 
+      if( before && before.conditionType === 'group' && before.value === '('
       && after && after.conditionType === 'group' && after.value === ')') {
         // already an existing group
         console.log("Existing group, should probably remove it");
@@ -118,25 +120,58 @@ export default class SearchBarContainer extends React.Component {
     }
   }
 
+  simplifySearchParameters(searchParameters) {
+    let reduced = searchParameters.reduce( (accu, searchParameter ) => {
+      let simplified = accu[0];
+      let removed = accu[1];
+      // remove groups that only contain one element
+      if (simplified[simplified.length - 2] && simplified[simplified.length - 2].value === '(' && simplified[simplified.length - 1] && simplified[simplified.length - 1].value !== '(' && simplified[simplified.length - 1].value !== ')' && searchParameter.value === ')') {
+        removed.push(simplified[simplified.length - 2]);
+        removed.push(searchParameter);
+        simplified.splice(simplified.length - 2, 1);
+      } else if (simplified[simplified.length - 1] && simplified[simplified.length - 1].value === '(' && searchParameter.value === ')') {
+        // remove groups with no elements
+        removed.push(simplified[simplified.length - 1]);
+        removed.push(searchParameter);
+        simplified.pop();
+      } else {
+        simplified.push(searchParameter);
+      }
+      return accu;
+    }, [[], []]);
+
+    return reduced;
+  }
+
   removePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
-    
-    let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
-    //searchParameters[index + 1] && searchParameters[index + 1].id;
-      //this.props.removeSearchParameter(searchParameterId);
 
+    // removes the last joining operator when a search pill is removed
+    let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
     if (lastJoiningParameter) {
       this.props.removeSearchParameter(lastJoiningParameter.id);
       this.props.removeSearchParameter(searchParameterId);
+
+      let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== lastJoiningParameter.id);
+      let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
+      extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
+
       if (this.props.onSearch) {
-        this.props.onSearch( searchParameters.filter( x => x.id !== searchParameterId && x.id !== lastJoiningParameter.id));
+        this.props.onSearch( simplifiedParameters );
       }
     } else {
       this.props.removeSearchParameter(searchParameterId);
+
+      let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId);
+      let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
+      extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
+
       if (this.props.onSearch) {
-        this.props.onSearch( searchParameters.filter( x => x.id !== searchParameterId) );      
+        this.props.onSearch( simplifiedParameters );
       }
     }
+
+    this.setState({highlightedPills: []});
   };
 
   getRemovePill = searchParameters => {

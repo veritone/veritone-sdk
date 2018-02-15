@@ -21,7 +21,7 @@ const SearchPill = ({ engineIconClass, label, remove, onClick, highlighted }) =>
     label={label}
     className={ searchPillClasses }
     classes={{ root: searchPillClass ,label: searchPillLabelClass, deleteIcon: deleteIconClass }}
-    onDelete={remove}
+    onDelete={ !highlighted && remove}
     onClick={onClick}
   />
   )
