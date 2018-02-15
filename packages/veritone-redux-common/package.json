@@ -12,6 +12,7 @@
     "veritone-functional-permissions": "^1.0.1",
     "veritone-oauth-helpers": "^1.1.2"
   },
+  "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
   "scripts": {
