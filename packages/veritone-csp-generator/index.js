@@ -372,7 +372,7 @@ const searchQueryGenerator = csp => {
 
   const getJoinOperator = query => {
     const operators = Object.keys(query);
-    return operators[0];
+    return operators[0].replace('(', '');
   };
 
   let joinOperator = getJoinOperator(csp);
