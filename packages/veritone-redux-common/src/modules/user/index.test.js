@@ -1,6 +1,7 @@
 import nock from 'nock';
 import { makeMockStore } from 'helpers/test/redux';
 
+import * as userConstants from './constants';
 import userReducer, * as userModule from './';
 
 const mockStore = makeMockStore();
@@ -9,7 +10,7 @@ describe('user module reducer', function() {
   describe('user', function() {
     it('handles user fetch request errors', function() {
       const fetchUserRequestErrorAction = {
-        type: userModule.FETCH_USER,
+        type: userConstants.FETCH_USER,
         error: true,
         payload: new Error()
       };
@@ -23,7 +24,7 @@ describe('user module reducer', function() {
   describe('login', function() {
     it('handles request errors', function() {
       const loginRequestErrorAction = {
-        type: userModule.LOGIN,
+        type: userConstants.LOGIN,
         error: true,
         payload: new Error()
       };
@@ -35,7 +36,7 @@ describe('user module reducer', function() {
 
     it('sets a good error message for server errors', function() {
       const loginRequestErrorAction = {
-        type: userModule.LOGIN_FAILURE,
+        type: userConstants.LOGIN_FAILURE,
         payload: {
           status: 500
         }
@@ -49,7 +50,7 @@ describe('user module reducer', function() {
 
     it('sets a good error message for bad credentials', function() {
       const loginRequestErrorAction = {
-        type: userModule.LOGIN_FAILURE,
+        type: userConstants.LOGIN_FAILURE,
         payload: {
           name: 'ApiError',
           status: 404
@@ -118,7 +119,7 @@ describe('user module actions', function() {
             .getActions()
             .some(
               a =>
-                a.type === userModule.LOGIN_SUCCESS &&
+                a.type === userConstants.LOGIN_SUCCESS &&
                 a.payload.userName === 'mitch'
             );
 
