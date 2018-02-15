@@ -486,25 +486,30 @@ export class SampleSearchBar extends React.Component {
       const operators = Object.keys(query);
       return operators[0];
     }
+    
+    let searchParameters = [];
+    const cspJoinOperator = getJoinOperator(cognitiveSearchProfile);
+    const joinOperator = cspJoinOperator.replace('(', '');
+    const conditions = cognitiveSearchProfile[cspJoinOperator];
 
-    const searchParameters = [];
-    let joinOperator = getJoinOperator(cognitiveSearchProfile);
-    let conditions = cognitiveSearchProfile[joinOperator];
+    if(cspJoinOperator.endsWith('(')) {
+      searchParameters.push({id: guid(), conditionType: 'group', value: '(' });
+    }
 
     for(let i = 0; i < conditions.length; i++) {
-
       if('engineCategoryId' in conditions[i]) {
         const newSearchPill = { id: guid(), conditionType: conditions[i].engineCategoryId, value: conditions[i].state }
         searchParameters.push( newSearchPill );
-        const newJoinOperator = { id: guid(), conditionType: 'join', value: joinOperator };
-        if(newJoinOperator) {
-          searchParameters.push( newJoinOperator );
-        }
       } else {
-        joinOperator = getJoinOperator(conditions[i])
-        conditions = conditions[i][joinOperator];
-        i = -1;
+        const subSearchParameters = this.CSPToSearchParameters(conditions[i]);
+        searchParameters = [...searchParameters, ...subSearchParameters];
       }
+      if(i < conditions.length - 1) {
+        searchParameters.push( { id: guid(), conditionType: 'join', value: joinOperator } );
+      }
+    }
+    if(cspJoinOperator.endsWith('(')) {
+      searchParameters.push({id: guid(), conditionType: 'group', value: ')' });
     }
     return searchParameters;
   }
