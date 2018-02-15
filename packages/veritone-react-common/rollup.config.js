@@ -27,7 +27,6 @@ export default [
       'classnames',
       ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
       ...Object.keys(lodash).map(name => `lodash/${name}`),
-      'lodash',
       ...Object.keys(mui).map(name => `material-ui/${name}`),
       'material-ui/styles',
       'material-ui/Form',
