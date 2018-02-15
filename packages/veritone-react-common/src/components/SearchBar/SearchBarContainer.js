@@ -162,7 +162,9 @@ export default class SearchBarContainer extends React.Component {
       let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== searchParameters[index + 1].id);
 
       this.props.removeSearchParameter(searchParameterId);
-      this.props.removeSearchParameter(searchParameters[index + 1].id);
+      if(searchParameters.length > 1) {
+        this.props.removeSearchParameter(searchParameters[index + 1].id);
+      }
 
       let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
       extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
