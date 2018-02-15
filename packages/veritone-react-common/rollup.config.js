@@ -8,7 +8,6 @@ import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
 import { snakeCase } from 'lodash';
 
-import PropTypes from 'prop-types';
 import * as mui from 'material-ui';
 import * as datefns from 'date-fns';
 import * as lodash from 'lodash';
@@ -25,27 +24,26 @@ export default [
       }
     ],
     external: [
-      'react',
-      'react-dom',
-      'react-redux',
-      'redux-saga',
-      'redux-saga/effects',
+      'classnames',
+      ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
+      ...Object.keys(lodash).map(name => `lodash/${name}`),
       'lodash',
+      ...Object.keys(mui).map(name => `material-ui/${name}`),
       'material-ui/styles',
       'material-ui/Form',
       'material-ui/Progress',
-      'redux-form-material-ui',
+      'mime-types',
+      'pluralize',
+      'prop-types',
+      'react',
       'react-dnd',
       'react-dnd-html5-backend',
+      'react-dom',
       'react-infinite-calendar',
+      'react-redux',
       'redux',
       'redux-form',
-      'pluralize',
-      'mime-types',
-      'classnames',
-      ...Object.keys(mui).map(name => `material-ui/${name}`),
-      ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
-      ...Object.keys(lodash).map(name => `lodash/${name}`),
+      'redux-form-material-ui',
     ],
     plugins: [
       replace({
@@ -68,10 +66,7 @@ export default [
         // modulesOnly: true
       }),
       commonjs({
-        include: ['../../node_modules/**', 'node_modules/**', '../**'],
-        namedExports: {
-          'prop-types': Object.keys(PropTypes)
-        }
+        include: ['../../node_modules/**', 'node_modules/**', '../**']
       }),
 
       postcss({
