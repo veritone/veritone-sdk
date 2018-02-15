@@ -27,7 +27,8 @@ export default [
       ...Object.keys(lodash).map(name => `lodash/${name}`),
       'prop-types',
       'veritone-oauth-helpers',
-      'veritone-functional-permissions'
+      'veritone-functional-permissions',
+      'redux-api-middleware-fixed'
     ],
     plugins: [
       replace({
