@@ -210,9 +210,10 @@ export class SampleSearchBar extends React.Component {
 
     let auth = null;
     let libraries = [];
+    let getEntity = null;
     try {
       auth = await this.getAuth();
-      const getEntity = this.getEntityFetch(auth);
+      getEntity = this.getEntityFetch(auth);
       libraries = await this.getLibraries(auth);
     } catch (e) {
       console.error(e);
@@ -223,22 +224,25 @@ export class SampleSearchBar extends React.Component {
     if(this.props.toCSP) this.props.toCSP( () => this.convertSearchParametersToCSP(this.state.searchParameters));
     if(this.props.csp) {
       searchParameters = this.CSPToSearchParameters(this.props.csp);
-      searchParameters = await Promise.all(searchParameters.map(async searchParameter => {
-        if (typeof searchParameter.value === 'object') {
-          if (searchParameter.value.type === 'entity') {
-            let entity = await getEntity(searchParameter.value.id);
-            searchParameter.value.label = entity.name;
-            searchParameter.value.image = entity.profileImageUrl;
-          } else if (searchParameter.value.type === 'library') {
-            let library = libraries.find(library => library.id === searchParameter.value.id);
-            if (library) {
-              searchParameter.value.label = library.name;
-              searchParameter.value.image = library.coverImageUrl;
+
+      if (getEntity) {
+        searchParameters = await Promise.all(searchParameters.map(async searchParameter => {
+          if (typeof searchParameter.value === 'object') {
+            if (searchParameter.value.type === 'entity') {
+              let entity = await getEntity(searchParameter.value.id);
+              searchParameter.value.label = entity.name;
+              searchParameter.value.image = entity.profileImageUrl;
+            } else if (searchParameter.value.type === 'library') {
+              let library = libraries.find(library => library.id === searchParameter.value.id);
+              if (library) {
+                searchParameter.value.label = library.name;
+                searchParameter.value.image = library.coverImageUrl;
+              }
             }
           }
-        }
-        return searchParameter;
-      }))
+          return searchParameter;
+        }))
+      }
     }
     this.setState( { auth: auth, searchParameters: searchParameters, libraries: libraries });
   }
@@ -531,7 +535,7 @@ export class SampleSearchBar extends React.Component {
       console.log("new parameter", parameter);
       // not existing, index given, insert at a given position
       const newSearchParameter = Array.isArray(parameter) ? parameter.map( x => ({ ...x, id: guid() }) ) : { ...parameter, id: guid() };
-      
+
       console.log(`new search parameter at ${index}`, newSearchParameter);
 
       const newSearchParameters = newSearchParameter.length > 1 ? update(this.state.searchParameters, {
