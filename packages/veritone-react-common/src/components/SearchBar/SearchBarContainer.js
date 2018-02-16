@@ -145,35 +145,34 @@ export default class SearchBarContainer extends React.Component {
 
   removePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
-    // removes the last joining operator when a search pill is removed
-    let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
-    if (lastJoiningParameter) {
+    let previousParameter = searchParameters[index - 1];
+    let newSearchParameters = null;
+
+    // if the pill to be removed is the start of a group, we need to remove the next joining parameter and not the previous one
+    if( ( previousParameter && previousParameter.value === '(' ) || ( index === 0 && this.numberOfPills(searchParameters) > 1 ) ) {
+      this.props.removeSearchParameter( searchParameters[index+1].id );
+      this.props.removeSearchParameter( searchParameterId );
+      newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== searchParameters[index+1].id);
+    } else if ( this.numberOfPills(searchParameters) > 1) {
+      // if the pill to be removed is in the middle of a group, remove the last joining parameter
+      let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
       this.props.removeSearchParameter(lastJoiningParameter.id);
       this.props.removeSearchParameter(searchParameterId);
-
-      let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== lastJoiningParameter.id);
-      let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
-      extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
-
-      if (this.props.onSearch) {
-        this.props.onSearch( simplifiedParameters );
-      }
+      newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== lastJoiningParameter.id);
     } else {
-      let newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== searchParameters[index + 1].id);
-
-      this.props.removeSearchParameter(searchParameterId);
-      if(searchParameters.length > 1) {
-        this.props.removeSearchParameter(searchParameters[index + 1].id);
-      }
-
-      let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
-      extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
-
-      if (this.props.onSearch) {
-        this.props.onSearch( simplifiedParameters );
-      }
+      // remove a single pill
+      this.props.removeSearchParameter( searchParameterId );
+      newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId);
     }
 
+    console.log("After remove", searchParameters);
+
+    let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
+    extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
+
+    if (this.props.onSearch) {
+      this.props.onSearch( simplifiedParameters );
+    }
     this.setState({highlightedPills: []});
   };
 
@@ -193,12 +192,18 @@ export default class SearchBarContainer extends React.Component {
     return null;
   }
 
+  numberOfPills = (searchParameters) => searchParameters.reduce( (accu, searchParameter) => {
+    if (searchParameter.conditionType !== 'join' && searchParameter.conditionType !== 'group' ) {
+      return accu + 1;
+    } else {
+      return accu;
+    }
+  }, 0);
+
   getApplyFilter = (engineId, searchParameters, searchParameterId) => {
     return parameter => {
       if (parameter) {
         const lastJoiningOperator = this.getLastJoiningOperator(searchParameters);
-
-        let numberOfPills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
         const insertAt = this.state.highlightedPills.length === 1 ? searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]) : undefined;
 
         // adding a pill before another pill
@@ -223,9 +228,9 @@ export default class SearchBarContainer extends React.Component {
           });
         } else {
           // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
-          if(!searchParameterId && numberOfPills.length > 0) {
+          if(!searchParameterId && this.numberOfPills(searchParameters) > 0) {
             this.addJoiningOperator(lastJoiningOperator);
-          } 
+          }
 
           this.props.addOrModifySearchParameter({
             value: parameter,
