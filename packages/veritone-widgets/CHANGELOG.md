@@ -39,4 +39,8 @@
   * fix s3 bucket url in result.
   * add `bucket` param to result objects.
 
+## 3.0.0
+* FilePicker
+  * (breaking) change `name` in upload result objects to `key`, to align with the actual server response.
+  * add `expires`, `getUrl`, and `unsignedUrl` fields to upload result objects (see readme)
 
