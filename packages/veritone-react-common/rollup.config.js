@@ -75,7 +75,6 @@ export default [
       postcss({
         modules: true,
         loaders: [sass]
-        // extract: 'dist/styles.css'
       }),
 
       json(),
