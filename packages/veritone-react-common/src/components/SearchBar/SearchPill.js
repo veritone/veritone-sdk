@@ -9,21 +9,20 @@ import Icon from './Icon';
 
 const searchPillLabelClass = cx(styles['searchPillLabel']);
 
-
-const searchPillClass = cx(styles['searchPill']);
+const searchPillClass = cx(styles['searchPill'], styles['searchPill:hover']);
 const deleteIconClass = cx(styles['deleteIcon']);
 
 const SearchPill = ({ engineIconClass, label, remove, onClick, highlighted }) => {
-  var searchPillClasses = cx( { [`${styles['highlighted']}`] : highlighted } )
+  var searchPillClasses = cx( { [`${styles['highlighted']}`] : highlighted , [`${styles['highlighted:hover']}`] : highlighted  } )
   return (
-  <Chip
+    <Chip
     avatar={<Icon iconClass={engineIconClass} color={'grey '} size={'1.5em'} />}
     label={label}
     className={ searchPillClasses }
     classes={{ root: searchPillClass ,label: searchPillLabelClass, deleteIcon: deleteIconClass }}
     onDelete={ !highlighted && remove}
     onClick={onClick}
-  />
+    />
   )
 };
 SearchPill.propTypes = {

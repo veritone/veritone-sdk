@@ -51,17 +51,19 @@ export default class SearchBarContainer extends React.Component {
         this.props.removeSearchParameter( before.id );
         this.props.removeSearchParameter( after.id );
       } else {
-        this.props.addOrModifySearchParameter({
+        let afterAdd1 = this.props.addOrModifySearchParameter({
           value: ')',
           conditionType: 'group'
         }, last + 1 );
 
-        this.props.addOrModifySearchParameter({
+        let afterAdd2 = this.props.addOrModifySearchParameter({
           value: '(',
           conditionType: 'group'
         }, first );
 
-        console.log("Added parenthesis");
+        console.log("Added parenthesis", afterAdd2);
+        let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(afterAdd2);
+        extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
       }
     }
   }
@@ -124,6 +126,7 @@ export default class SearchBarContainer extends React.Component {
     let reduced = searchParameters.reduce( (accu, searchParameter ) => {
       let simplified = accu[0];
       let removed = accu[1];
+
       // remove groups that only contain one element
       if (simplified[simplified.length - 2] && simplified[simplified.length - 2].value === '(' && simplified[simplified.length - 1] && simplified[simplified.length - 1].value !== '(' && simplified[simplified.length - 1].value !== ')' && searchParameter.value === ')') {
         removed.push(simplified[simplified.length - 2]);
@@ -140,7 +143,16 @@ export default class SearchBarContainer extends React.Component {
       return accu;
     }, [[], []]);
 
-    return reduced;
+    let [ simplifiedParameters, extraneousGroups ] = reduced;
+    while(simplifiedParameters[0].value === '(' && simplifiedParameters[simplifiedParameters.length - 1].value === ')') {
+      extraneousGroups.push(simplifiedParameters[0]);
+      extraneousGroups.push(simplifiedParameters[simplifiedParameters.length - 1]);
+
+      simplifiedParameters.pop();
+      simplifiedParameters.shift();
+    }
+
+    return [ simplifiedParameters, extraneousGroups ];
   }
 
   removePill = (searchParameterId, searchParameters) => {

@@ -530,6 +530,8 @@ export class SampleSearchBar extends React.Component {
       this.setState(prevState => ({
         searchParameters: newSearchParameters
       }));
+
+      return newSearchParameters;
     } else if (existing === -1 && typeof(index) === 'number' ) {
       console.log("insert at ", index)
       console.log("new parameter", parameter);
@@ -548,12 +550,16 @@ export class SampleSearchBar extends React.Component {
       this.setState(prevState => ({
         searchParameters: newSearchParameters
       }));
+
+      return newSearchParameters;
     } else {
       // add a new parameter
       const newSearchParameter = { ...parameter, id: guid() };
       this.setState(prevState => ({
         searchParameters: [...prevState.searchParameters, newSearchParameter]
       }));
+
+      return [...prevState.searchParameters, newSearchParameter];
     }
   };
 
