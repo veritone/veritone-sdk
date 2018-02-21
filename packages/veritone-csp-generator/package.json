@@ -11,7 +11,5 @@
   },
   "author": "Andrew Tung",
   "license": "Apache-2.0",
-  "dependencies": {
-    "user": "0.0.0"
-  }
+  "dependencies": {}
 }
