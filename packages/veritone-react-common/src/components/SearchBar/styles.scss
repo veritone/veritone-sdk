@@ -87,6 +87,7 @@
   line-height: calc(1em + 18px) !important;
   color: $grey-5;
   font-weight: normal !important;
+  height: 0.8em;
 }
 
 .joinOperatorRootLeft {
@@ -127,26 +128,31 @@
 }
 
 .searchGroup {
-  width: 100%;
   display: flex;
   padding-top: 2px;
   padding-bottom: 2px;
   align-items: center;
-  border: 2px dashed;
-  padding-right: 2px;
-  border-radius: 1em;
+  padding: 0.25em;
+  border: 1px dashed;
+  border-radius: 2em;
   //border-right: 2px solid blue;
   //background-color: rgba(0, 20, 60, 0.35);
 }
 
-.searchGroupNested {
-  width: 100%;
+.searchGroupNestedLeft {
   display: flex;
   align-items: center;
-  padding-right: 2px;
-  border-left: 2px dashed;
-  border-right: 2px dashed;
-  border-radius: 1em;
+  padding-left: 0.25em;
+  border-left: 1px dashed;
+  border-radius: 2em;
+}
+
+.searchGroupNestedRight {
+  display: flex;
+  align-items: center;
+  padding-right: 0.25em;
+  border-right: 1px dashed;
+  border-radius: 2em;
 }
 
 .removeUnderline {

@@ -155,8 +155,11 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
       )
     } else if (searchParameter.conditionType === 'group') {
       if(groups[searchParameter.id]) {
+        const nestedGroupStyling = searchParameters[i-1] && searchParameters[i-1].conditionType !== 'group' ? cx(styles['searchGroupNestedLeft']) : cx(styles['searchGroupNestedRight']);
+        const stylingClass = level === 0 ? cx(styles['searchGroup']) : nestedGroupStyling;
+
         output.push(
-          <span style={{ borderColor: theme.palette.primary.main }} className={ level === 0 ? cx(styles['searchGroup']) : cx(styles['searchGroupNested']) } key={`search_container_${searchParameter.id}`}>
+          <span style={{ borderColor: theme.palette.primary.main }} className={ stylingClass } key={`search_container_${searchParameter.id}`}>
           <SearchParameters
           key={`search_parameters_grouping_${searchParameter.id}_${level}`}
             searchParameters={ searchParameters.slice(i+1, groups[searchParameter.id]) }
