@@ -559,7 +559,7 @@ export class SampleSearchBar extends React.Component {
         searchParameters: [...prevState.searchParameters, newSearchParameter]
       }));
 
-      return [...prevState.searchParameters, newSearchParameter];
+      return [...this.state.searchParameters, newSearchParameter];
     }
   };
 

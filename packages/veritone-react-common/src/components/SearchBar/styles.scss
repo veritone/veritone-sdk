@@ -58,7 +58,7 @@
   margin-right: 3px;
   margin-left: 3px;
   font-weight: normal !important;
-  background-color: lightblue !important;
+  background-color: #e4f2fd !important;
 
   & .deleteIcon {
     height: 65%;
@@ -127,14 +127,26 @@
 }
 
 .searchGroup {
-  //width: 100%;
+  width: 100%;
+  display: flex;
   padding-top: 2px;
   padding-bottom: 2px;
-  display: flex;
-  border-bottom: 2px solid blue;
   align-items: center;
+  border: 2px dashed;
+  padding-right: 2px;
+  border-radius: 1em;
   //border-right: 2px solid blue;
   //background-color: rgba(0, 20, 60, 0.35);
+}
+
+.searchGroupNested {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-right: 2px;
+  border-left: 2px dashed;
+  border-right: 2px dashed;
+  border-radius: 1em;
 }
 
 .removeUnderline {

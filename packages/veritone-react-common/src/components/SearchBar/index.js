@@ -116,7 +116,7 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
 }
 
 
-const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
+const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, addPill, lastJoin, libraries}) => {
   let output = [];
 
   // need to do a pass over the search parameters to build a tree so we can render groups cleanly
@@ -139,10 +139,9 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   }
 
   console.log("Groups", groups);
-
   for (let i = 0; i < searchParameters.length; i++ ) {
     let searchParameter = searchParameters[i];
-    if (searchParameter.conditionType === 'join' && i !== searchParameters.length - 1 ) {
+    if (searchParameter.conditionType === 'join') {
       const onChangePill = (modifyPill, id) =>
         evt => {
           modifyPill({
@@ -155,7 +154,26 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
         <JoiningOperator onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />
       )
     } else if (searchParameter.conditionType === 'group') {
-      output.push(<span key={ `${searchParameter.id}_group`}>{searchParameter.value}</span>);
+      if(groups[searchParameter.id]) {
+        output.push(
+          <span style={{ borderColor: theme.palette.primary.main }} className={ level === 0 ? cx(styles['searchGroup']) : cx(styles['searchGroupNested']) } key={`search_container_${searchParameter.id}`}>
+          <SearchParameters
+          key={`search_parameters_grouping_${searchParameter.id}_${level}`}
+            searchParameters={ searchParameters.slice(i+1, groups[searchParameter.id]) }
+            level={level+1}
+            enabledEngineCategories={enabledEngineCategories}
+            highlightedPills={ highlightedPills }
+            togglePill={ togglePill }
+            addPill={ addPill }
+            openPill={ openPill }
+            removePill={ removePill }
+            modifyPill={ modifyPill }
+            libraries={ libraries }
+          />
+          </span>
+        )
+        i = groups[searchParameter.id];
+      }
     } else if (searchParameter.conditionType !== 'join') {
       const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
 
@@ -284,11 +302,11 @@ const SearchBar = ({
         highlightedPills={ highlightedPills }
         togglePill={ togglePill }
         addPill={ addPill }
-        togglePill={ togglePill }
         openPill={ openPill }
         removePill={ removePill }
         modifyPill={ modifyPill }
         libraries={ libraries }
+        color={color}
          /> }
         { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
