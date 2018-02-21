@@ -7,8 +7,9 @@ import url from "rollup-plugin-url"
 import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
 
-import PropTypes from 'prop-types';
 import * as mui from 'material-ui';
+import * as muiIcons from 'material-ui-icons';
+import * as lodash from 'lodash';
 
 import sass from './rollup-postcss-sass-loader';
 
@@ -26,13 +27,25 @@ export default [
       'react',
       'react-dom',
       'react-redux',
+      'react-redux-saga',
+      'redux',
+      'redux-api-middleware-fixed',
       'redux-saga',
       'redux-saga/effects',
-      'lodash',
+      ...Object.keys(lodash).map(name => `lodash/${name}`),
+      ...Object.keys(lodash).map(name => `lodash/fp/${name}`),
+      ...Object.keys(muiIcons).map(name => `material-ui-icons/${name}`),
       ...Object.keys(mui).map(name => `material-ui/${name}`),
+      ...Object.keys(mui.colors).map(name => `material-ui/colors/${name}`),
       'material-ui/styles',
       'material-ui/Form',
-      'material-ui/Progress'
+      'material-ui/Progress',
+      'material-ui/styles',
+      'material-ui/Form',
+      'material-ui/Progress',
+      'prop-types',
+      'veritone-react-common',
+      'veritone-redux-common'
     ],
     plugins: [
       replace({
@@ -56,16 +69,12 @@ export default [
         // modulesOnly: true
       }),
       commonjs({
-        include: ['../../node_modules/**', 'node_modules/**', '../**'],
-        namedExports: {
-          'prop-types': Object.keys(PropTypes)
-        }
+        include: ['../../node_modules/**', 'node_modules/**', '../**']
       }),
 
       postcss({
         modules: true,
-        loaders: [sass],
-        extract: true
+        loaders: [sass]
       }),
 
       json(),
