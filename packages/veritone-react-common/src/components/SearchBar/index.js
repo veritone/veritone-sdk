@@ -118,6 +118,28 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
 
 const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
   let output = [];
+
+  // need to do a pass over the search parameters to build a tree so we can render groups cleanly
+  const groups = {};
+  let startOfGroup = null;
+  let treeLevel = 0;
+  for(let i = 0; i < searchParameters.length; i++) {
+    if(searchParameters[i].value === '(') {
+      if(treeLevel === 0) {
+        startOfGroup = searchParameters[i].id;
+      }
+      treeLevel++;
+    } else if (searchParameters[i].value === ')') {
+      treeLevel--;
+      if(treeLevel === 0) {
+        groups[startOfGroup] = i;
+        startOfGroup = null;
+      }
+    }
+  }
+
+  console.log("Groups", groups);
+
   for (let i = 0; i < searchParameters.length; i++ ) {
     let searchParameter = searchParameters[i];
     if (searchParameter.conditionType === 'join' && i !== searchParameters.length - 1 ) {
@@ -133,13 +155,13 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
         <JoiningOperator onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />
       )
     } else if (searchParameter.conditionType === 'group') {
-      output.push(<span>{searchParameter.value}</span>);
+      output.push(<span key={ `${searchParameter.id}_group`}>{searchParameter.value}</span>);
     } else if (searchParameter.conditionType !== 'join') {
       const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
 
       const { abbreviation, thumbnail } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
       const remove = () => removePill(searchParameter.id);
-      
+
       const onClick= (e) => {
         if(e.shiftKey) {
           togglePill(searchParameter.id, searchParameters);
@@ -157,7 +179,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           onClick={ onClick }
           highlighted={ highlightedPills.indexOf(searchParameter.id) !== -1 }
           label={abbreviation}
-          
+
           remove={remove}
         />);
     }
