@@ -6,7 +6,7 @@ import replace from 'rollup-plugin-replace';
 import analyze from 'rollup-analyzer-plugin';
 // import uglify from 'rollup-plugin-uglify';
 
-import PropTypes from 'prop-types';
+import * as lodash from 'lodash';
 
 export default [
   {
@@ -16,9 +16,24 @@ export default [
         file: 'dist/bundle-es.js',
         format: 'es',
         exports: 'named'
+      },
+      {
+        file: 'dist/bundle-cjs.js',
+        format: 'cjs'
       }
     ],
-    external: ['react', 'react-dom', 'react-redux', 'redux-saga', 'redux-saga/effects', 'lodash'],
+    external: [
+      'react',
+      'react-dom',
+      'react-redux',
+      'redux-saga',
+      'redux-saga/effects',
+      ...Object.keys(lodash).map(name => `lodash/${name}`),
+      'prop-types',
+      'veritone-oauth-helpers',
+      'veritone-functional-permissions',
+      'redux-api-middleware-fixed'
+    ],
     plugins: [
       replace({
         'process.env.NODE_ENV': JSON.stringify('production')
@@ -40,10 +55,7 @@ export default [
         // modulesOnly: true
       }),
       commonjs({
-        include: ['../../node_modules/**', 'node_modules/**', '../**'],
-        namedExports: {
-          'prop-types': Object.keys(PropTypes)
-        }
+        include: ['../../node_modules/**', 'node_modules/**', '../**']
       }),
 
       json(),

@@ -3,16 +3,16 @@
   "version": "2.1.1",
   "dependencies": {
     "lodash": "^4.17.4",
-    "prettier": "^1.7.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
-    "redux-api-middleware-fixed": "^1.2.0",
+    "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.16.0",
     "veritone-functional-permissions": "^1.0.1",
     "veritone-oauth-helpers": "^1.1.2"
   },
+  "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
   "scripts": {
@@ -58,7 +58,6 @@
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^3.0.0",
     "veritone-dev-env": "^1.0.2"
   },
   "license": "Apache-2.0",
