@@ -22,6 +22,10 @@ export default [
         file: 'dist/bundle-es.js',
         format: 'es',
         exports: 'named'
+      },
+      {
+        file: 'dist/bundle-cjs.js',
+        format: 'cjs'
       }
     ],
     external: [
