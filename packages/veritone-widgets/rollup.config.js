@@ -3,7 +3,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
 import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
-import url from "rollup-plugin-url"
+import url from 'rollup-plugin-url';
 import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
 
@@ -21,6 +21,10 @@ export default [
         file: 'dist/bundle-es.js',
         format: 'es',
         exports: 'named'
+      },
+      {
+        file: 'dist/bundle-cjs.js',
+        format: 'cjs'
       }
     ],
     external: [
