@@ -12,3 +12,6 @@
 ## 1.1.2
 * Include babelHelpers in the bundle to prevent "babelHelpers is not defined" error
  
+## 2.0.0
+* Project is now built as an ES module
+* Removed es6-promise polyfill
