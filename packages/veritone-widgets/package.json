@@ -11,8 +11,8 @@
     "redux": "^3.7.2",
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",
-    "veritone-react-common": "^2.1.0",
-    "veritone-redux-common": "^2.1.1"
+    "veritone-react-common": "^3.0.0",
+    "veritone-redux-common": "^3.0.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
