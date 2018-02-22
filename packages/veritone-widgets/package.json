@@ -25,14 +25,15 @@
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
     "build": "cross-env NODE_ENV=production rollup -c",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
+    "build:storybook": "NODE_ENV=production build-storybook -c .storybook -o docs-static",
     "lint": "eslint src/** --ext .js",
     "clean:build": "rimraf dist",
     "prebuild": "npm run clean:build",
     "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
   "devDependencies": {
-    "@storybook/addon-knobs": "3.3.0-alpha.4",
-    "@storybook/react": "v3.3.0-alpha.4",
+    "@storybook/addon-knobs": "3.3.9",
+    "@storybook/react": "v3.3.9",
     "babel-plugin-add-react-displayname": "^0.0.5",
     "babel-plugin-date-fns": "^0.1.0",
     "babel-plugin-lodash": "^3.3.2",
