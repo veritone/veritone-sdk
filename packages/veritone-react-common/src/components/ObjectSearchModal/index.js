@@ -124,50 +124,30 @@ export default class ObjectSearchModal extends React.Component {
 
   render() {
     return (
-      <Dialog
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-        open={this.props.open}
-        onClose={this.props.cancel}
-      >
-        <ObjectSearchForm
-          cancel={ this.props.cancel }
-          applyFilter={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          showAutocomplete={ this.state.showAutocomplete }
-          modalState={ this.state }
-          selectResult={ this.selectResult }
-        />
-      </Dialog>
+      <ObjectSearchForm
+        cancel={ this.props.cancel }
+        applyFilter={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        showAutocomplete={ this.state.showAutocomplete }
+        modalState={ this.state }
+        selectResult={ this.selectResult }
+      />
     );
   }
 }
 
 export const ObjectSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
-  <div>
-    <DialogTitle>
-      Search by Object
-      <ModalSubtitle>Search within our database for objects.</ModalSubtitle>
-    </DialogTitle>
-    <DialogContent>
-      <SearchAutocompleteContainer
-        id="object_autocomplete_container"
-        onChange={ onChange }
-        defaultIsOpen={showAutocomplete}
-        onKeyPress={ onKeyPress }
-        cancel={ cancel }
-        applyFilter={ applyFilter }
-        componentState={ modalState }
-        selectResult={ selectResult }
-      />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={ cancel } color="primary">
-        Cancel
-      </Button>
-    </DialogActions>
-  </div>
+    <SearchAutocompleteContainer
+      id="object_autocomplete_container"
+      onChange={ onChange }
+      defaultIsOpen={showAutocomplete}
+      onKeyPress={ onKeyPress }
+      cancel={ cancel }
+      applyFilter={ applyFilter }
+      componentState={ modalState }
+      selectResult={ selectResult }
+    />
 )};
 
 const ObjectConditionGenerator = modalState => {

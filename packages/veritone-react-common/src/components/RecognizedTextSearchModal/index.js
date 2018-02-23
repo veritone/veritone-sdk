@@ -53,59 +53,30 @@ export default class RecognizedTextSearchModal extends React.Component {
 
   render() {
     return (
-      <Dialog
-        open={this.props.open}
-        onClose={this.props.cancel}
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-      >
-        <RecognizedTextSearchForm
-          cancel={ this.props.cancel }
-          defaultValue={ this.props.modalState.search }
-          onSubmit={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          onKeyPress={ this.onEnter }
-          inputValue={ this.state.filterValue }
-        />
-      </Dialog>
+      <RecognizedTextSearchForm
+        cancel={ this.props.cancel }
+        defaultValue={ this.props.modalState.search }
+        onSubmit={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        onKeyPress={ this.onEnter }
+        inputValue={ this.state.filterValue }
+      />
     );
   }
 }
 
 export const RecognizedTextSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
   return (
-    <div>
-      <DialogTitle>
-        Search by Recognized Text
-        <ModalSubtitle>Searches within our database for recognized text.</ModalSubtitle>
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          id="text_search_field"
-          autoFocus
-          margin="none"
-          defaultValue={ defaultValue }
-          onChange={ onChange }
-          onKeyPress={ onKeyPress }
-          placeholder="Text to search"
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={ cancel } color="primary" className="textSearchCancel">
-          Cancel
-        </Button>
-        <Button
-          disabled={!inputValue && !defaultValue}
-          onClick={ onSubmit }
-          color="primary"
-          className="textSearchSubmit"
-          raised
-        >
-          Search
-        </Button>
-      </DialogActions>
-    </div>
+    <TextField
+      id="text_search_field"
+      autoFocus
+      margin="none"
+      defaultValue={ defaultValue }
+      onChange={ onChange }
+      onKeyPress={ onKeyPress }
+      placeholder="Text to search"
+      fullWidth
+    />
   )};
 
 RecognizedTextSearchModal.defaultProps = {

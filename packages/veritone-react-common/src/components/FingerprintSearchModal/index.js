@@ -123,50 +123,30 @@ export default class FingerprintSearchModal extends React.Component {
 
   render() {
     return (
-      <Dialog
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-        open={this.props.open}
-        onClose={this.props.cancel}
-      >
-        <FingerprintSearchForm
-          cancel={ this.props.cancel }
-          applyFilter={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          modalState={ this.state }
-          showAutocomplete={ this.state.showAutocomplete }
-          selectResult={ this.selectResult }
-        />
-      </Dialog>
+      <FingerprintSearchForm
+        cancel={ this.props.cancel }
+        applyFilter={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        modalState={ this.state }
+        showAutocomplete={ this.state.showAutocomplete }
+        selectResult={ this.selectResult }
+      />
     );
   }
 }
 
 export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
-  <div>
-    <DialogTitle>
-      Search by Fingerprint
-      <FormHelperText>Locate a certain song or advertisement inside of audio and video files.</FormHelperText>
-    </DialogTitle>
-    <DialogContent>
-      <SearchAutocompleteContainer
-        id="fingerprint_autocomplete_container"
-        onChange={ onChange }
-        defaultIsOpen={showAutocomplete}
-        onKeyPress={ onKeyPress }
-        cancel={ cancel }
-        applyFilter={ applyFilter }
-        componentState={ modalState }
-        selectResult={ selectResult }
-      />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={ cancel } color="primary">
-        Cancel
-      </Button>
-    </DialogActions>
-  </div>
+    <SearchAutocompleteContainer
+      id="fingerprint_autocomplete_container"
+      onChange={ onChange }
+      defaultIsOpen={showAutocomplete}
+      onKeyPress={ onKeyPress }
+      cancel={ cancel }
+      applyFilter={ applyFilter }
+      componentState={ modalState }
+      selectResult={ selectResult }
+    />
 )};
 
 const FingerprintConditionGenerator = modalState => {

@@ -1,9 +1,27 @@
 import React from 'react';
 import { arrayOf, func, object, string } from 'prop-types';
 import { SearchBar } from '.';
+import Popover from 'material-ui/Popover';
+import Paper from 'material-ui/Paper';
+import EngineCategoryButton from './EngineCategoryButton';
 
-export default class SearchBarContainer extends React.Component {
+import Card, { CardHeader, CardMedia, CardContent, CardActions } from 'material-ui/Card';
+import Button from 'material-ui/Button';
+import Collapse from 'material-ui/transitions/Collapse';
+import Avatar from 'material-ui/Avatar';
+import IconButton from 'material-ui/IconButton';
+import Typography from 'material-ui/Typography';
+import Icon from './Icon';
+
+const supportedCategoriesClass = cx(styles['supportedCategories']);
+import cx from 'classnames';
+import styles from './styles.scss';
+
+import { withTheme } from 'material-ui/styles'
+
+class SearchBarContainer extends React.Component {
   static propTypes = {
+    theme: object,
     auth: string,
     color: string,
     api: string,
@@ -144,7 +162,7 @@ export default class SearchBarContainer extends React.Component {
     }, [[], []]);
 
     let [ simplifiedParameters, extraneousGroups ] = reduced;
-    while(simplifiedParameters[0].value === '(' && simplifiedParameters[simplifiedParameters.length - 1].value === ')') {
+    while(simplifiedParameters.length > 2 && simplifiedParameters[0].value === '(' && simplifiedParameters[simplifiedParameters.length - 1].value === ')') {
       extraneousGroups.push(simplifiedParameters[0]);
       extraneousGroups.push(simplifiedParameters[simplifiedParameters.length - 1]);
 
@@ -212,6 +230,21 @@ export default class SearchBarContainer extends React.Component {
     }
   }, 0);
 
+
+  addNewSearchParameter = (parameter, engineId) => {
+    // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
+    if(this.numberOfPills(this.props.searchParameters) > 0) {
+      const lastJoiningOperator = this.getLastJoiningOperator(this.props.searchParameters);
+      this.addJoiningOperator(lastJoiningOperator);
+    }
+
+    this.props.addOrModifySearchParameter({
+      value: parameter,
+      conditionType: engineId
+    });
+  }
+
+
   getApplyFilter = (engineId, searchParameters, searchParameterId) => {
     return parameter => {
       if (parameter) {
@@ -239,6 +272,7 @@ export default class SearchBarContainer extends React.Component {
             }
           });
         } else {
+          /*
           // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
           if(!searchParameterId && this.numberOfPills(searchParameters) > 0) {
             this.addJoiningOperator(lastJoiningOperator);
@@ -249,6 +283,7 @@ export default class SearchBarContainer extends React.Component {
             conditionType: engineId,
             id: searchParameterId
           });
+          */
         }
       } else {
         // if there is no value in the modal, remove the search parameter and the joining operator after it
@@ -291,24 +326,99 @@ export default class SearchBarContainer extends React.Component {
 
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
+    const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
 
     return (
-      <div style={{ width: '100%', marginLeft: '0em', marginRight: '0em', overflowY: 'hidden', padding: 0 }}>
-        <SearchBar
-          onSearch={this.props.onSearch}
-          color={this.props.color}
-          enabledEngineCategories={this.props.enabledEngineCategories}
-          searchParameters={this.props.searchParameters}
-          addJoiningOperator={this.props.addJoiningOperator}
-          highlightedPills={this.state.highlightedPills}
-          togglePill={ this.togglePill }
-          libraries={ this.props.libraries }
-          addPill={this.addPill}
-          removePill={this.getRemovePill(this.props.searchParameters)}
-          openPill={this.openPill}
-          modifyPill={ this.props.addOrModifySearchParameter }
-        />
-        {Modal ? (
+      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }}>
+        <div>
+          <SearchBar
+            onSearch={this.props.onSearch}
+            color={this.props.color}
+            enabledEngineCategories={this.props.enabledEngineCategories}
+            searchParameters={this.props.searchParameters}
+            addJoiningOperator={this.props.addJoiningOperator}
+            highlightedPills={this.state.highlightedPills}
+            togglePill={ this.togglePill }
+            libraries={ this.props.libraries }
+            addPill={this.addPill}
+            removePill={this.getRemovePill(this.props.searchParameters)}
+            openPill={this.openPill}
+            modifyPill={ this.props.addOrModifySearchParameter }
+          />
+
+        { Modal ? (
+        <Popover
+          id="simple-menu"
+          anchorEl={this.searchBar}
+          anchorOrigin={ { vertical: "bottom" } }
+          marginThreshold={0}
+          elevation={2}
+          open
+          onClose={this.cancelModal}
+        >
+          <Card className={ cx(styles['engineCategoryModal']) } style={{ width: this.searchBar.clientWidth }} elevation={0}>
+            <CardHeader
+              avatar={
+                <Icon iconClass={ openModal.iconClass } color={'grey '} size={'2em'} />
+              }
+              classes={ { action: cx(styles['modalAction']) } }
+              action={
+                <div className={supportedCategoriesClass}>
+                {this.props.enabledEngineCategories &&
+                  this.props.enabledEngineCategories.map(engineCategory => (
+                    <EngineCategoryButton
+                      key={engineCategory.id}
+                      engineCategory={engineCategory}
+                      color={this.props.color}
+                      addPill={ this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }}) : this.props.addPill }
+                    />
+                  ))}
+                </div>
+              }
+              title={ openModal.title }
+              subheader={ openModal.subtitle }
+              style={ { marginTop: 0, marginRight: 0 } }
+            />
+            <CardContent style={{ margin: "0.5em" }}>
+              { Modal ? (
+                <Modal
+                  open
+                  ref={ (input) => { this.openModal = input; } }
+                  //setGetModalValue={ (input) => { this.openModal = input; console.log("Accessor function", input) } }
+                  api={this.props.api}
+                  auth={this.props.auth}
+                  libraries={libraryIds}
+                  modalState={this.state.openModal.modalState}
+                  cancel={this.cancelModal}
+                  applyFilter={this.getApplyFilter(
+                    this.state.openModal.modalId,
+                    this.props.searchParameters,
+                    this.state.selectedPill
+                  )}
+                />
+              ) : null }
+            </CardContent>
+            <CardActions classes={ { root: cx(styles['modalFooterActions']) } } style={ { padding: "1em" }}>
+              <Button onClick={ this.cancelModal } color="primary" className={ cx(styles['cancelButton']) }>
+                Cancel
+              </Button>
+              <Button
+                onClick={ this.state.selectedPill ? () => { console.log("Replace the selected pill", this.openModal.returnValue()); this.getApplyFilter(this.openModal.returnValue())() } : () => { console.log("Add a pill", this.openModal.returnValue()); this.addNewSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId) } }
+                color="primary"
+                className="transcriptSubmit"
+              >
+                { console.log("Open modal state", this.state.openModal.modalState ) }
+                { this.state.selectedPill ? ( (selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') : 'Add' }
+              </Button>
+            </CardActions>
+          </Card>
+        </Popover>
+        ) : null }
+        </div>
+
+
+
+        { /* Modal ? (
           <Modal
             open
             api={this.props.api}
@@ -322,11 +432,13 @@ export default class SearchBarContainer extends React.Component {
               this.state.selectedPill
             )}
           />
-        ) : null}
+        ) : null */ }
       </div>
     );
   }
 }
+
+export default withTheme()(SearchBarContainer);
 
 SearchBarContainer.defaultProps = {
   searchParameters: [],

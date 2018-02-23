@@ -2,9 +2,6 @@ import React from 'react';
 import cx from 'classnames';
 import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 
-import Tooltip from 'material-ui/Tooltip';
-
-import Icon from './Icon';
 import SearchPill from './SearchPill';
 
 import styles from './styles.scss';
@@ -12,31 +9,6 @@ import Select from 'material-ui/Select';
 
 import { MenuItem } from 'material-ui/Menu';
 import { withTheme } from 'material-ui/styles';
-
-const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
-  const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
-  const tooltipClasses = cx(styles['searchPillTooltip']);
-
-  const onAddPill = () => addPill(engineCategory.id);
-
-  return (
-    <Tooltip
-      title={engineCategory.tooltip}
-      placement="left"
-      key={engineCategory.id}
-      className={cx(tooltipClasses)}
-    >
-      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill}>
-        <Icon iconClass={engineCategory.iconClass} color={color} />
-      </div>
-    </Tooltip>
-  );
-};
-EngineCategoryButton.propTypes = {
-  engineCategory: shape(supportedEngineCategoryType),
-  addPill: func,
-  color: string
-};
 
 const containerClasses = cx(styles['searchBar']);
 
@@ -115,7 +87,6 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
   }
 }
 
-
 const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, addPill, lastJoin, libraries}) => {
   let output = [];
 
@@ -190,8 +161,6 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           openPill(searchParameter);
         }
       }
-      //const open = () => openPill(searchParameter);
-      //const toggle = () => togglePill(searchParameter.id, searchParameters);
 
       output.push(
         <SearchPill
@@ -207,65 +176,6 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   }
   return output;
 });
-
-/*
-
-const SearchParameters = withTheme()(({theme, searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
-  let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'and';
-  let output = [];
-  for (let i = 0; i < searchParameters.length; i++ ) {
-    // i !== searchParameters.length - 2 makes it so if the last operator is different from the last joining operator (aka it would normally be parsed as a new subtree, the last joining operator is ignored)
-  	if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoiner && i !== searchParameters.length - 2) {
-    	// recursive descent
-      output.push([
-      <span style={ { borderBottom: `2px solid ${theme.palette.primary.main}` } } className={cx(styles['searchContainer'])} key={`search_container_${searchParameters[i]}`}>
-          <SearchParameter
-            openPill={openPill}
-            removePill={removePill}
-            modifyPill={modifyPill}
-            key={`search_parameter_${searchParameters[i].id}`}
-            isLast={ searchParameters.length-1 === i}
-            enabledEngineCategories={enabledEngineCategories}
-            searchParameter={searchParameters[i]}
-            level={level}
-            libraries={libraries}
-            lastJoin={searchParameters.length === 0}
-          />
-          <SearchParameters
-          key={`search_parameters_grouping_${searchParameters[i].id}_${level}`}
-          searchParameters={searchParameters.slice(i + 1)}
-          lastJoin={searchParameters[i+1].value}
-          level={level+1}
-          openPill={openPill}
-          enabledEngineCategories={enabledEngineCategories}
-          removePill={removePill}
-          modifyPill={modifyPill}
-          libraries={libraries}
-          />
-        </span>]);
-      break;
-    } else {
-    	output.push(
-        <SearchParameter
-        openPill={openPill}
-        removePill={removePill}
-        modifyPill={modifyPill}
-        key={`search_parameter_${searchParameters[i].id}`}
-        enabledEngineCategories={enabledEngineCategories}
-        level={level}
-        libraries={libraries}
-        searchParameter={searchParameters[i]}
-        lastJoin={searchParameters.length === 0}
-        isLast={ searchParameters.length-1 === i}
-      />
-    );
-    }
-  }
-
-  return (output);
-})
-
-*/
 
 const SearchBar = ({
   color,
@@ -313,6 +223,7 @@ const SearchBar = ({
          /> }
         { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
+      { /*}
       <div className={supportedCategoriesClass}>
         {enabledEngineCategories &&
           enabledEngineCategories.map(engineCategory => (
@@ -324,6 +235,7 @@ const SearchBar = ({
             />
           ))}
       </div>
+        */}
     </div>
   )
 };

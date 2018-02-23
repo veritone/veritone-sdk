@@ -146,21 +146,14 @@ export default class LogoSearchModal extends React.Component {
 
   render() {
     return (
-      <Dialog
-        maxWidth={'sm'}
-        fullWidth={true}
-        open={this.props.open}
-        onClose={this.props.cancel}
-      >
-        <LogoSearchForm
-          cancel={this.props.cancel}
-          applyFilter={this.applyFilterIfValue}
-          onChange={this.onChange}
-          modalState={this.state}
-          showAutocomplete={this.state.showAutocomplete}
-          selectResult={this.selectResult}
-        />
-      </Dialog>
+      <LogoSearchForm
+        cancel={this.props.cancel}
+        applyFilter={this.applyFilterIfValue}
+        onChange={this.onChange}
+        modalState={this.state}
+        showAutocomplete={this.state.showAutocomplete}
+        selectResult={this.selectResult}
+      />
     );
   }
 }
@@ -175,29 +168,16 @@ export const LogoSearchForm = ({
   selectResult
 }) => {
   return (
-    <div>
-      <DialogTitle>
-        Search by Logo
-        <ModalSubtitle>Searches within our database for logos.</ModalSubtitle>
-      </DialogTitle>
-      <DialogContent>
-        <SearchAutocompleteContainer
-          id="logo_autocomplete_container"
-          defaultIsOpen={showAutocomplete}
-          onChange={onChange}
-          onKeyPress={onKeyPress}
-          cancel={cancel}
-          applyFilter={applyFilter}
-          componentState={modalState}
-          selectResult={selectResult}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={cancel} color="primary">
-          Cancel
-        </Button>
-      </DialogActions>
-    </div>
+    <SearchAutocompleteContainer
+      id="logo_autocomplete_container"
+      defaultIsOpen={showAutocomplete}
+      onChange={onChange}
+      onKeyPress={onKeyPress}
+      cancel={cancel}
+      applyFilter={applyFilter}
+      componentState={modalState}
+      selectResult={selectResult}
+    />
   );
 };
 

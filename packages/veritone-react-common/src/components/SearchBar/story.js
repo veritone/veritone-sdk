@@ -36,7 +36,8 @@ storiesOf('SearchBar', module)
       <div
         style={{
           height: '45px',
-          width: '100%',
+          width: '900px',
+          marginLeft: "50px",
           padding: '5px',
           background: "#2196f3",
           padding: '5px',
