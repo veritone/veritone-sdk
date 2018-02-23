@@ -18,6 +18,7 @@ import cx from 'classnames';
 import styles from './styles.scss';
 
 import { withTheme } from 'material-ui/styles'
+import { guid } from './component';
 
 class SearchBarContainer extends React.Component {
   static propTypes = {
@@ -245,6 +246,14 @@ class SearchBarContainer extends React.Component {
   }
 
 
+  replaceSearchParameter = (parameterValue, engineId, searchParameterId) => {
+    this.props.addOrModifySearchParameter({
+      value: parameterValue,
+      conditionType: engineId,
+      id: searchParameterId
+    });
+  }
+
   getApplyFilter = (engineId, searchParameters, searchParameterId) => {
     return parameter => {
       if (parameter) {
@@ -323,7 +332,6 @@ class SearchBarContainer extends React.Component {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
     );
-
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
@@ -382,6 +390,13 @@ class SearchBarContainer extends React.Component {
             <CardContent style={{ margin: "0.5em" }}>
               { Modal ? (
                 <Modal
+                  // the guid generation in the key is on purpose.
+                  // basically, when a new modal of the exact same type is added, we use setState with the same modalId to
+                  // force a rerender, which generates a new guid, thereby resetting the modal
+                  // (this is preferrable to making every engine category modal implement a reset function)
+                  // if we want to allow for rerenders while preserving the modal component, uncomment out guid() and
+                  // explicity set openModal.key
+                  key={this.state.openModal.key || guid() }
                   open
                   ref={ (input) => { this.openModal = input; } }
                   //setGetModalValue={ (input) => { this.openModal = input; console.log("Accessor function", input) } }
@@ -403,7 +418,8 @@ class SearchBarContainer extends React.Component {
                 Cancel
               </Button>
               <Button
-                onClick={ this.state.selectedPill ? () => { console.log("Replace the selected pill", this.openModal.returnValue()); this.getApplyFilter(this.openModal.returnValue())() } : () => { console.log("Add a pill", this.openModal.returnValue()); this.addNewSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId) } }
+                onClick={ this.state.selectedPill ? () => { console.log("Replace the selected pill", this.openModal.returnValue()); this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill); } : () => { console.log("Add a pill", this.openModal.returnValue()); this.addNewSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId);let lastModal = this.state.openModal.modalId; this.setState( {   openModal: {
+                  modalId: "" + lastModal} });  console.log("State after add", this.state);  } }
                 color="primary"
                 className="transcriptSubmit"
               >

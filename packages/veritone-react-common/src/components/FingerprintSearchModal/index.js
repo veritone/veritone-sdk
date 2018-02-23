@@ -103,9 +103,9 @@ export default class FingerprintSearchModal extends React.Component {
   selectResult = result => {
     console.log('Selected ', result);
     if (result) {
-      this.setState(Object.assign({}, this.state, { selectedResult: result }), () => {
-        this.props.applyFilter(result);
-        this.props.cancel();
+      this.setState({ selectedResult: result }, () => {
+        //this.props.applyFilter(result);
+        //this.props.cancel();
       });
     }
   };
@@ -116,10 +116,22 @@ export default class FingerprintSearchModal extends React.Component {
       if (isArray(firstSection.items) && firstSection.items.length) {
         let filterToApply = firstSection.items[0];
         this.props.applyFilter(filterToApply);
-        this.props.cancel();
+        //this.props.cancel();
       }
     }
   };
+
+  returnValue() {
+    if (isArray(this.state.queryResults) && this.state.queryResults.length) {
+      let firstSection = this.state.queryResults[0];
+      if (isArray(firstSection.items) && firstSection.items.length) {
+        let filterToApply = firstSection.items[0];
+        return filterToApply;
+      }
+    }
+
+    return this.props.modalState;
+  }
 
   render() {
     return (
@@ -142,7 +154,6 @@ export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, 
       onChange={ onChange }
       defaultIsOpen={showAutocomplete}
       onKeyPress={ onKeyPress }
-      cancel={ cancel }
       applyFilter={ applyFilter }
       componentState={ modalState }
       selectResult={ selectResult }

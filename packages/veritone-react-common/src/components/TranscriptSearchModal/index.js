@@ -21,6 +21,7 @@ export default class TranscriptSearchModal extends React.Component {
   };
   static defaultProps = {
     applyFilter: value => console.log('Search transcript by value', value),
+    modalState: { search: '', language: 'en' },
     cancel: () => console.log('You clicked cancel')
   };
 
@@ -62,7 +63,7 @@ export default class TranscriptSearchModal extends React.Component {
     return (
       <TranscriptSearchForm
         cancel={ this.props.cancel }
-        defaultValue={ this.props.modalState.search }
+        defaultValue={ this.props.modalState && this.props.modalState.search || '' }
         onSubmit={ this.applyFilterIfValue }
         onChange={ this.onChange }
         onKeyPress={ this.onEnter }
@@ -95,7 +96,7 @@ const TranscriptConditionGenerator = modalState => {
   return {
     operator: 'query_string',
     field: 'transcript.transcript',
-    value: modalState.search.toLowerCase()
+    value: modalState.search && modalState.search.toLowerCase() || ''
   };
 };
 
