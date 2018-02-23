@@ -56,6 +56,7 @@ const JoiningOperator = ( {operator, onClick} ) => {
     <Chip
       label={operator}
       onClick={onClick}
+      style={{background: 'transparent', color: '#2196F3'}}
     />
   );
 }
