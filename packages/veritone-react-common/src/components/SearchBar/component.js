@@ -548,7 +548,7 @@ export class SampleSearchBar extends React.Component {
 
       console.log("After insertion", newSearchParameters);
       this.setState(prevState => ({
-        searchParameters: newSearchParameters
+          searchParameters: newSearchParameters
       }));
 
       return newSearchParameters;
@@ -562,6 +562,23 @@ export class SampleSearchBar extends React.Component {
       return [...this.state.searchParameters, newSearchParameter];
     }
   };
+
+  insertMultipleSearchParameters = (parametersToAdd) => {
+    const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, {parameter, index}) => {
+      const newSearchParameter = {
+        ...parameter, 
+        id: guid()
+      };
+      return update(latestSearchParameters, {
+        $splice: [[index, 0, newSearchParameter]]
+      });
+    }, this.state.searchParameters);
+
+    this.setState({
+      searchParameters: newSearchParameters
+    });
+    return newSearchParameters;
+  }
 
   removeSearchParameter = id => {
     this.setState(prevState => ({
@@ -616,6 +633,7 @@ export class SampleSearchBar extends React.Component {
           libraries={this.state.libraries}
           searchParameters={this.state.searchParameters}
           addOrModifySearchParameter={this.addOrModifySearchParameter}
+          insertMultipleSearchParameters={this.insertMultipleSearchParameters}
           removeSearchParameter={this.removeSearchParameter}
         />
       </MuiThemeProvider>

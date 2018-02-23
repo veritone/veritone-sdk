@@ -115,8 +115,7 @@ const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, ope
   }
 }
 
-
-const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, addPill, lastJoin, libraries}) => {
+const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, addPill, lastJoin, libraries, openMenu}) => {
   let output = [];
 
   // need to do a pass over the search parameters to build a tree so we can render groups cleanly
@@ -172,6 +171,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
             removePill={ removePill }
             modifyPill={ modifyPill }
             libraries={ libraries }
+            openMenu={ openMenu }
           />
           </span>
         )
@@ -187,7 +187,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
         if(e.shiftKey) {
           togglePill(searchParameter.id, searchParameters);
         } else {
-          openPill(searchParameter);
+          openMenu(e.currentTarget, searchParameter);
         }
       }
       //const open = () => openPill(searchParameter);
@@ -200,9 +200,9 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           onClick={ onClick }
           highlighted={ highlightedPills.indexOf(searchParameter.id) !== -1 }
           label={abbreviation}
-
           remove={remove}
-        />);
+        />
+    );
     }
   }
   return output;
@@ -278,7 +278,8 @@ const SearchBar = ({
   togglePill,
   modifyPill,
   onSearch,
-  libraries
+  libraries,
+  openMenu
 }) => {
   const getOnEnter = (onSearch) => (evt) => {
     console.log(evt);
@@ -310,6 +311,7 @@ const SearchBar = ({
         modifyPill={ modifyPill }
         libraries={ libraries }
         color={color}
+        openMenu={ openMenu }
          /> }
         { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
       </div>
