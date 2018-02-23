@@ -45,6 +45,7 @@ export default class AppBar extends React.Component {
     appSwitcher: bool,
     closeButton: bool,
     logo: bool,
+    logoSrc: string,
     onClose: func,
     enabledAppsFailedLoading: bool,
     isFetchingApps: bool,
@@ -54,6 +55,7 @@ export default class AppBar extends React.Component {
   };
   static defaultProps = {
     logo: true,
+    logoSrc: veritoneLogo,
     backgroundColor: '#4caf50',
     rightActions: [],
     elevation: 2,
@@ -77,7 +79,7 @@ export default class AppBar extends React.Component {
         <div className={styles.container}>
           {this.props.logo && (
             <div>
-              <img src={veritoneLogo} className={styles['logo']} />
+              <img src={this.props.logoSrc} className={styles['logo']} />
             </div>
           )}
 

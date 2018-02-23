@@ -25,6 +25,9 @@ storiesOf('AppBar', module)
   .add('Title/close', () => (
     <AppBar title="My Veritone App" closeButton onClose={action('close')} />
   ))
+  .add('Custom logo', () => (
+    <AppBar logoSrc={'http://via.placeholder.com/485x96'} />
+  ))
   .add('rightActions', () => (
     <div>
       <AppBar
