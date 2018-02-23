@@ -161,7 +161,7 @@ export default class SearchBarContainer extends React.Component {
     }, [[], []]);
 
     let [ simplifiedParameters, extraneousGroups ] = reduced;
-    while(simplifiedParameters[0].value === '(' && simplifiedParameters[simplifiedParameters.length - 1].value === ')') {
+    while(simplifiedParameters.length && simplifiedParameters[0].value === '(' && simplifiedParameters[simplifiedParameters.length - 1].value === ')') {
       extraneousGroups.push(simplifiedParameters[0]);
       extraneousGroups.push(simplifiedParameters[simplifiedParameters.length - 1]);
 
@@ -468,6 +468,7 @@ export default class SearchBarContainer extends React.Component {
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
           openMenu={this.handleMenuOpen}
+          resetSearchParameters={this.props.resetSearchParameters}
         />
         <Menu
           open={Boolean(this.state.menuAnchorEl)}

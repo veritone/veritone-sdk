@@ -586,6 +586,12 @@ export class SampleSearchBar extends React.Component {
     }));
   };
 
+  resetSearchParameters = () => {
+    this.setState({
+      searchParameters: []
+    })
+  };
+
   extendEngineCategories = engineCategories => {
     const engineCategoriesWithFunctions = engineCategories.map(
       engineCategory => {
@@ -635,6 +641,7 @@ export class SampleSearchBar extends React.Component {
           addOrModifySearchParameter={this.addOrModifySearchParameter}
           insertMultipleSearchParameters={this.insertMultipleSearchParameters}
           removeSearchParameter={this.removeSearchParameter}
+          resetSearchParameters={this.resetSearchParameters}
         />
       </MuiThemeProvider>
     );

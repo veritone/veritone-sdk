@@ -4,6 +4,8 @@ import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 
 import Tooltip from 'material-ui/Tooltip';
 import Chip from 'material-ui/Chip';
+import IconButton from 'material-ui/IconButton';
+import CloseIcon from 'material-ui-icons/Close';
 
 import Icon from './Icon';
 import SearchPill from './SearchPill';
@@ -161,7 +163,8 @@ const SearchBar = ({
   togglePill,
   onSearch,
   libraries,
-  openMenu
+  openMenu,
+  resetSearchParameters
 }) => {
   const getOnEnter = (onSearch) => (evt) => {
     console.log(evt);
@@ -207,6 +210,9 @@ const SearchBar = ({
             />
           ))}
       </div>
+      <IconButton onClick={resetSearchParameters}>
+        <CloseIcon/>
+      </IconButton>
     </div>
   )
 };
