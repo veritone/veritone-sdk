@@ -152,36 +152,12 @@ class GeolocationModalComponent extends React.Component {
 
   render() {
     return (
-      <Dialog
-        maxWidth={'md'}
-        fullWidth={true}
-        open={this.props.open}
-        onClose={this.props.cancel}
-      >
-        <DialogTitle>
-          Search by Geolocation
-          <ModalSubtitle>Locate by City, Zicode or DMA.</ModalSubtitle>
-        </DialogTitle>
-        <DialogContent>
-          <style dangerouslySetInnerHTML={ {__html: controlStyles + leafletStyles + leafletdrawStyles } } />
-          <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", height: "60vh", border: `2px solid ${this.props.theme.palette.primary.main}`}}>
+      <div>
+        <style dangerouslySetInnerHTML={ {__html: controlStyles + leafletStyles + leafletdrawStyles } } />
+        <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", height: "60vh", border: `2px solid ${this.props.theme.palette.primary.main}`}}>
 
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={ this.props.cancel } color="primary" className="transcriptCancel">
-            Cancel
-          </Button>
-          <Button
-            onClick={ this.applyFilterIfValue }
-            color="primary"
-            className="transcriptSubmit"
-            raised
-          >
-            Search
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </div>
     );
   }
 }

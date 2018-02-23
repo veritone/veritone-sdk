@@ -47,21 +47,22 @@ export default class SentimentSearchModal extends React.Component {
     }
   };
 
+  returnValue() {
+    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+      return;
+    } else {
+      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null } );
+    }
+  }
+
   render() {
     return (
-      <Dialog
-        open={this.props.open}
-        onClose={this.props.cancel}
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-      >
-        <SentimentSearchForm
-          cancel={ this.props.cancel }
-          onSubmit={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          inputValue={ this.state.filterValue }
-        />
-      </Dialog>
+      <SentimentSearchForm
+        cancel={ this.props.cancel }
+        onSubmit={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        inputValue={ this.state.filterValue }
+      />
     );
   }
 }
@@ -69,37 +70,16 @@ export default class SentimentSearchModal extends React.Component {
 export const SentimentSearchForm = ( { cancel, onSubmit, onChange, inputValue } ) => {
   const selectHackClass = cx(styles['material']);
   return (
-    <div>
-      <DialogTitle>
-        Search by Sentiment
-        <ModalSubtitle>Search by positive and negative sentiment in media.</ModalSubtitle>
-      </DialogTitle>
-      <DialogContent>
-        <Select
-          classes={{ select: selectHackClass }}
-          native
-          style={ {width: "200px", boxShadow: "none" } }
-          value={ inputValue }
-          onChange={ onChange }
-        >
-          <option value={'positive'}>Positive</option>
-          <option value={'negative'}>Negative</option>
-        </Select>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={ cancel } color="primary" className="sentimentSearchCancel">
-          Cancel
-        </Button>
-        <Button
-          onClick={ onSubmit }
-          color="primary"
-          className="sentimentSearchSubmit"
-          raised
-        >
-          Search
-        </Button>
-      </DialogActions>
-    </div>
+    <Select
+      classes={{ select: selectHackClass }}
+      native
+      style={ {width: "200px", boxShadow: "none" } }
+      value={ inputValue }
+      onChange={ onChange }
+    >
+      <option value={'positive'}>Positive</option>
+      <option value={'negative'}>Negative</option>
+    </Select>
   )};
 
 SentimentSearchModal.defaultProps = {

@@ -3,11 +3,10 @@ import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { FormHelperText } from 'material-ui/Form';
 
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from 'material-ui/Dialog';
+import {
+  CardActions,
+  CardContent,
+} from 'material-ui/Card';
 
 import { bool, func, string, shape } from 'prop-types';
 import Typography from 'material-ui/Typography';
@@ -22,6 +21,7 @@ export default class TranscriptSearchModal extends React.Component {
   };
   static defaultProps = {
     applyFilter: value => console.log('Search transcript by value', value),
+    modalState: { search: '', language: 'en' },
     cancel: () => console.log('You clicked cancel')
   };
 
@@ -51,62 +51,42 @@ export default class TranscriptSearchModal extends React.Component {
     }
   };
 
+  returnValue() {
+    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+      return;
+    } else {
+      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null, language: 'en' } );
+    }
+  }
+
   render() {
     return (
-      <Dialog
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-        open={this.props.open}
-        onClose={this.props.cancel}
-      >
-        <TranscriptSearchForm
-          cancel={ this.props.cancel }
-          defaultValue={ this.props.modalState.search }
-          onSubmit={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          onKeyPress={ this.onEnter }
-          inputValue={ this.state.filterValue }
-        />
-      </Dialog>
+      <TranscriptSearchForm
+        cancel={ this.props.cancel }
+        defaultValue={ this.props.modalState && this.props.modalState.search || '' }
+        onSubmit={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        onKeyPress={ this.onEnter }
+        inputValue={ this.state.filterValue }
+      />
     );
   }
 }
 
 export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
   return (
-  <div>
-    <DialogTitle>
-      Search by Keyword
-      <ModalSubtitle>Search within our database of media transcripts.</ModalSubtitle>
-    </DialogTitle>
-    <DialogContent>
-      <TextField
-        id="transcript_search_field"
-        autoFocus
-        margin="none"
-        defaultValue={ defaultValue }
-        onChange={ onChange }
-        onKeyPress={ onKeyPress }
-        placeholder="Phrase to search"
-        fullWidth
-      />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={ cancel } color="primary" className="transcriptCancel">
-        Cancel
-      </Button>
-      <Button
-        disabled={!inputValue && !defaultValue}
-        onClick={ onSubmit }
-        color="primary"
-        className="transcriptSubmit"
-        raised
-      >
-        Search
-      </Button>
-    </DialogActions>
-  </div>
-)}
+    <TextField
+      id="transcript_search_field"
+      autoFocus
+      margin="none"
+      defaultValue={ defaultValue }
+      onChange={ onChange }
+      onKeyPress={ onKeyPress }
+      placeholder="Phrase to search"
+      fullWidth
+    />
+  )
+}
 
 TranscriptSearchModal.defaultProps = {
   modalState: { search: '', language: 'en' }
@@ -116,7 +96,7 @@ const TranscriptConditionGenerator = modalState => {
   return {
     operator: 'query_string',
     field: 'transcript.transcript',
-    value: modalState.search.toLowerCase()
+    value: modalState.search && modalState.search.toLowerCase() || ''
   };
 };
 

@@ -147,56 +147,76 @@ const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
     modal: TranscriptSearchModal,
     getLabel: TranscriptDisplay,
-    generateCondition: TranscriptConditionGenerator
+    generateCondition: TranscriptConditionGenerator,
+    title: 'Search by Keyword',
+    subtitle: 'Search within our database of media transcripts.'
   },
   'f2554098-f14b-4d81-9be1-41d0f992a22f': {
     modal: SentimentSearchModal,
     getLabel: SentimentDisplay,
-    generateCondition: SentimentConditionGenerator
+    generateCondition: SentimentConditionGenerator,
+    title: 'Search by Sentiment',
+    subtitle: 'Search by positive and negative sentiment in media.'
   },
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
     modal: RecognizedTextSearchModal,
     getLabel: RecognizedTextDisplay,
-    generateCondition: RecognizedTextConditionGenerator
+    generateCondition: RecognizedTextConditionGenerator,
+    title: 'Search by Recognized Text',
+    subtitle: 'Searches within our database for recognized text.'
   },
   '6faad6b7-0837-45f9-b161-2f6bf31b7a07': {
     modal: FaceSearchModal,
     getLabel: FaceDisplay,
-    generateCondition: FaceConditionGenerator
+    generateCondition: FaceConditionGenerator,
+    title: 'Search by Face',
+    subtitle: 'Search within our database of known images of people.'
   },
   '088a31be-9bd6-4628-a6f0-e4004e362ea0': {
     modal: ObjectSearchModal,
     getLabel: ObjectDisplay,
-    generateCondition: ObjectConditionGenerator
+    generateCondition: ObjectConditionGenerator,
+    title: 'Search by Object',
+    subtitle: 'Search within our database for objects.'
   },
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': {
     modal: FingerprintSearchModal,
     getLabel: FingerprintDisplay,
-    generateCondition: FingerprintConditionGenerator
+    generateCondition: FingerprintConditionGenerator,
+    title: 'Search by Fingerprint',
+    subtitle: 'Locate a certain song or advertisement inside of audio and video files.'
   },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
     getLabel: LogoDisplay,
-    generateCondition: LogoConditionGenerator
+    generateCondition: LogoConditionGenerator,
+    title: 'Search by Logo',
+    subtitle: 'Searches within our database for logos.'
   },
   'tag-search-id': {
     modal: TagSearchModal,
     getLabel: TagDisplay,
-    generateCondition: TagConditionGenerator
+    generateCondition: TagConditionGenerator,
+    title: 'Search by Tag',
+    subtitle: 'Searches within our database for tags.'
   },
   'time-search-id': {
     modal: TimeSearchModal,
     getLabel: TimeDisplay,
-    generateCondition: TimeConditionGenerator
+    generateCondition: TimeConditionGenerator,
+    title: 'Search by Time',
+    subtitle: 'Search our database by day of week and time.'
   },
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': {
     modal: GeolocationModal,
     getLabel: GeolocationDisplay,
-    generateCondition: GeolocationGenerator
+    generateCondition: GeolocationGenerator,
+    title: 'Search by Geolocation',
+    subtitle: 'Locate by City, Zicode or DMA.'
   }
 };
 
-const guid = () => {
+export const guid = () => {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
       .toString(16)
@@ -621,7 +641,6 @@ export class SampleSearchBar extends React.Component {
         }
       }
     });
-
     return theme;
   }
 

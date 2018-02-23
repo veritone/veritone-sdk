@@ -116,48 +116,28 @@ export default class TagSearchModal extends React.Component {
 
   render() {
     return (
-      <Dialog
-        open={this.props.open}
-        onClose={this.props.cancel}
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-      >
-        <TagSearchForm
-          cancel={ this.props.cancel }
-          applyFilter={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          modalState={ this.state }
-          selectResult={ this.selectResult }
-        />
-      </Dialog>
+      <TagSearchForm
+        cancel={ this.props.cancel }
+        applyFilter={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        modalState={ this.state }
+        selectResult={ this.selectResult }
+      />
     );
   }
 }
 
 export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
-  <div>
-    <DialogTitle>
-      Search by Tag
-      <ModalSubtitle>Searches within our database for tags.</ModalSubtitle>
-    </DialogTitle>
-    <DialogContent>
-      <SearchAutocompleteContainer
-        id="tag_autocomplete_container"
-        onChange={ onChange }
-        onKeyPress={ onKeyPress }
-        cancel={ cancel }
-        applyFilter={ applyFilter }
-        componentState={ modalState }
-        selectResult={ selectResult }
-      />
-    </DialogContent>
-    <DialogActions>
-        <Button onClick={ cancel } color="primary">
-          Cancel
-        </Button>
-      </DialogActions>
-  </div>
+    <SearchAutocompleteContainer
+      id="tag_autocomplete_container"
+      onChange={ onChange }
+      onKeyPress={ onKeyPress }
+      cancel={ cancel }
+      applyFilter={ applyFilter }
+      componentState={ modalState }
+      selectResult={ selectResult }
+    />
 )};
 
 const TagConditionGenerator = modalState => {

@@ -126,21 +126,14 @@ export default class FaceSearchModal extends React.Component {
 
   render() {
     return (
-      <Dialog
-        open={this.props.open}
-        onClose={this.props.cancel}
-        maxWidth={ 'sm' }
-        fullWidth={ true }
-      >
-        <FaceSearchForm
-          cancel={ this.props.cancel }
-          applyFilter={ this.applyFilterIfValue }
-          onChange={ this.onChange }
-          modalState={ this.state }
-          selectResult={ this.selectResult }
-          showAutocomplete={ this.state.showAutocomplete }
-        />
-      </Dialog>
+      <FaceSearchForm
+        cancel={ this.props.cancel }
+        applyFilter={ this.applyFilterIfValue }
+        onChange={ this.onChange }
+        modalState={ this.state }
+        selectResult={ this.selectResult }
+        showAutocomplete={ this.state.showAutocomplete }
+      />
     );
   }
 }
@@ -148,27 +141,16 @@ export default class FaceSearchModal extends React.Component {
 export const FaceSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
   return (
   <div>
-    <DialogTitle>
-      Search by Face
-      <ModalSubtitle>Search within our database of known images of people.</ModalSubtitle>
-    </DialogTitle>
-    <DialogContent>
-      <SearchAutocompleteContainer
-        id="face_autocomplete_container"
-        onChange={ onChange }
-        onKeyPress={ onKeyPress }
-        cancel={ cancel }
-        defaultIsOpen={showAutocomplete}
-        applyFilter={ applyFilter }
-        componentState={ modalState }
-        selectResult={ selectResult }
-      />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={ cancel } color="primary">
-        Cancel
-      </Button>
-    </DialogActions>
+    <SearchAutocompleteContainer
+      id="face_autocomplete_container"
+      onChange={ onChange }
+      onKeyPress={ onKeyPress }
+      cancel={ cancel }
+      defaultIsOpen={showAutocomplete}
+      applyFilter={ applyFilter }
+      componentState={ modalState }
+      selectResult={ selectResult }
+    />
   </div>
 )};
 

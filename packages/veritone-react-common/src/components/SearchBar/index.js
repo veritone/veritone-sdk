@@ -2,7 +2,6 @@ import React from 'react';
 import cx from 'classnames';
 import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 
-import Tooltip from 'material-ui/Tooltip';
 import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
@@ -15,31 +14,6 @@ import Select from 'material-ui/Select';
 
 import { MenuItem } from 'material-ui/Menu';
 import { withTheme } from 'material-ui/styles';
-
-const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
-  const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
-  const tooltipClasses = cx(styles['searchPillTooltip']);
-
-  const onAddPill = () => addPill(engineCategory.id);
-
-  return (
-    <Tooltip
-      title={engineCategory.tooltip}
-      placement="left"
-      key={engineCategory.id}
-      className={cx(tooltipClasses)}
-    >
-      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill}>
-        <Icon iconClass={engineCategory.iconClass} color={color} />
-      </div>
-    </Tooltip>
-  );
-};
-EngineCategoryButton.propTypes = {
-  engineCategory: shape(supportedEngineCategoryType),
-  addPill: func,
-  color: string
-};
 
 const containerClasses = cx(styles['searchBar']);
 
@@ -135,8 +109,6 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           openMenu(e.currentTarget, searchParameter);
         }
       }
-      //const open = () => openPill(searchParameter);
-      //const toggle = () => togglePill(searchParameter.id, searchParameters);
 
       output.push(
         <SearchPill
@@ -199,17 +171,6 @@ const SearchBar = ({
         openMenu={ openMenu }
          /> }
         { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
-      </div>
-      <div className={supportedCategoriesClass}>
-        {enabledEngineCategories &&
-          enabledEngineCategories.map(engineCategory => (
-            <EngineCategoryButton
-              key={engineCategory.id}
-              engineCategory={engineCategory}
-              color={color}
-              addPill={addPill}
-            />
-          ))}
       </div>
       <IconButton onClick={resetSearchParameters}>
         <CloseIcon/>
