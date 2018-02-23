@@ -108,6 +108,8 @@ export default class SearchBarContainer extends React.Component {
         return;
       }
 
+      //TODO test this, seems to be broken
+      
       // if there are pills already highlighted, we can only highlight their neighbors
       let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
       // x.conditionType !== 'group' (add this back if you want them to be able to group neighbors who are already in groups)
@@ -243,7 +245,14 @@ export default class SearchBarContainer extends React.Component {
             value: 'and',
             conditionType: 'join'
           };
-          const newParams = insertDirection === 'left' ? [searchTermParam, operatorParam] : [operatorParam, searchTermParam];
+
+          //if left && previous operator is join [term, operator] else [operator, term]
+          //if right && next operator is join [term, operator] else [operator, term]
+
+          const selectedParamConditionType = searchParameters[selectedParamIndex].conditionType;
+          const newParams = ((selectedParamConditionType === 'join' && insertDirection === 'left') || (selectedParamConditionType !== 'join' && insertDirection === 'right')) 
+            ? [operatorParam, searchTermParam] 
+            : [searchTermParam, operatorParam];
           this.props.addOrModifySearchParameter(newParams, insertAt);
           this.setState({
             openModal: { modalId: null },
@@ -293,18 +302,41 @@ export default class SearchBarContainer extends React.Component {
   };
 
   handleMenuOpen = (target, searchParameter) => {
-    const menuOptions = (this.state.highlightedPills.length > 1 && this.state.highlightedPills.includes(searchParameter.id))
-      ? [
+    let menuOptions;
+    if(searchParameter.conditionType === 'join') {
+      menuOptions = [
+        {
+          label: 'AND',
+          onClick: () => {this.menuChangeOperator(searchParameter, 'and')}
+        },
+        {
+          label: 'OR',
+          onClick: () => {this.menuChangeOperator(searchParameter, 'or')}
+        },
+        {
+          label: 'Insert Search Term to Left',
+          onClick: () => {this.menuInsertDirection('left')}
+        },
+        {
+          label: 'Insert Search Term to Right',
+          onClick: () => {this.menuInsertDirection('right')}
+        }
+      ];
+    } else {
+      const showGroupOptions = this.state.highlightedPills.length > 1 && this.state.highlightedPills.includes(searchParameter.id);
+      if(showGroupOptions) {
+        menuOptions = [
           {
             label: 'Group Selection',
             onClick: this.menuGroupSelection
           },
           {
             label: 'Delete',
-            onClick: this.menuRemoveHighlightedPills 
+            onClick: this.menuRemoveHighlightedPills
           }
-        ]
-      : [
+        ];
+      } else {
+        menuOptions = [
           {
             label: 'Edit',
             onClick: this.menuEditPill
@@ -322,6 +354,8 @@ export default class SearchBarContainer extends React.Component {
             onClick: () => {this.menuInsertDirection('right')}
           }
         ];
+      }
+    }
 
     const menuPosition = {
       top: target.offsetTop + target.offsetHeight,
@@ -343,12 +377,30 @@ export default class SearchBarContainer extends React.Component {
     });
   }
 
+  menuChangeOperator = (searchParameter, newOperatorValue) => {
+    const newParameter = {
+      ...searchParameter,
+      value: newOperatorValue
+    };
+    this.props.addOrModifySearchParameter(newParameter);
+    this.setState({
+      menuAnchorEl: null,
+      selectedSearchParameter: null
+    });
+  }
+
+  //TODO call onSearch?
   menuInsertDirection = (insertDirection) => {
     this.setState({
       menuAnchorEl: null,
-      openModal: { modalId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182' },
-      insertDirection 
+      openModal: { modalId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182' }, //TODO dont use hardcoded id
+      insertDirection
     });
+
+    //TODO call onSearch?
+    if(this.props.onSearch) {
+      this.props.onSearch();
+    }
   }
 
   menuRemovePill = () => {
@@ -357,6 +409,7 @@ export default class SearchBarContainer extends React.Component {
       menuAnchorEl: null,
       selectedSearchParameter: null
     });
+
   }
 
   menuRemoveHighlightedPills = () => {
@@ -414,7 +467,6 @@ export default class SearchBarContainer extends React.Component {
           libraries={ this.props.libraries }
           addPill={this.addPill}
           removePill={this.getRemovePill(this.props.searchParameters)}
-          modifyPill={ this.props.addOrModifySearchParameter }
           openMenu={this.handleMenuOpen}
         />
         <Menu
@@ -459,7 +511,7 @@ SearchBarContainer.defaultProps = {
   enabledEngineCategories: [],
   addOrModifySearchParameter: state =>
     console.log('Add or modify the search parameter', state),
-  insertMultipleSearchParameters: state => 
+  insertMultipleSearchParameters: state =>
     console.log('insert multiple search parameters', state),
   removeSearchParameter: id =>
     console.log('Remove the search parameter with the id', id)

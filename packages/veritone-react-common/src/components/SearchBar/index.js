@@ -3,6 +3,7 @@ import cx from 'classnames';
 import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 
 import Tooltip from 'material-ui/Tooltip';
+import Chip from 'material-ui/Chip';
 
 import Icon from './Icon';
 import SearchPill from './SearchPill';
@@ -48,74 +49,16 @@ const InputCursor = ({onKeyPress, onFocus}) => (
   <input onFocus={onFocus} onKeyPress={onKeyPress} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1" />
 )
 
-const JoiningOperator = ( {operator, readOnly, onChange, lastJoiningOperator} ) => {
-  const joinOperatorClass = cx(styles['joinOperator']);
-  // uncomment the following line if you want a dashed line at the end;
-  //const joinOperatorRootClass = ( lastJoiningOperator === operator || !lastJoiningOperator ) ? cx(styles['joinOperatorRootRight']) : null;
-  const joinOperatorRootClass = null;
-
+const JoiningOperator = ( {operator, onClick} ) => {
   return (
-    <Select
-    classes={ { 'selectMenu': joinOperatorClass, 'root': joinOperatorRootClass } }
-    value={operator}
-    disableUnderline={ lastJoiningOperator === operator }
-    onChange={ onChange }
-    >
-      <MenuItem value={'and'}>AND</MenuItem>
-      <MenuItem value={'or'}>OR</MenuItem>
-    </Select>
+    <Chip
+      label={operator}
+      onClick={onClick}
+    />
   );
 }
 
-const StaticJoiningOperator = ( {operator} ) => {
-  const joinOperatorReadOnly = cx(styles['joinOperatorDisabled']);
-  return (
-    <span className={joinOperatorReadOnly}>{ operator }</span>
-  );
-}
-
-const SearchParameter = ( {searchParameter, enabledEngineCategories, isLast, openPill, removePill, modifyPill, lastJoiningOperator, level, libraries} ) => {
-  // assume strings are always AND or OR operators for now
-
-  if( searchParameter.conditionType === 'join' ) {
-    const onChangePill = (modifyPill, id) =>
-      evt => {
-        modifyPill({
-          value: evt.target.value,
-          conditionType: 'join',
-          id: id
-        })
-      };
-    // level < 1 is the feature toggle for maximum tree depth
-    return (<JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />);
-    //return isLast && level < 1 ? ( <JoiningOperator lastJoiningOperator={lastJoiningOperator} onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} /> ) : ( <StaticJoiningOperator key={searchParameter.id} operator={searchParameter.value.toUpperCase()} /> )
-  }
-  // otherwise it's a search engine category
-  else
-  {
-    const searchParameterEngine = enabledEngineCategories.find(
-      engineCategory => engineCategory.id === searchParameter.conditionType
-    );
-
-    const { abbreviation, thumbnail } = searchParameterEngine ? searchParameterEngine.getLabel(
-      searchParameter.value
-    ) : { abbreviation: undefined, thumbnail: undefined };
-    const remove = () => removePill(searchParameter.id);
-    const open = () => openPill(searchParameter);
-
-    return [
-      <SearchPill
-        key={searchParameter.id}
-        engineIconClass={searchParameterEngine.iconClass}
-        label={abbreviation}
-        open={open}
-        remove={remove}
-      />
-    ];
-  }
-}
-
-const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, modifyPill, addPill, lastJoin, libraries, openMenu}) => {
+const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, addPill, lastJoin, libraries, openMenu}) => {
   let output = [];
 
   // need to do a pass over the search parameters to build a tree so we can render groups cleanly
@@ -141,16 +84,16 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   for (let i = 0; i < searchParameters.length; i++ ) {
     let searchParameter = searchParameters[i];
     if (searchParameter.conditionType === 'join') {
-      const onChangePill = (modifyPill, id) =>
-        evt => {
-          modifyPill({
-            value: evt.target.value,
-            conditionType: 'join',
-            id: id
-          })
-        };
+      const onClick = (e) => {
+        console.log('onClick operator');
+        openMenu(e.currentTarget, searchParameter);
+      };
       output.push(
-        <JoiningOperator onChange={onChangePill(modifyPill, searchParameter.id)} key={searchParameter.id} operator={searchParameter.value} />
+        <JoiningOperator 
+          key={searchParameter.id}
+          operator={searchParameter.value}
+          onClick={onClick}
+        />
       )
     } else if (searchParameter.conditionType === 'group') {
       if(groups[searchParameter.id]) {
@@ -169,7 +112,6 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
             addPill={ addPill }
             openPill={ openPill }
             removePill={ removePill }
-            modifyPill={ modifyPill }
             libraries={ libraries }
             openMenu={ openMenu }
           />
@@ -208,65 +150,6 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   return output;
 });
 
-/*
-
-const SearchParameters = withTheme()(({theme, searchParameters, level, enabledEngineCategories, openPill, removePill, modifyPill, lastJoin, libraries}) => {
-  let lastJoiner = lastJoin ? lastJoin : (searchParameters[1] && searchParameters[1].value) || 'and';
-  let output = [];
-  for (let i = 0; i < searchParameters.length; i++ ) {
-    // i !== searchParameters.length - 2 makes it so if the last operator is different from the last joining operator (aka it would normally be parsed as a new subtree, the last joining operator is ignored)
-  	if(searchParameters[i].conditionType !== 'join' && searchParameters[i+1].value !== lastJoiner && i !== searchParameters.length - 2) {
-    	// recursive descent
-      output.push([
-      <span style={ { borderBottom: `2px solid ${theme.palette.primary.main}` } } className={cx(styles['searchContainer'])} key={`search_container_${searchParameters[i]}`}>
-          <SearchParameter
-            openPill={openPill}
-            removePill={removePill}
-            modifyPill={modifyPill}
-            key={`search_parameter_${searchParameters[i].id}`}
-            isLast={ searchParameters.length-1 === i}
-            enabledEngineCategories={enabledEngineCategories}
-            searchParameter={searchParameters[i]}
-            level={level}
-            libraries={libraries}
-            lastJoin={searchParameters.length === 0}
-          />
-          <SearchParameters
-          key={`search_parameters_grouping_${searchParameters[i].id}_${level}`}
-          searchParameters={searchParameters.slice(i + 1)}
-          lastJoin={searchParameters[i+1].value}
-          level={level+1}
-          openPill={openPill}
-          enabledEngineCategories={enabledEngineCategories}
-          removePill={removePill}
-          modifyPill={modifyPill}
-          libraries={libraries}
-          />
-        </span>]);
-      break;
-    } else {
-    	output.push(
-        <SearchParameter
-        openPill={openPill}
-        removePill={removePill}
-        modifyPill={modifyPill}
-        key={`search_parameter_${searchParameters[i].id}`}
-        enabledEngineCategories={enabledEngineCategories}
-        level={level}
-        libraries={libraries}
-        searchParameter={searchParameters[i]}
-        lastJoin={searchParameters.length === 0}
-        isLast={ searchParameters.length-1 === i}
-      />
-    );
-    }
-  }
-
-  return (output);
-})
-
-*/
-
 const SearchBar = ({
   color,
   searchParameters,
@@ -276,7 +159,6 @@ const SearchBar = ({
   removePill,
   highlightedPills,
   togglePill,
-  modifyPill,
   onSearch,
   libraries,
   openMenu
@@ -308,7 +190,6 @@ const SearchBar = ({
         addPill={ addPill }
         openPill={ openPill }
         removePill={ removePill }
-        modifyPill={ modifyPill }
         libraries={ libraries }
         color={color}
         openMenu={ openMenu }
@@ -338,8 +219,6 @@ SearchBar.propTypes = {
   addPill: func,
   openPill: func,
   removePill: func,
-  modifyPill: func,
-  onChangePill: func
 };
 
 const supportedEngineCategoryType = {
