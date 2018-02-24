@@ -25,7 +25,7 @@ const getTheme = () => {
 }
 
 const SearchPill = ({ engineIconClass, label, remove, onClick, highlighted }) => {
-  var searchPillClasses = cx( { [`${styles['highlighted']}`] : highlighted , [`${styles['highlighted:hover']}`] : highlighted  } )
+  var searchPillClasses = cx( { [`${styles['highlighted']}`] : highlighted , [`${styles['highlighted:hover']}`] : highlighted, focus: styles['searchPill:focus']  } )
   return (
     <Chip
     avatar={<Icon iconClass={engineIconClass} color={'grey '} size={'1.5em'} />}
