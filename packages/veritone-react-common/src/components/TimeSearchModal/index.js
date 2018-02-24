@@ -96,6 +96,20 @@ export default class TimeSearchModal extends React.Component {
     }
   };
 
+  returnValue() {
+    if (
+      !this.state.filterValue ||
+      !this.state.filterValue.dayPartStartTime ||
+      !this.state.filterValue.dayPartEndTime
+    ) {
+      return
+    } else {
+      return {
+        search: this.copyFilter(this.state.filterValue)
+      };
+    }
+  }
+
   render() {
     return (
       <TimeSearchForm
@@ -168,8 +182,6 @@ export const TimeSearchForm = ({
   const asterisk = !inputValue.stationBroadcastTime ? '*' : '';
 
   return (
-    <div>
-    <DialogContent>
       <div className={cx(styles['timeSearchConfigContent'])}>
         <div className={cx(styles['timeSelectSection'])}>
           <div className={cx(styles['timeSelectSection'])}>
@@ -253,13 +265,7 @@ export const TimeSearchForm = ({
             </Typography>
           </label>
         )}
-      </div>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={cancel} color="primary" className="timeSearchCancel">
-        Cancel
-      </Button>
-      <Button
+              { /*
         disabled={
           !inputValue ||
           !inputValue.dayPartStartTime ||
@@ -269,15 +275,9 @@ export const TimeSearchForm = ({
           (inputValue.stationBroadcastTime &&
             !inputValue.selectedDays.some(item => item == true))
         }
-        onClick={onSubmit}
-        color="primary"
-        className="timeSearchSubmit"
-        raised
-      >
-        Search
-      </Button>
-    </DialogActions>
-    </div>
+
+      */}
+      </div>
   );
 };
 
