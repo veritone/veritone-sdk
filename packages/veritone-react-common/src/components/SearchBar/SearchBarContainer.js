@@ -328,6 +328,20 @@ class SearchBarContainer extends React.Component {
     });
   };
 
+  addOrEditModal = () => {
+    if(this.state.selectedPill) {
+      console.log('Replace the selected pill', this.openModal.returnValue());
+      this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill);
+    } else {
+      console.log("Current modal", this.openModal);
+      console.log('Add a pill', this.openModal.returnValue());
+      this.addNewSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId);
+      let lastModal = this.state.openModal.modalId;
+      this.setState({ openModal: { modalId: '' + lastModal } });
+      console.log('State after add', this.state);
+    }
+  }
+
   render() {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
@@ -418,8 +432,7 @@ class SearchBarContainer extends React.Component {
                 Cancel
               </Button>
               <Button
-                onClick={ this.state.selectedPill ? () => { console.log("Replace the selected pill", this.openModal.returnValue()); this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill); } : () => { console.log("Add a pill", this.openModal.returnValue()); this.addNewSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId);let lastModal = this.state.openModal.modalId; this.setState( {   openModal: {
-                  modalId: "" + lastModal} });  console.log("State after add", this.state);  } }
+                onClick={ this.addOrEditModal }
                 color="primary"
                 className="transcriptSubmit"
               >

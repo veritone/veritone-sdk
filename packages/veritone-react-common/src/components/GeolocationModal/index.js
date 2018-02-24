@@ -21,7 +21,7 @@ import { bool, func, string, shape } from 'prop-types';
 import ModalSubtitle from '../ModalSubtitle';
 import { withTheme } from 'material-ui/styles'
 
-class GeolocationModalComponent extends React.Component {
+class GeolocationModal extends React.Component {
   static propTypes = {
     open: bool,
     modalState: shape({ search: string, language: string }),
@@ -66,6 +66,12 @@ class GeolocationModalComponent extends React.Component {
   applyFilterIfValue = () => {
     const filterValue = this.getFilterValue();
     this.props.applyFilter(filterValue);
+  };
+
+  returnValue() {
+    debugger;
+    console.log( this.getFilterValue() );
+    return this.getFilterValue();
   };
 
   renderMap(element) {
@@ -154,7 +160,7 @@ class GeolocationModalComponent extends React.Component {
     return (
       <div>
         <style dangerouslySetInnerHTML={ {__html: controlStyles + leafletStyles + leafletdrawStyles } } />
-        <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", height: "60vh", border: `2px solid ${this.props.theme.palette.primary.main}`}}>
+        <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", height: "60vh"}}>
 
         </div>
       </div>
@@ -181,8 +187,6 @@ const GeolocationDisplay = modalState => {
     thumbnail: null
   };
 };
-
-const GeolocationModal = withTheme()(GeolocationModalComponent)
 
 export {
   GeolocationModal,

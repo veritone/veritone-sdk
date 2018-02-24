@@ -51,6 +51,14 @@ export default class RecognizedTextSearchModal extends React.Component {
     }
   };
 
+  returnValue() {
+    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
+      return;
+    } else {
+      return ( { search: this.state.filterValue ? this.state.filterValue.trim() : null } );
+    }
+  }
+
   render() {
     return (
       <RecognizedTextSearchForm
