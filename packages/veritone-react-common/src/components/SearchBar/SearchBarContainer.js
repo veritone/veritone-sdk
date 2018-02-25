@@ -447,6 +447,15 @@ class SearchBarContainer extends React.Component {
       } else {
         console.log('Replace the selected pill', this.openModal.returnValue());
         this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill);
+        this.setState({
+          openModal: { modalId: null },
+          selectedPill: null,
+          insertDirection: null
+        }, () => {
+          if(this.props.onSearch) {
+            this.props.onSearch();
+          }
+        });
       }
     } else {
       console.log("Current modal", this.openModal);
