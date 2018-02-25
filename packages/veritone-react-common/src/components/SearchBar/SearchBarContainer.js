@@ -128,7 +128,7 @@ class SearchBarContainer extends React.Component {
       }
 
       //TODO test this, seems to be broken
-      
+
       // if there are pills already highlighted, we can only highlight their neighbors
       let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
       // x.conditionType !== 'group' (add this back if you want them to be able to group neighbors who are already in groups)
@@ -261,7 +261,6 @@ class SearchBarContainer extends React.Component {
     });
   }
 
-
   replaceSearchParameter = (parameterValue, engineId, searchParameterId) => {
     this.props.addOrModifySearchParameter({
       value: parameterValue,
@@ -291,8 +290,8 @@ class SearchBarContainer extends React.Component {
           //if right && next operator is join [term, operator] else [operator, term]
 
           const selectedParamConditionType = searchParameters[selectedParamIndex].conditionType;
-          const newParams = ((selectedParamConditionType === 'join' && insertDirection === 'left') || (selectedParamConditionType !== 'join' && insertDirection === 'right')) 
-            ? [operatorParam, searchTermParam] 
+          const newParams = ((selectedParamConditionType === 'join' && insertDirection === 'left') || (selectedParamConditionType !== 'join' && insertDirection === 'right'))
+            ? [operatorParam, searchTermParam]
             : [searchTermParam, operatorParam];
           this.props.addOrModifySearchParameter(newParams, insertAt);
           this.setState({
@@ -533,8 +532,9 @@ class SearchBarContainer extends React.Component {
           <Menu
             open={Boolean(this.state.menuAnchorEl)}
             onClose={this.handleMenuClose}
-            anchorReference={'anchorPosition'}
-            anchorPosition={this.state.menuPosition}
+            anchorEl={this.state.menuAnchorEl}
+            anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
+            style={ {top: "1.25em" } }
             disableRestoreFocus
             // anchorEl={this.state.menuAnchorEl}
           >
@@ -597,11 +597,7 @@ class SearchBarContainer extends React.Component {
                   libraries={libraryIds}
                   modalState={this.state.openModal.modalState}
                   cancel={this.cancelModal}
-                  applyFilter={this.getApplyFilter(
-                    this.state.openModal.modalId,
-                    this.props.searchParameters,
-                    this.state.selectedPill
-                  )}
+                  applyFilter={this.addOrEditModal}
                 />
               ) : null }
             </CardContent>
