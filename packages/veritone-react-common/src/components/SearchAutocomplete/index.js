@@ -41,7 +41,6 @@ class SearchAutocompleteContainer extends React.Component {
       )
     }),
     onChange: func,
-    applyFilter: func,
     cancel: func
   };
 
@@ -69,9 +68,10 @@ class SearchAutocompleteContainer extends React.Component {
 
   onEnter = event => {
     if (event.key === 'Enter') {
-      if (isArray(this.props.componentState.queryResults) && this.props.componentState.queryResults.length) {
-        this.props.applyFilter();
-      }
+      console.log('TODO update onEnter for autocomplete');
+      // if (isArray(this.props.componentState.queryResults) && this.props.componentState.queryResults.length) {
+      //   this.props.applyFilter();
+      // }
     }
   };
 
@@ -82,9 +82,8 @@ class SearchAutocompleteContainer extends React.Component {
           <SearchAutocompleteDownshift
             defaultIsOpen={ this.props.defaultIsOpen }
             cancel={ this.props.cancel }
-            applyFilter={ this.props.applyFilter }
             debouncedOnChange={ this.debouncedOnChange }
-            onKeyPress={ this.onEnter }
+            onKeyPress={ this.onEnter }            
             queryString={ this.state.queryString }
             results={ this.props.componentState.queryResults }
             selectResult={ this.props.selectResult }
@@ -98,7 +97,6 @@ class SearchAutocompleteContainer extends React.Component {
 const SearchAutocompleteDownshift = ({
   defaultIsOpen,
   cancel,
-  applyFilter,
   debouncedOnChange,
   onKeyPress,
   inputValue,
@@ -190,7 +188,6 @@ SearchAutocompleteContainer.defaultProps = {
     inputValue: []
   },
   onChange: value => console.log('Autocomplete field changed', value),
-  applyFilter: value => console.log('Search by autocomplete result', value),
   cancel: () => console.log('You clicked cancel')
 };
 

@@ -16,11 +16,9 @@ export default class TranscriptSearchModal extends React.Component {
   static propTypes = {
     open: bool,
     modalState: shape({ search: string, language: string }),
-    applyFilter: func,
     cancel: func
   };
   static defaultProps = {
-    applyFilter: value => console.log('Search transcript by value', value),
     modalState: { search: '', language: 'en' },
     cancel: () => console.log('You clicked cancel')
   };
@@ -37,17 +35,7 @@ export default class TranscriptSearchModal extends React.Component {
 
   onEnter = event => {
     if (event.key === 'Enter') {
-      this.applyFilterIfValue();
-    }
-  };
-
-  applyFilterIfValue = () => {
-    if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
-      this.props.applyFilter();
-    } else {
-      this.props.applyFilter(
-        { search: this.state.filterValue ? this.state.filterValue.trim() : null, language: 'en' }
-      );
+      console.log('TODO handle onEnter for transcript');
     }
   };
 
@@ -64,7 +52,6 @@ export default class TranscriptSearchModal extends React.Component {
       <TranscriptSearchForm
         cancel={ this.props.cancel }
         defaultValue={ this.props.modalState && this.props.modalState.search || '' }
-        onSubmit={ this.applyFilterIfValue }
         onChange={ this.onChange }
         onKeyPress={ this.onEnter }
         inputValue={ this.state.filterValue }
@@ -73,7 +60,7 @@ export default class TranscriptSearchModal extends React.Component {
   }
 }
 
-export const TranscriptSearchForm = ( { defaultValue, cancel, onSubmit, onChange, onKeyPress, inputValue } ) => {
+export const TranscriptSearchForm = ( { defaultValue, cancel, onChange, onKeyPress, inputValue } ) => {
   return (
     <TextField
       id="transcript_search_field"

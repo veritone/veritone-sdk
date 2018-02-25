@@ -128,9 +128,9 @@ export default class FingerprintSearchModal extends React.Component {
         let filterToApply = firstSection.items[0];
         return filterToApply;
       }
+    } else {
+      return;
     }
-
-    return this.props.modalState;
   }
 
   render() {

@@ -69,7 +69,6 @@ class GeolocationModal extends React.Component {
   };
 
   returnValue() {
-    debugger;
     console.log( this.getFilterValue() );
     return this.getFilterValue();
   };

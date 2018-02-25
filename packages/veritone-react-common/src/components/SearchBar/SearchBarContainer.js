@@ -393,7 +393,7 @@ class SearchBarContainer extends React.Component {
   }
 
   menuEditPill = () => {
-    const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);    
+    const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
     this.openPill(selectedPill);
     this.setState({
       menuAnchorEl: null
@@ -450,8 +450,13 @@ class SearchBarContainer extends React.Component {
       }
     } else {
       console.log("Current modal", this.openModal);
-      console.log('Add a pill', this.openModal.returnValue());
-      this.addNewSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId);
+      const newSearchParameterValue = this.openModal.returnValue();
+      if(!newSearchParameterValue) {
+        console.log('cannot add pill without value');
+        return;
+      }
+      console.log('Add a pill', newSearchParameterValue);
+      this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({ openModal: { modalId: '' + lastModal } });
       console.log('State after add', this.state);
