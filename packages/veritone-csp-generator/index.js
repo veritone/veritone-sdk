@@ -4,7 +4,8 @@ const FaceConditionGenerator = modalState => {
     field:
       'face-recognition.series.' +
       (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
-    value: modalState.id
+    value: modalState.id,
+    not: modalState.exclude === true
   };
 };
 
@@ -14,7 +15,8 @@ const FingerprintConditionGenerator = modalState => {
     field:
       'fingerprint.series.' +
       (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
-    value: modalState.id
+    value: modalState.id,
+    not: modalState.exclude === true
   };
 };
 
@@ -27,13 +29,15 @@ const LogoConditionGenerator = modalState => {
     return {
       operator: 'query_string',
       field: 'logo-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`
+      value: `*${modalState.id}*`,
+      not: modalState.exclude === true
     };
   } else {
     return {
       operator: 'term',
       field: 'logo-recognition.series.found',
-      value: modalState.id
+      value: modalState.id,
+      not: modalState.exclude === true
     };
   }
 };
@@ -43,13 +47,15 @@ const ObjectConditionGenerator = modalState => {
     return {
       operator: 'query_string',
       field: 'object-recognition.series.found.fulltext',
-      value: `*${modalState.id}*`
+      value: `*${modalState.id}*`,
+      not: modalState.exclude === true
     };
   } else {
     return {
       operator: 'term',
       field: 'object-recognition.series.found',
-      value: modalState.id
+      value: modalState.id,
+      not: modalState.exclude === true
     };
   }
 };
@@ -75,7 +81,8 @@ const TagConditionGenerator = modalState => {
       operator: 'term',
       field: 'tags.value',
       value: modalState.id,
-      dotNotation: true
+      dotNotation: true,
+      not: modalState.exclude === true
     }
   };
 };
