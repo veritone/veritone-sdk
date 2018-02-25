@@ -1,9 +1,10 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
-import { FormHelperText } from 'material-ui/Form';
+import { FormHelperText, FormGroup, FormControlLabel } from 'material-ui/Form';
+import Grid from 'material-ui/Grid';
+import Checkbox from 'material-ui/Checkbox';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
-import ModalSubtitle from '../ModalSubtitle';
 
 import Dialog, {
   DialogActions,
@@ -31,8 +32,7 @@ const faceConfig = {
 @attachAutocomplete('api/search/autocomplete', faceConfig)
 export default class FaceSearchModal extends React.Component {
   static defaultProps = {
-    modalState: { queryResults: [], queryString: '' },
-    applyFilter: value => console.log('Search faces by entityId', value),
+    modalState: { queryResults: [], queryString: '', exclude: false },
     cancel: () => console.log('You clicked cancel')
   };
 
@@ -58,10 +58,10 @@ export default class FaceSearchModal extends React.Component {
             description: string
           }))
         })
-      )
+      ),
+      exclude: bool
     }),
     fetchAutocomplete: func,
-    applyFilter: func,
     cancel: func
   };
 
@@ -77,12 +77,11 @@ export default class FaceSearchModal extends React.Component {
     var modal = this;
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
-        let newState = Object.assign({}, this.state, {
+        this.setState({
           queryString: debouncedQueryString,
           queryResults: response,
           showAutocomplete: true
         });
-        this.setState(newState);
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
@@ -106,59 +105,78 @@ export default class FaceSearchModal extends React.Component {
   selectResult = result => {
     console.log('Selected ', result);
     if (result) {
-      this.setState(Object.assign({}, this.state, { selectedResult: result }), () => {
-        this.props.applyFilter(result);
-        this.props.cancel();
+      this.setState({
+        selectedResult: result
       });
     }
   };
 
-  applyFilterIfValue = () => {
-    if (isArray(this.state.queryResults) && this.state.queryResults.length) {
-      let firstSection = this.state.queryResults[0];
-      if (isArray(firstSection.items) && firstSection.items.length) {
-        let filterToApply = firstSection.items[0];
-        this.props.applyFilter(filterToApply);
-        this.props.cancel();
-      }
+  returnValue() {
+    if(!this.state.selectedResult) {
+      return;
+    } else {
+      return {
+        exclude: this.state.exclude,
+        ...this.state.selectedResult
+      };
     }
-  };
+  }
+
+  toggleExclude = (event) => {
+    this.setState({
+      exclude: event.target.checked === true
+    });
+  }
 
   render() {
     return (
       <FaceSearchForm
         cancel={ this.props.cancel }
-        applyFilter={ this.applyFilterIfValue }
         onChange={ this.onChange }
         modalState={ this.state }
         selectResult={ this.selectResult }
         showAutocomplete={ this.state.showAutocomplete }
+        toggleExclude={ this.toggleExclude }
       />
     );
   }
 }
 
-export const FaceSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const FaceSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude } ) => {
   return (
-  <div>
-    <SearchAutocompleteContainer
-      id="face_autocomplete_container"
-      onChange={ onChange }
-      onKeyPress={ onKeyPress }
-      cancel={ cancel }
-      defaultIsOpen={showAutocomplete}
-      applyFilter={ applyFilter }
-      componentState={ modalState }
-      selectResult={ selectResult }
-    />
-  </div>
-)};
+    <Grid container spacing={8}>
+      <Grid item style={{flex: '1'}}>
+        <SearchAutocompleteContainer
+          id="face_autocomplete_container"
+          onChange={ onChange }
+          onKeyPress={ onKeyPress }
+          cancel={ cancel }
+          defaultIsOpen={showAutocomplete}
+          componentState={ modalState }
+          selectResult={ selectResult }
+        />
+      </Grid>
+      <Grid item>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={modalState.exclude}
+              onChange={toggleExclude}
+            />
+          }
+          label="Exclude"
+        />
+      </Grid>
+    </Grid>
+  )
+};
 
 const FaceConditionGenerator = modalState => {
   return {
     operator: 'term',
     field: 'face-recognition.series.' + (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
-    value: modalState.id
+    value: modalState.id,
+    not: modalState.exclude === true
   };
 };
 

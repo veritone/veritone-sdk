@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
-import { FormHelperText } from 'material-ui/Form';
+import { FormHelperText, FormGroup, FormControlLabel } from 'material-ui/Form';
+import Grid from 'material-ui/Grid';
+import Checkbox from 'material-ui/Checkbox';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -29,7 +31,7 @@ const fingerprintConfig = {
 @attachAutocomplete('api/search/autocomplete', fingerprintConfig)
 export default class FingerprintSearchModal extends React.Component {
   static defaultProps = {
-    modalState: { queryResults: [], queryString: '' },
+    modalState: { queryResults: [], queryString: '', exclude: false },
     applyFilter: value => console.log('Search fingerprints by entityId', value),
     cancel: () => console.log('You clicked cancel')
   };
@@ -56,7 +58,8 @@ export default class FingerprintSearchModal extends React.Component {
             description: string
           }))
         })
-      )
+      ),
+      exclude: bool
     }),
     fetchAutocomplete: func,
     applyFilter: func,
@@ -74,12 +77,11 @@ export default class FingerprintSearchModal extends React.Component {
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
-        let newState = Object.assign({}, this.state, {
+        this.setState({
           queryString: debouncedQueryString,
           queryResults: response,
           showAutocomplete: true
         });
-        this.setState(newState);
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
@@ -126,11 +128,20 @@ export default class FingerprintSearchModal extends React.Component {
       let firstSection = this.state.queryResults[0];
       if (isArray(firstSection.items) && firstSection.items.length) {
         let filterToApply = firstSection.items[0];
-        return filterToApply;
+        return {
+          exclude: this.state.exclude,
+          ...filterToApply
+        };
       }
     } else {
       return;
     }
+  }
+
+  toggleExclude = (event) => {
+    this.setState({
+      exclude: event.target.checked === true
+    });
   }
 
   render() {
@@ -142,23 +153,40 @@ export default class FingerprintSearchModal extends React.Component {
         modalState={ this.state }
         showAutocomplete={ this.state.showAutocomplete }
         selectResult={ this.selectResult }
+        toggleExclude={ this.toggleExclude }
       />
     );
   }
 }
 
-export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude } ) => {
   return (
-    <SearchAutocompleteContainer
-      id="fingerprint_autocomplete_container"
-      onChange={ onChange }
-      defaultIsOpen={showAutocomplete}
-      onKeyPress={ onKeyPress }
-      applyFilter={ applyFilter }
-      componentState={ modalState }
-      selectResult={ selectResult }
-    />
-)};
+    <Grid container spacing={8}>
+      <Grid item style={{flex: '1'}}>
+        <SearchAutocompleteContainer
+          id="fingerprint_autocomplete_container"
+          onChange={ onChange }
+          onKeyPress={ onKeyPress }
+          cancel={ cancel }
+          defaultIsOpen={showAutocomplete}
+          componentState={ modalState }
+          selectResult={ selectResult }
+        />
+      </Grid>
+      <Grid item>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={modalState.exclude}
+              onChange={toggleExclude}
+            />
+          }
+          label="Exclude"
+        />
+      </Grid>
+    </Grid>
+  )
+};
 
 const FingerprintConditionGenerator = modalState => {
   return {

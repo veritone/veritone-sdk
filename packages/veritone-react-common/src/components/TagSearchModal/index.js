@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button, TextField } from 'material-ui';
-import { FormHelperText } from 'material-ui/Form';
+import { FormHelperText, FormGroup, FormControlLabel } from 'material-ui/Form';
+import Grid from 'material-ui/Grid';
+import Checkbox from 'material-ui/Checkbox';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
@@ -31,7 +33,7 @@ const tagConfig = {
 @attachAutocomplete('api/search/autocomplete', tagConfig)
 export default class TagSearchModal extends React.Component {
   static defaultProps = {
-    modalState: { queryResults: [], queryString: '' },
+    modalState: { queryResults: [], queryString: '', exclude: false },
     applyFilter: value => console.log('Search tags by entityId', value),
     cancel: () => console.log('You clicked cancel')
   };
@@ -58,7 +60,8 @@ export default class TagSearchModal extends React.Component {
             description: string
           }))
         })
-      )
+      ),
+      exclude: bool
     }),
     fetchAutocomplete: func,
     applyFilter: func,
@@ -70,24 +73,26 @@ export default class TagSearchModal extends React.Component {
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
-        let newState = Object.assign({}, this.state, {
+        this.setState({
           queryString: debouncedQueryString,
-          queryResults: response
+          queryResults: response,
+          showAutocomplete: true
         });
-        this.setState(newState);
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
           error: true,
           queryString: debouncedQueryString,
-          queryResults: []
+          queryResults: [],
+          showAutocomplete: true
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryString: '',
-        queryResults: []
+        queryResults: [],
+        showAutocomplete: true
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -96,49 +101,71 @@ export default class TagSearchModal extends React.Component {
   selectResult = result => {
     console.log('Selected ', result);
     if (result) {
-      this.setState(Object.assign({}, this.state, { selectedResult: result }), () => {
-        this.props.applyFilter(result);
-        this.props.cancel();
+      this.setState({
+        selectedResult: result
       });
     }
   };
 
-  applyFilterIfValue = () => {
-    if (isArray(this.state.queryResults) && this.state.queryResults.length) {
-      let firstSection = this.state.queryResults[0];
-      if (isArray(firstSection.items) && firstSection.items.length) {
-        let filterToApply = firstSection.items[0];
-        this.props.applyFilter(filterToApply);
-        this.props.cancel();
-      }
+  returnValue() {
+    if(!this.state.selectedResult) {
+      return;
+    } else {
+      return {
+        exclude: this.state.exclude,
+        ...this.state.selectedResult
+      };
     }
-  };
+  }
+
+  toggleExclude = (event) => {
+    this.setState({
+      exclude: event.target.checked === true
+    });
+  }
 
   render() {
     return (
       <TagSearchForm
         cancel={ this.props.cancel }
-        applyFilter={ this.applyFilterIfValue }
         onChange={ this.onChange }
+        showAutocomplete={ this.state.showAutocomplete }
         modalState={ this.state }
         selectResult={ this.selectResult }
+        toggleExclude={ this.toggleExclude }
       />
     );
   }
 }
 
-export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult } ) => {
+export const TagSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude } ) => {
   return (
-    <SearchAutocompleteContainer
-      id="tag_autocomplete_container"
-      onChange={ onChange }
-      onKeyPress={ onKeyPress }
-      cancel={ cancel }
-      applyFilter={ applyFilter }
-      componentState={ modalState }
-      selectResult={ selectResult }
-    />
-)};
+    <Grid container spacing={8}>
+      <Grid item style={{flex: '1'}}>
+        <SearchAutocompleteContainer
+          id="tag_autocomplete_container"
+          onChange={ onChange }
+          onKeyPress={ onKeyPress }
+          cancel={ cancel }
+          defaultIsOpen={showAutocomplete}
+          componentState={ modalState }
+          selectResult={ selectResult }
+        />
+      </Grid>
+      <Grid item>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={modalState.exclude}
+              onChange={toggleExclude}
+            />
+          }
+          label="Exclude"
+        />
+      </Grid>
+    </Grid>
+  )
+};
 
 const TagConditionGenerator = modalState => {
   return {
@@ -148,7 +175,8 @@ const TagConditionGenerator = modalState => {
       operator: 'term',
       field: 'tags.value',
       value: modalState.id,
-      dotNotation: true
+      dotNotation: true,
+      not: modalState.exclude === true
     }
   };
 };
