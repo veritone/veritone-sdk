@@ -147,15 +147,12 @@ const SearchBar = ({
   }
 
   const addTranscript = () => {
-    if(searchParameters.length === 0) {
-      addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
-    }
+    addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
   }
 
   return (
     <div className={containerClasses}>
       <div className={searchInputContainerClass}>
-        { searchParameters.length === 0 ? <InputCursor key="first_input_cursor" onFocus={ addTranscript }/> : null }
         { <SearchParameters
         key={'top_level_search_parameters'}
         searchParameters={ searchParameters }
@@ -170,7 +167,7 @@ const SearchBar = ({
         color={color}
         openMenu={ openMenu }
          /> }
-        { searchParameters.length > 0 ? <InputCursor onKeyPress={getOnEnter(onSearch)} className={ cx(styles["afterCursor"]) } key={ `after_${searchParameters[searchParameters.length -1 ].id}_input_cursor` } /> : null }
+        {<InputCursor key="input_cursor" onFocus={ addTranscript }/>}
       </div>
       <IconButton onClick={resetSearchParameters}>
         <CloseIcon/>
