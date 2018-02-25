@@ -127,8 +127,6 @@ class SearchBarContainer extends React.Component {
         return;
       }
 
-      //TODO test this, seems to be broken
-
       // if there are pills already highlighted, we can only highlight their neighbors
       let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
       // x.conditionType !== 'group' (add this back if you want them to be able to group neighbors who are already in groups)
@@ -269,69 +267,6 @@ class SearchBarContainer extends React.Component {
     });
   }
 
-  getApplyFilter = (engineId, searchParameters, searchParameterId, insertDirection) => {
-    return parameter => {
-      if (parameter) {
-        const lastJoiningOperator = this.getLastJoiningOperator(searchParameters);
-
-        if(insertDirection) {
-          const selectedParamIndex = this.props.searchParameters.findIndex(x => x.id === this.state.selectedSearchParameter.id);
-          const insertAt = insertDirection === 'left' ? selectedParamIndex : selectedParamIndex + 1;
-          const searchTermParam = {
-            value: parameter,
-            conditionType: engineId
-          };
-          const operatorParam = {
-            value: 'and',
-            conditionType: 'join'
-          };
-
-          //if left && previous operator is join [term, operator] else [operator, term]
-          //if right && next operator is join [term, operator] else [operator, term]
-
-          const selectedParamConditionType = searchParameters[selectedParamIndex].conditionType;
-          const newParams = ((selectedParamConditionType === 'join' && insertDirection === 'left') || (selectedParamConditionType !== 'join' && insertDirection === 'right'))
-            ? [operatorParam, searchTermParam]
-            : [searchTermParam, operatorParam];
-          this.props.addOrModifySearchParameter(newParams, insertAt);
-          this.setState({
-            openModal: { modalId: null },
-            selectedPill: null
-          }, () => {
-            if(this.props.onSearch) {
-              this.props.onSearch();
-            }
-          });
-        } else {
-          /*
-          // if there's no selected pill, we're adding a new search parameter so add a joining operator if there are more than one pill
-          if(!searchParameterId && this.numberOfPills(searchParameters) > 0) {
-            this.addJoiningOperator(lastJoiningOperator);
-          }
-          this.props.addOrModifySearchParameter({
-            value: parameter,
-            conditionType: engineId,
-            id: searchParameterId
-          });
-          */
-        }
-      } else {
-        // if there is no value in the modal, remove the search parameter and the joining operator after it
-        this.removePill(searchParameterId, searchParameters);
-
-      }
-      this.setState({
-        openModal: { modalId: null },
-        selectedPill: null,
-        insertDirection: null
-      }, () => {
-        if(this.props.onSearch) {
-          this.props.onSearch();
-        }
-      });
-    };
-  };
-
   openPill = pillState => {
     console.log('Open pill with ', pillState);
     this.setState({
@@ -399,23 +334,17 @@ class SearchBarContainer extends React.Component {
       }
     }
 
-    const menuPosition = {
-      top: target.offsetTop + target.offsetHeight,
-      left: target.offsetLeft - target.parentElement.scrollLeft
-    };
-
     this.setState({
       menuAnchorEl: target,
-      selectedSearchParameter: searchParameter,
-      menuOptions,
-      menuPosition
+      selectedPill: searchParameter.id,
+      menuOptions
     });
   }
 
   handleMenuClose = () => {
     this.setState({
       menuAnchorEl: null,
-      selectedSearchParameter: null
+      selectedPill: null
     });
   }
 
@@ -427,7 +356,7 @@ class SearchBarContainer extends React.Component {
     this.props.addOrModifySearchParameter(newParameter);
     this.setState({
       menuAnchorEl: null,
-      selectedSearchParameter: null
+      selectedPill: null
     });
   }
 
@@ -446,29 +375,28 @@ class SearchBarContainer extends React.Component {
   }
 
   menuRemovePill = () => {
-    this.removePill(this.state.selectedSearchParameter.id, this.props.searchParameters);
+    this.removePill(this.state.selectedPill, this.props.searchParameters);
     this.setState({
       menuAnchorEl: null,
-      selectedSearchParameter: null
+      selectedPill: null
     });
-
   }
 
   menuRemoveHighlightedPills = () => {
     console.log('delete all highlighted pills from menu');
     //TODO remove multiple
-    this.removePill(this.state.selectedSearchParameter.id, this.props.searchParameters);
+    this.removePill(this.state.selectedPill, this.props.searchParameters);
     this.setState({
       menuAnchorEl: null,
-      selectedSearchParameter: null
+      selectedPill: null
     });
   }
 
   menuEditPill = () => {
-    this.openPill(this.state.selectedSearchParameter);
+    const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);    
+    this.openPill(selectedPill);
     this.setState({
-      menuAnchorEl: null,
-      selectedSearchParameter: null
+      menuAnchorEl: null
     });
   }
 
@@ -476,7 +404,7 @@ class SearchBarContainer extends React.Component {
     this.toggleGrouping();
     this.setState({
       menuAnchorEl: null,
-      selectedSearchParameter: null
+      selectedPill: null
     })
   }
 
@@ -490,8 +418,36 @@ class SearchBarContainer extends React.Component {
 
   addOrEditModal = () => {
     if(this.state.selectedPill) {
-      console.log('Replace the selected pill', this.openModal.returnValue());
-      this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill);
+      //insert new pill next to selected pill
+      if(this.state.insertDirection) {
+          const selectedPillIndex = this.props.searchParameters.findIndex(x => x.id === this.state.selectedPill)
+          const insertAt = this.state.insertDirection === 'left' ? selectedPillIndex : selectedPillIndex + 1;
+          const searchTermParam = {
+            value: this.openModal.returnValue(),
+            conditionType: this.state.openModal.modalId
+          };
+          const operatorParam = {
+            value: 'and',
+            conditionType: 'join'
+          };
+          const selectedParamConditionType = this.props.searchParameters[selectedPillIndex].conditionType;
+          const newParams = ((selectedParamConditionType === 'join' && this.state.insertDirection === 'left') || (selectedParamConditionType !== 'join' && this.state.insertDirection === 'right'))
+            ? [operatorParam, searchTermParam]
+            : [searchTermParam, operatorParam];
+          this.props.addOrModifySearchParameter(newParams, insertAt);
+          this.setState({
+            openModal: { modalId: null },
+            selectedPill: null,
+            insertDirection: null
+          }, () => {
+            if(this.props.onSearch) {
+              this.props.onSearch();
+            }
+          });
+      } else {
+        console.log('Replace the selected pill', this.openModal.returnValue());
+        this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill);
+      }
     } else {
       console.log("Current modal", this.openModal);
       console.log('Add a pill', this.openModal.returnValue());
@@ -533,10 +489,9 @@ class SearchBarContainer extends React.Component {
             open={Boolean(this.state.menuAnchorEl)}
             onClose={this.handleMenuClose}
             anchorEl={this.state.menuAnchorEl}
-            anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
+            // anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
             style={ {top: "1.25em" } }
             disableRestoreFocus
-            // anchorEl={this.state.menuAnchorEl}
           >
             {
               this.state.menuOptions && this.state.menuOptions.map(menuOption => (
