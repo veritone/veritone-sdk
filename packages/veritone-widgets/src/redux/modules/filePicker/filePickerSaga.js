@@ -32,7 +32,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
           url
           key
           bucket
-          expires
+          expiresInSeconds
           getUrl
           unsignedUrl
         }
@@ -93,7 +93,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       error,
       success,
       file,
-      descriptor: { key, bucket, expires, getUrl, unsignedUrl }
+      descriptor: { key, bucket, expiresInSeconds, getUrl, unsignedUrl }
     } = yield take(resultChan);
 
     if (success || error) {
@@ -102,7 +102,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       result.push({
         key,
         bucket,
-        expires,
+        expiresInSeconds,
         fileName: file.name,
         size: file.size,
         type: file.type,

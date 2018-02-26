@@ -52,3 +52,7 @@
 
 * OAuthLoginButton
   * Add onAuthSuccess, onAuthFailure callback props, which will receive the token or error, respectively, when the OAuth grant flow completes.
+
+## 3.0.0
+* FilePicker
+  * Change `expires` to `expiresInSeconds` to match API update.

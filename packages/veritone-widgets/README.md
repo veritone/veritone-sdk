@@ -189,7 +189,7 @@ The Veritone file upload dialog. Handles selecting and uploading files to S3 for
       * type: string, the mime type of the file
       * error: string or `false`, the error that prevented the file from uploading, if any
       * bucket: string, the S3 bucket to which the file was uploaded
-      * expires: number, the length of time the credentials in `getUrl` will be valid, in seconds.
+      * expiresInSeconds: number, the length of time the credentials in `getUrl` will be valid, in seconds.
       * getUrl: string or `null`, the resulting S3 URL, if successful. Includes credentials that are valid for `expires` seconds. 
       * unsignedUrl: string or `null`, the resulting S3 URL, if successful. Does not include credentials and will need to be signed to be used.
     * warning: string or `false`, a warning message if some (but not all) files failed to upload. A warning indicates that `result` contains some successful upload result objects, and some that were not successful (unsuccessful objects will have `error` populated with an error message, as noted above)
