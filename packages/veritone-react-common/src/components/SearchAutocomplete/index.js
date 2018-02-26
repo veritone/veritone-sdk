@@ -60,10 +60,20 @@ class SearchAutocompleteContainer extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.componentState.queryString !== this.props.componentState.queryString) {
+      this.setState({
+        queryString: nextProps.componentState.queryString
+      });
+    }
+  }
+
   debouncedOnChange = event => {
     let text = event.target.value;
     this.debouncedOnChange$.next(text);
-    this.setState(Object.assign({}, this.state, { queryString: text }));
+    this.setState({ 
+      queryString: text 
+    });
   };
 
   onEnter = event => {

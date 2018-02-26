@@ -66,10 +66,37 @@ export default class FaceSearchModal extends React.Component {
   };
 
   state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
-
+  
   componentWillMount() {
     if(this.props.modalState.label) {
-      this.onChange( this.props.modalState.label );
+      const selectedItem = {
+        description: this.props.modalState.description,
+        id: this.props.modalState.id,
+        image: this.props.modalState.image,
+        label: this.props.modalState.label,
+        type: this.props.modalState.type,
+      };
+      const rehydrateItems = [
+        {
+          ...selectedItem
+        }
+      ];
+      this.setState({
+        queryResults: [
+          {
+            header: "Libraries",
+            items: this.props.modalState.type === 'library' ? rehydrateItems : []
+          },
+          {
+            header: "Entities",
+            items: this.props.modalState.type === 'entity' ? rehydrateItems : []
+          }
+        ],
+        showAutocomplete: true,
+        selectedResult: {
+          ...selectedItem
+        }
+      })
     }
   }
 
@@ -106,7 +133,8 @@ export default class FaceSearchModal extends React.Component {
     console.log('Selected ', result);
     if (result) {
       this.setState({
-        selectedResult: result
+        selectedResult: result,
+        queryString: result.label
       });
     }
   };
