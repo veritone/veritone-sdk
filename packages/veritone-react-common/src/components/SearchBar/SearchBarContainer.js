@@ -193,10 +193,18 @@ class SearchBarContainer extends React.Component {
   }
 
   removePill = (searchParameterId, searchParameters) => {
+    const updatedSearchParameters = this.simpleRemovePill(searchParameterId, searchParameters);
+    if (this.props.onSearch) {
+      this.props.onSearch( updatedSearchParameters );
+    }
+    this.setState({highlightedPills: []});
+    return updatedSearchParameters;
+  };
+
+  simpleRemovePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
     let previousParameter = searchParameters[index - 1];
     let newSearchParameters = null;
-
     // if the pill to be removed is the start of a group, we need to remove the next joining parameter and not the previous one
     if( ( previousParameter && previousParameter.value === '(' ) || ( index === 0 && this.numberOfPills(searchParameters) > 1 ) ) {
       this.props.removeSearchParameter( searchParameters[index+1].id );
@@ -213,16 +221,9 @@ class SearchBarContainer extends React.Component {
       this.props.removeSearchParameter( searchParameterId );
       newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId);
     }
-
-    console.log("After remove", searchParameters);
-
     let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
     extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
-
-    if (this.props.onSearch) {
-      this.props.onSearch( simplifiedParameters );
-    }
-    this.setState({highlightedPills: []});
+    return simplifiedParameters;
   };
 
   getRemovePill = searchParameters => {
@@ -389,12 +390,17 @@ class SearchBarContainer extends React.Component {
   }
 
   menuRemoveHighlightedPills = () => {
-    console.log('delete all highlighted pills from menu');
-    //TODO remove multiple
-    this.removePill(this.state.selectedPill, this.props.searchParameters);
+    let simplifiedParameters = this.props.searchParameters;
+    this.state.highlightedPills && this.state.highlightedPills.forEach((highlightedPill) => {
+      simplifiedParameters = this.simpleRemovePill(highlightedPill, simplifiedParameters);
+    });
     this.setState({
       menuAnchorEl: null,
       selectedPill: null
+    }, () => {
+      if(this.props.onSearch) {
+        this.props.onSearch();
+      }
     });
   }
 
