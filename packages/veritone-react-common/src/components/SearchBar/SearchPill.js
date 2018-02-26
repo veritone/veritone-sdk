@@ -31,8 +31,9 @@ const SearchPill = ({ engineIconClass, label, remove, onClick, highlighted }) =>
     avatar={<Icon iconClass={engineIconClass} color={'grey '} size={'1.5em'} />}
     label={label}
     className={ searchPillClasses }
-    classes={{ root: searchPillClass ,label: searchPillLabelClass, deleteIcon: deleteIconClass }}
-    onDelete={ !highlighted && remove}
+    deleteIcon={ highlighted ? (<span style={ { paddingRight: "calc(1em + 7px)" } }></span>) : null }
+    classes={{ root: searchPillClass, label: searchPillLabelClass, deleteIcon: deleteIconClass }}
+    onDelete={ !highlighted ? remove : () => {} }
     onClick={onClick}
     />
   )

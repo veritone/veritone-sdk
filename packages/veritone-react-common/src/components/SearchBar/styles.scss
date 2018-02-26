@@ -69,7 +69,7 @@
   }
 }
 
-.searchPill:hover {
+.searchPill:hover:not(.highlighted) {
   background-color: #eeeeee !important;
 }
 
@@ -108,8 +108,8 @@
 }
 
 .joinOperatorChip {
-  padding-left: 0.25em;
-  padding-right: 0.25em;
+  padding-left: 0.25em !important;
+  padding-right: 0.25em !important;
 }
 
 .joinOperatorRootLeft {
