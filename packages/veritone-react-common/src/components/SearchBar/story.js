@@ -24,13 +24,13 @@ storiesOf('SearchBar', module)
       document.getElementById("generateCSPButton").onclick = () => {
         let csp = toCSPCallback();
         console.log(csp);
-        console.log(JSON.stringify(csp));
+        console.log(JSON.stringify(csp, null, 2));
       };
     };
 
     let csp = {"and":[{"state":{"search":"Lakers","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"or":[{"state":{"search":"Kobe","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Lebron","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"},{"state":{"search":"Shaq","language":"en"},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"}]}]};
 
-    const onSearch = (csp) => console.log(csp)
+    const onSearch = (csp) => console.log('onSearch', csp)
 
     return [
       <div

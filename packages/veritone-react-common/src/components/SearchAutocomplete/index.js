@@ -78,7 +78,6 @@ class SearchAutocompleteContainer extends React.Component {
 
   onEnter = event => {
     if (event.key === 'Enter') {
-      console.log('TODO update onEnter for autocomplete');
       // if (isArray(this.props.componentState.queryResults) && this.props.componentState.queryResults.length) {
       //   this.props.applyFilter();
       // }

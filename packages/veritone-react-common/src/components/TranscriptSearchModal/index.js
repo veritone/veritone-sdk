@@ -38,7 +38,6 @@ export default class TranscriptSearchModal extends React.Component {
       if(this.props.applyFilter) {
         this.props.applyFilter();
       }
-      console.log('TODO handle onEnter for transcript');
     }
   };
 
