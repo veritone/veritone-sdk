@@ -564,12 +564,8 @@ export class SampleSearchBar extends React.Component {
 
       return newSearchParameters;
     } else if (existing === -1 && typeof(index) === 'number' ) {
-      console.log("insert at ", index)
-      console.log("new parameter", parameter);
       // not existing, index given, insert at a given position
       const newSearchParameter = Array.isArray(parameter) ? parameter.map( x => ({ ...x, id: guid() }) ) : { ...parameter, id: guid() };
-
-      console.log(`new search parameter at ${index}`, newSearchParameter);
 
       const newSearchParameters = newSearchParameter.length > 1 ? update(this.state.searchParameters, {
         $splice: [[index, 0, ...newSearchParameter]]
@@ -577,7 +573,6 @@ export class SampleSearchBar extends React.Component {
         $splice: [[index, 0, newSearchParameter]]
       });
 
-      console.log("After insertion", newSearchParameters);
       this.setState(prevState => ({
           searchParameters: newSearchParameters
       }));

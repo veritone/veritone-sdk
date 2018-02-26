@@ -63,12 +63,10 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
     }
   }
 
-  console.log("Groups", groups);
   for (let i = 0; i < searchParameters.length; i++ ) {
     let searchParameter = searchParameters[i];
     if (searchParameter.conditionType === 'join') {
       const onClick = (e) => {
-        console.log('onClick operator');
         openMenu(e.currentTarget, searchParameter);
       };
       output.push(
@@ -175,11 +173,6 @@ class SearchBar extends React.Component {
   render() {
     const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth : false;
     if (showScrollBar) {
-      console.log("Offset width", this.scrollContainer.offsetWidth );
-      console.log("Offset left", this.scrollContainer.offsetLeft);
-      console.log("Client width", this.scrollContainer.clientWidth );
-      console.log("Scroll width", this.scrollContainer.scrollWidth);
-      console.log("Scroll left", this.scrollContainer.scrollLeft );
     }
     return (
       <div className={containerClasses}>

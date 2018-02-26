@@ -66,16 +66,13 @@ class SearchBarContainer extends React.Component {
       return;
     }
     let first = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]);
-    console.log("First highlightedPill index", first);
     let last = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
-    console.log("Last highlightedPill index", last);
 
     const before = this.props.searchParameters[first - 1];
     const after = this.props.searchParameters[last + 1];
     if( before && before.conditionType === 'group' && before.value === '('
     && after && after.conditionType === 'group' && after.value === ')') {
       // already an existing group
-      console.log("Existing group, should probably remove it");
       this.props.removeSearchParameter( before.id );
       this.props.removeSearchParameter( after.id );
     } else {
@@ -96,7 +93,6 @@ class SearchBarContainer extends React.Component {
         },
       ];
       const newSearchParameters = this.props.insertMultipleSearchParameters(paramsToAdd);
-      console.log("Added parenthesis", newSearchParameters);
       let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
       extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
     }
@@ -138,13 +134,9 @@ class SearchBarContainer extends React.Component {
       // if there are pills already highlighted, we can only highlight their neighbors
       let pills = searchParameters.filter( x => x.conditionType !== 'join' && x.conditionType !== 'group');
       // x.conditionType !== 'group' (add this back if you want them to be able to group neighbors who are already in groups)
-      //console.log("Just the pills", pills);
       let pillToHighlightIndex = pills.findIndex( x => x.id === searchParameterId);
-      //console.log("Pill to highlight index", pillToHighlightIndex);
       let firstHighlightedPillIndex = pills.findIndex( x => x.id === this.state.highlightedPills[0]);
-      //console.log("First highlightedPill index", firstHighlightedPillIndex);
       let lastHighlightedPillIndex = pills.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
-      console.log("Last highlighted pill index", lastHighlightedPillIndex);
       if (pillToHighlightIndex === firstHighlightedPillIndex - 1) {
         let highlightedPills = [...this.state.highlightedPills];
         highlightedPills.unshift(searchParameterId);
@@ -240,7 +232,6 @@ class SearchBarContainer extends React.Component {
   getLastJoiningOperator = (searchParameters) => {
     for(let i = searchParameters.length - 1; i >= 0; i--) {
       if(searchParameters[i].conditionType === 'join') {
-        console.log("Last joining operator", searchParameters[i]);
         return searchParameters[i].value;
       }
     }
@@ -277,7 +268,6 @@ class SearchBarContainer extends React.Component {
   }
 
   openPill = pillState => {
-    console.log('Open pill with ', pillState);
     this.setState({
       openModal: {
         modalId: pillState.conditionType,
@@ -444,7 +434,6 @@ class SearchBarContainer extends React.Component {
           const insertAt = this.state.insertDirection === 'left' ? selectedPillIndex : selectedPillIndex + 1;
           const newSearchParameterValue = this.openModal.returnValue();
           if(!newSearchParameterValue) {
-            console.log('cannot add pill without value');
             return;
           }
           const searchTermParam = {
@@ -472,10 +461,8 @@ class SearchBarContainer extends React.Component {
       } else {
         const newSearchParameterValue = this.openModal.returnValue();
         if(!newSearchParameterValue) {
-          console.log('cannot replace pill without value');
           return;
         }
-        console.log('Replace the selected pill', newSearchParameterValue);
         this.replaceSearchParameter(newSearchParameterValue, this.state.openModal.modalId, this.state.selectedPill);
         this.setState({
           openModal: { modalId: null },
@@ -488,13 +475,10 @@ class SearchBarContainer extends React.Component {
         });
       }
     } else {
-      console.log("Current modal", this.openModal);
       const newSearchParameterValue = this.openModal.returnValue();
       if(!newSearchParameterValue) {
-        console.log('cannot add pill without value');
         return;
       }
-      console.log('Add a pill', newSearchParameterValue);
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
@@ -504,7 +488,6 @@ class SearchBarContainer extends React.Component {
           this.props.onSearch();
         }
       });
-      console.log('State after add', this.state);
     }
   }
 
@@ -615,7 +598,6 @@ class SearchBarContainer extends React.Component {
                 color="primary"
                 className="transcriptSubmit"
               >
-                { console.log("Open modal state", this.state.openModal.modalState ) }
                 { this.state.selectedPill && !this.state.insertDirection ? ( (selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') : 'Add' }
               </Button>
             </CardActions>
