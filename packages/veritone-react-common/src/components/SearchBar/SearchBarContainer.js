@@ -491,6 +491,16 @@ class SearchBarContainer extends React.Component {
     }
   }
 
+  resetSearchParameters = () => {
+    this.setState( {
+      openModal: { modalId: null },
+      selectedPill: null,
+      menuAnchorEl: null,
+      highlightedPills: []
+    } );
+    this.props.resetSearchParameters();
+  }
+
   render() {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
@@ -516,7 +526,7 @@ class SearchBarContainer extends React.Component {
             openPill={this.openPill}
             modifyPill={ this.props.addOrModifySearchParameter }
             openMenu={this.handleMenuOpen}
-            resetSearchParameters={this.props.resetSearchParameters}
+            resetSearchParameters={this.resetSearchParameters}
           />
           <Menu
             open={Boolean(this.state.menuAnchorEl)}
