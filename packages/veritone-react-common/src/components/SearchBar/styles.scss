@@ -27,7 +27,8 @@
   cursor: text;
   padding-left: 0.25em;
   padding-right: 0.25em;
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-y: hidden;
   display: flex;
   align-items: center;
   height: 100%;

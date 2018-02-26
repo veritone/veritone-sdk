@@ -5,6 +5,8 @@ import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui-icons/Close';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
 
 import Icon from './Icon';
 import SearchPill from './SearchPill';
@@ -135,6 +137,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   return output;
 });
 
+/*
 const SearchBar = ({
   color,
   searchParameters,
@@ -149,43 +152,73 @@ const SearchBar = ({
   openMenu,
   resetSearchParameters
 }) => {
-  const getOnEnter = (onSearch) => (evt) => {
-    console.log(evt);
-    if(evt.key === 'Enter') {
-      onSearch();
+*/
+
+class SearchBar extends React.Component {
+
+  addTranscript = () => {
+    this.props.addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
+  }
+
+  scrollLeft = () => {
+    if(this.scrollContainer && this.scrollContainer.scrollLeft > 0) {
+      this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft - 20;
     }
   }
 
-  const addTranscript = () => {
-    addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
+  scrollRight = () => {
+    if(this.scrollContainer && this.scrollContainer.scrollLeft < (this.scrollContainer.scrollWidth - this.scrollContainer.offsetWidth)) {
+      this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft + 20;
+    }
   }
 
-  return (
-    <div className={containerClasses}>
-      <div className={searchInputContainerClass}>
-        { <SearchParameters
-        key={'top_level_search_parameters'}
-        searchParameters={ searchParameters }
-        level={0}
-        enabledEngineCategories={enabledEngineCategories}
-        highlightedPills={ highlightedPills }
-        togglePill={ togglePill }
-        addPill={ addPill }
-        openPill={ openPill }
-        removePill={ removePill }
-        libraries={ libraries }
-        color={color}
-        openMenu={ openMenu }
-         /> }
-        {<InputCursor key="input_cursor" onFocus={ addTranscript }/>}
+  render() {
+    const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth : false;
+    if (showScrollBar) {
+      console.log("Offset width", this.scrollContainer.offsetWidth );
+      console.log("Offset left", this.scrollContainer.offsetLeft);
+      console.log("Client width", this.scrollContainer.clientWidth );
+      console.log("Scroll width", this.scrollContainer.scrollWidth);
+      console.log("Scroll left", this.scrollContainer.scrollLeft );
+    }
+    return (
+      <div className={containerClasses}>
+        { showScrollBar ? (
+          <IconButton onClick={ this.scrollLeft } classes={ { root: cx(styles['resetButton']) } }>
+            <KeyboardArrowLeft/>
+          </IconButton>
+        ) : null }
+        <div className={searchInputContainerClass} ref={ (input) => { this.scrollContainer = input; } }>
+          { <SearchParameters
+          key={'top_level_search_parameters'}
+          searchParameters={ this.props.searchParameters }
+          level={0}
+          enabledEngineCategories={this.props.enabledEngineCategories}
+          highlightedPills={ this.props.highlightedPills }
+          togglePill={ this.props.togglePill }
+          addPill={ this.props.addPill }
+          openPill={ this.props.openPill }
+          removePill={ this.props.removePill }
+          libraries={ this.props.libraries }
+          color={ this.props.color}
+          openMenu={ this.props.openMenu }
+          /> }
+          {<InputCursor key="input_cursor" onFocus={ this.addTranscript }/>}
+        </div>
+        { showScrollBar ? (
+          <IconButton onClick={ this.scrollRight } classes={ { root: cx(styles['resetButton']) } }>
+            <KeyboardArrowRight/>
+          </IconButton>
+        ) : null 
+        } 
+        {
+          this.props.searchParameters.length > 0 ? (<IconButton onClick={ this.props.resetSearchParameters} classes={ { root: cx(styles['resetButton']) } }>
+            <CloseIcon/>
+          </IconButton>) : null
+        }
       </div>
-      {
-        searchParameters.length > 0 ? (<IconButton onClick={resetSearchParameters} classes={ { root: cx(styles['resetButton']) } }>
-          <CloseIcon/>
-        </IconButton>) : null
-      }
-    </div>
-  )
+    )
+  }
 };
 SearchBar.propTypes = {
   color: string.isRequired,
