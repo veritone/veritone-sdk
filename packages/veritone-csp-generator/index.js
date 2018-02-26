@@ -335,8 +335,6 @@ const V2QueryStringParser = (field, queryString) => {
       analyzer
     );
   }
-
-
   return buildStringQuery(field, queryString);
 }
 
@@ -370,67 +368,49 @@ const engineCategoryMapping = {
 };
 
 const searchQueryGenerator = csp => {
+  const queryFromCsp = cspToPartialQuery(csp);
   const baseQuery = {
     query: {
       operator: 'and',
-      conditions: []
+      conditions: queryFromCsp ? [queryFromCsp] : []
     }
   };
+  return baseQuery;
+};
 
-  const getJoinOperator = query => {
-    const operators = Object.keys(query);
-    return operators[0];
-  };
+const getJoinOperator = query => {
+  const operators = Object.keys(query);
+  return operators[0];
+};
 
-  const convertJoinOperator = joinOperator => {
-    return joinOperator.replace('(', '');
-  }
+const convertJoinOperator = joinOperator => {
+  return joinOperator.replace('(', '');
+}
 
-  let conditions;
-  let queryConditions;
-
-  //handle case where csp is a single term with no join operators  
-  if (csp.engineCategoryId) {
-    queryConditions = baseQuery.query.conditions;
-    conditions = [csp];
+const cspToPartialQuery = csp => {
+  if(csp && csp.engineCategoryId) {
+    return generateQueryCondition(csp);
   } else {
     const joinOperator = getJoinOperator(csp);
-    conditions = csp[joinOperator];
+    const conditions = csp[joinOperator];
     const newBooleanSubtree = {
       operator: convertJoinOperator(joinOperator),
-      conditions: []
+      conditions: conditions.map(cspToPartialQuery).filter(Boolean)
     };
-    baseQuery.query.conditions.push(newBooleanSubtree);
-    queryConditions = newBooleanSubtree.conditions;
+    return newBooleanSubtree;
   }
+};
 
-  for (let i = 0; i < conditions.length; i++) {
-    if ('engineCategoryId' in conditions[i]) {
-      // add an additional condition
-      if (
-        typeof engineCategoryMapping[conditions[i].engineCategoryId] ===
-        'function'
-      ) {
-        const newCondition = engineCategoryMapping[
-          conditions[i].engineCategoryId
-        ](conditions[i].state);
-        queryConditions.push(newCondition);
-      }
-    } else {
-      // different boolean operator, add a new subtree
-      const joinOperator = getJoinOperator(conditions[i]);      
-      const newBooleanSubtree = {
-        operator: convertJoinOperator(joinOperator),
-        conditions: []
-      };
-      queryConditions.push(newBooleanSubtree);
-      queryConditions = newBooleanSubtree.conditions;
-      conditions = conditions[i][joinOperator];
-      i = -1;
-    }
+const generateQueryCondition = node => {
+  if (node
+      && node.engineCategoryId
+      && typeof engineCategoryMapping[node.engineCategoryId] === 'function'
+  ) {
+    const newCondition = engineCategoryMapping[node.engineCategoryId](node.state);
+    return newCondition;
+  } else {
+    return null;
   }
-
-  return baseQuery;
 };
 
 module.exports = {
