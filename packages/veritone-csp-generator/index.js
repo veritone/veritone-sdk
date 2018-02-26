@@ -379,21 +379,30 @@ const searchQueryGenerator = csp => {
 
   const getJoinOperator = query => {
     const operators = Object.keys(query);
-    return operators[0].replace('(', '');
+    return operators[0];
   };
 
-  let joinOperator = getJoinOperator(csp);
-  let conditions = csp[joinOperator];
-
-  const newBooleanSubtree = {
-    operator: joinOperator,
-    conditions: []
-  };
-
-  if (conditions.length > 0) {
-    baseQuery.query.conditions.push(newBooleanSubtree);
+  const convertJoinOperator = joinOperator => {
+    return joinOperator.replace('(', '');
   }
-  let queryConditions = newBooleanSubtree.conditions;
+
+  let conditions;
+  let queryConditions;
+
+  //handle case where csp is a single term with no join operators  
+  if (csp.engineCategoryId) {
+    queryConditions = baseQuery.query.conditions;
+    conditions = [csp];
+  } else {
+    const joinOperator = getJoinOperator(csp);
+    conditions = csp[joinOperator];
+    const newBooleanSubtree = {
+      operator: convertJoinOperator(joinOperator),
+      conditions: []
+    };
+    baseQuery.query.conditions.push(newBooleanSubtree);
+    queryConditions = newBooleanSubtree.conditions;
+  }
 
   for (let i = 0; i < conditions.length; i++) {
     if ('engineCategoryId' in conditions[i]) {
@@ -409,13 +418,13 @@ const searchQueryGenerator = csp => {
       }
     } else {
       // different boolean operator, add a new subtree
+      const joinOperator = getJoinOperator(conditions[i]);      
       const newBooleanSubtree = {
-        operator: getJoinOperator(conditions[i]),
+        operator: convertJoinOperator(joinOperator),
         conditions: []
       };
       queryConditions.push(newBooleanSubtree);
       queryConditions = newBooleanSubtree.conditions;
-      joinOperator = getJoinOperator(conditions[i]);
       conditions = conditions[i][joinOperator];
       i = -1;
     }

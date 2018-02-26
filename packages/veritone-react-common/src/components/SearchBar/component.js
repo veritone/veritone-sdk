@@ -506,6 +506,17 @@ export class SampleSearchBar extends React.Component {
   }
 
   CSPToSearchParameters = (cognitiveSearchProfile, parentJoinOperator) => {
+    //handle case where csp is just a single term without any join groups
+    if(cognitiveSearchProfile.state && cognitiveSearchProfile.engineCategoryId) {
+      return [
+        {
+          id: guid(),
+          conditionType: cognitiveSearchProfile.engineCategoryId,
+          value: cognitiveSearchProfile.state
+        }
+      ]
+    }
+
     const getJoinOperator = ( query ) => {
       const operators = Object.keys(query);
       return operators[0];
@@ -586,7 +597,7 @@ export class SampleSearchBar extends React.Component {
   insertMultipleSearchParameters = (parametersToAdd) => {
     const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, {parameter, index}) => {
       const newSearchParameter = {
-        ...parameter, 
+        ...parameter,
         id: guid()
       };
       return update(latestSearchParameters, {
