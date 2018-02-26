@@ -53,10 +53,11 @@ class GeolocationModal extends React.Component {
 
   getFilterValue = () => {
     const mostRecent = (a, b) => a._createdTime > b._createdTime  ? a._createdTime : b._createdTime;
-    let lastCreated = Object.values(this.state.renderedMap._layers).filter( x => x._type === 'geolocationModal' ).reduce( mostRecent );
-
-    if(lastCreated) {
-      let filterValue = { latitude: lastCreated._latlng.lat , longitude: lastCreated._latlng.lng, distance: lastCreated._mRadius, units: 'm'}
+    let lastCreated = Object.values(this.state.renderedMap._layers).filter( x => x._type === 'geolocationModal' );
+  
+    if(lastCreated && lastCreated.length > 0) {
+      let lastCreatedValue = lastCreated.reduce( mostRecent );
+      let filterValue = { latitude: lastCreatedValue._latlng.lat , longitude: lastCreatedValue._latlng.lng, distance: lastCreatedValue._mRadius, units: 'm'}
       return filterValue;
     } else {
       return;
