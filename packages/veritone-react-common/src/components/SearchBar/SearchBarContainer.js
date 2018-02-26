@@ -14,12 +14,13 @@ import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 import Icon from './Icon';
 
-const supportedCategoriesClass = cx(styles['supportedCategories']);
 import cx from 'classnames';
 import styles from './styles.scss';
 
 import { withTheme } from 'material-ui/styles'
 import { guid } from './component';
+
+const supportedCategoriesClass = cx(styles['supportedCategories']);
 
 class SearchBarContainer extends React.Component {
   static propTypes = {
