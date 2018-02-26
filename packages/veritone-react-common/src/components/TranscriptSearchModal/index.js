@@ -35,6 +35,9 @@ export default class TranscriptSearchModal extends React.Component {
 
   onEnter = event => {
     if (event.key === 'Enter') {
+      if(this.props.applyFilter) {
+        this.props.applyFilter();
+      }
       console.log('TODO handle onEnter for transcript');
     }
   };

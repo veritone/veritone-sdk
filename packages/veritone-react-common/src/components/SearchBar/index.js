@@ -179,9 +179,11 @@ const SearchBar = ({
          /> }
         {<InputCursor key="input_cursor" onFocus={ addTranscript }/>}
       </div>
-      <IconButton onClick={resetSearchParameters}>
-        <CloseIcon/>
-      </IconButton>
+      {
+        searchParameters.length > 0 ? (<IconButton onClick={resetSearchParameters} classes={ { root: cx(styles['resetButton']) } }>
+          <CloseIcon/>
+        </IconButton>) : null
+      }
     </div>
   )
 };
