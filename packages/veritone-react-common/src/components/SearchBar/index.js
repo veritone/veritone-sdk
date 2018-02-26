@@ -30,7 +30,8 @@ const JoiningOperator = ( {operator, onClick} ) => {
     <Chip
       label={operator}
       onClick={onClick}
-      style={{background: 'transparent', color: '#2196F3'}}
+      classes={ { label: cx(styles['joinOperatorChip']) } }
+      style={{background: 'transparent', color: '#2196F3', paddingLeft: 0, paddingRight: 0}}
     />
   );
 }
