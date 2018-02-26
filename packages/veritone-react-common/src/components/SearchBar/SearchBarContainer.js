@@ -6,6 +6,12 @@ import Popover from 'material-ui/Popover';
 import Paper from 'material-ui/Paper';
 import EngineCategoryButton from './EngineCategoryButton';
 
+import cx from 'classnames';
+import styles from './styles.scss';
+
+import { withTheme } from 'material-ui/styles'
+import { guid } from './component';
+
 import Card, { CardHeader, CardMedia, CardContent, CardActions } from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Collapse from 'material-ui/transitions/Collapse';
@@ -13,12 +19,6 @@ import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
 import Icon from './Icon';
-
-import cx from 'classnames';
-import styles from './styles.scss';
-
-import { withTheme } from 'material-ui/styles'
-import { guid } from './component';
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
