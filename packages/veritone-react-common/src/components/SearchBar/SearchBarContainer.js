@@ -99,6 +99,9 @@ class SearchBarContainer extends React.Component {
       let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
       extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
     }
+    if(this.props.onSearch) {
+      this.props.onSearch();
+    }
   }
 
   addPill = modalId => {
@@ -190,10 +193,18 @@ class SearchBarContainer extends React.Component {
   }
 
   removePill = (searchParameterId, searchParameters) => {
+    const updatedSearchParameters = this.simpleRemovePill(searchParameterId, searchParameters);
+    if (this.props.onSearch) {
+      this.props.onSearch( updatedSearchParameters );
+    }
+    this.setState({highlightedPills: []});
+    return updatedSearchParameters;
+  };
+
+  simpleRemovePill = (searchParameterId, searchParameters) => {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
     let previousParameter = searchParameters[index - 1];
     let newSearchParameters = null;
-
     // if the pill to be removed is the start of a group, we need to remove the next joining parameter and not the previous one
     if( ( previousParameter && previousParameter.value === '(' ) || ( index === 0 && this.numberOfPills(searchParameters) > 1 ) ) {
       this.props.removeSearchParameter( searchParameters[index+1].id );
@@ -210,16 +221,9 @@ class SearchBarContainer extends React.Component {
       this.props.removeSearchParameter( searchParameterId );
       newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId);
     }
-
-    console.log("After remove", searchParameters);
-
     let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
     extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
-
-    if (this.props.onSearch) {
-      this.props.onSearch( simplifiedParameters );
-    }
-    this.setState({highlightedPills: []});
+    return simplifiedParameters;
   };
 
   getRemovePill = searchParameters => {
@@ -357,21 +361,24 @@ class SearchBarContainer extends React.Component {
     this.setState({
       menuAnchorEl: null,
       selectedPill: null
+    }, () => {
+      if(this.props.onSearch) {
+        this.props.onSearch();
+      }
     });
+
   }
 
-  //TODO call onSearch?
   menuInsertDirection = (insertDirection) => {
     this.setState({
       menuAnchorEl: null,
       openModal: { modalId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182' }, //TODO dont use hardcoded id
       insertDirection
+    }, () => {
+      if(this.props.onSearch) {
+        this.props.onSearch();
+      }
     });
-
-    //TODO call onSearch?
-    if(this.props.onSearch) {
-      this.props.onSearch();
-    }
   }
 
   menuRemovePill = () => {
@@ -383,12 +390,17 @@ class SearchBarContainer extends React.Component {
   }
 
   menuRemoveHighlightedPills = () => {
-    console.log('delete all highlighted pills from menu');
-    //TODO remove multiple
-    this.removePill(this.state.selectedPill, this.props.searchParameters);
+    let simplifiedParameters = this.props.searchParameters;
+    this.state.highlightedPills && this.state.highlightedPills.forEach((highlightedPill) => {
+      simplifiedParameters = this.simpleRemovePill(highlightedPill, simplifiedParameters);
+    });
     this.setState({
       menuAnchorEl: null,
       selectedPill: null
+    }, () => {
+      if(this.props.onSearch) {
+        this.props.onSearch();
+      }
     });
   }
 
@@ -398,6 +410,9 @@ class SearchBarContainer extends React.Component {
     this.setState({
       menuAnchorEl: null
     });
+    if(this.props.onSearch) {
+      this.props.onSearch();
+    }
   }
 
   menuGroupSelection = () => {
@@ -422,8 +437,13 @@ class SearchBarContainer extends React.Component {
       if(this.state.insertDirection) {
           const selectedPillIndex = this.props.searchParameters.findIndex(x => x.id === this.state.selectedPill)
           const insertAt = this.state.insertDirection === 'left' ? selectedPillIndex : selectedPillIndex + 1;
+          const newSearchParameterValue = this.openModal.returnValue();
+          if(!newSearchParameterValue) {
+            console.log('cannot add pill without value');
+            return;
+          }
           const searchTermParam = {
-            value: this.openModal.returnValue(),
+            value: newSearchParameterValue,
             conditionType: this.state.openModal.modalId
           };
           const operatorParam = {
@@ -445,8 +465,13 @@ class SearchBarContainer extends React.Component {
             }
           });
       } else {
-        console.log('Replace the selected pill', this.openModal.returnValue());
-        this.replaceSearchParameter(this.openModal.returnValue(), this.state.openModal.modalId, this.state.selectedPill);
+        const newSearchParameterValue = this.openModal.returnValue();
+        if(!newSearchParameterValue) {
+          console.log('cannot replace pill without value');
+          return;
+        }
+        console.log('Replace the selected pill', newSearchParameterValue);
+        this.replaceSearchParameter(newSearchParameterValue, this.state.openModal.modalId, this.state.selectedPill);
         this.setState({
           openModal: { modalId: null },
           selectedPill: null,
@@ -467,7 +492,13 @@ class SearchBarContainer extends React.Component {
       console.log('Add a pill', newSearchParameterValue);
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
-      this.setState({ openModal: { modalId: '' + lastModal } });
+      this.setState({
+        openModal: { modalId: '' + lastModal }
+      }, () => {
+        if(this.props.onSearch) {
+          this.props.onSearch();
+        }
+      });
       console.log('State after add', this.state);
     }
   }
@@ -580,7 +611,7 @@ class SearchBarContainer extends React.Component {
                 className="transcriptSubmit"
               >
                 { console.log("Open modal state", this.state.openModal.modalState ) }
-                { this.state.selectedPill ? ( (selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') : 'Add' }
+                { this.state.selectedPill && !this.state.insertDirection ? ( (selectedPill.conditionType === openModal.id && this.state.openModal.modalState !== undefined) ? 'Save' : 'Replace') : 'Add' }
               </Button>
             </CardActions>
           </Card>
