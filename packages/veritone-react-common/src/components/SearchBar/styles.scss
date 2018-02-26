@@ -73,7 +73,7 @@
   background-color: #eeeeee !important;
 }
 
-.searchPill:focus {
+.searchPill:focus:not(.highlighted) {
   background-color: #eeeeee !important;
 }
 

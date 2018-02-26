@@ -40,6 +40,9 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   let output = [];
 
   // need to do a pass over the search parameters to build a tree so we can render groups cleanly
+  // creates a structure where {id: number}
+  // id being the id of the pill at the start of the group
+  // and number being the number of elements in the group
   const groups = {};
   let startOfGroup = null;
   let treeLevel = 0;
@@ -52,7 +55,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
     } else if (searchParameters[i].value === ')') {
       treeLevel--;
       if(treeLevel === 0) {
-        groups[startOfGroup] = i;
+        groups[startOfGroup] = { endOfGroup: i, afterGroup: searchParameters[i+1] && searchParameters[i+1].conditionType } ;
         startOfGroup = null;
       }
     }
@@ -75,14 +78,20 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
       )
     } else if (searchParameter.conditionType === 'group') {
       if(groups[searchParameter.id]) {
-        const nestedGroupStyling = searchParameters[i-1] && searchParameters[i-1].conditionType !== 'group' ? cx(styles['searchGroupNestedLeft']) : cx(styles['searchGroupNestedRight']);
+        let nestedGroupStyling = '';
+        if(searchParameters[i-1] && searchParameters[i-1].conditionType !== 'group') {
+          nestedGroupStyling +=  cx(styles['searchGroupNestedLeft']) + " ";
+        }
+        if(groups[searchParameter.id].afterGroup && groups[searchParameter.id].afterGroup !== 'group') {
+          nestedGroupStyling +=  cx(styles['searchGroupNestedRight']);
+        }
         const stylingClass = level === 0 ? cx(styles['searchGroup']) : nestedGroupStyling;
 
         output.push(
           <span style={{ borderColor: theme.palette.primary.main }} className={ stylingClass } key={`search_container_${searchParameter.id}`}>
           <SearchParameters
           key={`search_parameters_grouping_${searchParameter.id}_${level}`}
-            searchParameters={ searchParameters.slice(i+1, groups[searchParameter.id]) }
+            searchParameters={ searchParameters.slice(i+1, groups[searchParameter.id].endOfGroup) }
             level={level+1}
             enabledEngineCategories={enabledEngineCategories}
             highlightedPills={ highlightedPills }
@@ -95,7 +104,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           />
           </span>
         )
-        i = groups[searchParameter.id];
+        i = groups[searchParameter.id].endOfGroup;
       }
     } else if (searchParameter.conditionType !== 'join') {
       const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
