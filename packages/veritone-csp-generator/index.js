@@ -367,13 +367,26 @@ const engineCategoryMapping = {
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator
 };
 
+const engineCategoryMetadataMapping = {
+  'f2554098-f14b-4d81-9be1-41d0f992a22f': 'sentiment-veritone',
+  '3b4ac603-9bfa-49d3-96b3-25ca3b502325': 'text-recognition',
+  '6faad6b7-0837-45f9-b161-2f6bf31b7a07': 'face-recognition',
+  '088a31be-9bd6-4628-a6f0-e4004e362ea0': 'object-recognition',
+  '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': 'fingerprint',
+  '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': 'logo-recognition',
+  'tag-search-id': 'tags',
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation',
+}
+
 const searchQueryGenerator = csp => {
   const queryFromCsp = cspToPartialQuery(csp);
+  const querySelect = buildQuerySelect(csp);
   const baseQuery = {
     query: {
       operator: 'and',
       conditions: queryFromCsp ? [queryFromCsp] : []
-    }
+    },
+    select: querySelect
   };
   return baseQuery;
 };
@@ -385,7 +398,7 @@ const getJoinOperator = query => {
 
 const convertJoinOperator = joinOperator => {
   return joinOperator.replace('(', '');
-}
+};
 
 const cspToPartialQuery = csp => {
   if(csp && csp.engineCategoryId) {
@@ -412,6 +425,41 @@ const generateQueryCondition = node => {
     return null;
   }
 };
+
+const buildQuerySelect = csp => {
+  const metadataKeys = selectMetadataFromCsp(csp);
+  const dedupedMetadataKeys = dedupeArray(metadataKeys);
+  return ['veritone-job', 'veritone-file', ...dedupedMetadataKeys];
+};
+
+const dedupeArray = arr => {
+  const map = {};
+  arr.forEach(x => {
+    map[x] = true;
+  });
+  return Object.keys(map);
+};
+
+const selectMetadataFromCsp = csp => {
+  let metadataKeys = [];
+  if(csp && csp.engineCategoryId) {
+    const metadataKey = engineCategoryMetadataMapping[csp.engineCategoryId];
+    if(metadataKey) {
+      metadataKeys.push(metadataKey);
+    }
+  } else {
+    const joinOperator = getJoinOperator(csp);
+    const conditions = csp[joinOperator];
+    conditions.forEach(condition => {
+      const subMetadataKeys = selectMetadataFromCsp(condition);
+      if(Array.isArray(subMetadataKeys)) {
+        metadataKeys = [...metadataKeys, ...subMetadataKeys];
+      }
+    });
+  }
+  return metadataKeys;
+};
+
 
 module.exports = {
   CSPToV3Query: searchQueryGenerator,
