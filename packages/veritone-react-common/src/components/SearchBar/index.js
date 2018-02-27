@@ -113,7 +113,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
     } else if (searchParameter.conditionType !== 'join') {
       const searchParameterEngine = enabledEngineCategories.find(engineCategory => engineCategory.id === searchParameter.conditionType);
 
-      const { abbreviation, thumbnail } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
+      const { abbreviation, thumbnail, exclude } = searchParameterEngine ? searchParameterEngine.getLabel(searchParameter.value) : { abbreviation: undefined, thumbnail: undefined };
       const remove = () => removePill(searchParameter.id);
 
       const onClick= (e) => {
@@ -128,6 +128,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           key={searchParameter.id}
           engineIconClass={searchParameterEngine.iconClass}
           onClick={ onClick }
+          exclude={ exclude }
           highlighted={ highlightedPills.indexOf(searchParameter.id) !== -1 }
           selected={ selectedPill ? searchParameter.id === selectedPill.id : false }
           label={abbreviation}
