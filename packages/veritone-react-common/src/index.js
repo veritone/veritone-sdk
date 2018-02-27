@@ -1,5 +1,4 @@
 import '../src/styles/global.scss';
-import 'normalize.css';
 
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {

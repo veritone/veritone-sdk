@@ -32,6 +32,9 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
           url
           key
           bucket
+          expiresInSeconds
+          getUrl
+          unsignedUrl
         }
       }`;
 
@@ -58,7 +61,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
     return yield* finishUpload(id, null, { error }, callback);
   }
 
-  let uploadDescriptors; // { url, key, bucket }
+  let uploadDescriptors; // { url, key, bucket, etc }
   try {
     uploadDescriptors = signedWritableUrlResponses.map(
       ({ data: { getSignedWritableUrl }, errors }) => {
@@ -90,23 +93,24 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
       error,
       success,
       file,
-      descriptor: { key, bucket }
+      descriptor: { key, bucket, expiresInSeconds, getUrl, unsignedUrl }
     } = yield take(resultChan);
 
     if (success || error) {
       yield put(uploadProgress(id, key, 100));
 
       result.push({
-        name: key,
+        key,
+        bucket,
+        expiresInSeconds,
         fileName: file.name,
         size: file.size,
         type: file.type,
         error: error || false,
-        bucket,
-        url: error
-          ? null
-          : window.encodeURI(`https://s3.amazonaws.com/${bucket}/${key}`)
+        unsignedUrl: error ? null : unsignedUrl,
+        getUrl: error ? null : getUrl
       });
+
       continue;
     }
 

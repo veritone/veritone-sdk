@@ -5,9 +5,12 @@ export const uiState = {
 };
 
 import userReducer, * as userModule from './user';
+import * as userConstants from './user/constants';
+
 export const user = {
   reducer: userReducer,
-  ...userModule
+  ...userModule,
+  ...userConstants
 };
 
 import configReducer, * as configModule from './config';
@@ -18,9 +21,12 @@ export const config = {
 
 import authRootSaga from './auth/oauthSaga'
 import authReducer, * as authModule from './auth';
+import * as authConstants from './auth/constants';
+
 export const auth = {
   reducer: authReducer,
   ...authModule,
+  ...authConstants,
   authRootSaga
 };
 

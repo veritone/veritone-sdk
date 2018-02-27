@@ -1,4 +1,3 @@
-import { Promise } from 'es6-promise';
 import { ParseURI } from './util';
 
 let _authWindow = null;

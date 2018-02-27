@@ -3,10 +3,12 @@ import { noop } from 'lodash';
 import { login } from 'veritone-oauth-helpers';
 import { call, put, takeLatest, fork, all } from 'redux-saga/effects';
 
-import * as authModule from '../auth'
+import { OAuthGrantSuccess } from '../auth';
+import { OAUTH_GRANT_FLOW_FAILED, REQUEST_OAUTH_GRANT } from '../auth/constants';
 
-
-function* requestOAuthGrant({ payload: { OAuthURI, onSuccess = noop, onFailure = noop } }) {
+function* requestOAuthGrant({
+  payload: { OAuthURI, onSuccess = noop, onFailure = noop }
+}) {
   let token;
 
   try {
@@ -14,17 +16,17 @@ function* requestOAuthGrant({ payload: { OAuthURI, onSuccess = noop, onFailure =
     token = OAuthToken;
   } catch (e) {
     console.log('oauth flow error', e);
-    yield put({ type: authModule.OAUTH_GRANT_FLOW_FAILED, payload: e, error: true });
+    yield put({ type: OAUTH_GRANT_FLOW_FAILED, payload: e, error: true });
     yield call(onFailure, e);
     return;
   }
 
-  yield put(authModule.OAuthGrantSuccess({ OAuthToken: token }));
-  yield call(onSuccess, { OAuthToken: token })
+  yield put(OAuthGrantSuccess({ OAuthToken: token }));
+  yield call(onSuccess, { OAuthToken: token });
 }
 
 function* watchOAuthGrantRequest() {
-  yield takeLatest(authModule.REQUEST_OAUTH_GRANT, requestOAuthGrant);
+  yield takeLatest(REQUEST_OAUTH_GRANT, requestOAuthGrant);
 }
 
 export default function* root() {

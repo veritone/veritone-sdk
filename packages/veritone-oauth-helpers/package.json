@@ -1,14 +1,25 @@
 {
   "name": "veritone-oauth-helpers",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "description": "Helper functions for authenticating to Veritone via OAuth",
-  "main": "src/index.js",
+  "main": "dist/bundle-cjs.js",
+  "module": "dist/bundle-es.js",
+  "jsnext:main": "dist/bundle-es.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "clean:build": "rimraf dist",
+    "prebuild": "npm run clean:build; mkdir dist",
+    "build": "NODE_ENV=production rollup -c",
+    "prepublishOnly": "npm run build"
   },
   "author": "Andrew Tung",
   "license": "Apache-2.0",
   "dependencies": {
-    "es6-promise": "^4.2.2"
+    "babel-runtime": "^6.26.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.2",
+    "rollup": "^0.56.3",
+    "rollup-plugin-babel": "^3.0.3"
   }
 }

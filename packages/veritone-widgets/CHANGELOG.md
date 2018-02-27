@@ -39,4 +39,20 @@
   * fix s3 bucket url in result.
   * add `bucket` param to result objects.
 
+## 3.0.0
+* Replaced webpack with rollup
+  * The bundle is now an es module rather than UMD, which should enable tree shaking to a greater extent, reducing the filesize overhead of using the library.
+  * Dependencies are now external to the library rather than being included in the bundle. Because of this, bundle size is reduced significantly. 
+  * A commonJS bundle is also included for older toolchains that do not understand the es module format.
 
+* FilePicker
+  * (breaking) change `name` in upload result objects to `key`, to align with the actual server response.
+  * add `expires`, `getUrl`, and `unsignedUrl` fields to upload result objects (see readme)
+
+
+* OAuthLoginButton
+  * Add onAuthSuccess, onAuthFailure callback props, which will receive the token or error, respectively, when the OAuth grant flow completes.
+
+## 3.0.1
+* FilePicker
+  * Change `expires` to `expiresInSeconds` to match API update.

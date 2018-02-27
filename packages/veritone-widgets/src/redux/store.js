@@ -4,28 +4,7 @@ import thunkMiddleware from 'redux-thunk';
 export const getBaseMiddlewares = () => [apiMiddleware(fetch), thunkMiddleware];
 
 export const getDevOnlyMiddlewares = () => {
-  if (process.env.NODE_ENV !== 'production') {
-    return [require('redux-logger').createLogger({ collapsed: true })];
-  }
+  return process.env.NODE_ENV !== 'production'
+    ? [require('redux-logger').createLogger({ collapsed: true })]
+    : [];
 };
-
-export const getProductionOnlyMiddlewares = () => [];
-
-export const getBaseStoreEnhancers = () => [];
-
-export const getDevOnlyStoreEnhancers = () => {
-  if (process.env.NODE_ENV !== 'production') {
-    // By default we try to read the key from ?debug_session=<key> in the address bar
-    const getDebugSessionKey = function() {
-      const matches = window.location.href.match(/[?&]debug_session=([^&]+)\b/);
-      return matches && matches.length ? matches[1] : null;
-    };
-
-    return [
-      // Lets you write ?debug_session=<key> in address bar to persist debug sessions
-      require('redux-devtools').persistState(getDebugSessionKey())
-    ];
-  }
-};
-
-export const getProductionOnlyStoreEnhancers = () => [];

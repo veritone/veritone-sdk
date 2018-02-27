@@ -1,5 +1,14 @@
 React components and related code
 
+## Use
+Import components by name. For example,
+```
+import { Avatar, Chip } from 'veritone-react-common'
+```
+
+A list of all components can be found in `src/index.js`. Usage examples of each component can be found in `src/components/<component>/story.js`.
+
+
 ## Running the dev environment
 `yarn start`: run the examples site
 
