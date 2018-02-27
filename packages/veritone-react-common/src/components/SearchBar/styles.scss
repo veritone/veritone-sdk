@@ -146,12 +146,13 @@
 }
 
 .afterCursor {
-  width: 100%;
   min-width: 25px;
   border: 0px;
   display: flex;
   height: 100%;
-  margin-left: 0.5em;
+  flex-grow: 1;
+  padding-left: 0.5em;
+  align-items: center;
 }
 
 .searchGroup {
@@ -159,9 +160,11 @@
   padding-top: 2px;
   padding-bottom: 2px;
   align-items: center;
-  padding: 0.25em;
+  padding-right: 0.1em;
+  padding-left: 0.1em;
   border: 1px dashed;
   border-radius: 2em;
+  flex-wrap: nowrap;
   //border-right: 2px solid blue;
   //background-color: rgba(0, 20, 60, 0.35);
 }
@@ -174,7 +177,7 @@
 .searchGroupNestedLeft {
   display: flex;
   align-items: center;
-  padding-left: 0.25em;
+  padding-left: 0.1em;
   border-left: 1px dashed;
   border-radius: 2em;
 }
@@ -182,7 +185,7 @@
 .searchGroupNestedRight {
   display: flex;
   align-items: center;
-  padding-right: 0.25em;
+  padding-right: 0.1em;
   border-right: 1px dashed;
   border-radius: 2em;
 }

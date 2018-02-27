@@ -13,6 +13,7 @@ import SearchPill from './SearchPill';
 
 import styles from './styles.scss';
 import Select from 'material-ui/Select';
+import Typography from 'material-ui/Typography';
 
 import { MenuItem } from 'material-ui/Menu';
 import { withTheme } from 'material-ui/styles';
@@ -23,8 +24,10 @@ const searchInputContainerClass = cx(styles['searchInput']);
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
 
-const InputCursor = ({onKeyPress, onFocus}) => (
-  <input onFocus={onFocus} onKeyPress={onKeyPress} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1" />
+const GhostInput = ({showGhost, onFocus}) => (
+  <span onClick={onFocus} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1">
+    { showGhost ? <Typography color="textSecondary" variant="headline">Search Veritone</Typography> : null }
+  </span>
 )
 
 const JoiningOperator = ( {operator, onClick} ) => {
@@ -70,7 +73,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
         openMenu(e.currentTarget, searchParameter);
       };
       output.push(
-        <JoiningOperator 
+        <JoiningOperator
           key={searchParameter.id}
           operator={searchParameter.value}
           onClick={onClick}
@@ -88,7 +91,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
         const stylingClass = level === 0 ? cx(styles['searchGroup']) : nestedGroupStyling;
 
         output.push(
-          <span style={{ borderColor: theme.palette.primary.main }} className={ stylingClass } key={`search_container_${searchParameter.id}`}>
+          <span style={{ alignItems: "center", display: "flex", flexWrap: "nowrap", borderColor: theme.palette.primary.main }} className={ stylingClass } key={`search_container_${searchParameter.id}`}>
           <SearchParameters
           key={`search_parameters_grouping_${searchParameter.id}_${level}`}
             searchParameters={ searchParameters.slice(i+1, groups[searchParameter.id].endOfGroup) }
@@ -196,16 +199,16 @@ class SearchBar extends React.Component {
           color={ this.props.color}
           openMenu={ this.props.openMenu }
           /> }
-          {<InputCursor key="input_cursor" onFocus={ this.addTranscript }/>}
+          {<GhostInput key="input_cursor" onFocus={ this.addTranscript } showGhost={ !this.props.searchParameters || this.props.searchParameters.length === 0 } />}
         </div>
         { showScrollBar ? (
           <IconButton onClick={ this.scrollRight } classes={ { root: cx(styles['resetButton']) } }>
             <KeyboardArrowRight/>
           </IconButton>
-        ) : null 
-        } 
+        ) : null
+        }
         {
-          this.props.searchParameters.length > 0 ? (<IconButton onClick={ this.props.resetSearchParameters} classes={ { root: cx(styles['resetButton']) } }>
+          this.props.searchParameters.length > 0 ? (<IconButton onClick={ this.props.resetSearchParameters } classes={ { root: cx(styles['resetButton']) } }>
             <CloseIcon/>
           </IconButton>) : null
         }

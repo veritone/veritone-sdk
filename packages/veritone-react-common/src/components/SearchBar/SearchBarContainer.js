@@ -577,7 +577,7 @@ class SearchBarContainer extends React.Component {
               subheader={ openModal.subtitle }
               style={ { marginTop: 0, marginRight: 0 } }
             />
-            <CardContent style={{ margin: "0.5em" }}>
+            <CardContent style={{ margin: "0.5em", paddingTop: "0", paddingBottom: "0" }}>
               { Modal ? (
                 <Modal
                   // the guid generation in the key is on purpose.
