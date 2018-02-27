@@ -38,6 +38,15 @@
   background-color: #f8f8f8 !important;
 }
 
+.selectedPill {
+  background-color: $dark-black;
+}
+
+.selectedPillLabel {
+  padding-left: 0;
+  color: white;
+}
+
 .engineCategoryPill {
   width: 1.5em;
   height: 1.5em;

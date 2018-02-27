@@ -41,7 +41,7 @@ const JoiningOperator = ( {operator, onClick} ) => {
   );
 }
 
-const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, enabledEngineCategories, openPill, removePill, addPill, lastJoin, libraries, openMenu}) => {
+const SearchParameters = withTheme()(({theme, searchParameters, level, togglePill, highlightedPills, selectedPill, enabledEngineCategories, openPill, removePill, addPill, lastJoin, libraries, openMenu}) => {
   let output = [];
 
   // need to do a pass over the search parameters to build a tree so we can render groups cleanly
@@ -98,6 +98,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
             level={level+1}
             enabledEngineCategories={enabledEngineCategories}
             highlightedPills={ highlightedPills }
+            selectedPill={ selectedPill }
             togglePill={ togglePill }
             addPill={ addPill }
             openPill={ openPill }
@@ -122,13 +123,13 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
           openMenu(e.currentTarget, searchParameter);
         }
       }
-
       output.push(
         <SearchPill
           key={searchParameter.id}
           engineIconClass={searchParameterEngine.iconClass}
           onClick={ onClick }
           highlighted={ highlightedPills.indexOf(searchParameter.id) !== -1 }
+          selected={ selectedPill ? searchParameter.id === selectedPill.id : false }
           label={abbreviation}
           remove={remove}
         />
@@ -196,6 +197,7 @@ class SearchBar extends React.Component {
           openPill={ this.props.openPill }
           removePill={ this.props.removePill }
           libraries={ this.props.libraries }
+          selectedPill={ this.props.selectedPill }
           color={ this.props.color}
           openMenu={ this.props.openMenu }
           /> }
