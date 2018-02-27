@@ -567,7 +567,8 @@ class SearchBarContainer extends React.Component {
                     <EngineCategoryButton
                       key={engineCategory.id}
                       engineCategory={engineCategory}
-                      color={this.props.color}
+                      backgroundColor={ engineCategory.id === this.state.openModal.modalId ? this.props.color : undefined }
+                      color={ engineCategory.id === this.state.openModal.modalId ? '#ffffff' : undefined }
                       addPill={ this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }}) : this.props.addPill }
                     />
                   ))}

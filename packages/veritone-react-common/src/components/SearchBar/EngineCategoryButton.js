@@ -7,9 +7,10 @@ import Icon from './Icon';
 
 import styles from './styles.scss';
 
+
 import cx from 'classnames';
 
-const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
+const EngineCategoryButton = ({ engineCategory, addPill, backgroundColor, color }) => {
   const engineCategoryIconClasses = cx(styles['engineCategoryPill']);
   const tooltipClasses = cx(styles['searchPillTooltip']);
 
@@ -22,7 +23,7 @@ const EngineCategoryButton = ({ engineCategory, addPill, color }) => {
       key={engineCategory.id}
       className={cx(tooltipClasses)}
     >
-      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill}>
+      <div className={cx(engineCategoryIconClasses)} onClick={onAddPill} style={ { backgroundColor: backgroundColor } }>
         <Icon iconClass={engineCategory.iconClass} color={color} />
       </div>
     </Tooltip>

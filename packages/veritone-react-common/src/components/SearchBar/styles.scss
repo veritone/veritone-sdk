@@ -40,12 +40,14 @@
 
 .engineCategoryPill {
   width: 1.5em;
-  height: 100%;
+  height: 1.5em;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   cursor: pointer;
+  color: $light-black;
+  border-radius: 4px;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
