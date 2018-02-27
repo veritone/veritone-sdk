@@ -54,7 +54,7 @@ class GeolocationModal extends React.Component {
   getFilterValue = () => {
     const mostRecent = (a, b) => a._createdTime > b._createdTime  ? a._createdTime : b._createdTime;
     let lastCreated = Object.values(this.state.renderedMap._layers).filter( x => x._type === 'geolocationModal' );
-  
+
     if(lastCreated && lastCreated.length > 0) {
       let lastCreatedValue = lastCreated.reduce( mostRecent );
       let filterValue = { latitude: lastCreatedValue._latlng.lat , longitude: lastCreatedValue._latlng.lng, distance: lastCreatedValue._mRadius, units: 'm'}
@@ -79,7 +79,7 @@ class GeolocationModal extends React.Component {
       if(element) {
         // default map position
         const position = [33.616, -117.928];
-        let map = new Map(element).setView(position, 14);
+        let map = new Map(element, { attributionControl: false } ).setView(position, 14);
 
         if(this.props.modalState) {
           position[0] = this.props.modalState.latitude,
@@ -160,7 +160,7 @@ class GeolocationModal extends React.Component {
     return (
       <div>
         <style dangerouslySetInnerHTML={ {__html: controlStyles + leafletStyles + leafletdrawStyles } } />
-        <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", height: "60vh"}}>
+        <div ref={input => { this.element = input; this.renderMap(this.element) }} style={{width: "100%", minHeight: "50vh"}}>
 
         </div>
       </div>
