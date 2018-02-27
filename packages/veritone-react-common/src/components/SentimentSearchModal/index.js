@@ -102,6 +102,7 @@ const SentimentConditionGenerator = modalState => {
 const SentimentDisplay = modalState => {
   return {
     abbreviation: modalState.search === 'positive' ? 'Positive' : 'Negative',
+    exclude: false,
     thumbnail: null
   };
 };

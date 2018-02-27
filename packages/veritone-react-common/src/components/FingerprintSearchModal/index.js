@@ -222,7 +222,7 @@ const FingerprintConditionGenerator = modalState => {
 
 const FingerprintDisplay = modalState => {
   return {
-    abbreviation: modalState.label.substring(0, 10),
+    abbreviation: modalState && modalState.label && modalState.label.length > 10 ? modalState.label.substring(0, 10) + '...' : modalState.label,
     thumbnail: modalState.image
   };
 };

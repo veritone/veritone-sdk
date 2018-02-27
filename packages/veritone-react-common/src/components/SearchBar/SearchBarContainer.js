@@ -525,6 +525,7 @@ class SearchBarContainer extends React.Component {
             togglePill={ this.togglePill }
             libraries={ this.props.libraries }
             addPill={this.addPill}
+            selectedPill={selectedPill}
             removePill={this.getRemovePill(this.props.searchParameters)}
             openPill={this.openPill}
             modifyPill={ this.props.addOrModifySearchParameter }
