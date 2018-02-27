@@ -66,7 +66,7 @@ export default class FaceSearchModal extends React.Component {
   };
 
   state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
-  
+
   componentWillMount() {
     if(this.props.modalState.label) {
       const selectedItem = {
@@ -105,7 +105,6 @@ export default class FaceSearchModal extends React.Component {
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
-          queryString: debouncedQueryString,
           queryResults: response,
           showAutocomplete: true
         });
@@ -113,7 +112,6 @@ export default class FaceSearchModal extends React.Component {
       }).catch(err => {
         this.setState({
           error: true,
-          queryString: debouncedQueryString,
           queryResults: [],
           showAutocomplete: true
         });
@@ -121,7 +119,6 @@ export default class FaceSearchModal extends React.Component {
       });
     } else {
       this.setState({
-        queryString: '',
         queryResults: [],
         showAutocomplete: true
       });

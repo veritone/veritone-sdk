@@ -120,7 +120,6 @@ export default class LogoSearchModal extends React.Component {
         )
         .then(response => {
           this.setState({
-            queryString: debouncedQueryString,
             queryResults: response,
             showAutocomplete: true
           });
@@ -129,7 +128,6 @@ export default class LogoSearchModal extends React.Component {
         .catch(err => {
           this.setState({
             error: true,
-            queryString: debouncedQueryString,
             queryResults: [],
             showAutocomplete: true
           });
@@ -137,7 +135,6 @@ export default class LogoSearchModal extends React.Component {
         });
     } else {
       this.setState({
-        queryString: '',
         queryResults: [],
         showAutocomplete: true
       });

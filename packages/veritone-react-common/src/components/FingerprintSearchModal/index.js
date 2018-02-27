@@ -105,7 +105,6 @@ export default class FingerprintSearchModal extends React.Component {
     if (debouncedQueryString) {
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
-          queryString: debouncedQueryString,
           queryResults: response,
           showAutocomplete: true
         });
@@ -113,7 +112,6 @@ export default class FingerprintSearchModal extends React.Component {
       }).catch(err => {
         this.setState({
           error: true,
-          queryString: debouncedQueryString,
           queryResults: [],
           showAutocomplete: true
         });
@@ -121,7 +119,6 @@ export default class FingerprintSearchModal extends React.Component {
       });
     } else {
       this.setState({
-        queryString: '',
         queryResults: [],
         showAutocomplete: true
       });
