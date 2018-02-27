@@ -12,6 +12,8 @@
     "react-redux-saga": "^1.0.2",
     "redux": "^3.7.2",
     "redux-saga": "^0.15.6",
+    "redux-thunk": "^2.2.0",
+    "sass-loader": "^6.0.6",
     "veritone-react-common": "^2.1.0",
     "veritone-redux-common": "^2.1.0"
   },

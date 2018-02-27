@@ -4,7 +4,8 @@ const { auth: { authRootSaga } } = modules;
 
 import appRootSaga from './modules/veritoneApp/saga';
 import filePickerRootSaga from './modules/filePicker/filePickerSaga';
+import engineSelectionRootSaga from './modules/engineSelection/saga';
 
 export default function* root() {
-  yield all([fork(authRootSaga), fork(filePickerRootSaga), fork(appRootSaga)]);
+  yield all([fork(authRootSaga), fork(filePickerRootSaga), fork(appRootSaga), fork(engineSelectionRootSaga)]);
 }
