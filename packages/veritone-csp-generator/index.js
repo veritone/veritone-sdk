@@ -374,7 +374,8 @@ const engineCategoryMetadataMapping = {
   '088a31be-9bd6-4628-a6f0-e4004e362ea0': 'object-recognition',
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': 'fingerprint',
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': 'logo-recognition',
-  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation'
+  'tag-search-id': 'tags',
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation',
 }
 
 const searchQueryGenerator = csp => {
