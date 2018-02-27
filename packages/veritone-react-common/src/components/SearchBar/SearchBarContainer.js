@@ -499,6 +499,9 @@ class SearchBarContainer extends React.Component {
       highlightedPills: []
     } );
     this.props.resetSearchParameters();
+    if(this.props.onSearch) {
+      this.props.onSearch([]);
+    }
   }
 
   render() {
