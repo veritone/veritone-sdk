@@ -19,5 +19,6 @@ export RaisedTextField from './components/RaisedTextField';
 export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
+export StarRating from './components/StarRating';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
