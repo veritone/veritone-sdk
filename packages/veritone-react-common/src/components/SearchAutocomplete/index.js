@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Button, Chip, ListItemSecondaryAction, Paper, TextField, ListItem, ListItemText, MenuItem } from 'material-ui';
+import { Avatar, Button, Chip, Paper, TextField } from 'material-ui';
 import Downshift from 'downshift';
 import { isArray } from 'lodash';
 import Rx from 'rxjs/Rx';
@@ -8,6 +8,7 @@ import { bool, func, string, shape, arrayOf } from 'prop-types';
 import styles from './styles.scss';
 
 import Typography from 'material-ui/Typography';
+import List, { ListItem, ListItemText } from 'material-ui/List';
 
 const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
 const autocompletePillClass = cx(styles['autocompletePill']);
@@ -143,18 +144,21 @@ const SearchAutocompleteDownshift = ({
           />
           { isOpen ?
             <Paper square>
+              <List>
               {
                 results && results.reduce((result, section, sectionIndex) => {
                   result.sections.push(
                     <div key={ 'section_' + sectionIndex }>
-                      <MenuItem><Typography color="textSecondary">{ section.header }</Typography></MenuItem>
+                      <ListItem>
+                        <ListItemText primary={section.header}/>
+                      </ListItem>
                       <div>
                         {
                           section.items && section.items.length
                           ? section.items.slice(0, RESULT_COUNT_PER_CATEGORY).map((item, index) => {
                               const indexAcc = result.itemIndex++;
                               return (
-                                <MenuItem
+                                <ListItem button
                                   key={ 'item' + indexAcc }
                                   component="div"
                                   {...getItemProps({
@@ -167,12 +171,11 @@ const SearchAutocompleteDownshift = ({
                                     ? <Avatar src={ item.image } />
                                     : null
                                   }
-                                  <Typography style={{ paddingLeft: "1em" }}>{ item.label }</Typography>
-                                  <Typography style={{ paddingLeft: "1em" }} color="textSecondary">{ item.description }</Typography>
-                                </MenuItem>
+                                  <ListItemText style={{ paddingLeft: "1em" }} primary={item.label} secondary={item.description}/>
+                                </ListItem>
                               )
                             })
-                          : <MenuItem><Typography style={{ paddingLeft: "1em" }}>No Results</Typography></MenuItem>
+                          : <ListItem><Typography style={{ paddingLeft: "1em" }}>No Results</Typography></ListItem>
                         }
                       </div>
                     </div>
@@ -180,6 +183,7 @@ const SearchAutocompleteDownshift = ({
                   return result;
                 }, { sections: [], itemIndex: 0 } ).sections
               }
+              </List>
             </Paper>
             : null
           }

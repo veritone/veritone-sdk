@@ -26,16 +26,21 @@ export default function attachAutocomplete(url, config) {
             let normalizedResult = {
               id: result.key,
               type: searchType,
-              label: result.key,
-              description: result.key
+              label: result.key
             };
             if (result.doc) {
               if (searchType === 'library') {
                 normalizedResult.id = result.doc.libraryId;
                 normalizedResult.image = result.doc.libraryCoverImageUrl;
+                if(result.doc_count === 1) {
+                  normalizedResult.description = `${result.doc_count} Item`;
+                } else if (result.doc_count > 1) {
+                  normalizedResult.description = `${result.doc_count} Items`;
+                }
               } else if (searchType === 'entity') {
                 normalizedResult.id = result.doc.entityId;
                 normalizedResult.image = result.doc.profileImageUrl;
+                normalizedResult.description = result.doc.libraryName;
               }
             }
             return normalizedResult;
@@ -109,7 +114,7 @@ export default function attachAutocomplete(url, config) {
       autcompleteFunctions.push(generateFetch('Entities', 'entity'));
     }
     if (isArray(config.customFields)) {
-      autcompleteFunctions.push(generateFetch('Library Results', 'custom'));
+      autcompleteFunctions.push(generateFetch('Results', 'custom'));
     }
     let defaultProps = { ...target.defaultProps };
     defaultProps.fetchAutocomplete = (queryString, token, api, libraries) => Promise.all(autcompleteFunctions.map(func => func(queryString, token, api, libraries)));
