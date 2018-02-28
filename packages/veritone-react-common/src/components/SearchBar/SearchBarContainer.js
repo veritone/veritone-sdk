@@ -15,6 +15,7 @@ import { guid } from './component';
 import Card, { CardHeader, CardMedia, CardContent, CardActions } from 'material-ui/Card';
 import Button from 'material-ui/Button';
 import Collapse from 'material-ui/transitions/Collapse';
+import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
 import IconButton from 'material-ui/IconButton';
 import Typography from 'material-ui/Typography';
@@ -290,6 +291,9 @@ class SearchBarContainer extends React.Component {
           onClick: () => {this.menuChangeOperator(searchParameter, 'or')}
         },
         {
+          divider: true
+        },
+        {
           label: 'Insert Search Term to Left',
           onClick: () => {this.menuInsertDirection('left')}
         },
@@ -320,6 +324,9 @@ class SearchBarContainer extends React.Component {
           {
             label: 'Delete',
             onClick: this.menuRemovePill
+          },
+          {
+            divider: true
           },
           {
             label: 'Insert Search Term to Left',
@@ -541,11 +548,14 @@ class SearchBarContainer extends React.Component {
             disableRestoreFocus
           >
             {
-              this.state.menuOptions && this.state.menuOptions.map(menuOption => (
+              this.state.menuOptions && this.state.menuOptions.map(menuOption =>
+                menuOption.divider ? <Divider /> :
+                (
                 <MenuItem onClick={menuOption.onClick}>
                   {menuOption.label}
                 </MenuItem>
-              ))
+                )
+              )
             }
           </Menu>
         { Modal ? (
