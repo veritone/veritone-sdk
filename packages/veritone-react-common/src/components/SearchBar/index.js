@@ -18,6 +18,12 @@ import Typography from 'material-ui/Typography';
 import { MenuItem } from 'material-ui/Menu';
 import { withTheme } from 'material-ui/styles';
 
+import {Observable} from "rxjs/Observable";
+import { interval } from 'rxjs/observable/interval';
+import "rxjs/add/operator/take";
+import "rxjs/add/operator/takeUntil";
+import { fromEvent } from 'rxjs/observable/fromEvent';
+
 const containerClasses = cx(styles['searchBar']);
 
 const searchInputContainerClass = cx(styles['searchInput']);
@@ -159,32 +165,86 @@ const SearchBar = ({
 
 class SearchBar extends React.Component {
 
+  state = {
+    showScrollBar: false,
+    showScrollLeft: false,
+    showScrollRight: false
+  }
+
   addTranscript = () => {
     this.props.addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
   }
 
-  scrollLeft = () => {
-    if(this.scrollContainer && this.scrollContainer.scrollLeft > 0) {
-      this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft - 20;
+  componentDidUpdate(prevProps, prevState) {
+    if( this.hashSearchParameters( prevProps.searchParameters ) !== this.hashSearchParameters(this.props.searchParameters)) {
+      const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth && this.props.searchParameters.length > 0 : false;
+      if (prevState && prevState.showScrollBar !== showScrollBar) {
+        this.updateScrollState();
+      }
     }
   }
 
-  scrollRight = () => {
-    if(this.scrollContainer && this.scrollContainer.scrollLeft < (this.scrollContainer.scrollWidth - this.scrollContainer.offsetWidth)) {
-      this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft + 20;
+  shouldScrollRight() {
+    return (this.scrollContainer.offsetWidth + Math.ceil(this.scrollContainer.scrollLeft )) < this.scrollContainer.scrollWidth;
+  }
+
+  shouldScrollLeft() {
+    return this.scrollContainer.scrollLeft > 0;
+  }
+
+  updateScrollState() {
+    const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth && this.props.searchParameters.length > 0 : false;
+    this.setState( {showScrollBar: showScrollBar, showScrollLeft: this.shouldScrollLeft(), showScrollRight: this.shouldScrollRight() });
+  }
+
+  scrollLeft = (step) => {
+    if(this.scrollContainer && this.shouldScrollLeft()) {
+      let amount = step && step > 5 ? 5 : step
+      this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft - (amount * 10);
+      if(this.shouldScrollLeft() !== this.state.showScrollLeft) {
+        this.updateScrollState();
+      }
     }
+  }
+
+  scrollRight = (step) => {
+    if(this.scrollContainer && this.shouldScrollRight()) {
+      let amount = step && step > 5 ? 5 : step
+      this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft + (amount * 10);
+      if(this.shouldScrollRight() !== this.state.showScrollRight) {
+        this.updateScrollState();
+      }
+    }
+  }
+
+  mouseDown = (direction) => {
+    return (e) => {
+      this.stop$ = fromEvent(e.target, 'mouseup');
+      interval(50).takeUntil(this.stop$).subscribe( x => {
+        if(direction === 'left') {
+          this.scrollLeft(x);
+        } else {
+          this.scrollRight(x);
+        }
+      });
+      this.stop$.take(1).subscribe();
+    }
+  }
+
+  hashSearchParameters = (searchParameters) => {
+    const hash = searchParameters.reduce( (x, y) => (x + y.id), "");
+    return hash;
   }
 
   render() {
-    const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth : false;
-    if (showScrollBar) {
-    }
     return (
       <div className={containerClasses}>
-        { showScrollBar ? (
-          <IconButton onClick={ this.scrollLeft } classes={ { root: cx(styles['resetButton']) } }>
+        { this.state.showScrollBar ? (
+          <span onMouseDown={ this.mouseDown('left') }>
+          <IconButton classes={ { root: cx(styles['resetButton']) } }>
             <KeyboardArrowLeft/>
           </IconButton>
+          </span>
         ) : null }
         <div className={searchInputContainerClass} ref={ (input) => { this.scrollContainer = input; } }>
           { <SearchParameters
@@ -204,10 +264,12 @@ class SearchBar extends React.Component {
           /> }
           {<GhostInput key="input_cursor" onFocus={ this.addTranscript } showGhost={ !this.props.searchParameters || this.props.searchParameters.length === 0 } />}
         </div>
-        { showScrollBar ? (
-          <IconButton onClick={ this.scrollRight } classes={ { root: cx(styles['resetButton']) } }>
+        { this.state.showScrollBar ? (
+          <span onMouseDown={ this.mouseDown('right') }>
+          <IconButton classes={ { root: cx(styles['resetButton']) } }>
             <KeyboardArrowRight/>
           </IconButton>
+          </span>
         ) : null
         }
         {
