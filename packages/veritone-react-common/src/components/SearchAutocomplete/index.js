@@ -50,7 +50,7 @@ class SearchAutocompleteContainer extends React.Component {
     this.subscription = this.debouncedOnChange$
       .debounceTime(500)
       .distinctUntilChanged()
-      .switchMap( debouncedText => this.props.onChange(debouncedText) )
+      .switchMap( debouncedText => { this.props.onChange(debouncedText) } )
       .subscribe();
   }
 
@@ -60,20 +60,9 @@ class SearchAutocompleteContainer extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.componentState.queryString !== this.props.componentState.queryString) {
-      this.setState({
-        queryString: nextProps.componentState.queryString
-      });
-    }
-  }
-
   debouncedOnChange = event => {
     let text = event.target.value;
     this.debouncedOnChange$.next(text);
-    this.setState({ 
-      queryString: text 
-    });
   };
 
   onEnter = event => {
@@ -92,7 +81,7 @@ class SearchAutocompleteContainer extends React.Component {
             defaultIsOpen={ this.props.defaultIsOpen }
             cancel={ this.props.cancel }
             debouncedOnChange={ this.debouncedOnChange }
-            onKeyPress={ this.onEnter }            
+            onKeyPress={ this.onEnter }
             queryString={ this.state.queryString }
             results={ this.props.componentState.queryResults }
             selectResult={ this.props.selectResult }
