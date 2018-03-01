@@ -102,6 +102,19 @@ class SearchBarContainer extends React.Component {
     }
   }
 
+  getToggleGroupLabel = () => {
+    let first = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]);
+    let last = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
+    const before = this.props.searchParameters[first - 1];
+    const after = this.props.searchParameters[last + 1];
+    if( before && before.conditionType === 'group' && before.value === '('
+    && after && after.conditionType === 'group' && after.value === ')') {
+      return 'Ungroup Selection';
+    } else {
+      return 'Group Selection';
+    }
+  }
+
   addPill = modalId => {
     this.setState({
       openModal: { modalId: modalId },
@@ -307,7 +320,7 @@ class SearchBarContainer extends React.Component {
       if(showGroupOptions) {
         menuOptions = [
           {
-            label: 'Group Selection',
+            label: this.getToggleGroupLabel(),
             onClick: this.menuGroupSelection
           },
           {
