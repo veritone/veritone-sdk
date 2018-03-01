@@ -7,6 +7,12 @@ import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import styles from './styles.scss';
 
+import {Observable} from "rxjs/Observable";
+import "rxjs/add/operator/take";
+import "rxjs/add/operator/takeUntil";
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+
 import Typography from 'material-ui/Typography';
 
 const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
@@ -18,7 +24,6 @@ const deleteIconClass = cx(styles['deleteIcon']);
 class SearchAutocompleteContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.debouncedOnChange$ = new Rx.Subject();
   }
 
   static propTypes = {
@@ -46,24 +51,17 @@ class SearchAutocompleteContainer extends React.Component {
 
   state = JSON.parse(JSON.stringify(this.props.componentState));
 
-  componentDidMount() {
-    this.subscription = this.debouncedOnChange$
-      .debounceTime(500)
-      .distinctUntilChanged()
-      .switchMap( debouncedText => { this.props.onChange(debouncedText) } )
-      .subscribe();
-  }
+  debouncedOnChange = e => {
+    this.stop$ = Rx.Observable.fromEvent(e.target, 'focusout');
+    this.stop$.take(1).subscribe();
 
-  componentWillUnmount() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-
-  debouncedOnChange = event => {
-    let text = event.target.value;
-    this.debouncedOnChange$.next(text);
+    Rx.Observable.fromEvent(e.target, 'keyup').map( x => x.target.value).distinctUntilChanged().debounceTime(500).last( debouncedText => this.props.onChange(debouncedText) )
+    .takeUntil(this.stop$).subscribe();
   };
+
+  onKeyDown = e => {
+    this.setState({queryString: e.target.value});
+  }
 
   onEnter = event => {
     if (event.key === 'Enter') {
@@ -82,6 +80,7 @@ class SearchAutocompleteContainer extends React.Component {
             cancel={ this.props.cancel }
             debouncedOnChange={ this.debouncedOnChange }
             onKeyPress={ this.onEnter }
+            onChange={ this.onKeyDown }
             queryString={ this.state.queryString }
             results={ this.props.componentState.queryResults }
             selectResult={ this.props.selectResult }
@@ -96,6 +95,7 @@ const SearchAutocompleteDownshift = ({
   defaultIsOpen,
   cancel,
   debouncedOnChange,
+  onChange,
   onKeyPress,
   inputValue,
   queryString,
@@ -104,7 +104,7 @@ const SearchAutocompleteDownshift = ({
 }) => {
   const RESULT_COUNT_PER_CATEGORY = 10;
   const itemToString = (item) => item && item.label;
-  const onFocus = (event) => event.target.select();
+  const onFocus = (event) => { debouncedOnChange(event); event.target.select() };
   return (
     <Downshift
       itemToString={ itemToString }
@@ -126,7 +126,7 @@ const SearchAutocompleteDownshift = ({
               autoFocus: true,
               fullWidth: true,
               onFocus: onFocus,
-              onChange: debouncedOnChange,
+              onChange: onChange,
               onKeyPress: onKeyPress
             })}
           />
