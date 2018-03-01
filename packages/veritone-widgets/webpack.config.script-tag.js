@@ -22,6 +22,7 @@ module.exports = {
   output: {
     library: '[name]',
     libraryTarget: 'umd',
+    libraryExport: 'default', // root export is widget's "export default"
     filename: '[name]-bundle-script.js',
     path: path.resolve(__dirname, 'dist')
   },
@@ -32,7 +33,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         include: path.resolve('./src'),
-        loapder: 'babel-loader'
+        loader: 'babel-loader'
       }
     ]
   }
