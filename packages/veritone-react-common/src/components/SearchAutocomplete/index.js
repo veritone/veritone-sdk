@@ -151,9 +151,14 @@ const SearchAutocompleteDownshift = ({
               onKeyPress: onKeyPress
             })}
           />
-          { isOpen ?
-            <Paper square>
-              <List>
+          { isOpen && results && results.length ?
+            <Paper square
+              style={{
+                maxHeight: '400px', 
+                overflow: 'auto',
+              }}
+            >
+              <List dense={true}>
               {
                 results && results.reduce((result, section, sectionIndex) => {
                   result.sections.push(
