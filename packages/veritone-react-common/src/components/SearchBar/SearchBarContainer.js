@@ -543,8 +543,8 @@ class SearchBarContainer extends React.Component {
             open={Boolean(this.state.menuAnchorEl)}
             onClose={this.handleMenuClose}
             anchorEl={this.state.menuAnchorEl}
-            // anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
-            style={ {top: "1.25em" } }
+            anchorOrigin={ { vertical: 'bottom' } }
+            getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
             disableRestoreFocus
           >
             {
