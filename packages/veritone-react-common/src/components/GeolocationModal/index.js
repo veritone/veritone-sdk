@@ -44,13 +44,6 @@ class GeolocationModal extends React.Component {
     });
   };
 
-  onEnter = event => {
-    if (event.key === 'Enter') {
-      this.applyFilterIfValue();
-    }
-  };
-
-
   getFilterValue = () => {
     const mostRecent = (a, b) => a._createdTime > b._createdTime  ? a._createdTime : b._createdTime;
     let lastCreated = Object.values(this.state.renderedMap._layers).filter( x => x._type === 'geolocationModal' );
@@ -70,7 +63,7 @@ class GeolocationModal extends React.Component {
   };
 
   returnValue() {
-    console.log( this.getFilterValue() );
+    // console.log( this.getFilterValue() );
     return this.getFilterValue();
   };
 

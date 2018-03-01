@@ -76,12 +76,6 @@ export default class TimeSearchModal extends React.Component {
     });
   };
 
-  onEnter = event => {
-    if (event.key === 'Enter') {
-      this.applyFilterIfValue();
-    }
-  };
-
   applyFilterIfValue = () => {
     if (
       !this.state.filterValue ||

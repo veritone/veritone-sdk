@@ -35,12 +35,6 @@ export default class RecognizedTextSearchModal extends React.Component {
     });
   };
 
-  onEnter = event => {
-    if (event.key === 'Enter') {
-      this.applyFilterIfValue();
-    }
-  };
-
   applyFilterIfValue = () => {
     if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
       this.props.applyFilter();
@@ -66,7 +60,6 @@ export default class RecognizedTextSearchModal extends React.Component {
         defaultValue={ this.props.modalState.search }
         onSubmit={ this.applyFilterIfValue }
         onChange={ this.onChange }
-        onKeyPress={ this.onEnter }
         inputValue={ this.state.filterValue }
       />
     );
