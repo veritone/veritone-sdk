@@ -616,7 +616,7 @@ class SearchBarContainer extends React.Component {
             </CardContent>
             <CardActions classes={ { root: cx(styles['modalFooterActions']) } } style={ { padding: "1em" }}>
               <Button onClick={ this.cancelModal } color="primary" className={ cx(styles['cancelButton']) }>
-                Cancel
+                Close
               </Button>
               <Button
                 onClick={ this.addOrEditModal }
