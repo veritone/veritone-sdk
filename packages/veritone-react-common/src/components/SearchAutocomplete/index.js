@@ -41,6 +41,7 @@ class SearchAutocompleteContainer extends React.Component {
         })
       )
     }),
+    onClickAutocomplete: func,
     onChange: func,
     cancel: func
   };
@@ -72,8 +73,8 @@ class SearchAutocompleteContainer extends React.Component {
   debouncedOnChange = event => {
     let text = event.target.value;
     this.debouncedOnChange$.next(text);
-    this.setState({ 
-      queryString: text 
+    this.setState({
+      queryString: text
     });
   };
 
@@ -93,10 +94,11 @@ class SearchAutocompleteContainer extends React.Component {
             defaultIsOpen={ this.props.defaultIsOpen }
             cancel={ this.props.cancel }
             debouncedOnChange={ this.debouncedOnChange }
-            onKeyPress={ this.onEnter }            
+            onKeyPress={ this.onEnter }
             queryString={ this.state.queryString }
             results={ this.props.componentState.queryResults }
             selectResult={ this.props.selectResult }
+            onClickAutocomplete={ this.props.onClickAutocomplete }
           />
         </div>
       </div>
@@ -112,11 +114,19 @@ const SearchAutocompleteDownshift = ({
   inputValue,
   queryString,
   results,
-  selectResult
+  selectResult,
+  onClickAutocomplete
 }) => {
   const RESULT_COUNT_PER_CATEGORY = 10;
   const itemToString = (item) => item && item.label;
   const onFocus = (event) => event.target.select();
+
+  const onClick = event => {
+    console.log('onClick');
+    if(!defaultIsOpen && onClickAutocomplete) {
+      onClickAutocomplete();
+    }
+  }
   return (
     <Downshift
       itemToString={ itemToString }
@@ -138,6 +148,7 @@ const SearchAutocompleteDownshift = ({
               autoFocus: true,
               fullWidth: true,
               onFocus: onFocus,
+              onClick: onClick,
               onChange: debouncedOnChange,
               onKeyPress: onKeyPress
             })}

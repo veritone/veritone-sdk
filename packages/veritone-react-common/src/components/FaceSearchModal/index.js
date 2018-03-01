@@ -76,26 +76,8 @@ export default class FaceSearchModal extends React.Component {
         label: this.props.modalState.label,
         type: this.props.modalState.type,
       };
-      const rehydrateItems = [
-        {
-          ...selectedItem
-        }
-      ];
       this.setState({
-        queryResults: [
-          {
-            header: "Libraries",
-            items: this.props.modalState.type === 'library' ? rehydrateItems : []
-          },
-          {
-            header: "Entities",
-            items: this.props.modalState.type === 'entity' ? rehydrateItems : []
-          }
-        ],
-        showAutocomplete: true,
-        selectedResult: {
-          ...selectedItem
-        }
+        selectedResult: selectedItem
       })
     }
   }
@@ -129,12 +111,16 @@ export default class FaceSearchModal extends React.Component {
     }
   };
 
+  onClickAutocomplete = event => {
+    this.onChange(this.state.queryString);
+  };
+
   selectResult = result => {
-    console.log('Selected ', result);
     if (result) {
       this.setState({
         selectedResult: result,
-        queryString: result.label
+        queryString: result.label,
+        showAutocomplete: false
       });
     }
   };
@@ -165,12 +151,13 @@ export default class FaceSearchModal extends React.Component {
         selectResult={ this.selectResult }
         showAutocomplete={ this.state.showAutocomplete }
         toggleExclude={ this.toggleExclude }
+        onClickAutocomplete={ this.onClickAutocomplete }
       />
     );
   }
 }
 
-export const FaceSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude } ) => {
+export const FaceSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete } ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -182,6 +169,7 @@ export const FaceSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress
           defaultIsOpen={showAutocomplete}
           componentState={ modalState }
           selectResult={ selectResult }
+          onClickAutocomplete={onClickAutocomplete}
         />
       </Grid>
       <Grid item>
