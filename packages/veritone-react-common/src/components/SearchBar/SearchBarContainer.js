@@ -511,6 +511,12 @@ class SearchBarContainer extends React.Component {
     }
   }
 
+  onEnter = (event) => {
+    if (event.key === 'Enter') {
+      this.addOrEditModal();
+    }
+  }
+
   render() {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
@@ -567,6 +573,7 @@ class SearchBarContainer extends React.Component {
           elevation={2}
           open
           onClose={this.cancelModal}
+          onKeyPress={this.onEnter}
         >
           <Card className={ cx(styles['engineCategoryModal']) } style={{ width: this.searchBar.clientWidth }} elevation={0}>
             <CardHeader
