@@ -525,7 +525,7 @@ class SearchBarContainer extends React.Component {
   }
 
   onEnter = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && event.repeat === false) {
       this.addOrEditModal();
     }
   }
