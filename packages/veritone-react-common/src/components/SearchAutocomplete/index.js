@@ -73,6 +73,17 @@ class SearchAutocompleteContainer extends React.Component {
     }
   };
 
+  selectResult = (result) => {
+    if(this.props.selectResult) {
+      this.props.selectResult(result);
+    }
+    if(result && result.label) {
+      this.setState({
+        queryString: result.label
+      })
+    }
+  }
+
   render() {
     return (
       <div>
@@ -85,7 +96,7 @@ class SearchAutocompleteContainer extends React.Component {
             onChange={ this.onKeyDown }
             queryString={ this.state.queryString }
             results={ this.props.componentState.queryResults }
-            selectResult={ this.props.selectResult }
+            selectResult={ this.selectResult }
             onClickAutocomplete={ this.props.onClickAutocomplete }
           />
         </div>
