@@ -32,7 +32,6 @@ const fingerprintConfig = {
 export default class FingerprintSearchModal extends React.Component {
   static defaultProps = {
     modalState: { queryResults: [], queryString: '', exclude: false },
-    applyFilter: value => console.log('Search fingerprints by entityId', value),
     cancel: () => console.log('You clicked cancel')
   };
 
@@ -62,7 +61,6 @@ export default class FingerprintSearchModal extends React.Component {
       exclude: bool
     }),
     fetchAutocomplete: func,
-    applyFilter: func,
     cancel: func
   };
 
@@ -77,27 +75,9 @@ export default class FingerprintSearchModal extends React.Component {
         label: this.props.modalState.label,
         type: this.props.modalState.type,
       };
-      const rehydrateItems = [
-        {
-          ...selectedItem
-        }
-      ];
       this.setState({
-        queryResults: [
-          {
-            header: "Libraries",
-            items: this.props.modalState.type === 'library' ? rehydrateItems : []
-          },
-          {
-            header: "Entities",
-            items: this.props.modalState.type === 'entity' ? rehydrateItems : []
-          }
-        ],
-        showAutocomplete: true,
-        selectedResult: {
-          ...selectedItem
-        }
-      })
+        selectedResult: selectedItem
+      });
     }
   }
 
@@ -126,39 +106,28 @@ export default class FingerprintSearchModal extends React.Component {
     }
   };
 
+  onClickAutocomplete = event => {
+    this.onChange(this.state.queryString);
+  };
+
   selectResult = result => {
-    console.log('Selected ', result);
     if (result) {
       this.setState({
         selectedResult: result,
-        queryString: result.label
+        queryString: result.label,
+        showAutocomplete: false
       });
     }
   };
 
-  applyFilterIfValue = () => {
-    if (isArray(this.state.queryResults) && this.state.queryResults.length) {
-      let firstSection = this.state.queryResults[0];
-      if (isArray(firstSection.items) && firstSection.items.length) {
-        let filterToApply = firstSection.items[0];
-        this.props.applyFilter(filterToApply);
-        //this.props.cancel();
-      }
-    }
-  };
-
   returnValue() {
-    if (isArray(this.state.queryResults) && this.state.queryResults.length) {
-      let firstSection = this.state.queryResults[0];
-      if (isArray(firstSection.items) && firstSection.items.length) {
-        let filterToApply = firstSection.items[0];
-        return {
-          exclude: this.state.exclude,
-          ...filterToApply
-        };
-      }
-    } else {
+    if(!this.state.selectedResult) {
       return;
+    } else {
+      return {
+        exclude: this.state.exclude,
+        ...this.state.selectedResult
+      };
     }
   }
 
@@ -172,18 +141,18 @@ export default class FingerprintSearchModal extends React.Component {
     return (
       <FingerprintSearchForm
         cancel={ this.props.cancel }
-        applyFilter={ this.applyFilterIfValue }
         onChange={ this.onChange }
         modalState={ this.state }
         showAutocomplete={ this.state.showAutocomplete }
         selectResult={ this.selectResult }
         toggleExclude={ this.toggleExclude }
+        onClickAutocomplete={ this.onClickAutocomplete }
       />
     );
   }
 }
 
-export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude } ) => {
+export const FingerprintSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete} ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -195,6 +164,7 @@ export const FingerprintSearchForm = ( { showAutocomplete, cancel, applyFilter, 
           defaultIsOpen={showAutocomplete}
           componentState={ modalState }
           selectResult={ selectResult }
+          onClickAutocomplete={onClickAutocomplete}
         />
       </Grid>
       <Grid item>
