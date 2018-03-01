@@ -39,12 +39,12 @@
 }
 
 .selectedPill {
-  background-color: $dark-black;
+  background-color: $dark-black !important;
 }
 
 .selectedPillLabel {
-  padding-left: 0;
-  color: white;
+  padding-left: 0 !important;
+  color: white !important;
 }
 
 .engineCategoryPill {

@@ -19,7 +19,7 @@ const EngineCategoryButton = ({ engineCategory, addPill, backgroundColor, color 
   return (
     <Tooltip
       title={engineCategory.tooltip}
-      placement="left"
+      placement="bottom"
       key={engineCategory.id}
       className={cx(tooltipClasses)}
     >
