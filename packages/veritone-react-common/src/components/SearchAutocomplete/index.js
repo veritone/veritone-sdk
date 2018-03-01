@@ -111,7 +111,6 @@ const SearchAutocompleteDownshift = ({
   debouncedOnChange,
   onChange,
   onKeyPress,
-  inputValue,
   queryString,
   results,
   selectResult,
@@ -121,24 +120,18 @@ const SearchAutocompleteDownshift = ({
   const itemToString = (item) => item && item.label;
   const onFocus = (event) => { debouncedOnChange(event); event.target.select() };
 
-  const onClick = event => {
-    if(!defaultIsOpen && onClickAutocomplete) {
-      onClickAutocomplete();
-    }
-  }
-
   return (
     <Downshift
       itemToString={ itemToString }
       onSelect={ selectResult }
-      isOpen={ defaultIsOpen }
+      defaultIsOpen={ defaultIsOpen }
       render={({
         getInputProps,
         getItemProps,
         selectedItem,
-        inputValue,
         highlightedIndex,
         isOpen,
+        openMenu
       }) => (
         <div>
           <TextField
@@ -149,7 +142,12 @@ const SearchAutocompleteDownshift = ({
               fullWidth: true,
               onFocus: onFocus,
               onChange: onChange,
-              onClick: onClick,
+              onClick: () => {
+                if(onClickAutocomplete) {
+                  onClickAutocomplete();
+                }
+                openMenu();
+              },
               onKeyPress: onKeyPress
             })}
           />
@@ -208,8 +206,7 @@ SearchAutocompleteContainer.defaultProps = {
   componentState: {
     error: false,
     queryString: '',
-    queryResults: [],
-    inputValue: []
+    queryResults: []
   },
   onChange: value => console.log('Autocomplete field changed', value),
   cancel: () => console.log('You clicked cancel')

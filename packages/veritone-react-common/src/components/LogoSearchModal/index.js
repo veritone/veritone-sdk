@@ -85,6 +85,7 @@ export default class LogoSearchModal extends React.Component {
         label: this.props.modalState.label,
         type: this.props.modalState.type,
       };
+      this.onChange(this.props.modalState.label);
       this.setState({
         selectedResult: selectedItem
       });
@@ -93,6 +94,9 @@ export default class LogoSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
+      this.setState({
+        queryResults: []
+      });
       return this.props
         .fetchAutocomplete(
           debouncedQueryString,
@@ -103,22 +107,21 @@ export default class LogoSearchModal extends React.Component {
         .then(response => {
           this.setState({
             queryResults: response,
-            showAutocomplete: true
+            queryString: debouncedQueryString
           });
           return debouncedQueryString;
         })
         .catch(err => {
           this.setState({
             error: true,
-            queryResults: [],
-            showAutocomplete: true
+            queryResults: []
           });
           return debouncedQueryString;
         });
     } else {
       this.setState({
         queryResults: [],
-        showAutocomplete: true
+        queryString: debouncedQueryString
       });
       return new Promise((resolve, reject) =>
         resolve(debouncedQueryString || '')
@@ -134,8 +137,7 @@ export default class LogoSearchModal extends React.Component {
     if (result) {
       this.setState({
         selectedResult: result,
-        queryString: result.label,
-        showAutocomplete: false
+        queryString: result.label
       });
     }
   };
@@ -173,7 +175,6 @@ export default class LogoSearchModal extends React.Component {
 }
 
 export const LogoSearchForm = ({
-  showAutocomplete,
   cancel,
   applyFilter,
   onChange,
@@ -191,7 +192,6 @@ export const LogoSearchForm = ({
           onChange={ onChange }
           onKeyPress={ onKeyPress }
           cancel={ cancel }
-          defaultIsOpen={showAutocomplete}
           componentState={ modalState }
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}

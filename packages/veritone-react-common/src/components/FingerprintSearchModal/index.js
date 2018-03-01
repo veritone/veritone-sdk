@@ -75,6 +75,7 @@ export default class FingerprintSearchModal extends React.Component {
         label: this.props.modalState.label,
         type: this.props.modalState.type,
       };
+      this.onChange(this.props.modalState.label);
       this.setState({
         selectedResult: selectedItem
       });
@@ -83,24 +84,26 @@ export default class FingerprintSearchModal extends React.Component {
 
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
+      this.setState({
+        queryResults: []
+      });
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
           queryResults: response,
-          showAutocomplete: true
+          queryString: debouncedQueryString
         });
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
           error: true,
-          queryResults: [],
-          showAutocomplete: true
+          queryResults: []
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryResults: [],
-        showAutocomplete: true
+        queryString: debouncedQueryString
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -114,8 +117,7 @@ export default class FingerprintSearchModal extends React.Component {
     if (result) {
       this.setState({
         selectedResult: result,
-        queryString: result.label,
-        showAutocomplete: false
+        queryString: result.label
       });
     }
   };
@@ -152,7 +154,7 @@ export default class FingerprintSearchModal extends React.Component {
   }
 }
 
-export const FingerprintSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete} ) => {
+export const FingerprintSearchForm = ( { cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete} ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -161,7 +163,6 @@ export const FingerprintSearchForm = ( { showAutocomplete, cancel, onChange, onK
           onChange={ onChange }
           onKeyPress={ onKeyPress }
           cancel={ cancel }
-          defaultIsOpen={showAutocomplete}
           componentState={ modalState }
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
