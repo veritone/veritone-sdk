@@ -501,7 +501,7 @@ class SearchBarContainer extends React.Component {
             : [searchTermParam, operatorParam];
           this.props.addOrModifySearchParameter(newParams, insertAt);
           this.setState({
-            openModal: { modalId: null },
+            openModal: { modalId: null, key: guid() },
             selectedPill: null,
             insertDirection: null
           }, () => {
@@ -516,7 +516,7 @@ class SearchBarContainer extends React.Component {
         }
         this.replaceSearchParameter(newSearchParameterValue, this.state.openModal.modalId, this.state.selectedPill);
         this.setState({
-          openModal: { modalId: null },
+          openModal: { modalId: null, key: guid() },
           selectedPill: null,
           insertDirection: null
         }, () => {
@@ -533,7 +533,7 @@ class SearchBarContainer extends React.Component {
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
-        openModal: { modalId: '' + lastModal }
+        openModal: { modalId: '' + lastModal, key: guid() }
       }, () => {
         if(this.props.onSearch) {
           this.props.onSearch();
@@ -598,7 +598,7 @@ class SearchBarContainer extends React.Component {
           >
             {
               this.state.menuOptions && this.state.menuOptions.map(menuOption =>
-                menuOption.divider ? <Divider /> :
+                menuOption.divider ? <Divider key={'menu_divider'} /> :
                 (
                 <MenuItem key={menuOption.label} onClick={menuOption.onClick}>
                   {menuOption.label}
@@ -633,7 +633,7 @@ class SearchBarContainer extends React.Component {
                       engineCategory={engineCategory}
                       backgroundColor={ engineCategory.id === this.state.openModal.modalId ? this.props.color : undefined }
                       color={ engineCategory.id === this.state.openModal.modalId ? '#ffffff' : undefined }
-                      addPill={ this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }}) : this.props.addPill }
+                      addPill={ this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }, key: guid()}) : this.props.addPill }
                     />
                   ))}
                 </div>
@@ -651,7 +651,7 @@ class SearchBarContainer extends React.Component {
                   // (this is preferrable to making every engine category modal implement a reset function)
                   // if we want to allow for rerenders while preserving the modal component, uncomment out guid() and
                   // explicity set openModal.key
-                  key={this.state.openModal.key || guid() }
+                  key={this.state.openModal.key }
                   open
                   ref={ (input) => { this.openModal = input; } }
                   //setGetModalValue={ (input) => { this.openModal = input; console.log("Accessor function", input) } }
