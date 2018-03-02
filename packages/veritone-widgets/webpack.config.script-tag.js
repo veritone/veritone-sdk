@@ -23,8 +23,8 @@ module.exports = {
     library: '[name]',
     libraryTarget: 'umd',
     libraryExport: 'default', // root export is widget's "export default"
-    filename: '[name]-bundle-script.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist/umd')
   },
   module: {
     // noParse: [],

@@ -106,6 +106,32 @@ const appBar = new AppBarWidget({
 });
 ```
 
+## Use via script tag
+For environments that do not support javascript module imports, widgets can also be included in an app via script tags.
+
+```
+<body>
+  <div id="appBar-widget"></div>
+
+  <script src="https://unpkg.com/veritone-widgets@^3/umd/VeritoneApp.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^3/umd/AppBar.js"></script>
+
+  <script>
+    const app = VeritoneApp();
+
+    const appBar = new AppBar({
+      elId: 'appBar-widget',
+      title: 'AppBar Widget',
+      profileMenu: true,
+      appSwitcher: true
+    });
+  </script>
+</body>
+```
+
+As you can see, each widget is bundled individually to keep file sizes small. In addition, VeritoneApp is separately bundled and required to use widgets. Scripts can be accessed from the the [unpkg](https://unpkg.com/) cdn or downloaded and hosted on your own infrastructure. Unpkg supports [semver ranges](https://docs.npmjs.com/misc/semver), or a specific version can be specified exactly. 
+
+
 ## Configuring widgets
 Note that the OAuthLoginButton widget in the example above is being configured with four properties: elId, OAuthURI, onAuthSuccess and onAuthFailure. As mentioned earlier, an elId is required for every widget. OAuthURI, onAuthSuccess and onAuthFailure are specific configurable properties on the OAuthLoginButton. As it is in the example, configuration is always provided to the widget constructor.
 
