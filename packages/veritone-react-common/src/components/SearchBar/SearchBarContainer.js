@@ -184,7 +184,7 @@ class SearchBarContainer extends React.Component {
         this.setState( { highlightedPills: highlightedPills });
       } else {
         // BOOP! you tried to group a non adjacent pill
-        console.warn('You tried to highlight a non-adjacent pill');
+        // console.warn('You tried to highlight a non-adjacent pill');
       }
     } else {
       // if there are no pills highlighted yet, we can highlight any of the pills
