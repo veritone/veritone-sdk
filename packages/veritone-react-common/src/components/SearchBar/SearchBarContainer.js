@@ -57,6 +57,21 @@ class SearchBarContainer extends React.Component {
     document.removeEventListener('keydown', this.handleGroupingKeyPress);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    // modal closed, modal now open. register a window.resize event to make the modal responsive
+    if((!prevState.openModal || !prevState.openModal.modalId) && this.state.openModal && this.state.openModal.modalId ) {
+      this.windowResizeListener = fromEvent(window, 'resize').subscribe( x =>
+        this.setState({ clientWidth: this.searchBar.getBoundingClientRect().width })
+      );
+    } else if( prevState.openModal && prevState.openModal.modalId && (!this.state.openModal || !this.state.openModal.modalId)) {
+    // modal open, now modal closing
+      if(this.windowResizeListener && this.windowResizeListener.unsubscribe) {
+        console.log("Closed a modal");
+        this.windowResizeListener.unsubscribe();
+      }
+    }
+  }
+
   handleGroupingKeyPress = (event) => {
     // let the user use esc to deselect all highlighted pills
     if(event.code === 'Escape' && this.state.highlightedPills.length > 0 && !this.state.selectedPill && !this.state.openModal.modalId) {
@@ -602,7 +617,7 @@ class SearchBarContainer extends React.Component {
           onClose={this.cancelModal}
           onKeyPress={this.onEnter}
         >
-          <Card className={ cx(styles['engineCategoryModal']) } style={{ width: this.searchBar.clientWidth }} elevation={0}>
+          <Card className={ cx(styles['engineCategoryModal']) } style={{ width: this.state.clientWidth || this.searchBar.getBoundingClientRect().width }} elevation={0}>
             <CardHeader
               avatar={
                 <Icon iconClass={ openModal.iconClass } color={'grey '} size={'2em'} />
