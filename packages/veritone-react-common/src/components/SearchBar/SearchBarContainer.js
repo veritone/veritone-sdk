@@ -189,11 +189,11 @@ class SearchBarContainer extends React.Component {
     } else {
       // if there are no pills highlighted yet, we can highlight any of the pills
       const clickTargetIsHighlightedPillOrShiftHeld = e => {
-        let clickedOnHighlightedPill = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-searchparameterid') && this.state.highlightedPills.indexOf(y.attributes.getNamedItem('data-searchparameterid').value) !== -1);
+        let clickedOnHighlightedPill = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-searchparameterid') && this.state.highlightedPills.indexOf(y.attributes.getNamedItem('data-searchparameterid').value) !== -1) || false;
         return ((e.shiftKey == true) || clickedOnHighlightedPill);
       }
       // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift
-      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile( clickTargetIsHighlightedPillOrShiftHeld ).last().subscribe( x => {
+      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile( clickTargetIsHighlightedPillOrShiftHeld ).subscribe( null, null, x => {
         this.setState({ highlightedPills: []});
       });
       let highlightedPills = [ searchParameterId ];

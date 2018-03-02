@@ -167,9 +167,7 @@ const SearchBar = ({
 class SearchBar extends React.Component {
 
   state = {
-    showScrollBar: false,
-    showScrollLeft: false,
-    showScrollRight: false
+    showScrollBar: false
   }
 
   addTranscript = () => {
@@ -179,56 +177,48 @@ class SearchBar extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if( this.hashSearchParameters( prevProps.searchParameters ) !== this.hashSearchParameters(this.props.searchParameters)) {
       const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth && this.props.searchParameters.length > 0 : false;
-      if (prevState && prevState.showScrollBar !== showScrollBar) {
-        this.updateScrollState();
-      }
+      this.updateScrollState();
     }
-  }
-
-  shouldScrollRight() {
-    return (this.scrollContainer.offsetWidth + Math.ceil(this.scrollContainer.scrollLeft )) < this.scrollContainer.scrollWidth;
-  }
-
-  shouldScrollLeft() {
-    return this.scrollContainer.scrollLeft > 0;
   }
 
   updateScrollState() {
     const showScrollBar = this.scrollContainer ? this.scrollContainer.scrollWidth > this.scrollContainer.clientWidth && this.props.searchParameters.length > 0 : false;
-    this.setState( {showScrollBar: showScrollBar, showScrollLeft: this.shouldScrollLeft(), showScrollRight: this.shouldScrollRight() });
+    this.setState( {showScrollBar: showScrollBar } );
   }
 
   scrollLeft = (step) => {
-    if(this.scrollContainer && this.shouldScrollLeft()) {
+    if(this.scrollContainer) {
       let amount = step && step > 5 ? 5 : step
       this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft - (amount * 10);
-      if(this.shouldScrollLeft() !== this.state.showScrollLeft) {
-        this.updateScrollState();
-      }
+      this.updateScrollState();
     }
   }
 
   scrollRight = (step) => {
-    if(this.scrollContainer && this.shouldScrollRight()) {
+    if(this.scrollContainer) {
       let amount = step && step > 5 ? 5 : step
       this.scrollContainer.scrollLeft =  this.scrollContainer.scrollLeft + (amount * 10);
-      if(this.shouldScrollRight() !== this.state.showScrollRight) {
-        this.updateScrollState();
-      }
+      this.updateScrollState();
     }
   }
 
   mouseDown = (direction) => {
     return (e) => {
-      this.stop$ = fromEvent(e.target, 'mouseup');
-      interval(50).takeUntil(this.stop$).subscribe( x => {
-        if(direction === 'left') {
-          this.scrollLeft(x);
-        } else {
-          this.scrollRight(x);
-        }
-      });
-      this.stop$.take(1).subscribe();
+      if(direction === 'left') {
+        this.scrollLeft(10);
+      } else {
+        this.scrollRight(10);
+      }
+
+      if(!this.scrollListener) {
+        this.scrollListener = interval(50).takeUntil(fromEvent(e.target, 'mouseup')).subscribe( x => {
+          if(direction === 'left') {
+            this.scrollLeft(x);
+          } else {
+            this.scrollRight(x);
+          }
+        }, null ,() => this.scrollListener = null);
+      }
     }
   }
 
