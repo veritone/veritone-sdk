@@ -38,6 +38,12 @@ class GeolocationModal extends React.Component {
     renderedMap: false
   };
 
+  componentWillUnmount() {
+    if (this.state.renderedMap && this.state.renderedMap.remove) {
+      this.state.renderedMap.remove();
+    }
+  }
+
   onChange = event => {
     this.setState({
       filterValue: event.target.value
@@ -82,8 +88,7 @@ class GeolocationModal extends React.Component {
           newCircle._createdTime = new Date();
           newCircle._type = 'geolocationModal';
           newCircle.addTo(map);
-
-          setTimeout( () => map.flyTo(position), 200);
+          setTimeout( () => { map.flyTo(position); map.fitBounds(newCircle.getBounds()) }, 200);
         }
 
         // save the react component so that the map's events can use the react state
@@ -131,7 +136,7 @@ class GeolocationModal extends React.Component {
           newCircle._createdTime = new Date();
           newCircle._type = 'geolocationModal';
           newCircle.addTo(map);
-          setTimeout( () => map.flyTo(latlong), 200);
+          setTimeout( () => { map.flyTo(latlong); map.fitBounds(newCircle.getBounds()) }, 200);
         });
 
         // add a geolocation distance filter when a circle is drawn
@@ -142,6 +147,7 @@ class GeolocationModal extends React.Component {
           layer._createdTime = new Date();
           layer._type = "geolocationModal";
           drawnItems.addLayer(layer);
+          setTimeout( () => map.fitBounds(layer.getBounds()), 200);
         });
 
         this.setState({renderedMap: map, address_bar: searchControl });
