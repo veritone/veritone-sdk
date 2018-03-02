@@ -60,13 +60,14 @@ class SearchBarContainer extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     // modal closed, modal now open. register a window.resize event to make the modal responsive
     if((!prevState.openModal || !prevState.openModal.modalId) && this.state.openModal && this.state.openModal.modalId ) {
-      this.windowResizeListener = fromEvent(window, 'resize').subscribe( x =>
-        this.setState({ clientWidth: this.searchBar.getBoundingClientRect().width })
-      );
+      this.windowResizeListener = fromEvent(window, 'resize').map( x => x.currentTarget.outerWidth).debounceTime(150).distinctUntilChanged().subscribe( x => {
+        if(this.searchBar) {
+          this.setState({ clientWidth: this.searchBar.getBoundingClientRect().width })
+        }
+      });
     } else if( prevState.openModal && prevState.openModal.modalId && (!this.state.openModal || !this.state.openModal.modalId)) {
     // modal open, now modal closing
       if(this.windowResizeListener && this.windowResizeListener.unsubscribe) {
-        console.log("Closed a modal");
         this.windowResizeListener.unsubscribe();
       }
     }
