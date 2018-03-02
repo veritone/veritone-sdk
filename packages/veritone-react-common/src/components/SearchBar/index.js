@@ -218,6 +218,8 @@ class SearchBar extends React.Component {
             this.scrollRight(x);
           }
         }, null ,() => this.scrollListener = null);
+      } else {
+        this.scrollListener.unsubscribe();
       }
     }
   }
