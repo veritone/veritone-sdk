@@ -633,7 +633,7 @@ class SearchBarContainer extends React.Component {
                       engineCategory={engineCategory}
                       backgroundColor={ engineCategory.id === this.state.openModal.modalId ? this.props.color : undefined }
                       color={ engineCategory.id === this.state.openModal.modalId ? '#ffffff' : undefined }
-                      addPill={ this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }}) : this.props.addPill }
+                      addPill={ this.state.openModal.modalId ? () => this.setState({ openModal: { modalId: engineCategory.id }, key: guid()}) : this.props.addPill }
                     />
                   ))}
                 </div>
@@ -651,7 +651,7 @@ class SearchBarContainer extends React.Component {
                   // (this is preferrable to making every engine category modal implement a reset function)
                   // if we want to allow for rerenders while preserving the modal component, uncomment out guid() and
                   // explicity set openModal.key
-                  key={this.state.openModal.key || guid() }
+                  key={this.state.openModal.key }
                   open
                   ref={ (input) => { this.openModal = input; } }
                   //setGetModalValue={ (input) => { this.openModal = input; console.log("Accessor function", input) } }
