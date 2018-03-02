@@ -25,10 +25,12 @@ const getTheme = () => {
   return theme;
 }
 
-const SearchPill = ({ engineIconClass, label, remove, onClick, highlighted, selected, exclude }) => {
-  var searchPillClasses = cx( {[`${styles['highlighted']}`] : highlighted , [`${styles['highlighted:hover']}`] : highlighted, [`${styles['excludePill']}`]: exclude, focus: styles['searchPill:focus']  } )
+const SearchPill = ({ id, engineIconClass, label, remove, onClick, highlighted, selected, exclude }) => {
+
+  var searchPillClasses = cx( {[`${styles['highlighted']}`] : highlighted , [`${styles['highlighted:hover']}`] : highlighted, [`${styles['excludePill']}`]: exclude, focus: styles['searchPill:focus']  } ) || cx(styles['searchPill']);
   return (
     <Chip
+    data-searchparameterid={id}
     avatar={<Icon iconClass={engineIconClass} color={ selected ? 'white' : 'grey '} size={'1.5em'} />}
     label={label}
     className={ selected ? cx(styles['highlighted']) : searchPillClasses }

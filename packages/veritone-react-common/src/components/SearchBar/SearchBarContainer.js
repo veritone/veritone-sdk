@@ -9,6 +9,12 @@ import EngineCategoryButton from './EngineCategoryButton';
 import cx from 'classnames';
 import styles from './styles.scss';
 
+import {Observable} from "rxjs/Observable";
+import "rxjs/add/operator/take";
+import "rxjs/add/operator/takeWhile";
+import { last, map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+
 import { withTheme } from 'material-ui/styles'
 import { guid } from './component';
 
@@ -56,9 +62,10 @@ class SearchBarContainer extends React.Component {
     if(event.code === 'Escape' && this.state.highlightedPills.length > 0 && !this.state.selectedPill && !this.state.openModal.modalId) {
       event.preventDefault();
       this.setState( { highlightedPills: [] });
-    } else if(event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 1) {
+    } else if( event.code === 'KeyG' && event.shiftKey && this.state.highlightedPills.length > 1) {
       event.preventDefault();
       this.toggleGrouping();
+
     }
   }
 
@@ -152,6 +159,14 @@ class SearchBarContainer extends React.Component {
       }
     } else {
       // if there are no pills highlighted yet, we can highlight any of the pills
+      const clickTargetIsHighlightedPillOrShiftHeld = e => {
+        let clickedOnHighlightedPill = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-searchparameterid') && this.state.highlightedPills.indexOf(y.attributes.getNamedItem('data-searchparameterid').value) !== -1);
+        return ((e.shiftKey == true) || clickedOnHighlightedPill);
+      }
+      // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift
+      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile( clickTargetIsHighlightedPillOrShiftHeld ).last().subscribe( x => {
+        this.setState({ highlightedPills: []});
+      });
       let highlightedPills = [ searchParameterId ];
       this.setState( { highlightedPills: highlightedPills });
     }
@@ -521,7 +536,6 @@ class SearchBarContainer extends React.Component {
 
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }}>
-        <div>
           <SearchBar
             onSearch={this.props.onSearch}
             color={this.props.color}
@@ -551,7 +565,7 @@ class SearchBarContainer extends React.Component {
               this.state.menuOptions && this.state.menuOptions.map(menuOption =>
                 menuOption.divider ? <Divider /> :
                 (
-                <MenuItem onClick={menuOption.onClick}>
+                <MenuItem key={menuOption.label} onClick={menuOption.onClick}>
                   {menuOption.label}
                 </MenuItem>
                 )
@@ -630,7 +644,6 @@ class SearchBarContainer extends React.Component {
         </Popover>
         ) : null }
         </div>
-      </div>
     );
   }
 }

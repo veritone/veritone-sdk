@@ -32,7 +32,7 @@ const supportedCategoriesClass = cx(styles['supportedCategories']);
 
 const GhostInput = ({showGhost, onFocus}) => (
   <span onClick={onFocus} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1">
-    { showGhost ? <Typography color="textSecondary" variant="headline">Search Veritone</Typography> : null }
+    { showGhost ? <Typography color="textSecondary" variant="headline">Search</Typography> : null }
   </span>
 )
 
@@ -132,6 +132,7 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
       output.push(
         <SearchPill
           key={searchParameter.id}
+          id={searchParameter.id}
           engineIconClass={searchParameterEngine.iconClass}
           onClick={ onClick }
           exclude={ exclude }
