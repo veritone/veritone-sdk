@@ -141,7 +141,7 @@ const geolocation = {
 }
 
 const appBarColor = '#ff2200';
-const enabledEngineCategories = [transcript, sentiment, fingerprint, face, obj, recognizedText, logo, tag, time, geolocation];
+const enabledEngineCategories = [transcript, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
