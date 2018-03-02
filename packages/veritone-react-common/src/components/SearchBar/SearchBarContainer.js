@@ -188,12 +188,13 @@ class SearchBarContainer extends React.Component {
       }
     } else {
       // if there are no pills highlighted yet, we can highlight any of the pills
-      const clickTargetIsHighlightedPillOrShiftHeld = e => {
+      const clickTargetShouldNotClearHighlightedPills = e => {
         let clickedOnHighlightedPill = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-searchparameterid') && this.state.highlightedPills.indexOf(y.attributes.getNamedItem('data-searchparameterid').value) !== -1) || false;
-        return ((e.shiftKey == true) || clickedOnHighlightedPill);
+        let clickedOnDeleteFromMenu = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-preservehighlight') && y.attributes.getNamedItem('data-preservehighlight').value === 'true');        
+        return ((e.shiftKey == true) || clickedOnHighlightedPill || clickedOnDeleteFromMenu);
       }
-      // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift
-      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile( clickTargetIsHighlightedPillOrShiftHeld ).subscribe( null, null, x => {
+      // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift      
+      this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile( clickTargetShouldNotClearHighlightedPills ).subscribe( null, null, x => {
         this.setState({ highlightedPills: []});
       });
       let highlightedPills = [ searchParameterId ];
@@ -356,7 +357,8 @@ class SearchBarContainer extends React.Component {
           },
           {
             label: 'Delete',
-            onClick: this.menuRemoveHighlightedPills
+            onClick: this.menuRemoveHighlightedPills,
+            preserveHighlight: 'true'
           }
         ];
       } else {
@@ -600,7 +602,7 @@ class SearchBarContainer extends React.Component {
               this.state.menuOptions && this.state.menuOptions.map(menuOption =>
                 menuOption.divider ? <Divider key={'menu_divider'} /> :
                 (
-                <MenuItem key={menuOption.label} onClick={menuOption.onClick}>
+                <MenuItem key={menuOption.label} onClick={menuOption.onClick} data-preservehighlight={menuOption.preserveHighlight}>
                   {menuOption.label}
                 </MenuItem>
                 )
