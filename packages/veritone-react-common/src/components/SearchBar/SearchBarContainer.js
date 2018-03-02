@@ -501,7 +501,7 @@ class SearchBarContainer extends React.Component {
             : [searchTermParam, operatorParam];
           this.props.addOrModifySearchParameter(newParams, insertAt);
           this.setState({
-            openModal: { modalId: null },
+            openModal: { modalId: null, key: guid() },
             selectedPill: null,
             insertDirection: null
           }, () => {
@@ -516,7 +516,7 @@ class SearchBarContainer extends React.Component {
         }
         this.replaceSearchParameter(newSearchParameterValue, this.state.openModal.modalId, this.state.selectedPill);
         this.setState({
-          openModal: { modalId: null },
+          openModal: { modalId: null, key: guid() },
           selectedPill: null,
           insertDirection: null
         }, () => {
@@ -533,7 +533,7 @@ class SearchBarContainer extends React.Component {
       this.addNewSearchParameter(newSearchParameterValue, this.state.openModal.modalId);
       let lastModal = this.state.openModal.modalId;
       this.setState({
-        openModal: { modalId: '' + lastModal }
+        openModal: { modalId: '' + lastModal, key: guid() }
       }, () => {
         if(this.props.onSearch) {
           this.props.onSearch();
