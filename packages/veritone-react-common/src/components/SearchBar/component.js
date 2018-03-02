@@ -184,7 +184,7 @@ const engineCategoryMapping = {
     getLabel: FingerprintDisplay,
     generateCondition: FingerprintConditionGenerator,
     title: 'Search by Fingerprint',
-    subtitle: 'Locate a certain song or advertisement inside of audio and video files.'
+    subtitle: 'Locate a certain song or advertisement inside of audio files.'
   },
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': {
     modal: LogoSearchModal,
