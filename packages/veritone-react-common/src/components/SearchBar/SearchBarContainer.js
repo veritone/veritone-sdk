@@ -109,6 +109,19 @@ class SearchBarContainer extends React.Component {
     }
   }
 
+  getToggleGroupLabel = () => {
+    let first = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[0]);
+    let last = this.props.searchParameters.findIndex( x => x.id === this.state.highlightedPills[this.state.highlightedPills.length - 1]);
+    const before = this.props.searchParameters[first - 1];
+    const after = this.props.searchParameters[last + 1];
+    if( before && before.conditionType === 'group' && before.value === '('
+    && after && after.conditionType === 'group' && after.value === ')') {
+      return 'Ungroup Selection';
+    } else {
+      return 'Group Selection';
+    }
+  }
+
   addPill = modalId => {
     this.setState({
       openModal: { modalId: modalId },
@@ -322,7 +335,7 @@ class SearchBarContainer extends React.Component {
       if(showGroupOptions) {
         menuOptions = [
           {
-            label: 'Group Selection',
+            label: this.getToggleGroupLabel(),
             onClick: this.menuGroupSelection
           },
           {
@@ -526,6 +539,12 @@ class SearchBarContainer extends React.Component {
     }
   }
 
+  onEnter = (event) => {
+    if (event.key === 'Enter' && event.repeat === false) {
+      this.addOrEditModal();
+    }
+  }
+
   render() {
     const openModal = this.props.enabledEngineCategories.find(
       x => x.id === this.state.openModal.modalId
@@ -557,8 +576,8 @@ class SearchBarContainer extends React.Component {
             open={Boolean(this.state.menuAnchorEl)}
             onClose={this.handleMenuClose}
             anchorEl={this.state.menuAnchorEl}
-            // anchorOrigin={ { vertical: 'bottom', horizontal: 'center' } }
-            style={ {top: "1.25em" } }
+            anchorOrigin={ { vertical: 'bottom' } }
+            getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
             disableRestoreFocus
           >
             {
@@ -581,6 +600,7 @@ class SearchBarContainer extends React.Component {
           elevation={2}
           open
           onClose={this.cancelModal}
+          onKeyPress={this.onEnter}
         >
           <Card className={ cx(styles['engineCategoryModal']) } style={{ width: this.searchBar.clientWidth }} elevation={0}>
             <CardHeader

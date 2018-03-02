@@ -33,14 +33,6 @@ export default class TranscriptSearchModal extends React.Component {
     });
   };
 
-  onEnter = event => {
-    if (event.key === 'Enter') {
-      if(this.props.applyFilter) {
-        this.props.applyFilter();
-      }
-    }
-  };
-
   returnValue() {
     if(!this.state.filterValue || this.state.filterValue.trim().length === 0) {
       return;
@@ -55,7 +47,6 @@ export default class TranscriptSearchModal extends React.Component {
         cancel={ this.props.cancel }
         defaultValue={ this.props.modalState && this.props.modalState.search || '' }
         onChange={ this.onChange }
-        onKeyPress={ this.onEnter }
         inputValue={ this.state.filterValue }
       />
     );

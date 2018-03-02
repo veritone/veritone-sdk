@@ -76,6 +76,7 @@ export default class FaceSearchModal extends React.Component {
         label: this.props.modalState.label,
         type: this.props.modalState.type,
       };
+      this.onChange(this.props.modalState.label);
       this.setState({
         selectedResult: selectedItem
       })
@@ -85,24 +86,26 @@ export default class FaceSearchModal extends React.Component {
   onChange = debouncedQueryString => {
     var modal = this;
     if (debouncedQueryString) {
+      this.setState({
+        queryResults: []
+      });
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
           queryResults: response,
-          showAutocomplete: true
+          queryString: debouncedQueryString
         });
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
           error: true,
-          queryResults: [],
-          showAutocomplete: true
+          queryResults: []
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryResults: [],
-        showAutocomplete: true
+        queryString: debouncedQueryString
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -116,8 +119,7 @@ export default class FaceSearchModal extends React.Component {
     if (result) {
       this.setState({
         selectedResult: result,
-        queryString: result.label,
-        showAutocomplete: false
+        queryString: result.label
       });
     }
   };
@@ -146,7 +148,6 @@ export default class FaceSearchModal extends React.Component {
         onChange={ this.onChange }
         modalState={ this.state }
         selectResult={ this.selectResult }
-        showAutocomplete={ this.state.showAutocomplete }
         toggleExclude={ this.toggleExclude }
         onClickAutocomplete={ this.onClickAutocomplete }
       />
@@ -154,7 +155,7 @@ export default class FaceSearchModal extends React.Component {
   }
 }
 
-export const FaceSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete } ) => {
+export const FaceSearchForm = ( { cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete } ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -163,7 +164,6 @@ export const FaceSearchForm = ( { showAutocomplete, cancel, onChange, onKeyPress
           onChange={ onChange }
           onKeyPress={ onKeyPress }
           cancel={ cancel }
-          defaultIsOpen={showAutocomplete}
           componentState={ modalState }
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}

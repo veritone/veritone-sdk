@@ -427,9 +427,8 @@ const generateQueryCondition = node => {
 };
 
 const buildQuerySelect = csp => {
-  const metadataKeys = selectMetadataFromCsp(csp);
-  const dedupedMetadataKeys = dedupeArray(metadataKeys);
-  return ['veritone-job', 'veritone-file', ...dedupedMetadataKeys];
+  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript', ...selectMetadataFromCsp(csp)];
+  return dedupeArray(metadataKeys);
 };
 
 const dedupeArray = arr => {
