@@ -598,7 +598,7 @@ class SearchBarContainer extends React.Component {
           >
             {
               this.state.menuOptions && this.state.menuOptions.map(menuOption =>
-                menuOption.divider ? <Divider /> :
+                menuOption.divider ? <Divider key={'menu_divider'} /> :
                 (
                 <MenuItem key={menuOption.label} onClick={menuOption.onClick}>
                   {menuOption.label}
