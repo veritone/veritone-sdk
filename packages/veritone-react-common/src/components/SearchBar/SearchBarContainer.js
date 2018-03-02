@@ -190,10 +190,10 @@ class SearchBarContainer extends React.Component {
       // if there are no pills highlighted yet, we can highlight any of the pills
       const clickTargetShouldNotClearHighlightedPills = e => {
         let clickedOnHighlightedPill = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-searchparameterid') && this.state.highlightedPills.indexOf(y.attributes.getNamedItem('data-searchparameterid').value) !== -1) || false;
-        let clickedOnDeleteFromMenu = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-preservehighlight') && y.attributes.getNamedItem('data-preservehighlight').value === 'true');        
+        let clickedOnDeleteFromMenu = e.path.find(y => y.attributes && y.attributes.getNamedItem('data-preservehighlight') && y.attributes.getNamedItem('data-preservehighlight').value === 'true');
         return ((e.shiftKey == true) || clickedOnHighlightedPill || clickedOnDeleteFromMenu);
       }
-      // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift      
+      // register an event listener so when the user clicks on something that's not a highlighted pill, we'll unselect everything as long as he's not stil holding down shift
       this.unselectMouseClick = fromEvent(document, 'mousedown').takeWhile( clickTargetShouldNotClearHighlightedPills ).subscribe( null, null, x => {
         this.setState({ highlightedPills: []});
       });
@@ -353,7 +353,8 @@ class SearchBarContainer extends React.Component {
         menuOptions = [
           {
             label: this.getToggleGroupLabel(),
-            onClick: this.menuGroupSelection
+            onClick: this.menuGroupSelection,
+            preserveHighlight: 'true'
           },
           {
             label: 'Delete',
