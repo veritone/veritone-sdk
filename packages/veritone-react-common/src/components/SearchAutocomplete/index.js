@@ -154,7 +154,7 @@ const SearchAutocompleteDownshift = ({
           { isOpen && results && results.length ?
             <Paper square
               style={{
-                maxHeight: '400px', 
+                maxHeight: '300px', 
                 overflow: 'auto',
               }}
             >
