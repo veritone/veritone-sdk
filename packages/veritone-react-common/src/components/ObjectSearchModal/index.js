@@ -98,14 +98,14 @@ export default class ObjectSearchModal extends React.Component {
       }).catch(err => {
         this.setState({
           error: true,
-          queryResults: [],          
+          queryResults: [],
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryResults: [],
-        queryString: debouncedQueryString        
+        queryString: debouncedQueryString
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
     }
@@ -206,7 +206,8 @@ const ObjectConditionGenerator = modalState => {
 const ObjectDisplay = modalState => {
   return {
     abbreviation: modalState.label.substring(0, 10),
-    thumbnail: modalState.image
+    thumbnail: modalState.image,
+    exclude: modalState.exclude
   };
 };
 
