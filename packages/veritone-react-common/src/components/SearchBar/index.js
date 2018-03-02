@@ -220,6 +220,7 @@ class SearchBar extends React.Component {
         }, null ,() => this.scrollListener = null);
       } else {
         this.scrollListener.unsubscribe();
+        this.scrollListener = null;
       }
     }
   }
