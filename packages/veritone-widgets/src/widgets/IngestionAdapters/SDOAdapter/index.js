@@ -3,7 +3,7 @@ import { object, func } from 'prop-types';
 import { connect } from 'react-redux';
 import { modules } from 'veritone-redux-common';
 const { user } = modules;
-import widget from '../../shared/widget';
+import widget from '../../../shared/widget';
 
 @connect(
   state => ({
@@ -39,4 +39,14 @@ class SDOAdapter extends React.Component {
   }
 }
 
-export default widget(SDOAdapter);
+// export default widget(SDOAdapter);
+export default {
+  widget: widget(SDOAdapter),
+  config: {
+    sourceTypeId: 'react-adapter',
+    logo: 'https://static.veritone.com/veritone-ui/ingestion/quantum_no_store_small.png',
+    scheduleOn: false,
+    processOn: true,
+    customizeOn: true
+  }
+}
