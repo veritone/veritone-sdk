@@ -2,8 +2,6 @@ import React from 'react';
 import { bool, func } from 'prop-types';
 import { connect } from 'react-redux';
 
-import { omit, keyBy } from 'lodash';
-
 import { DiscoverySideBar as Sidebar } from 'veritone-react-common';
 
 import { modules } from 'veritone-redux-common';
@@ -22,7 +20,7 @@ import widget from '../../shared/widget';
 @connect(
   (state) => ({
     engines: engineModule.getEngines(state),
-    engineSearchResults: engineModule.getEngineSearchResults(state)
+    currentResults: engineSelectionModule.getCurrentResults(state)
   }),
   {},
   null,
@@ -56,20 +54,22 @@ class EngineSelectionWidget extends React.Component {
   }
 
   _renderDetailView = () => (
-    <EngineDetailView onClose={this.handleHideDetailView} engine={this.state.engineDetails} />
+    <EngineDetailView
+      onClose={this.handleHideDetailView}
+      engine={this.state.engineDetails}
+    />
   );
 
   _renderListView = () => (
     <EngineListView
       engines={this.props.engines}
-      engineSearchResults={this.props.engineSearchResults} 
+      currentResults={this.props.currentResults}
       showDetailView={this.handleShowDetailView}
     />
   )
 
-
   render() {
-    console.log('engines', this.props)
+    console.log('props', this.props)
     return (
       this.state.showDetailView ?
         this._renderDetailView() :

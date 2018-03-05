@@ -56,14 +56,14 @@ export default class SelectBar extends React.Component {
       label: 'Newest',
       handler: () => console.log('clicked Newest filter...')
     }]
-    // const { } = this.props;
+
     return (
       <div className={styles.selectBar}>
         <LibCheckbox onChange={this.props.onCheck} />
         Select All (721)
 
         <div className={styles.selectBarIcons}>
-          <SearchBar onSearch={this.props.onSearch} />
+          <SearchBar onSearch={this.props.onSearch} onClear={this.props.onClearSearch} />
           <IconButton
             onClick={this.openSortMenu}
             key="button"

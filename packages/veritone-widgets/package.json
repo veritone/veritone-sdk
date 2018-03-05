@@ -8,6 +8,7 @@
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
     "react-redux-saga": "^1.0.2",
+    "react-virtualized": "^9.18.5",
     "redux": "^3.7.2",
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",

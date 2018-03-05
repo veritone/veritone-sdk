@@ -35,8 +35,9 @@ export default class StarRating extends React.Component {
       <div className={styles.rating}>
         {Array.from(Array(5),
           (e, i) => this.props.rating >= (i + 1) ?
-            <StarIcon {...starProps} /> :
+            <StarIcon key={i} {...starProps} /> :
             <StarBorderIcon
+              key={i}
               {...starProps }
               color={this.props.starBorderColor}
             />)

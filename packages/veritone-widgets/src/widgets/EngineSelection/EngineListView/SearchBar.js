@@ -1,7 +1,7 @@
 import React from 'react';
 import { bool, func } from 'prop-types';
+import { debounce } from 'lodash';
 
-import LibCheckbox from 'material-ui/Checkbox';
 import IconButton from 'material-ui/IconButton';
 import SearchIcon from 'material-ui-icons/Search';
 import CloseIcon from 'material-ui-icons/Close';
@@ -20,27 +20,39 @@ export default class SearchBar extends React.Component {
   };
 
   state = {
-    isOpen: this.props.isOpen
+    isOpen: this.props.isOpen,
+    searchTerm: ''
+  }
+
+  componentWillMount(props) {
+    this.forwardChange = debounce((evt) => this.props.onSearch(this.state.searchTerm), 300);
   }
 
   toggleSearchBar = () => {
     this.setState({
-      isOpen: !this.state.isOpen
+      isOpen: !this.state.isOpen,
+      searchTerm: this.state.isOpen ? '' : this.state.searchTerm
     })
+
+    if (this.state.isOpen) {
+      this.props.onClear();
+    }
   }
 
   handleChange = evt => {
-    this.props.onSearch(evt.target.value)
+    this.setState({
+      searchTerm: evt.target.value,
+    });
+    this.forwardChange(evt);
   }
-
-  // clearSearch to reset results
 
   _renderOpenedState = () => (
     <div>
       <LibTextField
         className={styles.searchBar}
-        placeholder="Search by name"
+        placeholder="Search by engine name"
         onChange={this.handleChange}
+        value={this.state.searchTerm}
         InputProps={{
           endAdornment: (
             <InputAdornment className={styles.searchBarIcon} position="end">
@@ -62,9 +74,6 @@ export default class SearchBar extends React.Component {
       <IconButton
         onClick={this.toggleSearchBar}
         className={styles.searchBarIcon}
-        // iconStyle={styles.iconButtonSearch.iconStyle}
-        // style={styles.iconButtonSearch.style}
-        // disabled={false}
       >
         <SearchIcon />
       </IconButton>
@@ -73,7 +82,9 @@ export default class SearchBar extends React.Component {
 
   render() {
     return (
-      this.state.isOpen ? this._renderOpenedState() : this._renderClosedState()
+      this.state.isOpen ?
+        this._renderOpenedState() :
+        this._renderClosedState()
     )
   }
 }

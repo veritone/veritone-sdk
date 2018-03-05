@@ -1,7 +1,7 @@
 import React from 'react';
+import { bool, string } from 'prop-types';
 import { connect } from 'react-redux';
 import { storiesOf } from '@storybook/react';
-import { bool, string } from 'prop-types';
 import { text } from '@storybook/addon-knobs';
 import { modules } from 'veritone-redux-common';
 const { user } = modules;
@@ -30,7 +30,9 @@ class Story extends React.Component {
     });
 
     this._engineSelection = new EngineSelectionWidget({
-      elId: 'engine-selection-widget'
+      elId: 'engine-selection-widget',
+      onSave: () => {},
+      onCancel: () => {}
     });
   }
 
@@ -45,12 +47,6 @@ class Story extends React.Component {
 
 
   render() {
-    // return (
-    //   <div>
-    //     <span id="engine-selection-widget" />
-    //   </div>
-    // );
-
     return (
       <span>
           {this.props.fetchUserFailed &&
@@ -75,22 +71,6 @@ class Story extends React.Component {
           )}
   
           <span id="engine-selection-widget" />
-  
-          {this.props.userIsAuthenticated && (
-            <button
-              disabled={!this.props.userIsAuthenticated}
-              onClick={this.handlePick}
-            >
-              Pick files
-            </button>
-          )}
-{/*   
-          {this.state.result && (
-            <pre>
-              Result:
-              {JSON.stringify(this.state.result, null, '\t')}
-            </pre>
-          )} */}
         </span>
       );
   }
@@ -100,28 +80,7 @@ class Story extends React.Component {
 const app = VeritoneApp();
 
 storiesOf('EngineSelectionWidget', module).add('Base', () => {
-  // const app = new VeritoneApp([
-  //   new EngineSelectionWidget({
-  //     elId: 'engine-selection-widget'
-  //   })
-  // ]);
-
-  // const mountApp = app.mount.bind(app);
-  // const destroyApp = app.destroy.bind(app);
-
   const sessionToken = text('Api Session Token', '');
   
   return <Story sessionToken={sessionToken} store={app._store} />;
-
-  // return (
-  //   <div>
-  //     <div id="engine-selection-widget"/>
-  //     <br/>
-  //     <br/>
-  //     <br/>
-  //     <br/>
-  //     <button onClick={mountApp}>Mount</button>
-  //     <button onClick={destroyApp}>destroy</button>
-  //   </div>
-  // )
 });

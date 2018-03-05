@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { string, object, func } from 'prop-types';
 
 import LibCheckbox from 'material-ui/Checkbox';
-// import LibCheckbox from './Checkbox';
 
 import cjisLogo from '../images/CJIS_logo.png';
 import fedrampLogo from '../images/fedramp_logo.png';
@@ -24,10 +23,10 @@ import styles from './styles.scss';
     isChecked: engineSelectionModule.engineIsChecked(state, ownProps.engine.id)
   }),
   {
-    addEngineId: engineSelectionModule.addEngineId,
-    removeEngineId: engineSelectionModule.removeEngineId,
-    checkEngineId: engineSelectionModule.checkEngineId,
-    uncheckEngineId: engineSelectionModule.uncheckEngineId,
+    addEngine: engineSelectionModule.addEngine,
+    removeEngine: engineSelectionModule.removeEngine,
+    checkEngine: engineSelectionModule.checkEngine,
+    uncheckEngine: engineSelectionModule.uncheckEngine,
   },
   null,
   { withRef: true }
@@ -39,10 +38,9 @@ export default class EngineSelectionRow extends React.Component {
   };
 
   handleOnChange = () => {
-    console.log('EngineSelectionRow Checkbox()', this.props.engine.id)
     this.props.isChecked ?
-      this.props.uncheckEngineId(this.props.engine.id) :
-      this.props.checkEngineId(this.props.engine.id);
+      this.props.uncheckEngine(this.props.engine.id) :
+      this.props.checkEngine(this.props.engine.id);
   }
 
   handleOnClick = () => {
@@ -65,7 +63,7 @@ export default class EngineSelectionRow extends React.Component {
             <div className={styles.main}>
               <div className={styles.headings}>
                 <div className={styles.title} onClick={this.handleOnClick}>{this.props.engine.name}</div>
-                <div className={styles.subTitle}>Sample Sub Title</div>
+                <div className={styles.subTitle}>{this.props.engine.ownerOrganization.name}</div>
               </div>
               <Price />
             </div>
@@ -92,8 +90,8 @@ export default class EngineSelectionRow extends React.Component {
             </div>
             <div className={styles.button}>
               <ToggleButton
-                onAdd={this.props.addEngineId}
-                onRemove={this.props.removeEngineId}
+                onAdd={this.props.addEngine}
+                onRemove={this.props.removeEngine}
                 engineId={this.props.engine.id}
                 isSelected={this.props.isSelected}
               />
