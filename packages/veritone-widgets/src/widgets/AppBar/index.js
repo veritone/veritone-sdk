@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { AppBar as LibAppBar } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { user } = modules;
+
+import appConfig from '../../../config.json';
 import widget from '../../shared/widget';
 
 @connect(
@@ -30,8 +32,12 @@ class AppBar extends React.Component {
     this.props.fetchEnabledApps();
   };
 
+  handleSwitchApp = id => {
+    window.location = `${appConfig.switchAppRoute}/${id}`;
+  };
+
   render() {
-    return <LibAppBar {...this.props} />;
+    return <LibAppBar {...this.props} onSwitchApp={this.handleSwitchApp} />;
   }
 }
 
