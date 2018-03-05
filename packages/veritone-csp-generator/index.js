@@ -21,7 +21,10 @@ const FingerprintConditionGenerator = modalState => {
 };
 
 const RecognizedTextConditionGenerator = modalState => {
-  return V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
+  const query = V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
+  query.highlight = "true";
+
+  return query;
 };
 
 const LogoConditionGenerator = modalState => {
