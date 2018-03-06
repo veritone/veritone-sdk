@@ -430,7 +430,8 @@ const generateQueryCondition = node => {
 };
 
 const buildQuerySelect = csp => {
-  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript', ...selectMetadataFromCsp(csp)];
+  const metadataKeysFromCsp = selectMetadataFromCsp(csp);
+  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(metadataKeysFromCsp);
   return dedupeArray(metadataKeys);
 };
 
@@ -455,7 +456,7 @@ const selectMetadataFromCsp = csp => {
     conditions.forEach(condition => {
       const subMetadataKeys = selectMetadataFromCsp(condition);
       if(Array.isArray(subMetadataKeys)) {
-        metadataKeys = [...metadataKeys, ...subMetadataKeys];
+        metadataKeys = metadataKeys.concat(subMetadataKeys);
       }
     });
   }
