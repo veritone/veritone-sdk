@@ -1,0 +1,15 @@
+.transcriptOutputView {
+  margin: 20px 40px 0 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.transcriptViewHeader {
+  height: 45px;
+  width: 100%;
+
+  .headerTitle {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
