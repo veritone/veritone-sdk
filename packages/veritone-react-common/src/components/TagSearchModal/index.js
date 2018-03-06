@@ -7,6 +7,7 @@ import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
 import ModalSubtitle from '../ModalSubtitle';
+import { LinearProgress } from 'material-ui/Progress';
 
 import Dialog, {
   DialogActions,
@@ -89,23 +90,27 @@ export default class TagSearchModal extends React.Component {
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       this.setState({
-        queryResults: []
+        queryResults: [],
+        loading: true,
       });
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
           queryResults: response,
-          queryString: debouncedQueryString
+          queryString: debouncedQueryString,
+          loading: false,
         });
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
           error: true,
-          queryResults: []
+          queryResults: [],
+          loading: false,
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
+        loading: false,
         queryResults: [],
         queryString: debouncedQueryString
       });
@@ -153,12 +158,13 @@ export default class TagSearchModal extends React.Component {
         selectResult={ this.selectResult }
         toggleExclude={ this.toggleExclude }
         onClickAutocomplete={ this.onClickAutocomplete }
+        loading={ this.state.loading }
       />
     );
   }
 }
 
-export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete } ) => {
+export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading } ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -171,6 +177,7 @@ export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, moda
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
         />
+        { loading ? <LinearProgress /> : null }
       </Grid>
       <Grid item>
         <FormControlLabel

@@ -607,9 +607,12 @@ export class SampleSearchBar extends React.Component {
   }
 
   removeSearchParameter = id => {
+    let filteredOut = [].concat(id);
     this.setState(prevState => ({
-      searchParameters: prevState.searchParameters.filter(x => x.id !== id)
+      searchParameters: prevState.searchParameters.filter(x => filteredOut.indexOf(x.id) === -1)
     }));
+
+    return this.state.searchParameters.filter(x => filteredOut.indexOf(x.id) === -1);
   };
 
   resetSearchParameters = () => {
