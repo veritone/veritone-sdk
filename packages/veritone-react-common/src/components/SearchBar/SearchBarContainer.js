@@ -97,8 +97,13 @@ class SearchBarContainer extends React.Component {
     if( before && before.conditionType === 'group' && before.value === '('
     && after && after.conditionType === 'group' && after.value === ')') {
       // already an existing group
-      this.props.removeSearchParameter( before.id );
-      this.props.removeSearchParameter( after.id );
+      this.props.removeSearchParameter( [before.id, after.id] );
+      const newSearchParameters = this.props.searchParameters.filter( x => x.id !== before.id && x.id !== after.id );
+      let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
+      this.props.removeSearchParameter(extraneousGroups);
+      if(this.props.onSearch) {
+        this.props.onSearch(simplifiedParameters);
+      }
     } else {
       const paramsToAdd = [
         {
@@ -118,11 +123,13 @@ class SearchBarContainer extends React.Component {
       ];
       const newSearchParameters = this.props.insertMultipleSearchParameters(paramsToAdd);
       let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
-      extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
+      this.props.removeSearchParameter(extraneousGroups);
+      if(this.props.onSearch) {
+        this.props.onSearch(simplifiedParameters);
+      }
     }
-    if(this.props.onSearch) {
-      this.props.onSearch();
-    }
+
+    this.setState({ highlightedPills: [] });
   }
 
   getToggleGroupLabel = () => {
@@ -232,6 +239,7 @@ class SearchBarContainer extends React.Component {
       simplifiedParameters.shift();
     }
 
+
     return [ simplifiedParameters, extraneousGroups ];
   }
 
@@ -248,24 +256,26 @@ class SearchBarContainer extends React.Component {
     let index = searchParameters.findIndex(x => x.id === searchParameterId);
     let previousParameter = searchParameters[index - 1];
     let newSearchParameters = null;
+
+    let pillsToRemove = [];
     // if the pill to be removed is the start of a group, we need to remove the next joining parameter and not the previous one
     if( ( previousParameter && previousParameter.value === '(' ) || ( index === 0 && this.numberOfPills(searchParameters) > 1 ) ) {
-      this.props.removeSearchParameter( searchParameters[index+1].id );
-      this.props.removeSearchParameter( searchParameterId );
+      pillsToRemove.push(searchParameterId);
+      pillsToRemove.push( searchParameters[index+1].id );
       newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== searchParameters[index+1].id);
     } else if ( this.numberOfPills(searchParameters) > 1) {
       // if the pill to be removed is in the middle of a group, remove the last joining parameter
       let lastJoiningParameter = searchParameters.slice(0, index).reverse().find( x => x.conditionType === 'join');
-      this.props.removeSearchParameter(lastJoiningParameter.id);
-      this.props.removeSearchParameter(searchParameterId);
+      pillsToRemove.push( searchParameterId );
+      pillsToRemove.push( lastJoiningParameter.id );
       newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId && x.id !== lastJoiningParameter.id);
     } else {
       // remove a single pill
-      this.props.removeSearchParameter( searchParameterId );
+      pillsToRemove.push(searchParameterId);
       newSearchParameters = searchParameters.filter( x => x.id !== searchParameterId);
     }
     let [ simplifiedParameters, extraneousGroups ] = this.simplifySearchParameters(newSearchParameters);
-    extraneousGroups.map( x => this.props.removeSearchParameter(x.id) );
+    this.props.removeSearchParameter(pillsToRemove.concat(extraneousGroups.map(x => x.id)));
     return simplifiedParameters;
   };
 

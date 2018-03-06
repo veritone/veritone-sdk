@@ -7,6 +7,7 @@ import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
 import ModalSubtitle from '../ModalSubtitle';
+import { LinearProgress } from 'material-ui/Progress';
 
 import Dialog, {
   DialogActions,
@@ -66,7 +67,7 @@ export default class ObjectSearchModal extends React.Component {
     cancel: func
   };
 
-  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
+  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false } )));
 
   componentWillMount() {
     if(this.props.modalState.label) {
@@ -87,16 +88,19 @@ export default class ObjectSearchModal extends React.Component {
   onChange = debouncedQueryString => {
     if (debouncedQueryString) {
       this.setState({
-        queryResults: []
+        queryResults: [],
+        loading: true,
       });
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
+          loading: false,
           queryResults: response,
           queryString: debouncedQueryString
         });
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
+          loading: false,
           error: true,
           queryResults: [],
         });
@@ -104,6 +108,7 @@ export default class ObjectSearchModal extends React.Component {
       });
     } else {
       this.setState({
+        loading: false,
         queryResults: [],
         queryString: debouncedQueryString
       });
@@ -151,12 +156,13 @@ export default class ObjectSearchModal extends React.Component {
         selectResult={ this.selectResult }
         toggleExclude={ this.toggleExclude }
         onClickAutocomplete={ this.onClickAutocomplete }
+        loading={this.state.loading}
       />
     );
   }
 }
 
-export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete } ) => {
+export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading } ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -169,6 +175,7 @@ export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, m
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
         />
+        { loading ? <LinearProgress /> : null }
       </Grid>
       <Grid item>
         <FormControlLabel

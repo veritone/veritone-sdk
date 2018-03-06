@@ -11,6 +11,7 @@ import Dialog, {
   DialogContent,
   DialogTitle
 } from 'material-ui/Dialog';
+import { LinearProgress } from 'material-ui/Progress';
 
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import update from 'immutability-helper';
@@ -65,7 +66,7 @@ export default class FaceSearchModal extends React.Component {
     cancel: func
   };
 
-  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '' } )));
+  state = JSON.parse(JSON.stringify( Object.assign({}, this.props.modalState, { queryString: this.props.modalState.label || '', loading: false} )));
 
   componentWillMount() {
     if(this.props.modalState.label) {
@@ -87,24 +88,28 @@ export default class FaceSearchModal extends React.Component {
     var modal = this;
     if (debouncedQueryString) {
       this.setState({
-        queryResults: []
+        queryResults: [],
+        loading: true
       });
       return this.props.fetchAutocomplete(debouncedQueryString, this.props.auth, this.props.api, this.props.libraries).then(response => {
         this.setState({
           queryResults: response,
-          queryString: debouncedQueryString
+          queryString: debouncedQueryString,
+          loading: false
         });
         return debouncedQueryString;
       }).catch(err => {
         this.setState({
           error: true,
-          queryResults: []
+          queryResults: [],
+          loading: false
         });
         return debouncedQueryString;
       });
     } else {
       this.setState({
         queryResults: [],
+        loading: false,
         queryString: debouncedQueryString
       });
       return new Promise((resolve, reject) => resolve(debouncedQueryString || ''));
@@ -150,12 +155,13 @@ export default class FaceSearchModal extends React.Component {
         selectResult={ this.selectResult }
         toggleExclude={ this.toggleExclude }
         onClickAutocomplete={ this.onClickAutocomplete }
+        loading={ this.state.loading }
       />
     );
   }
 }
 
-export const FaceSearchForm = ( { cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete } ) => {
+export const FaceSearchForm = ( { cancel, onChange, onKeyPress, modalState, selectResult, toggleExclude, onClickAutocomplete, loading } ) => {
   return (
     <Grid container spacing={8}>
       <Grid item style={{flex: '1'}}>
@@ -168,6 +174,7 @@ export const FaceSearchForm = ( { cancel, onChange, onKeyPress, modalState, sele
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
         />
+        { loading ? <LinearProgress /> : null }
       </Grid>
       <Grid item>
         <FormControlLabel
