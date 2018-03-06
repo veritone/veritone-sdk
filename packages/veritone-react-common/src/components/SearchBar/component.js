@@ -149,14 +149,14 @@ const engineCategoryMapping = {
     getLabel: TranscriptDisplay,
     generateCondition: TranscriptConditionGenerator,
     title: 'Search by Keyword',
-    subtitle: 'Search within our database of media transcripts.'
+    subtitle: 'Search by keyword within our database of transcripts.'
   },
   'f2554098-f14b-4d81-9be1-41d0f992a22f': {
     modal: SentimentSearchModal,
     getLabel: SentimentDisplay,
     generateCondition: SentimentConditionGenerator,
     title: 'Search by Sentiment',
-    subtitle: 'Search by positive and negative sentiment in media.'
+    subtitle: ' Search by known images of people within our database.'
   },
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
     modal: RecognizedTextSearchModal,
@@ -170,14 +170,14 @@ const engineCategoryMapping = {
     getLabel: FaceDisplay,
     generateCondition: FaceConditionGenerator,
     title: 'Search by Face',
-    subtitle: 'Search within our database of known images of people.'
+    subtitle: 'Search by known images of people within our database.'
   },
   '088a31be-9bd6-4628-a6f0-e4004e362ea0': {
     modal: ObjectSearchModal,
     getLabel: ObjectDisplay,
     generateCondition: ObjectConditionGenerator,
     title: 'Search by Object',
-    subtitle: 'Search within our database for objects.'
+    subtitle: 'Search by objects within our database.'
   },
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': {
     modal: FingerprintSearchModal,
@@ -191,21 +191,21 @@ const engineCategoryMapping = {
     getLabel: LogoDisplay,
     generateCondition: LogoConditionGenerator,
     title: 'Search by Logo',
-    subtitle: 'Searches within our database for logos.'
+    subtitle: 'Search by logos within our database.'
   },
   'tag-search-id': {
     modal: TagSearchModal,
     getLabel: TagDisplay,
     generateCondition: TagConditionGenerator,
     title: 'Search by Tag',
-    subtitle: 'Searches within our database for tags.'
+    subtitle: 'Search by tags within our database.'
   },
   'time-search-id': {
     modal: TimeSearchModal,
     getLabel: TimeDisplay,
     generateCondition: TimeConditionGenerator,
     title: 'Search by Time',
-    subtitle: 'Search our database by day of week and time.'
+    subtitle: 'Search by day of week and time within our database.'
   },
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': {
     modal: GeolocationModal,
