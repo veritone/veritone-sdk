@@ -175,7 +175,7 @@ export const ObjectSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, m
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress style={ {height: "0.2em" }} /> : null }
+        { loading ? <LinearProgress style={ {height: "0.1em" }} /> : null }
       </Grid>
       <Grid item>
         <FormControlLabel

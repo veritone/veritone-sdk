@@ -177,7 +177,7 @@ export const TagSearchForm = ( { cancel, applyFilter, onChange, onKeyPress, moda
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress style={ {height: "0.2em" }} /> : null }
+        { loading ? <LinearProgress style={ {height: "0.1em" }} /> : null }
       </Grid>
       <Grid item>
         <FormControlLabel
