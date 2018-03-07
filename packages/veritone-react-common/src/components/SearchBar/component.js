@@ -156,7 +156,7 @@ const engineCategoryMapping = {
     getLabel: SentimentDisplay,
     generateCondition: SentimentConditionGenerator,
     title: 'Search by Sentiment',
-    subtitle: ' Search by known images of people within our database.'
+    subtitle: 'Search by positive and negative sentiment in media.'
   },
   '3b4ac603-9bfa-49d3-96b3-25ca3b502325': {
     modal: RecognizedTextSearchModal,
