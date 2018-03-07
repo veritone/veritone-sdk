@@ -174,7 +174,7 @@ export const FaceSearchForm = ( { cancel, onChange, onKeyPress, modalState, sele
           selectResult={ selectResult }
           onClickAutocomplete={onClickAutocomplete}
         />
-        { loading ? <LinearProgress /> : null }
+        { loading ? <LinearProgress style={ {height: "0.2em" }}/> : null }
       </Grid>
       <Grid item>
         <FormControlLabel
