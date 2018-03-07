@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { startsWith } from 'lodash';
-import { string } from 'prop-types';
+import { string, number } from 'prop-types';
 
 import Snippet from '../Snippet';
 
@@ -12,8 +12,8 @@ const TranscriptChunk = ({ startTime, endTime, data }) => {
 }
 
 TranscriptChunk.propTypes = {
-  startTime: string,
-  endTime: string,
+  startTime: number,
+  endTime: number,
   data: string
 };
 

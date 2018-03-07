@@ -1,20 +1,20 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import TranscriptEngineOutput from './';
+import { TranscriptEngineOutput } from './';
 
 import styles from './story.styles.scss';
 
-storiesOf('TranscriptEngineOutput', module)
-  .add('Base', () => {
-    // Mock of what we think the data structure will look like.
-    return (<TranscriptEngineOutput assets={assets} classes={{root: styles.transcriptRoot}}/>);
+storiesOf('EngineOutputViews', module)
+  .add('TranscriptEngineOutput', () => {
+    return (<TranscriptEngineOutput assets={transcriptAssets} classes={{root: styles.transcriptRoot}}/>);
   });
 
-const assets = [
+  // Mock of what we think the data structure will look like.
+const transcriptAssets = [
   {
-    startTime: '',
-    endTime: '',
+    startTime: 1520444708,
+    endTime: 1520444731,
     data: `<?xml version="1.0" encoding="utf-8"?>
     <tt xml:lang="en-us" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
     <body region="CaptionArea">
