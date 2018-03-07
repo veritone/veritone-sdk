@@ -45,8 +45,8 @@ export default {
   config: {
     sourceTypeId: 'react-adapter',
     logo: 'https://static.veritone.com/veritone-ui/ingestion/quantum_no_store_small.png',
-    scheduleOn: false,
-    processOn: true,
-    customizeOn: true
+    enableSchedule: true,
+    enableProcess: true,
+    enableCustomize: true
   }
 }
