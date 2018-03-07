@@ -5,6 +5,8 @@ import TranscriptChunk from '../TranscriptChunk';
 
 import styles from './styles.scss';
 
+const scrollBuffer = 100;
+
 class TranscriptContent extends Component {
   static propTypes = {
     assets: arrayOf(object)
@@ -19,8 +21,15 @@ class TranscriptContent extends Component {
   }
 
   onScroll = () => {
-    console.log('Scrolling and stuff');
-    console.log(document.body.offsetHeight);
+    if (this.transcriptContent.scrollTop <= scrollBuffer ){
+      // There will be logic here to check if the asset[0] contains the start of the recording
+      console.log("Check if we should get the previous set of assets");
+    } else if ((this.transcriptContent.offsetHeight + this.transcriptContent.scrollTop) >= 
+      (this.transcriptContent.scrollHeight - scrollBuffer)) {
+      // There will be logic here to check we have reached the end fo the recording
+      // or if we need to fetch more assets
+      console.log("Check if we should get the next set of assets");
+    }
   }
 
   elementRef = (element) => {
