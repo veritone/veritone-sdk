@@ -3,38 +3,47 @@ import React from 'react';
 import {
   string,
   bool,
+  func,
   arrayOf,
+  number
 } from 'prop-types';
+
+import styles from './styles.scss';
 
 import {
   Checkbox
 } from 'components/formComponents';
 
-import styles from './styles.scss';
+import LinesEllipsis from 'react-lines-ellipsis';
+import responsiveHOC from 'react-lines-ellipsis/lib/responsiveHOC'
+const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
+
 
 export default class SDOTile extends React.Component {
   static propTypes = {
-    sourceName: string,
+    checkAll: bool,
     createdAt: string,
     name: string,
     timeZone: string,
     text: string,
     profileImage: string,
-    attributes: arrayOf(string)
+    attributes: arrayOf(string),
+    numberOfFields: number
   };
 
   static defaultProps = {
-    sourceName: 'SDO Source',
+    checkAll: false,
     createdAt: 'Sat Dec 14 04:35:55 +0000 2013',
     name: 'TwitterDev',
     timeZone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts and everything in between blah blah blah blah blah Your official source for Twitter posts and everything in between blah blah blah blah blah',
-    profileImage: 'link',
-    attributes: ['really long attribute name', '2', '3']
+    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
+    profileImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
+    attributes: ['really long attribute name', 'description', 'description'],
+    numberOfFields: 9
   };
 
   state = {
-    flexValue: 1 / (Object.keys(this.props).length + this.props.attributes.length - 1),
+    flexValue: 1 / this.props.numberOfFields,
     checked: false
   };
 
@@ -44,7 +53,6 @@ export default class SDOTile extends React.Component {
     });
   };
 
-  
 
   render() {
     return (
@@ -62,7 +70,17 @@ export default class SDOTile extends React.Component {
         <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>{this.props.name}</span>
         <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>{this.props.timeZone}</span>
         <span className={styles.sdoTextColumn} style={{flex: this.state.flexValue}}>{this.props.text}</span>
-        <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>{this.props.profileImage}</span>
+        {/* <ResponsiveEllipsis
+          className={styles.sdoTextColumn} 
+          style={{flex: this.state.flexValue}}
+          text={this.props.text}
+          maxLine='3'
+          ellipsis='...'
+          trimRight
+          basedOn='letters'
+          component='span'
+        /> */}
+        <img className={styles.sdoProfileImage} style={{flex: this.state.flexValue}} src={this.props.profileImage}></img>
         <Attributes attributes={this.props.attributes} flexValue={this.state.flexValue}/>
       </div>
     );

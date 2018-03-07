@@ -1,20 +1,33 @@
 .sdoTile {
   height: 80px;
   width: 100%;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 13px;
+  line-height: 15px;
+
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-evenly;
   border-bottom: 1px solid rgba(0,0,0,0.12);
+  padding-top: 10px;
+  padding-bottom: 10px;
+
   .checkbox {
     margin-left: 25px;
   }
   .sdoBasicColumn {
     flex: 1 1 auto;
     align-self: center;
-    justify-content: center;
     line-height: 1;
   }
+
+  .sdoProfileImage {
+    height: 31px;
+    width: 31px;
+    align-self: center;
+  }
+
   // .sdoTextColumn {
   //   flex: 1 1 auto;
   //   align-self: center;
@@ -27,36 +40,37 @@
   .sdoTextColumn {
     flex: 1 1 auto;
     align-self: center;
-    justify-content: center;
     overflow: hidden;
-    position: relative; 
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    // position: relative; 
     line-height: 1;
     max-height: 80px; 
-    padding-right: 1px;
+    // padding-right: 1px;
   }
 
-  .sdoTextColumn:before {
-    /* points in the end */
-    content: '...';
-    /* absolute position */
-    position: absolute;
-    /* set position to right bottom corner of block */
-    right: 0;
-    bottom: 0;
-  }
+  // .sdoTextColumn:before {
+  //   /* points in the end */
+  //   content: '...';
+  //   /* absolute position */
+  //   position: absolute;
+  //   /* set position to right bottom corner of block */
+  //   right: 0;
+  //   bottom: 0;
+  // }
 
-  .sdoTextColumn:after {
-    /* points in the end */
-    content: '';
-    /* absolute position */
-    position: absolute;
-    /* set position to right bottom corner of text */
-    right: 0;
-    /* set width and height */
-    width: 1em;
-    height: 1em;
-    margin-top: 0.2em;
-    /* bg color = bg color under block */
-    background: white;
-  }
+  // .sdoTextColumn:after {
+  //   /* points in the end */
+  //   content: '';
+  //   /* absolute position */
+  //   position: absolute;
+  //   /* set position to right bottom corner of text */
+  //   right: 0;
+  //   /* set width and height */
+  //   width: 1em;
+  //   height: 1em;
+  //   margin-top: 0.2em;
+  //   /* bg color = bg color under block */
+  //   background: white;
+  // }
 }
