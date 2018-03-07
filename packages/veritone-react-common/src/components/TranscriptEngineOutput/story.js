@@ -2,7 +2,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import TranscriptEngineOutput from './';
-console.log(TranscriptEngineOutput);
 
 import styles from './story.styles.scss';
 
