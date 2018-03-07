@@ -29,11 +29,9 @@ export default class TimeSearchModal extends React.Component {
         selectedDays: arrayOf(bool)
       })
     }),
-    applyFilter: func,
     cancel: func
   };
   static defaultProps = {
-    applyFilter: value => console.log('Search by time', value),
     cancel: () => console.log('You clicked cancel')
   };
 
@@ -43,51 +41,57 @@ export default class TimeSearchModal extends React.Component {
     return copy;
   };
 
+
+
+  initializeState = (initialValue) => {
+    const filterValue = this.copyFilter(initialValue);
+    if(filterValue.stationBroadcastTime === false) {
+      filterValue.dayPartStartTime = fromUTCToLocal(filterValue.dayPartStartTime);
+      filterValue.dayPartEndTime = fromUTCToLocal(filterValue.dayPartEndTime);
+    }
+    return filterValue;
+  }
+
   state = {
-    filterValue: null || this.copyFilter(this.props.modalState.search)
+    filterValue: this.initializeState(this.props.modalState.search)
   };
 
   onDayPartStartTimeChange = event => {
-    this.state.filterValue.dayPartStartTime = event.target.value;
     this.setState({
-      filterValue: this.state.filterValue
+      filterValue: {
+        ...this.state.filterValue,
+        dayPartStartTime: event.target.value
+      }
     });
   };
 
   onDayPartEndTimeChange = event => {
-    this.state.filterValue.dayPartEndTime = event.target.value;
     this.setState({
-      filterValue: this.state.filterValue
+      filterValue: {
+        ...this.state.filterValue,
+        dayPartEndTime: event.target.value
+      }
     });
   };
 
   onStationBroadcastTimeChange = event => {
-    this.state.filterValue.stationBroadcastTime = event.target.checked;
     this.setState({
-      filterValue: this.state.filterValue
+      filterValue: {
+        ...this.state.filterValue,
+        stationBroadcastTime: event.target.checked
+      }
     });
   };
 
   onDayOfWeekSelectionChange = event => {
-    this.state.filterValue.selectedDays[Number(event.target.value)] =
-      event.target.checked;
+    const selectedDays = [...this.state.filterValue.selectedDays];
+    selectedDays[Number(event.target.value)] = event.target.checked;
     this.setState({
-      filterValue: this.state.filterValue
+      filterValue: {
+        ...this.state.filterValue,
+        selectedDays
+      }
     });
-  };
-
-  applyFilterIfValue = () => {
-    if (
-      !this.state.filterValue ||
-      !this.state.filterValue.dayPartStartTime ||
-      !this.state.filterValue.dayPartEndTime
-    ) {
-      this.props.applyFilter();
-    } else {
-      this.props.applyFilter({
-        search: this.copyFilter(this.state.filterValue)
-      });
-    }
   };
 
   returnValue() {
@@ -98,8 +102,13 @@ export default class TimeSearchModal extends React.Component {
     ) {
       return
     } else {
+      const filterValue = this.copyFilter(this.state.filterValue);
+      if(filterValue.stationBroadcastTime === false) {
+        filterValue.dayPartStartTime = fromLocalToUTC(filterValue.dayPartStartTime);
+        filterValue.dayPartEndTime = fromLocalToUTC(filterValue.dayPartEndTime);
+      }
       return {
-        search: this.copyFilter(this.state.filterValue)
+        search: filterValue
       };
     }
   }
@@ -108,7 +117,6 @@ export default class TimeSearchModal extends React.Component {
     return (
       <TimeSearchForm
         cancel={this.props.cancel}
-        onSubmit={this.applyFilterIfValue}
         onDayPartStartTimeChange={this.onDayPartStartTimeChange}
         onDayPartEndTimeChange={this.onDayPartEndTimeChange}
         onStationBroadcastTimeChange={this.onStationBroadcastTimeChange}
@@ -166,7 +174,6 @@ const daysOfTheWeek = [
 
 export const TimeSearchForm = ({
   cancel,
-  onSubmit,
   onDayPartStartTimeChange,
   onDayPartEndTimeChange,
   onStationBroadcastTimeChange,
@@ -278,11 +285,11 @@ export const TimeSearchForm = ({
 TimeSearchModal.defaultProps = {
   modalState: {
     search: {
-      dayPartStartTime: moment()
+      dayPartStartTime: moment.utc()
         .subtract(1, 'hour')
         .startOf('hour')
         .format('HH:mm'),
-      dayPartEndTime: moment()
+      dayPartEndTime: moment.utc()
         .subtract(1, 'hour')
         .endOf('hour')
         .milliseconds(0)
@@ -359,11 +366,17 @@ const TimeConditionGenerator = modalState => {
 const TimeDisplay = modalState => {
   let abbreviationMessage = '';
   if (modalState.search.dayPartStartTime && modalState.search.dayPartEndTime) {
+    let dayPartStartTime = modalState.search.dayPartStartTime;
+    let dayPartEndTime = modalState.search.dayPartEndTime;
+    if(modalState.search.stationBroadcastTime === false) {
+      dayPartStartTime = fromUTCToLocal(dayPartStartTime);
+      dayPartEndTime = fromUTCToLocal(dayPartEndTime);
+    }
     const startTime = moment(
-      modalState.search.dayPartStartTime,
+      dayPartStartTime,
       'HH:mm'
     ).format('hh:mm A');
-    const endTime = moment(modalState.search.dayPartEndTime, 'HH:mm').format(
+    const endTime = moment(dayPartEndTime, 'HH:mm').format(
       'hh:mm A'
     );
     abbreviationMessage = `${startTime}-${endTime}`;
@@ -385,6 +398,14 @@ const TimeDisplay = modalState => {
         : abbreviationMessage,
     thumbnail: null
   };
+};
+
+const fromLocalToUTC = (inputTime) => {
+  return moment(inputTime, 'HH:mm').utc().format('HH:mm');
+};
+
+const fromUTCToLocal = (inputTime) => {
+  return moment.utc(inputTime, 'HH:mm').local().format('HH:mm');
 };
 
 export { TimeSearchModal, TimeConditionGenerator, TimeDisplay };
