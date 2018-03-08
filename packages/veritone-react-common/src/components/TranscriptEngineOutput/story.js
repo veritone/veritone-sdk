@@ -8,6 +8,9 @@ import styles from './story.styles.scss';
 storiesOf('TranscriptEngineOutput', module)
   .add('Base', () => {
     return (<TranscriptEngineOutput assets={transcriptAssets} classes={{root: styles.transcriptRoot}}/>);
+  })
+  .add('EditMode', () => {
+    return (<TranscriptEngineOutput assets={transcriptAssets} classes={{root: styles.transcriptRoot}} editModeEnabled={true}/>);
   });
 
   // Mock of what we think the data structure will look like.
@@ -29,7 +32,7 @@ const transcriptAssets = [
   },
   {
     startTime: 1520444732,
-    endTime: 1520444755,
+    endTime: 1520445050,
     data: `<?xml version="1.0" encoding="utf-8"?>
     <tt xml:lang="en-us" xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
     <body region="CaptionArea">

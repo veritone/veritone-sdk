@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, object } from 'prop-types';
+import { arrayOf, object, bool } from 'prop-types';
 
 import TranscriptChunk from '../TranscriptChunk';
 
@@ -9,7 +9,8 @@ const scrollBuffer = 100;
 
 class TranscriptContent extends Component {
   static propTypes = {
-    assets: arrayOf(object)
+    assets: arrayOf(object),
+    editModeEnabled: bool
   };
 
   componentDidMount() {
@@ -37,8 +38,17 @@ class TranscriptContent extends Component {
   }
 
   render() {
-    let dataChunks = this.props.assets.map((asset, index) => {
-      return (<TranscriptChunk key={index} startTime={asset.startTime} endTime={asset.endTime} data={asset.data}/>);
+    let { assets, editModeEnabled} = this.props;
+    let dataChunks = assets.map((asset, index) => {
+      return (
+        <TranscriptChunk 
+          key={index} 
+          startTime={asset.startTime} 
+          endTime={asset.endTime} 
+          data={asset.data} 
+          editModeEnabled={editModeEnabled}
+        />
+      );
     })
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>
