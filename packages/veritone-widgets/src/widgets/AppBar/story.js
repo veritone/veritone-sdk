@@ -24,7 +24,7 @@ class Story extends React.Component {
 
   componentDidMount() {
     this._oauthButton = new OAuthLoginButton({
-      mode: 'auth-code',
+      mode: 'authCode',
       elId: 'login-button-widget-auth-code',
       OAuthURI: 'http://local.veritone-sample-app.com:5001/auth/veritone'
     });
@@ -32,7 +32,8 @@ class Story extends React.Component {
     this._oauthButtonImplicit = new OAuthLoginButton({
       mode: 'implicit',
       elId: 'login-button-widget-implicit',
-      OAuthURI: 'http://local.veritone-sample-app.com:5001/auth/veritone'
+      clientId: 'fixme',
+      redirectUri: window.origin
     });
 
     this._appBar = new AppBarWidget({

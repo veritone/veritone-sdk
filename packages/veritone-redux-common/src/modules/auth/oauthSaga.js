@@ -30,12 +30,19 @@ function* requestOAuthGrant({
 }
 
 function* requestOAuthGrantImplicit({
-  payload: { OAuthURI, onSuccess = noop, onFailure = noop }
+  payload: {
+    OAuthURI,
+    responseType,
+    clientId,
+    redirectUri,
+    scope,
+    onSuccess = noop,
+    onFailure = noop
+  }
 }) {
   const authWindow = yield call(
     window.open,
-    // fixme: apiroot/v1/admin/aiuthorize, client id and redir url into params
-    'http://api.aws-dev.veritone.com/v1/admin/oauth/authorize?response_type=token&client_id=20a0686a-62e5-45cc-a8b4-e9cb11460ec3&redirect_uri=http://local.veritone-sample-app.com:3000&scope=all',
+    `${OAuthURI}?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`,
     '_auth',
     'width=550px,height=650px'
   );
@@ -59,9 +66,13 @@ function* requestOAuthGrantImplicit({
   const { OAuthToken, error } = yield take(windowEventChannel);
   yield call([authWindow, authWindow.close]);
 
-  return OAuthToken
-    ? yield put(OAuthGrantSuccess({ OAuthToken }))
-    : yield put(OAuthGrantFailure(error));
+  if (OAuthToken) {
+    yield put(OAuthGrantSuccess({ OAuthToken }));
+    yield call(onSuccess, { OAuthToken });
+  } else if (error) {
+    yield put(OAuthGrantFailure({ error }));
+    yield call(onFailure, error);
+  }
 }
 
 function* watchOAuthGrantRequest() {
@@ -74,7 +85,3 @@ function* watchOAuthGrantRequest() {
 export default function* root() {
   yield all([fork(watchOAuthGrantRequest)]);
 }
-
-// http://api.aws-dev.veritone.com/v1/admin/oauth/authorize?response_type=token&client_id=20a0686a-62e5-45cc-a8b4-e9cb11460ec3&redirect_uri=http://local.veritone-sample-app.com:3000&scope=all
-
-//http://local.veritone-sample-app.com:3000/%3FselectedKind%3DFilePickerWidget%26selectedStory%3DBase

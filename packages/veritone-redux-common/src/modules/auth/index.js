@@ -83,17 +83,33 @@ export function setOAuthToken(token) {
   };
 }
 
-export function requestOAuthGrant(OAuthURI, onSuccess, onFailure) {
+export function requestOAuthGrant({ OAuthURI, onSuccess, onFailure }) {
   return {
     type: constants.REQUEST_OAUTH_GRANT,
     payload: { OAuthURI, onSuccess, onFailure }
   };
 }
 
-export function requestOAuthGrantImplicit(OAuthURI, onSuccess, onFailure) {
+export function requestOAuthGrantImplicit({
+  OAuthURI = 'https://api.veritone.com/v1/admin/oauth/authorize',
+  responseType = 'token',
+  scope = 'all',
+  clientId,
+  redirectUri,
+  onSuccess,
+  onFailure
+}) {
   return {
     type: constants.REQUEST_OAUTH_GRANT_IMPLICIT,
-    payload: { OAuthURI, onSuccess, onFailure }
+    payload: {
+      OAuthURI,
+      responseType,
+      scope,
+      clientId,
+      redirectUri,
+      onSuccess,
+      onFailure
+    }
   };
 }
 

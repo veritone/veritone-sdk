@@ -23,10 +23,15 @@ class OAuthLoginButton extends React.Component {
     requestOAuthGrant: func.isRequired,
     requestOAuthGrantImplicit: func.isRequired,
     userIsAuthenticated: bool.isRequired,
-    OAuthURI: string.isRequired,
-    mode: oneOf(['implicit', 'auth-code']),
+    mode: oneOf(['implicit', 'authCode']),
     onAuthSuccess: func,
-    onAuthFailure: func
+    onAuthFailure: func,
+    OAuthURI: string.isRequired,
+    // required params for implicit grant only:
+    responseType: string,
+    scope: string,
+    redirectUri: string,
+    clientId: string,
   };
 
   static defaultProps = {
@@ -36,14 +41,18 @@ class OAuthLoginButton extends React.Component {
   handleLogin = () => {
     const grantFn = {
       implicit: this.props.requestOAuthGrantImplicit,
-      'auth-code': this.props.requestOAuthGrant
+      authCode: this.props.requestOAuthGrant
     }[this.props.mode];
 
-    grantFn(
-      this.props.OAuthURI,
-      this.props.onAuthSuccess,
-      this.props.onAuthFailure
-    );
+    grantFn({
+      OAuthURI: this.props.OAuthURI,
+      responseType: this.props.responseType,
+      scope: this.props.scope,
+      clientId: this.props.clientId,
+      redirectUri: this.props.redirectUri,
+      onSuccess: this.props.onAuthSuccess,
+      onFailure: this.props.onAuthFailure
+    });
   };
 
   render() {
