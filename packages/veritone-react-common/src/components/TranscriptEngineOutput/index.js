@@ -14,6 +14,11 @@ class TranscriptEngineOutput extends Component {
     classes: object
   };
 
+  static defaultProps = {
+    assets: [],
+    classes: {}
+  }
+
   render() {
     let { classes } = this.props;
     return (
