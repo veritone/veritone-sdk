@@ -10,7 +10,9 @@ export default class Scheduler extends React.Component {
   };
 
   static defaultProps = {
-    occurrenceType: 'none'
+    schedule: {
+      occurrenceType: 'none'
+    }
   };
 
   componentDidMount() {
@@ -29,16 +31,21 @@ export default class Scheduler extends React.Component {
   };
 
   // Component specific functions here
+  handleChange = (event, value) => {
+    this.setState({ schedule: { occurrenceType: value } });
+  }
  
   render() {
     return (
       <div>
-        <RadioGroup name="occurrenceType" value={this.state.occurrenceType}>
-          <FormControlLabel value="recurring" control={<Radio />} label="Recurring" />
-          <FormControlLabel value="continuous" control={<Radio />} label="Continuous" />
-          <FormControlLabel value="one-time" control={<Radio />} label="One Time" />
-          <FormControlLabel value="none" control={<Radio />} label="None" />
-        </RadioGroup>
+        <FormControl component="fieldset" required>
+          <RadioGroup name="occurrenceType" value={this.state.schedule.occurrenceType} onChange={this.handleChange} style={{display: 'flex', flexDirection: 'row'}}>
+            <FormControlLabel value="recurring" control={<Radio />} label="Recurring" />
+            <FormControlLabel value="continuous" control={<Radio />} label="Continuous" />
+            <FormControlLabel value="one-time" control={<Radio />} label="One Time" />
+            <FormControlLabel value="none" control={<Radio />} label="None" />
+          </RadioGroup>
+        </FormControl>
       </div>
     );
   }
