@@ -4,7 +4,9 @@ import {
   string,
   bool,
   arrayOf,
-  number
+  number,
+  any,
+  objectOf
 } from 'prop-types';
 
 import { Field } from 'redux-form';
@@ -19,27 +21,26 @@ import {
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
 
-import SDOTile from './SDOTile';
+import SDOTile from 'components/SDO/SDOTile';
 
 import styles from './styles.scss';
 
-export default class SDOTiles extends React.Component {
+export default class SDOCard extends React.Component {
   static propTypes = {
-    numberOfFields: number
+    numberOfFields: number,
+    data: arrayOf(any),
+    sdoSourceInfo: objectOf(any)
   };
 
   static defaultProps = {
-    numberOfFields: 9 // includes the checkbox
+
   };
 
   state = {
     checkedAll: false,
-    flexValue: 1 / this.props.numberOfFields,
-    attributeCount: 3, // should be dynamic, set for testing
-    sourceName: '@therealtrump',
-    sourceImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    sourceSelection: 'therealtrump (Source Name)',
-    sourceSelections: ['therealtrump (Source Name)', 'therealstump (Source Name)']
+    flexValue: 1 / (this.props.numberOfFields + 1),
+    // attributeCount: this.props.data[0].attributes.length, // should be dynamic, set for testing
+    
   };
 
   handleSelectChange = (event) => {
@@ -56,22 +57,28 @@ export default class SDOTiles extends React.Component {
   };
 
   render() {
-    const menuItems = this.state.sourceSelections.map((source, index) => {
+    const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
+      return <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}} key={index}>{title}</span>
+    });
+    const menuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
       return <MenuItem value={source} key={index}>{source}</MenuItem>
+    });
+    const SDOTiles = this.props.data.map((SDO, index) => {
+      return <SDOTile checkAll={this.state.checkedAll} numberOfFields={this.props.numberOfFields} columns={SDO} key={index} />
     });
     return (
       <div>
         <div className={styles.tableCard}>
           <div className={styles.sourceTitle}>
             <div className={styles.sourceTitleGroup}>
-              <img src={this.state.sourceImage} alt='' className={styles.imageStyle} />
+              <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
               <div className={styles.sourceName}>
-                {this.state.sourceName} (Source Name)
+                {this.props.sdoSourceInfo.sourceName} (Source Name)
               </div>
             </div>
             <Select 
               className={styles.sourceSelect}
-              value={this.state.sourceSelection}
+              value={this.props.sdoSourceInfo.sourceSelection}
               onChange={this.handleSelectChange}
               >
               {menuItems}
@@ -87,17 +94,18 @@ export default class SDOTiles extends React.Component {
               style={{flex: this.state.flexValue}}
               label=''
             />
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>created_at</span>
+            {columnTitles}
+            {/* <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>created_at</span>
             <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>name</span>
             <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>time_zone</span>
             <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>text</span>
 
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>profile_image</span>
-            <Attributes attributes={this.state.attributeCount} flexValue={this.state.flexValue}/>
+            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>profile_image</span> */}
+            {/* <Attributes attributes={this.state.attributeCount} flexValue={this.state.flexValue}/> */}
 
             
           </div>
-          <SDOTile/>
+          {SDOTiles}
         </div>
       </div>
     );
@@ -106,12 +114,12 @@ export default class SDOTiles extends React.Component {
 };
 
 
-function Attributes(props) {
-  const attributes = props.attributes;
-  const flexValue = props.flexValue;
-  let spans = [];
-  for (let i = 0; i < attributes; i++) {
-    spans.push(<span className={styles.sdoBasicColumn} style={{flex: flexValue}} key={i}>Attribute</span>);
-  }
-  return spans;
-};
+// function Attributes(props) {
+//   const attributes = props.attributes;
+//   const flexValue = props.flexValue;
+//   let spans = [];
+//   for (let i = 0; i < attributes; i++) {
+//     spans.push(<span className={styles.sdoBasicColumn} style={{flex: flexValue}} key={i}>Attribute</span>);
+//   }
+//   return spans;
+// };

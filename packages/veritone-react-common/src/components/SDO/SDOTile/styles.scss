@@ -20,12 +20,18 @@
     flex: 1 1 auto;
     align-self: center;
     line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1;
+    padding-right: 5px; // make it neater when columns are squeezed too close
   }
 
   .sdoProfileImage {
     height: 31px;
     width: 31px;
     align-self: center;
+    padding-right: 5px; // make it neater when columns are squeezed too close
   }
 
   // .sdoTextColumn {
