@@ -90,10 +90,25 @@ export function requestOAuthGrant(OAuthURI, onSuccess, onFailure) {
   };
 }
 
+export function requestOAuthGrantImplicit(OAuthURI, onSuccess, onFailure) {
+  return {
+    type: constants.REQUEST_OAUTH_GRANT_IMPLICIT,
+    payload: { OAuthURI, onSuccess, onFailure }
+  };
+}
+
 export function OAuthGrantSuccess({ OAuthToken }) {
   return {
     type: constants.OAUTH_GRANT_FLOW_SUCCESS,
     payload: { OAuthToken }
+  };
+}
+
+export function OAuthGrantFailure({ error }) {
+  return {
+    type: constants.OAUTH_GRANT_FLOW_FAILED,
+    payload: { error },
+    error: true
   };
 }
 

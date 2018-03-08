@@ -24,8 +24,15 @@ class Story extends React.Component {
 
   componentDidMount() {
     this._oauthButton = new OAuthLoginButton({
-      elId: 'login-button-widget',
-      OAuthURI: 'http://localhost:5001/auth/veritone'
+      mode: 'auth-code',
+      elId: 'login-button-widget-auth-code',
+      OAuthURI: 'http://local.veritone-sample-app.com:5001/auth/veritone'
+    });
+
+    this._oauthButtonImplicit = new OAuthLoginButton({
+      mode: 'implicit',
+      elId: 'login-button-widget-implicit',
+      OAuthURI: 'http://local.veritone-sample-app.com:5001/auth/veritone'
     });
 
     this._appBar = new AppBarWidget({
@@ -39,6 +46,7 @@ class Story extends React.Component {
   componentWillUnmount() {
     this._appBar.destroy();
     this._oauthButton.destroy();
+    this._oauthButtonImplicit.destroy();
   }
 
   handleLogin = () => {
@@ -68,7 +76,10 @@ class Story extends React.Component {
               </p>
               or log in via oauth:
               <p>
-                <span id="login-button-widget" />
+                implicit:
+                <span id="login-button-widget-implicit" />
+                auth code:
+                <span id="login-button-widget-auth-code" />
               </p>
             </div>
           )}
