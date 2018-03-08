@@ -7,13 +7,28 @@ import styles from './story.styles.scss';
 
 storiesOf('TranscriptEngineOutput', module)
   .add('Base', () => {
-    return (<TranscriptEngineOutput assets={transcriptAssets} classes={{root: styles.transcriptRoot}}/>);
+    return (
+      <TranscriptEngineOutput 
+        assets={transcriptAssets} 
+        classes={{root: styles.transcriptRoot}}
+        tdoStartTime={tdoStartTime}
+        tdoEndTime={tdoEndTime}
+      />
+    );
   })
   .add('EditMode', () => {
-    return (<TranscriptEngineOutput assets={transcriptAssets} classes={{root: styles.transcriptRoot}} editModeEnabled={true}/>);
+    return (
+      <TranscriptEngineOutput 
+        assets={transcriptAssets} 
+        classes={{root: styles.transcriptRoot}} 
+        editModeEnabled={true}
+        tdoStartTime={tdoStartTime}
+        tdoEndTime={tdoEndTime}
+      />
+    );
   });
 
-  // Mock of what we think the data structure will look like.
+// Mock of what we think the data structure will look like.
 const transcriptAssets = [
   {
     startTime: 1520444708,
@@ -94,3 +109,5 @@ const transcriptAssets = [
     </tt>`
   }
 ];
+const tdoStartTime = transcriptAssets[0].startTime;
+const tdoEndTime = transcriptAssets[transcriptAssets.length - 1].endTime;

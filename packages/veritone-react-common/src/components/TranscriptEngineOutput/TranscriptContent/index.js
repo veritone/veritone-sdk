@@ -22,7 +22,7 @@ class TranscriptContent extends Component {
   }
 
   onScroll = () => {
-    if (this.transcriptContent.scrollTop <= scrollBuffer ){
+    if (this.transcriptContent.scrollTop <= scrollBuffer){
       // There will be logic here to check if the asset[0] contains the start of the recording
       console.log("Check if we should get the previous set of assets");
     } else if ((this.transcriptContent.offsetHeight + this.transcriptContent.scrollTop) >= 
@@ -38,7 +38,7 @@ class TranscriptContent extends Component {
   }
 
   render() {
-    let { assets, editModeEnabled} = this.props;
+    let { assets, editModeEnabled, tdoStartTime, tdoEndTime } = this.props;
     let dataChunks = assets.map((asset, index) => {
       return (
         <TranscriptChunk 
