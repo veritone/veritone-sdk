@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react';
 import { startsWith } from 'lodash';
-import { string, number } from 'prop-types';
+import { string, number, bool } from 'prop-types';
 
 import Snippet from '../Snippet';
 
-const TranscriptChunk = ({ startTime, endTime, data }) => {
-  let snippets = convertTranscript(data).map((snippet, index) => {
-    return <Snippet key={index} text={snippet.text}/>
+const TranscriptChunk = ({ startTime, endTime, data, editModeEnabled }) => {
+  let snippets = convertFromTranscript(data).map((snippet, index) => {
+    return <Snippet key={index} snippet={snippet} editModeEnabled={editModeEnabled}/>
   });
   return <Fragment>{snippets}</Fragment>
 }
@@ -14,7 +14,8 @@ const TranscriptChunk = ({ startTime, endTime, data }) => {
 TranscriptChunk.propTypes = {
   startTime: number,
   endTime: number,
-  data: string
+  data: string,
+  editModeEnabled: bool
 };
 
 export default TranscriptChunk;
@@ -27,7 +28,7 @@ function toSeconds(timeString) {
   return parseFloat((h + m + s).toFixed(3));
 }
 
-function convertTranscript(xmlData) {
+function convertFromTranscript(xmlData) {
   let snippetRegex = /<p begin="([^"]+)" end="([^"]+)">([^<]+)<\/p>/g;
   let snippetRegexSingle = /<p begin="([^"]+)" end="([^"]+)">([^<]+)<\/p>/;
   let snippets = [];

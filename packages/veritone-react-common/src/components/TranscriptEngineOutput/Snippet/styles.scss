@@ -1,3 +1,9 @@
+@import 'src/styles/modules/variables';
+
 .boldText {
   font-weight: 500;
+}
+
+.hoverText {
+  color: $blue-1;
 }
