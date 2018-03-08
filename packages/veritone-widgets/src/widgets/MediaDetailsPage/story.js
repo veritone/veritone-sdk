@@ -8,7 +8,9 @@ import MediaDetailsPage from './';
 class Story extends React.Component {
   componentDidMount() {
     this._mediaDetailsPage = new MediaDetailsPage({
-      elId: 'mediaDetails-widget'
+      elId: 'mediaDetails-widget',
+      mediaId: 1234567,
+      onClose: function(){ console.log('Widget for Media Details onClose clicked.')}
     });
   }
   componentWillUnmount() {
