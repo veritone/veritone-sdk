@@ -1,4 +1,5 @@
 import '../src/styles/global.scss';
+import MediaDetails from "./components/MediaDetails/index";
 
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
@@ -18,3 +19,4 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
+export MediaDetails from './components/MediaDetails';

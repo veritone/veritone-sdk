@@ -1,0 +1,22 @@
+
+.mediaDetailsPageContent {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  min-height: 400px;
+  position: relative;
+
+  .mediaDetailsPageCloseIcon {
+    position: relative;
+    float: right;
+    margin: 24px;
+    height: 14px;
+    width: 14px;
+    button {
+      height: 14px;
+      width: 14px;
+    }
+    button:before {
+      font-size: 18px;
+    }
+  }
+}
