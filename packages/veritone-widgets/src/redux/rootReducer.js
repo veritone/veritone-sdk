@@ -5,6 +5,10 @@ import filePickerReducer, {
   namespace as filePickerNamespace
 } from './modules/filePicker';
 
+import mediaDetailsReducer, {
+  namespace as mediaDetailsNamespace
+} from './modules/mediaDetails';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -16,6 +20,7 @@ import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
 export default function createReducer(asyncReducers) {
   return combineReducers({
     [filePickerNamespace]: filePickerReducer,
+    [mediaDetailsNamespace]: mediaDetailsReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
