@@ -142,12 +142,17 @@ var data = [
 var sdoSourceInfo = {
   sourceName: '@therealtrump',
   sourceImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-  sourceSelection: 'therealtrump (Source Name)',
-  sourceSelections: ['therealtrump (Source Name)', 'therealstump (Source Name)']
+  sourceSelection: 'therealtrump',
+  sourceSelections: ['therealtrump', 'therealstump']
+};
+
+var sdoSchemaInfo = {
+  schemaSelection: 'Tweet',
+  schemaSelections: ['Tweet', 'Twat', 'Twot']
 };
 
 
 storiesOf('SDOCard', module)
   .add('Base', () => (
-    <SDOCard numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} />
+    <SDOCard numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} sdoSchemaInfo={sdoSchemaInfo} />
   ))

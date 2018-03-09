@@ -1,3 +1,51 @@
+.fullScreenHeader {
+  height: 116px;
+  border-bottom: 1px solid #E0E0E0;
+  .fullScreenTitle {
+    display: flex;
+    flex-direction: row;
+    margin-left: 1px;
+    .titleText {
+      align-self: center;
+      height: 24px;
+      color: rgba(0, 0, 0, 0.87);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 24px;
+    }
+  }
+  .headerDescription {
+    height: 18px;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 14px;
+    line-height: 18px;
+    margin-left: 50px;
+  }
+}
+
+.schemaSelector {
+  float: right;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 15px;
+  .schemaSelect {
+    align-self: center;
+    margin-right: 15px;
+  }
+  .searchIcon {
+    font-size: 18px;
+    transform: scaleX(-1);
+    align-self: center;
+  }
+  .menuIcon {
+    font-size: 16px;
+    align-self: center;
+  }
+}
+
+
+
 .tableCard {
   border-radius: 2px;
   background-color: rgba(216, 216, 216, 0);
@@ -32,7 +80,7 @@
     }
     
     .sourceSelect {
-      margin-right: 4vh;
+      margin-right: 2vh;
     }
   }
   
@@ -59,6 +107,9 @@
       align-self: center;
       line-height: 1;
       padding-right: 5px; //make it neater when columns are squeezed too close
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   
   }

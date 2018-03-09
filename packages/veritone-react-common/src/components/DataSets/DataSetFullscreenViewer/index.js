@@ -20,6 +20,8 @@ import {
 } from 'components/formComponents';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
 
 import SDOTile from 'components/SDO/SDOTile';
 
@@ -60,14 +62,26 @@ export default class DataSetFullScreen extends React.Component {
     const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
       return <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}} key={index}>{title}</span>
     });
-    const menuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
-      return <MenuItem value={source} key={index}>{source}</MenuItem>
-    });
     const SDOTiles = this.props.data.map((SDO, index) => {
       return <SDOTile checkAll={this.state.checkedAll} numberOfFields={this.props.numberOfFields} columns={SDO} key={index} />
     });
     return (
       <div>
+        <div className={styles.fullScreenTopBar}>
+          <div className={styles.topBarTitle}>{this.props.sdoSourceInfo.dataSetName}</div>
+          <div className={styles.iconGroup}>
+            <IconButton className={styles.helpIcon} aria-label='help'>
+              <Icon className={'icon-help2'}></Icon>
+            </IconButton>
+            <IconButton className={styles.menuIcon} aria-label='help'>
+              <Icon className={'icon-more_vert'}></Icon>
+            </IconButton>
+            <span className={styles.separator}></span>
+            <IconButton className={styles.exitIcon} aria-label='help'>
+              <Icon className={'icon-close-exit'}></Icon>
+            </IconButton>
+          </div>
+        </div>
         <div className={styles.tableCard}>
           <div className={styles.sourceTitle}>
             <div className={styles.sourceTitleGroup}>
@@ -76,13 +90,6 @@ export default class DataSetFullScreen extends React.Component {
                 {this.props.sdoSourceInfo.sourceName} (Source Name)
               </div>
             </div>
-            <Select 
-              className={styles.sourceSelect}
-              value={this.props.sdoSourceInfo.sourceSelection}
-              onChange={this.handleSelectChange}
-              >
-              {menuItems}
-            </Select>
           </div>
           <div className={styles.sdoTableTitle}>
             <Checkbox
@@ -109,17 +116,5 @@ export default class DataSetFullScreen extends React.Component {
         </div>
       </div>
     );
-  }
-
+  };
 };
-
-
-// function Attributes(props) {
-//   const attributes = props.attributes;
-//   const flexValue = props.flexValue;
-//   let spans = [];
-//   for (let i = 0; i < attributes; i++) {
-//     spans.push(<span className={styles.sdoBasicColumn} style={{flex: flexValue}} key={i}>Attribute</span>);
-//   }
-//   return spans;
-// };

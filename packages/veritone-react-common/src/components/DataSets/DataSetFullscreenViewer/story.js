@@ -140,6 +140,7 @@ var data = [
 ];
 
 var sdoSourceInfo = {
+  dataSetName: 'Twitter Data Set 1',
   sourceName: '@therealtrump',
   sourceImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
   sourceSelection: 'therealtrump (Source Name)',

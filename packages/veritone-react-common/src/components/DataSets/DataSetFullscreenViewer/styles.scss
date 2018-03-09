@@ -1,3 +1,54 @@
+.fullScreenTopBar {
+  background-color: #1F2532;
+  height: 65px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .topBarTitle {
+    color: #FAFAFA;
+    font-size: 20px;
+    line-height: 28px;
+    align-self: center;
+    margin-left: 25px;
+  }
+
+  .iconGroup {
+    align-self: center;
+    display: flex;
+    justify-content: space-between;
+    width: 125px;
+    margin-right: 25px;
+
+    .helpIcon {
+      height: 20px;
+      width: 20px;
+      color: #FAFAFA;
+      align-self: center;
+    }
+    .menuIcon {
+      height: 20px;
+      width: 20px;
+      color: #FAFAFA;
+      align-self: center;
+    }
+    .separator {
+      align-self: center;
+      color: #FAFAFA;
+      border-right: 2px solid white;
+      height: 27px;
+      margin-left: -2px;
+      margin-bottom: -2px;
+    }
+    .exitIcon {
+      height: 20px;
+      width: 20px;
+      color: #FAFAFA;
+      align-self: center;
+    }
+  }
+}
+
 .tableCard {
   // border-radius: 2px;
   // background-color: rgba(216, 216, 216, 0);

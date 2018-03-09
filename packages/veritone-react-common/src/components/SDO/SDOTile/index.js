@@ -87,5 +87,5 @@ export default class SDOTile extends React.Component {
         {/* <Attributes attributes={this.props.columns.attributes} flexValue={this.state.flexValue}/> */}
       </div>
     );
-  }
-}
+  };
+};
