@@ -20,4 +20,4 @@ export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
 export SDOCard from './components/SDO/SDOCard';
 export SDOTile from './components/SDO/SDOTile';
-export DataSetFullscreen from './components/DataSets/DataSetFullscreenViewer';
+export DataSetFullScreen from './components/DataSets/DataSetFullscreenViewer';

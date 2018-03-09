@@ -1,0 +1,66 @@
+.tableCard {
+  // border-radius: 2px;
+  // background-color: rgba(216, 216, 216, 0);
+  // box-shadow: 0 2px 4px 0 rgba(0,0,0,0.14), 0 3px 4px 0 rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+  margin-left: 2vh;
+  margin-right: 2vh;
+  // padding-right: 2vh;
+  // padding-left: 2vh;
+
+  .sourceTitle {
+    padding: 20px 0 20px 25px;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+
+    .sourceTitleGroup {
+      display: flex;
+      flex-direction: row;
+
+      .imageStyle {
+        height: 38px;
+        width: 38px;
+      }
+  
+      .sourceName {
+        line-height: 16px;
+        font-weight: 500;
+        font-size: 14px;
+        align-self: center;
+        padding-left: 20px;
+      }
+    }
+    
+    .sourceSelect {
+      margin-right: 4vh;
+    }
+  }
+  
+  .sdoTableTitle {
+    height: 60px;
+    width: 100%;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 15px;
+  
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+  
+    .checkbox {
+      margin-left: 25px;
+    }
+  
+    .sdoBasicColumn {
+      flex: 1 1 auto;
+      align-self: center;
+      line-height: 1;
+      padding-right: 5px; //make it neater when columns are squeezed too close
+    }
+  
+  }
+}
+

@@ -30,15 +30,6 @@ export default class SDOTile extends React.Component {
 
   static defaultProps = {
     checkAll: false
-    // columns: {
-    //   createdAt: 'Sat Dec 14 04:35:55 +0000 2013',
-    //   name: 'TwitterDev',
-    //   timeZone: 'Pacific Time (US & Canada)',
-    //   text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    //   profileImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    //   attributes: ['really long attribute name', 'description', 'description']
-    // },
-    // numberOfFields: 8
   };
 
   state = {
@@ -52,10 +43,17 @@ export default class SDOTile extends React.Component {
     });
   };
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({checked: nextProps.checkAll});
+  };
+
+  shouldComponentUpdate(nextProps) {
+    return this.state.checked !== nextProps.checkAll;
+  };
+
 
   render() {
     const columnSections = Object.values(this.props.columns).map((column, index) => {
-      console.log(column);
       if (column.indexOf('image') !== -1) { //TODO: this won't always work, need a way to know if a field is an image
         // change tag for images
         return <img className={styles.sdoProfileImage} style={{flex: this.state.flexValue}} src={column} key={index}></img>
@@ -75,10 +73,6 @@ export default class SDOTile extends React.Component {
           label=''
         />
         {columnSections}
-        {/* <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>{this.props.columns.createdAt}</span>
-        <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>{this.props.columns.name}</span>
-        <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>{this.props.columns.timeZone}</span>
-        <span className={styles.sdoTextColumn} style={{flex: this.state.flexValue}}>{this.props.columns.text}</span> */}
         {/* <ResponsiveEllipsis
           className={styles.sdoTextColumn} 
           style={{flex: this.state.flexValue}}
@@ -95,13 +89,3 @@ export default class SDOTile extends React.Component {
     );
   }
 }
-
-// function Attributes(props) {
-//   const attributes = props.attributes;
-//   const flexValue = props.flexValue;
-//   return (
-//     attributes.map(function (attribute, index) {
-//       return <span className={styles.sdoBasicColumn} style={{flex: flexValue}} key={index}>{attribute}</span>
-//     })
-//   );
-// }

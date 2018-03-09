@@ -95,15 +95,7 @@ export default class SDOCard extends React.Component {
               label=''
             />
             {columnTitles}
-            {/* <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>created_at</span>
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>name</span>
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>time_zone</span>
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>text</span>
-
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>profile_image</span> */}
             {/* <Attributes attributes={this.state.attributeCount} flexValue={this.state.flexValue}/> */}
-
-            
           </div>
           {SDOTiles}
         </div>
@@ -112,14 +104,3 @@ export default class SDOCard extends React.Component {
   }
 
 };
-
-
-// function Attributes(props) {
-//   const attributes = props.attributes;
-//   const flexValue = props.flexValue;
-//   let spans = [];
-//   for (let i = 0; i < attributes; i++) {
-//     spans.push(<span className={styles.sdoBasicColumn} style={{flex: flexValue}} key={i}>Attribute</span>);
-//   }
-//   return spans;
-// };
