@@ -30,9 +30,6 @@ export default class MediaDetails extends Component {
     // Media player segment
     // engine category selector
 
-    console.log('Media component log');
-    console.log(this.props.engineCategories);
-
     return (
       <Paper className={styles.mediaDetailsPageContent}>
         <div>
@@ -44,11 +41,18 @@ export default class MediaDetails extends Component {
               disableRipple={true}/>
           </div>
         </div>
-        {console.log(this.props.engineCategories)}
         <div>
-          Engine categories statuses
+          Engine categories
           {this.props.engineCategories && this.props.engineCategories.length && (
-            <span>{this.props.engineCategories[0].status}</span>
+            <div>
+              {
+                this.props.engineCategories.map(function(engineCategory) {
+                  return (
+                      <a key={engineCategory.id}>{engineCategory.name}</a>
+                  );
+                })
+              }
+            </div>
           )}
         </div>
 

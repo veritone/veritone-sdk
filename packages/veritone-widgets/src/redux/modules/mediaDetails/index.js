@@ -25,8 +25,6 @@ export default createReducer(defaultState, {
     };
   },
   [LOAD_ENGINE_CATEGORIES_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
-    console.log('Reducer load complete. updating state');
-    console.log(payload);
     const errorMessage = get(error, 'message', error); // Error or string
     return {
       ...state,
@@ -53,11 +51,8 @@ export const loadEngineCategoriesRequest = (widgetId, mediaId, callback) => ({
   meta: { widgetId }
 });
 
-export const loadEngineCategoriesComplete = function(widgetId, result, { warn, error }) {
-  console.log('inside loadEngineCategoriesComplete');
-  return {
-    type: LOAD_ENGINE_CATEGORIES_COMPLETE,
-      payload: result,
-    meta: { warn, error, widgetId }
-  }
-};
+export const loadEngineCategoriesComplete = (widgetId, result, { warn, error }) => ({
+  type: LOAD_ENGINE_CATEGORIES_COMPLETE,
+  payload: result,
+  meta: { warn, error, widgetId }
+});

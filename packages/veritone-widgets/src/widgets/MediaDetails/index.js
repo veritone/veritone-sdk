@@ -30,16 +30,11 @@ class MediaDetailsWidget extends React.Component {
     engineCategories: arrayOf(any)
   };
 
-  loadEngineCategoriesCallback = noop;
-
   componentDidMount() {
     this.props.loadEngineCategoriesRequest(this.props._widgetId, this.props.mediaId);
   }
 
   render() {
-
-    console.log('widget');
-    console.log(this.props.engineCategories);
 
     // TODOs:
     // load Engine categories and pass down
