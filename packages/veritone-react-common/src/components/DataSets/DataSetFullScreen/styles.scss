@@ -112,6 +112,9 @@
       align-self: center;
       line-height: 1;
       padding-right: 5px; //make it neater when columns are squeezed too close
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   
   }

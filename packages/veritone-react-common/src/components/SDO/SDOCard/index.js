@@ -41,9 +41,7 @@ export default class SDOCard extends React.Component {
 
   state = {
     checkedAll: false,
-    flexValue: 1 / (this.props.numberOfFields + 1),
-    // attributeCount: this.props.data[0].attributes.length, // should be dynamic, set for testing
-    
+    flexValue: 1 / (this.props.numberOfFields + 1),    
   };
 
   handleSelectChange = (event) => {
@@ -61,7 +59,6 @@ export default class SDOCard extends React.Component {
 
   render() {
     const schemaMenuItems = this.props.sdoSchemaInfo.schemaSelections.map((schema, index) => {
-      console.log(schema);
       return <MenuItem value={schema} key={index}>{schema} (Schema Name)</MenuItem>
     });
     const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
@@ -77,8 +74,8 @@ export default class SDOCard extends React.Component {
       <div>
         <div className={styles.fullScreenHeader}>
           <div className={styles.fullScreenTitle}>
-            <IconButton className={styles.helpIcon} aria-label='help'>
-              <Icon className={'icon-keyboard_backspace'}></Icon>
+            <IconButton className={styles.arrowIcon} aria-label='help'>
+              <Icon className={'icon-arrow-back'}></Icon>
             </IconButton>
             <div className={styles.titleText}>Full Screen Mode: Correlated Data</div>
           </div>
@@ -128,7 +125,6 @@ export default class SDOCard extends React.Component {
               label=''
             />
             {columnTitles}
-            {/* <Attributes attributes={this.state.attributeCount} flexValue={this.state.flexValue}/> */}
           </div>
           {SDOTiles}
         </div>

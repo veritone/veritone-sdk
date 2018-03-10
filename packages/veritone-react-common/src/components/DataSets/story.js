@@ -2,7 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import DataSetFullScreen from './'
+import DataSetFullScreen from './DataSetFullScreen';
+import DataSetViewer from './DataSetViewer';
 
 
 var numberOfFields = 8;
@@ -148,7 +149,21 @@ var sdoSourceInfo = {
 };
 
 
-storiesOf('DataSetFullScreen', module)
-  .add('Base', () => (
+
+// FOR DATA SET VIEWER
+var dataSetInfo = [
+  {
+    jobName: 'Twitter Data Set 1',
+    schema: 'Twitter Schema Version 2.3',
+    startTime: 'Wed Jul 13, 2016 09:23 PM'
+  }
+];
+
+
+storiesOf('DataSets', module)
+  .add('FullScreen', () => (
     <DataSetFullScreen numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} />
+  ))
+  .add('Viewer', () => (
+    <DataSetViewer dataSetInfo={dataSetInfo}/>
   ))

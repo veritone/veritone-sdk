@@ -4,6 +4,7 @@
   .fullScreenTitle {
     display: flex;
     flex-direction: row;
+    padding-top: 20px;
     margin-left: 1px;
     .titleText {
       align-self: center;
@@ -12,6 +13,14 @@
       font-size: 20px;
       font-weight: 500;
       line-height: 24px;
+      margin-left: 34px;
+    }
+    .arrowIcon {
+      font-size: 22px;
+      height: 22px;
+      width: 22px;
+      align-self: center;
+      color: rgba(0, 0, 0, 0.87);
     }
   }
   .headerDescription {
@@ -19,7 +28,8 @@
     color: rgba(0, 0, 0, 0.54);
     font-size: 14px;
     line-height: 18px;
-    margin-left: 50px;
+    margin-left: 55px;
+    margin-top: 32px;
   }
 }
 
@@ -35,7 +45,6 @@
   }
   .searchIcon {
     font-size: 18px;
-    transform: scaleX(-1);
     align-self: center;
   }
   .menuIcon {
@@ -100,6 +109,10 @@
   
     .checkbox {
       margin-left: 25px;
+    }
+
+    .checkbox .checkedPrimary {
+      color: #2196F3;
     }
   
     .sdoBasicColumn {

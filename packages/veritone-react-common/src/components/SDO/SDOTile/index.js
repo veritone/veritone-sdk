@@ -47,9 +47,9 @@ export default class SDOTile extends React.Component {
     this.setState({checked: nextProps.checkAll});
   };
 
-  shouldComponentUpdate(nextProps) {
-    return this.state.checked !== nextProps.checkAll;
-  };
+  // shouldComponentUpdate(nextProps) {
+  //   return this.state.checked !== nextProps.checkAll;
+  // };
 
 
   render() {

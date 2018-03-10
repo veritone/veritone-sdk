@@ -1,4 +1,4 @@
-.tableTitleRow {
+.tableRow {
   height: 62px;
   width: 100%;
   display: flex;
@@ -10,13 +10,13 @@
     align-self: center;
   }
 
-  .titleTextGroup {
+  .rowTextGroup {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
 
-    .tableTitle {
+    .columnText {
       height: 14px;
       color: rgba(0, 0, 0, 0.54);
       font-size: 12px;
@@ -29,4 +29,10 @@
       white-space: nowrap;
     }
   }
+
+  .menuIcon {
+    font-size: 22px;
+    align-self: center;
+  }
+  
 }

@@ -9,12 +9,6 @@ import {
   objectOf
 } from 'prop-types';
 
-import { Field } from 'redux-form';
-
-import { InputLabel } from 'material-ui/Input';
-import {
-  FormControl
-} from 'material-ui/Form';
 import {
   Checkbox,
 } from 'components/formComponents';
