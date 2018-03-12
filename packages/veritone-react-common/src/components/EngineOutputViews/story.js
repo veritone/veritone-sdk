@@ -5,7 +5,12 @@ import styles from './story.styles.scss';
 
 import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
-import { transcriptAssets, tdoStartTime, tdoEndTime } from './story.data.js';
+import { 
+  transcriptAssets, 
+  tdoStartTime, 
+  tdoEndTime,
+  sentimentAssets
+} from './story.data.js';
 
 storiesOf('EngineOutputViews', module)
   .add('TranscriptEngineOutput', () => {
@@ -17,5 +22,10 @@ storiesOf('EngineOutputViews', module)
     />);
   })
   .add('SentimentEngineOutput', () => {
-    return (<SentimentEngineOutput classes={{ root: styles.sentimentRoot }}/>);
+    return (
+      <SentimentEngineOutput
+        data={sentimentAssets}
+        classes={{ root: styles.sentimentRoot }}
+      />
+    );
   });

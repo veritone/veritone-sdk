@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { shape, string } from 'prop-types';
+import { shape, string, arrayOf, number } from 'prop-types';
 import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
@@ -7,17 +7,6 @@ import { MenuItem } from 'material-ui/Menu';
 import SentimentGraph from './SentimentGraph';
 
 import styles from './styles.scss';
-
-let data = [
-  {end: 5580, score: 0.6, start: 80},
-  {end: 10599, score: 0.75, start: 5589},
-  {end: 16340, score: 0.55, start: 10610},
-  {end: 18130, score: 0.65, start: 16350},
-  {end: 23610, score: 0.45, start: 18110},
-  {end: 24010, score: 0.25, start: 23620},
-  {end: 29010, score: 0.45, start: 24020},
-  {end: 34150, score: 0.75, start: 29022}
-];
 
 // Smooth/normalize sentiment time-series data, using a set of Exponentially-Weighted Moving Averages (EWMA):
 function smoothAndNormalizeTimeSeries(series, duration) {
@@ -160,6 +149,11 @@ function smoothAndNormalizeTimeSeries(series, duration) {
 
 class SentimentEngineOutput extends Component {
   static propTypes = {
+    data: arrayOf(shape({
+      end: number,
+      start: number,
+      score: number
+    })),
     classes: shape({
       root: string,
       header: string
@@ -167,10 +161,9 @@ class SentimentEngineOutput extends Component {
   };
 
   render() {
-    let { classes } = this.props;
+    let { classes, data } = this.props;
     let duration = data[data.length - 1]['end'] - data[0]['start'];
     let taskData = smoothAndNormalizeTimeSeries(data || [], duration);
-    console.log(this.sentimentConent);
     return (
       <div className={classNames(styles.sentimentOutputView, classes.root)}>
         <div className={classNames(styles.sentimentViewHeader, classes.header)}>

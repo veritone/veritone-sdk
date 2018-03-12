@@ -80,3 +80,14 @@ export const transcriptAssets = [
 ];
 export const tdoStartTime = transcriptAssets[0].startTime;
 export const tdoEndTime = transcriptAssets[transcriptAssets.length - 1].endTime;
+
+export const sentimentAssets = [
+  {end: 5580, score: 0.6, start: 80},
+  {end: 10599, score: 0.75, start: 5589},
+  {end: 16340, score: 0.55, start: 10610},
+  {end: 18130, score: 0.65, start: 16350},
+  {end: 23610, score: 0.45, start: 18110},
+  {end: 24010, score: 0.25, start: 23620},
+  {end: 29010, score: 0.45, start: 24020},
+  {end: 34150, score: 0.75, start: 29022}
+];

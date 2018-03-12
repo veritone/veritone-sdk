@@ -46,6 +46,8 @@ class SentimentGraph extends Component {
             tickFormatter={this.formatPercent}
           />
           <CartesianGrid />
+          {/*TODO: update this to accept a prop that will change the position
+          the media player plays*/}
           <ReferenceLine x={13475} stroke="orange"/>
           <defs>
             <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
