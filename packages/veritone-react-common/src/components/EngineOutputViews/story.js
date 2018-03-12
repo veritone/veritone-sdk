@@ -5,6 +5,7 @@ import styles from './story.styles.scss';
 
 import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
+import FacialDetectionOuput from './FacialDetectionOutput';
 import { 
   transcriptAssets, 
   tdoStartTime, 
@@ -28,4 +29,9 @@ storiesOf('EngineOutputViews', module)
         classes={{ root: styles.sentimentRoot }}
       />
     );
+  })
+  .add('FacialDetectionOutput', () => {
+    return (
+      <FacialDetectionOuput />
+    )
   });
