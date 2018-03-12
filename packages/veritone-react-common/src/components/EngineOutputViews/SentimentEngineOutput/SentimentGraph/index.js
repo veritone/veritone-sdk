@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { arrayOf, object } from 'prop-types';
-import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area } from 'recharts';
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  CartesianGrid, 
+  XAxis, 
+  YAxis, 
+  Area, 
+  ReferenceLine 
+} from 'recharts';
 
 class SentimentGraph extends Component {
   static propTypes = {
@@ -34,10 +42,11 @@ class SentimentGraph extends Component {
           <XAxis dataKey="time" tickFormatter={this.msToTime}/>
           <YAxis 
             dataKey="score"
-            ticks={[-100,-80,-60,-40,-20,0,20,40,60,80,100]}
+            domain={[-100, 100]}
             tickFormatter={this.formatPercent}
           />
           <CartesianGrid />
+          <ReferenceLine x={13475} stroke="orange"/>
           <defs>
             <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
               <stop offset="47.5%" stopColor="green" stopOpacity={1}/>
