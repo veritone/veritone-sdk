@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
-import { number, func } from 'prop-types';
+import { number, func, arrayOf, any} from 'prop-types';
 import styles from './styles.scss';
 
 export default class MediaDetails extends Component {
   static propTypes = {
     mediaId: number,
-    onClose: func
+    onClose: func,
+    engineCategories: arrayOf(any)
   };
 
   state = {
@@ -28,9 +29,6 @@ export default class MediaDetails extends Component {
     // add action buttons menu
     // Media player segment
     // engine category selector
-    // wire uo Redux
-    // load engine Categories (through Redux)
-    // load engine results (through Redux)
 
     return (
       <Paper className={styles.mediaDetailsPageContent}>
@@ -43,7 +41,20 @@ export default class MediaDetails extends Component {
               disableRipple={true}/>
           </div>
         </div>
-
+        <div>
+          Engine categories
+          {this.props.engineCategories && this.props.engineCategories.length && (
+            <div>
+              {
+                this.props.engineCategories.map(function(engineCategory) {
+                  return (
+                      <a key={engineCategory.id}>{engineCategory.name}</a>
+                  );
+                })
+              }
+            </div>
+          )}
+        </div>
 
         <div>
           {this.state.selectedEngineCategoryId && this.state.selectedEngineCategoryId.length && (
