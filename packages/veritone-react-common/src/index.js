@@ -1,4 +1,5 @@
 import '../src/styles/global.scss';
+import DataSetFullscreen from './components/DataSets/DataSetFullscreenViewer/index';
 
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
@@ -17,3 +18,6 @@ export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
+export SDOCard from './components/SDO/SDOCard';
+export SDOTile from './components/SDO/SDOTile';
+export DataSetFullScreen from './components/DataSets/DataSetFullScreen';
