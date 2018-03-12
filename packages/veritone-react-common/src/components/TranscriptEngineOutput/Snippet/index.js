@@ -9,7 +9,8 @@ class Snippet extends Component {
     snippet: shape({
       text: string
     }),
-    boldText: bool
+    boldText: bool,
+    editModeEnabled: bool
   };
 
   state = {

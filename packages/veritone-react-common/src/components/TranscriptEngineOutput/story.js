@@ -1,9 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import TranscriptEngineOutput from './';
-
 import styles from './story.styles.scss';
+
+import TranscriptEngineOutput from './';
 
 storiesOf('TranscriptEngineOutput', module)
   .add('Base', () => {

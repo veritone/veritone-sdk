@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
-import { arrayOf, object, bool, number } from 'prop-types';
+import { arrayOf , bool, number, shape, string } from 'prop-types';
 import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
-import TranscriptContent from './TranscriptContent';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
+import TranscriptContent from './TranscriptContent';
 
 import styles from './styles.scss';
 
 @withMuiThemeProvider
 class TranscriptEngineOutput extends Component {
   static propTypes = {
-    assets: arrayOf(object),
+    assets: arrayOf(shape({
+      startTime: number,
+      endTime: number,
+      data: string
+    })),
     editModeEnabled: bool,
-    classes: object,
+    classes: shape({
+      root: string,
+      header: string
+    }),
     tdoStartTime: number,
     tdoEndTime: number
   };

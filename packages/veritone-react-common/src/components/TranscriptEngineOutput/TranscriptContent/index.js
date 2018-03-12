@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, object, bool } from 'prop-types';
+import { arrayOf, object, bool, number } from 'prop-types';
 
 import TranscriptChunk from '../TranscriptChunk';
 
@@ -10,7 +10,9 @@ const scrollBuffer = 100;
 class TranscriptContent extends Component {
   static propTypes = {
     assets: arrayOf(object),
-    editModeEnabled: bool
+    editModeEnabled: bool,
+    tdoStartTime: number,
+    tdoEndTime: number
   };
 
   componentDidMount() {
@@ -47,6 +49,8 @@ class TranscriptContent extends Component {
           endTime={asset.endTime} 
           data={asset.data} 
           editModeEnabled={editModeEnabled}
+          tdoStartTime={tdoStartTime}
+          tdoEndTime={tdoEndTime}
         />
       );
     })
