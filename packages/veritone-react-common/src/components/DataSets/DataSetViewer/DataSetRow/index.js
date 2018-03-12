@@ -16,7 +16,7 @@ import styles from './styles.scss';
 
 export default class DataSetRow extends React.Component {
   static propTypes = {
-    checkedAll: bool,
+    checkAll: bool,
     rowInfo: objectOf(any)
   };
 
@@ -25,7 +25,7 @@ export default class DataSetRow extends React.Component {
   };
 
   state = {
-    checked: false,
+    checked: this.props.checkAll || false,
   };
 
   handleCheckboxChange = () => {
@@ -34,18 +34,26 @@ export default class DataSetRow extends React.Component {
     });
   };
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({checked: nextProps.checkAll});
+  };
+
+  handleRowClick = (event) => {
+    console.log('row clicked');
+  };
+
   render() {
     return (
-      <div className={styles.tableRow}>
+      <div className={styles.tableRow} >
         <Checkbox
           input={{
             onChange: this.handleCheckboxChange,
-            value: this.state.checkedAll
+            value: this.state.checked
           }}
           className={styles.checkbox}
           label=''
         />
-        <div className={styles.rowTextGroup}>
+        <div className={styles.rowTextGroup} onClick={this.handleRowClick}>
           <span className={styles.columnText}>{this.props.rowInfo.jobName}</span>
           <span className={styles.columnText}>{this.props.rowInfo.schema}</span>
           <span className={styles.columnText}>{this.props.rowInfo.startTime}</span>

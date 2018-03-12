@@ -156,6 +156,21 @@ var dataSetInfo = [
     jobName: 'Twitter Data Set 1',
     schema: 'Twitter Schema Version 2.3',
     startTime: 'Wed Jul 13, 2016 09:23 PM'
+  },
+  {
+    jobName: 'Twitter Data Set 2',
+    schema: 'Twitter Schema Version 2.3',
+    startTime: 'Wed Jul 13, 2016 09:23 PM'
+  },
+  {
+    jobName: 'Twitter Data Set 3',
+    schema: 'Twitter Schema Version 2.3',
+    startTime: 'Wed Jul 13, 2016 09:23 PM'
+  },
+  {
+    jobName: 'Twitter Data Set 4',
+    schema: 'A different Twitter Schema Version 2.3',
+    startTime: 'Wed Jul 13, 2016 09:23 PM'
   }
 ];
 

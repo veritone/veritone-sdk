@@ -6,7 +6,8 @@ import {
   arrayOf,
   number,
   any,
-  objectOf
+  objectOf,
+  func
 } from 'prop-types';
 
 import { Field } from 'redux-form';
@@ -32,7 +33,8 @@ export default class SDOCard extends React.Component {
     numberOfFields: number,
     data: arrayOf(any),
     sdoSourceInfo: objectOf(any),
-    sdoSchemaInfo: objectOf(any)
+    sdoSchemaInfo: objectOf(any),
+    callback: func
   };
 
   static defaultProps = {
@@ -41,12 +43,25 @@ export default class SDOCard extends React.Component {
 
   state = {
     checkedAll: false,
-    flexValue: 1 / (this.props.numberOfFields + 1),    
+    flexValue: 1 / (this.props.numberOfFields + 1),
+    sourceSelection: this.props.sdoSourceInfo.sourceSelection || '',
+    schemaSelection: this.props.sdoSchemaInfo.schemaSelection || ''
   };
 
-  handleSelectChange = (event) => {
+  setupCallback = (data) => {
+    console.log('callback for SDOCard');
+    this.props.callback(data);
+  };
+
+  handleSourceChange = (event) => {
     this.setState({
       sourceSelection: event.target.value
+    });
+  };
+
+  handleSchemaChange = (event) => {
+    this.setState({
+      schemaSelection: event.target.value
     });
   };
 
@@ -85,8 +100,8 @@ export default class SDOCard extends React.Component {
           <div className={styles.schemaSelector}>
             <Select 
               className={styles.schemaSelect}
-              value={this.props.sdoSchemaInfo.schemaSelection}
-              onChange={this.handleSelectChange}
+              value={this.state.schemaSelection}
+              onChange={this.handleSchemaChange}
             >
               {schemaMenuItems}
             </Select>
@@ -108,8 +123,8 @@ export default class SDOCard extends React.Component {
             </div>
             <Select 
               className={styles.sourceSelect}
-              value={this.props.sdoSourceInfo.sourceSelection}
-              onChange={this.handleSelectChange}
+              value={this.state.sourceSelection}
+              onChange={this.handleSourceChange}
             >
               {sourceMenuItems}
             </Select>

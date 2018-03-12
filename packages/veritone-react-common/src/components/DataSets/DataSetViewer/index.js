@@ -29,7 +29,6 @@ export default class DataSetViewer extends React.Component {
 
   state = {
     checkedAll: false,
-    
   };
 
   handleCheckboxChange = () => {
@@ -39,6 +38,9 @@ export default class DataSetViewer extends React.Component {
   };
 
   render() {
+    const dataSetRows = this.props.dataSetInfo.map((row, index) => {
+      return <DataSetRow checkAll={this.state.checkedAll} rowInfo={row} key={index} />
+    });
     return (
       <div>
         <div className={styles.tableTitleRow}>
@@ -57,8 +59,7 @@ export default class DataSetViewer extends React.Component {
           </div>
           <div style={{width: '55px'}}></div>
         </div>
-        <DataSetRow checkedAll={this.state.checkedAll} rowInfo={this.props.dataSetInfo[0]}/>
-
+        {dataSetRows}
       </div>
     );
   };
