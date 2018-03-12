@@ -1,7 +1,8 @@
 @import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
+@import '../common';
 
-.navigate-back {
+.back {
   display: flex;
   padding-top: 20px;
   padding-left: 28px;
@@ -10,7 +11,7 @@
   align-items: center;
 }
 
-.back-btn {
+.backBtn {
   display: inline-flex;
 
   span {
@@ -19,7 +20,7 @@
 }
 
 .content {
-  padding: 40px 60px
+  padding: 40px 60px;
 }
 
 .description {
@@ -30,7 +31,7 @@
   padding-top: 15px;
 }
 
-.section-heading {
+.sectionHeading {
   padding-bottom: 15px;
   font-size: 13px;
   font-weight: bold;
@@ -38,17 +39,17 @@
   color: $dark-black;
 }
 
-.details-content {
+.detailsContent {
   display: flex;
   flex-wrap: wrap;
 }
 
 .section {
   flex: 1 0 20%;
-  margin-right: 5px
+  margin-right: 5px;
 }
 
-.section-title {
+.sectionTitle {
   padding-bottom: 12px;
 }
 
@@ -56,80 +57,28 @@
   margin-bottom: 10px;
 }
 
-.detail-title {
+.detailTitle {
   font-size: 10px;
   font-weight: 500;
 }
 
-.detail-value {
+.detailValue {
   font-size: 12px;
 }
 
-.info {
-  display: flex;
-  padding: 19px 0 40px;
-  min-height: 177px;
-}
-
-.logos,
 .logo {
-  display: inline-flex;
-}
-
-.logo {
-  height: 16px;
-  align-items: center;
   margin-right: 20px;
-  
-  img {
-    height: auto;
-  }
 }
 
-.info-avatar,
-.info-primary,
-.info-secondary {
-  display: inline-flex;
-  flex-direction: column;
+.avatar {
+  @include avatar(130px);
+  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.4);
 }
 
-.info-container {
-  display: inline-flex;
-  padding-top: 3px;
-  flex-grow: 1;
-}
-
-.info-title {
-  font-size: 18px;
-  line-height: 21px;
-  margin-bottom: 5px;
-}
-
-.info-subTitle {
-  margin-bottom: 5px;
-  font-size: 13px;
-  color: $light-black;
-}
-
-.info-avatar {
-  position: relative;
-  $dimensions: 130px;
-  width: $dimensions;
-  height: $dimensions;
-  box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.4);
-}
-
-.info-primary {
-  flex-grow: 1;
-  padding: 0 20px;
-}
-
-.info-info {
-  display: flex;
-  align-items: center;
+.info {
   padding-bottom: 30px;
 }
 
-.info-button {
+.button {
   padding-top: 10px;
 }

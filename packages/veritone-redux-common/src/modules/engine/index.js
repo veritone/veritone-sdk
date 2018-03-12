@@ -10,7 +10,6 @@ export const FETCH_ENGINES = 'vtn/engine/FETCH_ENGINES';
 export const FETCH_ENGINES_SUCCESS = 'vtn/engine/FETCH_ENGINES_SUCCESS';
 export const FETCH_ENGINES_FAILURE = 'vtn/engine/FETCH_ENGINES_FAILURE';
 
-
 const defaultState = {
   enginesById: {},
   isFetching: false,
@@ -49,20 +48,28 @@ export default createReducer(defaultState, {
       enginesById: {}
     };
   }
-})
+});
 
 function local(state) {
   return state[namespace];
 }
 
-export function fetchEngines(filters = {}) {
+export function fetchEngines(searchQuery, filters = {}) {
   return async function action(dispatch, getState) {
     dispatch({ type: FETCH_ENGINES });
 
+    const filterBy = {};
+
+    // exclude empty filters
+    Object.keys(filters).map(filter => {
+      if (filters[filter] && filters[filter].length) {
+        filterBy[filter] = filters[filter];
+      }
+    });
+
     const query = `
-      query Engines($name: String = "", $category: String = "") {
-        engines(name: $name, category: $category, limit: 1000) {
-          count
+      query Engines($name: String = "", $filter: EngineFilter) {
+        engines(name: $name, limit: 1000, filter: $filter) {
           records {
             id
             name
@@ -70,6 +77,8 @@ export function fetchEngines(filters = {}) {
             logoPath
             iconPath
             rating
+            price
+            deploymentModel
             ownerOrganization {
               name
             }
@@ -77,31 +86,46 @@ export function fetchEngines(filters = {}) {
               iconClass
               name
             }
+            builds(status: ["deployed"]) {
+              records {
+                modifiedDateTime
+                manifest
+              }
+            }
           }
         }
       }`;
 
     try {
-      console.log('filters', filters)
-      const response =  await callGraphQLApi({
+      const response = await callGraphQLApi({
         query,
-        variables: filters,
+        variables: {
+          name: searchQuery,
+          filter: filterBy
+        },
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
-
-      console.log('response', response)
 
       if (!isEmpty(response.errors) && isEmpty(response.data.engines)) {
         throw response.errors;
       }
 
       const results = get(response, 'data.engines.records');
+      const count = get(response, 'data.engines.count');
 
-      dispatch({ type: FETCH_ENGINES_SUCCESS, payload: { results }, meta: { filters } })
-    } catch(err) {
-      dispatch({ type: FETCH_ENGINES_FAILURE, payload: err, meta: { filters } })
+      dispatch({
+        type: FETCH_ENGINES_SUCCESS,
+        payload: { count, results },
+        meta: { searchQuery, filters }
+      });
+    } catch (err) {
+      dispatch({
+        type: FETCH_ENGINES_FAILURE,
+        payload: err,
+        meta: { filters }
+      });
     }
-  }
+  };
 }
 
 export function getEngines(state) {
@@ -112,6 +136,6 @@ export function isFetchingEngines(state) {
   return local(state).isFetching;
 }
 
-export function fetchingEnginesFailed(state) {
+export function failedToFetchEngines(state) {
   return local(state).fetchingFailed;
 }

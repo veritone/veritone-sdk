@@ -1,0 +1,45 @@
+.sideBar {
+  $width: 290px;
+  min-width: $width;
+  max-width: $width;
+}
+
+.inlineFilter {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filterContainer {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.title {
+  // font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.filters {
+}
+
+.filter {
+  // font-weight: bold;
+}
+
+.checkbox,
+.radio {
+  $dimensions: 24px !important;
+  height: $dimensions;
+  width: $dimensions;
+  margin-right: 8px;
+}
+
+.rc-slider-handle {
+  border: 2px solid rgb(33, 150, 243) !important;
+  background-color: rgb(33, 150, 243) !important;
+}
+
+.rc-slider-track {
+  background-color: rgb(33, 150, 243) !important;
+}

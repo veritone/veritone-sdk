@@ -1,80 +1,71 @@
 import React from 'react';
-import { bool, func } from 'prop-types';
-import { connect } from 'react-redux';
-
+import { func } from 'prop-types';
 import { DiscoverySideBar as Sidebar } from 'veritone-react-common';
+import { noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
 import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
-import styles from './styles.scss';
-
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
 
+import withMuiThemeProvider from '../../shared/withMuiThemeProvider';
+
 import widget from '../../shared/widget';
 
-
-@connect(
-  (state) => ({
-    engines: engineModule.getEngines(state),
-    currentResults: engineSelectionModule.getCurrentResults(state)
-  }),
-  {},
-  null,
-  { withRef: true }
-)
+@withMuiThemeProvider
 class EngineSelectionWidget extends React.Component {
-  static propTypes = {};
+  static propTypes = {
+    onSave: func.isRequired,
+    onCancel: func.isRequired
+  };
 
   static defaultProps = {
-    engines: {}
-  }
+    onSave: noop,
+    onCancel: noop
+  };
 
   state = {
     showDetailView: false,
     engineDetails: null,
-    selectAll: false,
-  }
+    selectAll: false
+  };
 
   handleShowDetailView = engine => {
     this.setState({
       showDetailView: true,
       engineDetails: engine
-    })
-  }
+    });
+  };
 
   handleHideDetailView = engineId => {
     this.setState({
       showDetailView: false,
       engineDetails: null
-    })
-  }
+    });
+  };
 
-  _renderDetailView = () => (
+  renderDetailView = () => (
     <EngineDetailView
       onClose={this.handleHideDetailView}
       engine={this.state.engineDetails}
     />
   );
 
-  _renderListView = () => (
+  renderListView = () => (
     <EngineListView
-      engines={this.props.engines}
-      currentResults={this.props.currentResults}
       showDetailView={this.handleShowDetailView}
+      onSave={this.props.onSave}
+      onCancel={this.props.onCancel}
     />
-  )
+  );
 
   render() {
-    console.log('props', this.props)
-    return (
-      this.state.showDetailView ?
-        this._renderDetailView() :
-        this._renderListView()
-    );
+    return this.state.showDetailView
+      ? this.renderDetailView()
+      : this.renderListView();
   }
 }
 

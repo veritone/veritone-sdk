@@ -11,15 +11,18 @@ export default class Price extends React.Component {
   };
 
   static defaultProps = {
-    symbol: '$'
-  }
+    symbol: '$',
+    amount: 0
+  };
 
   render() {
+    const price = (this.props.amount / 100).toFixed(2);
+    const units = String(price).split('.');
     return (
       <div className={styles.price}>
         <div className={styles.symbol}>{this.props.symbol}</div>
-        <div className={styles.dollars}>1</div>
-        <div className={styles.cents}>99</div>
+        <div className={styles.dollars}>{units[0]}</div>
+        <div className={styles.cents}>{units[1]}</div>
         <div className={styles.text}>/media hour</div>
       </div>
     );

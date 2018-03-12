@@ -25,14 +25,16 @@ const categoryColorMap = {
   transcription: pink[500],
   facialDetection: teal[500],
   audioDetection: deepPurple[500],
-  musicDetection: deepPurple[500] 
+  musicDetection: deepPurple[500]
 };
 
 const Lozenge = ({ type, icon = '' }) => {
   return (
     <div
       className={styles.lozenge}
-      style={{ backgroundColor: categoryColorMap[camelCase(type)] || pink[500] }}
+      style={{
+        backgroundColor: categoryColorMap[camelCase(type)] || pink[500]
+      }}
     >
       <i className={icon} />
       {type}

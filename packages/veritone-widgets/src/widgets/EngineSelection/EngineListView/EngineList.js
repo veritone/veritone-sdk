@@ -2,12 +2,11 @@ import React from 'react';
 
 import { InfiniteLoader, AutoSizer, List } from 'react-virtualized';
 
-import EngineSelectionRow from './EngineSelectionRow';
+import EngineSelectionRow from './EngineSelectionRow/';
 
 import styles from './styles.scss';
 
-
-export default function EngineList ({
+export default function EngineList({
   /** Are there more items to load? (This information comes from the most recent API request.) */
   hasNextPage,
   /** Are we currently loading a page of items? (This may be an in-flight flag in your Redux store for example.) */
@@ -22,44 +21,36 @@ export default function EngineList ({
   showDetailView
 }) {
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
-  const rowCount = hasNextPage
-    ? list.length + 1
-    : list.length
+  const rowCount = hasNextPage ? list.length + 1 : list.length;
 
   // Only load 1 page of items at a time.
   // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
-  const loadMoreRows = isNextPageLoading
-    ? () => {}
-    : loadNextPage
+  const loadMoreRows = isNextPageLoading ? () => {} : loadNextPage;
 
   // Every row is loaded except for our loading indicator row.
   const isRowLoaded = ({ index }) => !hasNextPage || index < list.length;
 
   // Render a list item or a loading indicator.
   const rowRenderer = ({ index, key, style }) => {
-    let content
+    let content;
 
     if (!isRowLoaded({ index })) {
-      content = 'Loading...'
+      content = 'Loading...';
     } else {
       content = (
         <EngineSelectionRow
           engine={engines[list[index]]}
           showDetailView={showDetailView}
         />
-      )
+      );
     }
 
     return (
-      <div
-        key={key}
-        style={style}
-      >
+      <div key={key} style={style}>
         {content}
       </div>
-    )
-  }
-
+    );
+  };
 
   return (
     <InfiniteLoader
@@ -67,13 +58,13 @@ export default function EngineList ({
       loadMoreRows={loadMoreRows}
       rowCount={rowCount}
     >
-      {({onRowsRendered, registerChild}) => (
-        <AutoSizer disableHeight>
-          {({width}) => (
+      {({ onRowsRendered, registerChild }) => (
+        <AutoSizer>
+          {({ width, height }) => (
             <List
               ref={registerChild}
               style={{ outline: 0 }}
-              height={600}
+              height={height}
               onRowsRendered={onRowsRendered}
               rowCount={rowCount}
               rowHeight={177}
@@ -84,5 +75,5 @@ export default function EngineList ({
         </AutoSizer>
       )}
     </InfiniteLoader>
-  )
+  );
 }

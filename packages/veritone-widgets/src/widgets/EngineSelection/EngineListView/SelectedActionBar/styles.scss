@@ -1,0 +1,39 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.addRemoveSelectedBar {
+  display: inline-flex;
+  width: 100%;
+  font-size: 14px;
+  height: 49px;
+  padding: 0 30px;
+  color: $light-black;
+  border-bottom: 1px solid $grey-4;
+  background-color: #f6fbff;
+  align-items: center;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+}
+
+.selectedCountText {
+  @include mui-text('body2');
+  color: $dark-black;
+  font-weight: 400 !important;
+  margin-left: 10px;
+}
+
+.selectMessage {
+  color: $blue-1;
+}
+
+.selectedCount {
+  font-weight: 500 !important;
+}
+
+.bulkActions {
+  display: inline-flex;
+  margin-left: auto;
+}

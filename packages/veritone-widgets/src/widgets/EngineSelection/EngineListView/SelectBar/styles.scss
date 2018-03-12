@@ -1,0 +1,32 @@
+@import 'src/styles/modules/variables';
+
+.selectBar {
+  display: flex;
+  font-size: 14px;
+  align-items: center;
+  color: $light-black;
+  padding: 15px 0 10px 5px;
+  min-height: 73px;
+  max-height: 73px;
+}
+
+.selectBarIcons {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.searchBar {
+  width: 285px;
+}
+
+.searchBarIcon {
+  $iconSize: 22px !important;
+  height: $iconSize;
+  width: $iconSize;
+  vertical-align: bottom;
+}
+
+.searchBarInput {
+  font-size: 14px !important;
+}

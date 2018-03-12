@@ -1,4 +1,13 @@
-import { get, set, omit, without, union } from 'lodash';
+import {
+  get,
+  set,
+  omit,
+  without,
+  union,
+  isObject,
+  merge,
+  isArray
+} from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer } = helpers;
 const { engine: engineModule } = modules;
@@ -6,25 +15,28 @@ const { engine: engineModule } = modules;
 export const CHECK_ALL_ENGINES = 'vtn/engineSelection/CHECK_ALL_ENGINES';
 export const UNCHECK_ALL_ENGINES = 'vtn/engineSelection/UNCHECK_ALL_ENGINES';
 
-export const ADD_ENGINE = 'vtn/engineSelection/ADD_ENGINE';
-export const REMOVE_ENGINE = 'vtn/engineSelection/REMOVE_ENGINE';
+export const ADD_ENGINES = 'vtn/engineSelection/ADD_ENGINES';
+export const REMOVE_ENGINES = 'vtn/engineSelection/REMOVE_ENGINES';
 
 export const CHECK_ENGINE = 'vtn/engineSelection/CHECK_ENGINE';
-export const UNCHECK_ENGINE = 'vtn/engineSelection/UNCHECK_ENGINE'
+export const UNCHECK_ENGINE = 'vtn/engineSelection/UNCHECK_ENGINE';
 
 export const ADD_FILTER = 'vtn/engineSelection/ADD_FILTER';
 export const REMOVE_FILTER = 'vtn/engineSelection/REMOVE_FILTER';
+export const CLEAR_ALL_FILTERS = 'vtn/engineSelection/CLEAR_ALL_FILTERS';
 
 export const SEARCH = 'vtn/engineSelection/SEARCH';
 export const CLEAR_SEARCH = 'vtn/engineSelection/CLEAR_SEARCH';
-
 
 export const namespace = 'engineSelection';
 
 const defaultState = {
   searchResults: {},
+  searchQuery: '',
+  engineCount: 0,
   filters: {
-    name: ''
+    category: [],
+    rating: []
   },
   orderBy: {},
   selectedEngineIds: [],
@@ -34,56 +46,59 @@ const defaultState = {
 
 export default createReducer(defaultState, {
   [engineModule.FETCH_ENGINES_SUCCESS](state, action) {
-    console.log('FETCH_ENGINES_SUCCESS >>>>>>>>>>>>', state)
-    const resultsPath = pathFor(action.meta.filters);
+    const resultsPath = pathFor(action.meta.searchQuery, action.meta.filters);
     const normalizedResults = action.payload.results.map(engine => engine.id);
     const newResults = set({}, resultsPath, normalizedResults);
 
     return {
       ...state,
-      searchResults: Object.assign({}, state.searchResults, newResults)
+      searchResults: merge({}, state.searchResults, newResults)
     };
   },
   [CHECK_ALL_ENGINES](state, action) {
+    const engineIds = isArray(action.payload.engines)
+      ? action.payload.engines
+      : Object.keys(action.payload.engines);
     return {
       ...state,
-      checkedEngineIds: Object.keys(action.payload.engines),
+      checkedEngineIds: engineIds,
       allEnginesChecked: true
-    }
+    };
   },
   [UNCHECK_ALL_ENGINES](state, action) {
     return {
       ...state,
       checkedEngineIds: [],
       allEnginesChecked: false
-    }
+    };
   },
-  [ADD_ENGINE](state, action) {
+  [ADD_ENGINES](state, action) {
     return {
       ...state,
       selectedEngineIds: union(
         state.selectedEngineIds,
-        [action.payload.engineId]
+        action.payload.engineIds
       ),
-    }
+      checkedEngineIds: [],
+      allEnginesChecked: false
+    };
   },
-  [REMOVE_ENGINE](state, action) {
+  [REMOVE_ENGINES](state, action) {
     return {
       ...state,
       selectedEngineIds: without(
         state.selectedEngineIds,
-        action.payload.engineId
-      )
-    }
+        ...action.payload.engineIds
+      ),
+      checkedEngineIds: [],
+      allEnginesChecked: false
+    };
   },
   [CHECK_ENGINE](state, action) {
     return {
       ...state,
-      checkedEngineIds: union(
-        state.checkedEngineIds,
-        [action.payload.engineId]
-      ),
-    }
+      checkedEngineIds: union(state.checkedEngineIds, [action.payload.engineId])
+    };
   },
   [UNCHECK_ENGINE](state, action) {
     return {
@@ -91,8 +106,9 @@ export default createReducer(defaultState, {
       checkedEngineIds: without(
         state.checkedEngineIds,
         action.payload.engineId
-      )
-    }
+      ),
+      allEnginesChecked: false
+    };
   },
   [ADD_FILTER](state, action) {
     return {
@@ -101,33 +117,36 @@ export default createReducer(defaultState, {
         ...state.filters,
         [action.payload.type]: action.payload.value
       }
-    }
+    };
   },
   [REMOVE_FILTER](state, action) {
     return {
       ...state,
       filters: omit(state.filters, action.payload.type)
-    }
+    };
+  },
+  [CLEAR_ALL_FILTERS](state, action) {
+    return {
+      ...state,
+      filters: {
+        category: [],
+        rating: []
+      }
+    };
   },
   [SEARCH](state, action) {
     return {
       ...state,
-      filters: {
-        ...state.filters,
-        name: action.payload.searchQuery
-      }
-    }
+      searchQuery: action.payload.searchQuery
+    };
   },
   [CLEAR_SEARCH](state, action) {
     return {
       ...state,
-      filters: {
-        ...state.filters,
-        name: ''
-      }
-    }
+      searchQuery: ''
+    };
   }
-})
+});
 
 function local(state) {
   return state[namespace];
@@ -135,9 +154,10 @@ function local(state) {
 
 export function refetchEngines() {
   return function action(dispatch, getState) {
+    const searchQuery = getSearchQuery(getState());
     const filters = getEngineFilters(getState());
-    dispatch(engineModule.fetchEngines(filters));
-  }
+    dispatch(engineModule.fetchEngines(searchQuery, filters));
+  };
 }
 
 export function searchEngines({ name }) {
@@ -185,20 +205,20 @@ export function uncheckAllEngines() {
   };
 }
 
-export function addEngine(engineId) {
+export function addEngines(engineIds) {
   return {
-    type: ADD_ENGINE,
+    type: ADD_ENGINES,
     payload: {
-      engineId
+      engineIds
     }
   };
 }
 
-export function removeEngine(engineId) {
+export function removeEngines(engineIds) {
   return {
-    type: REMOVE_ENGINE,
+    type: REMOVE_ENGINES,
     payload: {
-      engineId
+      engineIds
     }
   };
 }
@@ -228,16 +248,27 @@ export function clearSearch() {
   };
 }
 
+export function clearAllFilters() {
+  return {
+    type: CLEAR_ALL_FILTERS,
+    payload: {}
+  };
+}
 
-export function pathFor(filters) {
-  console.log('pathFor......', filters)
-
-  return [filters.name, JSON.stringify(omit(filters, 'name', 'order'))];
+export function pathFor(searchQuery, filters, orderBy) {
+  return [searchQuery, JSON.stringify(filters)];
 }
 
 export function getCurrentResults(state) {
-  console.log('getCurrentResults....', get(local(state).searchResults, pathFor(local(state).filters)))
-  return get(local(state).searchResults, pathFor(local(state).filters));
+  const results = get(
+    local(state).searchResults,
+    pathFor(local(state).searchQuery, local(state).filters)
+  );
+  return results;
+}
+
+export function getSearchQuery(state) {
+  return local(state).searchQuery;
 }
 
 export function getEngineFilters(state) {
@@ -258,6 +289,10 @@ export function allEnginesChecked(state) {
 
 export function getSelectedEngineIds(state) {
   return local(state).selectedEngineIds;
+}
+
+export function getCheckedEngineIds(state) {
+  return local(state).checkedEngineIds;
 }
 
 export const widgets = state => local(state).widgets;
