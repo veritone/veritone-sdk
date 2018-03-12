@@ -18,5 +18,6 @@ export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
-export TranscriptEngineOutput from './components/TranscriptEngineOutput';
+export TranscriptEngineOutput from './components/EngineOutputViews/TranscriptEngineOutput';
+export SentimentEngineOutput from './components/EngineOutputViews/SentimentEngineOutput';
 export MediaDetails from './components/MediaDetails';

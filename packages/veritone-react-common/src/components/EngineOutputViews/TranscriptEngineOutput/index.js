@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
+import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import TranscriptContent from './TranscriptContent';
 
 import styles from './styles.scss';

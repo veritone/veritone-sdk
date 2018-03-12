@@ -1,35 +1,4 @@
-import React from 'react';
-import { storiesOf } from '@storybook/react';
-
-import styles from './story.styles.scss';
-
-import TranscriptEngineOutput from './';
-
-storiesOf('TranscriptEngineOutput', module)
-  .add('Base', () => {
-    return (
-      <TranscriptEngineOutput 
-        assets={transcriptAssets} 
-        classes={{root: styles.transcriptRoot}}
-        tdoStartTime={tdoStartTime}
-        tdoEndTime={tdoEndTime}
-      />
-    );
-  })
-  .add('EditMode', () => {
-    return (
-      <TranscriptEngineOutput 
-        assets={transcriptAssets} 
-        classes={{root: styles.transcriptRoot}} 
-        editModeEnabled={true}
-        tdoStartTime={tdoStartTime}
-        tdoEndTime={tdoEndTime}
-      />
-    );
-  });
-
-// Mock of what we think the data structure will look like.
-const transcriptAssets = [
+export const transcriptAssets = [
   {
     startTime: 1520444708,
     endTime: 1520444731,
@@ -109,5 +78,5 @@ const transcriptAssets = [
     </tt>`
   }
 ];
-const tdoStartTime = transcriptAssets[0].startTime;
-const tdoEndTime = transcriptAssets[transcriptAssets.length - 1].endTime;
+export const tdoStartTime = transcriptAssets[0].startTime;
+export const tdoEndTime = transcriptAssets[transcriptAssets.length - 1].endTime;
