@@ -5,13 +5,21 @@ import styles from './story.styles.scss';
 
 import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
+<<<<<<< HEAD
 import FacialDetectionOuput from './FacialDetectionOutput';
+=======
+import FacialDetectionOuput from './FacialDetectionEngineOutput';
+>>>>>>> media-details-page
 import ObjectDetectionOuput from './ObjectDetectionEngineOutput';
 import { 
   transcriptAssets, 
   tdoStartTime, 
   tdoEndTime,
+<<<<<<< HEAD
   sentimentAssets
+=======
+  sentimentAssets,
+>>>>>>> media-details-page
   objectDetectionAssets
 } from './story.data.js';
 
@@ -28,7 +36,7 @@ storiesOf('EngineOutputViews', module)
     return (
       <SentimentEngineOutput
         data={sentimentAssets}
-        classes={{ root: styles.sentimentRoot }}
+        classes={{ root: styles.outputViewRoot }}
       />
     );
   })
