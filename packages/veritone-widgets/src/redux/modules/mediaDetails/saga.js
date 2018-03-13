@@ -152,7 +152,7 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
         return;
       }
       if (category.engines.some(engine => engine.status !== 'complete')) {
-        category.status = 'inprogres';
+        category.status = 'inprogress';
       } else {
         category.status = 'completed';
       }

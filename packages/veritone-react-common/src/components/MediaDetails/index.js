@@ -85,8 +85,6 @@ export default class MediaDetails extends Component {
         {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'thumbnail' &&
         <div>Thumbnail component</div>}
 
-
-
       </Paper>
     );
   }

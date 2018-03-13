@@ -32,7 +32,7 @@ class EngineCategorySelector extends Component {
                   return (
                     <Tab value={engineCategory.id}
                          key={engineCategory.id}
-                         icon={<Icon hidden={false} className={styles.categoryIcon}>{engineCategory.iconClass}</Icon>}
+                         icon={<Icon className={styles.categoryIcon}>{engineCategory.iconClass}</Icon>}
                          classes={{
                            root: styles.engineCategoryTab
                          }}>
