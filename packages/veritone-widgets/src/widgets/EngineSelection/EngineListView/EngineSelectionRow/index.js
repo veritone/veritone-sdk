@@ -1,16 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bool, object, func } from 'prop-types';
+import { bool, object, func, string, shape } from 'prop-types';
 
-import { Lozenge, Price, Ellipsis, StarRating } from 'veritone-react-common';
+import {
+  Lozenge,
+  // Price,
+  Ellipsis
+  // StarRating
+} from 'veritone-react-common';
 
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
 import LibCheckbox from 'material-ui/Checkbox';
 
-import cjisLogo from '../../images/CJIS_logo.png';
-import fedrampLogo from '../../images/fedramp_logo.png';
+// import cjisLogo from '../../images/CJIS_logo.png';
+// import fedrampLogo from '../../images/fedramp_logo.png';
 import networkIsolatedLogo from '../../images/networkisolated_logo.png';
 import externalAccessLogo from '../../images/externalaccess_logo.png';
 import externalProcessingLogo from '../../images/externalprocessing_logo.png';
@@ -40,7 +45,14 @@ import styles from './styles.scss';
 )
 export default class EngineSelectionRow extends React.Component {
   static propTypes = {
-    engine: object.isRequired,
+    engine: shape({
+      id: string.isRequired,
+      name: string.isRequired,
+      category: object,
+      description: string,
+      iconPath: string,
+      ownerOrganization: object
+    }).isRequired,
     isSelected: bool.isRequired,
     isChecked: bool.isRequired,
     onViewDetail: func.isRequired,

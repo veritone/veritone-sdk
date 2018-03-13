@@ -10,9 +10,8 @@ import {
   shape,
   number
 } from 'prop-types';
-import { isEmpty, isArray, isString, noop, without } from 'lodash';
+import { isEmpty, isArray, isString, without } from 'lodash';
 
-import LibCheckbox from 'material-ui/Checkbox';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';

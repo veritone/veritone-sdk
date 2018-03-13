@@ -1,10 +1,9 @@
 import React from 'react';
+import { bool, arrayOf, string, func, number, objectOf, any } from 'prop-types';
 import { InfiniteLoader, AutoSizer, List } from 'react-virtualized';
 import EngineSelectionRow from './EngineSelectionRow/';
 
-import styles from './styles.scss';
-
-export default function EngineList({
+function EngineList({
   /** Are there more items to load? (This information comes from the most recent API request.) */
   hasNextPage,
   /** Are we currently loading a page of items? (This may be an in-flight flag in your Redux store for example.) */
@@ -73,3 +72,16 @@ export default function EngineList({
     </InfiniteLoader>
   );
 }
+
+EngineList.propTypes = {
+  hasNextPage: bool.isRequired,
+  isNextPageLoading: bool.isRequired,
+  list: arrayOf(string).isRequired,
+  loadNextPage: bool.isRequired,
+  onViewDetail: func.isRequired,
+  index: number.isRequired,
+  key: number.isRequired,
+  style: objectOf(any)
+};
+
+export default EngineList;

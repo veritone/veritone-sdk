@@ -1,11 +1,14 @@
 import React from 'react';
-import { bool, func } from 'prop-types';
-import { capitalize } from 'lodash';
+import { func, object, bool, string, shape } from 'prop-types';
 
-import { Lozenge, Price, StarRating } from 'veritone-react-common';
+import {
+  Lozenge
+  // Price,
+  // StarRating
+} from 'veritone-react-common';
 import ToggleButton from '../ToggleButton/';
-import cjisLogo from '../images/CJIS_logo.png';
-import fedrampLogo from '../images/fedramp_logo.png';
+// import cjisLogo from '../images/CJIS_logo.png';
+// import fedrampLogo from '../images/fedramp_logo.png';
 import networkIsolatedLogo from '../images/networkisolated_logo.png';
 import externalAccessLogo from '../images/externalaccess_logo.png';
 import externalProcessingLogo from '../images/externalprocessing_logo.png';
@@ -13,7 +16,7 @@ import humanReviewLogo from '../images/humanreview_logo.png';
 
 import styles from './styles.scss';
 
-export default ({ engine, onAdd, onRemove, isSelected }) => {
+function InfoSection({ engine, onAdd, onRemove, isSelected }) {
   const deploymentModelLogo = {
     FullyNetworkIsolated: networkIsolatedLogo,
     MostlyNetworkIsolated: externalAccessLogo,
@@ -65,4 +68,20 @@ export default ({ engine, onAdd, onRemove, isSelected }) => {
       </div>
     </div>
   );
+}
+
+InfoSection.propTypes = {
+  engine: shape({
+    id: string.isRequired,
+    name: string.isRequired,
+    category: object,
+    description: string,
+    iconPath: string,
+    ownerOrganization: object
+  }).isRequired,
+  onAdd: func.isRequired,
+  onRemove: func.isRequired,
+  isSelected: bool.isRequired
 };
+
+export default InfoSection;

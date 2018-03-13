@@ -1,14 +1,13 @@
 import React from 'react';
-
+import { func, arrayOf, string, shape } from 'prop-types';
 import { DiscoverySideBar as Sidebar } from 'veritone-react-common';
-import LibCheckbox from 'material-ui/Checkbox';
 import { isArray, isString } from 'lodash';
 
 import styles from './styles.scss';
 
 import * as Filters from './Filters';
 
-export default function EnginesSideBar({
+function EnginesSideBar({
   filters,
   filterBy,
   onClearAllFilters,
@@ -45,6 +44,17 @@ export default function EnginesSideBar({
     </div>
   );
 }
+
+EnginesSideBar.propTypes = {
+  filters: shape({
+    category: arrayOf(string)
+  }).isRequired,
+  filterBy: func.isRequired,
+  onClearAllFilters: func.isRequired,
+  onClearFilter: func.isRequired
+};
+
+export default EnginesSideBar;
 
 function getSelectedFilters(filters) {
   const selectedFilters = [];

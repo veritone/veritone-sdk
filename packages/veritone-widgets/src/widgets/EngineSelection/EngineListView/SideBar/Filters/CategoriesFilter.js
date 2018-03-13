@@ -6,7 +6,7 @@ import LibCheckbox from 'material-ui/Checkbox';
 import styles from '../styles.scss';
 
 class CategoriesFilter extends React.Component {
-  static props = {
+  static propTypes = {
     filters: shape({
       category: arrayOf(string).isRequired
     }).isRequired,

@@ -1,7 +1,5 @@
 import React from 'react';
 import { func, arrayOf, shape, number } from 'prop-types';
-import { capitalize } from 'lodash';
-import TextField from 'material-ui/TextField';
 import Radio from 'material-ui/Radio';
 import { StarRating } from 'veritone-react-common';
 import { blue } from 'material-ui/colors';
@@ -16,7 +14,7 @@ const Range = createSliderWithTooltip(Slider.Range);
 import styles from '../styles.scss';
 
 class PriceAndRatingFilter extends React.Component {
-  static props = {
+  static propTypes = {
     filters: shape({
       rating: arrayOf(number)
     }).isRequired,

@@ -4,7 +4,7 @@ import { objectOf, any, func, bool } from 'prop-types';
 
 import BackIcon from 'material-ui-icons/KeyboardBackspace';
 import InfoSection from './InfoSection';
-import DetailSection from './DetailSection';
+// import DetailSection from './DetailSection';
 
 import styles from './styles.scss';
 
@@ -36,76 +36,76 @@ export default class EngineDetailView extends React.Component {
   };
 
   render() {
-    const sections = {
-      basics: [
-        {
-          title: 'Server Country',
-          value: 'United States'
-        },
-        {
-          title: 'Version',
-          value: 'N/A'
-        },
-        {
-          title: 'Last Updated',
-          value: 'N/A'
-        }
-      ],
-      security: [
-        {
-          title: 'Encrypted in Flight',
-          value: 'N/A'
-        },
-        {
-          title: 'Deletes Data After Process',
-          value: 'N/A'
-        },
-        {
-          title: 'Network Isolated',
-          value: 'N/A'
-        },
-        {
-          title: 'CJIS Compliant',
-          value: 'N/A'
-        },
-        {
-          title: 'PCI Compliant',
-          value: 'N/A'
-        },
-        {
-          title: 'FedRamp Compliant',
-          value: 'N/A'
-        }
-      ],
-      performance: [
-        {
-          title: 'CPU Profile',
-          value: 'N/A'
-        },
-        {
-          title: 'Avg Memory',
-          value: 'N/A'
-        },
-        {
-          title: 'Max Memory',
-          value: 'N/A'
-        },
-        {
-          title: 'Max Concurrency',
-          value: 'N/A'
-        }
-      ],
-      files: [
-        {
-          title: 'Filetypes Supported',
-          value: 'N/A'
-        },
-        {
-          title: 'Max File Size',
-          value: 'N/A'
-        }
-      ]
-    };
+    // const sections = {
+    //   basics: [
+    //     {
+    //       title: 'Server Country',
+    //       value: 'United States'
+    //     },
+    //     {
+    //       title: 'Version',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Last Updated',
+    //       value: 'N/A'
+    //     }
+    //   ],
+    //   security: [
+    //     {
+    //       title: 'Encrypted in Flight',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Deletes Data After Process',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Network Isolated',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'CJIS Compliant',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'PCI Compliant',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'FedRamp Compliant',
+    //       value: 'N/A'
+    //     }
+    //   ],
+    //   performance: [
+    //     {
+    //       title: 'CPU Profile',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Avg Memory',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Max Memory',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Max Concurrency',
+    //       value: 'N/A'
+    //     }
+    //   ],
+    //   files: [
+    //     {
+    //       title: 'Filetypes Supported',
+    //       value: 'N/A'
+    //     },
+    //     {
+    //       title: 'Max File Size',
+    //       value: 'N/A'
+    //     }
+    //   ]
+    // };
 
     return (
       <div>

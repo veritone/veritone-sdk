@@ -1,12 +1,10 @@
 import React from 'react';
 import { func, objectOf, any } from 'prop-types';
-import { capitalize } from 'lodash';
-import Radio from 'material-ui/Radio';
 
-import styles from '../styles.scss';
+// import styles from '../styles.scss';
 
 class AttributesFilter extends React.Component {
-  static props = {
+  static propTypes = {
     filters: objectOf(any).isRequired,
     filterBy: func.isRequired
   };

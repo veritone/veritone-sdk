@@ -1,6 +1,5 @@
 import React from 'react';
 import { func } from 'prop-types';
-import { DiscoverySideBar as Sidebar } from 'veritone-react-common';
 import { noop } from 'lodash';
 
 import EngineListView from './EngineListView/';

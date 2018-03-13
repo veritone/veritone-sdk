@@ -1,8 +1,5 @@
 import { fork, call, put, all, takeLatest, select } from 'redux-saga/effects';
-import { modules } from 'veritone-redux-common';
-import { isEmpty } from 'lodash';
 import * as engineSelectionModule from './';
-const { engine: engineModule } = modules;
 
 function* fetchEngines() {
   yield put(engineSelectionModule.refetchEngines());
@@ -23,7 +20,7 @@ function* watchRefetchEngineActions() {
 
   yield takeLatest(refetchTypes, function* onInvalidateAction() {
     let cachedResults = yield* getCachedResults();
-    
+
     if (!cachedResults) {
       yield* fetchEngines();
     }
@@ -31,7 +28,7 @@ function* watchRefetchEngineActions() {
 }
 
 function* onMount() {
-  yield call(fetchEngines)
+  yield call(fetchEngines);
 }
 
 export default function* root() {

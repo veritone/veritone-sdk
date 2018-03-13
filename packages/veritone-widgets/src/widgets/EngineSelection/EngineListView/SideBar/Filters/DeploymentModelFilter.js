@@ -1,12 +1,11 @@
 import React from 'react';
 import { func, shape, string } from 'prop-types';
-import { capitalize } from 'lodash';
 import Radio from 'material-ui/Radio';
 
 import styles from '../styles.scss';
 
 class DeploymentModelFilter extends React.Component {
-  static props = {
+  static propTypes = {
     filters: shape({
       deploymentModel: string
     }).isRequired,

@@ -1,9 +1,8 @@
 import React from 'react';
-import { func, bool } from 'prop-types';
+import { func, bool, string } from 'prop-types';
 import cx from 'classnames';
 
 import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add';
 import ClearIcon from 'material-ui-icons/Clear';
 
 import styles from './styles.scss';
@@ -12,6 +11,7 @@ export default class ToggleButton extends React.Component {
   static propTypes = {
     onAdd: func.isRequired,
     onRemove: func.isRequired,
+    engineId: string.isRequired,
     isSelected: bool.isRequired
   };
 

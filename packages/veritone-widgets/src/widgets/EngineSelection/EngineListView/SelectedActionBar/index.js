@@ -3,7 +3,6 @@ import { arrayOf, string, number, func, bool } from 'prop-types';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import BackIcon from 'material-ui-icons/KeyboardBackspace';
-import { blue } from 'material-ui/colors';
 
 import styles from './styles.scss';
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { func, number, bool, string } from 'prop-types';
 
-import IconButton from 'material-ui/IconButton';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import { ListItemText } from 'material-ui/List';
+// import IconButton from 'material-ui/IconButton';
+// import Menu, { MenuItem } from 'material-ui/Menu';
+// import { ListItemText } from 'material-ui/List';
 
 import Checkbox from 'material-ui/Checkbox';
-import SortIcon from 'material-ui-icons/SortByAlpha';
+// import SortIcon from 'material-ui-icons/SortByAlpha';
 
 import SearchBar from './SearchBar';
 
