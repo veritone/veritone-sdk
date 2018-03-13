@@ -77,10 +77,10 @@ EngineList.propTypes = {
   hasNextPage: bool.isRequired,
   isNextPageLoading: bool.isRequired,
   list: arrayOf(string).isRequired,
-  loadNextPage: bool.isRequired,
+  loadNextPage: func,
   onViewDetail: func.isRequired,
-  index: number.isRequired,
-  key: number.isRequired,
+  index: number,
+  key: number,
   style: objectOf(any)
 };
 

@@ -2,20 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bool, object, func, string, shape } from 'prop-types';
 
-import {
-  Lozenge,
-  // Price,
-  Ellipsis
-  // StarRating
-} from 'veritone-react-common';
+import { Lozenge, Ellipsis } from 'veritone-react-common';
 
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
-import LibCheckbox from 'material-ui/Checkbox';
+import Checkbox from 'material-ui/Checkbox';
 
-// import cjisLogo from '../../images/CJIS_logo.png';
-// import fedrampLogo from '../../images/fedramp_logo.png';
 import networkIsolatedLogo from '../../images/networkisolated_logo.png';
 import externalAccessLogo from '../../images/externalaccess_logo.png';
 import externalProcessingLogo from '../../images/externalprocessing_logo.png';
@@ -90,7 +83,7 @@ export default class EngineSelectionRow extends React.Component {
           )}
           {!this.props.engine.iconPath && <i className="icon-engines" />}
           <div className={styles.engineSelect}>
-            <LibCheckbox
+            <Checkbox
               onChange={this.handleOnChange}
               checked={this.props.isChecked}
             />
@@ -107,11 +100,9 @@ export default class EngineSelectionRow extends React.Component {
                   {this.props.engine.ownerOrganization.name}
                 </div>
               </div>
-              {/* <Price amount={this.props.engine.price} /> */}
             </div>
             <div className={styles.info}>
               {name && iconClass && <Lozenge type={name} icon={iconClass} />}
-              {/* <StarRating rating={this.props.engine.rating} /> */}
             </div>
             <div className={styles.description}>
               {this.props.engine.description && (
@@ -121,12 +112,6 @@ export default class EngineSelectionRow extends React.Component {
           </div>
           <div className={styles.secondary}>
             <div className={styles.logos}>
-              {/* <div className={styles.logo}>
-                <img src={cjisLogo} />
-              </div>
-              <div className={styles.logo}>
-                <img src={fedrampLogo} />
-              </div> */}
               <div className={styles.logo}>
                 <img
                   src={deploymentModelLogo[this.props.engine.deploymentModel]}

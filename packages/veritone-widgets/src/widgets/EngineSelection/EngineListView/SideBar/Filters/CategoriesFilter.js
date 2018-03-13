@@ -1,7 +1,7 @@
 import React from 'react';
 import { func, arrayOf, string, shape } from 'prop-types';
 import { without } from 'lodash';
-import LibCheckbox from 'material-ui/Checkbox';
+import Checkbox from 'material-ui/Checkbox';
 
 import styles from '../styles.scss';
 
@@ -60,7 +60,7 @@ class CategoriesFilter extends React.Component {
           {categories.map(category => (
             <div key={category}>
               <div className={styles.inlineFilter}>
-                <LibCheckbox
+                <Checkbox
                   classes={{ default: styles.checkbox }}
                   checked={this.props.filters.category.includes(category)}
                   onClick={() => this.handleOnClick(category)}

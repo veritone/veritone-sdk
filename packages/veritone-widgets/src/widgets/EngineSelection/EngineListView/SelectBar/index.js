@@ -1,12 +1,7 @@
 import React from 'react';
 import { func, number, bool, string } from 'prop-types';
 
-// import IconButton from 'material-ui/IconButton';
-// import Menu, { MenuItem } from 'material-ui/Menu';
-// import { ListItemText } from 'material-ui/List';
-
 import Checkbox from 'material-ui/Checkbox';
-// import SortIcon from 'material-ui-icons/SortByAlpha';
 
 import SearchBar from './SearchBar';
 
@@ -25,36 +20,7 @@ export default class SelectBar extends React.Component {
     count: number.isRequired
   };
 
-  // state = {
-  //   sortMenuIsOpen: false,
-  //   sortMenuAnchorEl: null
-  // };
-
-  // openSortMenu = event => {
-  //   this.setState({
-  //     sortMenuIsOpen: true,
-  //     sortMenuAnchorEl: event.currentTarget
-  //   });
-  // };
-
-  // closeSortMenu = () => {
-  //   this.setState({
-  //     sortMenuIsOpen: false
-  //   });
-  // };
-
   render() {
-    // const sortMenuItems = [
-    //   {
-    //     label: 'Category',
-    //     handler: () => console.log('clicked Category filter...')
-    //   },
-    //   {
-    //     label: 'Newest',
-    //     handler: () => console.log('clicked Newest filter...')
-    //   }
-    // ];
-
     return (
       <div className={styles.selectBar}>
         <Checkbox
@@ -73,26 +39,6 @@ export default class SelectBar extends React.Component {
             isOpen={this.props.isSearchOpen}
             isDisabled={this.props.isDisabled}
           />
-          {/* <IconButton
-            onClick={this.openSortMenu}
-            key="button"
-            className="sortMenuButton"
-            disabled={this.props.isDisabled}
-          >
-            <SortIcon />
-          </IconButton>
-          <Menu
-            key="menu"
-            open={this.state.sortMenuIsOpen}
-            onRequestClose={this.closeSortMenu}
-            anchorEl={this.state.sortMenuAnchorEl}
-          >
-            {sortMenuItems.map(({ label, handler }) => (
-              <MenuItem button key={label} onClick={handler}>
-                <ListItemText primary={label} />
-              </MenuItem>
-            ))}
-          </Menu> */}
         </div>
       </div>
     );

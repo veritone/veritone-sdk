@@ -45,8 +45,6 @@ export default class SearchBar extends React.Component {
       return;
     }
 
-    console.log('this.props.searchQuery', this.props.searchQuery);
-    console.log('event.target.value ', event.target.value);
     event.persist();
     this.forwardChange(event);
   };
@@ -57,7 +55,6 @@ export default class SearchBar extends React.Component {
         className={styles.searchBar}
         placeholder="Search by engine name"
         onChange={this.handleChange}
-        // value={this.state.searchQuery}
         inputProps={{
           className: styles.searchBarInput
         }}

@@ -19,13 +19,14 @@
 }
 
 .selectedCountText {
-  @include mui-text('body2');
+  @include mui-text('body1');
   color: $dark-black;
   margin-left: 10px;
 }
 
 .selectMessage {
   color: $blue-1;
+  @include mui-text('body2');
 }
 
 .selectedCount {
