@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { string, bool, shape } from 'prop-types';
+import { string, bool, shape, func } from 'prop-types';
 import classNames from 'classnames';
 
 import styles from './styles.scss';
@@ -10,29 +10,21 @@ class Snippet extends Component {
       text: string
     }),
     boldText: bool,
-    editModeEnabled: bool
+    editModeEnabled: bool,
+    onSnippetClick: func.isRequired
   };
 
-  state = {
-    hoverText: false
-  }
-
-  enableHover = () => {
-    this.setState({hoverText: true});
-  }
-
-  disableHover = () => {
-    this.setState({hoverText: false});
+  handleSnippetClick = () => {
+    this.props.onSnippetClick(this.props.snippet);
   }
 
   render() {
     let { snippet, boldText, editModeEnabled } = this.props;
     return (
-      <span 
-        className={classNames(boldText && styles.boldText, this.state.hoverText && styles.hoverText)} 
-        onMouseEnter={this.enableHover}
-        onMouseLeave={this.disableHover}
-      >{snippet.text} </span>
+      <p 
+        className={classNames(styles.snippetText, boldText && styles.boldText)}
+        onClick={this.handleSnippetClick}
+      >{snippet.text} </p>
     );
   }
 }
