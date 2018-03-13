@@ -1,4 +1,4 @@
 {
-  "apiRoot": "https://api.aws-dev.veritone.com",
+  "apiRoot": "https://api.veritone.com",
   "graphQLEndpoint": "v3/graphql"
 }
