@@ -17,7 +17,7 @@ export function commonHeaders(state) {
 }
 
 export function callGraphQLApi({
-  endpoint = 'https://api.aws-dev.veritone.com/v3/graphql',
+  endpoint = 'https://api.veritone.com/v3/graphql',
   query,
   variables,
   operationName,
