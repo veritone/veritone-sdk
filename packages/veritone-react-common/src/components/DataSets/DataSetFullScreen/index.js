@@ -60,7 +60,7 @@ export default class DataSetFullScreen extends React.Component {
       return <SDOTile checkAll={this.state.checkedAll} numberOfFields={this.props.numberOfFields} columns={SDO} key={index} />
     });
     return (
-      <div>
+      <div className={styles.fullPage}>
         <div className={styles.fullScreenTopBar}>
           <div className={styles.topBarTitle}>{this.props.sdoSourceInfo.dataSetName}</div>
           <div className={styles.iconGroup}>
@@ -92,7 +92,6 @@ export default class DataSetFullScreen extends React.Component {
                 value: this.state.checkedAll
               }}
               className={styles.checkbox}
-              style={{flex: this.state.flexValue}}
               label=''
             />
             {columnTitles}

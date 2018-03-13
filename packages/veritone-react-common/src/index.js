@@ -21,3 +21,4 @@ export AppContainer from './components/AppContainer';
 export SDOCard from './components/SDO/SDOCard';
 export SDOTile from './components/SDO/SDOTile';
 export DataSetFullScreen from './components/DataSets/DataSetFullScreen';
+export RefreshButton from './components/RefreshButton';

@@ -163,7 +163,12 @@ var columns = {
   timeZone: 'Pacific Time (US & Canada)',
   text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
   profileImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-  attributes: ['really long attribute name', 'description', 'description 2']
+  Attribute: 'really long attribute name', 
+  Attribute2: 'description', 
+  Attribute3: 'description 2',
+  a: 'a',
+  b: 'b',
+  c: 'c'
 };
 var numberOfFields = 8;
 
