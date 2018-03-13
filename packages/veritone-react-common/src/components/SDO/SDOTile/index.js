@@ -33,7 +33,7 @@ export default class SDOTile extends React.Component {
   };
 
   state = {
-    flexValue: 1 / (this.props.numberOfFields + 1), //add one for the checkbox
+    // flexValue: 1 / (this.props.numberOfFields + 1), //add one for the checkbox
     checked: this.props.checkAll || false
   };
 
@@ -52,9 +52,9 @@ export default class SDOTile extends React.Component {
     const columnSections = Object.values(this.props.columns).map((column, index) => {
       if (column.indexOf('image') !== -1) { //TODO: this won't always work, need a way to know if a field is an image
         // change tag for images
-        return <img className={styles.sdoProfileImage} style={{flex: this.state.flexValue}} src={column} key={index}></img>
+        return <div className={styles.sdoImageWrapper} key={index}><img className={styles.sdoImage} src={column} key={index}></img></div>
       } else {
-        return <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}} key={index}>{column}</span>
+        return <span className={styles.sdoBasicColumn} key={index}>{column}</span>
       }
     });
     return (
@@ -65,7 +65,6 @@ export default class SDOTile extends React.Component {
             value: this.state.checked
           }}
           className={styles.checkbox}
-          style={{flex: this.state.flexValue}}
           label=''
         />
         {columnSections}

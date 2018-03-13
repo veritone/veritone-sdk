@@ -43,7 +43,7 @@ export default class SDOCard extends React.Component {
 
   state = {
     checkedAll: false,
-    flexValue: 1 / (this.props.numberOfFields + 1),
+    // flexValue: 1 / (this.props.numberOfFields + 1),
     sourceSelection: this.props.sdoSourceInfo.sourceSelection || '',
     schemaSelection: this.props.sdoSchemaInfo.schemaSelection || ''
   };
@@ -77,7 +77,7 @@ export default class SDOCard extends React.Component {
       return <MenuItem value={schema} key={index}>{schema} (Schema Name)</MenuItem>
     });
     const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
-      return <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}} key={index}>{title}</span>
+      return <span className={styles.sdoBasicColumn} key={index}>{title}</span>
     });
     const sourceMenuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
       return <MenuItem value={source} key={index}>{source} (Source Name)</MenuItem>
@@ -86,7 +86,7 @@ export default class SDOCard extends React.Component {
       return <SDOTile checkAll={this.state.checkedAll} numberOfFields={this.props.numberOfFields} columns={SDO} key={index} />
     });
     return (
-      <div>
+      <div className={styles.fullPage}>
         <div className={styles.fullScreenHeader}>
           <div className={styles.fullScreenTitle}>
             <IconButton className={styles.arrowIcon} aria-label='help'>
@@ -113,7 +113,7 @@ export default class SDOCard extends React.Component {
             </IconButton>
           </div>
         </div>
-        <div className={styles.tableCard}>
+        <div className={styles.sdoCard}>
           <div className={styles.sourceTitle}>
             <div className={styles.sourceTitleGroup}>
               <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
@@ -129,19 +129,22 @@ export default class SDOCard extends React.Component {
               {sourceMenuItems}
             </Select>
           </div>
-          <div className={styles.sdoTableTitle}>
-            <Checkbox
-              input={{
-                onChange: this.handleCheckboxChange,
-                value: this.state.checkedAll
-              }}
-              className={styles.checkbox}
-              style={{flex: this.state.flexValue}}
-              label=''
-            />
-            {columnTitles}
+          <div className={styles.sdoTable}>
+            <div className={styles.sdoTableTitle}>
+              <Checkbox
+                input={{
+                  onChange: this.handleCheckboxChange,
+                  value: this.state.checkedAll
+                }}
+                className={styles.checkbox}
+                label=''
+              />
+              {columnTitles}
+            </div>
+            <div className={styles.tableRows}>
+              {SDOTiles}
+            </div>
           </div>
-          {SDOTiles}
         </div>
       </div>
     );

@@ -1,38 +1,47 @@
 .sdoTile {
   height: 80px;
-  width: 100%;
+  // width: 100%;
   color: rgba(0, 0, 0, 0.87);
   font-size: 13px;
   line-height: 15px;
 
   display: flex;
+  flex: 1;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: space-evenly;
+  // justify-content: space-evenly;
   border-bottom: 1px solid rgba(0,0,0,0.12);
   padding-top: 10px;
   padding-bottom: 10px;
+  width: fit-content;
 
   .checkbox {
     margin-left: 25px;
   }
   .sdoBasicColumn {
-    flex: 1 1 auto;
+    // flex: 1 1 auto;
+    width: 120px;
     align-self: center;
-    line-height: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     line-height: 1;
     padding-right: 5px; // make it neater when columns are squeezed too close
   }
+  
+  .sdoImageWrapper {
+    display: flex;
+    justify-content: center;
 
-  .sdoProfileImage {
-    height: 31px;
-    width: 31px;
-    align-self: center;
-    padding-right: 5px; // make it neater when columns are squeezed too close
+    width: 120px;
+    .sdoImage {
+      height: 32px;
+      width: 32px;
+      align-self: center;
+      padding-right: 5px; // make it neater when columns are squeezed too close
+    }
   }
+  
 
   // .sdoTextColumn {
   //   flex: 1 1 auto;
