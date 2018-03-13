@@ -1,13 +1,4 @@
-import {
-  get,
-  set,
-  omit,
-  without,
-  union,
-  isObject,
-  merge,
-  isArray
-} from 'lodash';
+import { get, set, omit, without, union, merge, isArray } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer } = helpers;
 const { engine: engineModule } = modules;
@@ -28,12 +19,14 @@ export const CLEAR_ALL_FILTERS = 'vtn/engineSelection/CLEAR_ALL_FILTERS';
 export const SEARCH = 'vtn/engineSelection/SEARCH';
 export const CLEAR_SEARCH = 'vtn/engineSelection/CLEAR_SEARCH';
 
+export const CHANGE_TAB = 'vtn/engineSelection/CHANGE_TAB';
+export const TOGGLE_SEARCH = 'vtn/engineSelection/TOGGLE_SEARCH';
+
 export const namespace = 'engineSelection';
 
 const defaultState = {
   searchResults: {},
   searchQuery: '',
-  engineCount: 0,
   filters: {
     category: [],
     rating: []
@@ -41,7 +34,9 @@ const defaultState = {
   orderBy: {},
   selectedEngineIds: [],
   checkedEngineIds: [],
-  allEnginesChecked: false
+  allEnginesChecked: false,
+  currentTabIndex: 0,
+  isSearchOpen: false
 };
 
 export default createReducer(defaultState, {
@@ -116,13 +111,17 @@ export default createReducer(defaultState, {
       filters: {
         ...state.filters,
         [action.payload.type]: action.payload.value
-      }
+      },
+      checkedEngineIds: [],
+      allEnginesChecked: false
     };
   },
   [REMOVE_FILTER](state, action) {
     return {
       ...state,
-      filters: omit(state.filters, action.payload.type)
+      filters: omit(state.filters, action.payload.type),
+      checkedEngineIds: [],
+      allEnginesChecked: false
     };
   },
   [CLEAR_ALL_FILTERS](state, action) {
@@ -131,19 +130,39 @@ export default createReducer(defaultState, {
       filters: {
         category: [],
         rating: []
-      }
+      },
+      checkedEngineIds: [],
+      allEnginesChecked: false
     };
   },
   [SEARCH](state, action) {
     return {
       ...state,
-      searchQuery: action.payload.searchQuery
+      searchQuery: action.payload.searchQuery,
+      checkedEngineIds: [],
+      allEnginesChecked: false
     };
   },
   [CLEAR_SEARCH](state, action) {
     return {
       ...state,
-      searchQuery: ''
+      searchQuery: '',
+      checkedEngineIds: [],
+      allEnginesChecked: false,
+      isSearchOpen: false
+    };
+  },
+  [CHANGE_TAB](state, action) {
+    return {
+      ...state,
+      currentTabIndex: action.payload.tabIndex,
+      isSearchOpen: false
+    };
+  },
+  [TOGGLE_SEARCH](state, action) {
+    return {
+      ...state,
+      isSearchOpen: !state.isSearchOpen
     };
   }
 });
@@ -255,8 +274,32 @@ export function clearAllFilters() {
   };
 }
 
+export function changeTab(tabIndex) {
+  return {
+    type: CHANGE_TAB,
+    payload: {
+      tabIndex
+    }
+  };
+}
+
+export function toggleSearch() {
+  return {
+    type: TOGGLE_SEARCH,
+    payload: {}
+  };
+}
+
 export function pathFor(searchQuery, filters, orderBy) {
   return [searchQuery, JSON.stringify(filters)];
+}
+
+export function getCurrentTabIndex(state) {
+  return local(state).currentTabIndex;
+}
+
+export function isSearchOpen(state) {
+  return local(state).isSearchOpen;
 }
 
 export function getCurrentResults(state) {

@@ -1,6 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { string, object, func } from 'prop-types';
+import { bool, object, func } from 'prop-types';
+
+import { Lozenge, Price, Ellipsis, StarRating } from 'veritone-react-common';
+
+import { modules } from 'veritone-redux-common';
+const { engine: engineModule } = modules;
 
 import LibCheckbox from 'material-ui/Checkbox';
 
@@ -10,8 +15,6 @@ import networkIsolatedLogo from '../../images/networkisolated_logo.png';
 import externalAccessLogo from '../../images/externalaccess_logo.png';
 import externalProcessingLogo from '../../images/externalprocessing_logo.png';
 import humanReviewLogo from '../../images/humanreview_logo.png';
-
-import { Lozenge, Price, Ellipsis, StarRating } from 'veritone-react-common';
 
 import * as engineSelectionModule from '../../../../redux/modules/engineSelection';
 
@@ -23,23 +26,28 @@ import styles from './styles.scss';
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
       state,
-      ownProps.engine.id
+      ownProps.engineId
     ),
-    isChecked: engineSelectionModule.engineIsChecked(state, ownProps.engine.id)
+    engine: engineModule.getEngine(state, ownProps.engineId),
+    isChecked: engineSelectionModule.engineIsChecked(state, ownProps.engineId)
   }),
   {
     addEngines: engineSelectionModule.addEngines,
     removeEngines: engineSelectionModule.removeEngines,
     checkEngine: engineSelectionModule.checkEngine,
     uncheckEngine: engineSelectionModule.uncheckEngine
-  },
-  null,
-  { withRef: true }
+  }
 )
 export default class EngineSelectionRow extends React.Component {
   static propTypes = {
-    engine: object,
-    showDetailView: func.isRequired
+    engine: object.isRequired,
+    isSelected: bool.isRequired,
+    isChecked: bool.isRequired,
+    onViewDetail: func.isRequired,
+    addEngines: func.isRequired,
+    removeEngines: func.isRequired,
+    checkEngine: func.isRequired,
+    uncheckEngine: func.isRequired
   };
 
   handleOnChange = () => {
@@ -49,7 +57,7 @@ export default class EngineSelectionRow extends React.Component {
   };
 
   handleOnClick = () => {
-    this.props.showDetailView(this.props.engine);
+    this.props.onViewDetail(this.props.engine);
   };
 
   render() {
@@ -69,10 +77,6 @@ export default class EngineSelectionRow extends React.Component {
             <img src={this.props.engine.iconPath} />
           )}
           {!this.props.engine.iconPath && <i className="icon-engines" />}
-          {/* <img src={this.props.engine.iconPath} />
-          <div>
-            <i className="icon-engines" />
-          </div> */}
           <div className={styles.engineSelect}>
             <LibCheckbox
               onChange={this.handleOnChange}
@@ -91,25 +95,26 @@ export default class EngineSelectionRow extends React.Component {
                   {this.props.engine.ownerOrganization.name}
                 </div>
               </div>
-              <Price amount={this.props.engine.price} />
+              {/* <Price amount={this.props.engine.price} /> */}
             </div>
             <div className={styles.info}>
-              <Lozenge type={name} icon={iconClass} />
-              <StarRating rating={this.props.engine.rating} />
+              {name && iconClass && <Lozenge type={name} icon={iconClass} />}
+              {/* <StarRating rating={this.props.engine.rating} /> */}
             </div>
             <div className={styles.description}>
-              {this.props.engine.description}
-              {/* <Ellipsis /> */}
+              {this.props.engine.description && (
+                <Ellipsis text={this.props.engine.description} lines={3} />
+              )}
             </div>
           </div>
           <div className={styles.secondary}>
             <div className={styles.logos}>
-              <div className={styles.logo}>
+              {/* <div className={styles.logo}>
                 <img src={cjisLogo} />
               </div>
               <div className={styles.logo}>
                 <img src={fedrampLogo} />
-              </div>
+              </div> */}
               <div className={styles.logo}>
                 <img
                   src={deploymentModelLogo[this.props.engine.deploymentModel]}

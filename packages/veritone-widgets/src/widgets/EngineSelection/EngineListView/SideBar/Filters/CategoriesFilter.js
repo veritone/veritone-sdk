@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, objectOf, any } from 'prop-types';
+import { func, arrayOf, string, shape } from 'prop-types';
 import { without } from 'lodash';
 import LibCheckbox from 'material-ui/Checkbox';
 
@@ -7,7 +7,9 @@ import styles from '../styles.scss';
 
 class CategoriesFilter extends React.Component {
   static props = {
-    filters: objectOf(any).isRequired,
+    filters: shape({
+      category: arrayOf(string).isRequired
+    }).isRequired,
     filterBy: func.isRequired
   };
 
@@ -54,9 +56,9 @@ class CategoriesFilter extends React.Component {
     return (
       <div className={styles.filterContainer}>
         <div className={styles.title}>Categories</div>
-        <div className={styles.filters}>
+        <div>
           {categories.map(category => (
-            <div className={styles.filter} key={category}>
+            <div key={category}>
               <div className={styles.inlineFilter}>
                 <LibCheckbox
                   classes={{ default: styles.checkbox }}

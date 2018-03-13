@@ -1,13 +1,15 @@
+@import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
 
 .selectBar {
+  $height: 73px;
+  @include mui-text('body1');
   display: flex;
-  font-size: 14px;
   align-items: center;
   color: $light-black;
   padding: 15px 0 10px 5px;
-  min-height: 73px;
-  max-height: 73px;
+  min-height: $height;
+  max-height: $height;
 }
 
 .selectBarIcons {
@@ -28,5 +30,14 @@
 }
 
 .searchBarInput {
-  font-size: 14px !important;
+  @include mui-text('body1');
+}
+
+.searchBarUnderline {
+  &:before {
+    height: 1px !important;
+  }
+  &:after {
+    background-color: $blue-1 !important;
+  }
 }

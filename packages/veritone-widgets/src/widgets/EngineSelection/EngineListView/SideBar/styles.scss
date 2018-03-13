@@ -1,3 +1,6 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
 .sideBar {
   $width: 290px;
   min-width: $width;
@@ -11,20 +14,14 @@
 }
 
 .filterContainer {
+  @include mui-text('body1');
   padding: 10px 20px;
-  font-size: 14px;
+  color: $full-black;
 }
 
 .title {
-  // font-weight: bold;
+  font-weight: 500;
   margin-bottom: 10px;
-}
-
-.filters {
-}
-
-.filter {
-  // font-weight: bold;
 }
 
 .checkbox,
@@ -36,10 +33,10 @@
 }
 
 .rc-slider-handle {
-  border: 2px solid rgb(33, 150, 243) !important;
-  background-color: rgb(33, 150, 243) !important;
+  border: 2px solid $blue-1 !important;
+  background-color: $blue-1 !important;
 }
 
 .rc-slider-track {
-  background-color: rgb(33, 150, 243) !important;
+  background-color: $blue-1 !important;
 }

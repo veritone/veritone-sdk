@@ -2,7 +2,7 @@ import React from 'react';
 import { bool, func } from 'prop-types';
 import { capitalize } from 'lodash';
 
-import { Lozenge, Price, Ellipsis, StarRating } from 'veritone-react-common';
+import { Lozenge, Price, StarRating } from 'veritone-react-common';
 import ToggleButton from '../ToggleButton/';
 import cjisLogo from '../images/CJIS_logo.png';
 import fedrampLogo from '../images/fedramp_logo.png';
@@ -13,13 +13,17 @@ import humanReviewLogo from '../images/humanreview_logo.png';
 
 import styles from './styles.scss';
 
-export default ({ engine }) => {
+export default ({ engine, onAdd, onRemove, isSelected }) => {
   const deploymentModelLogo = {
     FullyNetworkIsolated: networkIsolatedLogo,
     MostlyNetworkIsolated: externalAccessLogo,
     NonNetworkIsolated: externalProcessingLogo,
     HumanReview: humanReviewLogo
   };
+
+  const { name: orgName } = engine.ownerOrganization;
+  const { name: categoryName, iconClass } = engine.category || {};
+
   return (
     <div className={styles.row}>
       <div className={styles.avatar}>
@@ -29,27 +33,33 @@ export default ({ engine }) => {
       <div className={styles.container}>
         <div className={styles.primary}>
           <div className={styles.title}>{engine.name}</div>
-          <div className={styles.orgName}>{engine.ownerOrganization.name}</div>
+          <div className={styles.orgName}>{orgName}</div>
           <div className={styles.info}>
-            <Lozenge type={engine.category.name} />
-            <StarRating rating={engine.rating} />
+            {categoryName &&
+              iconClass && <Lozenge type={categoryName} icon={iconClass} />}
+            {/* <StarRating rating={engine.rating} /> */}
           </div>
           <div className={styles.logos}>
-            <div className={styles.logo}>
+            {/* <div className={styles.logo}>
               <img src={cjisLogo} />
             </div>
             <div className={styles.logo}>
               <img src={fedrampLogo} />
-            </div>
+            </div> */}
             <div className={styles.logo}>
               <img src={deploymentModelLogo[engine.deploymentModel]} />
             </div>
           </div>
         </div>
         <div className={styles.secondary}>
-          <Price amount={engine.price} />
+          {/* <Price amount={engine.price} /> */}
           <div className={styles.button}>
-            <ToggleButton />
+            <ToggleButton
+              onAdd={onAdd}
+              onRemove={onRemove}
+              engineId={engine.id}
+              isSelected={isSelected}
+            />
           </div>
         </div>
       </div>

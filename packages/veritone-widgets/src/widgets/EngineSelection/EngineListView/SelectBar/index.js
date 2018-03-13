@@ -1,9 +1,9 @@
 import React from 'react';
-import { func, number, bool } from 'prop-types';
+import { func, number, bool, string } from 'prop-types';
 
 import IconButton from 'material-ui/IconButton';
 import Menu, { MenuItem } from 'material-ui/Menu';
-import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import { ListItemText } from 'material-ui/List';
 
 import Checkbox from 'material-ui/Checkbox';
 import SortIcon from 'material-ui-icons/SortByAlpha';
@@ -14,43 +14,46 @@ import styles from './styles.scss';
 
 export default class SelectBar extends React.Component {
   static propTypes = {
-    onCheck: func.isRequired,
+    onCheckAll: func.isRequired,
+    searchQuery: string,
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
     isChecked: bool.isRequired,
     isDisabled: bool.isRequired,
-    count: number
+    isSearchOpen: bool.isRequired,
+    onToggleSearch: func.isRequired,
+    count: number.isRequired
   };
 
-  state = {
-    sortMenuIsOpen: false,
-    sortMenuAnchorEl: null
-  };
+  // state = {
+  //   sortMenuIsOpen: false,
+  //   sortMenuAnchorEl: null
+  // };
 
-  openSortMenu = event => {
-    this.setState({
-      sortMenuIsOpen: true,
-      sortMenuAnchorEl: event.currentTarget
-    });
-  };
+  // openSortMenu = event => {
+  //   this.setState({
+  //     sortMenuIsOpen: true,
+  //     sortMenuAnchorEl: event.currentTarget
+  //   });
+  // };
 
-  closeSortMenu = () => {
-    this.setState({
-      sortMenuIsOpen: false
-    });
-  };
+  // closeSortMenu = () => {
+  //   this.setState({
+  //     sortMenuIsOpen: false
+  //   });
+  // };
 
   render() {
-    const sortMenuItems = [
-      {
-        label: 'Category',
-        handler: () => console.log('clicked Category filter...')
-      },
-      {
-        label: 'Newest',
-        handler: () => console.log('clicked Newest filter...')
-      }
-    ];
+    // const sortMenuItems = [
+    //   {
+    //     label: 'Category',
+    //     handler: () => console.log('clicked Category filter...')
+    //   },
+    //   {
+    //     label: 'Newest',
+    //     handler: () => console.log('clicked Newest filter...')
+    //   }
+    // ];
 
     return (
       <div className={styles.selectBar}>
@@ -65,13 +68,16 @@ export default class SelectBar extends React.Component {
           <SearchBar
             onSearch={this.props.onSearch}
             onClearSearch={this.props.onClearSearch}
+            onToggleSearch={this.props.onToggleSearch}
             searchQuery={this.props.searchQuery}
+            isOpen={this.props.isSearchOpen}
             isDisabled={this.props.isDisabled}
           />
-          <IconButton
+          {/* <IconButton
             onClick={this.openSortMenu}
             key="button"
             className="sortMenuButton"
+            disabled={this.props.isDisabled}
           >
             <SortIcon />
           </IconButton>
@@ -86,7 +92,7 @@ export default class SelectBar extends React.Component {
                 <ListItemText primary={label} />
               </MenuItem>
             ))}
-          </Menu>
+          </Menu> */}
         </div>
       </div>
     );

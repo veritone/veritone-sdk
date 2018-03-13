@@ -1,17 +1,34 @@
 import React from 'react';
-import { objectOf, any, func } from 'prop-types';
+import { connect } from 'react-redux';
+import { objectOf, any, func, bool } from 'prop-types';
 
-import styles from './styles.scss';
-
+import BackIcon from 'material-ui-icons/KeyboardBackspace';
 import InfoSection from './InfoSection';
 import DetailSection from './DetailSection';
 
-import BackIcon from 'material-ui-icons/KeyboardBackspace';
+import styles from './styles.scss';
 
+import * as engineSelectionModule from '../../../redux/modules/engineSelection';
+
+@connect(
+  (state, ownProps) => ({
+    isSelected: engineSelectionModule.engineIsSelected(
+      state,
+      ownProps.engine.id
+    )
+  }),
+  {
+    addEngines: engineSelectionModule.addEngines,
+    removeEngines: engineSelectionModule.removeEngines
+  }
+)
 export default class EngineDetailView extends React.Component {
   static propTypes = {
     engine: objectOf(any).isRequired,
-    onClose: func.isRequired
+    isSelected: bool.isRequired,
+    onCloseDetailView: func.isRequired,
+    addEngines: func.isRequired,
+    removeEngines: func.isRequired
   };
 
   static defaultProps = {
@@ -27,7 +44,7 @@ export default class EngineDetailView extends React.Component {
         },
         {
           title: 'Version',
-          value: 14.04
+          value: 'N/A'
         },
         {
           title: 'Last Updated',
@@ -92,21 +109,29 @@ export default class EngineDetailView extends React.Component {
 
     return (
       <div>
-        <div className={styles.back} onClick={this.props.onClose}>
-          <div className={styles.backBtn}>
+        <div className={styles.back}>
+          <div
+            className={styles.backBtn}
+            onClick={this.props.onCloseDetailView}
+          >
             <BackIcon />
             <span>Back</span>
           </div>
         </div>
         <div className={styles.content}>
-          <InfoSection engine={this.props.engine} />
+          <InfoSection
+            engine={this.props.engine}
+            onAdd={this.props.addEngines}
+            onRemove={this.props.removeEngines}
+            isSelected={this.props.isSelected}
+          />
           <div className={styles.description}>
             <div className={styles.sectionHeading}>Description</div>
             <div className={styles.descriptionContent}>
               {this.props.engine.description}
             </div>
           </div>
-          <hr />
+          {/* <hr />
           <div className={styles.details}>
             <div className={styles.sectionHeading}>Engine Details</div>
             <div className={styles.detailsContent}>
@@ -114,7 +139,7 @@ export default class EngineDetailView extends React.Component {
                 <DetailSection section={section} />
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );

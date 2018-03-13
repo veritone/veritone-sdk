@@ -21,9 +21,9 @@
 }
 
 .tabs {
+  @include mui-text('body1');
   display: inline-flex;
   width: 100%;
-  font-size: 14px;
   height: 49px;
   padding: 0 30px;
   color: $light-black;

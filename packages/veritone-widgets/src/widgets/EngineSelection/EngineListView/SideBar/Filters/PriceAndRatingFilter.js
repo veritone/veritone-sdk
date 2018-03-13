@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, objectOf, any } from 'prop-types';
+import { func, arrayOf, shape, number } from 'prop-types';
 import { capitalize } from 'lodash';
 import TextField from 'material-ui/TextField';
 import Radio from 'material-ui/Radio';
@@ -17,7 +17,9 @@ import styles from '../styles.scss';
 
 class PriceAndRatingFilter extends React.Component {
   static props = {
-    filters: objectOf(any).isRequired,
+    filters: shape({
+      rating: arrayOf(number)
+    }).isRequired,
     filterBy: func.isRequired
   };
 

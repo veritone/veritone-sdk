@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, string, number, func } from 'prop-types';
+import { arrayOf, string, number, func, bool } from 'prop-types';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import BackIcon from 'material-ui-icons/KeyboardBackspace';
@@ -89,7 +89,8 @@ SelectedActionBar.propTypes = {
   onBack: func.isRequired,
   onAddSelected: func.isRequired,
   onRemoveSelected: func.isRequired,
-  onSelectAll: func.isRequired
+  onSelectAll: func.isRequired,
+  disabledSelectAllMessage: bool.isRequired
 };
 
 export default SelectedActionBar;

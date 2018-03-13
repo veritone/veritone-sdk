@@ -2,9 +2,9 @@
 @import 'src/styles/modules/variables';
 
 .addRemoveSelectedBar {
+  @include mui-text('body1');
   display: inline-flex;
   width: 100%;
-  font-size: 14px;
   height: 49px;
   padding: 0 30px;
   color: $light-black;
@@ -21,7 +21,6 @@
 .selectedCountText {
   @include mui-text('body2');
   color: $dark-black;
-  font-weight: 400 !important;
   margin-left: 10px;
 }
 

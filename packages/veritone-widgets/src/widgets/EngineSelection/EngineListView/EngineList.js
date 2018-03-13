@@ -1,7 +1,5 @@
 import React from 'react';
-
 import { InfiniteLoader, AutoSizer, List } from 'react-virtualized';
-
 import EngineSelectionRow from './EngineSelectionRow/';
 
 import styles from './styles.scss';
@@ -15,10 +13,8 @@ export default function EngineList({
   list = [],
   /** Callback function (eg. Redux action-creator) responsible for loading the next page of items */
   loadNextPage,
-
-  engines,
-
-  showDetailView
+  /** View detail page */
+  onViewDetail
 }) {
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
   const rowCount = hasNextPage ? list.length + 1 : list.length;
@@ -39,8 +35,8 @@ export default function EngineList({
     } else {
       content = (
         <EngineSelectionRow
-          engine={engines[list[index]]}
-          showDetailView={showDetailView}
+          engineId={list[index]}
+          onViewDetail={onViewDetail}
         />
       );
     }

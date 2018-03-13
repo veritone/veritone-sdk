@@ -7,12 +7,15 @@
   padding-top: 20px;
   padding-left: 28px;
   font-size: 20px;
-  cursor: pointer;
-  align-items: center;
 }
 
 .backBtn {
+  @include mui-text('title');
+  font-weight: 500 !important;
+  color: $dark-black;
   display: inline-flex;
+  align-items: center;
+  cursor: pointer;
 
   span {
     margin-left: 10px;
@@ -32,10 +35,8 @@
 }
 
 .sectionHeading {
+  @include mui-text('menu');
   padding-bottom: 15px;
-  font-size: 13px;
-  font-weight: bold;
-  line-height: 15px;
   color: $dark-black;
 }
 

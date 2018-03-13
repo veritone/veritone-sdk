@@ -13,6 +13,7 @@ import styles from './styles.scss';
 export default class SearchBar extends React.Component {
   static propTypes = {
     searchQuery: string,
+    onToggleSearch: func.isRequired,
     isOpen: bool.isRequired,
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
@@ -20,11 +21,8 @@ export default class SearchBar extends React.Component {
   };
 
   static defaultProps = {
-    isOpen: false
-  };
-
-  state = {
-    isOpen: this.props.isOpen
+    isOpen: false,
+    searchQuery: ''
   };
 
   componentWillMount(props) {
@@ -34,12 +32,10 @@ export default class SearchBar extends React.Component {
     );
   }
 
-  toggleSearchBar = () => {
-    this.setState({
-      isOpen: !this.state.isOpen
-    });
+  handleToggleSearch = () => {
+    this.props.onToggleSearch();
 
-    if (this.state.isOpen && this.props.searchQuery) {
+    if (this.props.isOpen && this.props.searchQuery) {
       this.props.onClearSearch();
     }
   };
@@ -48,6 +44,9 @@ export default class SearchBar extends React.Component {
     if (!event.target.value || event.target.value === this.props.searchQuery) {
       return;
     }
+
+    console.log('this.props.searchQuery', this.props.searchQuery);
+    console.log('event.target.value ', event.target.value);
     event.persist();
     this.forwardChange(event);
   };
@@ -58,16 +57,19 @@ export default class SearchBar extends React.Component {
         className={styles.searchBar}
         placeholder="Search by engine name"
         onChange={this.handleChange}
-        value={this.state.searchQuery}
+        // value={this.state.searchQuery}
         inputProps={{
           className: styles.searchBarInput
         }}
         InputProps={{
+          classes: {
+            underline: styles.searchBarUnderline
+          },
           endAdornment: (
             <InputAdornment className={styles.searchBarIcon} position="end">
               <IconButton
                 className={styles.searchBarIcon}
-                onClick={this.toggleSearchBar}
+                onClick={this.handleToggleSearch}
               >
                 <CloseIcon />
               </IconButton>
@@ -81,7 +83,7 @@ export default class SearchBar extends React.Component {
   renderClosedState = () => (
     <div>
       <IconButton
-        onClick={this.toggleSearchBar}
+        onClick={this.handleToggleSearch}
         className={styles.searchBarIcon}
         disabled={this.props.isDisabled}
       >
@@ -91,7 +93,7 @@ export default class SearchBar extends React.Component {
   );
 
   render() {
-    return this.state.isOpen
+    return this.props.isOpen
       ? this.renderOpenedState()
       : this.renderClosedState();
   }

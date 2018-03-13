@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, objectOf, any } from 'prop-types';
+import { func, shape, string } from 'prop-types';
 import { capitalize } from 'lodash';
 import Radio from 'material-ui/Radio';
 
@@ -7,7 +7,9 @@ import styles from '../styles.scss';
 
 class DeploymentModelFilter extends React.Component {
   static props = {
-    filters: objectOf(any).isRequired,
+    filters: shape({
+      deploymentModel: string
+    }).isRequired,
     filterBy: func.isRequired
   };
 

@@ -1,6 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bool, func, objectOf, any, arrayOf, string } from 'prop-types';
+import {
+  bool,
+  func,
+  objectOf,
+  object,
+  arrayOf,
+  string,
+  shape,
+  number
+} from 'prop-types';
 import { isEmpty, isArray, isString, noop, without } from 'lodash';
 
 import LibCheckbox from 'material-ui/Checkbox';
@@ -11,8 +20,6 @@ import { CircularProgress } from 'material-ui/Progress';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
-import styles from './styles.scss';
-
 import SelectBar from './SelectBar/';
 import EnginesSideBar from './SideBar';
 import EngineList from './EngineList';
@@ -21,9 +28,11 @@ import FailureScreen from './FailureScreen/';
 
 import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 
+import styles from './styles.scss';
+
 @connect(
   (state, ownProps) => ({
-    engines: engineModule.getEngines(state),
+    allEngines: engineModule.getEngines(state),
     currentResults: engineSelectionModule.getCurrentResults(state),
     allEnginesChecked: engineSelectionModule.allEnginesChecked(state),
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state),
@@ -31,7 +40,9 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
     filters: engineSelectionModule.getEngineFilters(state),
     isFetchingEngines: engineModule.isFetchingEngines(state),
     failedToFetchEngines: engineModule.failedToFetchEngines(state),
-    searchQuery: engineSelectionModule.getSearchQuery(state)
+    searchQuery: engineSelectionModule.getSearchQuery(state),
+    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state),
+    isSearchOpen: engineSelectionModule.isSearchOpen(state)
   }),
   {
     addEngines: engineSelectionModule.addEngines,
@@ -43,37 +54,56 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
     clearSearch: engineSelectionModule.clearSearch,
     addEngineFilter: engineSelectionModule.addEngineFilter,
     removeEngineFilter: engineSelectionModule.removeEngineFilter,
-    clearAllFilters: engineSelectionModule.clearAllFilters
-  },
-  null,
-  { withRef: true }
+    clearAllFilters: engineSelectionModule.clearAllFilters,
+    changeTab: engineSelectionModule.changeTab,
+    toggleSearch: engineSelectionModule.toggleSearch
+  }
 )
 export default class EngineListView extends React.Component {
   static propTypes = {
-    engines: objectOf(any),
-    showDetailView: func.isRequired,
-    currentResults: arrayOf(string),
+    allEngines: objectOf(object).isRequired,
+    onViewDetail: func.isRequired,
+    currentResults: arrayOf(string).isRequired,
+    allEnginesChecked: bool.isRequired,
+    selectedEngineIds: arrayOf(string).isRequired,
+    checkedEngineIds: arrayOf(string).isRequired,
+    filters: shape({
+      category: arrayOf(string)
+    }).isRequired,
+    isFetchingEngines: bool.isRequired,
+    failedToFetchEngines: bool.isRequired,
+    searchQuery: string,
+    currentTabIndex: number.isRequired,
+    isSearchOpen: bool.isRequired,
+    addEngines: func.isRequired,
+    removeEngines: func.isRequired,
+    refetchEngines: func.isRequired,
+    searchEngines: func.isRequired,
+    checkAllEngines: func.isRequired,
+    uncheckAllEngines: func.isRequired,
+    clearSearch: func.isRequired,
+    addEngineFilter: func.isRequired,
+    removeEngineFilter: func.isRequired,
+    clearAllFilters: func.isRequired,
+    changeTab: func.isRequired,
+    toggleSearch: func.isRequired,
     onSave: func.isRequired,
     onCancel: func.isRequired
   };
 
   static defaultProps = {
-    engines: {},
+    allEngines: {},
     currentResults: []
   };
 
-  state = {
-    tabIndex: 0
-  };
-
   handleCheckAll = () => {
+    const enginesToCheck = this.props.currentTabIndex
+      ? this.props.currentResults
+      : this.props.selectedEngineIds;
+
     this.props.allEnginesChecked
       ? this.props.uncheckAllEngines()
-      : this.props.checkAllEngines(
-          this.state.tabIndex
-            ? this.props.currentResults
-            : this.props.selectedEngineIds
-        );
+      : this.props.checkAllEngines(enginesToCheck);
   };
 
   handleSearch = name => {
@@ -81,24 +111,15 @@ export default class EngineListView extends React.Component {
   };
 
   handleTabChange = (event, tabIndex) => {
-    this.setState({ tabIndex });
+    this.props.changeTab(tabIndex);
   };
-
-  // handleOnFilterChange = ({ type, value }) => {
-  //   // console.log('handleOnFilterChange()', type, value)
-  //   // (!!this.props.filters[type]) ?
-  //   //   this.props.removeEngineFilter({ type, value }) :
-  //   this.props.addEngineFilter({ type, value })
-  // }
 
   renderEngineList = selectedEngines => (
     <EngineList
       hasNextPage={false}
       isNextPageLoading={false}
       loadNextPage={() => {}}
-      // loadNextPage={this.props.fetchEngines}
-      showDetailView={this.props.showDetailView}
-      engines={this.props.engines}
+      onViewDetail={this.props.onViewDetail}
       list={selectedEngines || this.props.currentResults}
     />
   );
@@ -158,7 +179,7 @@ export default class EngineListView extends React.Component {
   renderTabs = () => (
     <Tabs
       className={styles.tabs}
-      value={this.state.tabIndex}
+      value={this.props.currentTabIndex}
       onChange={this.handleTabChange}
       indicatorColor="primary"
       textColor="primary"
@@ -207,7 +228,7 @@ export default class EngineListView extends React.Component {
 
   render() {
     const { checkedEngineIds } = this.props;
-    const { tabIndex } = this.state;
+    const { currentTabIndex } = this.props;
     const tabs = {
       0: this.renderYourEnginesTab(),
       1: this.renderExploreAllEnginesTab()
@@ -225,13 +246,13 @@ export default class EngineListView extends React.Component {
           {!isEmpty(checkedEngineIds) && (
             <SelectedActionBar
               selectedEngines={checkedEngineIds}
-              disabledSelectAllMessage={!tabIndex}
+              disabledSelectAllMessage={!currentTabIndex}
               currentResultsCount={this.props.currentResults.length}
               onBack={this.props.uncheckAllEngines}
               onAddSelected={this.props.addEngines}
               onRemoveSelected={this.props.removeEngines}
               onSelectAll={this.props.checkAllEngines}
-              allEngines={Object.keys(this.props.engines)}
+              allEngines={Object.keys(this.props.allEngines)}
             />
           )}
           {isEmpty(checkedEngineIds) && this.renderTabs()}
@@ -241,15 +262,21 @@ export default class EngineListView extends React.Component {
               searchQuery={this.props.searchQuery}
               onSearch={this.handleSearch}
               onClearSearch={this.props.clearSearch}
+              onToggleSearch={this.props.toggleSearch}
+              isSearchOpen={this.props.isSearchOpen}
               isChecked={this.props.allEnginesChecked}
-              isDisabled={!tabIndex}
+              isDisabled={
+                this.props.failedToFetchEngines ||
+                this.props.isFetchingEngines ||
+                !currentTabIndex
+              }
               count={
-                tabIndex
+                currentTabIndex
                   ? this.props.currentResults.length
                   : this.props.selectedEngineIds.length
               }
             />
-            <div className={styles.engineList}>{tabs[tabIndex]}</div>
+            <div className={styles.engineList}>{tabs[currentTabIndex]}</div>
             <div className={styles.footer}>
               <Button onClick={this.props.onCancel}>Cancel</Button>
               <Button color="primary" onClick={this.props.onSave}>

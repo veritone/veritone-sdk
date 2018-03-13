@@ -111,11 +111,10 @@ export function fetchEngines(searchQuery, filters = {}) {
       }
 
       const results = get(response, 'data.engines.records');
-      const count = get(response, 'data.engines.count');
 
       dispatch({
         type: FETCH_ENGINES_SUCCESS,
-        payload: { count, results },
+        payload: { results },
         meta: { searchQuery, filters }
       });
     } catch (err) {
@@ -130,6 +129,10 @@ export function fetchEngines(searchQuery, filters = {}) {
 
 export function getEngines(state) {
   return local(state).enginesById;
+}
+
+export function getEngine(state, engineId) {
+  return local(state).enginesById[engineId];
 }
 
 export function isFetchingEngines(state) {

@@ -3,11 +3,6 @@ import { func } from 'prop-types';
 import { DiscoverySideBar as Sidebar } from 'veritone-react-common';
 import { noop } from 'lodash';
 
-import { modules } from 'veritone-redux-common';
-const { engine: engineModule } = modules;
-
-import * as engineSelectionModule from '../../redux/modules/engineSelection';
-
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
 
@@ -29,18 +24,17 @@ class EngineSelectionWidget extends React.Component {
 
   state = {
     showDetailView: false,
-    engineDetails: null,
-    selectAll: false
+    engineDetails: null
   };
 
-  handleShowDetailView = engine => {
+  handleOnViewDetail = engine => {
     this.setState({
       showDetailView: true,
       engineDetails: engine
     });
   };
 
-  handleHideDetailView = engineId => {
+  handleOnHideDetail = engineId => {
     this.setState({
       showDetailView: false,
       engineDetails: null
@@ -49,14 +43,14 @@ class EngineSelectionWidget extends React.Component {
 
   renderDetailView = () => (
     <EngineDetailView
-      onClose={this.handleHideDetailView}
+      onCloseDetailView={this.handleOnHideDetail}
       engine={this.state.engineDetails}
     />
   );
 
   renderListView = () => (
     <EngineListView
-      showDetailView={this.handleShowDetailView}
+      onViewDetail={this.handleOnViewDetail}
       onSave={this.props.onSave}
       onCancel={this.props.onCancel}
     />
