@@ -6,7 +6,7 @@ import styles from './story.styles.scss';
 import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
 import FacialDetectionOuput from './FacialDetectionEngineOutput';
-import ObjectDetectionOuput from './ObjectDetectionEngineOutput';
+
 import { 
   transcriptAssets, 
   tdoStartTime, 
