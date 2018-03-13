@@ -11,15 +11,14 @@ import {
   transcriptAssets, 
   tdoStartTime, 
   tdoEndTime,
-  sentimentAssets,
-  objectDetectionAssets
+  sentimentAssets
 } from './story.data.js';
 
 storiesOf('EngineOutputViews', module)
   .add('TranscriptEngineOutput', () => {
     return (<TranscriptEngineOutput 
         assets={transcriptAssets} 
-        classes={{root: styles.transcriptRoot}}
+        classes={{root: styles.outputViewRoot}}
         tdoStartTime={tdoStartTime}
         tdoEndTime={tdoEndTime}
     />);
