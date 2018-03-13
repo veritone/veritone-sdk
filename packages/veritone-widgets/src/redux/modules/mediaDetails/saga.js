@@ -37,6 +37,9 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
                   category {
                     id
                     name
+                    iconClass
+                    categoryType
+                    editable
                   }
                 }
               }
@@ -149,7 +152,7 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
         return;
       }
       if (category.engines.some(engine => engine.status !== 'complete')) {
-        category.status = 'in_progress';
+        category.status = 'inprogres';
       } else {
         category.status = 'completed';
       }

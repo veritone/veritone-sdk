@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import EngineCategorySelector from './EngineCategorySelector';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import { number, func, arrayOf, any} from 'prop-types';
@@ -12,13 +13,23 @@ export default class MediaDetails extends Component {
   };
 
   state = {
-    selectedEngineCategoryId: ''
+    selectedEngineCategory: this.props.engineCategories && this.props.engineCategories.length ? this.props.engineCategories[0] : null
   };
 
-  handleEngineCategorySelection = categoryId => {
+  componentWillReceiveProps(nextProps) {
+    // preselect 1st engine category - only on the first load
+    if(!this.state.selectedEngineCategory && nextProps.engineCategories && nextProps.engineCategories.length) {
+      this.setState({
+        selectedEngineCategory: nextProps.engineCategories[0]
+      });
+    }
+  }
+
+  handleEngineCategoryChange = selectedCategoryId => {
+    const selectedCategory = this.props.engineCategories.find(category => category.id === selectedCategoryId);
     this.setState({
       // ...this.state, // check if needed
-      selectedEngineCategoryId: categoryId // {}
+      selectedEngineCategory: selectedCategory
     });
   };
 
@@ -28,8 +39,6 @@ export default class MediaDetails extends Component {
     // add header
     // add action buttons menu
     // Media player segment
-    // engine category selector
-
     return (
       <Paper className={styles.mediaDetailsPageContent}>
         <div>
@@ -41,28 +50,43 @@ export default class MediaDetails extends Component {
               disableRipple={true}/>
           </div>
         </div>
-        <div>
-          Engine categories
-          {this.props.engineCategories && this.props.engineCategories.length && (
-            <div>
-              {
-                this.props.engineCategories.map(function(engineCategory) {
-                  return (
-                      <a key={engineCategory.id}>{engineCategory.name}</a>
-                  );
-                })
-              }
-            </div>
-          )}
-        </div>
+        {this.state.selectedEngineCategory &&
+          <EngineCategorySelector engineCategories={this.props.engineCategories}
+                                  selectedEngineCategoryId={this.state.selectedEngineCategory.id}
+                                  onSelectEngineCategory={this.handleEngineCategoryChange}/>}
+
 
         <div>
-          {this.state.selectedEngineCategoryId && this.state.selectedEngineCategoryId.length && (
-            <div>
-              {this.state.selectedEngineCategoryId}
-            </div>
-          )}
+          Currently Selected category: {this.state.selectedEngineCategory &&
+          <span>{this.state.selectedEngineCategory.name}</span>}
         </div>
+
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'transcript' &&
+          <div>Transcript component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'face' &&
+        <div>Face component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'object' &&
+        <div>Object component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'logo' &&
+        <div>Logo component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'ocr' &&
+        <div>OCR component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'fingerprint' &&
+        <div>Fingerprint component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'translate' &&
+        <div>Translation component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'sentiment' &&
+        <div>Sentiment component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'geolocation' &&
+        <div>Geolocation component</div>}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'stationPlayout' &&
+        <div>Station playout component</div>}
+        {/* Thumbnail is not supported: remove before release */}
+        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'thumbnail' &&
+        <div>Thumbnail component</div>}
+
+
+
       </Paper>
     );
   }

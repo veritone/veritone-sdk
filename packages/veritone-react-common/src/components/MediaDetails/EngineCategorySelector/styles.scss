@@ -1,0 +1,21 @@
+
+.engineCategoryTabsContainer {
+  width: 100%;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+
+  .engineCategoryTabs {
+    min-height: 37px;
+  }
+
+  .engineCategoryTab {
+    min-width: 58px;
+    width: 58px;
+
+    .categoryIcon {
+      height: 20px;
+      width: 20px;
+    }
+  }
+}
