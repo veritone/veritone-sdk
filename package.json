@@ -7,15 +7,13 @@
   "author": "Mitch Robb <mrobb@veritone.com>",
   "license": "Apache-2.0",
   "scripts": {
-    "buildall": "./buildall.sh"
+    "buildall": "./buildall.sh",
+    "publish-dev": "./publish-dev.sh"
   },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
     "prettier": "^1.7.2"
-  },
-  "scripts": {
-    "publish-dev": "./publish-dev.sh"
   }
 }
