@@ -6,12 +6,13 @@ import styles from './story.styles.scss';
 import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
 import FaceDetectionOuput from './FaceDetectionEngineOutput';
-
+import ObjectDetectionOuput from './ObjectDetectionEngineOutput';
 import { 
   transcriptAssets, 
   tdoStartTime, 
   tdoEndTime,
-  sentimentAssets
+  sentimentAssets,
+  objectDetectionAssets
 } from './story.data.js';
 
 storiesOf('EngineOutputViews', module)
@@ -35,6 +36,16 @@ storiesOf('EngineOutputViews', module)
     return (
       <FaceDetectionOuput
         classes={{ root: styles.outputViewRoot }}
+      />
+    )
+  })
+  .add('ObjectDetectionOutput', () => {
+    return (
+      <ObjectDetectionOuput 
+        assets={ objectDetectionAssets }
+        classes={ {
+          root: styles.outputViewRoot 
+        } }
       />
     )
   });
