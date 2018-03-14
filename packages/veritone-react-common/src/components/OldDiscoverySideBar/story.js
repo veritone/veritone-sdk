@@ -64,7 +64,7 @@ const exampleSelectedFilters = [
   }
 ];
 
-storiesOf('DiscoverySideBar', module)
+storiesOf('OldDiscoverySideBar', module)
   .add('Two tabs', () => {
     const clearAllFilters = boolean('clearAllFilters button', false);
 
