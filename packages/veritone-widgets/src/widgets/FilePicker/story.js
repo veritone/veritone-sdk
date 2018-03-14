@@ -4,24 +4,22 @@ import { connect } from 'react-redux';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { modules } from 'veritone-redux-common';
-const { user, config } = modules;
+const { user } = modules;
 
 import devConfig from '../../../config.dev.json';
 import VeritoneApp from '../../shared/VeritoneApp';
 import FilePicker from '.';
 import OAuthLoginButton from '../OAuthLoginButton';
 
-@connect((state, ownProps) => ({
+@connect(state => ({
   userIsAuthenticated: user.userIsAuthenticated(state),
-  fetchUserFailed: user.fetchingFailed(state),
-  apiRoot: config.getConfig(ownProps.store.getState()).apiRoot
+  fetchUserFailed: user.fetchingFailed(state)
 }))
 class Story extends React.Component {
   static propTypes = {
     userIsAuthenticated: bool,
     fetchUserFailed: bool,
-    sessionToken: string,
-    apiRoot: string.isRequired
+    sessionToken: string
   };
 
   state = {
@@ -38,7 +36,6 @@ class Story extends React.Component {
     this._oauthButtonImplicit = new OAuthLoginButton({
       mode: 'implicit',
       elId: 'login-button-widget-implicit',
-      OAuthURI: `${this.props.apiRoot}/v1/admin/oauth/authorize`,
       clientId: devConfig.clientId,
       redirectUri: window.origin
     });
@@ -71,11 +68,11 @@ class Story extends React.Component {
     }
 
     if (error) {
-      return this.handlePickError(error)
+      return this.handlePickError(error);
     }
 
     if (warning) {
-      this.handlePickWarning(warning)
+      this.handlePickWarning(warning);
     }
 
     this.setState({ result: files });
@@ -86,11 +83,11 @@ class Story extends React.Component {
     console.log('Picking was cancelled');
   };
 
-  handlePickError = (error) => {
+  handlePickError = error => {
     console.log('Picking failed with error:', error);
   };
 
-  handlePickWarning = (warning) => {
+  handlePickWarning = warning => {
     console.log('Pick resulted in a warning:', warning);
   };
 
@@ -114,9 +111,9 @@ class Story extends React.Component {
             or log in via oauth:
             <p>
               implicit:
-              <span id="login-button-widget-implicit"/>
+              <span id="login-button-widget-implicit" />
               auth code:
-              <span id="login-button-widget-auth-code"/>
+              <span id="login-button-widget-auth-code" />
             </p>
           </div>
         )}

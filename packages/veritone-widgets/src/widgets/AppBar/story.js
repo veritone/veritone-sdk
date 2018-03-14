@@ -5,24 +5,22 @@ import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { AppContainer } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
-const { user, config } = modules;
+const { user } = modules;
 
 import devConfig from '../../../config.dev.json';
 import VeritoneApp from '../../shared/VeritoneApp';
 import OAuthLoginButton from '../OAuthLoginButton';
 import AppBarWidget from './';
 
-@connect((state, ownProps) => ({
+@connect(state => ({
   userIsAuthenticated: user.userIsAuthenticated(state),
-  fetchUserFailed: user.fetchingFailed(state),
-  apiRoot: config.getConfig(ownProps.store.getState()).apiRoot
+  fetchUserFailed: user.fetchingFailed(state)
 }))
 class Story extends React.Component {
   static propTypes = {
     userIsAuthenticated: bool,
     fetchUserFailed: bool,
-    sessionToken: string,
-    apiRoot: string.isRequired
+    sessionToken: string
   };
 
   componentDidMount() {
@@ -35,7 +33,6 @@ class Story extends React.Component {
     this._oauthButtonImplicit = new OAuthLoginButton({
       mode: 'implicit',
       elId: 'login-button-widget-implicit',
-      OAuthURI: `${this.props.apiRoot}/v1/admin/oauth/authorize`,
       clientId: devConfig.clientId,
       redirectUri: window.origin
     });

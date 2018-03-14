@@ -5,14 +5,16 @@ import { func, bool, string, oneOf } from 'prop-types';
 import { modules } from 'veritone-redux-common';
 const {
   user: { userIsAuthenticated },
-  auth: { requestOAuthGrant, requestOAuthGrantImplicit }
+  auth: { requestOAuthGrant, requestOAuthGrantImplicit },
+  config: { getConfig }
 } = modules;
 
 import widget from '../../shared/widget';
 
 @connect(
   state => ({
-    userIsAuthenticated: userIsAuthenticated(state)
+    userIsAuthenticated: userIsAuthenticated(state),
+    apiRoot: getConfig(state).apiRoot
   }),
   { requestOAuthGrant, requestOAuthGrantImplicit },
   null,
@@ -26,12 +28,13 @@ class OAuthLoginButton extends React.Component {
     mode: oneOf(['implicit', 'authCode']),
     onAuthSuccess: func,
     onAuthFailure: func,
-    OAuthURI: string.isRequired,
+    apiRoot: string.isRequired,
+    OAuthURI: string,
     // required params for implicit grant only:
     responseType: string,
     scope: string,
     redirectUri: string,
-    clientId: string,
+    clientId: string
   };
 
   static defaultProps = {
@@ -39,13 +42,20 @@ class OAuthLoginButton extends React.Component {
   };
 
   handleLogin = () => {
+    /* prettier-ignore */
+    const defaultImplicitGrantURI = `${this.props.apiRoot}/v1/admin/oauth/authorize`;
+
+    const OAuthURI =
+      this.props.OAuthURI ||
+      (this.props.mode === 'implicit' ? defaultImplicitGrantURI : undefined);
+
     const grantFn = {
       implicit: this.props.requestOAuthGrantImplicit,
       authCode: this.props.requestOAuthGrant
     }[this.props.mode];
 
     grantFn({
-      OAuthURI: this.props.OAuthURI,
+      OAuthURI,
       responseType: this.props.responseType,
       scope: this.props.scope,
       clientId: this.props.clientId,
