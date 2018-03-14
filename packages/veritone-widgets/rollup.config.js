@@ -49,7 +49,9 @@ export default [
       'material-ui/Progress',
       'prop-types',
       'veritone-react-common',
-      'veritone-redux-common'
+      'veritone-redux-common',
+      'react-virtualized',
+      'redux-thunk'
     ],
     plugins: [
       replace({

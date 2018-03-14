@@ -51,6 +51,7 @@ export default [
       'redux',
       'redux-form',
       'redux-form-material-ui',
+      'react-dotdotdot'
     ],
     plugins: [
       replace({
