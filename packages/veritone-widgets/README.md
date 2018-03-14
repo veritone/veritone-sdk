@@ -155,6 +155,7 @@ The title and navigation bar common between all Veritone applications. Includes 
 *Options:*
 
 * title: string, a title to show in the center of the AppBar
+* logoSrc: string, a URL or image (like an SVG) to use as the logo on the left-hand side of the AppBar.
 * backgroundColor: string, a color (in hex) to use for the AppBar background
 * profileMenu: bool, whether or not to show the profile menu
 * appSwitcher: bool, whether or not to show the app switcher menu
