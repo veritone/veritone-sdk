@@ -1,10 +1,14 @@
 /* eslint-disable import/order */
 import { noop } from 'lodash';
 import { login } from 'veritone-oauth-helpers';
-import { call, put, takeLatest, fork, all } from 'redux-saga/effects';
+import { eventChannel, END } from 'redux-saga';
+import { call, put, takeLatest, fork, all, take } from 'redux-saga/effects';
 
-import { OAuthGrantSuccess } from '../auth';
-import { OAUTH_GRANT_FLOW_FAILED, REQUEST_OAUTH_GRANT } from '../auth/constants';
+import { OAuthGrantSuccess, OAuthGrantFailure } from '../auth';
+import {
+  REQUEST_OAUTH_GRANT,
+  REQUEST_OAUTH_GRANT_IMPLICIT
+} from '../auth/constants';
 
 function* requestOAuthGrant({
   payload: { OAuthURI, onSuccess = noop, onFailure = noop }
@@ -16,7 +20,7 @@ function* requestOAuthGrant({
     token = OAuthToken;
   } catch (e) {
     console.log('oauth flow error', e);
-    yield put({ type: OAUTH_GRANT_FLOW_FAILED, payload: e, error: true });
+    yield put(OAuthGrantFailure(e));
     yield call(onFailure, e);
     return;
   }
@@ -25,8 +29,57 @@ function* requestOAuthGrant({
   yield call(onSuccess, { OAuthToken: token });
 }
 
+function* requestOAuthGrantImplicit({
+  payload: {
+    OAuthURI,
+    responseType,
+    clientId,
+    redirectUri,
+    scope,
+    onSuccess = noop,
+    onFailure = noop
+  }
+}) {
+  const authWindow = yield call(
+    window.open,
+    `${OAuthURI}?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`,
+    '_auth',
+    'width=550px,height=650px'
+  );
+
+  const windowEventChannel = eventChannel(emitter => {
+    function handleEvent(e) {
+      if (e.data.OAuthToken || e.data.error) {
+        emitter({ OAuthToken: e.data.OAuthToken, error: e.data.error });
+        emitter(END);
+      }
+    }
+
+    window.addEventListener('message', handleEvent, false);
+
+    return () => {
+      // unsubscribe
+      window.removeEventListener('message', handleEvent);
+    };
+  });
+
+  const { OAuthToken, error } = yield take(windowEventChannel);
+  yield call([authWindow, authWindow.close]);
+
+  if (OAuthToken) {
+    yield put(OAuthGrantSuccess({ OAuthToken }));
+    yield call(onSuccess, { OAuthToken });
+  } else if (error) {
+    yield put(OAuthGrantFailure({ error }));
+    yield call(onFailure, error);
+  }
+}
+
 function* watchOAuthGrantRequest() {
-  yield takeLatest(REQUEST_OAUTH_GRANT, requestOAuthGrant);
+  yield all([
+    takeLatest(REQUEST_OAUTH_GRANT, requestOAuthGrant),
+    takeLatest(REQUEST_OAUTH_GRANT_IMPLICIT, requestOAuthGrantImplicit)
+  ]);
 }
 
 export default function* root() {
