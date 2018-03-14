@@ -91,7 +91,7 @@ export function requestOAuthGrant({ OAuthURI, onSuccess, onFailure }) {
 }
 
 export function requestOAuthGrantImplicit({
-  OAuthURI = 'https://api.veritone.com/v1/admin/oauth/authorize',
+  OAuthURI,
   responseType = 'token',
   scope = 'all',
   clientId,

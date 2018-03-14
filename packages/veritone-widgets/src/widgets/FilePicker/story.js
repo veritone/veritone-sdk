@@ -4,21 +4,24 @@ import { connect } from 'react-redux';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { modules } from 'veritone-redux-common';
-const { user } = modules;
+const { user, config } = modules;
 
+import devConfig from '../../../config.dev.json';
 import VeritoneApp from '../../shared/VeritoneApp';
 import FilePicker from '.';
 import OAuthLoginButton from '../OAuthLoginButton';
 
-@connect(state => ({
+@connect((state, ownProps) => ({
   userIsAuthenticated: user.userIsAuthenticated(state),
-  fetchUserFailed: user.fetchingFailed(state)
+  fetchUserFailed: user.fetchingFailed(state),
+  apiRoot: config.getConfig(ownProps.store.getState()).apiRoot
 }))
 class Story extends React.Component {
   static propTypes = {
     userIsAuthenticated: bool,
     fetchUserFailed: bool,
-    sessionToken: string
+    sessionToken: string,
+    apiRoot: string.isRequired
   };
 
   state = {
@@ -27,8 +30,17 @@ class Story extends React.Component {
 
   componentDidMount() {
     this._oauthButton = new OAuthLoginButton({
-      elId: 'login-button-widget',
-      OAuthURI: 'http://localhost:5001/auth/veritone'
+      mode: 'authCode',
+      elId: 'login-button-widget-auth-code',
+      OAuthURI: 'http://local.veritone-sample-app.com:5001/auth/veritone'
+    });
+
+    this._oauthButtonImplicit = new OAuthLoginButton({
+      mode: 'implicit',
+      elId: 'login-button-widget-implicit',
+      OAuthURI: `${this.props.apiRoot}/v1/admin/oauth/authorize`,
+      clientId: devConfig.clientId,
+      redirectUri: window.origin
     });
 
     this._picker = new FilePicker({
@@ -42,6 +54,7 @@ class Story extends React.Component {
   componentWillUnmount() {
     this._picker.destroy();
     this._oauthButton.destroy();
+    this._oauthButtonImplicit.destroy();
   }
 
   handleLogin = () => {
@@ -100,7 +113,10 @@ class Story extends React.Component {
             </p>
             or log in via oauth:
             <p>
-              <span id="login-button-widget" />
+              implicit:
+              <span id="login-button-widget-implicit"/>
+              auth code:
+              <span id="login-button-widget-auth-code"/>
             </p>
           </div>
         )}
