@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class FacialDetectionEngineOutput extends Component {
+class FaceDetectionEngineOutput extends Component {
   render() {
     return (
       <div>Facial detection view</div>
@@ -8,4 +8,4 @@ class FacialDetectionEngineOutput extends Component {
   }
 }
 
-export default FacialDetectionEngineOutput;
+export default FaceDetectionEngineOutput;
