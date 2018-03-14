@@ -4,6 +4,9 @@ import { action } from '@storybook/addon-actions';
 
 import DataSetFullScreen from './DataSetFullScreen';
 import DataSetViewer from './DataSetViewer';
+import SDOSourceCard from './DataSetSourceViewer/DataSetSourceCard';
+import DataSetSourceView from './DataSetSourceViewer';
+import DataSetNullState from './DataSetNullState';
 
 
 var numberOfFields = 8;
@@ -175,10 +178,56 @@ var dataSetInfo = [
 ];
 
 
+// FOR DATA SET SOURCE CARD
+var sourceCardData = {
+  sourceName: 'Twitter Dataset 1',
+  schemaName: 'Twitter Schema Version 2.3',
+  creationDate: 'Wed Jul 13, 2016 09:23 PM',
+  thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
+};
+
+
+// FOR DATA SET SOURCE VIEW
+var sourceData = [
+  {
+    sourceName: 'Twitter Dataset 1',
+    schemaName: 'Twitter Schema Version 2.3',
+    creationDate: 'Wed Jul 13, 2016 09:23 PM',
+    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
+  },
+  {
+    sourceName: 'Twitter Dataset 2',
+    schemaName: 'Twitter Schema Version 3.3',
+    creationDate: 'Wed Jul 15, 2016 09:23 PM',
+    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
+  },
+  {
+    sourceName: 'Twitter Dataset 3',
+    schemaName: 'Twitter Schema Version 4.3',
+    creationDate: 'Wed Jul 13, 2017 09:23 PM',
+    thumbnail: 'none'
+  },
+  {
+    sourceName: 'Twitter Dataset 4',
+    schemaName: 'Twitter Schema Version 5.3',
+    creationDate: 'Wed Jul 13, 2016 10:23 PM'
+  }
+]
+
+
 storiesOf('DataSets', module)
   .add('FullScreen', () => (
     <DataSetFullScreen numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} />
   ))
   .add('Viewer', () => (
     <DataSetViewer dataSetInfo={dataSetInfo}/>
+  ))
+  .add('SDOCard', () => (
+    <SDOSourceCard checkedAll={false} sourceName={sourceCardData.sourceName} schemaVersion={sourceCardData.schemaName} creationDate={sourceCardData.creationDate} thumbnail={sourceCardData.thumbnail} />
+  ))
+  .add('SDOSourceView', () => (
+    <DataSetSourceView sourceData={sourceData}/>
+  ))
+  .add('NullState', () => (
+    <DataSetNullState />
   ))

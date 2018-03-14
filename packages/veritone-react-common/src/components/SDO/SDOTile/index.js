@@ -50,12 +50,7 @@ export default class SDOTile extends React.Component {
 
   render() {
     const columnSections = Object.values(this.props.columns).map((column, index) => {
-      if (column.indexOf('image') !== -1) { //TODO: this won't always work, need a way to know if a field is an image
-        // change tag for images
-        return <div className={styles.sdoImageWrapper} key={index}><img className={styles.sdoImage} src={column} key={index}></img></div>
-      } else {
-        return <span className={styles.sdoBasicColumn} key={index}>{column}</span>
-      }
+      return <span className={styles.sdoBasicColumn} key={index}>{column}</span>
     });
     return (
       <div className={styles.sdoTile}>
