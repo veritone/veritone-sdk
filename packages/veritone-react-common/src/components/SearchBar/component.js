@@ -212,7 +212,7 @@ const engineCategoryMapping = {
     getLabel: GeolocationDisplay,
     generateCondition: GeolocationGenerator,
     title: 'Search by Geolocation',
-    subtitle: 'Locate by City, Zipcode or DMA.'
+    subtitle: 'Locate by City, ZIP Code or DMA.'
   }
 };
 
