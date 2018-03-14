@@ -31,7 +31,7 @@ export { sectionsShape } from './SectionTree';
 
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
-    formComponents: objectOf(element).isRequired,
+    formComponents: objectOf(element),
     filtersSections: sectionsShape.isRequired,
     selectedFilters: arrayOf(object).isRequired, // see AllFiltersList.filters
     onClearAllFilters: func,
@@ -43,13 +43,29 @@ export class DiscoverySideBarContainerPure extends React.Component {
     selectedTab: string.isRequired,
     onSelectTab: func.isRequired,
     filtersActivePath: arrayOf(number).isRequired,
-    onFiltersNavigate: func.isRequired
+    onFiltersNavigate: func.isRequired,
+    noTabs: bool    
   };
   static defaultProps = {
     selectedFilters: []
   };
 
   render() {
+    if (this.props.noTabs) {
+      return (
+        <div className={styles.container}>
+          <SectionTree
+            sections = {this.props.filtersSections}
+            activePath = {this.props.filtersActivePath}
+            onNavigate = {this.props.onFiltersNavigate}
+            formComponents = {this.props.formComponents}
+            iconStyle={this.props.iconStyle}
+            selectedFilterStyle={this.props.selectedFilterStyle}
+          />
+        </div>
+      );
+    }
+
     return (
       <div className={styles.container}>
         <Header
@@ -80,6 +96,8 @@ export class DiscoverySideBarContainerPure extends React.Component {
               activePath={this.props.filtersActivePath}
               onNavigate={this.props.onFiltersNavigate}
               formComponents={this.props.formComponents}
+              iconStyle={this.props.iconStyle}
+              selectedFilterStyle={this.props.selectedFilterStyle}
             />
           </div>
         )}
@@ -97,15 +115,17 @@ export class DiscoverySideBarContainerPure extends React.Component {
 @withMuiThemeProvider
 export default class DiscoverySideBarContainer extends React.Component {
   static propTypes = {
-    tabs: arrayOf(string).isRequired
+    tabs: arrayOf(string),
+    noTabs: bool
   };
 
   static defaultProps = {
-    tabs: ['Browse', 'Filters']
+    tabs: ['Browse', 'Filters'],
+    noTabs: false
   };
 
   state = {
-    selectedTab: this.props.tabs[0],
+    selectedTab: !this.props.noTabs ? this.props.tabs[0] : '',
     filtersActivePath: []
   };
 
@@ -118,13 +138,15 @@ export default class DiscoverySideBarContainer extends React.Component {
   };
 
   render() {
+    const { filtersActivePath, onFiltersNavigate, ...rest } = this.props;
+
     return (
       <DiscoverySideBarContainerPure
-        {...this.props}
         selectedTab={this.state.selectedTab}
         onSelectTab={this.handleSelectTab}
-        filtersActivePath={this.state.filtersActivePath}
-        onFiltersNavigate={this.handleFiltersNavigate}
+        filtersActivePath={this.props.filtersActivePath || this.state.filtersActivePath}
+        onFiltersNavigate={onFiltersNavigate || this.handleFiltersNavigate}
+        {...rest}
       />
     );
   }

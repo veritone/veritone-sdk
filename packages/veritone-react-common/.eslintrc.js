@@ -1,21 +1,8 @@
 const env = require('veritone-dev-env');
 
-module.exports = {
-  ...env.eslintReact,
-  globals: {
-    ...env.eslintReact.globals,
-    module: true
-  },
-  env: {
-    ...env.eslintReact.env,
-    jest: true
-  },
-  plugins: [
-    ...env.eslintReact.plugins,
-    'import'
-  ],
-  rules: {
-    ...env.eslintReact.rules,
-    'import/order': 2
-  }
-};
+module.exports = Object.assign({}, env.eslintReact, {
+  globals: Object.assign({ module: true }, env.eslintReact.globals),
+  env: Object.assign({ jest: true }, env.eslintReact.env),
+  plugins: env.eslintReact.plugins.concat('import'),
+  rules: Object.assign({ 'import/order': true }, env.eslintReact.rules)
+});
