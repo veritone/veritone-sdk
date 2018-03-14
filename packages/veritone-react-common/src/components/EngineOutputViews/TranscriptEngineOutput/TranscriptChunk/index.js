@@ -4,9 +4,14 @@ import { string, number, bool } from 'prop-types';
 
 import Snippet from '../Snippet';
 
-const TranscriptChunk = ({ startTime, endTime, data, editModeEnabled }) => {
+const TranscriptChunk = ({ startTime, endTime, data, editModeEnabled, onSnippetClick }) => {
   let snippets = convertFromTranscript(data).map((snippet, index) => {
-    return <Snippet key={index} snippet={snippet} editModeEnabled={editModeEnabled}/>
+    return <Snippet 
+      key={index} 
+      snippet={snippet} 
+      editModeEnabled={editModeEnabled}
+      onSnippetClick={onSnippetClick}
+    />
   });
   return <Fragment>{snippets}</Fragment>
 }

@@ -39,6 +39,10 @@ class TranscriptContent extends Component {
     this.transcriptContent = element
   }
 
+  handleSnippetClicked = (snippet, evt) => {
+    console.log(snippet);
+  }
+
   render() {
     let { assets, editModeEnabled, tdoStartTime, tdoEndTime } = this.props;
     let dataChunks = assets.map((asset, index) => {
@@ -51,6 +55,7 @@ class TranscriptContent extends Component {
           editModeEnabled={editModeEnabled}
           tdoStartTime={tdoStartTime}
           tdoEndTime={tdoEndTime}
+          onSnippetClick={this.handleSnippetClicked}
         />
       );
     })

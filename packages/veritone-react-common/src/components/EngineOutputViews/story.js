@@ -5,7 +5,7 @@ import styles from './story.styles.scss';
 
 import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
-import FacialDetectionOuput from './FacialDetectionEngineOutput';
+import FaceDetectionOuput from './FaceDetectionEngineOutput';
 import ObjectDetectionOuput from './ObjectDetectionEngineOutput';
 import { 
   transcriptAssets, 
@@ -18,8 +18,8 @@ import {
 storiesOf('EngineOutputViews', module)
   .add('TranscriptEngineOutput', () => {
     return (<TranscriptEngineOutput 
-        assets={transcriptAssets} 
-        classes={{root: styles.transcriptRoot}}
+        assets={transcriptAssets}
+        classes={{ root: styles.outputViewRoot }}
         tdoStartTime={tdoStartTime}
         tdoEndTime={tdoEndTime}
     />);
@@ -32,8 +32,20 @@ storiesOf('EngineOutputViews', module)
       />
     );
   })
-  .add('FacialDetectionOutput', () => {
+  .add('FaceDetectionOutput', () => {
     return (
-      <FacialDetectionOuput />
+      <FaceDetectionOuput
+        classes={{ root: styles.outputViewRoot }}
+      />
+    )
+  })
+  .add('ObjectDetectionOutput', () => {
+    return (
+      <ObjectDetectionOuput 
+        assets={ objectDetectionAssets }
+        classes={ {
+          root: styles.outputViewRoot 
+        } }
+      />
     )
   });

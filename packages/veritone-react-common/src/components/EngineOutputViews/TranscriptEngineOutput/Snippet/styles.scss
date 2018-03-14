@@ -1,9 +1,13 @@
 @import 'src/styles/modules/variables';
 
-.boldText {
-  font-weight: 500;
+.snippetText {
+  display: inline;
+
+  &:hover {
+    color: $blue-1;
+  }
 }
 
-.hoverText {
-  color: $blue-1;
+.boldText {
+  font-weight: 500;
 }
