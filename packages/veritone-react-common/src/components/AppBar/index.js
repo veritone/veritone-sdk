@@ -50,7 +50,8 @@ export default class AppBar extends React.Component {
     isFetchingApps: bool,
     logout: func,
     fetchEnabledApps: func,
-    user: objectOf(any)
+    user: objectOf(any),
+    onSwitchApp: func
   };
   static defaultProps = {
     logo: true,
@@ -58,7 +59,8 @@ export default class AppBar extends React.Component {
     rightActions: [],
     elevation: 2,
     logout: () => {},
-    fetchEnabledApps: () => {}
+    fetchEnabledApps: () => {},
+    onSwitchApp: () => {}
   };
 
   handleRefresh = () => {
@@ -104,6 +106,7 @@ export default class AppBar extends React.Component {
                   isFetchingApps={this.props.isFetchingApps}
                   handleRefresh={this.handleRefresh}
                   currentAppName={this.props.currentAppName}
+                  onSwitchApp={this.props.onSwitchApp}
                 />
               </div>
             )}

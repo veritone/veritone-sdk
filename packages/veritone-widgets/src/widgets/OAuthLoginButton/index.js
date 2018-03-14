@@ -1,31 +1,68 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, bool, string } from 'prop-types';
+import { func, bool, string, oneOf } from 'prop-types';
 
 import { modules } from 'veritone-redux-common';
-const { user: { userIsAuthenticated }, auth: { requestOAuthGrant } } = modules;
+const {
+  user: { userIsAuthenticated },
+  auth: { requestOAuthGrant, requestOAuthGrantImplicit },
+  config: { getConfig }
+} = modules;
 
 import widget from '../../shared/widget';
 
 @connect(
   state => ({
-    userIsAuthenticated: userIsAuthenticated(state)
+    userIsAuthenticated: userIsAuthenticated(state),
+    apiRoot: getConfig(state).apiRoot
   }),
-  { requestOAuthGrant },
+  { requestOAuthGrant, requestOAuthGrantImplicit },
   null,
   { withRef: true }
 )
 class OAuthLoginButton extends React.Component {
   static propTypes = {
     requestOAuthGrant: func.isRequired,
+    requestOAuthGrantImplicit: func.isRequired,
     userIsAuthenticated: bool.isRequired,
-    OAuthURI: string.isRequired,
+    mode: oneOf(['implicit', 'authCode']),
     onAuthSuccess: func,
-    onAuthFailure: func
+    onAuthFailure: func,
+    apiRoot: string.isRequired,
+    OAuthURI: string,
+    // required params for implicit grant only:
+    responseType: string,
+    scope: string,
+    redirectUri: string,
+    clientId: string
+  };
+
+  static defaultProps = {
+    mode: 'implicit'
   };
 
   handleLogin = () => {
-    this.props.requestOAuthGrant(this.props.OAuthURI, this.props.onAuthSuccess, this.props.onAuthFailure);
+    /* prettier-ignore */
+    const defaultImplicitGrantURI = `${this.props.apiRoot}/v1/admin/oauth/authorize`;
+
+    const OAuthURI =
+      this.props.OAuthURI ||
+      (this.props.mode === 'implicit' ? defaultImplicitGrantURI : undefined);
+
+    const grantFn = {
+      implicit: this.props.requestOAuthGrantImplicit,
+      authCode: this.props.requestOAuthGrant
+    }[this.props.mode];
+
+    grantFn({
+      OAuthURI,
+      responseType: this.props.responseType,
+      scope: this.props.scope,
+      clientId: this.props.clientId,
+      redirectUri: this.props.redirectUri,
+      onSuccess: this.props.onAuthSuccess,
+      onFailure: this.props.onAuthFailure
+    });
   };
 
   render() {
