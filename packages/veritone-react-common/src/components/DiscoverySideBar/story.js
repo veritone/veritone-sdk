@@ -50,6 +50,41 @@ const exampleSectionTree = {
     }
   ]
 };
+const exampleSidebarMenu = {
+  children: [
+    {
+      label: 'Section 1',
+      children: [
+        {
+          label: 'SubSection 1',
+          children: [
+            {
+              label: 'Sub-SubSection 1',
+              children: []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Section 2',
+      children: []
+    },
+    {
+      label: 'Section 3',
+      children: [
+        {
+          label: 'SubSection 1',
+          children: []
+        },
+        {
+          label: 'SubSection 2',
+          children: []
+        }
+      ]
+    }
+  ]
+};
 
 const exampleSelectedFilters = [
   {
@@ -99,6 +134,16 @@ storiesOf('DiscoverySideBar', module)
             'select-station-form': <div>select a station</div>
           }}
           selectedFilters={exampleSelectedFilters}
+        />
+      </Container>
+    );
+  })
+  .add('No tab', () => {
+    return (
+      <Container>
+        <Sidebar
+          noTabs
+          filtersSections={exampleSidebarMenu}
         />
       </Container>
     );

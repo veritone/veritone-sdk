@@ -120,7 +120,7 @@ describe('SectionTree', function() {
     expect(handler).toHaveBeenCalledWith([0, 0]);
   });
 
-  it('does not show tabs with visible === false', function() {
+  it('does not show section tabs with visible === false', function() {
     const visibleTestTree = {
       children: [
         {
