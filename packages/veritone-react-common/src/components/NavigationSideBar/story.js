@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 
-import Sidebar from './';
+import SideBar from './';
 
 const Container = (
   { children } // eslint-disable-line
@@ -50,7 +50,7 @@ const exampleSectionTree = {
     }
   ]
 };
-const exampleSidebarMenu = {
+const exampleSideBarMenu = {
   children: [
     {
       label: 'Section 1',
@@ -99,13 +99,13 @@ const exampleSelectedFilters = [
   }
 ];
 
-storiesOf('DiscoverySideBar', module)
+storiesOf('NavigationSideBar', module)
   .add('Two tabs', () => {
     const clearAllFilters = boolean('clearAllFilters button', false);
 
     return (
       <Container>
-        <Sidebar
+        <SideBar
           tabs={['Browse', 'Filters']}
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
@@ -124,7 +124,7 @@ storiesOf('DiscoverySideBar', module)
 
     return (
       <Container>
-        <Sidebar
+        <SideBar
           tabs={['Filters']}
           clearAllFilters={clearAllFilters}
           onClearFilter={action('clear filter')}
@@ -141,9 +141,9 @@ storiesOf('DiscoverySideBar', module)
   .add('No tab', () => {
     return (
       <Container>
-        <Sidebar
+        <SideBar
           noTabs
-          filtersSections={exampleSidebarMenu}
+          filtersSections={exampleSideBarMenu}
         />
       </Container>
     );

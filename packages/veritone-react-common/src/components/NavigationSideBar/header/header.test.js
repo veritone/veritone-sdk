@@ -2,14 +2,14 @@ import React from 'react';
 import { noop } from 'lodash';
 import { mount } from 'enzyme';
 
-import DiscoverySideBarHeader from './Header';
+import NavigationSideBarHeader from './Header';
 import MultipleTabHeader from './MuitipleTabHeader';
 
-describe('DiscoverySideBarHeader', function() {
+describe('NavigationSideBarHeader', function() {
   it('Should render MultipleTabHeader when props.tabs.length > 1', function() {
     const tabs = ['one', 'two'];
     const wrapper = mount(
-      <DiscoverySideBarHeader
+      <NavigationSideBarHeader
         tabs={tabs}
         selectedTab={tabs[0]}
         onSelectTab={noop}
@@ -25,7 +25,7 @@ describe('DiscoverySideBarHeader', function() {
     const selectedTab = 'two';
 
     const wrapper = mount(
-      <DiscoverySideBarHeader
+      <NavigationSideBarHeader
         tabs={tabs}
         selectedTab={selectedTab}
         onSelectTab={onSelectTab}
@@ -45,7 +45,7 @@ describe('DiscoverySideBarHeader', function() {
 
   it('Should render SingleTabHeader when props.tabs.length === 1', function() {
     const wrapper = mount(
-      <DiscoverySideBarHeader
+      <NavigationSideBarHeader
         tabs={['one']}
         selectedTab="one"
         onSelectTab={noop}
@@ -57,7 +57,7 @@ describe('DiscoverySideBarHeader', function() {
 
   it('Should show the props.rightIconButtonElement when props.rightIconButton is true', function() {
     const wrapper = mount(
-      <DiscoverySideBarHeader
+      <NavigationSideBarHeader
         tabs={['one']}
         selectedTab="one"
         onSelectTab={noop}

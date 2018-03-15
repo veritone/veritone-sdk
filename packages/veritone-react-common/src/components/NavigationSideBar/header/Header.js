@@ -4,7 +4,7 @@ import MultipleTabHeader from './MuitipleTabHeader';
 import SingleTabHeader from './SingleTabHeader';
 import styles from './styles.scss';
 
-export default class DiscoverySidebarHeader extends React.Component {
+export default class NavigationSideBarHeader extends React.Component {
   static propTypes = {
     tabs: arrayOf(string).isRequired,
     selectedTab: string.isRequired,

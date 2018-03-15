@@ -8,7 +8,7 @@ export AppFooter, {
 export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
 export Chip from './components/Chip';
-export DiscoverySideBar, { sectionsShape } from './components/DiscoverySideBar';
+export NavigationSideBar, { sectionsShape } from './components/NavigationSideBar';
 export FullScreenDialog from './components/FullScreenDialog';
 export ProfileMenu from './components/ProfileMenu';
 export RaisedTextField from './components/RaisedTextField';

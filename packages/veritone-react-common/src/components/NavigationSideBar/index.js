@@ -29,7 +29,7 @@ import AllFiltersList from './AllFiltersList';
 
 export { sectionsShape } from './SectionTree';
 
-export class DiscoverySideBarContainerPure extends React.Component {
+export class NavigationSideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element),
     filtersSections: sectionsShape.isRequired,
@@ -44,7 +44,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
     onSelectTab: func.isRequired,
     filtersActivePath: arrayOf(number).isRequired,
     onFiltersNavigate: func.isRequired,
-    noTabs: bool    
+    noTabs: bool
   };
   static defaultProps = {
     selectedFilters: []
@@ -113,7 +113,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
 
 // state provider for top level sidebar state-- selected tabs, sections etc.
 @withMuiThemeProvider
-export default class DiscoverySideBarContainer extends React.Component {
+export default class NavigationSideBarContainer extends React.Component {
   static propTypes = {
     tabs: arrayOf(string),
     noTabs: bool
@@ -141,7 +141,7 @@ export default class DiscoverySideBarContainer extends React.Component {
     const { filtersActivePath, onFiltersNavigate, ...rest } = this.props;
 
     return (
-      <DiscoverySideBarContainerPure
+      <NavigationSideBarContainerPure
         selectedTab={this.state.selectedTab}
         onSelectTab={this.handleSelectTab}
         filtersActivePath={this.props.filtersActivePath || this.state.filtersActivePath}
