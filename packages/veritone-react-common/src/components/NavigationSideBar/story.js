@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+import AttachMoneyIcon from 'material-ui-icons/Apps';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
-import { action } from '@storybook/addon-actions';
 
+import styles from './story.styles.scss';
 import SideBar from './';
 
 const Container = (
@@ -15,136 +15,81 @@ const Container = (
   </div>
 );
 
-const exampleSectionTree = {
-  children: [
-    {
-      label: 'Section 1',
-      children: [
-        {
-          label: 'SubSection 1',
-          children: [
-            {
-              label: 'Sub-SubSection 1',
-              children: [{ formComponentId: 'select-station-form' }]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      label: 'Section 2',
-      children: []
-    },
-    {
-      label: 'Section 3',
-      children: [
-        {
-          label: 'SubSection 1',
-          children: [{ formComponentId: 'select-station-form' }]
-        },
-        {
-          label: 'SubSection 2',
-          children: [{ formComponentId: 'select-station-form' }]
-        }
-      ]
-    }
-  ]
-};
 const exampleSideBarMenu = {
-  children: [
-    {
-      label: 'Section 1',
-      children: [
-        {
-          label: 'SubSection 1',
-          children: [
-            {
-              label: 'Sub-SubSection 1',
-              children: []
+  children: {
+    overview: {
+      label: 'Overview',
+      iconClassName: 'icon-overview'
+    },
+    billing: {
+      label: 'Billing Dashboard',
+      icon: <AttachMoneyIcon/>
+    },
+    engines: {
+      label: 'Engines',
+      iconClassName: 'icon-engines',
+      children: {
+        documentation: {
+          label: 'Documentation',
+          children: {
+            api: {
+              label: 'API'
             }
-          ]
-        }
-      ]
-    },
-    {
-      label: 'Section 2',
-      children: []
-    },
-    {
-      label: 'Section 3',
-      children: [
-        {
-          label: 'SubSection 1',
-          children: []
+          }
         },
-        {
-          label: 'SubSection 2',
-          children: []
+        deployments: {
+          label: 'Deployments'
+        },
+        models: {
+          label: 'Models'
+        },
+        public: {
+          label: 'Public Engines'
         }
-      ]
+      }
+    },
+    applications: {
+      label: 'Applications',
+      iconClassName: 'icon-applications'
+    },
+    'data-schemas': {
+      label: 'Data',
+      iconClassName: 'icon-data'
     }
-  ]
+  }
 };
 
-const exampleSelectedFilters = [
-  {
-    label: 'filter category one',
-    number: 5,
-    id: '1'
-  },
-  {
-    label: 'filter category 2',
-    number: 10,
-    id: '2'
+storiesOf('NavigationSideBar', module).add('Base', () => {
+  return (
+    <Container>
+      <StatefulSideBar
+        title="Navigation"
+        sections={exampleSideBarMenu}
+        selectedItemClasses={{
+          leftIcon: styles.iconselected
+        }}
+      />
+    </Container>
+  );
+});
+
+class StatefulSideBar extends React.Component {
+  state = {
+    activePath: []
+  };
+
+  handleNavigate = newPath => {
+    console.log(newPath)
+    this.setState({ activePath: newPath });
+  };
+
+  render() {
+    return (
+      <SideBar
+        {...this.props}
+        activePath={this.state.activePath}
+        onNavigate={this.handleNavigate}
+      />
+    );
   }
-];
-
-storiesOf('NavigationSideBar', module)
-  .add('Two tabs', () => {
-    const clearAllFilters = boolean('clearAllFilters button', false);
-
-    return (
-      <Container>
-        <SideBar
-          tabs={['Browse', 'Filters']}
-          clearAllFilters={clearAllFilters}
-          onClearFilter={action('clear filter')}
-          onClearAllFilters={action('clear all filters')}
-          filtersSections={exampleSectionTree}
-          formComponents={{
-            'select-station-form': <div>select a station</div>
-          }}
-          selectedFilters={exampleSelectedFilters}
-        />
-      </Container>
-    );
-  })
-  .add('One tab', () => {
-    const clearAllFilters = boolean('clearAllFilters button', false);
-
-    return (
-      <Container>
-        <SideBar
-          tabs={['Filters']}
-          clearAllFilters={clearAllFilters}
-          onClearFilter={action('clear filter')}
-          onClearAllFilters={action('clear all filters')}
-          filtersSections={exampleSectionTree}
-          formComponents={{
-            'select-station-form': <div>select a station</div>
-          }}
-          selectedFilters={exampleSelectedFilters}
-        />
-      </Container>
-    );
-  })
-  .add('No tab', () => {
-    return (
-      <Container>
-        <SideBar
-          noTabs
-          filtersSections={exampleSideBarMenu}
-        />
-      </Container>
-    );
-  });
+}

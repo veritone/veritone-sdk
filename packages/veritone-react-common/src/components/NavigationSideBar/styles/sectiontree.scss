@@ -11,7 +11,7 @@
   border-bottom: 1px solid $grey-4 !important;
   background-color: $grey-1 !important;
 
-  &.dark {
+  &.selected {
     background-color: $grey-2 !important;
   }
 
@@ -26,6 +26,7 @@
 
     .leftIcon {
       margin-right: 15px;
+      font-size: 20px;
     }
 
     .rightIcon {

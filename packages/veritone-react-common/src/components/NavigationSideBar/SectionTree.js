@@ -1,70 +1,61 @@
 import React from 'react';
 import cx from 'classnames';
-import { noop, initial, get, keyBy } from 'lodash';
+import { noop, initial, get, map } from 'lodash';
 import {
   string,
   arrayOf,
   shape,
   func,
   number,
-  objectOf,
   element,
   bool,
-  oneOfType
+  objectOf,
+  any
 } from 'prop-types';
 import Button from 'material-ui/Button';
 import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import ChevronRightIcon from 'material-ui-icons/ChevronRight';
 
 import { intersperse } from 'helpers/fp';
-import Chip from '../Chip';
 import styles from './styles/sectiontree.scss';
 
 const nodeShape = {
   label: string,
-  icon: oneOfType([element, string]),
-  formComponentId: string // formComponentId for a leaf, or label/children for a node
+  icon: element,
+  iconClassName: string
 };
-nodeShape.children = arrayOf(shape(nodeShape));
+nodeShape.children = objectOf(shape(nodeShape));
 
 export const sectionsShape = shape(nodeShape);
 
 class SectionTree extends React.Component {
   static propTypes = {
     sections: sectionsShape.isRequired,
-    formComponents: objectOf(element),
-    activePath: arrayOf(number).isRequired,
+    activePath: arrayOf(string).isRequired,
     onNavigate: func.isRequired,
-    iconStyle: objectOf(string),
-    selectedFilterStyle: shape({
-      icon: objectOf(string)
+    selectedItemClasses: shape({
+      leftIcon: string
+    }),
+    classes: shape({
+      leftIcon: string
     })
   };
 
-  handleNavigateForward = (index, path) => {
-    this.props.onNavigate(path || [...this.props.activePath, index]);
+  handleNavigateForward = path => {
+    this.props.onNavigate([...this.props.activePath, path]);
   };
 
-  handleNavigateBack = (index, path) => {
-    this.props.onNavigate(path || initial(this.props.activePath));
+  handleNavigateBack = () => {
+    this.props.onNavigate(initial(this.props.activePath));
   };
 
-  handleNavigateCurrent = (index) => {
-    if (this.props.activePath.length > 1) {
-      return this.props.onNavigate([...initial(this.props.activePath), index]);
-    }
-
-    if (this.props.activePath[0] !== index) {
-      return this.props.onNavigate([index]);
-    }
-  }
+  handleNavigateSibling = path => {
+    this.props.onNavigate([...initial(this.props.activePath), path]);
+  };
 
   render() {
-    const props = {
-      leftIconStyle: this.props.iconStyle,
-      selectedStyle: this.props.selectedFilterStyle
-    }
     const currentPath = intersperse(this.props.activePath, 'children');
+    const parentPath = intersperse(initial(this.props.activePath), 'children');
 
     const currentVisibleSection = get(
       this.props.sections.children, // skip root when navigating
@@ -72,78 +63,63 @@ class SectionTree extends React.Component {
       this.props.sections // root visible by default
     );
 
-    if (!currentVisibleSection.children || !currentVisibleSection.children.length) {
-      const activeParentPath = initial(this.props.activePath);
-      const currentVisibleSectionParent = get(
-        this.props.sections.children, // skip root when navigating
-        intersperse(activeParentPath, 'children'),
-        this.props.sections // if get returns undefined, we must be at the root
-      );
+    const currentVisibleSectionParent = get(
+      this.props.sections.children,
+      parentPath,
+      this.props.sections
+    );
 
-      return (
-        <div>
-          {currentVisibleSectionParent.label &&
+    const parentIsRoot = currentVisibleSectionParent === this.props.sections;
+    const selectedItemHasChildren = !!currentVisibleSection.children;
+    const rootItemSelected = parentIsRoot && !selectedItemHasChildren;
+
+    return (
+      <div className={styles.tabsContainer}>
+        {!rootItemSelected && currentPath.length > 0 && (
           <SectionTreeTab
+            selectedClasses={this.props.selectedItemClasses}
+            classes={this.props.classes}
+            selected
             label={currentVisibleSectionParent.label}
             leftIcon={<ArrowBackIcon />}
-            id={-1}
-            onClick={() => this.handleNavigateBack(null, initial(activeParentPath))}
-            data-testtarget="back-button"
-            {...props}
-          />}
-          {currentVisibleSectionParent.children.map(
-            ({ visible, label, formComponentId, children, icon }, i) =>
-              visible !== false && (
-                <SectionTreeTab
-                  dark={label === currentVisibleSection.label}
-                  label={label}
-                  leftIcon={icon}
-                  rightIcon={(children && children.length) ? <ChevronRightIcon /> : undefined}
-                  key={`${label}-${i}`}
-                  id={i}
-                  onClick={this.handleNavigateCurrent}
-                  {...props}
-                />
-              )
-          )}
-        </div>
-      )
-    }
-
-    const visibleFormComponentIdAtLeaf =
-      currentVisibleSection.children.length === 1 &&
-      currentVisibleSection.children[0].formComponentId;
-
-      return (
-      <div className={styles.tabsContainer}>
-        {currentPath.length > 0 && (
-          <SectionTreeTab
-            dark
-            label={currentVisibleSection.label}
-            leftIcon={<ArrowBackIcon />}
-            id={-1}
             onClick={this.handleNavigateBack}
             data-testtarget="back-button"
-            {...props}
           />
         )}
 
-        {visibleFormComponentIdAtLeaf
-          ? this.props.formComponents[visibleFormComponentIdAtLeaf]
-          : currentVisibleSection.children.map(
-              ({ visible, label, formComponentId, children, icon }, i) =>
-                visible !== false && (
-                  <SectionTreeTab
-                    label={label}
-                    leftIcon={icon}
-                    rightIcon={(children && children.length) ? <ChevronRightIcon /> : undefined}
-                    key={`${label}-${i}`}
-                    id={i}
-                    onClick={this.handleNavigateForward}
-                    {...props}
-                  />
-                )
-            )}
+        {map(
+          // render the parent (w/ current section highlighted + its siblings)
+          // when we're at a leaf path
+          currentVisibleSection.children
+            ? currentVisibleSection.children
+            : currentVisibleSectionParent.children,
+          (
+            { visible, label, formComponentId, children, icon, iconClassName },
+            path
+          ) =>
+            visible !== false && (
+              <SectionTreeTab
+                selectedClasses={this.props.selectedItemClasses}
+                classes={this.props.classes}
+                selected={label === currentVisibleSection.label}
+                label={label}
+                leftIcon={
+                  iconClassName ? <span className={iconClassName} /> : icon
+                }
+                rightIcon={
+                  children &&
+                  Object.keys(children).length && <ChevronRightIcon />
+                }
+                key={`${label}-${path}`}
+                id={path}
+                onClick={
+                  currentVisibleSection.children
+                    ? this.handleNavigateForward
+                    : this.handleNavigateSibling
+                }
+              />
+            )
+        )}
       </div>
     );
   }
@@ -155,56 +131,40 @@ export const SectionTreeTab = ({
   label,
   id,
   leftIcon,
-  leftIconStyle,
-  selectedStyle,
   rightIcon,
-  filterCount,
-  dark,
+  selected,
+  selectedClasses = {},
+  classes = {},
   onClick = noop
-}) => {
+}) => (
   /* eslint-disable react/jsx-no-bind */
-  const leftIconStyles = Object.assign({}, leftIconStyle, dark && selectedStyle && selectedStyle.icon);
-
- return (
   <Button
-      classes={{
-        root: cx(styles.sectionTreeTab, { [styles.dark]: dark }),
-        label: styles.muiButtonLabelOverride
-      }}
-      onClick={() => onClick(id)}
+    classes={{
+      root: cx(styles.sectionTreeTab, { [styles.selected]: selected }),
+      label: styles.muiButtonLabelOverride
+    }}
+    onClick={() => onClick(id)}
+  >
+    <span
+      className={cx(styles.leftIcon, classes.leftIcon, {
+        [selectedClasses.leftIcon]: selected
+      })}
     >
-      {leftIcon && // render left icon
-        React.isValidElement(leftIcon)
-        ? <span className={styles.leftIcon}>{React.cloneElement(leftIcon, { style: leftIconStyles })}</span>
-        : <span className={cx(styles.leftIcon, leftIcon)} style={leftIconStyles}></span>
-      }
-      <span className={styles.label}>{label}</span>
-
-      {filterCount > 0 && (
-        <div onMouseOver={() => console.log('hover')}>
-          <Chip
-            label={filterCount}
-            hoveredLabel={'clear'}
-            style={{ height: 18 }}
-            onClick={e => e.stopPropagation()}
-          />
-        </div>
-      )}
-      <span className={styles.rightIcon}>{rightIcon}</span>
-    </Button>
-  )
-}
+      {leftIcon}
+    </span>
+    <span className={styles.label}>{label}</span>
+    <span className={styles.rightIcon}>{rightIcon}</span>
+  </Button>
+);
 
 SectionTreeTab.propTypes = {
   label: string,
-  id: number,
-  leftIcon: oneOfType([element, string]),
+  id: string,
+  leftIcon: element,
   rightIcon: element,
   filterCount: number,
-  dark: bool,
+  selected: bool,
   onClick: func,
-  leftIconStyle: objectOf(string),
-  selectedStyle: shape({
-    icon: objectOf(string)
-  })
+  classes: objectOf(any),
+  selectedClasses: objectOf(any)
 };
