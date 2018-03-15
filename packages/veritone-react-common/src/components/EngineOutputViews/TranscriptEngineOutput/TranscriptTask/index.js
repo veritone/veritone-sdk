@@ -20,7 +20,6 @@ class TranscriptTask extends Component {
   }
 
   handleSnippetEdit = (snippet, newText) => {
-    console.log(snippet, newText);
     this.props.onSnippetEdit(snippet, newText, this.props.chunk.taskId);
   }
 

@@ -14,7 +14,8 @@ class TranscriptContent extends Component {
     editMode: string,
     onSnippetClicked: func,
     tdoStartTime: number,
-    tdoEndTime: number
+    tdoEndTime: number,
+    onSnippetEdit: func
   };
 
   componentDidMount() {
@@ -56,14 +57,7 @@ class TranscriptContent extends Component {
   }
 
   render() {
-    let { 
-      assets, 
-      editModeEnabled,
-      editMode,
-      tdoStartTime, 
-      tdoEndTime, 
-      onSnippetClicked 
-    } = this.props;
+    let { editMode } = this.props;
 
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>

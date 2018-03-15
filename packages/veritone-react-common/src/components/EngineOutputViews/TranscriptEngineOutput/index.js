@@ -26,7 +26,15 @@ class TranscriptEngineOutput extends Component {
     }),
     onSnippetClicked: func,
     tdoStartTime: number,
-    tdoEndTime: number
+    tdoEndTime: number,
+    editMode: string,
+    selectedEngineId: string,
+    engines: arrayOf(shape({
+      sourceEngineId: string,
+      sourceEngineName: string
+    })),
+    onEngineChange: func,
+    onSnippetEdit: func
   };
 
   static defaultProps = {
@@ -40,9 +48,7 @@ class TranscriptEngineOutput extends Component {
       classes, 
       editModeEnabled, 
       editMode, 
-      assets, 
-      tdoStartTime, 
-      tdoEndTime, 
+      assets,
       onSnippetClicked,
       selectedEngineId,
       engines,

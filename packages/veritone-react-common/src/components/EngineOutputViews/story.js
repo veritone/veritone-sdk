@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
-import { select, boolean } from '@storybook/addon-knobs';
+import { boolean } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
-import { fill } from 'lodash';
+import { bool, func } from 'prop-types';
 
 import styles from './story.styles.scss';
 
@@ -11,14 +11,17 @@ import SentimentEngineOutput from './SentimentEngineOutput';
 import FaceDetectionOuput from './FaceDetectionEngineOutput';
 import ObjectDetectionOuput from './ObjectDetectionEngineOutput';
 import { 
-  transcriptAssets, 
-  tdoStartTime, 
-  tdoEndTime,
+  transcriptAssets,
   sentimentAssets,
   objectDetectionAssets
 } from './story.data.js';
 
 class TranscriptionStory extends Component {
+  static propTypes = {
+    editModeEnabled: bool,
+    onSnippetClicked: func
+  }
+
   state = {
     assets: transcriptAssets,
     editMode: "bulk",
