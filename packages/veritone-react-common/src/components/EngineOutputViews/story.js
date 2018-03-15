@@ -40,6 +40,13 @@ class TranscriptionStory extends Component {
       selectedEngineId: evt.target.value
     })
   }
+
+  handleEditModeChange = (evt) => {
+    this.setState({
+      ...this.state,
+      editMode: evt.target.value
+    })
+  }
   
   handleSnippetEdit = (snippet, innerHtml, taskId) => {
     this.setState({
@@ -72,6 +79,7 @@ class TranscriptionStory extends Component {
         assets={this.state.assets}
         editModeEnabled={this.props.editModeEnabled}
         editMode={this.state.editMode}
+        onEditModeChange={this.handleEditModeChange}
         engines={this.state.engines}
         selectedEngineId={this.state.selectedEngineId}
         onEngineChange={this.handleEngineChange}

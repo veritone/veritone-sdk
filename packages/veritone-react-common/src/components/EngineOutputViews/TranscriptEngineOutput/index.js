@@ -34,7 +34,8 @@ class TranscriptEngineOutput extends Component {
       sourceEngineName: string
     })),
     onEngineChange: func,
-    onSnippetEdit: func
+    onSnippetEdit: func,
+    onEditModeChange: func
   };
 
   static defaultProps = {
@@ -53,13 +54,15 @@ class TranscriptEngineOutput extends Component {
       selectedEngineId,
       engines,
       onEngineChange,
-      onSnippetEdit
+      onSnippetEdit,
+      onEditModeChange
     } = this.props;
     return (
       <div className={classNames(styles.transcriptOutputView, classes.root)}>
         <div className={classNames(styles.transcriptViewHeader, classes.header)}>
           { editModeEnabled ?
               <RadioGroup
+                onChange={onEditModeChange}
                 aria-label="edit_mode"
                 value={editMode}
                 name="editMode"
