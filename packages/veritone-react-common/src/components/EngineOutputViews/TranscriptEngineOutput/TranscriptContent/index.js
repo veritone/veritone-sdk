@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { arrayOf, object, bool, number } from 'prop-types';
+import { arrayOf, object, bool, number, func } from 'prop-types';
 
-import TranscriptChunk from '../TranscriptChunk';
+import Snippet from '../Snippet';
 
 import styles from './styles.scss';
 
@@ -11,6 +11,7 @@ class TranscriptContent extends Component {
   static propTypes = {
     assets: arrayOf(object),
     editModeEnabled: bool,
+    onSnippetClicked: func,
     tdoStartTime: number,
     tdoEndTime: number
   };
@@ -39,29 +40,29 @@ class TranscriptContent extends Component {
     this.transcriptContent = element
   }
 
-  handleSnippetClicked = (snippet, evt) => {
-    console.log(snippet);
-  }
-
   render() {
-    let { assets, editModeEnabled, tdoStartTime, tdoEndTime } = this.props;
-    let dataChunks = assets.map((asset, index) => {
+    let { 
+      assets, 
+      editModeEnabled, 
+      tdoStartTime, 
+      tdoEndTime, 
+      onSnippetClicked 
+    } = this.props;
+
+    let snippets = assets.map((snippet, index) => {
       return (
-        <TranscriptChunk 
+        <Snippet 
           key={index} 
-          startTime={asset.startTime} 
-          endTime={asset.endTime} 
-          data={asset.data} 
+          snippet={snippet} 
+          onSnippetClick={onSnippetClicked}
           editModeEnabled={editModeEnabled}
-          tdoStartTime={tdoStartTime}
-          tdoEndTime={tdoEndTime}
-          onSnippetClick={this.handleSnippetClicked}
         />
       );
     })
+
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>
-        { dataChunks }
+        { snippets }
       </div>
     );
   }
