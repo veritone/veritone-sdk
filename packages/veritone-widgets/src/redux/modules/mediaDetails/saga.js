@@ -38,7 +38,6 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
                     id
                     name
                     iconClass
-                    categoryType
                     editable
                   }
                 }
@@ -114,6 +113,7 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
           let engineCategory = engineCategoryById.get(task.engine.category.id);
           if (!engineCategory) {
             engineCategory = Object.assign({}, task.engine.category);
+            engineCategory.iconClass = engineCategory.iconClass.replace('-engine', '')
             engineCategory.engines = [];
             engineCategoryById.set(engineCategory.id, engineCategory);
           }

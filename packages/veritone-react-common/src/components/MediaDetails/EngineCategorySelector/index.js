@@ -16,7 +16,6 @@ class EngineCategorySelector extends Component {
   };
 
   render() {
-    console.log(this.props.selectedEngineCategoryId);
     return (
         this.props.engineCategories && this.props.engineCategories.length && this.props.selectedEngineCategoryId && (
           <div className={styles.engineCategoryTabsContainer}>
@@ -32,10 +31,12 @@ class EngineCategorySelector extends Component {
                   return (
                     <Tab value={engineCategory.id}
                          key={engineCategory.id}
-                         icon={<Icon className={styles.categoryIcon}>{engineCategory.iconClass}</Icon>}
+                         icon={<Icon className={engineCategory.iconClass.replace('-engine', '')}
+                                     classes={{root: styles.categoryIcon}}></Icon>}
                          classes={{
                            root: styles.engineCategoryTab
                          }}>
+                      Blah blah
                     </Tab>
                   );
                 })
