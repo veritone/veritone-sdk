@@ -1,5 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { select, boolean } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
 
@@ -19,9 +21,9 @@ storiesOf('EngineOutputViews', module)
   .add('TranscriptEngineOutput', () => {
     return (<TranscriptEngineOutput 
         assets={transcriptAssets}
+        editModeEnabled={boolean('Edit Mode Enabled', false)}
+        onSnippetClicked={action('Snippet Clicked')}
         classes={{ root: styles.outputViewRoot }}
-        tdoStartTime={tdoStartTime}
-        tdoEndTime={tdoEndTime}
     />);
   })
   .add('SentimentEngineOutput', () => {
