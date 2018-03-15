@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { arrayOf, object, bool, number, func } from 'prop-types';
+import { arrayOf, object, bool, number, func, string } from 'prop-types';
 
-import TranscriptChunk from '../TranscriptChunk';
+import TranscriptTask from '../TranscriptTask';
 
 import styles from './styles.scss';
 
@@ -11,6 +11,7 @@ class TranscriptContent extends Component {
   static propTypes = {
     assets: arrayOf(object),
     editModeEnabled: bool,
+    editMode: string,
     onSnippetClicked: func,
     tdoStartTime: number,
     tdoEndTime: number
@@ -40,29 +41,36 @@ class TranscriptContent extends Component {
     this.transcriptContent = element
   }
 
+  getTranscriptChunks = () => {
+    return this.props.assets.map((chunk, i) => {
+      return (
+        <TranscriptTask 
+          key={i} 
+          chunk={chunk}
+          editModeEnabled={this.props.editModeEnabled}
+          onSnippetClick={this.props.onSnippetClicked}
+          onSnippetEdit={this.props.onSnippetEdit}
+        />
+      )
+    });
+  }
+
   render() {
     let { 
       assets, 
-      editModeEnabled, 
+      editModeEnabled,
+      editMode,
       tdoStartTime, 
       tdoEndTime, 
       onSnippetClicked 
     } = this.props;
 
-    let chunks = assets.map((chunk, i) => {
-      return (
-        <TranscriptChunk 
-          key={i} 
-          chunk={chunk}
-          editModeEnabled={editModeEnabled}
-          onSnippetClick={onSnippetClicked}
-        />
-      )
-    })
-
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>
-        { chunks }
+        { editMode === 'bulk' ?
+            <textarea /> :
+            this.getTranscriptChunks()
+        }
       </div>
     );
   }

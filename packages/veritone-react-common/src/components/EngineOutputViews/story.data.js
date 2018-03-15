@@ -2,6 +2,9 @@ export const transcriptAssets = [
   {
     startTimeMs: 0,
     endTimeMs: 13812,
+    sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
+    sourceEngineName: "Temporal",
+    taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-4fba913a-7fc0-4dbe-9eae-df5892c10683",
     series: [
       {
         start: 0,
@@ -38,6 +41,9 @@ export const transcriptAssets = [
   {
     startTimeMs:13183,
     endTimeMs: 13236,
+    sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
+    sourceEngineName: "Temporal",
+    taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-1e5e61a6-ad67-4116-a810-73aaad01353a",
     series: [
       {
         start: 13183,
@@ -89,6 +95,9 @@ export const transcriptAssets = [
   {
     startTimeMs: 13237,
     endTimeMs: 13292,
+    sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
+    sourceEngineName: "Temporal",
+    taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf",
     series: [
       {
         start: 13237,

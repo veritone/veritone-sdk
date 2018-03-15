@@ -3,7 +3,7 @@ import { arrayOf, shape, number, string, bool, func } from 'prop-types';
 
 import Snippet from '../Snippet';
 
-class TranscriptChunk extends Component {
+class TranscriptTask extends Component {
   static propTypes = {
     chunk: shape({
       startTimeMs: number,
@@ -15,7 +15,13 @@ class TranscriptChunk extends Component {
       }))
     }),
     onSnippetClick: func,
+    onSnippetEdit: func,
     editModeEnabled: bool
+  }
+
+  handleSnippetEdit = (snippet, newText) => {
+    console.log(snippet, newText);
+    this.props.onSnippetEdit(snippet, newText, this.props.chunk.taskId);
   }
 
   render () {
@@ -26,6 +32,7 @@ class TranscriptChunk extends Component {
           key={index} 
           snippet={snippet} 
           onSnippetClick={onSnippetClick}
+          onSnippetEdit={this.handleSnippetEdit}
           editModeEnabled={editModeEnabled}
         />
       );
@@ -38,4 +45,4 @@ class TranscriptChunk extends Component {
   }
 }
 
-export default TranscriptChunk;
+export default TranscriptTask;

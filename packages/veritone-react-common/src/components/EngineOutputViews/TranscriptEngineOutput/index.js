@@ -36,30 +36,61 @@ class TranscriptEngineOutput extends Component {
   }
 
   render() {
-    let { classes, editModeEnabled, assets, tdoStartTime, tdoEndTime, onSnippetClicked } = this.props;
+    let { 
+      classes, 
+      editModeEnabled, 
+      editMode, 
+      assets, 
+      tdoStartTime, 
+      tdoEndTime, 
+      onSnippetClicked,
+      selectedEngineId,
+      engines,
+      onEngineChange,
+      onSnippetEdit
+    } = this.props;
     return (
       <div className={classNames(styles.transcriptOutputView, classes.root)}>
         <div className={classNames(styles.transcriptViewHeader, classes.header)}>
           { editModeEnabled ?
               <RadioGroup
                 aria-label="edit_mode"
-                value="snippet"
+                value={editMode}
                 name="editMode"
               >
-                <FormControlLabel value="snippet" control={<Radio color="primary" />} label="Snippet Edit" />
-                <FormControlLabel value="bulk" control={<Radio color="primary" />} label="Bulk Edit" />
+                <FormControlLabel 
+                  className={styles.editModeFormControlLabel} 
+                  value="snippet" 
+                  control={<Radio color="primary" />} 
+                  label="Snippet Edit" 
+                />
+                <FormControlLabel 
+                  className={styles.editModeFormControlLabel} 
+                  value="bulk" 
+                  control={<Radio color="primary" />} 
+                  label="Bulk Edit" 
+                />
               </RadioGroup>:
               <div className={styles.headerTitle}>Transcription</div>
           }
           <div className={styles.transcriptActions}>
-            <Select value="temporal">
-              <MenuItem value="temporal">Temporal</MenuItem>
+            <Select value={selectedEngineId || ""} onChange={onEngineChange}>
+              { engines.map((e, i) => {
+                  return <MenuItem 
+                    key={i} 
+                    value={e.sourceEngineId}
+                  >
+                    {e.sourceEngineName}
+                  </MenuItem>
+                })
+              }
             </Select>
           </div>
         </div>
         <TranscriptContent 
           assets={assets}
           onSnippetClicked={onSnippetClicked}
+          onSnippetEdit={onSnippetEdit}
           editModeEnabled={editModeEnabled}
         />
       </div>
