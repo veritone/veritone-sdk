@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, object, bool, number, func } from 'prop-types';
 
-import Snippet from '../Snippet';
+import TranscriptChunk from '../TranscriptChunk';
 
 import styles from './styles.scss';
 
@@ -49,20 +49,20 @@ class TranscriptContent extends Component {
       onSnippetClicked 
     } = this.props;
 
-    let snippets = assets.map((snippet, index) => {
+    let chunks = assets.map((chunk, i) => {
       return (
-        <Snippet 
-          key={index} 
-          snippet={snippet} 
-          onSnippetClick={onSnippetClicked}
+        <TranscriptChunk 
+          key={i} 
+          chunk={chunk}
           editModeEnabled={editModeEnabled}
+          onSnippetClick={onSnippetClicked}
         />
-      );
+      )
     })
 
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>
-        { snippets }
+        { chunks }
       </div>
     );
   }

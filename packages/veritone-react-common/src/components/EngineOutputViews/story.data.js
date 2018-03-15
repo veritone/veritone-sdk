@@ -1,129 +1,147 @@
 export const transcriptAssets = [
   {
-    start: 0,
-    end: 13130,
-    text: "I have a dream . That 1 day . This nation will rise up . And live out the true meaning of its screen . We hold these truths to be self-evident that all men are created equal ."
+    startTimeMs: 0,
+    endTimeMs: 13812,
+    series: [
+      {
+        start: 0,
+        end: 13130,
+        text: "I have a dream . That 1 day . This nation will rise up . And live out the true meaning of its screen . We hold these truths to be self-evident that all men are created equal ."
+      },
+      {
+        start: 13131,
+        end: 13146,
+        text: "Hello I a m just typing some random stuff to show how "
+      },
+      {
+        start: 13147,
+        end: 13162,
+        text: "we can display a transcript using"
+      },
+      {
+        start: 13163,
+        end: 13170,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13171,
+        end: 13176,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13177,
+        end: 13182,
+        text: "Just a random string for dummy data that I made up. "
+      }
+    ]
   },
   {
-    start: 13131,
-    end: 13146,
-    text: "Hello I a m just typing some random stuff to show how "
+    startTimeMs:13183,
+    endTimeMs: 13236,
+    series: [
+      {
+        start: 13183,
+        end: 13188,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13189,
+        end: 13194,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13195,
+        end: 13200,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13201,
+        end: 13206,
+        text: "Hello I a m just typing some random stuff to show how "
+      },
+      {
+        start: 13207,
+        end: 13212,
+        text: "we can display a transcript using"
+      },
+      {
+        start: 13213,
+        end: 13218,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13219,
+        end: 13224,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13225,
+        end: 13230,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13231,
+        end: 13236,
+        text: "Just a random string for dummy data that I made up. "
+      },
+    ]
   },
   {
-    start: 13147,
-    end: 13162,
-    text: "we can display a transcript using"
-  },
-  {
-    start: 13163,
-    end: 13170,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13171,
-    end: 13176,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13177,
-    end: 13182,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13183,
-    end: 13188,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13189,
-    end: 13194,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13195,
-    end: 13200,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13201,
-    end: 13206,
-    text: "Hello I a m just typing some random stuff to show how "
-  },
-  {
-    start: 13207,
-    end: 13212,
-    text: "we can display a transcript using"
-  },
-  {
-    start: 13213,
-    end: 13218,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13219,
-    end: 13224,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13225,
-    end: 13230,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13231,
-    end: 13236,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13237,
-    end: 13242,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13243,
-    end: 13248,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13249,
-    end: 13250,
-    text: "Hello I a m just typing some random stuff to show how "
-  },
-  {
-    start: 13251,
-    end: 13256,
-    text: "we can display a transcript using"
-  },
-  {
-    start: 13257,
-    end: 13262,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13263,
-    end: 13268,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13269,
-    end: 13274,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13275,
-    end: 13280,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13281,
-    end: 13286,
-    text: "Just a random string for dummy data that I made up. "
-  },
-  {
-    start: 13287,
-    end: 13292,
-    text: "Just a random string for dummy data that I made up. "
-  },
+    startTimeMs: 13237,
+    endTimeMs: 13292,
+    series: [
+      {
+        start: 13237,
+        end: 13242,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13243,
+        end: 13248,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13249,
+        end: 13250,
+        text: "Hello I a m just typing some random stuff to show how "
+      },
+      {
+        start: 13251,
+        end: 13256,
+        text: "we can display a transcript using"
+      },
+      {
+        start: 13257,
+        end: 13262,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13263,
+        end: 13268,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13269,
+        end: 13274,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13275,
+        end: 13280,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13281,
+        end: 13286,
+        text: "Just a random string for dummy data that I made up. "
+      },
+      {
+        start: 13287,
+        end: 13292,
+        text: "Just a random string for dummy data that I made up. "
+      },
+    ]
+  }
 ];
 
 export const tdoStartTime = transcriptAssets[0].startTime;
