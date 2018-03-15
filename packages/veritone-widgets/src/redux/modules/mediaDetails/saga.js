@@ -37,6 +37,8 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
                   category {
                     id
                     name
+                    iconClass
+                    editable
                   }
                 }
               }
@@ -111,6 +113,7 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
           let engineCategory = engineCategoryById.get(task.engine.category.id);
           if (!engineCategory) {
             engineCategory = Object.assign({}, task.engine.category);
+            engineCategory.iconClass = engineCategory.iconClass.replace('-engine', '')
             engineCategory.engines = [];
             engineCategoryById.set(engineCategory.id, engineCategory);
           }
@@ -149,7 +152,7 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
         return;
       }
       if (category.engines.some(engine => engine.status !== 'complete')) {
-        category.status = 'in_progress';
+        category.status = 'inprogress';
       } else {
         category.status = 'completed';
       }
