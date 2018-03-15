@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
+import Drawer from 'material-ui/Drawer';
 import EngineCategorySelector from './EngineCategorySelector';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
@@ -16,7 +17,9 @@ export default class MediaDetails extends Component {
 
   state = {
     selectedEngineCategory: this.props.engineCategories && this.props.engineCategories.length ? this.props.engineCategories[0] : null,
-    isEditMode: false
+    isEditMode: false,
+    isInfoPanelOpen: false,
+    hasPendingChanges: false
   };
 
   componentWillReceiveProps(nextProps) {
@@ -37,7 +40,7 @@ export default class MediaDetails extends Component {
   };
 
   getSelectedCategoryMessage = () => {
-    return 'Use the edit screen below to edit.';
+    return 'Use the edit screen below to correct ' + this.state.selectedEngineCategory.name.toLowerCase() + 's.';
   };
 
   toggleEditMode = () => {
@@ -47,16 +50,21 @@ export default class MediaDetails extends Component {
     });
   };
 
-  onSave = () => {
+  onSaveEdit = () => {
     this.toggleEditMode();
   };
 
-  onCancel = () => {
+  onCancelEdit = () => {
     this.toggleEditMode();
   };
 
   onRunProcess = () => {
-    this.toggleEditMode();
+  };
+
+  toggleInfoPanel = () => {
+    this.setState({
+      isInfoPanelOpen : !this.state.isInfoPanelOpen
+    });
   };
 
   render() {
@@ -68,50 +76,67 @@ export default class MediaDetails extends Component {
 
     return (
       <Paper className={styles.mediaDetailsPageContent}>
-        <div className={styles.mediaDetailsPageHeader}>
-          <div className={styles.headerMediaName}>{this.props.mediaId}</div>
-          <div className={styles.headerMediaActions}>
-            <div className={styles.pageCloseIcon}>
-              <IconButton
-                onClick={this.props.onClose}
-                className='icon-close-exit'
-                disableRipple={true}/>
-            </div>
-          </div>
-        </div>
-        <div className={styles.mediaDetailsPageSubHeader}>
-        </div>
 
-        {this.state.selectedEngineCategory &&
-          <div className={styles.engineActionHeader}>
-            {!this.state.isEditMode &&
-              <div className={styles.readModeHeader}>
-                <div className={styles.engineCategorySelector}>
-                  <EngineCategorySelector engineCategories={this.props.engineCategories}
-                                          selectedEngineCategoryId={this.state.selectedEngineCategory.id}
-                                          onSelectEngineCategory={this.handleEngineCategoryChange}/>
+        {!this.state.isEditMode &&
+          <div>
+            <div className={styles.pageHeader}>
+              <div className={styles.pageHeaderTitleLabel}>{this.props.mediaId}</div>
+              <div className={styles.pageHeaderActionButtons}>
+                <IconButton className={styles.pageHeaderActionButton} onClick={this.onRunProcess} aria-label='Run process' disableRipple={true}>
+                  <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
+                </IconButton>
+                <IconButton className={styles.pageHeaderActionButton} onClick={this.toggleInfoPanel} aria-label='Info Panel' disableRipple={true}>
+                  <Icon className='icon-info-panel' classes={{root: styles.iconClass}}></Icon>
+                </IconButton>
+                <div className={styles.pageHeaderActionButtonsSeparator}></div>
+                <IconButton className={styles.pageCloseButton} onClick={this.props.onClose} aria-label='Close' disableRipple={true}>
+                  <Icon className='icon-close-exit' classes={{root: styles.iconClass}}></Icon>
+                </IconButton>
+              </div>
+            </div>
+            <div className={styles.mediaDetailsPageTabSelector}>
+            </div>
+            {this.state.selectedEngineCategory &&
+              <div className={styles.engineActionHeader}>
+                <div className={styles.engineActionContainer}>
+                  <div className={styles.engineCategorySelector}>
+                    <EngineCategorySelector engineCategories={this.props.engineCategories}
+                                            selectedEngineCategoryId={this.state.selectedEngineCategory.id}
+                                            onSelectEngineCategory={this.handleEngineCategoryChange}/>
+                  </div>
+                  <Button variant='raised'
+                          color='primary'
+                          className={styles.toEditModeButton}
+                          onClick={this.toggleEditMode}>EDIT MODE</Button>
                 </div>
-                <Button variant='raised'
-                        color='primary'
-                        className={styles.editModeButton}
-                        onClick={this.toggleEditMode}>EDIT MODE</Button>
               </div>}
-            {this.state.isEditMode &&
-              <div className={styles.editModeHeader}>
-                <div className={styles.editCategoryHelperMessage}>
-                  {this.getSelectedCategoryMessage()}
-                </div>
-                <div className={styles.editModeActionButtons}>
-                  <Button className={styles.runProcessButton}
-                          onClick={this.onRunProcess}>
-                    <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
-                    RUN PROCESS</Button>
-                  <Button className={styles.actionButton}
-                          onClick={this.onCancel}>CANCEL</Button>
-                  <Button className={styles.actionButton}
-                          onClick={this.onSave}>SAVE</Button>
-                </div>
-              </div>}
+          </div>}
+
+        {this.state.isEditMode &&
+          <div>
+            <div className={styles.pageHeaderEditMode}>
+              <IconButton className={styles.backButtonEditMode} onClick={this.onCancelEdit} aria-label='Back' disableRipple={true}>
+                <Icon className='icon-arrow-back' classes={{root: styles.iconClass}}></Icon>
+              </IconButton>
+              <div className={styles.pageHeaderTitleLabelEditMode}>Edit Mode: {this.state.selectedEngineCategory.name}</div>
+            </div>
+            <div className={styles.pageSubHeaderEditMode}>
+              <div className={styles.editCategoryHelperMessage}>
+                {this.getSelectedCategoryMessage()}
+              </div>
+              <div className={styles.actionButtonsEditMode}>
+                <Button className={styles.runProcessButtonEditMode}
+                        onClick={this.onRunProcess}>
+                  <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
+                  RUN PROCESS</Button>
+                <div className={styles.actionButtonsSeparatorEditMode}></div>
+                <Button className={styles.actionButtonEditMode}
+                        onClick={this.onCancelEdit}>CANCEL</Button>
+                <Button className={styles.actionButtonEditMode}
+                        disabled={!this.state.hasPendingChanges}
+                        onClick={this.onSaveEdit}>SAVE</Button>
+              </div>
+            </div>
           </div>}
 
         <div>
@@ -143,6 +168,17 @@ export default class MediaDetails extends Component {
         {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'thumbnail' &&
         <div>Thumbnail component</div>}
 
+        <Drawer anchor="right" open={this.state.isInfoPanelOpen} onClose={this.toggleInfoPanel}>
+          <div
+            tabIndex={0}
+            role="button"
+            onClick={this.toggleInfoPanel}
+            onKeyDown={this.toggleInfoPanel}
+          >
+            {this.state.mediaId}
+          </div>
+          Whatever happens - happens.
+        </Drawer>
       </Paper>
     );
   }
