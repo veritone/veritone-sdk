@@ -23,9 +23,9 @@ import styles from './styles.scss';
 
 export default class IngestionJobFullScreen extends React.Component {
   static propTypes = {
-    numberOfFields: number,
     data: arrayOf(any),
-    sdoSourceInfo: objectOf(any)
+    sdoSchemaInfo: objectOf(any),
+    jobInfo: objectOf(any)
   };
 
   static defaultProps = {
@@ -33,12 +33,13 @@ export default class IngestionJobFullScreen extends React.Component {
   };
 
   state = {
-    checkedAll: false,    
+    checkedAll: false, 
+    schemaSelection: this.props.sdoSchemaInfo.schemas[0].schemaName   
   };
 
-  handleSelectChange = (event) => {
+  handleSchemaChange = (event) => {
     this.setState({
-      sourceSelection: event.target.value
+      schemaSelection: event.target.value
     });
   };
 
@@ -56,10 +57,13 @@ export default class IngestionJobFullScreen extends React.Component {
     const SDOTiles = this.props.data.map((SDO, index) => {
       return <SDOTile checkAll={this.state.checkedAll} numberOfFields={this.props.numberOfFields} columns={SDO} key={index} />
     });
+    const schemaMenuItems = this.props.sdoSchemaInfo.schemas.map((schema, index) => {
+      return <MenuItem value={schema.schemaName} key={index}>{schema.schemaName} Version {schema.version}</MenuItem>
+    });
     return (
       <div className={styles.fullPage}>
         <div className={styles.fullScreenTopBar}>
-          <div className={styles.topBarTitle}>{this.props.sdoSourceInfo.dataSetName}</div>
+          <div className={styles.topBarTitle}>{this.props.jobInfo.jobName}</div>
           <div className={styles.iconGroup}>
             <IconButton className={styles.helpIcon} aria-label='help'>
               <Icon className={'icon-help2'}></Icon>
@@ -74,12 +78,25 @@ export default class IngestionJobFullScreen extends React.Component {
           </div>
         </div>
         <div className={styles.tableCard}>
-          <div className={styles.sourceTitle}>
-            <div className={styles.sourceTitleGroup}>
-              <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
-              <div className={styles.sourceName}>
-                {this.props.sdoSourceInfo.sourceName} (Source Name)
+          <div className={styles.schemaTitle}>
+            <div className={styles.schemaTitleGroup}>
+              <img src={this.props.jobInfo.thumbnail} alt='' className={styles.imageStyle} />
+              <div className={styles.schemaName}>
+                {this.props.jobInfo.jobName}
               </div>
+            </div>
+            <div className={styles.schemaGroup}>
+              <Select 
+                className={styles.schemaSelect}
+                value={this.state.schemaSelection}
+                onChange={this.handleSchemaChange}
+              >
+                {schemaMenuItems}
+              </Select>
+              <div className={styles.separator} />
+              <IconButton className={styles.exportIcon} aria-label='export'>
+                <Icon className={'icon-file_download'}></Icon>
+              </IconButton>
             </div>
           </div>
           <div className={styles.sdoTableTitle}>

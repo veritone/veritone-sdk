@@ -143,18 +143,30 @@ var data = [
   }
 ];
 
-var sdoSourceInfo = {
-  dataSetName: 'Twitter Data Set 1',
-  sourceName: '@therealtrump',
-  sourceImage: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-  sourceSelection: 'therealtrump (Source Name)',
-  sourceSelections: ['therealtrump (Source Name)', 'therealstump (Source Name)']
+
+// FOR FULLSCREEN VIEW
+var sdoSchemaInfo = {
+  schemas: [
+    {
+      schemaName: 'Tweet Post Schema',
+      version: '1.1',
+    },
+    {
+      schemaName: 'Tweet Post Schema 2',
+      version: '2.0'
+    }
+  ]
 };
+
+var oneJobInfo = {
+  jobName: 'Donald Trump Twitter Posts',
+  thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+}
 
 
 
 // FOR DATA SET VIEWER
-var dataSetInfo = [
+var jobInfo = [
   {
     jobName: 'Twitter Data Set 1',
     schema: 'Twitter Schema Version 2.3',
@@ -216,10 +228,10 @@ var jobData = [
 
 storiesOf('IngestionJobs', module)
   .add('FullScreen', () => (
-    <IngestionJobFullScreen data={data} sdoSourceInfo={sdoSourceInfo} />
+    <IngestionJobFullScreen data={data} sdoSchemaInfo={sdoSchemaInfo} jobInfo={oneJobInfo} />
   ))
   .add('Tile View', () => (
-    <IngestionJobTileView dataSetInfo={dataSetInfo}/>
+    <IngestionJobTileView jobInfo={jobInfo}/>
   ))
   .add('Grid Card', () => (
     <IngestionJobGridCard checkedAll={false} sourceName={jobCardData.sourceName} schemaVersion={jobCardData.schemaName} creationDate={jobCardData.creationDate} thumbnail={jobCardData.thumbnail} />

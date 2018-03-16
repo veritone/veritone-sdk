@@ -20,7 +20,7 @@ import styles from './styles.scss';
 
 export default class IngestionJobTileView extends React.Component {
   static propTypes = {
-    dataSetInfo: arrayOf(objectOf(any))
+    jobInfo: arrayOf(objectOf(any))
   };
 
   static defaultProps = {
@@ -38,7 +38,7 @@ export default class IngestionJobTileView extends React.Component {
   };
 
   render() {
-    const jobRows = this.props.dataSetInfo.map((row, index) => {
+    const jobRows = this.props.jobInfo.map((row, index) => {
       return <JobRow checkAll={this.state.checkedAll} rowInfo={row} key={index} />
     });
     return (
