@@ -20,7 +20,7 @@
   }
 
   .jobDetails {
-    padding: 20px;
+    padding-left: 20px;
 
     .checkboxBackground {
       background-color: #FFFFFF;
@@ -46,9 +46,6 @@
       color: #2196F3 !important;
     }
 
-    
-    
-
     .jobName {
       font-size: 14px;
       font-weight: 500;
@@ -57,17 +54,36 @@
       padding-bottom: 5px;
     }
 
-    .schemaVersion {
-      font-size: 12px;
-      line-height: 13px;
-      color: rgba(0, 0, 0, 0.87);
-      padding-bottom: 5px;
-    }
+    .gridDetails {
+      
+      .gridDetailsRow {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-bottom: 5px;
 
-    .creationDate {
-      font-size: 12px;
-      line-height: 18px;
-      color: rgba(0, 0, 0, 0.54);
+        .detailsTitle {
+          color: rgba(0, 0, 0, 0.87);
+          font-size: 12px;
+          line-height: 13px;
+          width: 80px;
+          margin-right: 10px;
+        }
+        .detailsText {
+          color: rgba(0, 0, 0, 0.87);
+          font-size: 12px;
+          line-height: 13px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      
+    }
+    .status {
+      bottom: 10px;
+      right: 10px;
+      position: absolute;
     }
   }
   
