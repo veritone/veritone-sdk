@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React  from 'react';
 import AttachMoneyIcon from 'material-ui-icons/Apps';
 import { storiesOf } from '@storybook/react';
 
