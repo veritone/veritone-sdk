@@ -12,6 +12,7 @@ import {
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
+import StatusPill from 'components/IngestionJobs/StatusPill';
 import styles from './styles.scss';
 
 export default class JobRow extends React.Component {
@@ -58,7 +59,7 @@ export default class JobRow extends React.Component {
         />
         <div className={styles.rowTextGroup} onClick={this.handleRowClick}>
           <span className={styles.columnText}>{this.props.name}</span>
-          <span className={styles.columnText}>{this.props.status}</span>
+          <span className={styles.status}><StatusPill status={this.props.status} /></span>
           <span className={styles.columnText}>{this.props.adapter}</span>
           <span className={styles.columnText}>{this.props.ingestionType}</span>
           <span className={styles.columnText}>{this.props.creationDate}</span>

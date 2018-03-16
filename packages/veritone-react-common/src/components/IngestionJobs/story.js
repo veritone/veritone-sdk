@@ -169,39 +169,43 @@ var oneJobInfo = {
 var jobInfo = [
   {
     name: 'Donald Trump Twitter Posts 1',
-    status: 'In Progress',
-    adapter: 'Twitter',
+    status: 'active',
+    adapter: 'Facebook',
     ingestionType: 'Data set',
     creationDate: 'Wed Jul 13, 2016 09:23 PM',
     lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg',
+    sourceType: 'Facebook'
   },
   {
     name: 'Donald Trump Twitter Posts 2',
-    status: 'In Progress',
+    status: 'paused',
     adapter: 'Twitter',
     ingestionType: 'Data set',
     creationDate: 'Wed Jul 13, 2016 09:23 PM',
     lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
+    sourceType: 'Twitter'
   },
   {
     name: 'Donald Trump Twitter Posts 3',
-    status: 'In Progress',
+    status: 'processing',
     adapter: 'Twitter',
     ingestionType: 'Data set',
     creationDate: 'Wed Jul 13, 2016 09:23 PM',
     lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
+    sourceType: 'Twitter'
   },
   {
     name: 'Donald Trump Twitter Posts 4',
-    status: 'In Progress',
+    status: 'inactive',
     adapter: 'Twitter',
     ingestionType: 'Data set',
     creationDate: 'Wed Jul 13, 2016 09:23 PM',
     lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
+    sourceType: 'Twitter'
   }
 ];
 

@@ -64,7 +64,7 @@ export default class IngestionJobTileView extends React.Component {
             <span className={styles.tableTitle}>Adapter</span>
             <span className={styles.tableTitle}>Ingestion Type</span>
             <span className={styles.tableTitle}>Creation Date</span>
-            <span className={styles.tableTitle}>Last Ingestion Date</span>
+            <span className={styles.tableTitle}>Last Ingestion</span>
           </div>
           <div style={{width: '55px'}}></div>
         </div>

@@ -1,0 +1,18 @@
+.statusPill {
+  // bottom: 10px;
+  // right: 10px;
+  // position: absolute;
+  height: 20px;
+  width: fit-content;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+
+  .statusPillText {
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 11px;
+    padding: 4px 8px 4px 8px;
+    text-transform: uppercase;
+  }
+}
