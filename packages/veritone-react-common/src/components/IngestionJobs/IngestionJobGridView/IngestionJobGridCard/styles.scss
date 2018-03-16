@@ -6,7 +6,7 @@
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.14), 0 3px 4px 0 rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
   position: relative;
 
-  .sourceThumbnail {
+  .jobThumbnail {
     width: 100%;
     height: 164px;
     position: relative;
@@ -19,7 +19,7 @@
     }
   }
 
-  .sourceDetails {
+  .jobDetails {
     padding: 20px;
 
     .checkboxBackground {
@@ -49,7 +49,7 @@
     
     
 
-    .sourceName {
+    .jobName {
       font-size: 14px;
       font-weight: 500;
       line-height: 13px;

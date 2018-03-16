@@ -168,62 +168,42 @@ var oneJobInfo = {
 // FOR DATA SET VIEWER
 var jobInfo = [
   {
-    jobName: 'Twitter Data Set 1',
-    schema: 'Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
+    name: 'Donald Trump Twitter Posts 1',
+    status: 'In Progress',
+    adapter: 'Twitter',
+    ingestionType: 'Data set',
+    creationDate: 'Wed Jul 13, 2016 09:23 PM',
+    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
   },
   {
-    jobName: 'Twitter Data Set 2',
-    schema: 'Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
+    name: 'Donald Trump Twitter Posts 2',
+    status: 'In Progress',
+    adapter: 'Twitter',
+    ingestionType: 'Data set',
+    creationDate: 'Wed Jul 13, 2016 09:23 PM',
+    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
   },
   {
-    jobName: 'Twitter Data Set 3',
-    schema: 'Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
+    name: 'Donald Trump Twitter Posts 3',
+    status: 'In Progress',
+    adapter: 'Twitter',
+    ingestionType: 'Data set',
+    creationDate: 'Wed Jul 13, 2016 09:23 PM',
+    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
   },
   {
-    jobName: 'Twitter Data Set 4',
-    schema: 'A different Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
+    name: 'Donald Trump Twitter Posts 4',
+    status: 'In Progress',
+    adapter: 'Twitter',
+    ingestionType: 'Data set',
+    creationDate: 'Wed Jul 13, 2016 09:23 PM',
+    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
+    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
   }
 ];
-
-
-// FOR DATA SET SOURCE CARD
-var jobCardData = {
-  sourceName: 'Twitter Dataset 1',
-  schemaName: 'Twitter Schema Version 2.3',
-  creationDate: 'Wed Jul 13, 2016 09:23 PM',
-  thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
-};
-
-
-// FOR DATA SET SOURCE VIEW
-var jobData = [
-  {
-    sourceName: 'Twitter Dataset 1',
-    schemaName: 'Twitter Schema Version 2.3',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
-  },
-  {
-    sourceName: 'Twitter Dataset 2',
-    schemaName: 'Twitter Schema Version 3.3',
-    creationDate: 'Wed Jul 15, 2016 09:23 PM',
-    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
-  },
-  {
-    sourceName: 'Twitter Dataset 3',
-    schemaName: 'Twitter Schema Version 4.3',
-    creationDate: 'Wed Jul 13, 2017 09:23 PM',
-  },
-  {
-    sourceName: 'Twitter Dataset 4',
-    schemaName: 'Twitter Schema Version 5.3',
-    creationDate: 'Wed Jul 13, 2016 10:23 PM',
-  }
-]
 
 
 storiesOf('IngestionJobs', module)
@@ -234,10 +214,10 @@ storiesOf('IngestionJobs', module)
     <IngestionJobTileView jobInfo={jobInfo}/>
   ))
   .add('Grid Card', () => (
-    <IngestionJobGridCard checkedAll={false} sourceName={jobCardData.sourceName} schemaVersion={jobCardData.schemaName} creationDate={jobCardData.creationDate} thumbnail={jobCardData.thumbnail} />
+    <IngestionJobGridCard checkedAll={false} jobName={jobInfo[0].name} status={jobInfo[0].status} creationDate={jobInfo[0].creationDate} thumbnail={jobInfo[0].thumbnail} />
   ))
   .add('Grid View', () => (
-    <IngestionJobGridView jobData={jobData}/>
+    <IngestionJobGridView jobInfo={jobInfo}/>
   ))
   .add('NullState', () => (
     <IngestionJobNullstate />

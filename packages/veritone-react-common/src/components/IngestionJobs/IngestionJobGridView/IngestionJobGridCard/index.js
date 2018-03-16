@@ -20,8 +20,8 @@ import {
 export default class IngestionJobGridCard extends React.Component {
   static propTypes = {
     checkedAll: bool,
-    sourceName: string,
-    schemaVersion: string,
+    jobName: string,
+    status: string,
     creationDate: string,
     thumbnail: string
   };
@@ -44,10 +44,10 @@ export default class IngestionJobGridCard extends React.Component {
     
     return (
       <div className={styles.sdoCard}>
-        <div className={styles.sourceThumbnail}>
+        <div className={styles.jobThumbnail}>
           <img className={styles.imageStyle} src={this.props.thumbnail} alt='' />
         </div>
-        <div className={styles.sourceDetails}>
+        <div className={styles.jobDetails}>
         {/* BELOW IS A HACK FOR GETTING CHECKBOX BACKGROUND TO BE WHITE */}
         <div className={styles.checkboxBackground}></div>
         <Checkbox
@@ -62,8 +62,8 @@ export default class IngestionJobGridCard extends React.Component {
           }}
           label=''
         />
-          <div className={styles.sourceName}>{this.props.sourceName}</div>
-          <div className={styles.schemaVersion}>{this.props.schemaVersion}</div>
+          <div className={styles.jobName}>{this.props.jobName}</div>
+          <div className={styles.schemaVersion}>{this.props.status}</div>
           <div className={styles.creationDate}>{this.props.creationDate}</div>
         </div>
       </div>
