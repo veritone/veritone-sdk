@@ -57,17 +57,63 @@ class SectionTree extends React.Component {
     const currentPath = intersperse(this.props.activePath, 'children');
     const parentPath = intersperse(initial(this.props.activePath), 'children');
 
-    const currentVisibleSection = get(
-      this.props.sections.children, // skip root when navigating
-      currentPath,
-      this.props.sections // root visible by default
-    );
+    let currentVisibleSection =
+      currentPath.length === 0
+        ? this.props.sections // root visible by default
+        : get(
+            this.props.sections.children, // skip root when navigating
+            currentPath
+          );
 
-    const currentVisibleSectionParent = get(
+    let currentVisibleSectionParent = get(
       this.props.sections.children,
       parentPath,
       this.props.sections
     );
+
+    const showingPartialDeepPath = !currentVisibleSection;
+
+    if (showingPartialDeepPath) {
+      // ffixme -- actually why dont i just do this deepest part?
+      // regular ones will match it fine too
+
+      // find the deepest section we can match in the tree by dropping pieces
+      // from the activePath until we find one that works.
+      // this can probably be done more cleanly.
+      const deepestMatchedPath = initial(
+        this.props.activePath.reduce(
+          result => {
+            const tryPath = intersperse(initial(result), 'children');
+            const maybeSection = get(this.props.sections.children, tryPath);
+
+            return maybeSection ? result : initial(result);
+          },
+          [...this.props.activePath]
+        )
+      );
+      const deepestMatchedPathParent = intersperse(
+        initial(deepestMatchedPath),
+        'children'
+      );
+
+      currentVisibleSection = get(
+        this.props.sections.children, // skip root when navigating
+        intersperse(deepestMatchedPath, 'children')
+      );
+
+      currentVisibleSectionParent = get(
+        this.props.sections.children,
+        intersperse(deepestMatchedPathParent, 'children'),
+        this.props.sections
+      );
+    }
+
+    // tree: [a,b,c,d]
+    // path is [a, b, 1, 2]
+    // return node for b
+
+    // if currentVisibleSection is undefined, but NOT root,
+    // move as far into the tree as possible and return the last section
 
     const parentIsRoot = currentVisibleSectionParent === this.props.sections;
     const selectedItemHasChildren = !!currentVisibleSection.children;
@@ -75,17 +121,18 @@ class SectionTree extends React.Component {
 
     return (
       <div className={styles.tabsContainer}>
-        {!rootItemSelected && currentPath.length > 0 && (
-          <SectionTreeTab
-            selectedClasses={this.props.selectedItemClasses}
-            classes={this.props.classes}
-            selected
-            label={currentVisibleSectionParent.label}
-            leftIcon={<ArrowBackIcon />}
-            onClick={this.handleNavigateBack}
-            data-testtarget="back-button"
-          />
-        )}
+        {!rootItemSelected &&
+          this.props.activePath.length > 0 && (
+            <SectionTreeTab
+              selectedClasses={this.props.selectedItemClasses}
+              classes={this.props.classes}
+              selected
+              label={currentVisibleSection.label}
+              leftIcon={<ArrowBackIcon />}
+              onClick={this.handleNavigateBack}
+              data-testtarget="back-button"
+            />
+          )}
 
         {map(
           // render the parent (w/ current section highlighted + its siblings)
@@ -93,32 +140,27 @@ class SectionTree extends React.Component {
           currentVisibleSection.children
             ? currentVisibleSection.children
             : currentVisibleSectionParent.children,
-          (
-            { visible, label, formComponentId, children, icon, iconClassName },
-            path
-          ) =>
-            visible !== false && (
-              <SectionTreeTab
-                selectedClasses={this.props.selectedItemClasses}
-                classes={this.props.classes}
-                selected={label === currentVisibleSection.label}
-                label={label}
-                leftIcon={
-                  iconClassName ? <span className={iconClassName} /> : icon
-                }
-                rightIcon={
-                  children &&
-                  Object.keys(children).length && <ChevronRightIcon />
-                }
-                key={`${label}-${path}`}
-                id={path}
-                onClick={
-                  currentVisibleSection.children
-                    ? this.handleNavigateForward
-                    : this.handleNavigateSibling
-                }
-              />
-            )
+          ({ label, formComponentId, children, icon, iconClassName }, path) => (
+            <SectionTreeTab
+              selectedClasses={this.props.selectedItemClasses}
+              classes={this.props.classes}
+              selected={label === currentVisibleSection.label}
+              label={label}
+              leftIcon={
+                iconClassName ? <span className={iconClassName} /> : icon
+              }
+              rightIcon={
+                children && Object.keys(children).length && <ChevronRightIcon />
+              }
+              key={`${label}-${path}`}
+              id={path}
+              onClick={
+                currentVisibleSection.children
+                  ? this.handleNavigateForward
+                  : this.handleNavigateSibling
+              }
+            />
+          )
         )}
       </div>
     );

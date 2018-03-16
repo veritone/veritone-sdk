@@ -13,7 +13,6 @@ export default class NavigationSideBarContainer extends React.Component {
     sections: sectionsShape.isRequired,
     classes: objectOf(any),
     selectedItemClasses: objectOf(any),
-    // provided by wrapper:
     activePath: arrayOf(string).isRequired,
     onNavigate: func.isRequired
   };
