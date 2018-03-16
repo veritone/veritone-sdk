@@ -23,9 +23,9 @@ import styles from './styles.scss';
 
 export default class IngestionJobFullScreen extends React.Component {
   static propTypes = {
-    data: arrayOf(any),
-    sdoSchemaInfo: objectOf(any),
-    jobInfo: objectOf(any)
+    data: arrayOf(any).isRequired,
+    sdoSchemaInfo: objectOf(any).isRequired,
+    jobInfo: objectOf(any).isRequired
   };
 
   static defaultProps = {
@@ -80,7 +80,7 @@ export default class IngestionJobFullScreen extends React.Component {
         <div className={styles.tableCard}>
           <div className={styles.schemaTitle}>
             <div className={styles.schemaTitleGroup}>
-              <img src={this.props.jobInfo.thumbnail} alt='' className={styles.imageStyle} />
+              <img src={this.props.jobInfo.thumbnail} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' className={styles.imageStyle} />
               <div className={styles.schemaName}>
                 {this.props.jobInfo.jobName}
               </div>

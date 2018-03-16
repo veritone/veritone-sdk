@@ -31,10 +31,10 @@ import styles from './styles.scss';
 
 export default class SDOMediaDetailsCard extends React.Component {
   static propTypes = {
-    data: arrayOf(any),
-    sdoSourceInfo: objectOf(any),
-    sdoSchemaInfo: objectOf(any),
-    sdoEngineInfo: objectOf(any),
+    data: arrayOf(any).isRequired,
+    sdoSourceInfo: objectOf(any).isRequired,
+    sdoSchemaInfo: objectOf(any).isRequired,
+    sdoEngineInfo: objectOf(any).isRequired,
     callback: func
   };
 

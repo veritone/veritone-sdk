@@ -30,8 +30,8 @@ import styles from './styles.scss';
 
 export default class SDOCard extends React.Component {
   static propTypes = {
-    data: arrayOf(any),
-    sdoSourceInfo: objectOf(any),
+    data: arrayOf(any).isRequired,
+    sdoSourceInfo: objectOf(any).isRequired,
     callback: func
   };
 

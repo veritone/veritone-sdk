@@ -20,7 +20,7 @@ import styles from './styles.scss';
 
 export default class IngestionJobTileView extends React.Component {
   static propTypes = {
-    jobInfo: arrayOf(objectOf(any))
+    jobInfo: arrayOf(objectOf(any)).isRequired
   };
 
   static defaultProps = {};

@@ -23,8 +23,8 @@ const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
 
 export default class SDOTile extends React.Component {
   static propTypes = {
-    columns: objectOf(any),
-    checkAll: bool
+    columns: objectOf(any).isRequired,
+    checkAll: bool.isRequired
   };
 
   static defaultProps = {
