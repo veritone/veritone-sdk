@@ -9224,6 +9224,10 @@ react-color@^2.11.4:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
+react-contenteditable@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/react-contenteditable/-/react-contenteditable-2.0.7.tgz#a8d1c1d7b9a393f336c5ecdb74e5e336d786676b"
+
 react-datetime@^2.11.1:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.14.0.tgz#c7859c5b765275d7980f1cca27c03a727ff9ccef"

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { arrayOf , bool, number, shape, string } from 'prop-types';
+import { arrayOf , bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
+import Radio, { RadioGroup } from 'material-ui/Radio';
+import { FormControlLabel } from 'material-ui/Form';
 
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import TranscriptContent from './TranscriptContent';
@@ -22,8 +24,18 @@ class TranscriptEngineOutput extends Component {
       root: string,
       header: string
     }),
+    onSnippetClicked: func,
     tdoStartTime: number,
-    tdoEndTime: number
+    tdoEndTime: number,
+    editMode: string,
+    selectedEngineId: string,
+    engines: arrayOf(shape({
+      sourceEngineId: string,
+      sourceEngineName: string
+    })),
+    onEngineChange: func,
+    onSnippetEdit: func,
+    onEditModeChange: func
   };
 
   static defaultProps = {
@@ -33,22 +45,63 @@ class TranscriptEngineOutput extends Component {
   }
 
   render() {
-    let { classes, editModeEnabled, assets, tdoStartTime, tdoEndTime } = this.props;
+    let { 
+      classes, 
+      editModeEnabled, 
+      editMode, 
+      assets,
+      onSnippetClicked,
+      selectedEngineId,
+      engines,
+      onEngineChange,
+      onSnippetEdit,
+      onEditModeChange
+    } = this.props;
     return (
       <div className={classNames(styles.transcriptOutputView, classes.root)}>
         <div className={classNames(styles.transcriptViewHeader, classes.header)}>
-          <div className={styles.headerTitle}>Transcription</div>
+          { editModeEnabled ?
+              <RadioGroup
+                onChange={onEditModeChange}
+                aria-label="edit_mode"
+                value={editMode}
+                name="editMode"
+              >
+                <FormControlLabel 
+                  className={styles.editModeFormControlLabel} 
+                  value="snippet" 
+                  control={<Radio color="primary" />} 
+                  label="Snippet Edit" 
+                />
+                <FormControlLabel 
+                  className={styles.editModeFormControlLabel} 
+                  value="bulk" 
+                  control={<Radio color="primary" />} 
+                  label="Bulk Edit" 
+                />
+              </RadioGroup>:
+              <div className={styles.headerTitle}>Transcription</div>
+          }
           <div className={styles.transcriptActions}>
-            <Select value="temporal">
-              <MenuItem value="temporal">Temporal</MenuItem>
+            <Select value={selectedEngineId || ""} onChange={onEngineChange}>
+              { engines.map((e, i) => {
+                  return <MenuItem 
+                    key={i} 
+                    value={e.sourceEngineId}
+                  >
+                    {e.sourceEngineName}
+                  </MenuItem>
+                })
+              }
             </Select>
           </div>
         </div>
         <TranscriptContent 
-          assets={assets} 
+          assets={assets}
+          onSnippetClicked={onSnippetClicked}
+          onSnippetEdit={onSnippetEdit}
           editModeEnabled={editModeEnabled}
-          tdoStartTime={tdoStartTime}
-          tdoEndTime={tdoEndTime}
+          editMode={editMode}
         />
       </div>
     );

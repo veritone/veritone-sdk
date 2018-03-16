@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { arrayOf, object, bool, number } from 'prop-types';
+import { arrayOf, object, bool, number, func, string } from 'prop-types';
 
-import TranscriptChunk from '../TranscriptChunk';
+import TranscriptTask from '../TranscriptTask';
 
 import styles from './styles.scss';
 
@@ -11,8 +11,11 @@ class TranscriptContent extends Component {
   static propTypes = {
     assets: arrayOf(object),
     editModeEnabled: bool,
+    editMode: string,
+    onSnippetClicked: func,
     tdoStartTime: number,
-    tdoEndTime: number
+    tdoEndTime: number,
+    onSnippetEdit: func
   };
 
   componentDidMount() {
@@ -39,29 +42,38 @@ class TranscriptContent extends Component {
     this.transcriptContent = element
   }
 
-  handleSnippetClicked = (snippet, evt) => {
-    console.log(snippet);
+  getTranscriptChunks = () => {
+    return this.props.assets.map((chunk, i) => {
+      return (
+        <TranscriptTask 
+          key={i} 
+          chunk={chunk}
+          editModeEnabled={this.props.editModeEnabled}
+          onSnippetClick={this.props.onSnippetClicked}
+          onSnippetEdit={this.props.onSnippetEdit}
+        />
+      )
+    });
   }
 
   render() {
-    let { assets, editModeEnabled, tdoStartTime, tdoEndTime } = this.props;
-    let dataChunks = assets.map((asset, index) => {
-      return (
-        <TranscriptChunk 
-          key={index} 
-          startTime={asset.startTime} 
-          endTime={asset.endTime} 
-          data={asset.data} 
-          editModeEnabled={editModeEnabled}
-          tdoStartTime={tdoStartTime}
-          tdoEndTime={tdoEndTime}
-          onSnippetClick={this.handleSnippetClicked}
-        />
-      );
-    })
+    let { editMode, assets, editModeEnabled } = this.props;
+
+    let bulkText = this.props.assets.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.series.reduce((a, c) => {
+        return a + c.text + ' ';
+      }, '')
+    }, '');
+    
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>
-        { dataChunks }
+        { editMode === 'bulk' && editModeEnabled ?
+            <textarea 
+              className={styles.bulkEditTextArea} 
+              defaultValue={bulkText}
+            /> :
+            this.getTranscriptChunks()
+        }
       </div>
     );
   }
