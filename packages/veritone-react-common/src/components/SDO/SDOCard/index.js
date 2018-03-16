@@ -81,7 +81,7 @@ export default class SDOCard extends React.Component {
               {this.props.sdoSourceInfo.sourceName} (Source Name)
             </div>
           </div>
-          <div className={styles.sourceSelectGroup}>
+          <div className={styles.sourceGroup}>
             <Select 
               className={styles.sourceSelect}
               value={this.state.sourceSelection}
@@ -89,10 +89,7 @@ export default class SDOCard extends React.Component {
             >
               {sourceMenuItems}
             </Select>
-            <div className={styles.separator}/>
-            <IconButton className={styles.searchIcon} aria-label='search'>
-              <Icon className={'icon-search'}></Icon>
-            </IconButton>
+            <div className={styles.separator} />
             <IconButton className={styles.exportIcon} aria-label='export'>
               <Icon className={'icon-file_download'}></Icon>
             </IconButton>
@@ -100,14 +97,6 @@ export default class SDOCard extends React.Component {
         </div>
         <div className={styles.sdoTable}>
           <div className={styles.sdoTableTitle}>
-            {/* <Checkbox
-              input={{
-                onChange: this.handleCheckboxChange,
-                value: this.state.checkedAll
-              }}
-              className={styles.checkbox}
-              label=''
-            /> */}
             {columnTitles}
           </div>
           <div className={styles.tableRows}>

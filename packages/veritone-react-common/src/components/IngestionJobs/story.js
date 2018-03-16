@@ -214,7 +214,7 @@ var jobData = [
 ]
 
 
-storiesOf('DataSets', module)
+storiesOf('IngestionJobs', module)
   .add('FullScreen', () => (
     <IngestionJobFullScreen data={data} sdoSourceInfo={sdoSourceInfo} />
   ))

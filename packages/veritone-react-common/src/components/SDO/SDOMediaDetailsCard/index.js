@@ -25,6 +25,7 @@ import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
 import SDOTile from 'components/SDO/SDOTile';
+import SDOCard from 'components/SDO/SDOCard';
 
 import styles from './styles.scss';
 
@@ -123,44 +124,7 @@ export default class SDOMediaDetailsCard extends React.Component {
             </IconButton>
           </div>
         </div>
-        <div className={styles.sdoCard}>
-          <div className={styles.sourceTitle}>
-            <div className={styles.sourceTitleGroup}>
-              <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
-              <div className={styles.sourceName}>
-                {this.props.sdoSourceInfo.sourceName} (Source Name)
-              </div>
-            </div>
-            <div className={styles.sourceSelectGroup}>
-              <Select 
-                className={styles.sourceSelect}
-                value={this.state.sourceSelection}
-                onChange={this.handleSourceChange}
-              >
-                {sourceMenuItems}
-              </Select>
-              <IconButton className={styles.menuIcon} onClick={this.selectMenu} aria-label='menu'>
-                <Icon className={'icon-more_vert'}></Icon>
-              </IconButton>
-            </div>
-          </div>
-          <div className={styles.sdoTable}>
-            <div className={styles.sdoTableTitle}>
-              {/* <Checkbox
-                input={{
-                  onChange: this.handleCheckboxChange,
-                  value: this.state.checkedAll
-                }}
-                className={styles.checkbox}
-                label=''
-              /> */}
-              {columnTitles}
-            </div>
-            <div className={styles.tableRows}>
-              {SDOTiles}
-            </div>
-          </div>
-        </div>
+        <SDOCard data={this.props.data} sdoSourceInfo={this.props.sdoSourceInfo} />
       </div>
     );
   };

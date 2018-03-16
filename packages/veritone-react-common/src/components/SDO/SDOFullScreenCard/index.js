@@ -25,6 +25,7 @@ import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
 import SDOTile from 'components/SDO/SDOTile';
+import SDOCard from 'components/SDO/SDOCard';
 
 import styles from './styles.scss';
 
@@ -103,7 +104,15 @@ export default class SDOFullScreenCard extends React.Component {
             </IconButton>
             <div className={styles.titleText}>Full Screen Mode: Correlated Data</div>
           </div>
-          <div className={styles.headerDescription}>Use the full screen below to view your data in a larger format.</div>
+          <div className={styles.headerDescriptionGroup}>
+            <div className={styles.headerDescription}>Use the full screen below to view your data in a larger format.</div>
+            <div className={styles.runProcess}> {/* TODO: This should probably be a button, but don't know how to custom make the button*/}
+              <IconButton className={styles.processIcon} aria-label='process'>
+                <Icon className={'icon-run-process'}></Icon>
+              </IconButton>
+              <div className={styles.processText}>RUN PROCESS</div>
+            </div>
+          </div>
         </div>
         <div className={styles.schemaSection}>
           <div className={styles.correlatedText}>Correlated Data</div>
@@ -130,39 +139,7 @@ export default class SDOFullScreenCard extends React.Component {
             </IconButton> */}
           </div>
         </div>
-        <div className={styles.sdoCard}>
-          <div className={styles.sourceTitle}>
-            <div className={styles.sourceTitleGroup}>
-              <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
-              <div className={styles.sourceName}>
-                {this.props.sdoSourceInfo.sourceName} (Source Name)
-              </div>
-            </div>
-            <Select 
-              className={styles.sourceSelect}
-              value={this.state.sourceSelection}
-              onChange={this.handleSourceChange}
-            >
-              {sourceMenuItems}
-            </Select>
-          </div>
-          <div className={styles.sdoTable}>
-            <div className={styles.sdoTableTitle}>
-              {/* <Checkbox
-                input={{
-                  onChange: this.handleCheckboxChange,
-                  value: this.state.checkedAll
-                }}
-                className={styles.checkbox}
-                label=''
-              /> */}
-              {columnTitles}
-            </div>
-            <div className={styles.tableRows}>
-              {SDOTiles}
-            </div>
-          </div>
-        </div>
+        <SDOCard data={this.props.data} sdoSourceInfo={this.props.sdoSourceInfo} />
       </div>
     );
   };

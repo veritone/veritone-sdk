@@ -31,14 +31,15 @@
         padding-left: 20px;
       }
     }
-    .sourceSelectGroup {
+    .sourceGroup {
       display: flex;
       flex-direction: row;
       align-items: center;
+
       .sourceSelect {
         margin-right: 20px;
       }
-  
+
       .separator {
         align-self: center;
         border-right: 2px solid #e0e0e0;
@@ -47,14 +48,39 @@
         margin-bottom: -2px;
       }
 
-      .searchIcon {
-        margin-left: 20px;
-      }
-
       .exportIcon {
-        margin-right: 2vh;
+        font-size: 22px;
+        height: 22px;
+        width: 22px;
+        align-self: center;
+        margin-left: 20px;
+        margin-right: 20px;
       }
     }
+    // .sourceSelectGroup {
+    //   display: flex;
+    //   flex-direction: row;
+    //   align-items: center;
+    //   .sourceSelect {
+    //     margin-right: 20px;
+    //   }
+  
+    //   .separator {
+    //     align-self: center;
+    //     border-right: 2px solid #e0e0e0;
+    //     height: 27px;
+    //     margin-left: -2px;
+    //     margin-bottom: -2px;
+    //   }
+
+    //   .searchIcon {
+    //     margin-left: 20px;
+    //   }
+
+    //   .exportIcon {
+    //     margin-right: 2vh;
+    //   }
+    // }
     
   }
   
