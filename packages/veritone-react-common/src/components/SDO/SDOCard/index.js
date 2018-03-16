@@ -30,10 +30,8 @@ import styles from './styles.scss';
 
 export default class SDOCard extends React.Component {
   static propTypes = {
-    numberOfFields: number,
     data: arrayOf(any),
     sdoSourceInfo: objectOf(any),
-    sdoSchemaInfo: objectOf(any),
     callback: func
   };
 
@@ -43,9 +41,7 @@ export default class SDOCard extends React.Component {
 
   state = {
     checkedAll: false,
-    // flexValue: 1 / (this.props.numberOfFields + 1),
-    sourceSelection: this.props.sdoSourceInfo.sourceSelection || '',
-    schemaSelection: this.props.sdoSchemaInfo.schemaSelection || ''
+    sourceSelection: this.props.sdoSourceInfo.sourceSelection || ''
   };
 
   setupCallback = (data) => {
@@ -59,12 +55,6 @@ export default class SDOCard extends React.Component {
     });
   };
 
-  handleSchemaChange = (event) => {
-    this.setState({
-      schemaSelection: event.target.value
-    });
-  };
-
 
   handleCheckboxChange = () => {
     this.setState({
@@ -73,9 +63,6 @@ export default class SDOCard extends React.Component {
   };
 
   render() {
-    const schemaMenuItems = this.props.sdoSchemaInfo.schemaSelections.map((schema, index) => {
-      return <MenuItem value={schema} key={index}>{schema} (Schema Name)</MenuItem>
-    });
     const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
       return <span className={styles.sdoBasicColumn} key={index}>{title}</span>
     });
@@ -83,44 +70,18 @@ export default class SDOCard extends React.Component {
       return <MenuItem value={source} key={index}>{source} (Source Name)</MenuItem>
     });
     const SDOTiles = this.props.data.map((SDO, index) => {
-      return <SDOTile checkAll={this.state.checkedAll} numberOfFields={this.props.numberOfFields} columns={SDO} key={index} />
+      return <SDOTile checkAll={this.state.checkedAll} columns={SDO} key={index} />
     });
     return (
-      <div className={styles.fullPage}>
-        <div className={styles.fullScreenHeader}>
-          <div className={styles.fullScreenTitle}>
-            <IconButton className={styles.arrowIcon} aria-label='help'>
-              <Icon className={'icon-arrow-back'}></Icon>
-            </IconButton>
-            <div className={styles.titleText}>Full Screen Mode: Correlated Data</div>
-          </div>
-          <div className={styles.headerDescription}>Use the full screen below to view your data in a larger format.</div>
-        </div>
-        <div style={{height: '72px'}}>
-          <div className={styles.schemaSelector}>
-            <Select 
-              className={styles.schemaSelect}
-              value={this.state.schemaSelection}
-              onChange={this.handleSchemaChange}
-            >
-              {schemaMenuItems}
-            </Select>
-            <IconButton className={styles.searchIcon} aria-label='search'>
-              <Icon className={'icon-search'}></Icon>
-            </IconButton>
-            <IconButton className={styles.menuIcon} aria-label='menu'>
-              <Icon className={'icon-more_vert'}></Icon>
-            </IconButton>
-          </div>
-        </div>
-        <div className={styles.sdoCard}>
-          <div className={styles.sourceTitle}>
-            <div className={styles.sourceTitleGroup}>
-              <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
-              <div className={styles.sourceName}>
-                {this.props.sdoSourceInfo.sourceName} (Source Name)
-              </div>
+      <div className={styles.sdoCard}>
+        <div className={styles.sourceTitle}>
+          <div className={styles.sourceTitleGroup}>
+            <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
+            <div className={styles.sourceName}>
+              {this.props.sdoSourceInfo.sourceName} (Source Name)
             </div>
+          </div>
+          <div className={styles.sourceSelectGroup}>
             <Select 
               className={styles.sourceSelect}
               value={this.state.sourceSelection}
@@ -128,22 +89,29 @@ export default class SDOCard extends React.Component {
             >
               {sourceMenuItems}
             </Select>
+            <div className={styles.separator}/>
+            <IconButton className={styles.searchIcon} aria-label='search'>
+              <Icon className={'icon-search'}></Icon>
+            </IconButton>
+            <IconButton className={styles.exportIcon} aria-label='export'>
+              <Icon className={'icon-file_download'}></Icon>
+            </IconButton>
           </div>
-          <div className={styles.sdoTable}>
-            <div className={styles.sdoTableTitle}>
-              <Checkbox
-                input={{
-                  onChange: this.handleCheckboxChange,
-                  value: this.state.checkedAll
-                }}
-                className={styles.checkbox}
-                label=''
-              />
-              {columnTitles}
-            </div>
-            <div className={styles.tableRows}>
-              {SDOTiles}
-            </div>
+        </div>
+        <div className={styles.sdoTable}>
+          <div className={styles.sdoTableTitle}>
+            {/* <Checkbox
+              input={{
+                onChange: this.handleCheckboxChange,
+                value: this.state.checkedAll
+              }}
+              className={styles.checkbox}
+              label=''
+            /> */}
+            {columnTitles}
+          </div>
+          <div className={styles.tableRows}>
+            {SDOTiles}
           </div>
         </div>
       </div>

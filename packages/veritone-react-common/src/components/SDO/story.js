@@ -4,6 +4,8 @@ import { action } from '@storybook/addon-actions';
 
 import SDOCard from './SDOCard';
 import SDOTile from './SDOTile';
+import SDOFullScreenCard from './SDOFullScreenCard';
+import SDOMediaDetailsCard from './SDOMediaDetailsCard';
 
 
 
@@ -153,6 +155,11 @@ var sdoSchemaInfo = {
   schemaSelections: ['Tweet', 'Twat', 'Twot']
 };
 
+var sdoEngineInfo = {
+  engineSelection: 'Engine Name 1',
+  engineSelections: ['Engine Name 1', 'Engine Name 2']
+};
+
 
 
 // FOR SDO TILE
@@ -173,10 +180,15 @@ var columns = {
 var numberOfFields = 8;
 
 storiesOf('SDO', module)
-  .add('Card', () => (
-    <SDOCard numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} sdoSchemaInfo={sdoSchemaInfo} />
+  .add('FullScreenCard', () => (
+    <SDOFullScreenCard numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} sdoSchemaInfo={sdoSchemaInfo} sdoEngineInfo={sdoEngineInfo} />
   ))
-
+  .add('MediaDetailsCard', () => (
+    <SDOMediaDetailsCard numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} sdoSchemaInfo={sdoSchemaInfo} sdoEngineInfo={sdoEngineInfo} />
+  ))
+  .add('Card', () => (
+    <SDOCard data={data} sdoSourceInfo={sdoSourceInfo} />
+  ))
   .add('Tile', () => (
     <SDOTile checkAll={checkAll} numberOfFields={numberOfFields} columns={columns} />
   ))

@@ -24,8 +24,7 @@ const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
 export default class SDOTile extends React.Component {
   static propTypes = {
     columns: objectOf(any),
-    checkAll: bool,
-    numberOfFields: number
+    checkAll: bool
   };
 
   static defaultProps = {
@@ -33,7 +32,6 @@ export default class SDOTile extends React.Component {
   };
 
   state = {
-    // flexValue: 1 / (this.props.numberOfFields + 1), //add one for the checkbox
     checked: this.props.checkAll || false
   };
 
@@ -50,23 +48,18 @@ export default class SDOTile extends React.Component {
 
   render() {
     const columnSections = Object.values(this.props.columns).map((column, index) => {
-      if (column.indexOf('image') !== -1) { //TODO: this won't always work, need a way to know if a field is an image
-        // change tag for images
-        return <div className={styles.sdoImageWrapper} key={index}><img className={styles.sdoImage} src={column} key={index}></img></div>
-      } else {
-        return <span className={styles.sdoBasicColumn} key={index}>{column}</span>
-      }
+      return <span className={styles.sdoBasicColumn} key={index}>{column}</span>
     });
     return (
       <div className={styles.sdoTile}>
-        <Checkbox
+        {/* <Checkbox
           input={{
             onChange: this.handleCheckboxChange,
             value: this.state.checked
           }}
           className={styles.checkbox}
           label=''
-        />
+        /> */}
         {columnSections}
         {/* <ResponsiveEllipsis
           className={styles.sdoTextColumn} 
