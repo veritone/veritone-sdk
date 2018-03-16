@@ -14,7 +14,7 @@ import IconButton from 'material-ui/IconButton';
 
 import styles from './styles.scss';
 
-export default class DataSetRow extends React.Component {
+export default class JobRow extends React.Component {
   static propTypes = {
     checkAll: bool,
     rowInfo: objectOf(any)

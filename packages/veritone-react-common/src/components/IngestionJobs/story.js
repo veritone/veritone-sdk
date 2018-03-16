@@ -2,11 +2,11 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import DataSetFullScreen from './DataSetFullScreen';
-import DataSetViewer from './DataSetViewer';
-import SDOSourceCard from './DataSetSourceViewer/DataSetSourceCard';
-import DataSetSourceView from './DataSetSourceViewer';
-import DataSetNullState from './DataSetNullState';
+import IngestionJobFullScreen from './IngestionJobFullScreen';
+import IngestionJobTileView from './IngestionJobTileView';
+import IngestionJobGridCard from './IngestionJobGridView/IngestionJobGridCard';
+import IngestionJobGridView from './IngestionJobGridView';
+import IngestionJobNullstate from './IngestionJobNullstate';
 
 
 var numberOfFields = 8;
@@ -179,7 +179,7 @@ var dataSetInfo = [
 
 
 // FOR DATA SET SOURCE CARD
-var sourceCardData = {
+var jobCardData = {
   sourceName: 'Twitter Dataset 1',
   schemaName: 'Twitter Schema Version 2.3',
   creationDate: 'Wed Jul 13, 2016 09:23 PM',
@@ -188,7 +188,7 @@ var sourceCardData = {
 
 
 // FOR DATA SET SOURCE VIEW
-var sourceData = [
+var jobData = [
   {
     sourceName: 'Twitter Dataset 1',
     schemaName: 'Twitter Schema Version 2.3',
@@ -205,29 +205,28 @@ var sourceData = [
     sourceName: 'Twitter Dataset 3',
     schemaName: 'Twitter Schema Version 4.3',
     creationDate: 'Wed Jul 13, 2017 09:23 PM',
-    thumbnail: 'none'
   },
   {
     sourceName: 'Twitter Dataset 4',
     schemaName: 'Twitter Schema Version 5.3',
-    creationDate: 'Wed Jul 13, 2016 10:23 PM'
+    creationDate: 'Wed Jul 13, 2016 10:23 PM',
   }
 ]
 
 
 storiesOf('DataSets', module)
   .add('FullScreen', () => (
-    <DataSetFullScreen numberOfFields={numberOfFields} data={data} sdoSourceInfo={sdoSourceInfo} />
+    <IngestionJobFullScreen data={data} sdoSourceInfo={sdoSourceInfo} />
   ))
-  .add('Viewer', () => (
-    <DataSetViewer dataSetInfo={dataSetInfo}/>
+  .add('Tile View', () => (
+    <IngestionJobTileView dataSetInfo={dataSetInfo}/>
   ))
-  .add('SDOCard', () => (
-    <SDOSourceCard checkedAll={false} sourceName={sourceCardData.sourceName} schemaVersion={sourceCardData.schemaName} creationDate={sourceCardData.creationDate} thumbnail={sourceCardData.thumbnail} />
+  .add('Grid Card', () => (
+    <IngestionJobGridCard checkedAll={false} sourceName={jobCardData.sourceName} schemaVersion={jobCardData.schemaName} creationDate={jobCardData.creationDate} thumbnail={jobCardData.thumbnail} />
   ))
-  .add('SDOSourceView', () => (
-    <DataSetSourceView sourceData={sourceData}/>
+  .add('Grid View', () => (
+    <IngestionJobGridView jobData={jobData}/>
   ))
   .add('NullState', () => (
-    <DataSetNullState />
+    <IngestionJobNullstate />
   ))

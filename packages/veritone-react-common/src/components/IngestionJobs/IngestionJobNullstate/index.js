@@ -16,7 +16,7 @@ import Icon from 'material-ui/Icon';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
-export default class DataSetNullState extends React.Component {
+export default class IngestionJobNullstate extends React.Component {
   static propTypes = {
     
   };
@@ -31,11 +31,11 @@ export default class DataSetNullState extends React.Component {
     return (
       <div className={styles.nullStateView}>
         <Icon className={'icon-translation'} style={{fontSize: '100px'}}></Icon> {/* USE THIS ICON FOR NOW SINCE IT LOOKS MOST SIMILAR TO DATASETS ICON  */}
-        <div className={styles.titleText}>No Data Sets</div>
+        <div className={styles.titleText}>No Ingestion Jobs</div>
         <div className={styles.greyText}>If you need help getting started, take a look at the</div>
         <div className={styles.linkText}>How to Ingest a Data Set</div>
         <Button className={styles.newDataSetButton} raised color='primary' component='span'>
-          NEW DATA SET
+          Ingest Data
         </Button>
       </div>
     );

@@ -14,11 +14,11 @@ import {
 } from 'components/formComponents';
 import { MenuItem } from 'material-ui/Menu';
 
-import DataSetRow from './DataSetRow';
+import JobRow from './JobRow';
 
 import styles from './styles.scss';
 
-export default class DataSetViewer extends React.Component {
+export default class IngestionJobTileView extends React.Component {
   static propTypes = {
     dataSetInfo: arrayOf(objectOf(any))
   };
@@ -38,8 +38,8 @@ export default class DataSetViewer extends React.Component {
   };
 
   render() {
-    const dataSetRows = this.props.dataSetInfo.map((row, index) => {
-      return <DataSetRow checkAll={this.state.checkedAll} rowInfo={row} key={index} />
+    const jobRows = this.props.dataSetInfo.map((row, index) => {
+      return <JobRow checkAll={this.state.checkedAll} rowInfo={row} key={index} />
     });
     return (
       <div>
@@ -59,7 +59,7 @@ export default class DataSetViewer extends React.Component {
           </div>
           <div style={{width: '55px'}}></div>
         </div>
-        {dataSetRows}
+        {jobRows}
       </div>
     );
   };

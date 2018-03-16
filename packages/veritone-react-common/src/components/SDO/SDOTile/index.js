@@ -24,8 +24,7 @@ const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
 export default class SDOTile extends React.Component {
   static propTypes = {
     columns: objectOf(any),
-    checkAll: bool,
-    numberOfFields: number
+    checkAll: bool
   };
 
   static defaultProps = {
@@ -33,7 +32,6 @@ export default class SDOTile extends React.Component {
   };
 
   state = {
-    // flexValue: 1 / (this.props.numberOfFields + 1), //add one for the checkbox
     checked: this.props.checkAll || false
   };
 
@@ -54,14 +52,14 @@ export default class SDOTile extends React.Component {
     });
     return (
       <div className={styles.sdoTile}>
-        <Checkbox
+        {/* <Checkbox
           input={{
             onChange: this.handleCheckboxChange,
             value: this.state.checked
           }}
           className={styles.checkbox}
           label=''
-        />
+        /> */}
         {columnSections}
         {/* <ResponsiveEllipsis
           className={styles.sdoTextColumn} 

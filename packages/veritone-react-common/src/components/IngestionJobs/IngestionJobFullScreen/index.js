@@ -21,7 +21,7 @@ import SDOTile from 'components/SDO/SDOTile';
 
 import styles from './styles.scss';
 
-export default class DataSetFullScreen extends React.Component {
+export default class IngestionJobFullScreen extends React.Component {
   static propTypes = {
     numberOfFields: number,
     data: arrayOf(any),
@@ -33,10 +33,7 @@ export default class DataSetFullScreen extends React.Component {
   };
 
   state = {
-    checkedAll: false,
-    flexValue: 1 / (this.props.numberOfFields + 1),
-    // attributeCount: this.props.data[0].attributes.length, // should be dynamic, set for testing
-    
+    checkedAll: false,    
   };
 
   handleSelectChange = (event) => {
@@ -67,11 +64,11 @@ export default class DataSetFullScreen extends React.Component {
             <IconButton className={styles.helpIcon} aria-label='help'>
               <Icon className={'icon-help2'}></Icon>
             </IconButton>
-            <IconButton className={styles.menuIcon} aria-label='help'>
+            {/* <IconButton className={styles.menuIcon} aria-label='menu'>
               <Icon className={'icon-more_vert'}></Icon>
-            </IconButton>
+            </IconButton> */}
             <span className={styles.separator}></span>
-            <IconButton className={styles.exitIcon} aria-label='help'>
+            <IconButton className={styles.exitIcon} aria-label='exit'>
               <Icon className={'icon-close-exit'}></Icon>
             </IconButton>
           </div>
@@ -86,24 +83,7 @@ export default class DataSetFullScreen extends React.Component {
             </div>
           </div>
           <div className={styles.sdoTableTitle}>
-            <Checkbox
-              input={{
-                onChange: this.handleCheckboxChange,
-                value: this.state.checkedAll
-              }}
-              className={styles.checkbox}
-              label=''
-            />
             {columnTitles}
-            {/* <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>created_at</span>
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>name</span>
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>time_zone</span>
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>text</span>
-
-            <span className={styles.sdoBasicColumn} style={{flex: this.state.flexValue}}>profile_image</span> */}
-            {/* <Attributes attributes={this.state.attributeCount} flexValue={this.state.flexValue}/> */}
-
-            
           </div>
           {SDOTiles}
         </div>

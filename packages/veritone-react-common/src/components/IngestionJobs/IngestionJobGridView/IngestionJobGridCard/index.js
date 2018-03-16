@@ -17,7 +17,7 @@ import {
 } from 'components/formComponents';
 
 
-export default class SDOSourceCard extends React.Component {
+export default class IngestionJobGridCard extends React.Component {
   static propTypes = {
     checkedAll: bool,
     sourceName: string,
