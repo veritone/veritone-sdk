@@ -75,7 +75,7 @@ storiesOf('NavigationSideBar', module).add('Base', () => {
 
 class StatefulSideBar extends React.Component {
   state = {
-    activePath: ['engines', 'documentation', '123', 'tasks']
+    activePath: []
   };
 
   handleNavigate = newPath => {

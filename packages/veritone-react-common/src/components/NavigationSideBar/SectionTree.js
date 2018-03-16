@@ -42,78 +42,55 @@ class SectionTree extends React.Component {
   };
 
   handleNavigateForward = path => {
-    this.props.onNavigate([...this.props.activePath, path]);
+    this.props.onNavigate([...this.getNavigationRelativePath(), path]);
   };
 
   handleNavigateBack = () => {
-    this.props.onNavigate(initial(this.props.activePath));
+    this.props.onNavigate(initial(this.getNavigationRelativePath()));
   };
 
   handleNavigateSibling = path => {
-    this.props.onNavigate([...initial(this.props.activePath), path]);
+    this.props.onNavigate([...initial(this.getNavigationRelativePath()), path]);
+  };
+
+  getNavigationRelativePath = () => {
+    const deepestMatchingPath = this.getDeepestMatchedPath();
+    const showingPartialPath = deepestMatchingPath !== this.props.activePath;
+    return showingPartialPath ? deepestMatchingPath : this.props.activePath;
+  };
+
+  getDeepestMatchedPath = () => {
+    // find the deepest section we can match in the tree by dropping pieces
+    // from the activePath until we find one that works.
+    // this can probably be done more cleanly.
+    return this.props.activePath.reduce(
+      result => {
+        const tryPath = intersperse(result, 'children');
+        const maybeSection = get(this.props.sections.children, tryPath);
+
+        return maybeSection ? result : initial(result);
+      },
+      [...this.props.activePath]
+    );
   };
 
   render() {
-    const currentPath = intersperse(this.props.activePath, 'children');
-    const parentPath = intersperse(initial(this.props.activePath), 'children');
+    const deepestMatchedPath = this.getDeepestMatchedPath();
+    const deepestMatchedPathParent = initial(deepestMatchedPath);
 
-    let currentVisibleSection =
-      currentPath.length === 0
+    const currentVisibleSection =
+      this.props.activePath.length === 0
         ? this.props.sections // root visible by default
         : get(
             this.props.sections.children, // skip root when navigating
-            currentPath
+            intersperse(deepestMatchedPath, 'children')
           );
 
-    let currentVisibleSectionParent = get(
+    const currentVisibleSectionParent = get(
       this.props.sections.children,
-      parentPath,
+      intersperse(deepestMatchedPathParent, 'children'),
       this.props.sections
     );
-
-    const showingPartialDeepPath = !currentVisibleSection;
-
-    if (showingPartialDeepPath) {
-      // ffixme -- actually why dont i just do this deepest part?
-      // regular ones will match it fine too
-
-      // find the deepest section we can match in the tree by dropping pieces
-      // from the activePath until we find one that works.
-      // this can probably be done more cleanly.
-      const deepestMatchedPath = initial(
-        this.props.activePath.reduce(
-          result => {
-            const tryPath = intersperse(initial(result), 'children');
-            const maybeSection = get(this.props.sections.children, tryPath);
-
-            return maybeSection ? result : initial(result);
-          },
-          [...this.props.activePath]
-        )
-      );
-      const deepestMatchedPathParent = intersperse(
-        initial(deepestMatchedPath),
-        'children'
-      );
-
-      currentVisibleSection = get(
-        this.props.sections.children, // skip root when navigating
-        intersperse(deepestMatchedPath, 'children')
-      );
-
-      currentVisibleSectionParent = get(
-        this.props.sections.children,
-        intersperse(deepestMatchedPathParent, 'children'),
-        this.props.sections
-      );
-    }
-
-    // tree: [a,b,c,d]
-    // path is [a, b, 1, 2]
-    // return node for b
-
-    // if currentVisibleSection is undefined, but NOT root,
-    // move as far into the tree as possible and return the last section
 
     const parentIsRoot = currentVisibleSectionParent === this.props.sections;
     const selectedItemHasChildren = !!currentVisibleSection.children;

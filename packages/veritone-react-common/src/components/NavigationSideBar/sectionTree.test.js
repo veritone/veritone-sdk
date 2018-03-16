@@ -141,8 +141,8 @@ describe('SectionTree', function() {
   );
 
   it(
-    'should render the parent path and show the current item as selected when the currently ' +
-      'selected item has no children',
+    'should render the parent path and show the current item as selected when the ' +
+      'currently selected item has no children',
     function() {
       let wrapper = mount(
         <SectionTree
@@ -156,21 +156,128 @@ describe('SectionTree', function() {
           <SectionTreeTab label="Deployments" selected />
         )
       ).toBeTruthy();
+
+      wrapper = mount(
+        <SectionTree
+          {...defaultProps}
+          activePath={['engines', 'documentation', 'api']}
+        />
+      );
+
+      expect(
+        wrapper.containsMatchingElement(<SectionTreeTab label="API" selected />)
+      ).toBeTruthy();
     }
   );
 
-  it('should not show a back button when displaying the root');
-  it(
-    'should show a back button with the item name when the currently selected item has no children'
-  );
+  it('should not show a back button when displaying the root, unless root is the last-matched path', function() {
+    let wrapper = mount(<SectionTree {...defaultProps} activePath={[]} />);
+
+    expect(
+      wrapper.containsMatchingElement(
+        <SectionTreeTab data-testtarget="back-button" />
+      )
+    ).toBeFalsy();
+
+    // root is last matched
+    wrapper = mount(
+      <SectionTree {...defaultProps} activePath={['engines', 'asdf']} />
+    );
+
+    expect(
+      wrapper.containsMatchingElement(
+        <SectionTreeTab data-testtarget="back-button" />
+      )
+    ).toBeTruthy();
+  });
+
+  it('should show a back button with the item name when the currently selected item has no children', function() {
+    let wrapper = mount(
+      <SectionTree {...defaultProps} activePath={['engines', 'deployments']} />
+    );
+
+    expect(
+      wrapper.containsMatchingElement(
+        <SectionTreeTab data-testtarget="back-button" label="Deployments" />
+      )
+    ).toBeTruthy();
+
+    wrapper = mount(
+      <SectionTree
+        {...defaultProps}
+        activePath={['engines', 'documentation', 'api']}
+      />
+    );
+
+    expect(
+      wrapper.containsMatchingElement(
+        <SectionTreeTab data-testtarget="back-button" label="API" />
+      )
+    ).toBeTruthy();
+  });
+
+  it('should, given a partial path, render the items of the deepest matching path', function() {
+    const wrapper = mount(
+      <SectionTree
+        {...defaultProps}
+        activePath={['engines', 'documentation', 'fake', '123']}
+      />
+    );
+
+    expect(
+      wrapper.containsMatchingElement(<SectionTreeTab label="API" />)
+    ).toBeTruthy();
+  });
 
   it(
-    'should, given a partial path, render the items of the deepest matching path'
-  );
-  it(
     'should, given a partial path, render a back button that navigates to the ' +
-      'parent of the deepest matching path, with the label off the deepest matching path'
+      'parent of the deepest matching path, with the label of the deepest matching path',
+    function() {
+      const handler = jest.fn();
+      const wrapper = mount(
+        <SectionTree
+          {...defaultProps}
+          activePath={['engines', 'documentation', 'fake', '123']}
+          onNavigate={handler}
+        />
+      );
+
+      expect(
+        wrapper.containsMatchingElement(
+          <SectionTreeTab data-testtarget="back-button" label="Documentation" />
+        )
+      ).toBeTruthy();
+
+      wrapper
+        .find('SectionTreeTab[data-testtarget="back-button"]')
+        .first()
+        .simulate('click');
+
+      expect(handler).toHaveBeenCalledWith(['engines']);
+    }
   );
+
+  it('should, given a partial path, handle navigation to siblings on the deepest matched path', function() {
+    const handler = jest.fn();
+    const wrapper = mount(
+      <SectionTree
+        {...defaultProps}
+        activePath={['engines', 'fake', '123']}
+        onNavigate={handler}
+      />
+    );
+
+    expect(
+      wrapper.containsAllMatchingElements([
+        <SectionTreeTab label="Documentation" />,
+        <SectionTreeTab label="Deployments" />
+      ])
+    ).toBeTruthy();
+
+    wrapper.find('SectionTreeTab[label="Deployments"]').simulate('click');
+
+    expect(handler).toHaveBeenCalledWith(['engines', 'deployments']);
+  });
 
   it('should call props.onNavigate for backward navigation, dropping the last path index', function() {
     const handler = jest.fn();
@@ -199,11 +306,25 @@ describe('SectionTree', function() {
       />
     );
     wrapper
-      .find('SectionTreeTab')
+      .find('SectionTreeTab[data-testtarget="back-button"]')
       .first()
       .simulate('click');
 
     expect(handler).toHaveBeenCalledWith(['engines']);
+  });
+
+  it('should call props.onNavigate for navigation between sibling paths', function() {
+    const handler = jest.fn();
+    const wrapper = mount(
+      <SectionTree {...defaultProps} activePath={[]} onNavigate={handler} />
+    );
+    wrapper.find('SectionTreeTab[label="Engines"]').simulate('click');
+
+    expect(handler).toHaveBeenCalledWith(['engines']);
+
+    wrapper.find('SectionTreeTab[label="Billing Dashboard"]').simulate('click');
+
+    expect(handler).toHaveBeenCalledWith(['billing']);
   });
 });
 
