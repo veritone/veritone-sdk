@@ -101,6 +101,7 @@ class TranscriptEngineOutput extends Component {
           onSnippetClicked={onSnippetClicked}
           onSnippetEdit={onSnippetEdit}
           editModeEnabled={editModeEnabled}
+          editMode={editMode}
         />
       </div>
     );

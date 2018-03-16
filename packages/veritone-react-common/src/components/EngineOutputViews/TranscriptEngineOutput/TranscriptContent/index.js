@@ -57,12 +57,21 @@ class TranscriptContent extends Component {
   }
 
   render() {
-    let { editMode } = this.props;
+    let { editMode, assets, editModeEnabled } = this.props;
 
+    let bulkText = this.props.assets.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.series.reduce((a, c) => {
+        return a + c.text + ' ';
+      }, '')
+    }, '');
+    
     return (
       <div className={styles.transcriptContent} ref={this.elementRef}>
-        { editMode === 'bulk' ?
-            <textarea /> :
+        { editMode === 'bulk' && editModeEnabled ?
+            <textarea 
+              className={styles.bulkEditTextArea} 
+              defaultValue={bulkText}
+            /> :
             this.getTranscriptChunks()
         }
       </div>

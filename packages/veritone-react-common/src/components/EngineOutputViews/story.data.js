@@ -14,7 +14,7 @@ export const transcriptAssets = [
       {
         start: 13131,
         end: 13146,
-        text: "Hello I a m just typing some random stuff to show how "
+        text: "Hello I am just typing some random stuff to show how "
       },
       {
         start: 13147,
@@ -112,7 +112,7 @@ export const transcriptAssets = [
       {
         start: 13249,
         end: 13250,
-        text: "Hello I a m just typing some random stuff to show how "
+        text: "Hello I am just typing some random stuff to show how "
       },
       {
         start: 13251,
