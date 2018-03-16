@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex: none;
 
   .headerTitle {
     font-size: 16px;
@@ -18,7 +19,6 @@
 }
 
 .objectDetectionContent {
-  flex: 1;
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
@@ -71,8 +71,8 @@
 
   .objectOccurenceList {
     width: 100%;
-    display: flex;
-    flex-flow: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(120px, 1fr));
 
     .objectOccurence {
       width: 120px;
