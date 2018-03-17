@@ -1,13 +1,7 @@
 import React from 'react';
 
 import {
-  string,
-  bool,
-  func,
-  arrayOf,
-  number,
-  objectOf,
-  any
+  string
 } from 'prop-types';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from 'material-ui/Button';
@@ -34,7 +28,7 @@ export default class IngestionJobNullstate extends React.Component {
         <div className={styles.titleText}>No Ingestion Jobs</div>
         <div className={styles.greyText}>If you need help getting started, take a look at the</div>
         <div className={styles.linkText}>How to Ingest a Data Set</div>
-        <Button className={styles.newDataSetButton} raised color='primary' component='span'>
+        <Button className={styles.buttonStyle} raised color='primary' component='span'>
           Ingest Data
         </Button>
       </div>

@@ -6,7 +6,7 @@ import IngestionJobFullScreen from './IngestionJobFullScreen';
 import IngestionJobTileView from './IngestionJobTileView';
 import IngestionJobGridCard from './IngestionJobGridView/IngestionJobGridCard';
 import IngestionJobGridView from './IngestionJobGridView';
-import IngestionJobNullstate from './IngestionJobNullstate';
+import IngestionJobNullstate from './Nullstate';
 
 
 var numberOfFields = 8;
