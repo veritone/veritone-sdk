@@ -73,12 +73,22 @@
         flex-direction: row;
         align-items: center;
   
-        .imageStyle {
+        .imageWrapper {
+          // border-radius: 50%;
           height: 38px;
           width: 38px;
+          overflow: hidden;
+          // position: relative;
+
+          .imageStyle {
+            object-fit: cover;
+            height: 38px;
+            width: 38px;
+            border-radius: 50%;
+          }
         }
     
-        .schemaName {
+        .jobName {
           line-height: 16px;
           font-weight: 500;
           font-size: 14px;

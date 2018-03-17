@@ -64,10 +64,11 @@ export default class JobRow extends React.Component {
           <span className={styles.columnText}>{this.props.ingestionType}</span>
           <span className={styles.columnText}>{this.props.creationDate}</span>
           <span className={styles.columnText}>{this.props.lastIngested}</span>
+          <IconButton className={styles.menuIcon} aria-label='menu'>
+            <Icon className={'icon-more_vert'}></Icon>
+          </IconButton>
         </div>
-        <IconButton className={styles.menuIcon} aria-label='menu'>
-          <Icon className={'icon-more_vert'}></Icon>
-        </IconButton>
+        
       </div>
     );
   };

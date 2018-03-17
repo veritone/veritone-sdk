@@ -80,8 +80,10 @@ export default class IngestionJobFullScreen extends React.Component {
         <div className={styles.tableCard}>
           <div className={styles.schemaTitle}>
             <div className={styles.schemaTitleGroup}>
-              <img src={this.props.jobInfo.thumbnail} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' className={styles.imageStyle} />
-              <div className={styles.schemaName}>
+              <div className={styles.imageWrapper}>
+                <img src={this.props.jobInfo.thumbnail} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' className={styles.imageStyle} />
+              </div>
+              <div className={styles.jobName}>
                 {this.props.jobInfo.jobName}
               </div>
             </div>

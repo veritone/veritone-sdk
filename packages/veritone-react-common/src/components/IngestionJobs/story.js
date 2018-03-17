@@ -160,8 +160,9 @@ var sdoSchemaInfo = {
 
 var oneJobInfo = {
   jobName: 'Donald Trump Twitter Posts',
-  thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
-}
+  // thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+  thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
+};
 
 
 

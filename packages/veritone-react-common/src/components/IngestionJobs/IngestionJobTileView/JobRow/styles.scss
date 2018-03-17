@@ -34,13 +34,16 @@
       align-self: center;
       width: 17%;
       overflow: hidden;
+      padding-right: 5px;
+    }
+
+    .menuIcon {
+      font-size: 22px;
+      align-self: center;
     }
   }
 
-  .menuIcon {
-    font-size: 22px;
-    align-self: center;
-  }
+
  
   &:hover {
     cursor: pointer;
