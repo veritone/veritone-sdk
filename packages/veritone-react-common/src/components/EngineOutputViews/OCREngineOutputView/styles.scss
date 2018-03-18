@@ -25,18 +25,3 @@
   flex-wrap: wrap;
   overflow: scroll;
 }
-
-.ocrContainer {
-  border: 1px solid #e0e0e0;
-  border-radius: 20px;
-  padding: 12.5px;
-  line-height: 21px;
-  margin-bottom: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  display: inline-block;
-
-  .ocrObjectTimestamp {
-    color: 	#2196F3;
-  }
-}

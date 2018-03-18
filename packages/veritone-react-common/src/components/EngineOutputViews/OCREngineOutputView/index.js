@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, number, string } from 'prop-types';
+import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import { format, setHours } from 'date-fns';
 
+import OCRObject from './OCRObject';
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
@@ -24,27 +25,13 @@ class OCREngineOutputView extends Component {
           text: string
         })
       }))
-    }))
+    })),
+    onOcrClicked: func
   }
 
   static defaultProps = {
     assets: [],
     classes: {}
-  }
-
-  msToTime = (duration) => {
-    let h, m, s;
-    s = Math.floor(duration / 1000);
-    m = Math.floor(s / 60);
-    s = s % 60;
-    h = Math.floor(m / 60);
-    m = m % 60;
-
-    h = (h < 10) && (h > 0) ? "0" + h : h;
-    m = (m < 10) ? "0" + m : m;
-    s = (s < 10) ? "0" + s : s;
-
-    return (h > 0 ? h + ":" : "" ) + m + ":" + s;
   }
 
   render() {
@@ -64,12 +51,12 @@ class OCREngineOutputView extends Component {
           { assets.reduce((accumulator, currentValue) => {
               return [ ...accumulator, ...currentValue.series]
             }, []).map((ocrObject, i) => {
-              return <div key={i} className={styles.ocrContainer}>
-                <span>{ocrObject.object.text}</span>
-                <span className={styles.ocrObjectTimestamp}>
-                  {this.msToTime(ocrObject.start)} - {this.msToTime(ocrObject.end)}
-                </span>
-              </div>
+              return <OCRObject 
+                key={i} 
+                text={ocrObject.object.text}
+                startTime={ocrObject.start}
+                endTime={ocrObject.end}
+              />
             })
           }
         </div>
