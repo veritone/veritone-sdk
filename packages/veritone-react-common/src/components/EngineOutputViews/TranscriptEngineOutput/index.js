@@ -8,6 +8,7 @@ import { FormControlLabel } from 'material-ui/Form';
 
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import TranscriptContent from './TranscriptContent';
+import EngineOutputHeader from '../EngineOutputHeader';
 
 import styles from './styles.scss';
 
@@ -59,30 +60,29 @@ class TranscriptEngineOutput extends Component {
     } = this.props;
     return (
       <div className={classNames(styles.transcriptOutputView, classes.root)}>
-        <div className={classNames(styles.transcriptViewHeader, classes.header)}>
-          { editModeEnabled ?
-              <RadioGroup
-                onChange={onEditModeChange}
-                aria-label="edit_mode"
-                value={editMode}
-                name="editMode"
-              >
-                <FormControlLabel 
-                  className={styles.editModeFormControlLabel} 
-                  value="snippet" 
-                  control={<Radio color="primary" />} 
-                  label="Snippet Edit" 
-                />
-                <FormControlLabel 
-                  className={styles.editModeFormControlLabel} 
-                  value="bulk" 
-                  control={<Radio color="primary" />} 
-                  label="Bulk Edit" 
-                />
-              </RadioGroup>:
-              <div className={styles.headerTitle}>Transcription</div>
-          }
+        <EngineOutputHeader title="Transcription" hideTitle={editModeEnabled}>
           <div className={styles.transcriptActions}>
+            { editModeEnabled && <RadioGroup
+                  onChange={onEditModeChange}
+                  aria-label="edit_mode"
+                  value={editMode}
+                  name="editMode"
+                  row
+                >
+                  <FormControlLabel 
+                    className={styles.editModeFormControlLabel} 
+                    value="snippet" 
+                    control={<Radio color="primary" />} 
+                    label="Snippet Edit" 
+                  />
+                  <FormControlLabel 
+                    className={styles.editModeFormControlLabel} 
+                    value="bulk" 
+                    control={<Radio color="primary" />} 
+                    label="Bulk Edit" 
+                  />
+                </RadioGroup>
+            }
             <Select value={selectedEngineId || ""} onChange={onEngineChange}>
               { engines.map((e, i) => {
                   return <MenuItem 
@@ -95,7 +95,7 @@ class TranscriptEngineOutput extends Component {
               }
             </Select>
           </div>
-        </div>
+        </EngineOutputHeader>
         <TranscriptContent 
           assets={assets}
           onSnippetClicked={onSnippetClicked}

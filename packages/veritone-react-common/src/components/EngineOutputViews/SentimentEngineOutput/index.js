@@ -5,6 +5,7 @@ import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
 import SentimentGraph from './SentimentGraph';
+import EngineOutputHeader from '../EngineOutputHeader';
 
 import styles from './styles.scss';
 
@@ -166,14 +167,11 @@ class SentimentEngineOutput extends Component {
     let taskData = smoothAndNormalizeTimeSeries(data || [], duration);
     return (
       <div className={classNames(styles.sentimentOutputView, classes.root)}>
-        <div className={classNames(styles.sentimentViewHeader, classes.header)}>
-          <div className={styles.headerTitle}>Sentiment</div>
-          <div className={styles.transcriptActions}>
-            <Select value="medulla">
-              <MenuItem value="medulla">Medulla</MenuItem>
-            </Select>
-          </div>
-        </div>
+        <EngineOutputHeader title="Sentiment">
+          <Select value="medulla">
+            <MenuItem value="medulla">Medulla</MenuItem>
+          </Select>
+        </EngineOutputHeader>
         <div className={styles.sentimentViewContent}>
           <SentimentGraph 
             data={taskData.series}

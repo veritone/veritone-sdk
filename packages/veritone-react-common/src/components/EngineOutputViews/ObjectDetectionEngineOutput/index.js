@@ -6,6 +6,8 @@ import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import Button from 'material-ui/Button';
 
+import EngineOutputHeader from '../EngineOutputHeader';
+
 import styles from './styles.scss';
 
 class ObjectDetectionEngineOutput extends Component {
@@ -69,14 +71,11 @@ class ObjectDetectionEngineOutput extends Component {
     }, []), 'found');
     return (
       <div className={classNames(styles.objectDetectionOutputView, classes.root)}>
-        <div className={classNames(styles.objectDetectionViewHeader, classes.header)}>
-          <div className={styles.headerTitle}>Object Detection</div>
-          <div className={styles.objectDetectionActions}>
-            <Select value="macula">
-              <MenuItem value="macula">Macula</MenuItem>
-            </Select>
-          </div>
-        </div>
+        <EngineOutputHeader title="Object Detection">
+          <Select value="macula">
+            <MenuItem value="macula">Macula</MenuItem>
+          </Select>
+        </ EngineOutputHeader>
         <div className={styles.objectDetectionContent}>
           { this.state.selectedObject ? 
               <div className={styles.selectedObjectInfo}>

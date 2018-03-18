@@ -6,6 +6,7 @@ import { MenuItem } from 'material-ui/Menu';
 import { format, setHours } from 'date-fns';
 
 import OCRObject from './OCRObject';
+import EngineOutputHeader from '../EngineOutputHeader';
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
@@ -39,14 +40,11 @@ class OCREngineOutputView extends Component {
 
     return (
       <div className={classNames(styles.ocrOutputView, classes.root)}>
-        <div className={classNames(styles.ocrViewHeader, classes.header)}>
-          <div className={styles.headerTitle}>Text Recognition</div>
-          <div className={styles.objectDetectionActions}>
-            <Select value="cortex">
+        <EngineOutputHeader title="Text Recognition">
+          <Select value="cortex">
               <MenuItem value="cortex">Cortex</MenuItem>
-            </Select>
-          </div>
-        </div>
+          </Select>
+        </EngineOutputHeader>
         <div className={styles.ocrContent}>
           { assets.reduce((accumulator, currentValue) => {
               return [ ...accumulator, ...currentValue.series]
