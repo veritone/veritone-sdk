@@ -10,10 +10,12 @@ import TranscriptEngineOutput from './TranscriptEngineOutput';
 import SentimentEngineOutput from './SentimentEngineOutput';
 import FaceDetectionOuput from './FaceDetectionEngineOutput';
 import ObjectDetectionOuput from './ObjectDetectionEngineOutput';
+import OCREngineOutputView from './OCREngineOutputView';
 import { 
   transcriptAssets,
   sentimentAssets,
-  objectDetectionAssets
+  objectDetectionAssets,
+  ocrAssets
 } from './story.data.js';
 
 class TranscriptionStory extends Component {
@@ -120,6 +122,16 @@ storiesOf('EngineOutputViews', module)
     return (
       <ObjectDetectionOuput 
         assets={ objectDetectionAssets }
+        classes={ {
+          root: styles.outputViewRoot 
+        } }
+      />
+    )
+  })
+  .add('OCREngineOutputView', () => {
+    return (
+      <OCREngineOutputView 
+        assets={ocrAssets}
         classes={ {
           root: styles.outputViewRoot 
         } }
