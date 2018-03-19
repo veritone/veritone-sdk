@@ -1,22 +1,25 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
-import Drawer from 'material-ui/Drawer';
 import EngineCategorySelector from './EngineCategorySelector';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
+import MediaInfoPanel from './MediaInfoPanel';
+import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
-import { number, func, arrayOf, any} from 'prop-types';
+import { number, func, object, arrayOf, any} from 'prop-types';
 import styles from './styles.scss';
 
 export default class MediaDetails extends Component {
   static propTypes = {
-    mediaId: number,
+    mediaId: number.isRequired,
     onClose: func,
-    engineCategories: arrayOf(any)
+    engineCategories: arrayOf(any),
+    tdo: object,
   };
 
   state = {
     selectedEngineCategory: this.props.engineCategories && this.props.engineCategories.length ? this.props.engineCategories[0] : null,
+    selectedTabValue: 0,
     isEditMode: false,
     isInfoPanelOpen: false,
     hasPendingChanges: false
@@ -31,10 +34,13 @@ export default class MediaDetails extends Component {
     }
   }
 
+  handleTabChange = (event, value) => {
+    this.setState({ selectedTabValue: value });
+  };
+
   handleEngineCategoryChange = selectedCategoryId => {
     const selectedCategory = this.props.engineCategories.find(category => category.id === selectedCategoryId);
     this.setState({
-      // ...this.state, // check if needed
       selectedEngineCategory: selectedCategory
     });
   };
@@ -43,9 +49,28 @@ export default class MediaDetails extends Component {
     return 'Use the edit screen below to correct ' + this.state.selectedEngineCategory.name.toLowerCase() + 's.';
   };
 
+  getMediaFileName = () => {
+    if (this.props.tdo && this.props.tdo.details &&
+        this.props.tdo.details.veritoneFile && this.props.tdo.details.veritoneFile.filename) {
+      return this.props.tdo.details.veritoneFile.filename;
+    }
+    return this.props.mediaId;
+  };
+
+  getMediaSource = () => {
+    if (this.props.tdo && this.props.tdo.details && this.props.tdo.details.veritoneProgram) {
+      const veritoneProgram = this.props.tdo.details.veritoneProgram;
+      if (veritoneProgram.programId === '-1') {
+        return 'Private Media';
+      } else {
+        return veritoneProgram.programName;
+      }
+    }
+    return '';
+  };
+
   toggleEditMode = () => {
     this.setState({
-      // ...this.state, // check if needed
       isEditMode: !this.state.isEditMode
     });
   };
@@ -69,10 +94,8 @@ export default class MediaDetails extends Component {
 
   render() {
 
-    // TODOs:
-    // add header
-    // add action buttons menu
-    // Media player segment
+    // TODO: hookup run process action button menu
+    // TODO: order engine categories in this page. Keep order hardcoded.
 
     return (
       <Paper className={styles.mediaDetailsPageContent}>
@@ -80,23 +103,32 @@ export default class MediaDetails extends Component {
         {!this.state.isEditMode &&
           <div>
             <div className={styles.pageHeader}>
-              <div className={styles.pageHeaderTitleLabel}>{this.props.mediaId}</div>
+              <div className={styles.pageHeaderTitleLabel}>
+                {this.getMediaFileName()}
+                </div>
               <div className={styles.pageHeaderActionButtons}>
-                <IconButton className={styles.pageHeaderActionButton} onClick={this.onRunProcess} aria-label='Run process' disableRipple={true}>
-                  <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
+                <IconButton className={styles.pageHeaderActionButton} onClick={this.onRunProcess} aria-label='Run process'>
+                    <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
                 </IconButton>
-                <IconButton className={styles.pageHeaderActionButton} onClick={this.toggleInfoPanel} aria-label='Info Panel' disableRipple={true}>
+                <IconButton className={styles.pageHeaderActionButton} onClick={this.toggleInfoPanel} aria-label='Info Panel'>
                   <Icon className='icon-info-panel' classes={{root: styles.iconClass}}></Icon>
                 </IconButton>
                 <div className={styles.pageHeaderActionButtonsSeparator}></div>
-                <IconButton className={styles.pageCloseButton} onClick={this.props.onClose} aria-label='Close' disableRipple={true}>
+                <IconButton className={styles.pageCloseButton} onClick={this.props.onClose} aria-label='Close'>
                   <Icon className='icon-close-exit' classes={{root: styles.iconClass}}></Icon>
                 </IconButton>
               </div>
             </div>
-            <div className={styles.mediaDetailsPageTabSelector}>
-            </div>
-            {this.state.selectedEngineCategory &&
+            <Tabs value={this.state.selectedTabValue}
+                    onChange={this.handleTabChange}
+                    classes={{
+                      flexContainer: styles.mediaDetailsPageTabSelector
+                    }}>
+              <Tab label="Media Details" classes={{root: styles.pageTabLabel}} style={{fontWeight: this.state.selectedTabValue === 0 ? 500 : 400}}/>
+              <Tab label="Content Templates" classes={{root: styles.pageTabLabel}} style={{fontWeight: this.state.selectedTabValue === 1 ? 500 : 400}}/>
+            </Tabs>
+
+            {this.state.selectedEngineCategory && this.state.selectedTabValue === 0 &&
               <div className={styles.engineActionHeader}>
                 <div className={styles.engineActionContainer}>
                   <div className={styles.engineCategorySelector}>
@@ -104,15 +136,16 @@ export default class MediaDetails extends Component {
                                             selectedEngineCategoryId={this.state.selectedEngineCategory.id}
                                             onSelectEngineCategory={this.handleEngineCategoryChange}/>
                   </div>
-                  <Button variant='raised'
-                          color='primary'
-                          className={styles.toEditModeButton}
-                          onClick={this.toggleEditMode}>EDIT MODE</Button>
+                  {this.state.selectedEngineCategory.editable &&
+                    <Button variant='raised'
+                            color='primary'
+                            className={styles.toEditModeButton}
+                            onClick={this.toggleEditMode}>EDIT MODE</Button>}
                 </div>
               </div>}
           </div>}
 
-        {this.state.isEditMode &&
+        {this.state.isEditMode && this.state.selectedTabValue === 0 &&
           <div>
             <div className={styles.pageHeaderEditMode}>
               <IconButton className={styles.backButtonEditMode} onClick={this.onCancelEdit} aria-label='Back' disableRipple={true}>
@@ -139,46 +172,49 @@ export default class MediaDetails extends Component {
             </div>
           </div>}
 
-        <div>
-          Currently Selected category: {this.state.selectedEngineCategory &&
-          <span>{this.state.selectedEngineCategory.name}</span>}
-        </div>
+        {this.state.selectedTabValue === 0 &&
+          <div className={styles.mediaScreen}>
+            <div className={styles.mediaView}>
+              <div className={styles.mediaPlayerView}>
+              </div>
+              <div className={styles.sourceLabel}>
+                Source: {this.getMediaSource()}
+              </div>
+            </div>
 
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'transcript' &&
-          <div>Transcript component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'face' &&
-        <div>Face component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'object' &&
-        <div>Object component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'logo' &&
-        <div>Logo component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'ocr' &&
-        <div>OCR component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'fingerprint' &&
-        <div>Fingerprint component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'translate' &&
-        <div>Translation component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'sentiment' &&
-        <div>Sentiment component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'geolocation' &&
-        <div>Geolocation component</div>}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'stationPlayout' &&
-        <div>Station playout component</div>}
-        {/* Thumbnail is not supported: remove before release */}
-        {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'thumbnail' &&
-        <div>Thumbnail component</div>}
+            <div className={styles.engineCategoryView}>
 
-        <Drawer anchor="right" open={this.state.isInfoPanelOpen} onClose={this.toggleInfoPanel}>
-          <div
-            tabIndex={0}
-            role="button"
-            onClick={this.toggleInfoPanel}
-            onKeyDown={this.toggleInfoPanel}
-          >
-            {this.state.mediaId}
-          </div>
-          Whatever happens - happens.
-        </Drawer>
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'transcript' &&
+              <div>Transcript component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'face' &&
+              <div>Face component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'object' &&
+              <div>Object component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'logo' &&
+              <div>Logo component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'ocr' &&
+              <div>OCR component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'fingerprint' &&
+              <div>Fingerprint component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'translate' &&
+              <div>Translation component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'sentiment' &&
+              <div>Sentiment component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'geolocation' &&
+              <div>Geolocation component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'stationPlayout' &&
+              <div>Station playout component</div>}
+              {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'music' &&
+              <div>Music component</div>}
+
+            </div>
+          </div>}
+
+        {this.state.isInfoPanelOpen &&
+          <MediaInfoPanel tdo={this.props.tdo} engineCategories={this.props.engineCategories} onClose={this.toggleInfoPanel} />}
+
+
+        {this.state.selectedTabValue === 1 && <div>Content Templates</div>}
       </Paper>
     );
   }

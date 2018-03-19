@@ -27,26 +27,21 @@
       align-items: center;
 
       .pageHeaderActionButton {
-        height: 20px;
-        width: 20px;
-        font-size: 20px;
+        font-size: 24px;
         color: rgba(255,255,255,0.54);
-        margin-left: 20px;
       }
 
       .pageHeaderActionButtonsSeparator {
         height: 27px;
         width: 1px;
         background-color: rgba(255,255,255,0.54);
-        margin: 0 25px;
+        margin: 0 5px 0 10px;
       }
 
       .pageCloseButton {
-        height: 20px;
-        width: 20px;
-        font-size: 20px;
+        font-size: 24px;
         color: rgba(255,255,255,0.54);
-        margin-right: 25px;
+        margin-right: 5px;
       }
     }
   }
@@ -56,12 +51,12 @@
     height: 55px;
     width: 100%;
 
-    .tabLabel {
-      height: 16px;
+    .pageTabLabel {
+      height: 55px;
       color: #FFFFFF;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 16px;
+      span {
+        font-size: 14px;
+      }
     }
   }
 
@@ -164,4 +159,38 @@
       }
     }
   }
+
+  .mediaScreen {
+    margin: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+
+    .mediaView {
+      .mediaPlayerView {
+        height: 330px;
+        width: 450px;
+        background: url('//static.veritone.com/veritone-ui/default-nullstate.svg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .sourceLabel {
+        color: rgba(0,0,0,0.54);
+        font-size: 12px;
+        line-height: 14px;
+        margin-top: 5px;
+      }
+    }
+
+    .engineCategoryView {
+      margin-left: 30px;
+    }
+  }
+
+  .metadataSidePanel {
+    width: 360px;
+  }
+
 }
