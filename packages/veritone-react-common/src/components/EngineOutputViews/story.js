@@ -33,7 +33,8 @@ class TranscriptionStory extends Component {
         sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
         sourceEngineName: "Temporal",
       }
-    ]
+    ],
+    viewMode: "time"
   };
 
   handleEngineChange = (evt) => {
@@ -47,6 +48,13 @@ class TranscriptionStory extends Component {
     this.setState({
       ...this.state,
       editMode: evt.target.value
+    })
+  }
+
+  handleViewModeChange = (evt) => {
+    this.setState({
+      ...this.state,
+      viewMode: evt.target.value
     })
   }
   
@@ -88,6 +96,8 @@ class TranscriptionStory extends Component {
         onSnippetClicked={this.props.onSnippetClicked}
         onSnippetEdit={this.handleSnippetEdit}
         classes={{ root: styles.outputViewRoot }}
+        viewMode={this.state.viewMode}
+        onViewModeChange={this.handleViewModeChange}
       />
     );
   }

@@ -36,13 +36,16 @@ class TranscriptEngineOutput extends Component {
     })),
     onEngineChange: func,
     onSnippetEdit: func,
-    onEditModeChange: func
+    onEditModeChange: func,
+    viewMode: string,
+    onViewModeChange: func
   };
 
   static defaultProps = {
     assets: [],
     classes: {},
-    editModeEnabled: false
+    editModeEnabled: false,
+    viewMode: "time"
   }
 
   render() {
@@ -56,44 +59,66 @@ class TranscriptEngineOutput extends Component {
       engines,
       onEngineChange,
       onSnippetEdit,
-      onEditModeChange
+      onEditModeChange,
+      viewMode,
+      onViewModeChange
     } = this.props;
     return (
       <div className={classNames(styles.transcriptOutputView, classes.root)}>
         <EngineOutputHeader title="Transcription" hideTitle={editModeEnabled}>
           <div className={styles.transcriptActions}>
-            { editModeEnabled && <RadioGroup
-                  onChange={onEditModeChange}
-                  aria-label="edit_mode"
-                  value={editMode}
-                  name="editMode"
-                  row
-                >
-                  <FormControlLabel 
-                    className={styles.editModeFormControlLabel} 
-                    value="snippet" 
-                    control={<Radio color="primary" />} 
-                    label="Snippet Edit" 
-                  />
-                  <FormControlLabel 
-                    className={styles.editModeFormControlLabel} 
-                    value="bulk" 
-                    control={<Radio color="primary" />} 
-                    label="Bulk Edit" 
-                  />
-                </RadioGroup>
-            }
-            <Select value={selectedEngineId || ""} onChange={onEngineChange}>
-              { engines.map((e, i) => {
-                  return <MenuItem 
-                    key={i} 
-                    value={e.sourceEngineId}
+            <div>
+              { editModeEnabled && <RadioGroup
+                    onChange={onEditModeChange}
+                    aria-label="edit_mode"
+                    value={editMode}
+                    name="editMode"
+                    row
                   >
-                    {e.sourceEngineName}
-                  </MenuItem>
-                })
+                    <FormControlLabel 
+                      className={styles.editModeFormControlLabel} 
+                      value="snippet" 
+                      control={<Radio color="primary" />} 
+                      label="Snippet Edit" 
+                    />
+                    <FormControlLabel 
+                      className={styles.editModeFormControlLabel} 
+                      value="bulk" 
+                      control={<Radio color="primary" />} 
+                      label="Bulk Edit" 
+                    />
+                  </RadioGroup>
               }
-            </Select>
+            </div>
+            <div>
+              <Select 
+                value={viewMode}
+                onChange={onViewModeChange}
+                className={styles.selectWithMargin}
+                autoWidth
+              >
+                <MenuItem value="time">
+                  Time
+                </MenuItem>
+                <MenuItem value="overview">
+                  Overview
+                </MenuItem>
+              </Select>
+              <Select 
+                value={selectedEngineId || ""} 
+                onChange={onEngineChange}
+              >
+                { engines.map((e, i) => {
+                    return <MenuItem 
+                      key={i} 
+                      value={e.sourceEngineId}
+                    >
+                      {e.sourceEngineName}
+                    </MenuItem>
+                  })
+                }
+              </Select>
+            </div>
           </div>
         </EngineOutputHeader>
         <TranscriptContent 
