@@ -91,6 +91,5 @@ storiesOf('MediaDetails', module)
                       },
                       tags: ['Hakuna', 'Matata', 'that\'s a wonderful phrase']
                     }
-                  }}>
-    </MediaDetails>
+                  }} />
   ));

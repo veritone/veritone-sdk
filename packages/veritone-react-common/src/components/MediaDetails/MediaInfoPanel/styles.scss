@@ -2,7 +2,7 @@
   width: 363px;
   font-family: Roboto;
   font-size: 14px;
-  color: rgba(0,0,0,0.87);
+  color: rgba(0, 0, 0, 0.87);
   line-height: 16px;
 
   .infoPanelHeader {
@@ -31,14 +31,15 @@
       margin-top: 15px;
 
       .infoFieldLabel {
-        color: rgba(0,0,0,0.54);
+        color: rgba(0, 0, 0, 0.54);
         font-size: 13px;
         line-height: 21px;
         min-width: 90px;
         max-width: 90px;
       }
+
       .infoFieldData {
-        color: rgba(0,0,0,0.87);
+        color: rgba(0, 0, 0, 0.87);
         font-size: 13px;
         line-height: 21px;
         max-width: 178px;
@@ -57,6 +58,7 @@
       width: 130px;
       margin-top: 20px;
     }
+
     .programImage {
       height: 82px;
       width: 82px;
@@ -64,5 +66,4 @@
       margin-left: 10px;
     }
   }
-
 }

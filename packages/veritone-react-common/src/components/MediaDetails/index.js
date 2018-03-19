@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
-import EngineCategorySelector from './EngineCategorySelector';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
-import MediaInfoPanel from './MediaInfoPanel';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
 import { number, func, object, arrayOf, any} from 'prop-types';
+import EngineCategorySelector from './EngineCategorySelector';
+import MediaInfoPanel from './MediaInfoPanel';
 import styles from './styles.scss';
 
 export default class MediaDetails extends Component {
@@ -108,14 +108,14 @@ export default class MediaDetails extends Component {
                 </div>
               <div className={styles.pageHeaderActionButtons}>
                 <IconButton className={styles.pageHeaderActionButton} onClick={this.onRunProcess} aria-label='Run process'>
-                    <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
+                    <Icon className='icon-run-process' classes={{root: styles.iconClass}}/>
                 </IconButton>
                 <IconButton className={styles.pageHeaderActionButton} onClick={this.toggleInfoPanel} aria-label='Info Panel'>
-                  <Icon className='icon-info-panel' classes={{root: styles.iconClass}}></Icon>
+                  <Icon className='icon-info-panel' classes={{root: styles.iconClass}}/>
                 </IconButton>
-                <div className={styles.pageHeaderActionButtonsSeparator}></div>
+                <div className={styles.pageHeaderActionButtonsSeparator}/>
                 <IconButton className={styles.pageCloseButton} onClick={this.props.onClose} aria-label='Close'>
-                  <Icon className='icon-close-exit' classes={{root: styles.iconClass}}></Icon>
+                  <Icon className='icon-close-exit' classes={{root: styles.iconClass}}/>
                 </IconButton>
               </div>
             </div>
@@ -148,8 +148,8 @@ export default class MediaDetails extends Component {
         {this.state.isEditMode && this.state.selectedTabValue === 0 &&
           <div>
             <div className={styles.pageHeaderEditMode}>
-              <IconButton className={styles.backButtonEditMode} onClick={this.onCancelEdit} aria-label='Back' disableRipple={true}>
-                <Icon className='icon-arrow-back' classes={{root: styles.iconClass}}></Icon>
+              <IconButton className={styles.backButtonEditMode} onClick={this.onCancelEdit} aria-label='Back' disableRipple>
+                <Icon className='icon-arrow-back' classes={{root: styles.iconClass}}/>
               </IconButton>
               <div className={styles.pageHeaderTitleLabelEditMode}>Edit Mode: {this.state.selectedEngineCategory.name}</div>
             </div>
@@ -160,9 +160,9 @@ export default class MediaDetails extends Component {
               <div className={styles.actionButtonsEditMode}>
                 <Button className={styles.runProcessButtonEditMode}
                         onClick={this.onRunProcess}>
-                  <Icon className='icon-run-process' classes={{root: styles.iconClass}}></Icon>
+                  <Icon className='icon-run-process' classes={{root: styles.iconClass}}/>
                   RUN PROCESS</Button>
-                <div className={styles.actionButtonsSeparatorEditMode}></div>
+                <div className={styles.actionButtonsSeparatorEditMode}/>
                 <Button className={styles.actionButtonEditMode}
                         onClick={this.onCancelEdit}>CANCEL</Button>
                 <Button className={styles.actionButtonEditMode}
@@ -175,8 +175,7 @@ export default class MediaDetails extends Component {
         {this.state.selectedTabValue === 0 &&
           <div className={styles.mediaScreen}>
             <div className={styles.mediaView}>
-              <div className={styles.mediaPlayerView}>
-              </div>
+              <div className={styles.mediaPlayerView}/>
               <div className={styles.sourceLabel}>
                 Source: {this.getMediaSource()}
               </div>
@@ -214,7 +213,7 @@ export default class MediaDetails extends Component {
           <MediaInfoPanel tdo={this.props.tdo} engineCategories={this.props.engineCategories} onClose={this.toggleInfoPanel} />}
 
 
-        {this.state.selectedTabValue === 1 && <div>Content Templates</div>}
+        {this.state.selectedTabValue === 1 && <div>Content Template</div>}
       </Paper>
     );
   }

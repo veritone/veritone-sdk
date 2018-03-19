@@ -66,11 +66,6 @@ class MediaInfoPanel extends Component {
 
     const contentElement = (
       <div className={styles.mediaInfoPanel}>
-        {(!this.props.tdo || !this.props.tdo.details) &&
-          <div>
-            Could not load metadata for media id: {this.props.mediaId}. Please try again later.
-          </div>}
-        {this.props.tdo && this.props.tdo.details &&
         <div>
           <div className={styles.infoPanelHeader}>
             <span>Metadata</span>
@@ -93,7 +88,7 @@ class MediaInfoPanel extends Component {
                 */}
               </Menu>
               <IconButton className={styles.closeButton} onClick={this.toggleIsOpen} aria-label='Close'>
-                <Icon className='icon-close-exit'></Icon>
+                <Icon className='icon-close-exit'/>
               </IconButton>
             </div>
           </div>
@@ -132,19 +127,19 @@ class MediaInfoPanel extends Component {
             <div className={styles.programImagesSection}>
               <div>Program Live Image
                 {this.props.tdo.details.veritoneProgram.programLiveImage && this.props.tdo.details.veritoneProgram.programLiveImage.length &&
-                  <img className={styles.programLiveImage} src={this.props.tdo.details.veritoneProgram.programLiveImage}></img>}
+                  <img className={styles.programLiveImage} src={this.props.tdo.details.veritoneProgram.programLiveImage}/>}
                 {(!this.props.tdo.details.veritoneProgram.programLiveImage || !this.props.tdo.details.veritoneProgram.programLiveImage.length) &&
-                  <img className={styles.programLiveImage} src='//static.veritone.com/veritone-ui/default-nullstate.svg'></img>}
+                  <img className={styles.programLiveImage} src='//static.veritone.com/veritone-ui/default-nullstate.svg'/>}
               </div>
               <div>Program Image
                 {this.props.tdo.details.veritoneProgram.programImage && this.props.tdo.details.veritoneProgram.programImage.length &&
-                  <img className={styles.programImage} src={this.props.tdo.details.veritoneProgram.programImage}></img>}
+                  <img className={styles.programImage} src={this.props.tdo.details.veritoneProgram.programImage}/>}
                 {(!this.props.tdo.details.veritoneProgram.programImage || !this.props.tdo.details.veritoneProgram.programImage.length) &&
-                  <img className={styles.programImage} src='//static.veritone.com/veritone-ui/program_image_null.svg'></img>}
+                  <img className={styles.programImage} src='//static.veritone.com/veritone-ui/program_image_null.svg'/>}
               </div>
             </div>
           </Paper>
-        </div>}
+        </div>
       </div>
     );
 
