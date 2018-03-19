@@ -2,6 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import { ocrAssets } from '../story.data.js';
+import EngineOutputHeader from '../EngineOutputHeader';
 import OCREngineOutputView from './';
 
 describe('OCREngineOutputView', () => {
@@ -12,7 +13,7 @@ describe('OCREngineOutputView', () => {
       />
     );
 
-    expect(wrapper.find('.ocrViewHeader')).toHaveLength(1);
+    expect(wrapper.find(EngineOutputHeader)).toHaveLength(1);
   });
 
   it('should have a content area', () => {
