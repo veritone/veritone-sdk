@@ -167,66 +167,73 @@ export const sentimentAssets = [
   {end: 34150, score: 0.75, start: 29022}
 ];
 
-export const objectDetectionAssets = [{
-  startTime: 1506360029,
-  endTime: 1506360056,
-  data: [
-    {
-      "end": 1000,
-      "found": "data",
-      "start": 0,
-      "saliency": 0.942457377910614
-    },
-    {
-      "end": 1000,
-      "found": "science",
-      "start": 0,
-      "saliency": 0.8848179578781128
-    },
-    {
-      "end": 2000,
-      "found": "data",
-      "start": 0,
-      "saliency": 0.942457377910614
-    },
-    {
-      "end": 2000,
-      "found": "illustration",
-      "start": 0,
-      "saliency": 0.9111268520355225
-    },
-    {
-      "end": 2000,
-      "found": "desktop",
-      "start": 0,
-      "saliency": 0.8710343837738037
-    },
-    {
-      "end": 4000,
-      "found": "data",
-      "start": 0,
-      "saliency": 0.8665211200714111
-    },
-    {
-      "end": 5000,
-      "found": "data",
-      "start": 0,
-      "saliency": 0.899578332901001
-    },
-    {
-      "end": 9000,
-      "found": "World Wide Web",
-      "start": 0,
-      "saliency": 0.9532221555709839
-    },
-    {
-      "end": 9000,
-      "found": "desktop",
-      "start": 0,
-      "saliency": 0.9239837527275085
-    }
-  ]
-}];
+export const objectDetectionAssets = [
+  {
+    startTimeMs: 0,
+    endTimeMs: 9000,
+    sourceEngineId: "2dc5166f-c0ad-4d84-8a85-515c42b5d357",
+    sourceEngineName: "Google Cloud Video Intelligence - Label Detection",
+    taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf",
+    series: [
+      {
+        startTimeMs: 0,
+        endTimeMs: 1000,
+        object: {
+          label: "data",
+          confidence: 0.942457377910614
+        }
+      },
+      {
+        endTimeMs: 1000,
+        startTimeMs: 0,
+        objects: {
+          label: "science",
+          confidence: 0.8848179578781128
+        }
+      },
+      {
+        endTimeMs: 2000,
+        startTimeMs: 0,
+        object: {
+          label: "data",
+          confidence: 0.942457377910614
+        }
+      },
+      {
+        endTimeMs: 2000,
+        startTimeMs: 0,
+        object: {
+          label: "desktop",
+          confidence: 0.8710343837738037
+        }
+      },
+      {
+        endTimeMs: 4000,
+        startTimeMs: 0,
+        object: {
+          label: "data",
+          confidence: 0.8665211200714111
+        }
+      },
+      {
+        endTimeMs: 5000,
+        startTimeMs: 0,
+        object: {
+          label: "data",
+          confidence: 0.899578332901001
+        }
+      },
+      {
+        endTimeMs: 9000,
+        startTimeMs: 0,
+        object: {
+          label: "desktop",
+          confidence: 0.9239837527275085
+        }
+      }
+    ]
+  }
+];
 
 export const ocrAssets = [
   {
