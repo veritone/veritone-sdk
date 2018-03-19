@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { shape, number, string, func } from 'prop-types';
+import { number, string, func } from 'prop-types';
 import { isFunction } from 'lodash';
 
 import styles from './styles.scss';
@@ -8,7 +8,8 @@ class OCRObject extends Component {
   static propTypes = {
     text: string,
     startTime: number,
-    endTime: number
+    endTime: number,
+    onOcrClicked: func
   };
 
   msToTime = (duration) => {
@@ -28,7 +29,7 @@ class OCRObject extends Component {
 
   handleOcrClick = (evt) => {
     if (isFunction(this.props.onOcrClicked)) {
-      this.props.onOcrClicked(this.props.ocrObject, evt);
+      this.props.onOcrClicked(this.props.startTime, this.props.endTime, evt);
     }
   }
 

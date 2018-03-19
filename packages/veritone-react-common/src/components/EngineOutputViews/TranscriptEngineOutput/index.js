@@ -7,8 +7,8 @@ import Radio, { RadioGroup } from 'material-ui/Radio';
 import { FormControlLabel } from 'material-ui/Form';
 
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
-import TranscriptContent from './TranscriptContent';
 import EngineOutputHeader from '../EngineOutputHeader';
+import TranscriptContent from './TranscriptContent';
 
 import styles from './styles.scss';
 

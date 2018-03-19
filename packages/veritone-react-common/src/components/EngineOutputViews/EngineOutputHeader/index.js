@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
-import { string, bool } from 'prop-types';
+import { string, bool, arrayOf, node, oneOfType } from 'prop-types';
 
 import styles from './styles.scss';
 
 class EngineOutputHeader extends Component {
   static propTypes = {
     title: string,
-    hideTitle: bool
+    hideTitle: bool,
+    children: oneOfType([
+      arrayOf(node),
+      node
+    ])
   };
 
   render() {

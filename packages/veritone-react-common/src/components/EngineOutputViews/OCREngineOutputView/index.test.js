@@ -1,8 +1,8 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import OCREngineOutputView from './';
 import { ocrAssets } from '../story.data.js';
+import OCREngineOutputView from './';
 
 describe('OCREngineOutputView', () => {
   it('should have a header', () => {

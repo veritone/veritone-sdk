@@ -3,11 +3,10 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import { format, setHours } from 'date-fns';
 
-import OCRObject from './OCRObject';
 import EngineOutputHeader from '../EngineOutputHeader';
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
+import OCRObject from './OCRObject';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -27,7 +26,10 @@ class OCREngineOutputView extends Component {
         })
       }))
     })),
-    onOcrClicked: func
+    onOcrClicked: func,
+    classes: shape({
+      root: string
+    })
   }
 
   static defaultProps = {

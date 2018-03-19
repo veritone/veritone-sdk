@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
-import SentimentGraph from './SentimentGraph';
 import EngineOutputHeader from '../EngineOutputHeader';
+import SentimentGraph from './SentimentGraph';
 
 import styles from './styles.scss';
 
