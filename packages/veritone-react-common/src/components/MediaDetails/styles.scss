@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .mediaDetailsPageContent {
   max-width: 100% !important;
   max-height: 100% !important;
@@ -27,19 +29,19 @@
 
       .pageHeaderActionButton {
         font-size: 24px;
-        color: rgba(255, 255, 255, 0.54);
+        color: $lightWhite;
       }
 
       .pageHeaderActionButtonsSeparator {
         height: 27px;
         width: 1px;
-        background-color: rgba(255, 255, 255, 0.54);
+        background-color: $lightWhite;
         margin: 0 5px 0 10px;
       }
 
       .pageCloseButton {
         font-size: 24px;
-        color: rgba(255, 255, 255, 0.54);
+        color: $lightWhite;
         margin-right: 5px;
       }
     }
@@ -62,7 +64,7 @@
 
   .engineActionHeader {
     height: 48px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid $grey-4;
 
     .engineActionContainer {
       display: flex;
@@ -77,11 +79,11 @@
 
       .toEditModeButton {
         text-transform: uppercase;
-        background-color: #2196f3;
+        background-color: $blue-1;
         color: #fff;
         height: 36px;
         border-radius: 3px;
-        box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
+        box-shadow: 0 0 2px 0 $faint-black, 0 2px 2px 0 rgba(0, 0, 0, 0.24);
         margin-right: 20px;
       }
     }
@@ -98,7 +100,7 @@
       font-size: 20px;
       font-weight: 500;
       line-height: 24px;
-      color: rgba(0, 0, 0, 0.87);
+      color: $dark-black;
       text-transform: capitalize;
     }
 
@@ -107,7 +109,7 @@
       width: 20px;
       font-size: 24px;
       margin: 0 30px;
-      color: rgba(0, 0, 0, 0.87);
+      color: $dark-black;
     }
   }
 
@@ -117,10 +119,10 @@
     justify-content: space-between;
     width: 100%;
     height: 48px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid $grey-4;
 
     .editCategoryHelperMessage {
-      color: rgba(0, 0, 0, 0.54);
+      color: $light-black;
       font-size: 14px;
       line-height: 18px;
       margin-left: 80px;
@@ -139,7 +141,7 @@
       }
 
       .runProcessButtonEditMode {
-        color: #2196f3;
+        color: $blue-1;
 
         .iconClass {
           font-size: 20px;
@@ -155,7 +157,7 @@
       .actionButtonsSeparatorEditMode {
         height: 32px;
         width: 2px;
-        background-color: #e0e0e0;
+        background-color: $grey-4;
         margin: 0 20px;
       }
     }
@@ -178,7 +180,7 @@
       }
 
       .sourceLabel {
-        color: rgba(0, 0, 0, 0.54);
+        color: $light-black;
         font-size: 12px;
         line-height: 14px;
         margin-top: 5px;

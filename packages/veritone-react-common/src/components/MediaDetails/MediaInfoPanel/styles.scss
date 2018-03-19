@@ -1,8 +1,10 @@
+@import 'src/styles/modules/variables';
+
 .mediaInfoPanel {
   width: 363px;
   font-family: Roboto;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.87);
+  color: $dark-black;
   line-height: 16px;
 
   .infoPanelHeader {
@@ -31,7 +33,7 @@
       margin-top: 15px;
 
       .infoFieldLabel {
-        color: rgba(0, 0, 0, 0.54);
+        color: $light-black;
         font-size: 13px;
         line-height: 21px;
         min-width: 90px;
@@ -39,7 +41,7 @@
       }
 
       .infoFieldData {
-        color: rgba(0, 0, 0, 0.87);
+        color: $dark-black;
         font-size: 13px;
         line-height: 21px;
         max-width: 178px;
