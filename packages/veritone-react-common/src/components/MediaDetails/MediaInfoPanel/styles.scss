@@ -1,0 +1,71 @@
+@import 'src/styles/modules/variables';
+
+.mediaInfoPanel {
+  width: 363px;
+  font-family: Roboto;
+  font-size: 14px;
+  color: $dark-black;
+  line-height: 16px;
+
+  .infoPanelHeader {
+    margin: 20px 10px 0 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .headerMenu {
+      .closeButton {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .infoPanelContent {
+    padding: 5px 20px 20px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+
+    .infoField {
+      display: flex;
+      flex-direction: row;
+      margin-top: 15px;
+
+      .infoFieldLabel {
+        color: $light-black;
+        font-size: 13px;
+        line-height: 21px;
+        min-width: 90px;
+        max-width: 90px;
+      }
+
+      .infoFieldData {
+        color: $dark-black;
+        font-size: 13px;
+        line-height: 21px;
+        max-width: 178px;
+        word-wrap: break-word;
+      }
+    }
+  }
+
+  .programImagesSection {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+
+    .programLiveImage {
+      height: 80px;
+      width: 130px;
+      margin-top: 20px;
+    }
+
+    .programImage {
+      height: 82px;
+      width: 82px;
+      margin-top: 20px;
+      margin-left: 10px;
+    }
+  }
+}
