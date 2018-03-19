@@ -39,28 +39,24 @@ class TranscriptionStory extends Component {
 
   handleEngineChange = (evt) => {
     this.setState({
-      ...this.state,
       selectedEngineId: evt.target.value
     })
   }
 
   handleEditModeChange = (evt) => {
     this.setState({
-      ...this.state,
       editMode: evt.target.value
     })
   }
 
   handleViewModeChange = (evt) => {
     this.setState({
-      ...this.state,
       viewMode: evt.target.value
     })
   }
   
   handleSnippetEdit = (snippet, innerHtml, taskId) => {
     this.setState({
-      ...this.state,
       assets: this.state.assets.map((task) => {
         if (task.taskId !== taskId) {
           return task;
