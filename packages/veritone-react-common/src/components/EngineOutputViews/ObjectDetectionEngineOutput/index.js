@@ -7,6 +7,8 @@ import { MenuItem } from 'material-ui/Menu';
 import Button from 'material-ui/Button';
 
 import EngineOutputHeader from '../EngineOutputHeader';
+import { msToReadableString } from '../../../helpers/time';
+import ObjectCountPill from './ObjectCountPill';
 
 import styles from './styles.scss';
 
@@ -37,21 +39,6 @@ class ObjectDetectionEngineOutput extends Component {
     selectedObject: null
   }
 
-  msToTime = (duration) => {
-    let h, m, s;
-    s = Math.floor(duration / 1000);
-    m = Math.floor(s / 60);
-    s = s % 60;
-    h = Math.floor(m / 60);
-    m = m % 60;
-
-    h = (h < 10) && (h > 0) ? "0" + h : h;
-    m = (m < 10) ? "0" + m : m;
-    s = (s < 10) ? "0" + s : s;
-
-    return (h > 0 ? h + ":" : "" ) + m + ":" + s;
-  }
-
   handlePillClicked = (objectName, evt) => {
     this.setState({selectedObject: objectName});
   }
@@ -67,8 +54,8 @@ class ObjectDetectionEngineOutput extends Component {
   render() {
     let { assets, classes } = this.props;
     let groupedAssets = groupBy(reduce(assets, (accumulator, currentValue) => {
-      return accumulator.concat(currentValue.data);
-    }, []), 'found');
+      return accumulator.concat(currentValue.series);
+    }, []), 'object.label');
     return (
       <div className={classNames(styles.objectDetectionOutputView, classes.root)}>
         <EngineOutputHeader title="Object Detection">
@@ -94,15 +81,25 @@ class ObjectDetectionEngineOutput extends Component {
                 <div className={styles.objectOccurenceList}>
                   {
                     groupedAssets[this.state.selectedObject].map((o, i)=>{
-                      return <div onClick={this.handleOccurenceClick} className={styles.objectOccurence} key={i}>{this.msToTime(o.start)} - {this.msToTime(o.end)}</div>
+                      return <div 
+                        onClick={this.handleOccurenceClick} 
+                        className={styles.objectOccurence} 
+                        key={i}
+                      >
+                        {msToReadableString(o.startTimeMs)} - {msToReadableString(o.endTimeMs)}
+                      </div>
                     })
                   }
                 </div>
               </div> :
-               Object.keys(groupedAssets).map(function(key, index) {
-                return <div key={index} className={styles.objectPill} onClick={this.handlePillClicked.bind(this, key)}>
-                  <span>{key}</span><a>({groupedAssets[key].length})</a>
-                </div>
+               Object.keys(groupedAssets).map(function(objectKey, index) {
+                return <ObjectCountPill 
+                  key={index} 
+                  className={styles.objectPill}
+                  label={objectKey}
+                  count={groupedAssets[objectKey].length}
+                  onClick={this.handlePillClicked}
+                />
               }, this)
           }
         </div>
