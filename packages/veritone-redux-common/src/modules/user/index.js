@@ -249,8 +249,7 @@ export function fetchEnabledApps() {
       endpoint: state =>
         `${getConfig(state).apiRoot}/v1/admin/current-user/applications`,
       method: 'GET',
-      headers: commonHeaders,
-      credentials: 'include'
+      headers: commonHeaders
     }
   };
 }

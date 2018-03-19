@@ -7,8 +7,10 @@ const app = VeritoneApp();
 const oauthButton = new OAuthLoginButton({
   // the ID of an existing element in your document where the button will appear
   elId: 'login-button-widget',
-  // your app server's authentication endpoint (required):
-  OAuthURI: 'http://localhost:5001/auth/veritone',
+  // the ID of your Veritone application (found in Developer App)
+  clientId: 'my-client-id',
+  // the route in your app that will handle OAuth responses (more details below)
+  redirectUri: 'https://my-app.com/handle_oauth_callback',
   // optional callbacks to retrieve the OAuth token for using outside of VeritoneApp:
   onAuthSuccess: ({ OAuthToken }) => console.log(OAuthToken),
   onAuthFailure: (error) => console.log(error)
@@ -75,10 +77,12 @@ The actual code you write to use widgets will vary based on your framework of ch
 // you can render the login button to the document like this:
 import { OAuthLoginButton } from 'veritone-widgets'
 const oauthButton = new OAuthLoginButton({
-  // the ID of the element in your document where the button will appear
+  // the ID of an existing element in your document where the button will appear
   elId: 'login-button-widget',
-  // your app server's authentication endpoint (required):
-  OAuthURI: 'http://localhost:5001/auth/veritone', 
+  // the ID of your Veritone application (found in Developer App)
+  clientId: 'my-client-id'
+  // the route in your app that will handle OAuth responses (more details below)
+  redirectUri: 'https://my-app.com/handle_oauth_callback',
   // optional callbacks to retrieve the OAuth token for using outside of VeritoneApp:
   onAuthSuccess: ({ OAuthToken }) => console.log(OAuthToken),
   onAuthFailure: (error) => console.log(error)
@@ -106,8 +110,34 @@ const appBar = new AppBarWidget({
 });
 ```
 
+## Use via script tag
+For environments that do not support javascript module imports, widgets can also be included in an app via script tags.
+
+```
+<body>
+  <div id="appBar-widget"></div>
+
+  <script src="https://unpkg.com/veritone-widgets@^3/umd/VeritoneApp.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^3/umd/AppBar.js"></script>
+
+  <script>
+    const app = VeritoneApp();
+
+    const appBar = new AppBar({
+      elId: 'appBar-widget',
+      title: 'AppBar Widget',
+      profileMenu: true,
+      appSwitcher: true
+    });
+  </script>
+</body>
+```
+
+As you can see, each widget is bundled individually to keep file sizes small. In addition, VeritoneApp is separately bundled and required to use widgets. Scripts can be accessed from the the [unpkg](https://unpkg.com/) cdn or downloaded and hosted on your own infrastructure. Unpkg supports [semver ranges](https://docs.npmjs.com/misc/semver), or a specific version can be specified exactly. 
+
+
 ## Configuring widgets
-Note that the OAuthLoginButton widget in the example above is being configured with four properties: elId, OAuthURI, onAuthSuccess and onAuthFailure. As mentioned earlier, an elId is required for every widget. OAuthURI, onAuthSuccess and onAuthFailure are specific configurable properties on the OAuthLoginButton. As it is in the example, configuration is always provided to the widget constructor.
+Note that the OAuthLoginButton widget in the example above is being configured with five properties: elId, clientId, OAuthURI, onAuthSuccess and onAuthFailure. As mentioned earlier, an elId is required for every widget. OAuthURI, clientId, onAuthSuccess and onAuthFailure are specific configurable properties on the OAuthLoginButton. As it is in the example, configuration is always provided to the widget constructor.
 
 ## Widget instance methods
 Some widgets have methods which can be called on an instance of that widget. For example, the FilePicker widget has the methods `pick()` and `cancel()` to open and close the picker dialog, respectively.
@@ -151,6 +181,7 @@ The title and navigation bar common between all Veritone applications. Includes 
 *Options:*
 
 * title: string, a title to show in the center of the AppBar
+* logoSrc: string, a URL or image (like an SVG) to use as the logo on the left-hand side of the AppBar.
 * backgroundColor: string, a color (in hex) to use for the AppBar background
 * profileMenu: bool, whether or not to show the profile menu
 * appSwitcher: bool, whether or not to show the app switcher menu
@@ -160,11 +191,20 @@ The title and navigation bar common between all Veritone applications. Includes 
 The "Log in with Veritone" button and corresponding frontend logic to handle the OAuth2 authentication flow.
 
 *Options:*
-
-* OAuthURI: string (required), the URL of your app server's OAuth authentication endpoint
+* mode: "implicit" (default) or "authCode", the OAuth grant type you wish to use. 
+* OAuthURI: string (required if using `authCode` mode), the URL of your app server's OAuth callback endpoint.
+* redirectUri: string (required if using `implicit` mode), the URL of your app frontend's OAuth callback endpoint.
+* clientID: string (required if using implicit mode), the ID of your Veritone application (found in Developer App)
 * onAuthSuccess: function, a callback that will be called with the OAuth token when the OAuth flow is completed successfully.
 * onAuthFailure: function, a callback that will be called with the error when the OAuth flow fails.
 
+*Requirements*
+
+Veritone provides two OAuth modes to suit different app requirements:
+
+`Implicit`, the default mode, is a frontend-only grant flow with no serverside requirement. _Most apps will use this mode._ This flow is much easier for apps to implement but has the downside of not returning a refresh token; users will need to log in again each time their token expires. 
+
+`Auth Code` is a server-based grant flow, which uses your Veritone app's OAuth secret to retrieve both an auth token and refresh token. Auth code flow requires a server because the OAuth secret cannot be exposed to the client; the veritone-widets-server package is an example implementation, and more information can be found in its readme.
 
 **FilePicker**
 
@@ -198,14 +238,12 @@ The Veritone file upload dialog. Handles selecting and uploading files to S3 for
 
 * cancel(): close the filepicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
 
-## Serverside requirements
-The OAuth2 flow requires both frontend and serverside components. An example server implementation can be found in the `veritone-widgets-server` package. The responsibility of the server is primarily to manage the application's OAuth secret during the token exchange with Veritone's servers. Please see the `veritone-widgets-server` readme for more information. 
-
 ## Running the development environment (storybook)
 1. Set up your local clone of veritone-sdk, following the instructions in the [main readme](https://github.com/veritone/veritone-sdk#development)
-2. In the `packages/veritone-widgets-server` folder, fill in the missing fields in the `env.development` file with your own app's information (see our [application quick-start guide](http://docs.veritone.com/applications/quick-start/) for more info on how to create an app)
-3. In the `packages/veritone-widgets` folder, run `yarn start`.
-4. When the build finishes, access the storybook at the url provided in your terminal.
+2. cd to this package
+3. In `config.dev.json`, fill in the missing fields with your own app's information (see our [application quick-start guide](http://docs.veritone.com/#/applications/quick-start/) for more info on how to create an app). **Your app's `URL` and `redirect URL` should be set to the same value** for the purposes of dev in this package. This default allows the environment to run with minimal config. 
+4. run `yarn start`.
+5. When the build finishes, access the storybook at the url provided in your terminal.
 
 ## License
 Copyright 2017, Veritone Inc.

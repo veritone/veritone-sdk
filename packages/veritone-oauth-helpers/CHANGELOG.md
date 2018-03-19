@@ -15,3 +15,7 @@
 ## 2.0.0
 * Project is now built as an ES module
 * Removed es6-promise polyfill
+
+## 2.0.1
+* Added a commonjs build to support older bundlers.
+* Tweaked the existing ES module build to run through rollup. Behavior should be unchanged.

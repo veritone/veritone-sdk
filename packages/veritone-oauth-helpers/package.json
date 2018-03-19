@@ -1,6 +1,6 @@
 {
   "name": "veritone-oauth-helpers",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Helper functions for authenticating to Veritone via OAuth",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",

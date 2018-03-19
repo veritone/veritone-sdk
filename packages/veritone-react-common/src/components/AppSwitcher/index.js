@@ -25,7 +25,8 @@ export default class AppSwitcher extends React.Component {
     ),
     isFetchingApps: bool,
     enabledAppsFailedLoading: bool,
-    handleRefresh: func
+    handleRefresh: func,
+    onSwitchApp: func
   };
   static defaultProps = {};
 
@@ -45,7 +46,7 @@ export default class AppSwitcher extends React.Component {
   };
 
   handleSwitchApp = id => {
-    window.location = `/switch-app/${id}`;
+    this.props.onSwitchApp(id);
   };
 
   render() {
