@@ -1,10 +1,11 @@
 import React from 'react';
-import { object, func } from 'prop-types';
+import { object, func, arrayOf } from 'prop-types';
 
 class SDOAdapter extends React.Component {
   static propTypes = {
     getConfiguration: func,
-    configuration: object
+    configuration: object,
+    fields: arrayOf(object)
   };
 
   componentDidMount() {
@@ -19,7 +20,8 @@ class SDOAdapter extends React.Component {
 
   // Hydrate the adapter with the provided configuration if it is defined
   state = {
-    configuration: this.props.configuration || {}
+    configuration: this.props.configuration || {},
+    fields: this.props.fields || []
   };
 
   // Adapter specific functions here
