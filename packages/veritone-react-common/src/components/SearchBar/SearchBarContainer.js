@@ -465,9 +465,6 @@ class SearchBarContainer extends React.Component {
     this.setState({
       menuAnchorEl: null
     });
-    if(this.props.onSearch) {
-      this.props.onSearch();
-    }
   }
 
   menuGroupSelection = () => {
