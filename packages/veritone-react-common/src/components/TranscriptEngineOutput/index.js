@@ -6,7 +6,7 @@ import { MenuItem } from 'material-ui/Menu';
 import Radio, { RadioGroup } from 'material-ui/Radio';
 import { FormControlLabel } from 'material-ui/Form';
 
-import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
+import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent from './TranscriptContent';
 
@@ -21,10 +21,7 @@ class TranscriptEngineOutput extends Component {
       data: string
     })),
     editModeEnabled: bool,
-    classes: shape({
-      root: string,
-      header: string
-    }),
+    className: string,
     onSnippetClicked: func,
     tdoStartTime: number,
     tdoEndTime: number,
@@ -50,7 +47,7 @@ class TranscriptEngineOutput extends Component {
 
   render() {
     let { 
-      classes, 
+      className, 
       editModeEnabled, 
       editMode, 
       assets,
@@ -64,9 +61,9 @@ class TranscriptEngineOutput extends Component {
       onViewModeChange
     } = this.props;
     return (
-      <div className={classNames(styles.transcriptOutputView, classes.root)}>
+      <div className={classNames(styles.transcriptOutputView, className)}>
         <EngineOutputHeader title="Transcription" hideTitle={editModeEnabled}>
-          <div className={styles.transcriptActions}>
+          <div className={styles.transcriptInputs}>
             <div>
               { editModeEnabled && <RadioGroup
                     onChange={onEditModeChange}
