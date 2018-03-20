@@ -165,6 +165,7 @@ class SentimentEngineOutput extends Component {
     return (
       <div className={classNames(styles.sentimentOutputView, className)}>
         <EngineOutputHeader title="Sentiment">
+          {/* TODO: update this to take in an array of engines  and create menu items */}
           <Select value="medulla">
             <MenuItem value="medulla">Medulla</MenuItem>
           </Select>
