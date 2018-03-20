@@ -20,10 +20,10 @@ import styles from './styles.scss';
 
 
 
-export default class IngestionJobGridCard extends React.Component {
+export default class SourceGridCard extends React.Component {
   static propTypes = {
     checkedAll: bool.isRequired,
-    jobName: string.isRequired,
+    name: string.isRequired,
     sourceType: string.isRequired,
     status: string.isRequired,
     creationDate: string.isRequired,
@@ -99,7 +99,7 @@ export default class IngestionJobGridCard extends React.Component {
             }}
             label=''
           />
-          <div className={styles.name}>{this.props.jobName}</div>
+          <div className={styles.name}>{this.props.name}</div>
           <div className={styles.gridDetails}>
             <div className={styles.gridDetailsRow}>
               <div className={styles.detailsTitle}>Source Type: </div>
