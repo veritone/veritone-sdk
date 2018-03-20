@@ -122,7 +122,9 @@ class MediaInfoPanel extends Component {
             </div>
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Tags</div>
-              <div className={styles.infoFieldData}>{this.props.tdo.details.tags.join(', ')}</div>
+              <div className={styles.infoFieldData}>
+                {this.props.tdo.details.tags &&
+                  <div>this.props.tdo.details.tags.join(', ')</div>}</div>
             </div>
             <div className={styles.programImagesSection}>
               <div>Program Live Image
