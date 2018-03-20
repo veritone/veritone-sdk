@@ -5,7 +5,7 @@ import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
+import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import OCRObject from './OCRObject';
 import styles from './styles.scss';
 
@@ -27,9 +27,7 @@ class OCREngineOutputView extends Component {
       }))
     })),
     onOcrClicked: func,
-    classes: shape({
-      root: string
-    })
+    className: string
   }
 
   static defaultProps = {
@@ -38,10 +36,10 @@ class OCREngineOutputView extends Component {
   }
 
   render() {
-    let { classes, assets } = this.props;
+    let { classes, assets, className } = this.props;
 
     return (
-      <div className={classNames(styles.ocrOutputView, classes.root)}>
+      <div className={classNames(styles.ocrOutputView, className)}>
         <EngineOutputHeader title="Text Recognition">
           <Select value="cortex">
               <MenuItem value="cortex">Cortex</MenuItem>
