@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { func, shape, number } from 'prop-types';
 import { isFunction } from 'lodash';
 
-import { msToReadableString } from '../../../../helpers/time';
+import { msToReadableString } from '../../../helpers/time';
 
 class ObjectOccurrenceInterval extends Component {
   static propTypes = {
