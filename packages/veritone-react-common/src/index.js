@@ -1,5 +1,4 @@
 import '../src/styles/global.scss';
-import MediaDetails from "./components/MediaDetails/index";
 
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
@@ -23,3 +22,5 @@ export SentimentEngineOutput from './components/EngineOutputViews/SentimentEngin
 export ObjectDetectionEngineOutput from './components/EngineOutputViews/ObjectDetectionEngineOutput';
 export OCREngineOutputView from './components/EngineOutputViews/OCREngineOutputView';
 export MediaDetails from './components/MediaDetails';
+export EngineCategorySelector from './components/EngineCategorySelector';
+export MediaInfoPanel from './components/MediaInfoPanel';

@@ -36,7 +36,6 @@ class EngineCategorySelector extends Component {
                          classes={{
                            root: styles.engineCategoryTab
                          }}>
-                      Blah blah
                     </Tab>
                   );
                 })

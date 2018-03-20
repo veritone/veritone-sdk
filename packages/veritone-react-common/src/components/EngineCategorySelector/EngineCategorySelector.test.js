@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import EngineCategorySelector from './';
+import EngineCategorySelector from './index';
 
 describe('EngineCategorySelector', () => {
   const TRANSCRIPT_ENGINE_CATEGORY = {
