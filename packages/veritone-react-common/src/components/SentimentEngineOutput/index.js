@@ -155,18 +155,15 @@ class SentimentEngineOutput extends Component {
       start: number,
       score: number
     })),
-    classes: shape({
-      root: string,
-      header: string
-    })
+    className: string
   };
 
   render() {
-    let { classes, data } = this.props;
+    let { classes, data, className } = this.props;
     let duration = data[data.length - 1]['end'] - data[0]['start'];
     let taskData = smoothAndNormalizeTimeSeries(data || [], duration);
     return (
-      <div className={classNames(styles.sentimentOutputView, classes.root)}>
+      <div className={classNames(styles.sentimentOutputView, className)}>
         <EngineOutputHeader title="Sentiment">
           <Select value="medulla">
             <MenuItem value="medulla">Medulla</MenuItem>
