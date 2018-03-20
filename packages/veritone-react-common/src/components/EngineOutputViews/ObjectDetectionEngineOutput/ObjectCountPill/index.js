@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { string, number, func } from 'prop-types';
 
+import styles from './styles.scss';
+
 class ObjectCountPill extends Component {
   static propTypes = {
     label: string,
@@ -14,9 +16,9 @@ class ObjectCountPill extends Component {
   }
 
   render() {
-    let { label, count, className } = this.props;
-    return <div className={className} onClick={this.handleClick}>
-      <span>{label}</span><a>({count})</a>
+    let { label, count } = this.props;
+    return <div className={styles.objectPill} onClick={this.handleClick}>
+      <span className={styles.objectLabel}>{label}</span>&nbsp;<a className={styles.objectCount}>({count})</a>
     </div>
   }
 }

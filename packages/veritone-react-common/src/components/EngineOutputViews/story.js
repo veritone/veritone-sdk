@@ -125,12 +125,22 @@ storiesOf('EngineOutputViews', module)
     )
   })
   .add('ObjectDetectionOutput', () => {
+    let engines = [{
+      sourceEngineId: "2dc5166f-c0ad-4d84-8a85-515c42b5d357",
+      sourceEngineName: "Google Cloud Video Intelligence - Label Detection",
+    },{
+      sourceEngineId: "12345",
+      sourceEngineName: "Test Engine Name",
+    }]
+
     return (
       <ObjectDetectionOuput 
         assets={ objectDetectionAssets }
-        classes={ {
-          root: styles.outputViewRoot 
-        } }
+        className={styles.outputViewRoot}
+        selectedEngineId="2dc5166f-c0ad-4d84-8a85-515c42b5d357"
+        engines={engines}
+        onEngineChange={action("Engine Changed")}
+        onObjectOccurrenceClicked={action("Object occurence clicked")}
       />
     )
   })

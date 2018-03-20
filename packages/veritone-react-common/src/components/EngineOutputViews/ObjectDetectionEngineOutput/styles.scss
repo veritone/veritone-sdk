@@ -25,22 +25,6 @@
   overflow: scroll;
 }
 
-.objectPill {
-  height: 40px;
-  max-width: 250px;
-  display: flex;
-  align-items: center;
-  border: 1px solid #e0e0e0;
-  border-radius: 20px;
-  padding: 12px;
-  font-size: 14px;
-  margin: 0 14px 14px 0;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
 .selectedObjectInfo {
   display: flex;
   flex-direction: column;
@@ -69,12 +53,12 @@
     padding: 15px 0;
   }
 
-  .objectOccurenceList {
+  .objectOccurrenceList {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 
-    .objectOccurence {
+    .objectOccurrence {
       width: 120px;
       box-sizing: border-box;
       color: #2196f3;
