@@ -98,4 +98,33 @@ const logout = async () => {
   });
 };
 
-export { login, logout };
+const handleImplicitRedirect = (
+  hash = window.location.hash,
+  opener = window.opener
+) => {
+  let OAuthToken, error;
+
+  try {
+    OAuthToken = hash.match(/access_token=(.+)$/)[1].split('&')[0];
+  } catch (e) {
+    /**/
+  }
+
+  if (!OAuthToken) {
+    try {
+      error = hash.match(/error=(.+)$/)[1].split('&')[0];
+    } catch (e) {
+      /**/
+    }
+  }
+
+  opener.postMessage(
+    {
+      OAuthToken,
+      error
+    },
+    window.origin
+  );
+};
+
+export { login, logout, handleImplicitRedirect };
