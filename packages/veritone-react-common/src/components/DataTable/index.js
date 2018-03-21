@@ -1,16 +1,17 @@
 import React from 'react';
-import cx from 'classnames';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { omit, noop, range, isFunction, isNumber } from 'lodash';
-import {
-  Table as LibTable,
-  TableBody as LibTableBody,
-  TableHeader,
-  TableHeaderColumn,
+// import cx from 'classnames';
+import { CSSTransitionGroup } from 'react-transition-group'
+import { omit, pick, noop, range, isFunction, isNumber, includes } from 'lodash';
+import MuiTable, {
+  TableBody as MuiTableBody,
+  TableFooter,
+  TableHead as MuiTableHead,
   TableRow,
-  TableRowColumn
+  TableCell
 } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
+import Checkbox from 'material-ui/Checkbox';
+import { withStyles} from 'material-ui/styles'
 
 import { injectInto } from 'helpers/react';
 import {
@@ -18,63 +19,67 @@ import {
   func,
   number,
   node,
-  children,
   objectOf,
   any,
   string,
   oneOfType,
-  oneOf
+  oneOf,
+  arrayOf
 } from 'prop-types';
 
 import withPagination from './withPagination';
 import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index.scss';
 
+// fixes scroll display: https://github.com/mui-org/material-ui/pull/8349/files
+const baseStyles = theme => ({
+  root: {
+    width: '100%',
+    marginTop: theme.spacing.unit * 3
+  },
+  tableWrapper: {
+    overflowX: 'auto',
+  },
+  head: {
+    paddingRight: '24px'
+  }
+});
+
 /*
  * BASE TABLE
  */
+@withStyles(baseStyles)
 class _Table extends React.Component {
   static propTypes = {
     rowGetter: func.isRequired,
     rowCount: number.isRequired,
+    rowRange: arrayOf(number),
     rowHeight: number,
-    footerHeight: number,
-    height: number, // exclude for auto
     width: number,
-    footerElement: children,
+    footerElement: node,
     focusedRow: number,
     renderFocusedRowDetails: func,
     onShowCellRange: func,
-    watchData: any, // eslint-disable-line
     emptyRenderer: func,
-    children: children, // children should be Columns
-    showHeader: bool
+    children: node, // children should be Columns
+    showHeader: bool,
+    selectable: bool,
+    selectedRows: arrayOf(any),
+    onSelectAll: func,
+    onSelectRow: func,
+    classes: objectOf(string)
   };
 
   static defaultProps = {
     rowHeight: 75,
-    footerHeight: 56,
     onShowCellRange: noop,
     emptyRenderer: noop,
-    showHeader: true
+    showHeader: true,
+    selectable: false,
+    selectedRows: [],
+    onSelectAll: noop,
+    onSelectRow: noop,
   };
-
-  componentDidMount() {
-    // this.callOnShowCellRange();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.watchData !== prevProps.watchData) {
-      this.callOnShowCellRange();
-    }
-  }
-
-  callOnShowCellRange() {
-    this.props.onShowCellRange({
-      start: 0,
-      end: this.props.rowCount - 1
-    });
-  }
 
   render() {
     const restProps = omit(this.props, [
@@ -84,7 +89,7 @@ class _Table extends React.Component {
     ]);
 
     return (
-      <ReactCSSTransitionGroup
+      <CSSTransitionGroup
         transitionEnter
         transitionLeave={false}
         transitionEnterTimeout={200}
@@ -97,15 +102,17 @@ class _Table extends React.Component {
         }}
         component="div"
       >
-        {isNumber(this.props.focusedRow) && this.props.rowCount > 0
-          ? <SplitTableContainer
-              {...restProps}
-              focusedRow={this.props.focusedRow}
-              renderFocusedRowDetails={this.props.renderFocusedRowDetails}
-              key="split"
-            />
-          : <NormalTableContainer {...restProps} key="normal" />}
-      </ReactCSSTransitionGroup>
+        <Paper elevation={1} className={this.props.classes.root}>
+          {isNumber(this.props.focusedRow) && this.props.rowCount > 0
+            ? <SplitTableContainer
+                {...restProps}
+                focusedRow={this.props.focusedRow}
+                renderFocusedRowDetails={this.props.renderFocusedRowDetails}
+                key="split"
+              />
+            : <NormalTableContainer {...restProps} key="normal" />}
+        </Paper>
+      </CSSTransitionGroup>
     );
   }
 }
@@ -113,61 +120,74 @@ class _Table extends React.Component {
 /*
  * Table body when no row is focused
  */
+
 const NormalTableContainer = ({
   rowCount,
-  footerHeight,
+  rowRange,
   footerElement,
   children,
   emptyRenderer,
   showHeader,
+  selectable,
+  classes,
   ...rest
-}) =>
-  <Paper zDepth={1}>
-    <LibTable footerStyle={{ height: footerHeight }} {...rest}>
-      {
-        showHeader &&
-        <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-          <TableRow>
-            {React.Children.map(children, c =>
-              <TableHeaderColumn
-                key={c.props.header}
-                width={c.props.width}
-                style={{
-                  textAlign: c.props.align || 'left'
-                }}
-              >
-                {c.props.header}
-              </TableHeaderColumn>
-            )}
-          </TableRow>
-        </TableHeader>
-      }
-
-      {
-        rowCount === 0
-        ? <LibTableBody displayRowCheckbox={false}>
-            <TableRow>
-              <TableRowColumn colSpan={children.length}>
-                {emptyRenderer()}
-              </TableRowColumn>
-            </TableRow>
-          </LibTableBody>
-        : <TableBody {...rest} rowRangeEnd={rowCount}>
+}) => {
+  const headerProps = pick(rest, ['selectedRows', 'onSelectAll']);
+  const restProps = omit(rest, 'onSelectAll');
+  
+  return (
+    <div className={classes.tableWrapper}>
+      <MuiTable>
+        {
+          showHeader &&
+          <TableHead
+            classes={classes}
+            selectable={selectable}
+            rowCount={rowCount}
+            {...headerProps}
+          >
             {children}
-          </TableBody>
-      }
-
-      {footerElement}
-    </LibTable>
-  </Paper>;
+          </TableHead>
+        }
+        {
+          rowCount === 0
+          ? <MuiTableBody>
+              <TableRow>
+                <TableCell colSpan={children.length}>
+                  {emptyRenderer()}
+                </TableCell>
+              </TableRow>
+            </MuiTableBody>
+          : <TableBody 
+              {...restProps}
+              selectable={selectable}
+              rowRangeStart={(rowRange && rowRange[0])}
+              rowRangeEnd={(rowRange && rowRange[1]) || rowCount}
+            >
+              {children}
+            </TableBody>
+        }
+        {footerElement &&
+          <TableFooter>
+            <TableRow>
+              {footerElement}
+            </TableRow>
+          </TableFooter>}
+      </MuiTable>
+    </div>
+  );
+}
 
 NormalTableContainer.propTypes = {
   rowCount: number,
+  rowRange: arrayOf(number),
   footerHeight: number,
   footerElement: node,
   emptyRenderer: func,
   showHeader: bool,
-  children
+  children: node,
+  classes: objectOf(string),
+  selectable: bool
 };
 
 /*
@@ -178,24 +198,28 @@ class SplitTableContainer extends React.Component {
     focusedRow: number,
     onCellClick: func,
     rowCount: number,
+    rowRange: arrayOf(number),
     rowHeight: number,
-    footerHeight: number,
     footerElement: node,
     renderFocusedRowDetails: func,
     rowGetter: func,
     emptyRenderer: func,
     showHeader: bool,
-    children
+    children: node,
+    classes: objectOf(string),
+    selectable: bool,
+    onSelectRow: func
   };
 
   translateCellClick = (row, column) => {
-    return this.props.onCellClick(this.props.focusedRow + 1 + row, column);
+    return this.props.onCellClick(row, column);
   };
 
-  translateFocusedRowCellClick = (row, column) => {
-    // fixme: this causes the row to collapse even when clicking in the expanded accordion area
-    // return this.props.onCellClick(this.props.focusedRow, column);
-  };
+  handleOnSelectRow = (row) => {
+    return (e, checked) => {
+      return this.props.onSelectRow(row, checked)
+    }
+  }
 
   render() {
     const {
@@ -203,108 +227,117 @@ class SplitTableContainer extends React.Component {
       focusedRow,
       renderFocusedRowDetails,
       rowCount,
-      footerHeight,
+      rowRange,
       footerElement,
       children,
       rowGetter,
+      showHeader,
+      selectable,
+      classes,
       ...rest
     } = this.props;
 
-    const restProps = omit(rest, ['emptyRenderer', 'showHeader']);
+    const headerProps = pick(rest, ['selectedRows', 'onSelectAll']);
+    const restProps = omit(rest, 'onSelectAll');
 
     return (
       <div>
-        <Paper zDepth={1}>
-          <LibTable {...restProps} onCellClick={onCellClick}>
-            <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-              <TableRow>
-                {React.Children.map(children, c =>
-                  <TableHeaderColumn
-                    key={c.props.header}
-                    width={c.props.width}
-                    style={{
-                      textAlign: c.props.align || 'left'
-                    }}
-                  >
-                    {c.props.header}
-                  </TableHeaderColumn>
-                )}
-              </TableRow>
-            </TableHeader>
-
-            {rowCount === 0
-              ? <LibTableBody displayRowCheckbox={false}>
+        <Paper elevation={1} className={classes.tableWrapper}>
+          <MuiTable>
+            {
+              showHeader &&
+              <TableHead
+                classes={classes}
+                selectable={selectable}
+                rowCount={rowCount}
+                {...headerProps}
+              >
+                {children}
+              </TableHead>
+            }
+            {
+              rowCount === 0
+              ? <MuiTableBody>
                   <TableRow>
-                    <TableRowColumn colSpan={children.length}>
+                    <TableCell colSpan={children.length}>
                       {this.props.emptyRenderer()}
-                    </TableRowColumn>
+                    </TableCell>
                   </TableRow>
-                </LibTableBody>
+                </MuiTableBody>
               : <TableBody
                   {...restProps}
+                  selectable={selectable}
+                  rowRangeStart={rowRange && rowRange[0]}
                   rowRangeEnd={this.props.focusedRow}
                   rowGetter={rowGetter}
+                  onCellClick={onCellClick}
                 >
                   {children}
-                </TableBody>}
-          </LibTable>
+                </TableBody>
+            }
+          </MuiTable>
         </Paper>
 
         <Paper
-          zDepth={1}
+          className={classes.tableWrapper}
+          elevation={1}
           style={{
             marginTop: 15,
             marginBottom: 15
           }}
-          className={cx(styles['focusTable'], styles['focused-row'])}
+          // className={cx(styles['focusTable'], styles['focused-row'])}
           key={focusedRow}
         >
-          <LibTable
-            {...restProps}
-            onCellClick={this.translateFocusedRowCellClick}
-            selectable={false}
-          >
-            <LibTableBody displayRowCheckbox={false} style={{ maxHeight: 48 }}>
-              <TableRow style={{ height: this.props.rowHeight }}>
+          <MuiTable>
+            <MuiTableBody>
+              <TableRow style={{ maxHeight: 48, height: this.props.rowHeight }}>
+                {
+                  selectable &&
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={includes(rest.selectedRows, focusedRow)}
+                      onChange={this.handleOnSelectRow(focusedRow)}
+                    />
+                  </TableCell>
+                }
                 {injectInto(children, {
                   data: rowGetter(this.props.focusedRow),
-                  row: this.props.focusedRow
+                  row: this.props.focusedRow,
+                  onCellClick
                 })}
               </TableRow>
               <TableRow>
-                <TableRowColumn
+                <TableCell
                   colSpan={children.length}
                   style={{ whiteSpace: 'inherit', padding: 0 }}
                 >
                   {renderFocusedRowDetails(rowGetter(this.props.focusedRow))}
-                </TableRowColumn>
+                </TableCell>
               </TableRow>
-            </LibTableBody>
-          </LibTable>
+            </MuiTableBody>
+          </MuiTable>
         </Paper>
 
-        <Paper zDepth={1}>
-          <LibTable
-            footerStyle={{ height: footerHeight }}
-            {...restProps}
-            onCellClick={this.translateCellClick}
-          >
+        <Paper elevation={1} className={classes.tableWrapper}>
+          <MuiTable>
             <TableBody
               {...restProps}
-              rowRangeStart={
-                this.props.focusedRow + 1
-                // this.state.collapseFocusedRow
-                //   ? this.props.focusedRow
-                //   : this.props.focusedRow + 1
-              }
-              rowRangeEnd={rowCount}
+              selectable={selectable}
+              rowRangeStart={this.props.focusedRow + 1}
+              rowRangeEnd={(rowRange && rowRange[1]) || rowCount}
               rowGetter={rowGetter}
+              onCellClick={this.translateCellClick}
             >
               {children}
             </TableBody>
 
-            {footerElement}
-          </LibTable>
+            {footerElement &&
+              <TableFooter>
+                <TableRow>
+                  {footerElement}
+                </TableRow>
+              </TableFooter>}
+          </MuiTable>
         </Paper>
       </div>
     );
@@ -320,23 +353,47 @@ const TableBody = ({
   rowRangeEnd,
   rowGetter,
   rowHeight,
+  onCellClick,
+  selectable,
+  selectedRows,
+  onSelectRow,
   ...rest
 }) => {
+  function handleOnSelectRow (row) {
+    return (e, checked) => {
+      return onSelectRow(row, checked)
+    }
+  } 
+
   return (
-    <LibTableBody displayRowCheckbox={false} showRowHover {...rest}>
-      {(rowRangeStart
+    <MuiTableBody>
+      {(isNumber(rowRangeStart)
         ? range(rowRangeStart, rowRangeEnd)
         : range(rowRangeEnd)).map((
-        r // rowGetter(r) &&
+        r
       ) =>
-        <TableRow style={{ height: rowHeight }} key={r}>
+        <TableRow
+          key={r}
+          style={{ height: rowHeight }}
+          hover
+        >
+          {
+            selectable &&
+            <TableCell padding="checkbox">
+              <Checkbox
+                checked={includes(selectedRows, r)}
+                onChange={handleOnSelectRow(r)}
+              />
+            </TableCell>
+          }
           {injectInto(children, {
             data: rowGetter(r),
-            row: r
+            row: r,
+            onCellClick
           })}
         </TableRow>
       )}
-    </LibTableBody>
+    </MuiTableBody>
   );
 };
 TableBody.propTypes = {
@@ -344,9 +401,13 @@ TableBody.propTypes = {
   rowRangeEnd: number,
   rowHeight: number,
   rowGetter: func,
-  children
+  children: node,
+  selectable: bool,
+  selectedRows: arrayOf(any),
+  onCellClick: func,
+  onSelectRow: func
 };
-TableBody.muiName = 'TableBody'; // trick MUI into thinking this is a LibTableBody
+TableBody.muiName = 'TableBody'; // trick MUI into thinking this is a MuiTableBody
 
 /*
  * To be used as children of the base table
@@ -360,6 +421,8 @@ export const Column = ({
   align = 'left',
   style,
   row,
+  width,
+  onCellClick,
   ...rest
 }) => {
   function renderData() {
@@ -372,17 +435,22 @@ export const Column = ({
       : String(data[dataKey] || '');
   }
 
+  function handleCellClick(e) {
+    return onCellClick(row, dataKey, data[dataKey]);
+  }
+
   return (
-    <TableRowColumn
-      {...rest}
+    <TableCell
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',
         textAlign: align,
+        width,
         ...style
       }}
+      onClick={onCellClick && handleCellClick}
     >
       {data && renderData()}
-    </TableRowColumn>
+    </TableCell>
   );
 };
 
@@ -394,7 +462,53 @@ Column.propTypes = {
   cursorPointer: bool,
   align: oneOf(['left', 'right', 'center']),
   style: objectOf(oneOfType([string, number])),
-  row: number
+  row: number,
+  onCellClick: func
+};
+
+const TableHead = ({
+  children,
+  selectable = false,
+  onSelectAll = noop,
+  selectedRows = [],
+  rowCount,
+  classes
+}) => {
+  return (
+    <MuiTableHead>
+      <TableRow>
+        {
+          selectable &&
+          <TableCell padding="checkbox">
+            <Checkbox
+              checked={selectedRows.length === rowCount}
+              onChange={onSelectAll}
+            />
+          </TableCell>
+        }
+        {React.Children.map(children, c =>
+          <TableCell
+            className={classes.head}
+            key={c.props.header}
+            style={{
+              textAlign: c.props.align || 'left',
+              width: c.props.width
+            }}
+          >
+            {c.props.header}
+          </TableCell>
+        )}
+      </TableRow>
+    </MuiTableHead>
+  );
+}
+
+TableHead.propTypes = {
+  selectable: bool,
+  onSelectAll: func,
+  rowCount: number.isRequired,
+  children: node,
+  selectedRows: arrayOf(number)
 };
 
 // symbol that will cause a column to render its loading state if passed in from rowGetter
@@ -405,5 +519,3 @@ export const LOADING = '@@LOADING';
  */
 export const Table = withBasicBehavior(_Table);
 export const PaginatedTable = withBasicBehavior(withPagination(_Table));
-
-// todo: sorting

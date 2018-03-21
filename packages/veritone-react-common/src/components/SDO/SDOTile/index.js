@@ -16,9 +16,9 @@ import {
   Checkbox
 } from 'components/formComponents';
 
-import LinesEllipsis from 'react-lines-ellipsis';
-import responsiveHOC from 'react-lines-ellipsis/lib/responsiveHOC'
-const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
+// import LinesEllipsis from 'react-lines-ellipsis';
+// import responsiveHOC from 'react-lines-ellipsis/lib/responsiveHOC'
+// const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
 
 
 export default class SDOTile extends React.Component {
