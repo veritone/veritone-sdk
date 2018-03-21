@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .objectDetectionOutputView {
   padding: 20px 40px 0 30px;
   display: flex;
@@ -55,4 +57,8 @@
 
 .objectCount {
   flex: 0;
+}
+
+.objectDetectedTime {
+  color: $blue-1;
 }

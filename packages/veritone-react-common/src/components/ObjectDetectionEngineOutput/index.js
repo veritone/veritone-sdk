@@ -78,7 +78,7 @@ class ObjectDetectionEngineOutput extends Component {
                 onClick={this.handleOccurenceClick(o)}
               >
                 <span className={styles.objectLabel}>{o.object.label}</span>&nbsp;
-                <span>{msToReadableString(o.startTimeMs)} - {msToReadableString(o.endTimeMs)}</span>
+                <span className={styles.objectDetectedTime}>{msToReadableString(o.startTimeMs)} - {msToReadableString(o.endTimeMs)}</span>
               </div>
             })
           }
