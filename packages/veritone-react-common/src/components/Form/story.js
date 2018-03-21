@@ -10,19 +10,32 @@ var fields = {
   name: 'Name',
   lastName: 'Last Name',
   username: 'Username',
-  password: 'Password'
+  password: 'Password',
+  time: 'Time',
+  schemas: {
+    twitterschema1: {
+      value: 'Twitter Schema 1',
+      
+    },
+    twitterschema2: {
+      value: 'Twitter Schema 2'
+    }
+  }
 };
 
-var values = {
+var defaultValues = {
   name: 'John',
-  lastName: 'Doe'
+  lastName: 'Doe',
+  schemas: 'twitterschema1'
 };
 
 var fieldTypes = {
   name: 'text',
   lastName: 'text',
   username: 'text',
-  password: 'password'
+  password: 'password',
+  time: 'time',
+  schemas: ['select', 'static']
 };
 
 var submitName = 'Save';
@@ -36,7 +49,7 @@ storiesOf('Form', module)
     <Form 
       formName={formName} 
       fields={fields} 
-      values={values} 
+      defaultValues={defaultValues} 
       fieldTypes={fieldTypes} 
       submitName={submitName} 
       submitCallback={submitCallback} 
