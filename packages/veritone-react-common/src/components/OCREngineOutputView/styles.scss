@@ -1,12 +1,13 @@
-.sentimentOutputView {
+.ocrOutputView {
   padding: 20px 40px 0 30px;
   display: flex;
   flex-direction: column;
 }
 
-.sentimentViewHeader {
+.ocrViewHeader {
   height: 45px;
   width: 100%;
+  flex: none;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -17,7 +18,8 @@
   }
 }
 
-.sentimentViewContent {
-  flex: auto;
+.ocrContent {
   display: flex;
+  flex-flow: row wrap;
+  overflow: scroll;
 }

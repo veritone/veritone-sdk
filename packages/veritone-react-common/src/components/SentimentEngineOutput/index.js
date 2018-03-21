@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
+import EngineOutputHeader from '../EngineOutputHeader';
 import SentimentGraph from './SentimentGraph';
 
 import styles from './styles.scss';
@@ -154,26 +155,21 @@ class SentimentEngineOutput extends Component {
       start: number,
       score: number
     })),
-    classes: shape({
-      root: string,
-      header: string
-    })
+    className: string
   };
 
   render() {
-    let { classes, data } = this.props;
+    let { classes, data, className } = this.props;
     let duration = data[data.length - 1]['end'] - data[0]['start'];
     let taskData = smoothAndNormalizeTimeSeries(data || [], duration);
     return (
-      <div className={classNames(styles.sentimentOutputView, classes.root)}>
-        <div className={classNames(styles.sentimentViewHeader, classes.header)}>
-          <div className={styles.headerTitle}>Sentiment</div>
-          <div className={styles.transcriptActions}>
-            <Select value="medulla">
-              <MenuItem value="medulla">Medulla</MenuItem>
-            </Select>
-          </div>
-        </div>
+      <div className={classNames(styles.sentimentOutputView, className)}>
+        <EngineOutputHeader title="Sentiment">
+          {/* TODO: update this to take in an array of engines  and create menu items */}
+          <Select value="medulla">
+            <MenuItem value="medulla">Medulla</MenuItem>
+          </Select>
+        </EngineOutputHeader>
         <div className={styles.sentimentViewContent}>
           <SentimentGraph 
             data={taskData.series}

@@ -19,5 +19,8 @@ export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
 export TranscriptEngineOutput from './components/EngineOutputViews/TranscriptEngineOutput';
 export SentimentEngineOutput from './components/EngineOutputViews/SentimentEngineOutput';
+export ObjectDetectionEngineOutput from './components/EngineOutputViews/ObjectDetectionEngineOutput';
+export OCREngineOutputView from './components/EngineOutputViews/OCREngineOutputView';
+export MediaDetails from './components/MediaDetails';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
