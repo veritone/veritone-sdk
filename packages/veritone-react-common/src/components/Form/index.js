@@ -28,16 +28,13 @@ export default class Form extends React.Component {
     defaultValues: objectOf(string), // any default values the form should come with (doesn't need to define all of them), key = fieldId, value = fieldValue
     fieldTypes: objectOf(any).isRequired, // tells the type of input of each field so we know what form component to use, key = fieldId, value = fieldType
     submitName: string, // name of the submit button, defaults to submit
-    submitCallback: func.isRequired // will pass the object of key = fieldId, value = fieldValue
+    submitCallback: func.isRequired, // will pass the object of key = fieldId, value = fieldValue
+    fieldIcons: objectOf(string) // provided icons mapped to the fieldId if you want an icon next to the field
   };
 
-  static defaultProps = {
+  static defaultProps = {};
 
-  };
-
-  state = {
-    
-  };
+  state = {};
 
   componentWillMount = () => {
     // TODO: error check the props
@@ -83,13 +80,15 @@ export default class Form extends React.Component {
     );
   };
 
-  render() {
+
+  populateFields = () => {
     const fields = Object.keys(this.props.fields).map((fieldId, index) => {
       // enumerate necessary values
+      console.log(this.state);
       let fieldType = this.props.fieldTypes[fieldId];
       let fieldName= this.props.fields[fieldId];
       let fieldValue = this.props.defaultValues[fieldId] || '';
-
+  
       // populate the fields based on field type
       if (fieldType.includes('text') || fieldType.includes('password')) {
         // textField
@@ -129,6 +128,7 @@ export default class Form extends React.Component {
         const items = Object.keys(this.props.fields[fieldId]).map((item, index) => {
           return <MenuItem value={item} key={index}>{this.props.fields[fieldId][item].value}</MenuItem>
         });
+        console.log(this.state[fieldId]);
         return (
           <Select
             className={styles.selectField}
@@ -143,6 +143,12 @@ export default class Form extends React.Component {
         return; // do nothing if a type was wrong TODO: might be checked in error checking
       }
     });
+    return fields;
+  } 
+
+
+  render() {
+    const fields = this.populateFields();
     return (
       <form className={styles.formStyle}>
         {fields}

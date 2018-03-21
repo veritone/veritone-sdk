@@ -18,6 +18,7 @@ import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
 import SDOTile from 'components/SDO/SDOTile';
+import CircleImage from 'components/CircleImage';
 
 import styles from './styles.scss';
 
@@ -80,9 +81,7 @@ export default class IngestionJobFullScreen extends React.Component {
         <div className={styles.tableCard}>
           <div className={styles.schemaTitle}>
             <div className={styles.schemaTitleGroup}>
-              <div className={styles.imageWrapper}>
-                <img src={this.props.jobInfo.thumbnail} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' className={styles.imageStyle} />
-              </div>
+              <CircleImage height={'38px'} width={'38px'} image={this.props.jobInfo.thumbnail}/>
               <div className={styles.jobName}>
                 {this.props.jobInfo.jobName}
               </div>

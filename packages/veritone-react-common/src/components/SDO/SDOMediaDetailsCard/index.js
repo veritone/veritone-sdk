@@ -31,34 +31,34 @@ import styles from './styles.scss';
 
 export default class SDOMediaDetailsCard extends React.Component {
   static propTypes = {
-    data: arrayOf(any).isRequired,
-    sdoSourceInfo: objectOf(any).isRequired,
-    sdoSchemaInfo: objectOf(any).isRequired,
-    sdoEngineInfo: objectOf(any).isRequired,
-    callback: func
+    sdoData: arrayOf(objectOf(any)).isRequired,
+    schemaData: arrayOf(objectOf(any)).isRequired, // array of schema objects
+    sdoEngineInfo: objectOf(any),
+
+    currentSchema: string, // the id of the current schema, if not provided, get the first instance
+    schemaCallback: func
   };
 
-  static defaultProps = {
-
-  };
+  static defaultProps = {};
 
   state = {
     checkedAll: false,
-    sourceSelection: this.props.sdoSourceInfo.sourceSelection || '',
-    schemaSelection: this.props.sdoSchemaInfo.schemaSelection || '',
+    schemaSelection: this.props.currentSchema || {},
     engineSelection: this.props.sdoEngineInfo.engineSelection || '<Engine Name>',
   };
 
-  setupCallback = (data) => {
-    console.log('callback for SDOCard');
-    this.props.callback(data);
+  componentWillMount = () => {
+    // TODO: check the schemaData
+    
+
+    if (!this.props.currentSchema || !Object.keys(this.props.currentSchema).length) {
+      // let currentSchema = this.props.schemaCallback(this.props.sdoData[0].schemaId); // if no schema passed, just get the first one //TODO: props attributes may change, schemaId might be something else now
+      this.setState({
+        schemaSelection: currentSchema
+      });
+    }
   };
 
-  handleSourceChange = (event) => {
-    this.setState({
-      sourceSelection: event.target.value
-    });
-  };
 
   handleSchemaChange = (event) => {
     this.setState({
@@ -84,7 +84,7 @@ export default class SDOMediaDetailsCard extends React.Component {
   };
 
   render() {
-    const schemaMenuItems = this.props.sdoSchemaInfo.schemaSelections.map((schema, index) => {
+    const schemaMenuItems = this.props.schemaData.map((schema, index) => {
       return <MenuItem value={schema} key={index}>{schema} (Schema Name)</MenuItem>
     });
     const engineMenuItems = this.props.sdoEngineInfo.engineSelections.map((engine, index) => {
@@ -93,9 +93,9 @@ export default class SDOMediaDetailsCard extends React.Component {
     const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
       return <span className={styles.sdoBasicColumn} key={index}>{title}</span>
     });
-    const sourceMenuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
-      return <MenuItem value={source} key={index}>{source} (Source Name)</MenuItem>
-    });
+    // const sourceMenuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
+    //   return <MenuItem value={source} key={index}>{source} (Source Name)</MenuItem>
+    // });
     const SDOTiles = this.props.data.map((SDO, index) => {
       return <SDOTile className={styles.tile} checkAll={this.state.checkedAll} columns={SDO} key={index} />
     });
@@ -124,7 +124,7 @@ export default class SDOMediaDetailsCard extends React.Component {
             </IconButton>
           </div>
         </div>
-        <SDOCard data={this.props.data} sdoSourceInfo={this.props.sdoSourceInfo} />
+        <SDOCard sdoData={this.props.data} schemaData={} />
       </div>
     );
   };

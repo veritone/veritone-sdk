@@ -30,8 +30,8 @@ import styles from './styles.scss';
 
 export default class SDOCard extends React.Component {
   static propTypes = {
-    data: arrayOf(any).isRequired,
-    sdoSourceInfo: objectOf(any).isRequired,
+    sdoData: arrayOf(objectOf(any)).isRequired, // take an array of SDO objects
+    schemaData: objectOf(string), // take the schema object
     callback: func
   };
 
@@ -41,7 +41,7 @@ export default class SDOCard extends React.Component {
 
   state = {
     checkedAll: false,
-    sourceSelection: this.props.sdoSourceInfo.sourceSelection || ''
+    // sourceSelection: this.props.sdoSourceInfo.sourceSelection || ''
   };
 
   setupCallback = (data) => {
@@ -49,11 +49,11 @@ export default class SDOCard extends React.Component {
     this.props.callback(data);
   };
 
-  handleSourceChange = (event) => {
-    this.setState({
-      sourceSelection: event.target.value
-    });
-  };
+  // handleSourceChange = (event) => {
+  //   this.setState({
+  //     sourceSelection: event.target.value
+  //   });
+  // };
 
 
   handleCheckboxChange = () => {
@@ -63,38 +63,17 @@ export default class SDOCard extends React.Component {
   };
 
   render() {
-    const columnTitles = Object.keys(this.props.data[0]).map((title, index) => {
+    const columnTitles = Object.keys(this.props.schemaData).map((title, index) => {
       return <span className={styles.sdoBasicColumn} key={index}>{title}</span>
     });
-    const sourceMenuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
-      return <MenuItem value={source} key={index}>{source} (Source Name)</MenuItem>
-    });
-    const SDOTiles = this.props.data.map((SDO, index) => {
+    // const sourceMenuItems = this.props.sdoSourceInfo.sourceSelections.map((source, index) => {
+    //   return <MenuItem value={source} key={index}>{source} (Source Name)</MenuItem>
+    // });
+    const SDOTiles = this.props.sdoData.map((SDO, index) => {
       return <SDOTile checkAll={this.state.checkedAll} columns={SDO} key={index} />
     });
     return (
       <div className={styles.sdoCard}>
-        <div className={styles.sourceTitle}>
-          <div className={styles.sourceTitleGroup}>
-            <img src={this.props.sdoSourceInfo.sourceImage} alt='' className={styles.imageStyle} />
-            <div className={styles.sourceName}>
-              {this.props.sdoSourceInfo.sourceName} (Source Name)
-            </div>
-          </div>
-          <div className={styles.sourceGroup}>
-            <Select 
-              className={styles.sourceSelect}
-              value={this.state.sourceSelection}
-              onChange={this.handleSourceChange}
-            >
-              {sourceMenuItems}
-            </Select>
-            <div className={styles.separator} />
-            <IconButton className={styles.exportIcon} aria-label='export'>
-              <Icon className={'icon-file_download'}></Icon>
-            </IconButton>
-          </div>
-        </div>
         <div className={styles.sdoTable}>
           <div className={styles.sdoTableTitle}>
             {columnTitles}
