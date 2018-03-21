@@ -46,3 +46,6 @@ This allows redux-common to use more than one version of the API.
 ## 3.1.0
 * Implement the oauth implicit grant flow
 * remove `credentials: include` on user.fetchEnabledApps, which does not work cross-domain.
+
+## 3.2.0
+* The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
