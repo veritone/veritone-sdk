@@ -37,8 +37,12 @@ This allows redux-common to use more than one version of the API.
 
 * Add callbacks to oauth saga to support behavior needed in veritone-widgets
 
-# 3.0.0
+## 3.0.0
 * Replaced webpack with rollup
   * The bundle is now an es module rather than UMD, which should enable tree shaking to a greater extent, reducing the filesize overhead of using the library.
   * Dependencies are now external to the library rather than being included in the bundle. Because of this, bundle size is reduced significantly. 
   * A commonJS bundle is also included for older toolchains that do not understand the es module format.
+
+## 3.1.0
+* Implement the oauth implicit grant flow
+* remove `credentials: include` on user.fetchEnabledApps, which does not work cross-domain.
