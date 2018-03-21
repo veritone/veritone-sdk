@@ -46,3 +46,6 @@
 * AppBar
   * Added props.logoSrc (string), which allows a logo to be passed into the component.
   * (breaking) Added props.onSwitchApp (func), which replaces the original behavior of setting window.location to the app immediately.
+
+## 4.1.0
+* The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools. 
