@@ -9,6 +9,7 @@ import Button from 'material-ui/Button';
 import EngineOutputHeader from '../EngineOutputHeader';
 import ObjectOccurrenceInterval from './ObjectOccurrenceInterval';
 import ObjectCountPill from './ObjectCountPill';
+import { msToReadableString } from '../../helpers/time';
 
 import styles from './styles.scss';
 
@@ -41,7 +42,7 @@ class ObjectDetectionEngineOutput extends Component {
     selectedObject: null
   }
 
-  handlePillClicked = (objectName, evt) => {
+  handlePillClicked = (objectName) => (evt) => {
     this.setState({selectedObject: objectName});
   }
 
@@ -49,7 +50,8 @@ class ObjectDetectionEngineOutput extends Component {
     this.setState({selectedObject: null});
   }
 
-  handleOccurenceClick = (occurrence) => {
+  handleOccurenceClick = occurrence => (event) => {
+    console.log(occurrence);
     this.props.onObjectOccurrenceClicked(occurrence);
   }
 
@@ -91,24 +93,21 @@ class ObjectDetectionEngineOutput extends Component {
                 </div>
                 <div className={styles.objectOccurrenceList}>
                   { groupedAssets[this.state.selectedObject].map((o, i)=>{
-                      return <ObjectOccurrenceInterval 
+                      return <div
                         key={i}
-                        occurrence={o}
+                        onClick={this.handleOccurenceClick(o)} 
                         className={styles.objectOccurrence}
-                        onOccurrenceClick={this.handleOccurenceClick}
-                      />
-                    })
+                      >
+                        {msToReadableString(o.startTimeMs)} - {msToReadableString(o.endTimeMs)}
+                      </div>
+                    }, this)
                   }
                 </div>
               </div> :
               Object.keys(groupedAssets).map(function(objectKey, index) {
-                return <ObjectCountPill 
-                  key={index} 
-                  className={styles.objectPill}
-                  label={objectKey}
-                  count={groupedAssets[objectKey].length}
-                  onClick={this.handlePillClicked}
-                />
+                return <div className={styles.objectPill} onClick={this.handlePillClicked(objectKey)}>
+                  <span className={styles.objectLabel}>{objectKey}</span>&nbsp;<a className={styles.objectCount}>({groupedAssets[objectKey].length})</a>
+                </div>
               }, this)
           }
         </div>
