@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import ObjectDetectionOuput from './';
-
 import styles from './story.styles.scss';
+import ObjectDetectionOuput from './';
 
 const objectDetectionAssets = [
   {
@@ -101,6 +100,7 @@ storiesOf('ObjectDetectionEngineOutput', module)
         engines={engines}
         onEngineChange={action("Engine Changed")}
         onObjectOccurrenceClicked={action("Object occurence clicked")}
+        mediaPlayerLocation={2000}
       />
     )
   }); 
