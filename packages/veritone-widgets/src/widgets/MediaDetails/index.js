@@ -32,6 +32,7 @@ class MediaDetailsWidget extends React.Component {
   static propTypes = {
     _widgetId: string.isRequired,
     mediaId: number.isRequired,
+    onRunProcess: func,
     onClose: func,
     loadEngineCategoriesRequest: func,
     loadMediaMetadataRequest: func,
@@ -64,6 +65,12 @@ class MediaDetailsWidget extends React.Component {
       });
     }
   }
+
+  handleRunProcess = () => {
+    this.props.onRunProcess();
+    // close MediaDetails dialog to focus on the run process dialog
+    this.props.onClose();
+  };
 
   handleTabChange = (event, value) => {
     this.setState({ selectedTabValue: value });
@@ -114,9 +121,6 @@ class MediaDetailsWidget extends React.Component {
     this.toggleEditMode();
   };
 
-  onRunProcess = () => {
-  };
-
   toggleInfoPanel = () => {
     this.setState({
       isInfoPanelOpen : !this.state.isInfoPanelOpen
@@ -124,10 +128,6 @@ class MediaDetailsWidget extends React.Component {
   };
 
   render() {
-
-    // TODO: hookup run process action button menu
-    // TODO: order engine categories in this page. Keep order hardcoded per mocks, then rest - alphabetically
-
     return (
       <FullScreenDialog open={true}>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -139,7 +139,7 @@ class MediaDetailsWidget extends React.Component {
                 {this.getMediaFileName()}
               </div>
               <div className={styles.pageHeaderActionButtons}>
-                <IconButton className={styles.pageHeaderActionButton} onClick={this.onRunProcess} aria-label='Run process'>
+                <IconButton className={styles.pageHeaderActionButton} onClick={this.handleRunProcess} aria-label='Run process'>
                   <Icon className='icon-run-process' classes={{root: styles.iconClass}}/>
                 </IconButton>
                 <IconButton className={styles.pageHeaderActionButton} onClick={this.toggleInfoPanel} aria-label='Info Panel'>
@@ -191,7 +191,7 @@ class MediaDetailsWidget extends React.Component {
               </div>
               <div className={styles.actionButtonsEditMode}>
                 <Button className={styles.runProcessButtonEditMode}
-                        onClick={this.onRunProcess}>
+                        onClick={this.handleRunProcess}>
                   <Icon className='icon-run-process' classes={{root: styles.iconClass}}/>
                   RUN PROCESS</Button>
                 <div className={styles.actionButtonsSeparatorEditMode}/>
@@ -216,27 +216,27 @@ class MediaDetailsWidget extends React.Component {
             <div className={styles.engineCategoryView}>
 
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'transcript' &&
-              <div>Transcript component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'face' &&
-              <div>Face component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'object' &&
-              <div>Object component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'logo' &&
-              <div>Logo component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'ocr' &&
-              <div>OCR component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'fingerprint' &&
-              <div>Fingerprint component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'translate' &&
-              <div>Translation component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'sentiment' &&
-              <div>Sentiment component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'geolocation' &&
-              <div>Geolocation component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'stationPlayout' &&
-              <div>Station playout component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
               {this.state.selectedEngineCategory && this.state.selectedEngineCategory.categoryType === 'music' &&
-              <div>Music component</div>}
+              <div>{this.state.selectedEngineCategory.categoryType} component</div>}
 
             </div>
           </div>}

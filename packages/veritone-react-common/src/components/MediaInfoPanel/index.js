@@ -94,7 +94,7 @@ class MediaInfoPanel extends Component {
           </div>
           <Paper className={styles.infoPanelContent}>
             <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Filename</div>
+              <div className={styles.infoFieldLabel}>Foo</div>
               <div className={styles.infoFieldData}>{this.props.tdo.details.veritoneFile.filename}</div>
             </div>
             <div className={styles.infoField}>
@@ -124,7 +124,7 @@ class MediaInfoPanel extends Component {
               <div className={styles.infoFieldLabel}>Tags</div>
               <div className={styles.infoFieldData}>
                 {this.props.tdo.details.tags &&
-                  <div>this.props.tdo.details.tags.join(', ')</div>}</div>
+                  <div>{this.props.tdo.details.tags.join(', ')}</div>}</div>
             </div>
             <div className={styles.programImagesSection}>
               <div>Program Live Image
