@@ -128,9 +128,6 @@ class MediaDetailsWidget extends React.Component {
   };
 
   render() {
-
-    // TODO: order engine categories by category type, hardcoded order as per mocks, then the rest keep in alphabetical order
-
     return (
       <FullScreenDialog open={true}>
         <Paper className={styles.mediaDetailsPageContent}>

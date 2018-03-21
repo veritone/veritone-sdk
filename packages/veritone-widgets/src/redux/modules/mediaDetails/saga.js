@@ -34,8 +34,6 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
             tasks {
               records {
                 id 
-                status
-                completedDateTime
                 engine {
                   id 
                   name
@@ -88,7 +86,7 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
       .forEach(error => console.warn(error));
   }
 
-  let result = [];
+  let engineCategories = [];
 
   // START CONVERTING tasks to EngineCategories
   // {
@@ -148,34 +146,40 @@ function* loadEngineCategoriesSaga(widgetId, mediaId, callback = noop) {
     });
 
     // list all categories
-    const allCategories = [];
+    const filteredCategories = [];
     const categoriesIterator = engineCategoryById.values();
     let nextCategory = categoriesIterator.next();
     while (!nextCategory.done) {
-      allCategories.push(nextCategory.value);
+      filteredCategories.push(nextCategory.value);
       nextCategory = categoriesIterator.next();
     }
-
-    // set category status
-    allCategories.forEach(category => {
-      if (category.engines.some(engine => engine.status === 'failed')) {
-        category.status = 'failed';
-        return;
-      }
-      if (category.engines.some(engine => engine.status !== 'complete')) {
-        category.status = 'inprogress';
-      } else {
-        category.status = 'completed';
-      }
-    });
-    result = allCategories;
+    engineCategories = filteredCategories;
   }
   //// **************
   //// END CONVERSION
 
+
+  // order categories first must go most frequently used (ask PMs), the rest - alphabetically
+  engineCategories.sort((category1, category2) => {
+    if (category1.categoryType < category2.categoryType)
+      return -1;
+    if (category1.categoryType > category2.categoryType)
+      return 1;
+    return 0;
+  });
+  const orderedCategoryTypes = ['transcript', 'face', 'object', 'logo', 'ocr', 'fingerprint', 'translate', 'sentiment', 'geolocation', 'stationPlayout', 'music'];
+  orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
+    const index = engineCategories.findIndex(category => category.categoryType === orderedCategoryType);
+      if (index >= 0) {
+        const category = engineCategories[index];
+        engineCategories.splice(index, 1);
+        engineCategories.unshift(category);
+      }
+  });
+
   yield* finishLoadEngineCategories(
     widgetId,
-    result,
+    engineCategories,
     {
       warning: false,
       error: false
