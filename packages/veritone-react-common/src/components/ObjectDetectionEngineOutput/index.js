@@ -7,8 +7,6 @@ import { MenuItem } from 'material-ui/Menu';
 import Button from 'material-ui/Button';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import ObjectOccurrenceInterval from './ObjectOccurrenceInterval';
-import ObjectCountPill from './ObjectCountPill';
 import { msToReadableString } from '../../helpers/time';
 
 import styles from './styles.scss';
