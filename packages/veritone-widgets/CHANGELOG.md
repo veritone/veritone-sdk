@@ -64,3 +64,6 @@
 * Added devconfig.json for easier configuration during development.
 * AppBar
   * Use the correct route when switching apps in the appSwitcher.
+
+## 4.1.0
+* The CJS and script tag bundles are now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
