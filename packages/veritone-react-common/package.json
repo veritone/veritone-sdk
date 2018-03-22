@@ -35,7 +35,7 @@
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
     "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
-    "build:storybook": "rimraf docs-static && NODE_ENV=production BABEL_ENV=production-es build-storybook -c .storybook -o docs-static",
+    "build:storybook": "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "lint": "npm run lint:js; npm run lint:styles",
