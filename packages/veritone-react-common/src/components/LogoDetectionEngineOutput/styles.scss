@@ -1,0 +1,19 @@
+@import 'src/styles/modules/muiTypography';
+
+.headerRight {
+	line-height: 45px;
+	& > div {
+		float: left;
+	}
+}
+
+.logoDetectionBody {
+	clear: both;
+
+	.item {
+		margin: 0px 10px 10px 0px;
+		.label {
+			max-width: 200px;
+		}
+	}
+}
