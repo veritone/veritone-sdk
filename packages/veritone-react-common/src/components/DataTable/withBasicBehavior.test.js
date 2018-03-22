@@ -1,13 +1,12 @@
 import React from 'react';
-import { expect } from 'chai';
 import { constant } from 'lodash';
 
-import { mountWithMuiContext } from 'helpers/test/mui';
+import { mount } from 'enzyme';
 
 import { Table, Column } from './';
 // import withBasicBeahvior from './withBasicBehavior';
 
-describe('withBasicBehavior', function() {
+describe.only('withBasicBehavior', function() {
   it("shows the Column's loading indicator for loading rows", function() {
     const rowData = {
       0: { id: 'a' },
@@ -15,7 +14,7 @@ describe('withBasicBehavior', function() {
     };
     const loadingIndices = [1, 3];
 
-    const wrapper = mountWithMuiContext(
+    const wrapper = mount(
       <Table
         rowGetter={i => rowData[i]} // eslint-disable-line react/jsx-no-bind
         rowCount={4}
@@ -25,17 +24,17 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td').at(0).text()).to.equal('a');
+    expect(wrapper.find('td').at(0).text()).toEqual('a');
 
-    expect(wrapper.find('td').at(1).text()).to.equal('Loading...');
+    expect(wrapper.find('td').at(1).text()).toEqual('Loading...');
 
-    expect(wrapper.find('td').at(2).text()).to.equal('c');
+    expect(wrapper.find('td').at(2).text()).toEqual('c');
 
-    expect(wrapper.find('td').at(3).text()).to.equal('Loading...');
+    expect(wrapper.find('td').at(3).text()).toEqual('Loading...');
   });
 
   it('shows the empty failure message', function() {
-    const wrapper = mountWithMuiContext(
+    const wrapper = mount(
       <Table
         rowGetter={constant(null)} // eslint-disable-line react/jsx-no-bind
         rowCount={0}
@@ -46,11 +45,11 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td')).to.have.text('works');
+    expect(wrapper.find('td').text()).toContain('works');
   });
 
   it('shows the empty loading message', function() {
-    const wrapper = mountWithMuiContext(
+    const wrapper = mount(
       <Table
         rowGetter={constant(null)} // eslint-disable-line react/jsx-no-bind
         rowCount={0}
@@ -61,11 +60,11 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td')).to.have.text('works');
+    expect(wrapper.find('td').text()).toContain('works');
   });
 
   it('shows the empty/no data message', function() {
-    const wrapper = mountWithMuiContext(
+    const wrapper = mount(
       <Table
         rowGetter={constant(null)} // eslint-disable-line react/jsx-no-bind
         rowCount={0}
@@ -75,11 +74,11 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td')).to.have.text('works');
+    expect(wrapper.find('td').text()).toContain('works');
   });
 
   it('allows emptyRenderer to be overwritten', function() {
-    const wrapper = mountWithMuiContext(
+    const wrapper = mount(
       <Table
         rowGetter={constant(null)} // eslint-disable-line react/jsx-no-bind
         rowCount={0}
@@ -89,7 +88,7 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td')).to.have.text('works');
+    expect(wrapper.find('td').text()).toContain('works');
   });
 
   it('does not show loading indicators for data that already exists', function() {
@@ -98,7 +97,7 @@ describe('withBasicBehavior', function() {
     };
     const loadingIndices = [0, 1];
 
-    const wrapper = mountWithMuiContext(
+    const wrapper = mount(
       <Table
         rowGetter={i => rowData[i]} // eslint-disable-line react/jsx-no-bind
         rowCount={2}
@@ -108,8 +107,8 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td').at(0).text()).to.equal('a');
+    expect(wrapper.find('td').at(0).text()).toEqual('a');
 
-    expect(wrapper.find('td').at(1).text()).to.equal('Loading...');
+    expect(wrapper.find('td').at(1).text()).toEqual('Loading...');
   });
 });

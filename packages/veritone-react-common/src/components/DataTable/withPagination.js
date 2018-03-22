@@ -41,29 +41,45 @@ const withPagination = WrappedTable => {
       onShowCellRange: noop,
       onCellClick: noop
     };
+
+    state = {
+      page: 0,
+      rowsPerPage: this.props.rowsPerPage || this.props.initialItemsPerPage
+    }
+
+    componentWillReceiveProps(nextProps) {
+      const newState = {};
+
+      if (nextProps.rowCount < this.props.rowCount) { // if the dataset is a different size, flip to first page
+        newState.page = 0;
+      }
+
+      if (nextProps.rowsPerPage !== this.props.rowsPerPage) {
+        newState.rowsPerPage = nextProps.rowsPerPage;
+      }
+
+      return this.setState(newState);
+    }
     
     rowGetter = i => {
       return this.props.rowGetter(i)
-      // const requestedIndex = i + this.props.rowsPerPage * this.props.page;
-      
-      // return requestedIndex <= this.props.rowCount
-      //   ? this.props.rowGetter(i + this.props.rowsPerPage * this.props.page)
-      //   : undefined;
     }
 
     handlePageChange = (e, page) => {
-      let lastPossiblePage = Math.ceil(this.props.rowCount / Number(this.props.rowsPerPage)) - 1;
+      let lastPossiblePage = Math.ceil(this.props.rowCount / this.state.rowsPerPage) - 1;
 
       if (lastPossiblePage < 0) {
         lastPossiblePage = 0;
       }
 
       // don't show empty pages
-      if (page >  lastPossiblePage) {
-        return this.props.handlePageChange(e, lastPossiblePage);
-      }
+      this.setState({ 
+        page: page > lastPossiblePage ? lastPossiblePage : page
+      })
+    }
 
-      return this.props.handlePageChange(e, page);
+    handleRowsPerPageChange = (e) => {
+      this.setState({ rowsPerPage: Number(e.target.value) })      
     }
     
     handleRefreshData = () => {
@@ -75,33 +91,28 @@ const withPagination = WrappedTable => {
       });
     }
 
-    getDisplayedItemIndices(props = this.props) {
-      const firstItem = props.page * props.rowsPerPage;
+    getDisplayedItemIndices = () => {
+      const firstItem = this.state.page * this.state.rowsPerPage;
       const lastItem =
-        props.page * props.rowsPerPage +
-        props.rowsPerPage -
+        this.state.page * this.state.rowsPerPage +
+        this.state.rowsPerPage -
         1;
 
       return [firstItem, lastItem];
     }
 
     translateCellClick = (row) => {
-      // return this.props.onCellClick(
-      //   row + this.props.page * this.props.rowsPerPage
-      // );
       return this.props.onCellClick(row);
     };
 
-    translateFocusedRow() {
+    translateFocusedRow = () => {
       // focused row is null unless the row is on this page
-      const min = this.props.rowsPerPage * this.props.page;
-      const max = this.props.rowsPerPage - 1 + this.props.rowsPerPage * this.props.page;
+      const min = this.state.rowsPerPage * this.state.page;
+      const max = this.state.rowsPerPage - 1 + this.state.rowsPerPage * this.state.page;
 
       return isNumber(this.props.focusedRow) &&
         this.props.focusedRow >= min &&
         this.props.focusedRow <= max
-        // ? this.props.focusedRow -
-        // this.props.page * this.props.rowsPerPage
         ? this.props.focusedRow
         : null;
     }
@@ -124,8 +135,6 @@ const withPagination = WrappedTable => {
       let [firstItem, lastItem] = this.getDisplayedItemIndices();
 
       lastItem = Math.min(lastItem, this.props.rowCount - 1);
-      // calculate the number of rows to render
-      // const rowCount = this.props.rowCount > 0 ? lastItem - firstItem + 1 : 0;
 
       const restProps = omit(this.props, [
         'rowGetter',
@@ -142,13 +151,28 @@ const withPagination = WrappedTable => {
             <TablePagination
               colSpan={this.props.children.length}
               count={this.props.rowCount}
-              rowsPerPage={this.props.rowsPerPage}
-              page={this.props.page}
+              rowsPerPage={this.state.rowsPerPage}
+              page={this.state.page}
               onChangePage={this.handlePageChange}
-              onChangeRowsPerPage={this.props.handleChangeRowsPerPage}
-              Actions={this.renderActions}
+              onChangeRowsPerPage={this.handleRowsPerPageChange}
+              // Actions={this.renderActions}
             />              
           }
+          // footerElement={
+          //   <PaginatedTableFooter
+          //     page={this.state.page}
+          //     perPage={this.state.rowsPerPage}
+          //     onChangePage={this.handlePageChange}
+          //     onChangePerPage={this.handleRowsPerPageChange}
+          //     colSpan={this.props.children.length}
+          //     rowCount={this.props.rowCount}
+          //     onRefreshPageData={
+          //       this.props.onRefreshPageData
+          //         ? this.handleRefreshData
+          //         : undefined
+          //     }
+          //   />
+          // }
           onCellClick={this.translateCellClick}
           focusedRow={this.translateFocusedRow()}
         />

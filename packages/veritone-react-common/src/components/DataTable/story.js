@@ -5,6 +5,7 @@ import { storiesOf } from '@storybook/react';
 import LinesEllipsis from 'react-lines-ellipsis'
 import responsiveHOC from 'react-lines-ellipsis/lib/responsiveHOC'
 import { Table, Column, PaginatedTable } from './';
+import MenuColumn from './MenuColumn';
 
 const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
 
@@ -188,22 +189,9 @@ function BasicTable(props) {
 }
 
 class PagedTable extends React.Component {
-  state = {
-    page: 0,
-    rowsPerPage: 5
-  }
-
   getRowData = (i) => {
     return this.props.data[i];
   };
-
-  fnPageChange = (e, page) => {
-    this.setState({ page })
-  }
-
-  fnPagePerRowChange = (e) => {
-    this.setState({ rowsPerPage: e.target.value })
-  }
 
   render() {
     const tableEmptyMessage =
@@ -218,9 +206,6 @@ class PagedTable extends React.Component {
         header={column}
         key={index}
         cellRenderer={renderCell}
-        // style={{
-        //   paddingRight: '24px'
-        // }}
       />
     });
   
@@ -228,11 +213,8 @@ class PagedTable extends React.Component {
       <PaginatedTable
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
-        page={this.state.page}
-        rowsPerPage={this.state.rowsPerPage}
+        rowsPerPage={5}
         showHeader
-        handlePageChange={this.fnPageChange}
-        handleChangeRowsPerPage={this.fnPagePerRowChange}
         onRefreshPageData={() => console.log('Refresh Me')}
         onCellClick={(i) => console.log('i:', i)}
       >
@@ -244,7 +226,6 @@ class PagedTable extends React.Component {
 
 class SplitTable extends React.Component {
   state = {
-    page: 0,
     rowsPerPage: 5,
     focusedTableRow: null
   }
@@ -253,25 +234,15 @@ class SplitTable extends React.Component {
     return this.props.data[i];
   };
 
-  fnPageChange = (e, page) => {
-    this.setState({ page })
-  }
-
-  fnPagePerRowChange = (e) => {
-    this.setState({ rowsPerPage: e.target.value })
-  }
-
   renderFocusedRowDetails = (row) => {
     return <div style={{textAlign: 'center'}}>{row.name}</div>
   }
 
   setFocusedRow = (row) => {
-    console.log('row:', row)
     this.setState({ focusedTableRow: row });
   }
 
   render() {
-    console.log('%'.repeat(50))
     const tableEmptyMessage =
       'Nothing to see here! This table will show your engines when some exist.';
   
@@ -292,11 +263,7 @@ class SplitTable extends React.Component {
       <PaginatedTable
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
-        page={this.state.page}
-        rowsPerPage={this.state.rowsPerPage}
         showHeader
-        handlePageChange={this.fnPageChange}
-        handleChangeRowsPerPage={this.fnPagePerRowChange}
         onRefreshPageData={() => console.log('Refresh Me')}
         onCellClick={this.setFocusedRow}
         focusedRow={this.state.focusedTableRow}
@@ -310,8 +277,6 @@ class SplitTable extends React.Component {
 
 class SelectionTable extends React.Component {
   state = {
-    page: 0,
-    rowsPerPage: 5,
     focusedTableRow: null,
     selectedRows: []
   }
@@ -319,14 +284,6 @@ class SelectionTable extends React.Component {
   getRowData = (i) => {
     return this.props.data[i];
   };
-
-  fnPageChange = (e, page) => {
-    this.setState({ page })
-  }
-
-  fnPagePerRowChange = (e) => {
-    this.setState({ rowsPerPage: e.target.value })
-  }
 
   renderFocusedRowDetails = (row) => {
     return <div style={{textAlign: 'center'}}>{row.name}</div>
@@ -367,11 +324,7 @@ class SelectionTable extends React.Component {
       <PaginatedTable
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
-        page={this.state.page}
-        rowsPerPage={this.state.rowsPerPage}
         showHeader
-        handlePageChange={this.fnPageChange}
-        handleChangeRowsPerPage={this.fnPagePerRowChange}
         onRefreshPageData={() => console.log('Refresh Me')}
         onCellClick={this.setFocusedRow}
         focusedRow={this.state.focusedTableRow}
@@ -400,3 +353,16 @@ storiesOf('Table', module)
   .add('Selection Table', () => (
     <SelectionTable data={data} /> 
   ))
+  .add('Menu Column', () => {
+    const data = {
+      actions: ['submit', 'delete']
+    };
+
+    return (
+      <MenuColumn
+        data={data}
+        dataKey="actions"
+        protectedActions={['delete']}
+      />
+    );
+  })

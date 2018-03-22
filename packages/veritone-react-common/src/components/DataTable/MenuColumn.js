@@ -8,16 +8,12 @@ import {
   without,
   intersection
 } from 'lodash';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/Menu';
+import Menu, { MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Divider from 'material-ui/Divider';
 
-// import styles from './styles/index.scss';
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
-
-import { Column } from 'shared-components/DataTable';
 
 export default class MenuColumn extends React.Component {
   static propTypes = {
@@ -25,7 +21,9 @@ export default class MenuColumn extends React.Component {
     protectedActions: arrayOf(string),
     additionalActions: arrayOf(string),
     transformLabel: func,
-    style: objectOf(any)
+    style: objectOf(any),
+    data: objectOf(any).isRequired,
+    dataKey: string.isRequired
   };
 
   static defaultProps = {
@@ -33,6 +31,21 @@ export default class MenuColumn extends React.Component {
     protectedActions: ['delete'],
     transformLabel: l => l,
     additionalActions: []
+  };
+
+  state = {
+    open: false,
+    anchorEl: null
+  };
+
+  openMenu = event => {
+    this.setState({ open: true, anchorEl: event.currentTarget });
+  };
+
+  closeMenu = () => {
+    this.setState({
+      open: false
+    });
   };
 
   sortActions(actions) {
@@ -48,55 +61,42 @@ export default class MenuColumn extends React.Component {
     ].filter(a => !!a);
   }
 
-  renderMenuCell = (actions = [], ...rest) => {
+  render () {
+    const actions = this.props.data[this.props.dataKey];
     const allActions = [...actions, ...this.props.additionalActions];
 
     return (
       allActions.length > 0 &&
-      <IconMenu
-        iconButtonElement={
-          <IconButton>
-            <MoreVertIcon />
-          </IconButton>
-        }
-        anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-        useLayerForClickAway
-        iconStyle={{ opacity: 0.54 }}
-      >
-        {this.sortActions(allActions).map(
-          (s, i) =>
-            s === '@@divider'
-              ? <Divider key={`divider-${i}`} />
-              : <MenuItem
-                  primaryText={startCase(
-                    camelCase(this.props.transformLabel(s))
-                  )}
-                  key={s}
-                  onTouchTap={partial(this.props.onSelectItem, s, ...rest)}
-                />
-        )}
-      </IconMenu>
+      <div>
+        <IconButton
+          aria-label="Actions"
+          aria-owns={this.state.anchorEl ? 'actions-menu' : null}
+          aria-haspopup="true"
+          onClick={this.openMenu}
+        >
+          <MoreVertIcon />
+        </IconButton>
+        <Menu
+          id="actions-menu"
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+          open={this.state.open}
+          onRequestClose={this.closeMenu}
+        >
+          {this.sortActions(allActions).map(
+            (s, i) =>
+              s === '@@divider'
+                ? <Divider key={`divider-${i}`} />
+                : <MenuItem
+                    key={s}
+                    onClick={partial(this.props.onSelectItem, s)}
+                  >
+                    {startCase(camelCase(this.props.transformLabel(s)))}
+                  </MenuItem>
+          )}
+        </Menu>      
+      </div>
     );
   };
-
-  render() {
-    return (
-      <Column
-        cursorPointer={false}
-        width={50}
-        align="right"
-        cellRenderer={this.renderMenuCell}
-        {...omit(
-          this.props,
-          'onSelectItem',
-          'protectedActions',
-          'additionalActions',
-          'transformLabel',
-          'uiState'
-        )}
-        style={{ paddingRight: 0, ...this.props.style }}
-      />
-    );
-  }
 }
