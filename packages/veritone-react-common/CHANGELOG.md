@@ -49,3 +49,6 @@
 
 ## 4.1.0
 * The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools. 
+
+## 4.2.0
+* Added `NavigationSideBar` component. See the story for more details.
