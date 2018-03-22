@@ -119,8 +119,8 @@ export default class LogoDetectionEngineOutput extends Component {
      * @return MUI Select Element
      */
     drawEngineSelection (data) {
-        if (!data || data.length === 0)                         return '';
-        if (!this.state.sourceEngineId && data.length > 0)      this.state.sourceEngineId = data[0].sourceEngineId;
+        if (!data || data.length === 0)      return '';
+        if (!this.state.sourceEngineId)      this.state.sourceEngineId = data[0].sourceEngineId;
         
         return (
             <Select value={this.state.sourceEngineId} onChange={this.onEngineChanged}>
