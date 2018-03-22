@@ -15,6 +15,7 @@ export default class PillButton extends Component {
 		gapClassName: PropTypes.string,
 		labelClassName: PropTypes.string,
 		infoClassName: PropTypes.string,
+		highlight: PropTypes.bool,
 		onClick: PropTypes.func
 	};
 
@@ -37,12 +38,13 @@ export default class PillButton extends Component {
 			gapClassName, 
 			labelClassName, 
 			infoClassName,
+			highlight,
 			onClick
 		} = this.props;
 		let hasGap = label && label.length > 0 && info && info.length > 0;
 
 		return (
-			<div className={classNames(defaultStyles.pillButton, className)} style={style} onClick={onClick}>
+			<div className={highlight? classNames(defaultStyles.pillButton, defaultStyles.highlight, className) : classNames(defaultStyles.pillButton, className)} style={style} onClick={onClick}>
 				<div className={classNames(defaultStyles.label, labelClassName)} style={labelStyle}>
 					{label}
 				</div>
