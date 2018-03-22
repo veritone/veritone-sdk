@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import LogoDetectionEngineOutput from './';
 import styles from './story.styles.scss';
+import LogoDetectionEngineOutput from './';
 
 
 storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {

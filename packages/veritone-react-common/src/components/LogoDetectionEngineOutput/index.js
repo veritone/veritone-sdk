@@ -2,30 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import classNames from 'classnames';
-import styles from './styles.scss';
-import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import ZoomOutMap from 'material-ui-icons/ZoomOutMap';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import EngineOutputHeader from '../EngineOutputHeader';
 import PillButton from '../Parts/Buttons/PillButton';
+import styles from './styles.scss';
 
 export default class LogoDetectionEngineOutput extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isExpanded: false
-        };
-
-        this.onItemSelected = this.onItemSelected.bind(this);
-        this.onEngineChanged = this.onEngineChanged.bind(this);
-        this.onExpandViewClicked = this.onExpandViewClicked.bind(this);
-    }
-
     static propTypes = {
         label: PropTypes.string,
         data: PropTypes.array,
+        className: PropTypes.string,
         headerClassName: PropTypes.string,
         bodyClassName: PropTypes.string,
         itemClassName: PropTypes.string,
@@ -41,43 +30,15 @@ export default class LogoDetectionEngineOutput extends Component {
         data: [],
     };
 
-    render () {
-        let {
-                data,
-                label, 
-                className, 
-                headerClassName,
-                bodyClassName
-            } = this.props;
-        
-        return (
-            <div className={(this.state.isExpanded) ? classNames(styles.logoDetection, styles.expanded, className) : classNames(styles.logoDetection, className)}>
-                {/* -----Header----- */}
-                <EngineOutputHeader title={label} className={headerClassName}>
-                    <div className={styles.headerRight}>
-                        {/* -----Engine Selection----- */}
-                        <div>
-                            {this.drawEngineSelection(data)}
-                        </div>
+    constructor(props) {
+        super(props);
+        this.state = {
+            isExpanded: false
+        };
 
-                        {/* -----Fullscreen button----- */}
-                        <div>
-                            <IconButton onClick={this.onExpandViewClicked}>
-                                <ZoomOutMap />
-                            </IconButton>
-                        </div>
-                    </div>
-                </ EngineOutputHeader>
-
-                {/* -----Body----- */}
-                <div className={classNames(styles.logoDetectionBody, bodyClassName)}>
-                    { 
-                        /* -----Detected Logos----- */
-                        this.drawItems(data) 
-                    }
-                </div>
-            </div>
-        );
+        this.onItemSelected = this.onItemSelected.bind(this);
+        this.onEngineChanged = this.onEngineChanged.bind(this);
+        this.onExpandViewClicked = this.onExpandViewClicked.bind(this);
     }
 
     //================================================================================
@@ -86,7 +47,7 @@ export default class LogoDetectionEngineOutput extends Component {
     onItemSelected (value) {
         let itemInfo = {
             item: value,
-            sourceEngineId: this.state.sourceEngineId
+            sourceEngineId: this.state.sourceEngineId || this.props.data[0].sourceEngineId
         }
         
         if (this.props.onItemSelected)      this.props.onItemSelected(itemInfo);
@@ -120,10 +81,10 @@ export default class LogoDetectionEngineOutput extends Component {
      */
     drawEngineSelection (data) {
         if (!data || data.length === 0)      return '';
-        if (!this.state.sourceEngineId)      this.state.sourceEngineId = data[0].sourceEngineId;
-        
+
+        let selectedID = this.state.sourceEngineId || data[0].sourceEngineId;
         return (
-            <Select value={this.state.sourceEngineId} onChange={this.onEngineChanged}>
+            <Select value={selectedID} onChange={this.onEngineChanged}>
                 {
                     data.map((engineInfo) => {
                         return (
@@ -149,11 +110,12 @@ export default class LogoDetectionEngineOutput extends Component {
         let itemClassName = this.props.itemClassName;
         let itemInfoClassName = this.props.itemInfoClassName;
         let itemLabelClassName = this.props.itemLabelClassName;
+        let selectedEngineID = this.state.sourceEngineId || data[0].sourceEngineId;
 
         let items = [];
         if (data && data.length > 0) {
             data.map((engineInfo) => {
-                if (engineInfo.sourceEngineId === this.state.sourceEngineId) {                          //Look for selected engine
+                if (engineInfo.sourceEngineId === selectedEngineID) {                                   //Look for selected engine
                     engineInfo.series.map((itemInfo, index) => {
                         if (itemInfo.logo) {                                                            //Look for detected logo
                             let startTime = this.formatTime(itemInfo.startTimeMs);
@@ -192,5 +154,47 @@ export default class LogoDetectionEngineOutput extends Component {
         formatedString = formatedString + numSeconds.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
         formatedString = formatedString + numMilliseconds.toLocaleString(undefined, {minimumIntegerDigits: 3});
         return formatedString;
+    }
+
+    //================================================================================
+    //================================Render Function=================================
+    //================================================================================
+    render () {
+        let {
+                data,
+                label, 
+                className, 
+                headerClassName,
+                bodyClassName
+            } = this.props;
+        
+        return (
+            <div className={(this.state.isExpanded) ? classNames(styles.logoDetection, styles.expanded, className) : classNames(styles.logoDetection, className)}>
+                {/* -----Header----- */}
+                <EngineOutputHeader title={label} className={headerClassName}>
+                    <div className={styles.headerRight}>
+                        {/* -----Engine Selection----- */}
+                        <div>
+                            {this.drawEngineSelection(data)}
+                        </div>
+
+                        {/* -----Fullscreen button----- */}
+                        <div>
+                            <IconButton onClick={this.onExpandViewClicked}>
+                                <ZoomOutMap />
+                            </IconButton>
+                        </div>
+                    </div>
+                </ EngineOutputHeader>
+
+                {/* -----Body----- */}
+                <div className={classNames(styles.logoDetectionBody, bodyClassName)}>
+                    { 
+                        /* -----Detected Logos----- */
+                        this.drawItems(data) 
+                    }
+                </div>
+            </div>
+        );
     }
 }

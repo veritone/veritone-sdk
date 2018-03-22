@@ -1,29 +1,28 @@
 .container {
-	> div {
-		float: left;
-	}
+  > div {
+    float: left;
+  }
 
-	.left {
-		width: 20%;
-		height: 300px;
-		background-color: cadetblue;
-	}
-	
-	.outputViewRoot {
-		width: 70%;
-		//width: 600px;
-	}
-	
-	.right {
-		width: 10%;
-		height: 400px;
-		background-color: burlywood;
-	}
+  .left {
+    width: 20%;
+    height: 300px;
+    background-color: cadetblue;
+  }
+  
+  .outputViewRoot {
+    width: 70%;
+    //width: 600px;
+  }
+  
+  .right {
+    width: 10%;
+    height: 400px;
+    background-color: burlywood;
+  }
 
-	.bottom {
-		clear: both;
-		width: 100%;
-		background-color: darkcyan
-	}
+  .bottom {
+    clear: both;
+    width: 100%;
+    background-color: darkcyan;
+  }
 }
-

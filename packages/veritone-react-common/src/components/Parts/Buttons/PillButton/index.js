@@ -7,14 +7,15 @@ export default class PillButton extends Component {
 	static propTypes = {
 		label: PropTypes.string,
 		info: PropTypes.string,
-		style: PropTypes.object,
-		gapStyle: PropTypes.object,
-		labelStyle: PropTypes.object,
-		infoStyle: PropTypes.object,
+		style: PropTypes.instanceOf(Object),
+		gapStyle: PropTypes.instanceOf(Object),
+		labelStyle: PropTypes.instanceOf(Object),
+		infoStyle: PropTypes.instanceOf(Object),
 		className: PropTypes.string,
 		gapClassName: PropTypes.string,
 		labelClassName: PropTypes.string,
-		infoClassName: PropTypes.string
+		infoClassName: PropTypes.string,
+		onClick: PropTypes.func
 	};
 
 	static defaultProps = {
@@ -35,17 +36,18 @@ export default class PillButton extends Component {
 			className, 
 			gapClassName, 
 			labelClassName, 
-			infoClassName
+			infoClassName,
+			onClick
 		} = this.props;
 		let hasGap = label && label.length > 0 && info && info.length > 0;
 
 		return (
-			<div className={classNames(defaultStyles.pillButton, className)} style={style} onClick={this.props.onClick}>
+			<div className={classNames(defaultStyles.pillButton, className)} style={style} onClick={onClick}>
 				<div className={classNames(defaultStyles.label, labelClassName)} style={labelStyle}>
 					{label}
 				</div>
 				{
-					hasGap ? <div className={classNames(defaultStyles.gap, gapClassName)} style={gapStyle}></div> : ''
+					hasGap ? <div className={classNames(defaultStyles.gap, gapClassName)} style={gapStyle}></div> : (null)
 				}
 				<div className={classNames(defaultStyles.info, infoClassName)} style={infoStyle}>
 					{info}
