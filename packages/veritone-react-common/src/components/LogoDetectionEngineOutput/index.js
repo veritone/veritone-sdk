@@ -13,7 +13,7 @@ import styles from './styles.scss';
 export default class LogoDetectionEngineOutput extends Component {
     static propTypes = {
         label: PropTypes.string,
-        data: PropTypes.array,
+        data: PropTypes.arrayOf(Object),
         className: PropTypes.string,
         headerClassName: PropTypes.string,
         bodyClassName: PropTypes.string,
@@ -36,7 +36,6 @@ export default class LogoDetectionEngineOutput extends Component {
             isExpanded: false
         };
 
-        this.onItemSelected = this.onItemSelected.bind(this);
         this.onEngineChanged = this.onEngineChanged.bind(this);
         this.onExpandViewClicked = this.onExpandViewClicked.bind(this);
     }
@@ -44,9 +43,9 @@ export default class LogoDetectionEngineOutput extends Component {
     //================================================================================
     //=============================Interaction Functions==============================
     //================================================================================
-    onItemSelected (value) {
+    onItemSelected = item => (event) => {
         let itemInfo = {
-            item: value,
+            item: item,
             sourceEngineId: this.state.sourceEngineId || this.props.data[0].sourceEngineId
         }
         
@@ -121,15 +120,16 @@ export default class LogoDetectionEngineOutput extends Component {
                             let startTime = this.formatTime(itemInfo.startTimeMs);
                             let endTime = this.formatTime(itemInfo.endTimeMs);
                             let logoItem = (
-                                <PillButton 
+                                <PillButton
+                                    value={index} 
                                     label={itemInfo.logo.label} 
                                     info={startTime + ' - ' + endTime}
                                     className={classNames(styles.item, itemClassName)}
                                     labelClassName={classNames(styles.label, itemLabelClassName)}
                                     infoClassName={itemInfoClassName}
                                     key={'logo-' + engineInfo.sourceEngineId + index}
-                                    onClick={(event) => {this.onItemSelected(itemInfo)}}
-                                ></PillButton>
+                                    onClick={this.onItemSelected(itemInfo)}
+                                />
                             );
                             items.push(logoItem);
                         }

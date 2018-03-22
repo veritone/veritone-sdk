@@ -47,7 +47,7 @@ export default class PillButton extends Component {
 					{label}
 				</div>
 				{
-					hasGap ? <div className={classNames(defaultStyles.gap, gapClassName)} style={gapStyle}></div> : (null)
+					hasGap ? <div className={classNames(defaultStyles.gap, gapClassName)} style={gapStyle} /> : null
 				}
 				<div className={classNames(defaultStyles.info, infoClassName)} style={infoStyle}>
 					{info}

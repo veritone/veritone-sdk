@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .pillButton {
   border: 1px solid #e0e0e0;
   border-radius: 20px;
@@ -26,7 +28,7 @@
   }
   
   .info {
-    color: #2196f3;
+    color: $blue-1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
