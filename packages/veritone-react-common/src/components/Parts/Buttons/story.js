@@ -18,7 +18,7 @@ storiesOf('Common Buttons', module).add('Pill Button', () => {
 			<PillButton label = 'label only'/>
 			<PillButton info = '(info only)'/>
 			<PillButton label='this is a very long label for a pill button' info='(2)'/>
-			<PillButton label='highlighted button' info='(tada)' highlight={true}/>
+			<PillButton label='highlighted button' info='(tada)' highlight/>
 		</div>
 	);
 });

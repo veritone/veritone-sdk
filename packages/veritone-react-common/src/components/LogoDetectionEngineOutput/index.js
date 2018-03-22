@@ -14,6 +14,7 @@ export default class LogoDetectionEngineOutput extends Component {
     static propTypes = {
         label: PropTypes.string,
         data: PropTypes.arrayOf(Object),
+        mediaPlayerTime: PropTypes.number,
         className: PropTypes.string,
         headerClassName: PropTypes.string,
         bodyClassName: PropTypes.string,
@@ -28,6 +29,7 @@ export default class LogoDetectionEngineOutput extends Component {
     static defaultProps = {
         label: 'Logo Recognition',
         data: [],
+        mediaPlayerTime: -1
     };
 
     constructor(props) {
@@ -106,6 +108,7 @@ export default class LogoDetectionEngineOutput extends Component {
      * @return {Array<PillButton>}
      */
     drawItems (data) {
+        let currentPlayTime = this.props.mediaPlayerTime;
         let itemClassName = this.props.itemClassName;
         let itemInfoClassName = this.props.itemInfoClassName;
         let itemLabelClassName = this.props.itemLabelClassName;
@@ -115,10 +118,20 @@ export default class LogoDetectionEngineOutput extends Component {
         if (data && data.length > 0) {
             data.map((engineInfo) => {
                 if (engineInfo.sourceEngineId === selectedEngineID) {                                   //Look for selected engine
+
+                    // Sort detected logos by there start time and end time
+                    engineInfo.series.sort(function(item1, item2){
+                        let startTimeDiff = item1.startTimeMs - item2.startTimeMs;
+                        if (startTimeDiff !== 0)    return startTimeDiff;
+                        else                        return item1.endTimeMs - item2.endTimeMs;
+                    });
+
+                    // Draw detected logos in the series
                     engineInfo.series.map((itemInfo, index) => {
                         if (itemInfo.logo) {                                                            //Look for detected logo
                             let startTime = this.formatTime(itemInfo.startTimeMs);
                             let endTime = this.formatTime(itemInfo.endTimeMs);
+                            console.log(itemInfo.startTimeMs, currentPlayTime);
                             let logoItem = (
                                 <PillButton
                                     value={index} 
@@ -129,6 +142,7 @@ export default class LogoDetectionEngineOutput extends Component {
                                     infoClassName={itemInfoClassName}
                                     key={'logo-' + engineInfo.sourceEngineId + index}
                                     onClick={this.onItemSelected(itemInfo)}
+                                    highlight={(itemInfo.startTimeMs <= currentPlayTime) ? true : false}
                                 />
                             );
                             items.push(logoItem);
