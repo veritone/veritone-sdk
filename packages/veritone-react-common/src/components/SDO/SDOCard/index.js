@@ -31,7 +31,7 @@ import styles from './styles.scss';
 export default class SDOCard extends React.Component {
   static propTypes = {
     sdoData: arrayOf(objectOf(any)).isRequired, // take an array of SDO objects
-    schemaData: objectOf(string), // take the schema object
+    schemaData: objectOf(objectOf(any)), // take the schema object
     callback: func
   };
 
@@ -48,12 +48,6 @@ export default class SDOCard extends React.Component {
     console.log('callback for SDOCard');
     this.props.callback(data);
   };
-
-  // handleSourceChange = (event) => {
-  //   this.setState({
-  //     sourceSelection: event.target.value
-  //   });
-  // };
 
 
   handleCheckboxChange = () => {

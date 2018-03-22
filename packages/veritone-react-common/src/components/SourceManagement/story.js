@@ -4,7 +4,7 @@ import { action } from '@storybook/addon-actions';
 
 import Nullstate from './Nullstate';
 // import SourceGridView from './GridView';
-// import SourceConfiguration from './SourceConfiguration';
+import SourceConfiguration from './SourceConfiguration';
 import SourceTileView from './SourceTileView';
 import SourceRow from './SourceRow';
 
@@ -72,143 +72,53 @@ var sourceTypes = [
   }
 ];
 
-  
-var assets = {
-  data: [
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    },
-    {
-      created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-      name: 'TwitterDev',
-      time_zone: 'Pacific Time (US & Canada)',
-      text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-      profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      Attribute: 'really long attribute name', 
-      Attribute2: 'description', 
-      Attribute3: 'description 2',
-      a: 'a',
-      b: 'b',
-      c: 'c'
-    }
-  ],
-  schemaInfo: {
-    schemaSelection: 'Tweet',
-    schemaSelections: ['Tweet', 'Twat', 'Twot']
+var sourceTypes = {
+  data: {
+    records: [
+      {
+        name: "Audio",
+        id: "audio_1",
+        sourceSchema: {
+          definition: {
+            properties: {
+              url: {
+                type: 'string',
+              },
+              username: {
+                type: 'string',
+                title: 'User Name'
+              },
+              password: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      },
+      {
+        name: "Audio2",
+        id: "audio_2",
+        sourceSchema: {
+          definition: {
+            properties: {
+              url: {
+                type: 'string',
+              },
+              username: {
+                type: 'string',
+                title: 'User Name 2'
+              },
+              password: {
+                type: 'string'
+              },
+              days: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    ]
   }
 };
 
@@ -221,6 +131,7 @@ var sourceResult = {
       name: "KWOL--FM",
       createdDateTime: "2014-12-01T18:17:20.675Z",
       modifiedDateTime: "2015-12-01T18:17:20.675Z",
+      thumbnail: "https://image.flaticon.com/icons/svg/25/25305.svg",
       sourceType: {
         id: "1",
         name: "Audio",
@@ -251,11 +162,16 @@ var sourceName = sourceResult.data.source.name;
 var sourceType = sourceResult.data.source.sourceType.name;
 var creationDate = sourceResult.data.source.createdDateTime;
 var lastUpdated = sourceResult.data.source.modifiedDateTime;
+var thumbnail = sourceResult.data.source.thumbnail;
 
 var sourceResults = [];
 for (let i=0;i<4;i++) {
   sourceResults.push(sourceResult);
 }
+
+function submitCallback(result) {
+  console.log(result);
+};
 
 storiesOf('SourceManagement', module)
   .add('Nullstate', () => (
@@ -267,9 +183,9 @@ storiesOf('SourceManagement', module)
   // .add('Grid', () => (
   //   <SourceGridView sourceInfo={sourceInfo} />
   // ))
-  // .add('FullScreen', () => (
-  //   <SourceConfiguration sourceTypes={sourceTypes} />
-  // ))
+  .add('SourceConfiguration', () => (
+    <SourceConfiguration sourceTypes={sourceTypes.data.records} submitCallback={submitCallback}/>
+  ))
   .add('Row', () => (
-    <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} />
+    <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} image={thumbnail} />
   ))

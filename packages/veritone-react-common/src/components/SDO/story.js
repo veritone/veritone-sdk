@@ -104,6 +104,7 @@ var schemaData1 = {
     type: 'string'
   }
 };
+
 var schemaData2 = {
   created_at: {
     type: 'dateTime',
@@ -224,7 +225,6 @@ function schemaCallback(schemaId) {
   }
 }
 
-
 //TODO: up for change
 var sdoEngineInfo = {
   engineSelection: 'Engine Name 1',
@@ -258,7 +258,7 @@ storiesOf('SDO', module)
   //   <SDOMediaDetailsCard sdoData={data} currentSchema={} sdoEngineInfo={sdoEngineInfo} schemaCallback={schemaCallback} />
   // ))
   .add('Card', () => (
-    <SDOCard sdoData={data} schemaData={schemaData}/>
+    <SDOCard sdoData={data} schemaData={schemaData1}/>
   ))
   .add('Tile', () => (
     <SDOTile checkAll={checkAll} numberOfFields={numberOfFields} columns={columns} />

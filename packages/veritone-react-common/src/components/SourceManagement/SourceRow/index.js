@@ -12,7 +12,8 @@ import {
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
-import StatusPill from 'components/IngestionJobs/StatusPill';
+import CircleImage from 'components/CircleImage';
+
 import styles from './styles.scss';
 
 export default class JobRow extends React.Component {
@@ -20,7 +21,8 @@ export default class JobRow extends React.Component {
     name: string,
     sourceType: string,
     creationDate: string,
-    lastUpdated: string
+    lastUpdated: string,
+    thumbnail: string
   };
 
   static defaultProps = {};
@@ -48,6 +50,9 @@ export default class JobRow extends React.Component {
     return (
       <div className={styles.tableRow} >
         <div className={styles.rowTextGroup} onClick={this.handleRowClick}>
+          <div className={styles.imageStyle}>
+            <CircleImage height={'38px'} width={'38px'} image={this.props.thumbnail}/>
+          </div>
           <span className={styles.mainColumn}>{this.props.name}</span>
           <span className={styles.columnText}>{this.props.sourceType}</span>
 

@@ -48,6 +48,9 @@ export default class SDOTile extends React.Component {
 
   render() {
     const columnSections = Object.values(this.props.columns).map((column, index) => {
+      if (column.includes('schemaId')) {
+        return;
+      }
       return <span className={styles.sdoBasicColumn} key={index}>{column}</span>
     });
     return (

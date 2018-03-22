@@ -1,7 +1,10 @@
 import React from 'react';
 
 import {
-  any, arrayOf, objectOf
+  any, 
+  arrayOf, 
+  objectOf,
+  func
 } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -9,99 +12,72 @@ import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
+import Input from 'material-ui/Input/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 
+import ModalHeader from 'components/ModalHeader';
+import DynamicSelect from 'components/SchemaDrivenSelectForm';
 import styles from './styles.scss';
-import Input from 'material-ui/Input/Input';
 
 @withMuiThemeProvider
 export default class SourceConfiguration extends React.Component {
   static propTypes = {
-    sourceTypes: arrayOf(objectOf(any))
+    sourceTypes: arrayOf(objectOf(any)).isRequired,
+    submitCallback: func, // will return an object: {sourceName, schemaResult: {sourceTypeId, fieldValues:{}}}
   };
   static defaultProps = {};
 
   state = {
-    sourceTypeSelection: this.props.sourceTypes[0].name || '', //should change to whatever the current source type is 
-    sourceTypeFields: this.props.sourceTypes[0].fields || {},
-    currentSourceTypeIndex: 0,
-    sourceTypesIndex: [],
-    fieldText: {},
-    sourceName: ''
+    placeholder: 'Select a Source Type',
+    sourceName: '',
+    schemaFormResult: {}
   };
 
   componentWillMount = () => {
-    let storeSourceTypeIndex = [];
+    // construct a clear path to the source type schema for each source type
     this.props.sourceTypes.forEach(sourceType => {
-      storeSourceTypeIndex.push(sourceType.name);
+      this.setState({
+        [sourceType.id]: sourceType.sourceSchema.definition.properties, // this is the path to the source type schema
+        [sourceType.id]: sourceType
+      })
     });
-
-    // keep a state of the field values
-    let fieldText = {};
-    Object.keys(this.state.sourceTypeFields).forEach((key) => {
-      console.log(key);
-      fieldText[key] = this.state.sourceTypeFields[key];
-    });
-
-    this.setState({
-      sourceTypesIndex: storeSourceTypeIndex,
-      fieldText: fieldText
-    })
   };
 
-  handleSourceTypeChange = (event) => {
-    let selection = event.target.value;
-    let index = this.state.sourceTypesIndex.indexOf(event.target.value);
-    let fields = this.props.sourceTypes[index].fields;
-    this.setState({
-      sourceTypeSelection: selection,
-      currentSourceTypeIndex: index,
-      sourceTypeFields: fields
-    });
+  handleDynamicFormCallback = (formResult) => {
+    console.log(formResult);
+    this.setState({schemaFormResult: formResult});
   };
 
   handleNameChange = (event) => {
-    console.log(event.target.value);
     this.setState({sourceName: event.target.value});
   };
 
-  handleTextChange = field => event => {
-    let fieldTextCopy = {};
-    fieldTextCopy[field] = event.target.value;
-    this.setState((prevState, props) => ({
-      fieldText: Object.assign({}, prevState.fieldText, fieldTextCopy)
-    }));
-  };
-
   handleSaveConfiguration = () => {
-    let toSave = Object.assign({}, this.state.fieldText, {sourceName: this.state.sourceName});
+    let savedFieldValues = this.state.schemaFormResult.fieldValues;
+    let sourceTypeFields = this.props.sourceTypes[this.state.schemaFormResult.currentSourceTypeIndex].sourceSchema.definition.properties;
+    if (Object.keys(savedFieldValues).length !== Object.keys(sourceTypeFields).length) {
+      return; // don't allow saving incomplete form
+    } else if (!this.state.sourceName) {
+      return;
+    }
+    let toSave = {
+      sourceName: this.state.sourceName,
+      schemaResult: this.state.schemaFormResult
+    };
     console.log(toSave);
+    this.props.submitCallback(toSave);
   };
 
   render() {
-    const sourceTypes = this.props.sourceTypes.map((type, index) => {
-      return <MenuItem value={type.name} id={index} key={index}>{type.name}</MenuItem>
-    });
-    const sourceTypeFields = Object.keys(this.state.sourceTypeFields).map((field, index) => {
-      return <TextField
-              className={styles.textFieldExtra}
-              type={field.toLowerCase() === 'password' ? 'password': 'text'}
-              fullWidth
-              margin='dense'
-              id={field}
-              label={field}
-              // value={this.props.sourceTypes[this.state.currentSourceTypeIndex].fields[field]}
-              value={this.state.fieldText[field]}
-              key={index}
-              onChange={this.handleTextChange(field)}
-            />
-    });
+
     return (
       <div className={styles.fullPage}>
+        <div className={styles.configurationTitle}>Configuration</div>
+        <div className={styles.configurationDescription}>Configure your source below by selecting a source type and inputting the associated data.</div>
         <form className={styles.sourceConfiguration}>
           <FormControl className={styles.formStyle}>
             <TextField 
-              className={styles.textField}
+              className={styles.sourceName}
               fullWidth
               margin='dense'
               id='sourceName'
@@ -109,20 +85,11 @@ export default class SourceConfiguration extends React.Component {
               value={this.state.sourceName}
               onChange={this.handleNameChange}
             />
-
-            <Select 
-              className={styles.selectField}
-              value={this.state.sourceTypeSelection}
-              onChange={this.handleSourceTypeChange}
-            >
-              {sourceTypes}
-            </Select>
-            <FormHelperText>NOTE: Source types available are dynamic based on your ingestion adapter</FormHelperText>
-            {sourceTypeFields}
+            <DynamicSelect sourceTypes={this.props.sourceTypes} formCallback={this.handleDynamicFormCallback} selectLabel='Select a Source Type'  helperText='NOTE: Source types available are dynamic based on your ingestion adapter'/>
           </FormControl>
         </form>
         <Button className={styles.buttonStyle} onClick={this.handleSaveConfiguration} raised color='primary' component='span'>
-          Save
+          Create
         </Button>
       </div>
     );

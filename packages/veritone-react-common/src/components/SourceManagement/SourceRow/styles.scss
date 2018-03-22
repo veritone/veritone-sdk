@@ -12,6 +12,11 @@
     justify-content: space-between;
     width: 100%;
 
+    .imageStyle {
+      align-self: center;
+      margin-right: 17px;
+    }
+
     .mainColumn {
       height: 15px;
       color: rgba(0, 0, 0, 0.87);

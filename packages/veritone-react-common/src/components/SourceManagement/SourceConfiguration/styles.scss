@@ -1,21 +1,32 @@
 .fullPage {
   height: 100%;
+  width: 100%;
+  margin-top: 30px;
+  margin-left: 30px;
+
+  .configurationTitle {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 20px;
+    line-height: 24px;
+  }
+  .configurationDescription {
+    opacity: 0.6;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 14px;
+    line-height: 16px;
+  }
+
   .sourceConfiguration {
     color: blue;
-    margin-left: 40px;
     .formStyle {
       width: 60%;
       min-width: 350px;
-      .textField {
-        margin-top: 30px;
+
+      .imageStyle {
+
       }
-      .textFieldExtra {
-        margin-top: 30px;
-        width: 80%;
-      }
-      .selectField {
-        margin-top: 30px;
-        width: 80%;
+      .sourceName {
+        margin-bottom: 30px;
       }
     }
     

@@ -1,0 +1,15 @@
+.dynamicFormStyle {
+  width: 100%;
+
+  .inputLabel {
+    font-size: 12px;
+    line-height: 14px;
+    position: inherit;
+  }
+  .textField {
+    margin-top: 30px;
+  }
+  .selectField {
+    margin-top: inherit;
+  }
+}

@@ -19,7 +19,9 @@ export default class CircleImage extends React.Component {
     width: '38px'
   };
 
-  state = {};
+  state = {
+    image: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+  };
 
   componentWillMount = () => {
     if (!this.props.width) {
@@ -27,12 +29,20 @@ export default class CircleImage extends React.Component {
     } else if (this.props.height !== this.props.width) {
       this.props.width = this.props.height;
     }
+
+    if (this.props.image) {
+      this.state.image = this.props.image;
+    }
   }
+
+  addDefaultSrc = (event) => {
+    event.target.src = 'https://static.veritone.com/veritone-ui/default-nullstate.svg';
+  };
 
   render() {
     return (
       <div className={styles.imageWrapper} style={{height: this.props.height, width: this.props.width}}>
-        <img src={this.props.image} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' className={styles.imageStyle} style={{height: this.props.height, width: this.props.width}}/>
+        <img src={this.state.image} onError={this.addDefaultSrc} alt='' className={styles.imageStyle} style={{height: this.props.height, width: this.props.width}}/>
       </div>
     );
   };

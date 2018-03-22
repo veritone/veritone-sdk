@@ -13,6 +13,7 @@ import {
 import { MenuItem } from 'material-ui/Menu';
 
 import SourceRow from 'components/SourceManagement/SourceRow';
+import CircleImage from 'components/CircleImage';
 
 import styles from './styles.scss';
 
@@ -32,12 +33,16 @@ export default class SourceTileView extends React.Component {
       let sourceType = source.data.source.sourceType.name;
       let creationDate = source.data.source.createdDateTime;
       let lastUpdated = source.data.source.modifiedDateTime;
-      return <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} key={index}/>
+      let thumbnail = source.data.source.thumbnail;
+      return <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} thumbnail={thumbnail} key={index}/>
     });
     return (
       <div>
         <div className={styles.tableTitleRow}>
           <div className={styles.titleTextGroup}>
+            <div className={styles.imageStyle} style={{visibility: 'hidden'}}>
+              <CircleImage height={'38px'} />
+            </div>
             <span className={styles.mainColumn}>Source name</span>
             <span className={styles.tableTitle}>Source Type</span>
             <span className={styles.tableTitle}>Created</span>
