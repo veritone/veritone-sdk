@@ -17,3 +17,12 @@
 		}
 	}
 }
+
+.expanded {
+	position: absolute;
+	width: 100% !important;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	background-color: white;
+}

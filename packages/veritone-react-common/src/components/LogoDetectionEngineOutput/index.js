@@ -14,7 +14,9 @@ import PillButton from '../Parts/Buttons/PillButton';
 export default class LogoDetectionEngineOutput extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            isExpanded: false
+        };
 
         this.onItemSelected = this.onItemSelected.bind(this);
         this.onEngineChanged = this.onEngineChanged.bind(this);
@@ -30,7 +32,8 @@ export default class LogoDetectionEngineOutput extends Component {
         itemLabelClassName: PropTypes.string,
         itemInfoClassName: PropTypes.string,
         onItemSelected: PropTypes.func,
-        onEngineSelected: PropTypes.func
+        onEngineSelected: PropTypes.func,
+        onExpandViewClicked: PropTypes.func
     };
 
     static defaultProps = {
@@ -48,8 +51,7 @@ export default class LogoDetectionEngineOutput extends Component {
             } = this.props;
         
         return (
-            <div className={classNames(styles.logoDetection, className)}
-                ref={(input) => { this.fullscreenDom = input; }}>
+            <div className={(this.state.isExpanded) ? classNames(styles.logoDetection, styles.expanded, className) : classNames(styles.logoDetection, className)}>
                 {/* -----Header----- */}
                 <EngineOutputHeader title={label} className={headerClassName}>
                     <div className={styles.headerRight}>
@@ -92,25 +94,20 @@ export default class LogoDetectionEngineOutput extends Component {
 
     onEngineChanged (event) {
         let selectedID = event.target.value;
-        this.setState({sourceEngineId: selectedID});
+        this.setState({
+            sourceEngineId: selectedID
+        });
 
-        if (this.props.onEngineSelected)     this.props.onEngineSelected(selectedID);
+        if (this.props.onEngineSelected)    this.props.onEngineSelected(selectedID);
     }
 
     onExpandViewClicked (event) {
-        let ele = this.fullscreenDom;
+        let newStatus = !this.state.isExpanded;
+        this.setState({
+            isExpanded: newStatus
+        });
 
-        if (ele.requestFullscreen) {
-            ele.requestFullscreen();
-        } else if (ele.webkitRequestFullscreen) {
-            ele.webkitRequestFullscreen();
-        } else if (ele.mozRequestFullScreen) {
-            ele.mozRequestFullScreen();
-        } else if (ele.msRequestFullscreen) {
-            ele.msRequestFullscreen();
-        } else {
-            console.log('Fullscreen API is not supported.');
-        }
+        if (this.props.onExpandViewClicked) this.props.onExpandViewClicked(newStatus);
     }
 
     //================================================================================
@@ -119,6 +116,7 @@ export default class LogoDetectionEngineOutput extends Component {
     /**
      * draw engine dropdown selections
      * @param {Array<{sourceEngineId:string, sourceEngineName:string, taskId: string, series:Array>} data - engine output data
+     * @return MUI Select Element
      */
     drawEngineSelection (data) {
         if (!data || data.length === 0)                         return '';
@@ -142,6 +140,11 @@ export default class LogoDetectionEngineOutput extends Component {
         );
     }
 
+    /**
+     * Draw detected logo entry in the series
+     * @param {Array<{sourceEngineId:string, series:Array<{startTimeMs:number, endTimeMs:number, logo:{label:string}}>>} data - engine output data
+     * @return {Array<PillButton>}
+     */
     drawItems (data) {
         let itemClassName = this.props.itemClassName;
         let itemInfoClassName = this.props.itemInfoClassName;
@@ -150,9 +153,9 @@ export default class LogoDetectionEngineOutput extends Component {
         let items = [];
         if (data && data.length > 0) {
             data.map((engineInfo) => {
-                if (engineInfo.sourceEngineId === this.state.sourceEngineId) {
+                if (engineInfo.sourceEngineId === this.state.sourceEngineId) {                          //Look for selected engine
                     engineInfo.series.map((itemInfo, index) => {
-                        if (itemInfo.logo) {
+                        if (itemInfo.logo) {                                                            //Look for detected logo
                             let startTime = this.formatTime(itemInfo.startTimeMs);
                             let endTime = this.formatTime(itemInfo.endTimeMs);
                             let logoItem = (

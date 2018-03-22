@@ -7,10 +7,22 @@ import styles from './story.styles.scss';
 
 storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {
     return (
-        <LogoDetectionEngineOutput 
-            className={styles.outputViewRoot}
-            data={mockData}
-        />
+        <div className={styles.container}>
+            <div className={styles.left}>
+                Left Box
+            </div>
+            <LogoDetectionEngineOutput 
+                className={styles.outputViewRoot}
+                data={mockData}
+            />
+            <div className={styles.right}>
+                Right Box
+            </div>
+            <div className={styles.bottom}>
+                Bottom Box
+            </div>
+        </div>
+        
     );
 });
 
