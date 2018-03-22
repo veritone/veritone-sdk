@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import SentimentEngineOutput from './';
-
 import styles from './story.styles.scss';
+
+import SentimentEngineOutput from './';
 
 export const sentimentAssets = [
   {end: 5580, score: 0.6, start: 80},

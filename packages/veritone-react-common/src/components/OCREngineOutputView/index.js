@@ -31,12 +31,11 @@ class OCREngineOutputView extends Component {
   }
 
   static defaultProps = {
-    assets: [],
-    classes: {}
+    assets: []
   }
 
   render() {
-    let { classes, assets, className } = this.props;
+    let { assets, className } = this.props;
 
     return (
       <div className={classNames(styles.ocrOutputView, className)}>

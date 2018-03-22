@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import OCREngineOutputView from './';
-
 import styles from './story.styles.scss';
+
+import OCREngineOutputView from './';
 
 const ocrAssets = [
   {
