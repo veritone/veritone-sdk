@@ -316,12 +316,13 @@ class SelectionTable extends React.Component {
         header={column}
         key={index}
         cellRenderer={renderCell}
-        width={100}
+        // width={100}
       />
     });
   
     return (
       <PaginatedTable
+        rowsPerPage={5}
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
         showHeader

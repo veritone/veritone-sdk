@@ -6,15 +6,6 @@ import { TablePagination } from 'material-ui/Table';
 import { withStyles } from 'material-ui/styles';
 import PaginatedTableFooter from './PaginatedTableFooter';
 
-const actionsStyles = theme => ({
-  root: {
-    flexShrink: 0,
-    color: theme.palette.text.secondary,
-    marginLeft: theme.spacing.unit * 2.5,
-  },
-});
-
-
 const withPagination = WrappedTable => { 
   class WrappedWithPagination extends React.Component {
     static propTypes = {
@@ -79,7 +70,10 @@ const withPagination = WrappedTable => {
     }
 
     handleRowsPerPageChange = (e) => {
-      this.setState({ rowsPerPage: Number(e.target.value) })      
+      this.setState({
+        page: 0,
+        rowsPerPage: Number(e.target.value)
+      })      
     }
     
     handleRefreshData = () => {
@@ -116,20 +110,6 @@ const withPagination = WrappedTable => {
         ? this.props.focusedRow
         : null;
     }
-
-    renderActions = (props) => {
-      const StyledPaginatedTableFooter = withStyles(
-        this.props.paginationStyles || actionsStyles,
-        { withTheme: true }
-      )(PaginatedTableFooter);
-
-      return (
-        <StyledPaginatedTableFooter
-          {...props}
-          onRefreshPageData={this.props.onRefreshPageData}
-        />
-      )
-    }
     
     render() {
       let [firstItem, lastItem] = this.getDisplayedItemIndices();
@@ -148,31 +128,20 @@ const withPagination = WrappedTable => {
           rowGetter={this.rowGetter}
           rowRange={[firstItem, lastItem + 1]}
           footerElement={
-            <TablePagination
-              colSpan={this.props.children.length}
-              count={this.props.rowCount}
-              rowsPerPage={this.state.rowsPerPage}
+            <PaginatedTableFooter
               page={this.state.page}
+              perPage={this.state.rowsPerPage}
               onChangePage={this.handlePageChange}
-              onChangeRowsPerPage={this.handleRowsPerPageChange}
-              // Actions={this.renderActions}
-            />              
+              onChangePerPage={this.handleRowsPerPageChange}
+              colSpan={this.props.children.length}
+              rowCount={this.props.rowCount}
+              onRefreshPageData={
+                this.props.onRefreshPageData
+                  ? this.handleRefreshData
+                  : undefined
+              }
+            />
           }
-          // footerElement={
-          //   <PaginatedTableFooter
-          //     page={this.state.page}
-          //     perPage={this.state.rowsPerPage}
-          //     onChangePage={this.handlePageChange}
-          //     onChangePerPage={this.handleRowsPerPageChange}
-          //     colSpan={this.props.children.length}
-          //     rowCount={this.props.rowCount}
-          //     onRefreshPageData={
-          //       this.props.onRefreshPageData
-          //         ? this.handleRefreshData
-          //         : undefined
-          //     }
-          //   />
-          // }
           onCellClick={this.translateCellClick}
           focusedRow={this.translateFocusedRow()}
         />

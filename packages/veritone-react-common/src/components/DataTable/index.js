@@ -31,24 +31,10 @@ import withPagination from './withPagination';
 import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index.scss';
 
-// fixes scroll display: https://github.com/mui-org/material-ui/pull/8349/files
-const baseStyles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-  head: {
-    paddingRight: '24px'
-  }
-});
 
 /*
  * BASE TABLE
  */
-@withStyles(baseStyles)
 class _Table extends React.Component {
   static propTypes = {
     rowGetter: func.isRequired,
@@ -67,7 +53,6 @@ class _Table extends React.Component {
     selectedRows: arrayOf(any),
     onSelectAll: func,
     onSelectRow: func,
-    classes: objectOf(string)
   };
 
   static defaultProps = {
@@ -102,7 +87,7 @@ class _Table extends React.Component {
         }}
         component="div"
       >
-        <Paper elevation={1} className={this.props.classes.root}>
+        <Paper elevation={1} className={styles.table}>
           {isNumber(this.props.focusedRow) && this.props.rowCount > 0
             ? <SplitTableContainer
                 {...restProps}
@@ -129,19 +114,17 @@ const NormalTableContainer = ({
   emptyRenderer,
   showHeader,
   selectable,
-  classes,
   ...rest
 }) => {
   const headerProps = pick(rest, ['selectedRows', 'onSelectAll']);
   const restProps = omit(rest, 'onSelectAll');
   
   return (
-    <div className={classes.tableWrapper}>
+    <div className={styles['table-wrapper']}>
       <MuiTable>
         {
           showHeader &&
           <TableHead
-            classes={classes}
             selectable={selectable}
             rowCount={rowCount}
             {...headerProps}
@@ -186,7 +169,6 @@ NormalTableContainer.propTypes = {
   emptyRenderer: func,
   showHeader: bool,
   children: node,
-  classes: objectOf(string),
   selectable: bool
 };
 
@@ -206,7 +188,6 @@ class SplitTableContainer extends React.Component {
     emptyRenderer: func,
     showHeader: bool,
     children: node,
-    classes: objectOf(string),
     selectable: bool,
     onSelectRow: func
   };
@@ -221,6 +202,39 @@ class SplitTableContainer extends React.Component {
     }
   }
 
+  renderSplitRow = () => {
+    const { focusedRow, rowGetter, children } = this.props;
+
+    return (
+        <MuiTableBody>
+          <TableRow style={{ maxHeight: 48, height: this.props.rowHeight }}>
+            {
+              this.props.selectable &&
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={includes(this.props.selectedRows, focusedRow)}
+                  onChange={this.handleOnSelectRow(focusedRow)}
+                />
+              </TableCell>
+            }
+            {injectInto(children, {
+              data: rowGetter(focusedRow),
+              row: focusedRow,
+              onCellClick: this.props.onCellClick
+            })}
+          </TableRow>
+          <TableRow>
+            <TableCell
+              colSpan={children.length}
+              style={{ whiteSpace: 'inherit', padding: 0 }}
+            >
+              {this.props.renderFocusedRowDetails(rowGetter(focusedRow))}
+            </TableCell>
+          </TableRow>
+        </MuiTableBody>
+    )
+  }
+
   render() {
     const {
       onCellClick,
@@ -233,7 +247,6 @@ class SplitTableContainer extends React.Component {
       rowGetter,
       showHeader,
       selectable,
-      classes,
       ...rest
     } = this.props;
 
@@ -242,12 +255,11 @@ class SplitTableContainer extends React.Component {
 
     return (
       <div>
-        <Paper elevation={1} className={classes.tableWrapper}>
+        <Paper elevation={1} className={styles['table-wrapper']}>
           <MuiTable>
             {
               showHeader &&
               <TableHead
-                classes={classes}
                 selectable={selectable}
                 rowCount={rowCount}
                 {...headerProps}
@@ -264,13 +276,18 @@ class SplitTableContainer extends React.Component {
                     </TableCell>
                   </TableRow>
                 </MuiTableBody>
+              : focusedRow === 0
+              ? this.renderSplitRow()
               : <TableBody
                   {...restProps}
                   selectable={selectable}
                   rowRangeStart={rowRange && rowRange[0]}
-                  rowRangeEnd={this.props.focusedRow}
+                  rowRangeEnd={focusedRow}
                   rowGetter={rowGetter}
                   onCellClick={onCellClick}
+                  style={{
+                    display: focusedRow ? 'inherit' : 'none !important'
+                  }}
                 >
                   {children}
                 </TableBody>
@@ -279,7 +296,7 @@ class SplitTableContainer extends React.Component {
         </Paper>
 
         <Paper
-          className={classes.tableWrapper}
+          className={styles['table-wrapper']}
           elevation={1}
           style={{
             marginTop: 15,
@@ -288,37 +305,14 @@ class SplitTableContainer extends React.Component {
           // className={cx(styles['focusTable'], styles['focused-row'])}
           key={focusedRow}
         >
-          <MuiTable>
-            <MuiTableBody>
-              <TableRow style={{ maxHeight: 48, height: this.props.rowHeight }}>
-                {
-                  selectable &&
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={includes(rest.selectedRows, focusedRow)}
-                      onChange={this.handleOnSelectRow(focusedRow)}
-                    />
-                  </TableCell>
-                }
-                {injectInto(children, {
-                  data: rowGetter(this.props.focusedRow),
-                  row: this.props.focusedRow,
-                  onCellClick
-                })}
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  colSpan={children.length}
-                  style={{ whiteSpace: 'inherit', padding: 0 }}
-                >
-                  {renderFocusedRowDetails(rowGetter(this.props.focusedRow))}
-                </TableCell>
-              </TableRow>
-            </MuiTableBody>
-          </MuiTable>
+          {focusedRow > 0 
+            ? <MuiTable>
+                {this.renderSplitRow()}
+              </MuiTable>
+            : undefined}
         </Paper>
 
-        <Paper elevation={1} className={classes.tableWrapper}>
+        <Paper elevation={1} className={styles['table-wrapper']}>
           <MuiTable>
             <TableBody
               {...restProps}
@@ -471,8 +465,7 @@ const TableHead = ({
   selectable = false,
   onSelectAll = noop,
   selectedRows = [],
-  rowCount,
-  classes
+  rowCount
 }) => {
   return (
     <MuiTableHead>
@@ -488,7 +481,7 @@ const TableHead = ({
         }
         {React.Children.map(children, c =>
           <TableCell
-            className={classes.head}
+            className={styles['table-cell']}
             key={c.props.header}
             style={{
               textAlign: c.props.align || 'left',

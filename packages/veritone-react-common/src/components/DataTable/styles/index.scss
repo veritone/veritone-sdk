@@ -1,6 +1,19 @@
 @import './modules/variables';
 @import './modules/muiTypography';
 
+.table {
+  width: 100%;
+}
+
+.table-wrapper {
+  overflow-x: auto
+}
+
+.table-cell {
+  padding-right: 24px
+}
+
+
 .focusTable {
   //overflow: hidden;
   transition: all 200ms ease;
@@ -43,46 +56,51 @@
 
 .paginated-footer {
   color: $light-black !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .rows-per-page {
-    @include mui-text('caption');
-
-    padding-right: 28px;
-  }
-
-  .per-page {
-    @include mui-text('caption');
-
-    margin-right: 32px;
-  }
-
-  .num-items {
-    padding-right: 32px;
-  }
-
-  .page-left,
-  .page-right,
-  .refresh {
-    button {
-      width: 24px !important;
-      height: 24px !important;
-    }
-
-    svg {
-      fill: $light-black !important;
-    }
-
-    padding: 0 !important;
-  }
-
-  .page-left {
-    margin-right: 24px !important;
-  }
-
-  .page-right {
-    margin-right: 0 !important;
-  }
+  flex-shrink: 0
 }
+
+// .paginated-footer {
+//   color: $light-black !important;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+
+//   .rows-per-page {
+//     @include mui-text('caption');
+
+//     padding-right: 28px;
+//   }
+
+//   .per-page {
+//     @include mui-text('caption');
+
+//     margin-right: 32px;
+//   }
+
+//   .num-items {
+//     padding-right: 32px;
+//   }
+
+//   .page-left,
+//   .page-right,
+//   .refresh {
+//     button {
+//       width: 24px !important;
+//       height: 24px !important;
+//     }
+
+//     svg {
+//       fill: $light-black !important;
+//     }
+
+//     padding: 0 !important;
+//   }
+
+//   .page-left {
+//     margin-right: 24px !important;
+//   }
+
+//   .page-right {
+//     margin-right: 0 !important;
+//   }
+// }

@@ -2,6 +2,7 @@ import React from 'react';
 import { range, filter, get, includes } from 'lodash';
 import MuiTable, { TableBody, TableFooter, TableRow } from 'material-ui/Table';
 import { mount } from 'enzyme';
+import Select from 'material-ui/Select';
 
 import { Table, Column, PaginatedTable, LOADING } from './';
 import MenuColumn from './MenuColumn';
@@ -141,7 +142,7 @@ describe('MenuColumn', function() {
   });
 });
 
-describe.only('Table', function () {
+describe('Table', function () {
   it('Renders rows provided by the rowGetter function when given column children', function () {
     const rowGetter = i => {
       return {
@@ -356,7 +357,7 @@ describe('PaginatedTable', function () {
     assertRowsExist(expectedCellContents, wrapper);
   });
 
-  it.skip(
+  it(
     'renders a footer that allows navigation between pages, displays the ' +
     'correct rows per page',
     function () {
@@ -448,9 +449,9 @@ describe('PaginatedTable', function () {
       </PaginatedTable>
     );
 
-    // expect(wrapper.find('SelectField')).to.exist;
+    expect(wrapper.find('Select').exists()).toBeTruthy();
 
-    wrapper.find('TablePagination').prop('onChangeRowsPerPage')({
+    wrapper.find('PaginatedTableFooter').prop('onChangePerPage')({
       target: { value: 20 }
     });
     // .simulate('change', { target: { value: 20 } }); // why doesn't this work?
@@ -461,7 +462,7 @@ describe('PaginatedTable', function () {
     assertRowsMissing(range(20, 30), wrapper);
   });
 
-  it.skip('moves back to the first page where rows exist when perPage changes', function () {
+  it('moves back to the first page where rows exist when perPage changes', function () {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -480,7 +481,7 @@ describe('PaginatedTable', function () {
     // expect pagination to move back to page 1
     // wrapper.find('.perPage')
     //   .simulate('change', { target: { value: 30 } });
-    wrapper.find('TablePagination').prop('onChangeRowsPerPage')({
+    wrapper.find('PaginatedTableFooter').prop('onChangePerPage')({
       target: { value: 30 }
     });
 
@@ -490,7 +491,7 @@ describe('PaginatedTable', function () {
     assertRowsExist(expectedRows, wrapper);
   });
 
-  it.skip('moves back to the first page where rows exist when rowCount changes', function () {
+  it('moves back to the first page where rows exist when rowCount changes', function () {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -505,17 +506,17 @@ describe('PaginatedTable', function () {
     wrapper.find('.pageRight').at(0).simulate('click');
     wrapper.find('.pageRight').at(0).simulate('click');
 
-    expect(wrapper.find('TablePagination').prop('page')).toEqual(2);
+    expect(wrapper.find('PaginatedTableFooter').prop('page')).toEqual(2);
 
     wrapper.setProps({ rowCount: 5 }).update();
 
     const expectedRows = range(0, 5).map(i => `row-${i}`);
     assertRowsExist(expectedRows, wrapper);
 
-    expect(wrapper.find('TablePagination').prop('page')).toEqual(0);
+    expect(wrapper.find('PaginatedTableFooter').prop('page')).toEqual(0);
   });
 
-  it.skip('does not move back to page -1 on perPage changes and rowCount=0', function () {
+  it('does not move back to page -1 on perPage changes and rowCount=0', function () {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -526,11 +527,11 @@ describe('PaginatedTable', function () {
       </PaginatedTable>
     );
 
-    wrapper.find('TablePagination').prop('onChangeRowsPerPage')({
+    wrapper.find('PaginatedTableFooter').prop('onChangePerPage')({
       target: { value: 30 }
     });
 
-    expect(wrapper.find('TablePagination').prop('page')).toEqual(0);
+    expect(wrapper.find('PaginatedTableFooter').prop('page')).toEqual(0);
   });
 
   it('renders only up to rowCount if rowCount < perPage', function () {
@@ -628,16 +629,7 @@ describe('Table with focused row', function () {
     expect(focusedWrapper.find('#details').text()).toEqual('row-2');
   });
 
-  it.skip('works in paginated tables', function () {
-    // const mockReduxStore = createStore(
-    //   combineReducers(
-    //     {
-    //       [namespace]: uiStateReducer
-    //     },
-    //     {}
-    //   )
-    // );
-
+  it('works in paginated tables', function () {
     function renderDetails(data = {}) {
       return (
         <h3 id="details">
@@ -653,7 +645,6 @@ describe('Table with focused row', function () {
         rowCount={11}
         renderFocusedRowDetails={renderDetails}
         focusedRow={2}
-        // store={mockReduxStore}
       >
         <Column dataKey="id" />
       </PaginatedTable>
