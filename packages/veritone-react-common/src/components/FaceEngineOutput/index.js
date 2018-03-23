@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { filter } from 'lodash';
 import { shape, number, string, bool, arrayOf, func } from 'prop-types';
+import classNames from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FaceGrid from './FaceGrid';
+
+import styles from './styles.scss';
 
 @withMuiThemeProvider
 class FaceEngineOutput extends Component {
@@ -17,10 +20,16 @@ class FaceEngineOutput extends Component {
         uri: string
       })
     })),
+    entitySearchResults: arrayOf(shape({
+      entityName: string,
+      libraryName: string,
+      profileImageUrl: string
+    })),
     enableEditMode: bool,
     mediaPlayerPosition: number,
     viewMode: string,
-    onAddNewEntity: func
+    onAddNewEntity: func,
+    className: string
   };
 
   state = {
@@ -32,12 +41,12 @@ class FaceEngineOutput extends Component {
   }
 
   render() {
-    let { faces, enableEditMode, viewMode, onAddNewEntity } = this.props;
+    let { faces, enableEditMode, viewMode, onAddNewEntity, entitySearchResults, className } = this.props;
     let facesRecognized = filter(faces, face => face.entityId.length > 0);
     let facesDetected = filter(faces, face => face.entityId === undefined || face.entityId.length === 0);
     console.log(facesDetected, facesRecognized);
     return (
-      <div>
+      <div className={classNames(styles.faceEngineOutput, className)}>
         <Tabs 
           value={this.state.activeTab} 
           onChange={this.handleTabChange} 
@@ -55,6 +64,7 @@ class FaceEngineOutput extends Component {
               enableEditMode={enableEditMode}
               viewMode={viewMode}
               onAddNewEntity={onAddNewEntity}
+              entitySearchResults={entitySearchResults}
             />
         }
       </div>
