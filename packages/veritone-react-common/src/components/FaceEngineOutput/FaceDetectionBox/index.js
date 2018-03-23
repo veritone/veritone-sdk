@@ -48,20 +48,37 @@ class FaceDetectionBox extends Component {
     this.setState({ hovered: false });
   };
 
+  makeEditable = () => {
+    this.setState({ editFaceEntity: true });
+  }
+
+  handleAddNewEntity = face => (evt) => {
+    this.props.addNewEntity(face, evt);
+  };
+
   itemToString = (item) => item && item.entityName;
 
   render() {
-    let { face, searchResults, updateEntity, enableEdit, addNewEntity } = this.props;
+    let { face, searchResults, updateEntity, enableEdit } = this.props;
 
     return (
       <div 
-        className={classNames(styles.faceContainer, enableEdit && this.state.hovered && styles.faceContainerHover)} 
+        className={classNames(styles.faceContainer, this.state.hovered && styles.faceContainerHover)} 
         onMouseOver={this.handleMouseOver} 
         onMouseLeave={this.handleMouseOut}
       >
         <div className={styles.entityImageContainer}>
           <img className={styles.entityImage} src={face.object.uri} />
-          { enableEdit && this.state.hovered && <div className={styles.imageButtonOverlay}>Hello</div> }
+          { enableEdit && this.state.hovered &&
+              <div className={styles.imageButtonOverlay}>
+                <div className={styles.faceActionIcon} onClick={this.makeEditable}>
+                  <i className='icon-mode_edit2' />
+                </div>
+                <div className={styles.faceActionIcon}>
+                  <i className='icon-trashcan' />
+                </div>
+              </div> 
+          }
         </div>
         <div className={styles.faceInformation}>
           <span className={styles.faceTimeOccurrence}>
@@ -81,6 +98,7 @@ class FaceDetectionBox extends Component {
                 }) => (
                   <div>
                     <TextField
+                      inputProps={{className: styles.entitySearchInput}}
                       {...getInputProps({
                         value: face.entityName,
                         placeholder: "Unkown",
@@ -117,7 +135,7 @@ class FaceDetectionBox extends Component {
                             <Button 
                               color="primary" 
                               className={styles.addNewEntityButton}
-                              onClick={addNewEntity}
+                              onClick={this.handleAddNewEntity(face)}
                             >
                               ADD NEW
                             </Button>
@@ -127,7 +145,7 @@ class FaceDetectionBox extends Component {
                     }
                   </div>
                 )}
-              </Downshift> : <div>Unkown</div>
+              </Downshift> : <div className={styles.unknownEntityText}>Unkown</div>
           }
         </div>
       </div> 

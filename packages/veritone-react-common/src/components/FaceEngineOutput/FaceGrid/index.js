@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, number, string, bool } from 'prop-types';
+import { arrayOf, shape, number, string, bool, func } from 'prop-types';
 
 import FaceDetectionBox from '../FaceDetectionBox';
 
@@ -15,7 +15,8 @@ class FaceGrid extends Component {
         uri: string
       })
     })),
-    enableEditMode: bool
+    enableEditMode: bool,
+    onAddNewEntity: func
   };
 
   drawFaces(faces) {
@@ -24,6 +25,7 @@ class FaceGrid extends Component {
         key={'face-' + index} 
         face={face} 
         enableEdit={this.props.enableEditMode}
+        addNewEntity={this.props.onAddNewEntity}
       />
     })
   }
