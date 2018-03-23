@@ -117,8 +117,8 @@ For environments that do not support javascript module imports, widgets can also
 <body>
   <div id="appBar-widget"></div>
 
-  <script src="https://unpkg.com/veritone-widgets@^3/umd/VeritoneApp.js"></script>
-  <script src="https://unpkg.com/veritone-widgets@^3/umd/AppBar.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^4/dist/umd/VeritoneApp.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^4/dist/umd/AppBar.js"></script>
 
   <script>
     const app = VeritoneApp();

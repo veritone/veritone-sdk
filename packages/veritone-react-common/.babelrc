@@ -21,7 +21,7 @@
         "lodash"
       ]
     },
-    "production": {
+    "production-es": {
       "presets": [
         [
           "env",
@@ -29,6 +29,40 @@
             "modules": false,
             "targets": {
               "browsers": ["> 5%"]
+            }
+          }
+        ],
+        "react"
+      ],
+      "plugins": [
+        "external-helpers",
+        [
+          "module-resolver",
+          {
+            "alias": {
+              "helpers": "./src/helpers",
+              "images": "./src/resources/images",
+              "components": "./src/components"
+            }
+          }
+        ],
+        "add-react-displayname",
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash",
+        "date-fns"
+      ]
+    },
+    "production-cjs": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": ["> 0.5%"]
             }
           }
         ],
