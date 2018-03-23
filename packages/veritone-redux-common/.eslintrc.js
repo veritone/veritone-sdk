@@ -5,11 +5,11 @@ module.exports = Object.assign({}, env.eslintReact, {
     module: true,
     process: true
   }),
-  env: Object.assign(env.eslintReact.env, {
+  env: Object.assign({}, env.eslintReact.env, {
     jest: true
   }),
   plugins: env.eslintReact.plugins.concat(['import']),
-  rules: Object.assign(env.eslintReact.rules, {
+  rules: Object.assign({}, env.eslintReact.rules, {
     'import/order': 2
   })
 });
