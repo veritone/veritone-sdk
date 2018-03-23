@@ -72,6 +72,10 @@ export default class DynamicSelect extends React.Component {
       currentFields: Object.assign({}, this.state.currentFields, fieldCopy)
     }, this.triggerCallback);
   };
+
+  handleTooltip = () => {
+    console.log('tooltip clicked');
+  };
   
   renderFields = (currentSourceTypeIndex) => {
     let properties = this.props.sourceTypes[currentSourceTypeIndex].sourceSchema.definition.properties
@@ -101,7 +105,7 @@ export default class DynamicSelect extends React.Component {
         {this.state.oneSourceType && 
           <div className={styles.sourceTypeNameContainer}>
             <div className={styles.sourceTypeName}>{this.props.sourceTypes[this.state.currentSourceTypeIndex].name}</div>
-            <div className={styles.sourceTypeNameTooltip}>Why can't I change this?</div>
+            <div className={styles.sourceTypeNameTooltip} onClick={this.handleTooltip}>Why can't I change this?</div>
           </div>}
         {(this.props.helperText && !this.state.oneSourceType) && <FormHelperText>{this.props.helperText}</FormHelperText>}
         {this.renderFields(this.state.currentSourceTypeIndex)}
@@ -110,7 +114,7 @@ export default class DynamicSelect extends React.Component {
   };
 }
 
-// This functional component will handle field type render logic, TODO: add fields here as needed
+// This functional component will handle field type render logic, TODO: add fields here as needed for different field types
 function SourceTypeField({id, type, value, onChange, title}) {
   //all types will be lowercase
   if (!title) {
