@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { filter } from 'lodash';
-import { shape, number, string, bool, arrayOf } from 'prop-types';
+import { shape, number, string, bool, arrayOf, func } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FaceGrid from './FaceGrid';
@@ -19,7 +19,8 @@ class FaceEngineOutput extends Component {
     })),
     enableEditMode: bool,
     mediaPlayerPosition: number,
-    viewMode: string
+    viewMode: string,
+    onAddNewEntity: func
   };
 
   state = {
@@ -31,7 +32,7 @@ class FaceEngineOutput extends Component {
   }
 
   render() {
-    let { faces, enableEditMode, viewMode } = this.props;
+    let { faces, enableEditMode, viewMode, onAddNewEntity } = this.props;
     let facesRecognized = filter(faces, face => face.entityId.length > 0);
     let facesDetected = filter(faces, face => face.entityId === undefined || face.entityId.length === 0);
     console.log(facesDetected, facesRecognized);
@@ -53,6 +54,7 @@ class FaceEngineOutput extends Component {
               faces={facesDetected} 
               enableEditMode={enableEditMode}
               viewMode={viewMode}
+              onAddNewEntity={onAddNewEntity}
             />
         }
       </div>

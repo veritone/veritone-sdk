@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, number } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
 
@@ -142,6 +143,7 @@ storiesOf('FaceEngineOutput', module)
             max: 6000,
             step: 1000
           })}
+          onAddNewEntity={action("Pop the add new entity modal")}
         />
       </div>
     )
