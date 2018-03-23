@@ -1,6 +1,6 @@
 {
   "name": "veritone-widgets",
-  "version": "3.0.1",
+  "version": "4.1.0",
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
@@ -11,9 +11,9 @@
     "redux": "^3.7.2",
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",
-    "veritone-oauth-helpers": "^2.0.1",
-    "veritone-react-common": "^3.0.0",
-    "veritone-redux-common": "^3.0.0"
+    "veritone-oauth-helpers": "^2.1.0",
+    "veritone-react-common": "^4.0.0",
+    "veritone-redux-common": "^3.1.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
@@ -25,9 +25,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
-    "build": "yarn run build:es && yarn run build:script-tag",
-    "build:es": "cross-env NODE_ENV=production rollup -c",
-    "build:script-tag": "cross-env NODE_ENV=production webpack --config webpack.config.script-tag.js",
+    "build": "yarn run build:es && yarn run build:cjs && yarn run build:script-tag",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
+    "build:script-tag": "cross-env NODE_ENV=production BABEL_ENV=production-cjs webpack --config webpack.config.script-tag.js",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook": "NODE_ENV=production build-storybook -c .storybook -o docs-static",
     "lint": "eslint src/** --ext .js",
