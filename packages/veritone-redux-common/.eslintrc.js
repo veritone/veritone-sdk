@@ -1,7 +1,7 @@
 const env = require('veritone-dev-env');
 
 module.exports = Object.assign({}, env.eslintReact, {
-  globals: Object.assign(env.eslintReact.globals, {
+  globals: Object.assign({}, env.eslintReact.globals, {
     module: true,
     process: true
   }),
