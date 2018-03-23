@@ -99,7 +99,7 @@ export default function attachAutocomplete(url, config) {
           resolve({
             header: 'Full-text Search',
             items: [{
-              id: queryString,
+              id: queryString.toLowerCase(),
               type: 'fullText',
               label: queryString
             }]
