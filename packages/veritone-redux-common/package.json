@@ -1,6 +1,6 @@
 {
   "name": "veritone-redux-common",
-  "version": "3.0.0",
+  "version": "3.2.0",
   "dependencies": {
     "lodash": "^4.17.4",
     "prop-types": "^15.6.0",
@@ -10,7 +10,7 @@
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.16.0",
     "veritone-functional-permissions": "^1.0.1",
-    "veritone-oauth-helpers": "^2.0.0"
+    "veritone-oauth-helpers": "^2.1.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
@@ -23,7 +23,9 @@
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
     "clean:build": "rimraf dist",
     "prebuild": "npm run clean:build",
-    "build": "NODE_ENV=production rollup -c",
+    "build": "yarn run build:es && yarn run build:cjs",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch": "NODE_ENV=production rollup -c --watch",
     "prepublishOnly": "npm run test && npm run lint && npm run build"
   },
@@ -39,6 +41,7 @@
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "cross-env": "^5.1.4",
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.2",
     "eslint": "^4.8.0",
