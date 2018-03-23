@@ -60,9 +60,15 @@ function formCallback(formResult) {
 };
 
 var helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
-var selectLabel = 'Select a Source Type*';
+var selectLabel = 'Select a Source Type';
+
+var initialValues = {
+  url: 'twitter.com',
+  username: 'trump',
+  password: 'password',
+}
 
 storiesOf('SchemaDrivenSelectForm', module)
   .add('Base', () => (
-    <DynamicSelect sourceTypes={sourceTypes.data.records} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
+    <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={initialValues} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
   ))

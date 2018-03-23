@@ -11,23 +11,36 @@ import {
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
+import {FormHelperText, FormControl} from 'material-ui/Form';
+import InputLabel from 'material-ui/Input/InputLabel';
 
 import styles from './styles.scss';
-import FormHelperText from 'material-ui/Form/FormHelperText';
-import InputLabel from 'material-ui/Input/InputLabel';
+
 
 export default class DynamicSelect extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
     formCallback: func.isRequired, //used to provide state to the parent
+    initialValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value
     helperText: string,
     selectLabel: string
   };
   static defaultProps = {};
 
   state = {
+    error: false,
+    oneSourceType: false,
     currentSourceTypeIndex: 0,
     currentFields: {},
+  };
+
+  componentWillMount = () => {
+    if (!this.props.sourceTypes.length) { //TODO: currently will error out and not render if sourceTypes is empty
+      console.error('Source types was empty.');
+      this.state.error = true;
+    } else if (this.props.sourceTypes.length === 1) {
+      this.state.oneSourceType = true;
+    }
   };
 
   triggerCallback = () => {
@@ -63,7 +76,7 @@ export default class DynamicSelect extends React.Component {
   renderFields = (currentSourceTypeIndex) => {
     let properties = this.props.sourceTypes[currentSourceTypeIndex].sourceSchema.definition.properties
     return Object.keys(properties).map((fieldId, index) => {
-      return <SourceTypeField id={fieldId} type={properties[fieldId].type.toLowerCase()} onChange={this.handleFieldChange} title={properties[fieldId].title ? properties[fieldId].title : '' } key={index} />
+      return <SourceTypeField id={fieldId} type={properties[fieldId].type.toLowerCase()} value={this.props.initialValues[fieldId]} onChange={this.handleFieldChange} title={properties[fieldId].title ? properties[fieldId].title : '' } key={index} />
     });
   };
 
@@ -72,9 +85,9 @@ export default class DynamicSelect extends React.Component {
       return <MenuItem value={index} id={type.id} key={index}>{type.name}</MenuItem>
     });
     return (
-      <div className={styles.dynamicFormStyle}>
-        <InputLabel className={styles.inputLabel} htmlFor={'select-id'}>{this.props.selectLabel ? this.props.selectLabel : ''}</InputLabel>
-        <Select 
+      <FormControl className={styles.dynamicFormStyle} error={this.state.error}>
+        {(this.props.selectLabel && !this.state.oneSourceType) && <InputLabel className={styles.inputLabel} htmlFor={'select-id'}>{this.props.selectLabel}</InputLabel>}
+        {!this.state.oneSourceType && <Select 
           className={styles.selectField}
           fullWidth
           id={'select-id'}
@@ -83,16 +96,22 @@ export default class DynamicSelect extends React.Component {
           onChange={this.handleSourceTypeChange}
         >
           {sourceTypes}
-        </Select>
-        {this.props.helperText && <FormHelperText>{this.props.helperText}</FormHelperText>}
+        </Select>}
+        {this.state.oneSourceType && <div className={styles.sourceTypeNameLabel}>Source Type</div>}
+        {this.state.oneSourceType && 
+          <div className={styles.sourceTypeNameContainer}>
+            <div className={styles.sourceTypeName}>{this.props.sourceTypes[this.state.currentSourceTypeIndex].name}</div>
+            <div className={styles.sourceTypeNameTooltip}>Why can't I change this?</div>
+          </div>}
+        {(this.props.helperText && !this.state.oneSourceType) && <FormHelperText>{this.props.helperText}</FormHelperText>}
         {this.renderFields(this.state.currentSourceTypeIndex)}
-      </div>
+      </FormControl>
     );
   };
 }
 
 // This functional component will handle field type render logic, TODO: add fields here as needed
-function SourceTypeField({id, type, onChange, title}) {
+function SourceTypeField({id, type, value, onChange, title}) {
   //all types will be lowercase
   if (!title) {
     title = id;
@@ -106,7 +125,7 @@ function SourceTypeField({id, type, onChange, title}) {
         margin='dense'
         id={id}
         label={title}
-        // value={this.state.fieldText[id]}
+        value={value}
         key={id}
         onChange={onChange(id)}
       />
@@ -120,7 +139,7 @@ function SourceTypeField({id, type, onChange, title}) {
         margin='dense'
         id={id}
         label={title}
-        // value={this.state.fieldText[id]}
+        value={value}
         key={id}
         onChange={onChange(id)}
       />
