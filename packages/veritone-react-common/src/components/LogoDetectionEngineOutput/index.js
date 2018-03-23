@@ -132,7 +132,6 @@ export default class LogoDetectionEngineOutput extends Component {
                         if (itemInfo.logo) {                                                            //Look for detected logo
                             let startTime = msToReadableString(itemInfo.startTimeMs);
                             let endTime = msToReadableString(itemInfo.endTimeMs);
-                            console.log(itemInfo.startTimeMs, currentPlayTime);
                             let logoItem = (
                                 <PillButton
                                     value={index} 
