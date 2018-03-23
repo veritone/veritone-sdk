@@ -1,9 +1,7 @@
 import React from 'react';
 import { isNumber, noop, omit } from 'lodash';
 
-import { func, number, string, objectOf, node, shape, object } from 'prop-types';
-import { TablePagination } from 'material-ui/Table';
-import { withStyles } from 'material-ui/styles';
+import { func, number, node } from 'prop-types';
 import PaginatedTableFooter from './PaginatedTableFooter';
 
 const withPagination = WrappedTable => { 

@@ -9,7 +9,7 @@ import { TableCell } from 'material-ui/Table';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
-import { func, number, shape, objectOf, string, any } from 'prop-types';
+import { func, number } from 'prop-types';
 import RefreshButton from '/components/RefreshButton';
 import styles from './styles/index.scss';
 
@@ -17,6 +17,7 @@ export default class PaginatedTableFooter extends React.Component {
   static propTypes = {
     page: number.isRequired,
     perPage: number.isRequired,
+    onChangePage: func.isRequired,
     onChangePerPage: func.isRequired,
     onRefreshPageData: func,
     rowCount: number,
@@ -56,7 +57,6 @@ export default class PaginatedTableFooter extends React.Component {
 
     return (
       <TableCell
-        // className={styles['paginated-footer']}
         colSpan={this.props.colSpan}        
         style={{
           textAlign: 'right'

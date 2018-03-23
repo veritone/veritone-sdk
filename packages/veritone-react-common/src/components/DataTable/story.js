@@ -1,13 +1,12 @@
 import React from 'react';
-import { range, without } from 'lodash';
 import { storiesOf } from '@storybook/react';
 
+import { arrayOf, object } from 'prop-types';
 import DotDotDot from 'react-dotdotdot'
-import { Table, Column, PaginatedTable } from './';
 import MenuColumn from './MenuColumn';
+import { Table, Column, PaginatedTable } from './';
 
-
-var data = [
+const data = [
   {
     created_at: 'Sat Dec 14 04:35:55 +0000 2013',
     name: 'TwitterDev',
@@ -149,33 +148,25 @@ function renderCell(data) {
 }
 
 
-function BasicTable(props) {
-  const tableEmptyMessage =
-    'Nothing to see here! This table will show your engines when some exist.';
-
-  const tableEmptyFailureMessage =
-    'Engines failed to load; please try again later.';
-
+function BasicTable({ data }) {
   function getRowData(i) {
-    return props.data[i];
+    return data[i];
   };
+  
 
-  const columns = Object.keys(props.data[0]).map((column, index) => {
+  const columns = Object.keys(data[0]).map((column, index) => {
     return <Column 
       dataKey={column}
       header={column}
       key={index}
       cellRenderer={renderCell}
-      // style={{
-      //   paddingRight: '24px'
-      // }}
     />
   });
 
   return (
       <Table
         rowGetter={getRowData}
-        rowCount={props.data.length}
+        rowCount={data.length}
         showHeader
       >
         {columns}
@@ -183,10 +174,22 @@ function BasicTable(props) {
   );
 }
 
+BasicTable.propTypes = {
+  data: arrayOf(object)
+}
+
 class PagedTable extends React.Component {
   getRowData = (i) => {
     return this.props.data[i];
   };
+  
+  handleOnRefreshPageData = () => {
+    return console.log('Refresh Me');
+  }
+
+  handleOnCellClick = (i) => {
+    return console.log('i:', i)
+  }
 
   render() {
     const tableEmptyMessage =
@@ -210,13 +213,19 @@ class PagedTable extends React.Component {
         rowCount={this.props.data.length}
         rowsPerPage={5}
         showHeader
-        onRefreshPageData={() => console.log('Refresh Me')}
-        onCellClick={(i) => console.log('i:', i)}
+        onRefreshPageData={this.handleOnRefreshPageData}
+        onCellClick={this.handleOnCellClick}
+        emptyMessage={tableEmptyMessage}
+        emptyFailureMessage={tableEmptyFailureMessage}
       >
         {columns}
       </PaginatedTable>
     )
   }
+}
+
+PagedTable.propTypes = {
+  data: arrayOf(object)
 }
 
 class SplitTable extends React.Component {
@@ -235,6 +244,10 @@ class SplitTable extends React.Component {
 
   setFocusedRow = (row) => {
     this.setState({ focusedTableRow: row });
+  }
+
+  handleOnRefreshPageData = () => {
+    return console.log('Refresh Me');
   }
 
   render() {
@@ -259,10 +272,12 @@ class SplitTable extends React.Component {
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
         showHeader
-        onRefreshPageData={() => console.log('Refresh Me')}
+        onRefreshPageData={this.handleOnRefreshPageData}
         onCellClick={this.setFocusedRow}
         focusedRow={this.state.focusedTableRow}
         renderFocusedRowDetails={this.renderFocusedRowDetails}
+        emptyMessage={tableEmptyMessage}
+        emptyFailureMessage={tableEmptyFailureMessage}
       >
         {columns}
       </PaginatedTable>
@@ -270,70 +285,8 @@ class SplitTable extends React.Component {
   }
 }
 
-class SelectionTable extends React.Component {
-  state = {
-    focusedTableRow: null,
-    selectedRows: []
-  }
-
-  getRowData = (i) => {
-    return this.props.data[i];
-  };
-
-  renderFocusedRowDetails = (row) => {
-    return <div style={{textAlign: 'center'}}>{row.name}</div>
-  }
-
-  setFocusedRow = (row) => {
-    this.setState({ focusedTableRow: row });
-  }
-
-  selectAll = (e, checked) => {
-    if (!checked) {
-      return this.setState({ selectedRows: [] });
-    }
-
-    return this.setState({ selectedRows: range(this.props.data.length) });
-  }
-
-  handleRowSelection = (row, checked) => {
-    this.setState({
-      selectedRows: checked 
-        ? [...this.state.selectedRows, row] 
-        : without(this.state.selectedRows, row)
-    });
-  }
-
-  render() {
-    const columns = Object.keys(this.props.data[0]).map((column, index) => {
-      return <Column
-        dataKey={column}
-        header={column}
-        key={index}
-        cellRenderer={renderCell}
-        // width={100}
-      />
-    });
-  
-    return (
-      <PaginatedTable
-        rowsPerPage={5}
-        rowGetter={this.getRowData}
-        rowCount={this.props.data.length}
-        showHeader
-        onRefreshPageData={() => console.log('Refresh Me')}
-        onCellClick={this.setFocusedRow}
-        focusedRow={this.state.focusedTableRow}
-        renderFocusedRowDetails={this.renderFocusedRowDetails}
-        selectable
-        selectedRows={this.state.selectedRows}
-        onSelectAll={this.selectAll}
-        onSelectRow={this.handleRowSelection}
-      >
-        {columns}
-      </PaginatedTable>
-    )
-  }
+SplitTable.propTypes = {
+  data: arrayOf(object)
 }
 
 storiesOf('Table', module)
@@ -345,9 +298,6 @@ storiesOf('Table', module)
   ))
   .add('Split Table', () => (
     <SplitTable data={data} />
-  ))
-  .add('Selection Table', () => (
-    <SelectionTable data={data} /> 
   ))
   .add('Menu Column', () => {
     const data = {
