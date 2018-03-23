@@ -32,11 +32,11 @@ class EngineCategorySelector extends Component {
                     <Tab value={engineCategory.id}
                          key={engineCategory.id}
                          icon={<Icon className={engineCategory.iconClass.replace('-engine', '')}
-                                     classes={{root: styles.categoryIcon}}></Icon>}
+                                     classes={{root: styles.categoryIcon}} />}
                          classes={{
                            root: styles.engineCategoryTab
-                         }}>
-                    </Tab>
+                         }} 
+                    />
                   );
                 })
               }
