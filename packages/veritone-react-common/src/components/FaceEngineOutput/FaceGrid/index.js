@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, number, string } from 'prop-types';
-
-import styles from './styles.scss';
+import { arrayOf, shape, number, string, bool } from 'prop-types';
 
 import FaceDetectionBox from '../FaceDetectionBox';
+
+import styles from './styles.scss';
 
 class FaceGrid extends Component {
   static propTypes = {
@@ -14,8 +14,19 @@ class FaceGrid extends Component {
         label: string,
         uri: string
       })
-    }))
+    })),
+    enableEditMode: bool
   };
+
+  drawFaces(faces) {
+    return faces.map((face, index) => {
+      return <FaceDetectionBox 
+        key={'face-' + index} 
+        face={face} 
+        enableEdit={this.props.enableEditMode}
+      />
+    })
+  }
 
   render() {
     let { faces } = this.props;
@@ -25,12 +36,6 @@ class FaceGrid extends Component {
         {this.drawFaces(faces)}
       </div>
     )
-  }
-
-  drawFaces(faces) {
-    return faces.map((face, index) => {
-      return <FaceDetectionBox key={'face-' + index} face={face} />
-    })
   }
 }
 
