@@ -1,6 +1,6 @@
 import React from 'react';
 import { range, filter, get, includes } from 'lodash';
-import MuiTable, { TableBody, TableFooter, TableRow } from 'material-ui/Table';
+import MuiTable, { TableBody, TableFooter, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
 import Select from 'material-ui/Select';
 
@@ -198,9 +198,9 @@ describe('Table', function () {
 
   it('renders a MUI TableFooter if provided', function () {
     const footer = (
-      <TableFooter id="my-footer">
-        <TableRow>Footer</TableRow>
-      </TableFooter>
+      <TableCell id="my-footer">
+        <div>Footer</div>
+      </TableCell>
     );
 
     const wrapper = mount(
@@ -416,7 +416,7 @@ describe('PaginatedTable', function () {
     }
   );
 
-  it.skip('renders a refresh button into the footer if onRefreshPageData is provided', function () {
+  it('renders a refresh button into the footer if onRefreshPageData is provided', function () {
     let calledWith;
 
     const wrapper = mount(
@@ -554,7 +554,7 @@ describe('PaginatedTable', function () {
     assertRowsExist(shouldNotExistCellContents, wrapper, false);
   });
 
-  describe.skip('callback behavior', function () {
+  describe('callback behavior', function () {
     it('calls onShowCellRange with the correct data', function () {
       let calledWith = null;
       const handleShowCellRange = range => {
@@ -567,23 +567,22 @@ describe('PaginatedTable', function () {
           rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
           rowCount={30}
           onShowCellRange={handleShowCellRange}
-          store={this.mockReduxStore}
         >
           <Column dataKey="id" />
         </PaginatedTable>
       );
 
       wrapper.find('.pageRight').at(0).simulate('click');
-      expect(calledWith).to.eql({ start: 10, end: 19 });
+      expect(calledWith).toEqual({ start: 10, end: 19 });
 
       wrapper.find('.pageRight').at(0).simulate('click');
-      expect(calledWith).to.eql({ start: 20, end: 29 });
+      expect(calledWith).toEqual({ start: 20, end: 29 });
 
       wrapper.find('.pageLeft').at(0).simulate('click');
-      expect(calledWith).to.eql({ start: 10, end: 19 });
+      expect(calledWith).toEqual({ start: 10, end: 19 });
 
       wrapper.setProps({ rowCount: 0 });
-      expect(calledWith).to.eql(
+      expect(calledWith).toEqual(
         { start: 0, end: 9 },
         "calls for full page even if rowCount says data doesn't exist"
       );

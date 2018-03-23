@@ -20,11 +20,7 @@ const withPagination = WrappedTable => {
       handleChangeRowsPerPage: func,
       children: node,
       page: number,
-      rowsPerPage: number,
-      classes: objectOf(string),
-      paginationStyles: shape({
-        root: object
-      })
+      rowsPerPage: number
     };
     
     static defaultProps = {
@@ -50,6 +46,15 @@ const withPagination = WrappedTable => {
       }
 
       return this.setState(newState);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+      if (
+        this.state.page !== prevState.page ||
+        this.state.rowsPerPage !== prevState.rowsPerPage
+      ) {
+        this.callOnShowCellRange();
+      }
     }
     
     rowGetter = i => {
@@ -84,6 +89,15 @@ const withPagination = WrappedTable => {
         end: lastItem
       });
     }
+
+    callOnShowCellRange = () => {
+      const [firstItem, lastItem] = this.getDisplayedItemIndices();
+
+      this.props.onShowCellRange({
+        start: firstItem,
+        end: lastItem
+      });
+    };
 
     getDisplayedItemIndices = () => {
       const firstItem = this.state.page * this.state.rowsPerPage;
@@ -144,6 +158,7 @@ const withPagination = WrappedTable => {
           }
           onCellClick={this.translateCellClick}
           focusedRow={this.translateFocusedRow()}
+          onShowCellRange={noop}
         />
       );
     }
