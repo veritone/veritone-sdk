@@ -8,6 +8,7 @@ import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import EngineOutputHeader from '../EngineOutputHeader';
 import PillButton from '../Parts/Buttons/PillButton';
+import { msToReadableString } from '../../helpers/time'
 import styles from './styles.scss';
 
 export default class LogoDetectionEngineOutput extends Component {
@@ -129,8 +130,8 @@ export default class LogoDetectionEngineOutput extends Component {
                     // Draw detected logos in the series
                     engineInfo.series.map((itemInfo, index) => {
                         if (itemInfo.logo) {                                                            //Look for detected logo
-                            let startTime = this.formatTime(itemInfo.startTimeMs);
-                            let endTime = this.formatTime(itemInfo.endTimeMs);
+                            let startTime = msToReadableString(itemInfo.startTimeMs);
+                            let endTime = msToReadableString(itemInfo.endTimeMs);
                             console.log(itemInfo.startTimeMs, currentPlayTime);
                             let logoItem = (
                                 <PillButton
@@ -152,22 +153,6 @@ export default class LogoDetectionEngineOutput extends Component {
             });
         }
         return items;
-    }
-
-    formatTime (millisec) {
-        let dateObject = new Date(millisec);
-        let numDays = dateObject.getUTCDate() - 1;
-        let numHours = dateObject.getUTCHours() + numDays * 24;
-        let numMinites = dateObject.getUTCMinutes();
-        let numSeconds = dateObject.getUTCSeconds();
-        let numMilliseconds = dateObject.getUTCMilliseconds();
-
-        let formatedString = '';
-        formatedString = formatedString + numHours.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
-        formatedString = formatedString + numMinites.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
-        formatedString = formatedString + numSeconds.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
-        formatedString = formatedString + numMilliseconds.toLocaleString(undefined, {minimumIntegerDigits: 3});
-        return formatedString;
     }
 
     //================================================================================
