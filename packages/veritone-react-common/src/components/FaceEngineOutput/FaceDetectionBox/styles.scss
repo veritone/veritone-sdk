@@ -70,6 +70,8 @@
   width: 244px;
   display: flex;
   flex-direction: column;
+  position: absolute;
+  z-index: 2;
 }
 
 .entitySearchInput {
@@ -78,7 +80,6 @@
 }
 
 .searchResultsList {
-  max-height: 345px;
   flex: auto;
   overflow: scroll;
 }

@@ -56,6 +56,27 @@ class FaceDetectionBox extends Component {
     this.props.addNewEntity(face, evt);
   };
 
+  inputRef = (c) => {
+    this._input = c;
+  }
+
+  /*TODO: come back to this and fix it*/
+  calculatePositionAndHeight = () => {
+    let distanceFromBottom = document.body.clientHeight - this._input.getBoundingClientRect().bottom;
+    let distanceFromTop = this._input.getBoundingClientRect().top;
+    let autocompleteMenuStyle = {
+      maxHeight: '350px'
+    }
+
+    if (distanceFromBottom > 150 ) {
+      autocompleteMenuStyle.maxHeight = distanceFromBottom > 350 ? '350px' : distanceFromBottom;
+    } else if (distanceFromTop > distanceFromBottom && distanceFromTop > 150) {
+      autocompleteMenuStyle.maxHeight = distanceFromTop > 350 ? '350px' : distanceFromBottom;
+      autocompleteMenuStyle.bottom = document.body.clientHeight - distanceFromTop;
+    }
+    return autocompleteMenuStyle;
+  }
+
   itemToString = (item) => item && item.entityName;
 
   render() {
@@ -98,7 +119,7 @@ class FaceDetectionBox extends Component {
                 }) => (
                   <div>
                     <TextField
-                      inputProps={{className: styles.entitySearchInput}}
+                      inputProps={{className: styles.entitySearchInput, ref: this.inputRef}}
                       {...getInputProps({
                         value: face.entityName,
                         placeholder: "Unkown",
@@ -106,7 +127,10 @@ class FaceDetectionBox extends Component {
                       })}
                     />
                     { isOpen ?
-                        <Paper className={styles.autoCompleteDropdown} square>
+                        <Paper 
+                          className={styles.autoCompleteDropdown} 
+                          square
+                        >
                           <div className={styles.searchResultsList}>
                             { searchResults && searchResults.length ?
                                 searchResults.map((result, index) => (

@@ -15,6 +15,11 @@ class FaceGrid extends Component {
         uri: string
       })
     })),
+    entitySearchResults: arrayOf(shape({
+      entityName: string,
+      libraryName: string,
+      profileImageUrl: string
+    })),
     enableEditMode: bool,
     onAddNewEntity: func
   };
@@ -26,6 +31,7 @@ class FaceGrid extends Component {
         face={face} 
         enableEdit={this.props.enableEditMode}
         addNewEntity={this.props.onAddNewEntity}
+        searchResults={this.props.entitySearchResults}
       />
     })
   }

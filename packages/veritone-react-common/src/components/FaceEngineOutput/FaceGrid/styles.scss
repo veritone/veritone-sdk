@@ -1,8 +1,6 @@
 .faceGrid {
-  flex: 1;
+  flex-grow: 1;
+  overflow: scroll;
   display: flex;
   flex-flow: row wrap;
-  overflow: scroll;
-  max-height: 100%;
-  max-width: 100%;
 }
