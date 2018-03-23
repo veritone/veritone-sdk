@@ -12,7 +12,7 @@ import {
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
-import StatusPill from 'components/IngestionJobs/StatusPill';
+import StatusPill from 'components/StatusPill';
 import styles from './styles.scss';
 
 export default class JobRow extends React.Component {

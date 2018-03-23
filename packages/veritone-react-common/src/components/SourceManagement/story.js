@@ -52,25 +52,6 @@ var sourceInfo = [
   }
 ];
 
-var sourceTypes = [
-  {
-    name: 'Twitter',
-    fields: {
-      url: 'http://www.twitter.com/hillaryclinton',
-      username: 'jane@twitter.com',
-      password: 'Password'
-    }
-  },
-  {
-    name: 'Facebook',
-    fields: {
-      url: 'http://www.facebook.com/hillaryclinton',
-      url2: 'http://www.facebook.com/jane',
-      username: 'jane@facebook.com',
-      password: 'Password'
-    }
-  }
-];
 
 var sourceTypes = {
   data: {

@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import IngestionJobFullScreen from './IngestionJobFullScreen';
+// import IngestionJobFullScreen from './IngestionJobFullScreen';
 import IngestionJobTileView from './IngestionJobTileView';
 import IngestionJobGridCard from './IngestionJobGridView/IngestionJobGridCard';
 import IngestionJobGridView from './IngestionJobGridView';
@@ -212,9 +212,9 @@ var jobInfo = [
 
 
 storiesOf('IngestionJobs', module)
-  .add('FullScreen', () => (
-    <IngestionJobFullScreen data={data} sdoSchemaInfo={sdoSchemaInfo} jobInfo={oneJobInfo} />
-  ))
+  // .add('FullScreen', () => (
+  //   <IngestionJobFullScreen data={data} sdoSchemaInfo={sdoSchemaInfo} jobInfo={oneJobInfo} />
+  // ))
   .add('Tile View', () => (
     <IngestionJobTileView jobInfo={jobInfo}/>
   ))

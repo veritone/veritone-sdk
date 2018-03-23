@@ -13,7 +13,7 @@ import {
   Checkbox
 } from 'components/formComponents';
 
-import StatusPill from 'components/IngestionJobs/StatusPill';
+import StatusPill from 'components/StatusPill';
 
 import styles from './styles.scss';
 

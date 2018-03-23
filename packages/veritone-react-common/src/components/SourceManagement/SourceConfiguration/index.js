@@ -48,10 +48,6 @@ export default class SourceConfiguration extends React.Component {
     this.setState({schemaFormResult: formResult});
   };
 
-  handleNameChange = (event) => {
-    this.setState({sourceName: event.target.value});
-  };
-
   handleSaveConfiguration = () => {
     let savedFieldValues = this.state.schemaFormResult.fieldValues;
     let sourceTypeFields = this.props.sourceTypes[this.state.schemaFormResult.currentSourceTypeIndex].sourceSchema.definition.properties;
@@ -66,6 +62,10 @@ export default class SourceConfiguration extends React.Component {
     };
     console.log(toSave);
     this.props.submitCallback(toSave);
+  };
+
+  handleNameChange = (event) => {
+    this.setState({sourceName: event.target.value});
   };
 
   render() {
