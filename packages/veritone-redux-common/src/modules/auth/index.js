@@ -83,10 +83,33 @@ export function setOAuthToken(token) {
   };
 }
 
-export function requestOAuthGrant(OAuthURI, onSuccess, onFailure) {
+export function requestOAuthGrant({ OAuthURI, onSuccess, onFailure }) {
   return {
     type: constants.REQUEST_OAUTH_GRANT,
     payload: { OAuthURI, onSuccess, onFailure }
+  };
+}
+
+export function requestOAuthGrantImplicit({
+  OAuthURI,
+  responseType = 'token',
+  scope = 'all',
+  clientId,
+  redirectUri,
+  onSuccess,
+  onFailure
+}) {
+  return {
+    type: constants.REQUEST_OAUTH_GRANT_IMPLICIT,
+    payload: {
+      OAuthURI,
+      responseType,
+      scope,
+      clientId,
+      redirectUri,
+      onSuccess,
+      onFailure
+    }
   };
 }
 
@@ -94,6 +117,14 @@ export function OAuthGrantSuccess({ OAuthToken }) {
   return {
     type: constants.OAUTH_GRANT_FLOW_SUCCESS,
     payload: { OAuthToken }
+  };
+}
+
+export function OAuthGrantFailure({ error }) {
+  return {
+    type: constants.OAUTH_GRANT_FLOW_FAILED,
+    payload: { error },
+    error: true
   };
 }
 
