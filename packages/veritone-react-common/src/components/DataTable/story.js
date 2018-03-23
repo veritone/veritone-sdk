@@ -2,12 +2,10 @@ import React from 'react';
 import { range, without } from 'lodash';
 import { storiesOf } from '@storybook/react';
 
-import LinesEllipsis from 'react-lines-ellipsis'
-import responsiveHOC from 'react-lines-ellipsis/lib/responsiveHOC'
+import DotDotDot from 'react-dotdotdot'
 import { Table, Column, PaginatedTable } from './';
 import MenuColumn from './MenuColumn';
 
-const ResponsiveEllipsis = responsiveHOC()(LinesEllipsis)
 
 var data = [
   {
@@ -144,12 +142,9 @@ var data = [
 
 function renderCell(data) {
   return (
-    <ResponsiveEllipsis
-      text={data}
-      maxLine='2'
-      ellipsis='...'
-      basedOn='words'
-    />
+    <DotDotDot clamp={2}>
+      {data}
+    </DotDotDot>
   )
 }
 
