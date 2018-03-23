@@ -38,12 +38,13 @@ export default class DynamicSelect extends React.Component {
   };
 
   componentWillMount = () => {
+    console.log(this.props.sourceTypes);
     if (!this.props.sourceTypes.length) { //TODO: currently will error out and not render if sourceTypes is empty
       console.error('Source types was empty.');
       this.state.error = true;
     } else if (this.props.sourceTypes.length === 1) {
       this.state.oneSourceType = true;
-    }
+    }  
   };
 
   triggerCallback = () => {
@@ -60,8 +61,8 @@ export default class DynamicSelect extends React.Component {
     let currentFields = {};
     let properties = this.props.sourceTypes[index].sourceSchema.definition.properties;
     Object.keys(properties).map((field, index) => {
-      currentFields[field] = null; // 
-    })
+      currentFields[field] = null;
+    }) 
     this.setState({
       currentSourceTypeIndex: index,
     }, this.triggerCallback);
@@ -82,7 +83,7 @@ export default class DynamicSelect extends React.Component {
   renderFields = (currentSourceTypeIndex) => {
     let properties = this.props.sourceTypes[currentSourceTypeIndex].sourceSchema.definition.properties
     return Object.keys(properties).map((fieldId, index) => {
-      return <SourceTypeField id={fieldId} type={properties[fieldId].type.toLowerCase()} value={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : ''} onChange={this.handleFieldChange} title={properties[fieldId].title ? properties[fieldId].title : '' } key={index} />
+      return <SourceTypeField id={fieldId} type={properties[fieldId].type.toLowerCase()} value={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : undefined} onChange={this.handleFieldChange} title={properties[fieldId].title ? properties[fieldId].title : '' } key={index} />
     });
   };
 

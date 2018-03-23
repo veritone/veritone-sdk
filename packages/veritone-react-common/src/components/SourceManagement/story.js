@@ -54,7 +54,7 @@ var sourceInfo = [
 
 
 var sourceTypes = {
-  data: {
+  sourceTypes: {
     records: [
       {
         name: "Audio",
@@ -165,7 +165,7 @@ storiesOf('SourceManagement', module)
   //   <SourceGridView sourceInfo={sourceInfo} />
   // ))
   .add('SourceConfiguration', () => (
-    <SourceConfiguration sourceTypes={sourceTypes.data.records} submitCallback={submitCallback}/>
+    <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} submitCallback={submitCallback}/>
   ))
   .add('Row', () => (
     <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} image={thumbnail} />

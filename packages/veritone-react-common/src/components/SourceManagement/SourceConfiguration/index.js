@@ -44,13 +44,15 @@ export default class SourceConfiguration extends React.Component {
   };
 
   handleDynamicFormCallback = (formResult) => {
-    console.log(formResult);
     this.setState({schemaFormResult: formResult});
   };
 
   handleSaveConfiguration = () => {
+    //TODO: implement an onSave check
     let savedFieldValues = this.state.schemaFormResult.fieldValues;
-    let sourceTypeFields = this.props.sourceTypes[this.state.schemaFormResult.currentSourceTypeIndex].sourceSchema.definition.properties;
+    let sourceTypeFields = this.props.sourceTypes[this.state.schemaFormResult.sourceTypeIndex].sourceSchema.definition.properties;
+
+    
     if (Object.keys(savedFieldValues).length !== Object.keys(sourceTypeFields).length) {
       return; // don't allow saving incomplete form
     } else if (!this.state.sourceName) {
