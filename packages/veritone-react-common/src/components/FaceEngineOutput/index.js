@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import { filter } from 'lodash';
+import { filter, groupBy } from 'lodash';
 import { shape, number, string, bool, arrayOf, func } from 'prop-types';
 import classNames from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FaceGrid from './FaceGrid';
+import Chip from '../Chip';
+import Avatar from '../Avatar';
+
+import noAvatar from 'images/no-avatar.png';
 
 import styles from './styles.scss';
 
@@ -19,6 +23,10 @@ class FaceEngineOutput extends Component {
         label: string,
         uri: string
       })
+    })),
+    libraries: arrayOf(shape({
+      id: string,
+      name: string
     })),
     entitySearchResults: arrayOf(shape({
       entityName: string,
@@ -40,14 +48,29 @@ class FaceEngineOutput extends Component {
     this.setState({ activeTab });
   }
 
+  getLibraryById = (id) => {
+    return this.props.libraries.find((library) => library.id == id);
+  }
+
+  getEntity = (library, entityId) => {
+    return library.entities.find(e => e.entityId === entityId);
+  }
+
   render() {
-    let { faces, enableEditMode, viewMode, onAddNewEntity, entitySearchResults, className } = this.props;
-    let facesRecognized = filter(faces, face => face.entityId.length > 0);
+    let { 
+      faces, 
+      enableEditMode, 
+      viewMode, 
+      onAddNewEntity, 
+      entitySearchResults, 
+      className 
+    } = this.props;
+
+    let facesRecognized = groupBy(filter(faces, face => face.entityId.length > 0), 'libraryId');
     let facesDetected = filter(faces, face => face.entityId === undefined || face.entityId.length === 0);
-    console.log(facesDetected, facesRecognized);
     return (
       <div className={classNames(styles.faceEngineOutput, className)}>
-        <Tabs 
+        <Tabs
           value={this.state.activeTab} 
           onChange={this.handleTabChange} 
           indicatorColor="primary"
@@ -56,7 +79,35 @@ class FaceEngineOutput extends Component {
           <Tab label="Face Detection" value="faceDetection"/>
         </Tabs>
         { this.state.activeTab === 'faceRecognition' && 
-            <div>Here is the face recognition screen</div>
+            Object.keys(facesRecognized).map(libraryId => {
+              let library = this.getLibraryById(libraryId);
+              let facesGroupedByEnity = groupBy(facesRecognized[libraryId], 'entityId');
+              if (library) {
+                return <div key={'library-' + library.id}>
+                  <div className={styles.libraryName}>
+                    <i className="icon-library-app"/>&nbsp;
+                    <span>Library: <strong>{library.name}</strong></span>
+                  </div>
+                  <div className={styles.entityCountContainer}>
+                    { Object.keys(facesGroupedByEnity).map(entityId => {
+                        let entity = this.getEntity(library, entityId);
+                        return <Chip 
+                          key={'entity-' + entityId}
+                          label={
+                            <span>{entity.entityName} <a>({facesGroupedByEnity[entityId].length})</a></span>
+                          }
+                          classes={{
+                            root: styles.entityCountChip
+                          }}
+                          avatar={<Avatar src={entity.profileImageUrl || noAvatar} size={40}/>}
+                        />;
+                      })
+                    }
+                  </div>
+                </div>
+              }
+              return null;
+            })
         }
         { this.state.activeTab === 'faceDetection' && 
             <FaceGrid 
