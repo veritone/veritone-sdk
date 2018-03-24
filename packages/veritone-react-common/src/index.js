@@ -7,6 +7,7 @@ export AppFooter, {
 } from './components/AppFooter';
 export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
+export Image from './components/Image';
 export Chip from './components/Chip';
 export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape

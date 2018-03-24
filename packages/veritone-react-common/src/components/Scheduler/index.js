@@ -4,6 +4,7 @@ import Radio, { RadioGroup } from 'material-ui/Radio';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import { FormLabel, FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import { get } from 'lodash';
 
 const RECURRING_SELECTION = {
   label: 'Recurring',
@@ -14,12 +15,12 @@ const CONTINUOUS_SELECTION = {
   value: 'continuous'
 };
 const ONE_TIME_SELECTION = {
-  label: 'One Time',
-  value: 'one-time'
+  label: 'Immediate',
+  value: 'immediate'
 };
 const NONE_SELECTION = {
-  label: 'None',
-  value: 'none'
+  label: 'On Demand',
+  value: 'on-demand'
 };
 const HOUR_SELECTION = {
   label: 'hour',
@@ -33,8 +34,6 @@ const WEEK_SELECTION = {
   label: 'week',
   value: 'week'
 };
-const RETAIN_DATA_VALUES = [1,2,3,4,5,6,7];
-const ENDS_VALUES = [1,2,3,4,5,6,7]; 
 const REPEAT_HOUR_VALUES = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 const REPEAT_DAY_VALUES = [1,2,3,4,5,6];
 const REPEAT_WEEK_VALUES = [1,2,3];
@@ -63,48 +62,29 @@ const REPEAT_DAY_SELECTIONS = REPEAT_DAY_VALUES.map(selection =>
 const REPEAT_WEEK_SELECTIONS = REPEAT_WEEK_VALUES.map(selection => 
   <MenuItem key={selection} value={selection}>{selection}</MenuItem>
 );
-const RETAIN_DATA_SELECTIONS = RETAIN_DATA_VALUES.map(selection => 
-  <MenuItem key={selection} value={selection}>{selection} Days</MenuItem>
-);
-const ENDS_SELECTION = ENDS_VALUES.map(selection => 
-  <MenuItem key={selection} value={selection}>{selection} Days</MenuItem>
-);
 
 export default class Scheduler extends React.Component {
   static propTypes = {
-    getSchedule: func,
+    updateSchedule: func.isRequired,
     schedule: object
   };
 
-  static defaultProps = {
-    schedule: {
-      occurrenceType: NONE_SELECTION.value,
-      repeatType: HOUR_SELECTION.value,
-      repeatValue: REPEAT_HOUR_VALUES[0],
-      ends: ENDS_VALUES[6],
-      retainData: RETAIN_DATA_VALUES[6],
-    }
-  };
-
   componentDidMount() {
-    // Required function to get schedule set by user
-    if (typeof this.props.getSchedule === 'function') {
-      // Return the current schedule
-      this.props.getSchedule(() => this.state.schedule);
-    } else {
-      console.error('Missing required getSchedule function');
-    }
   }
 
   // Hydrate the adapter with the provided schedule if it is defined
   state = {
-    schedule: this.props.schedule || {}
-  };
+    occurrenceType: get(this.props, ['schedule', 'occurrenceType']) || NONE_SELECTION.value,
+    repeatType: get(this.props, ['schedule', 'repeatType']) || HOUR_SELECTION.value,
+    repeatValue: get(this.props, ['schedule', 'repeatValue']) || REPEAT_HOUR_VALUES[0],
+    startDateTime: get(this.props, ['schedule', 'startDateTime']) || new Date(),
+    stopDateTime: get(this.props, ['schedule', 'stopDateTime'])
+  }
 
   // Component specific functions here
   getRepeatValueSelector = () => {
     let childrenSelection = [];
-    switch (this.state.schedule.repeatType) {
+    switch (this.state.repeatType) {
       case HOUR_SELECTION.value:
         childrenSelection = REPEAT_HOUR_SELECTIONS;
         break;
@@ -117,38 +97,37 @@ export default class Scheduler extends React.Component {
     }
     return (
       <Select
-        value={this.state.schedule.repeatValue}
+        value={this.state.repeatValue}
         onChange={this.handleRepeatValueChange}
         children={childrenSelection}>
       </Select>
     );
   }
 
-  handleOccurenceTypeChange = (event, value) => {
-    this.setState({ schedule: Object.assign({}, this.state.schedule, { occurrenceType: value }) });
+  sendSchedule = () => {
+    this.props.updateSchedule(this.state);
   }
 
-  handleRetainDataChange = event => {
-    this.setState({ schedule: Object.assign({}, this.state.schedule, { retainData: event.target.value }) });
+  handleOccurenceTypeChange = (event, value) => {
+    this.setState(Object.assign({}, this.state, { occurrenceType: value }), this.sendSchedule);
   }
 
   handleEndsChange = event => {
-    this.setState({ schedule: Object.assign({}, this.state.schedule, { ends: event.target.value }) });
+    this.setState(Object.assign({}, this.state, { ends: event.target.value }), this.sendSchedule);
   }
 
   handleRepeatTypeChange = event => {
-    this.setState({ schedule: Object.assign({}, this.state.schedule, { repeatType: event.target.value }) });
+    this.setState(Object.assign({}, this.state, { repeatType: event.target.value }), this.sendSchedule);
   }
 
   handleRepeatValueChange = event => {
-    this.setState({ schedule: Object.assign({}, this.state.schedule, { repeatValue: event.target.value }) });
+    this.setState(Object.assign({}, this.state, { repeatValue: event.target.value }), this.sendSchedule);
   }
 
   render() {
-    let retainData = this.state.schedule.retainData;
-    let ends = this.state.schedule.ends;
-    let repeatType = this.state.schedule.repeatType;
-    let occurrenceType = this.state.schedule.occurrenceType;
+    let ends = this.state.ends;
+    let repeatType = this.state.repeatType;
+    let occurrenceType = this.state.occurrenceType;
     let dynamicSection = [];
     if (occurrenceType === RECURRING_SELECTION.value) {
       dynamicSection.push(
@@ -168,49 +147,45 @@ export default class Scheduler extends React.Component {
           </div>
         </div>
       );
-      if (repeatType === DAY_SELECTION.value || repeatType === WEEK_SELECTION.value) {
+    }
+    if (occurrenceType === RECURRING_SELECTION.value || occurrenceType === CONTINUOUS_SELECTION.value) {
+      dynamicSection.push(
+        <div style={{display: 'flex', flexDirection: 'row'}}>
+          <div>Starts</div>
+          <div style={{display: 'flex', flexDirection: 'row'}}>
+            Start DateTime Picker
+          </div>
+        </div>
+      );
+      if (repeatType === DAY_SELECTION.value) {
         dynamicSection.push(
           <div>
             <div style={{display: 'flex', flexDirection: 'row'}}>
-              <div>Time Zone</div>
+              <div>Day Section</div>
               <div>
-                TIMEZONE SELECTOR
-              </div>
-            </div>
-            <div style={{display: 'flex', flexDirection: 'row'}}>
-              <div></div>
-              <div>
-                REPEATORS FOR {repeatType}
+                Day Interval DateTime Pickers
               </div>
             </div>
           </div>
         );
       }
-    }
-    if (occurrenceType === RECURRING_SELECTION.value || occurrenceType === CONTINUOUS_SELECTION.value) {
+      if (repeatType === WEEK_SELECTION.value) {
+        dynamicSection.push(
+          <div>
+            <div style={{display: 'flex', flexDirection: 'row'}}>
+              <div></div>
+              <div>
+                REPEATORS FOR {WEEK_SELECTION.value}
+              </div>
+            </div>
+          </div>
+        );
+      }
       dynamicSection.push(
         <div style={{display: 'flex', flexDirection: 'row'}}>
           <div>Ends</div>
-          <div>
-            <Select
-              value={ends}
-              onChange={this.handleEndsChange}
-              children={ENDS_SELECTION}>
-            </Select>
-          </div>
-        </div>
-      );
-    }
-    if (occurrenceType !== 'none') {
-      dynamicSection.push(
-        <div style={{display: 'flex', flexDirection: 'row'}}>
-          <div>Retain data for</div>
-          <div>
-            <Select
-              value={retainData}
-              onChange={this.handleRetainDataChange}
-              children={RETAIN_DATA_SELECTIONS}>
-            </Select>
+          <div style={{display: 'flex', flexDirection: 'row'}}>
+            End DateTime Picker
           </div>
         </div>
       );
