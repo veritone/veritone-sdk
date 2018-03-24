@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import { filter, groupBy } from 'lodash';
+import { filter, groupBy, remove } from 'lodash';
 import { shape, number, string, bool, arrayOf, func } from 'prop-types';
 import classNames from 'classnames';
 
@@ -44,6 +44,24 @@ class FaceEngineOutput extends Component {
     activeTab: 'faceRecognition'
   };
 
+  filterFaces = (faces, viewMode) => {
+    let allFaces = faces.reduce((accumulator, faceSeries) => {
+      if (faceSeries.series && faceSeries.series.length) {
+        return [...accumulator, ...faceSeries.series];
+      }
+    }, []);
+
+    if (viewMode === 'byFrame') {
+      allFaces = allFaces.filter((face) => {
+        return this.props.mediaPlayerPosition >= face.startTimeMs && this.props.mediaPlayerPosition <= face.endTimeMs;
+      })
+    }
+    return {
+      facesDetected: remove(allFaces, face => face.entityId === undefined || face.entityId.length === 0),
+      facesRecognized: groupBy(filter(allFaces, face => face.entityId.length > 0), 'libraryId'),
+    };
+  }
+
   handleTabChange = (event, activeTab) => {
     this.setState({ activeTab });
   }
@@ -66,8 +84,8 @@ class FaceEngineOutput extends Component {
       className 
     } = this.props;
 
-    let facesRecognized = groupBy(filter(faces, face => face.entityId.length > 0), 'libraryId');
-    let facesDetected = filter(faces, face => face.entityId === undefined || face.entityId.length === 0);
+    let filteredFaces = this.filterFaces(faces, viewMode);
+
     return (
       <div className={classNames(styles.faceEngineOutput, className)}>
         <Tabs
@@ -79,9 +97,9 @@ class FaceEngineOutput extends Component {
           <Tab label="Face Detection" value="faceDetection"/>
         </Tabs>
         { this.state.activeTab === 'faceRecognition' && 
-            Object.keys(facesRecognized).map(libraryId => {
+            Object.keys(filteredFaces.facesRecognized).map(libraryId => {
               let library = this.getLibraryById(libraryId);
-              let facesGroupedByEnity = groupBy(facesRecognized[libraryId], 'entityId');
+              let facesGroupedByEnity = groupBy(filteredFaces.facesRecognized[libraryId], 'entityId');
               if (library) {
                 return <div key={'library-' + library.id}>
                   <div className={styles.libraryName}>
@@ -111,7 +129,7 @@ class FaceEngineOutput extends Component {
         }
         { this.state.activeTab === 'faceDetection' && 
             <FaceGrid 
-              faces={facesDetected} 
+              faces={filteredFaces.facesDetected} 
               enableEditMode={enableEditMode}
               viewMode={viewMode}
               onAddNewEntity={onAddNewEntity}
