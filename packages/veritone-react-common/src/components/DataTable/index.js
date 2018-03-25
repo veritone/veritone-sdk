@@ -77,16 +77,14 @@ class _Table extends React.Component {
         }}
         component="div"
       >
-        {/* <Paper elevation={1} className={cx(styles.table)}> */}
-          {isNumber(this.props.focusedRow) && this.props.rowCount > 0
-            ? <SplitTableContainer
-                {...restProps}
-                focusedRow={this.props.focusedRow}
-                renderFocusedRowDetails={this.props.renderFocusedRowDetails}
-                key="split"
-              />
-            : <NormalTableContainer {...restProps} key="normal" />}
-        {/* </Paper> */}
+        {isNumber(this.props.focusedRow) && this.props.rowCount > 0
+          ? <SplitTableContainer
+              {...restProps}
+              focusedRow={this.props.focusedRow}
+              renderFocusedRowDetails={this.props.renderFocusedRowDetails}
+              key="split"
+            />
+          : <NormalTableContainer {...restProps} key="normal" />}
       </CSSTransitionGroup>
     );
   }
@@ -416,8 +414,7 @@ const TableHead = ({
             className={styles['table-cell']}
             key={c.props.header}
             style={{
-              textAlign: c.props.align || 'left',
-              // width: c.props.width
+              textAlign: c.props.align || 'left'
             }}
           >
             {c.props.header}
