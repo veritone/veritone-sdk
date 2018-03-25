@@ -8,6 +8,7 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FaceGrid from './FaceGrid';
 import Chip from '../Chip';
 import Avatar from '../Avatar';
+import EntityInformation from './EntityInformation';
 
 import noAvatar from 'images/no-avatar.png';
 
@@ -41,7 +42,8 @@ class FaceEngineOutput extends Component {
   };
 
   state = {
-    activeTab: 'faceRecognition'
+    activeTab: 'faceRecognition',
+    selectedEntity: null
   };
 
   filterFaces = (faces, viewMode) => {
@@ -56,6 +58,7 @@ class FaceEngineOutput extends Component {
         return this.props.mediaPlayerPosition >= face.startTimeMs && this.props.mediaPlayerPosition <= face.endTimeMs;
       })
     }
+
     return {
       facesDetected: remove(allFaces, face => face.entityId === undefined || face.entityId.length === 0),
       facesRecognized: groupBy(filter(allFaces, face => face.entityId.length > 0), 'libraryId'),
@@ -63,7 +66,9 @@ class FaceEngineOutput extends Component {
   }
 
   handleTabChange = (event, activeTab) => {
-    this.setState({ activeTab });
+    if (activeTab !== this.state.activetab) {
+      this.setState({activeTab});
+    }
   }
 
   getLibraryById = (id) => {
@@ -72,6 +77,57 @@ class FaceEngineOutput extends Component {
 
   getEntity = (library, entityId) => {
     return library.entities.find(e => e.entityId === entityId);
+  }
+
+  handleEntityClick = (entity, library) => evt => {
+    this.setState({
+      selectedEntity: {
+        ...entity,
+        libraryInfo: library
+      }
+    });
+  }
+
+  drawEntityChips = (facesGroupedByEnity, library) => {
+    return Object.keys(facesGroupedByEnity).map(entityId => {
+      let entity = this.getEntity(library, entityId);
+      return <Chip 
+        onClick={this.handleEntityClick(entity, library)}
+        key={'entity-' + entityId}
+        label={
+          <span>{entity.entityName} <a>({facesGroupedByEnity[entityId].length})</a></span>
+        }
+        classes={{
+          root: styles.entityCountChip
+        }}
+        avatar={<Avatar src={entity.profileImageUrl || noAvatar} size={40}/>}
+      />;
+    })
+  }
+
+  drawLibraryEntityBoxes = (recognizedFaces) => {
+    return Object.keys(recognizedFaces).map(libraryId => {
+      let library = this.getLibraryById(libraryId);
+      let facesGroupedByEnity = groupBy(recognizedFaces[libraryId], 'entityId');
+      if (library) {
+        return <div key={'library-' + library.id}>
+          <div className={styles.libraryName}>
+            <i className="icon-library-app"/>&nbsp;
+            <span>Library: <strong>{library.name}</strong></span>
+          </div>
+          <div className={styles.entityCountContainer}>
+            { this.drawEntityChips(facesGroupedByEnity, library) }
+          </div>
+        </div>
+      }
+      return null;
+    })
+  }
+
+  removeSelectedEntity = () => {
+    this.setState({
+      selectedEntity: null
+    });
   }
 
   render() {
@@ -96,45 +152,28 @@ class FaceEngineOutput extends Component {
           <Tab label="Face Recognition" value="faceRecognition"/>
           <Tab label="Face Detection" value="faceDetection"/>
         </Tabs>
-        { this.state.activeTab === 'faceRecognition' && 
-            Object.keys(filteredFaces.facesRecognized).map(libraryId => {
-              let library = this.getLibraryById(libraryId);
-              let facesGroupedByEnity = groupBy(filteredFaces.facesRecognized[libraryId], 'entityId');
-              if (library) {
-                return <div key={'library-' + library.id}>
-                  <div className={styles.libraryName}>
-                    <i className="icon-library-app"/>&nbsp;
-                    <span>Library: <strong>{library.name}</strong></span>
-                  </div>
-                  <div className={styles.entityCountContainer}>
-                    { Object.keys(facesGroupedByEnity).map(entityId => {
-                        let entity = this.getEntity(library, entityId);
-                        return <Chip 
-                          key={'entity-' + entityId}
-                          label={
-                            <span>{entity.entityName} <a>({facesGroupedByEnity[entityId].length})</a></span>
-                          }
-                          classes={{
-                            root: styles.entityCountChip
-                          }}
-                          avatar={<Avatar src={entity.profileImageUrl || noAvatar} size={40}/>}
-                        />;
-                      })
-                    }
-                  </div>
-                </div>
+        { this.state.activeTab === 'faceRecognition' &&
+            <div className={styles.faceTab}>
+              { this.state.selectedEntity ?
+                  <EntityInformation 
+                    entity={this.state.selectedEntity} 
+                    faces={filteredFaces.facesRecognized}
+                    onBackClicked={this.removeSelectedEntity}
+                  /> :
+                  this.drawLibraryEntityBoxes(filteredFaces.facesRecognized)
               }
-              return null;
-            })
+            </div>
         }
         { this.state.activeTab === 'faceDetection' && 
-            <FaceGrid 
-              faces={filteredFaces.facesDetected} 
-              enableEditMode={enableEditMode}
-              viewMode={viewMode}
-              onAddNewEntity={onAddNewEntity}
-              entitySearchResults={entitySearchResults}
-            />
+            <div className={styles.faceTab}>
+              <FaceGrid 
+                faces={filteredFaces.facesDetected} 
+                enableEditMode={enableEditMode}
+                viewMode={viewMode}
+                onAddNewEntity={onAddNewEntity}
+                entitySearchResults={entitySearchResults}
+              />
+            </div>
         }
       </div>
     );

@@ -27,7 +27,7 @@ class FaceGrid extends Component {
   drawFaces(faces) {
     return faces.map((face, index) => {
       return <FaceDetectionBox 
-        key={'face-' + index} 
+        key={'face-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index} 
         face={face} 
         enableEdit={this.props.enableEditMode}
         addNewEntity={this.props.onAddNewEntity}

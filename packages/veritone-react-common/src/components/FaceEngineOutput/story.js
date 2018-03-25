@@ -103,6 +103,26 @@ storiesOf('FaceEngineOutput', module)
           }
         },
         {
+          startTimeMs: 1000,
+          endTimeMs: 3000,
+          entityId: '',
+          libraryId: '',
+          object: {
+            type: 'face',
+            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
+          }
+        },
+        {
+          startTimeMs: 1000,
+          endTimeMs: 4000,
+          entityId: '',
+          libraryId: '',
+          object: {
+            type: 'face',
+            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
+          }
+        },
+        {
           startTimeMs: 2000,
           endTimeMs: 3000,
           entityId: '',
@@ -121,27 +141,7 @@ storiesOf('FaceEngineOutput', module)
             type: 'face',
             uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
           }
-        },
-        {
-          startTimeMs: 1000,
-          endTimeMs: 3000,
-          entityId: '',
-          libraryId: '',
-          object: {
-            type: 'face',
-            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
-          }
-        },
-        {
-          startTimeMs: 1000,
-          endTimeMs: 4000,
-          entityId: '',
-          libraryId: '',
-          object: {
-            type: 'face',
-            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
-          }
-        },
+        }
       ]
     },
     {
@@ -179,13 +179,17 @@ storiesOf('FaceEngineOutput', module)
           entityId: "c36e8b95-6d46-4a5a-a272-8507319a5a54",
           entityName: "Paul McCartney",
           libraryId: "f1297e1c-9c20-48fa-a8fd-46f1e6d62c43",
-          profileImageUrl: "https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg"
+          profileImageUrl: "https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg",
+          jsondata: {
+            description: "A member of the beatles"
+          }
         },
         {
           entityId: "1945a3ba-f0a3-411e-8419-78e31c73150a",
           entityName: "Ringo Starr",
           libraryId: "f1297e1c-9c20-48fa-a8fd-46f1e6d62c43",
-          profileImageUrl: null
+          profileImageUrl: null,
+          jsondata: {}
         }
       ]
     },
@@ -197,13 +201,15 @@ storiesOf('FaceEngineOutput', module)
           entityId: "13595602-3a7f-48d3-bfde-2d029af479f6",
           entityName: "Gomez Addams",
           libraryId: "b64ef50a-0a5b-47ff-a403-a9a30f9241a4",
-          profileImage: null
+          profileImage: null,
+          jsondata: {}
         },
         {
           entityId: "c1666e9f-9dc0-40f9-aece-0ec1bfeae29a",
           entityName: "James Williams",
           libraryId: "b64ef50a-0a5b-47ff-a403-a9a30f9241a4",
-          profileImage: null
+          profileImage: null,
+          jsondata: {}
         }
       ]
     }
