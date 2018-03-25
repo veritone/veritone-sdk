@@ -50,10 +50,10 @@ export default class LogoDetectionEngineOutput extends Component {
 		let itemInfo = {
 			item: item,
 			sourceEngineId: this.state.sourceEngineId || this.props.data[0].sourceEngineId
-		}
+		};
 
 		if (this.props.onItemSelected) this.props.onItemSelected(itemInfo);
-	}
+	};
 
 	onEngineChanged(event) {
 		let selectedID = event.target.value;
@@ -142,7 +142,7 @@ export default class LogoDetectionEngineOutput extends Component {
 									infoClassName={itemInfoClassName}
 									key={'logo-' + engineInfo.sourceEngineId + index}
 									onClick={this.onItemSelected(itemInfo)}
-									highlight={(itemInfo.startTimeMs <= currentPlayTime) ? true : false}
+									highlight={itemInfo.startTimeMs <= currentPlayTime}
 								/>
 							);
 							items.push(logoItem);

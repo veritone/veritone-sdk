@@ -11,7 +11,7 @@ storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {
 			<div className={styles.left}>
 				Left Box
 			</div>
-			<LogoDetectionEngineOutput 
+			<LogoDetectionEngineOutput
 				className={styles.outputViewRoot}
 				data={mockData}
 			/>
@@ -45,8 +45,8 @@ const mockData = [
 				startTimeMs: 4000,
 				endTimeMs: 5000,
 				logo: {
-				label: 'Google',
-				confidence: 0.942457377910614
+          label: 'Google',
+          confidence: 0.942457377910614
 				}
 			},
 			{
