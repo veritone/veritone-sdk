@@ -175,6 +175,7 @@ class FaceEngineOutput extends Component {
                 viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
+                onFaceOccurrenceClicked={onFaceOccurrenceClicked}
               />
             </div>
         }

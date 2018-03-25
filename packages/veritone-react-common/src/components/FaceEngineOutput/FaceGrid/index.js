@@ -21,8 +21,15 @@ class FaceGrid extends Component {
       profileImageUrl: string
     })),
     enableEditMode: bool,
-    onAddNewEntity: func
+    onAddNewEntity: func,
+    onFaceOccurrenceClicked: func
   };
+
+  handleFaceClick = face => evt => {
+    if(!this.props.enableEditMode) {
+      this.props.onFaceOccurrenceClicked(face, evt);
+    }
+  }
 
   drawFaces(faces) {
     return faces.map((face, index) => {
@@ -32,6 +39,7 @@ class FaceGrid extends Component {
         enableEdit={this.props.enableEditMode}
         addNewEntity={this.props.onAddNewEntity}
         searchResults={this.props.entitySearchResults}
+        onClick={this.handleFaceClick(face)}
       />
     })
   }

@@ -32,7 +32,8 @@ class FaceDetectionBox extends Component {
     )),
     enableEdit: bool,
     updateEntity: func,
-    addNewEntity: func
+    addNewEntity: func,
+    onClick: func
   };
 
   state = {
@@ -80,13 +81,14 @@ class FaceDetectionBox extends Component {
   itemToString = (item) => item && item.entityName;
 
   render() {
-    let { face, searchResults, updateEntity, enableEdit } = this.props;
+    let { face, searchResults, updateEntity, enableEdit, onClick } = this.props;
 
     return (
       <div 
         className={classNames(styles.faceContainer, this.state.hovered && styles.faceContainerHover)} 
         onMouseOver={this.handleMouseOver} 
         onMouseLeave={this.handleMouseOut}
+        onClick={onClick}
       >
         <div className={styles.entityImageContainer}>
           <img className={styles.entityImage} src={face.object.uri} />
