@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 
 import { arrayOf, object } from 'prop-types';
 import DotDotDot from 'react-dotdotdot'
+import MuiTable, { TableBody, TableRow } from 'material-ui/Table';
 import MenuColumn from './MenuColumn';
 import { Table, Column, PaginatedTable } from './';
 
@@ -211,7 +212,7 @@ class PagedTable extends React.Component {
       <PaginatedTable
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
-        rowsPerPage={5}
+        initialItemsPerPage={5}
         showHeader
         onRefreshPageData={this.handleOnRefreshPageData}
         onCellClick={this.handleOnCellClick}
@@ -263,7 +264,8 @@ class SplitTable extends React.Component {
         header={column}
         key={index}
         cellRenderer={renderCell}
-        width={'100%'}
+        align="center"
+        width={100}
       />
     });
   
@@ -305,10 +307,17 @@ storiesOf('Table', module)
     };
 
     return (
-      <MenuColumn
-        data={data}
-        dataKey="actions"
-        protectedActions={['delete']}
-      />
+      <MuiTable>
+        <TableBody>
+          <TableRow>
+            <MenuColumn
+              align="left"
+              data={data}
+              dataKey="actions"
+              protectedActions={['delete']}
+            />          
+          </TableRow>
+        </TableBody>      
+      </MuiTable>
     );
   })

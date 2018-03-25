@@ -1,11 +1,9 @@
 import React from 'react';
 import { range, filter, get, includes } from 'lodash';
-import MuiTable, { TableBody, TableFooter, TableRow, TableCell } from 'material-ui/Table';
+import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
-import Select from 'material-ui/Select';
-
-import { Table, Column, PaginatedTable, LOADING } from './';
 import MenuColumn from './MenuColumn';
+import { Table, Column, PaginatedTable, LOADING } from './';
 
 function assertRowsExist(rows, wrapper, assertion = true) {
   rows.forEach(expected => {
@@ -101,11 +99,13 @@ describe('MenuColumn', function() {
       actions: ['submit', 'delete']
     };
     let wrapper = mount(
+      <SupressColumnWarnings>
         <MenuColumn
           data={data}
           dataKey="actions"
           protectedActions={['delete']}
         />
+      </SupressColumnWarnings>
     );
 
     const menuItems = wrapper.find('Menu').prop('children');
@@ -117,7 +117,9 @@ describe('MenuColumn', function() {
       actions: ['submit', 'delete']
     };
     let wrapper = mount(
+      <SupressColumnWarnings>
         <MenuColumn data={data} dataKey="actions" protectedActions={[]} />
+      </SupressColumnWarnings>
     );
 
     const menuItems = wrapper.find('Menu').prop('children');
@@ -130,11 +132,13 @@ describe('MenuColumn', function() {
       actions: ['delete']
     };
     let wrapper = mount(
+      <SupressColumnWarnings>
         <MenuColumn
           data={data}
           dataKey="actions"
           protectedActions={['delete']}
         />
+      </SupressColumnWarnings>
     );
 
     const menuItems = wrapper.find('Menu').prop('children');
@@ -144,7 +148,7 @@ describe('MenuColumn', function() {
 
 describe('Table', function () {
   it('Renders rows provided by the rowGetter function when given column children', function () {
-    const rowGetter = i => {
+    function rowGetter(i) {
       return {
         index: String(i),
         name: `col-${i}`
@@ -250,7 +254,7 @@ describe('Table', function () {
   describe('callback behavior', function () {
     xit('calls onShowCellRange with the correct data on mount', function () {
       let calledWith = null;
-      const handleShowCellRange = range => {
+      function handleShowCellRange(range) {
         calledWith = range;
       };
 
@@ -272,7 +276,7 @@ describe('Table', function () {
       function () {
         let calledWith = null;
         let calledCount = 0;
-        const handleShowCellRange = range => {
+        function handleShowCellRange (range) {
           calledWith = range;
           calledCount++;
         };
@@ -346,7 +350,7 @@ describe('PaginatedTable', function () {
       <PaginatedTable
         rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
         rowCount={30}
-        rowsPerPage={20}
+        initialItemsPerPage={20}
       >
         <Column dataKey="id" />
       </PaginatedTable>
@@ -366,7 +370,7 @@ describe('PaginatedTable', function () {
 
       const wrapper = mount(
         <PaginatedTable
-          rowsPerPage={perPage}
+          initialItemsPerPage={perPage}
           rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
           rowCount={30}
         >
@@ -421,7 +425,7 @@ describe('PaginatedTable', function () {
 
     const wrapper = mount(
       <PaginatedTable
-        rowsPerPage={12}
+        initialItemsPerPage={12}
         rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
         rowCount={30}
         onRefreshPageData={range => (calledWith = range)} // eslint-disable-line react/jsx-no-bind
@@ -441,7 +445,7 @@ describe('PaginatedTable', function () {
   it('renders a select element in the footer that changes the number of rows per page', function () {
     const wrapper = mount(
       <PaginatedTable
-        rowsPerPage={10}
+        initialItemsPerPage={10}
         rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
         rowCount={30}
       >
@@ -557,7 +561,7 @@ describe('PaginatedTable', function () {
   describe('callback behavior', function () {
     it('calls onShowCellRange with the correct data', function () {
       let calledWith = null;
-      const handleShowCellRange = range => {
+      function handleShowCellRange(range) {
         calledWith = range;
       };
 

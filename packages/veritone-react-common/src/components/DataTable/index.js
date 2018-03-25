@@ -77,7 +77,7 @@ class _Table extends React.Component {
         }}
         component="div"
       >
-        <Paper elevation={1} className={styles.table}>
+        {/* <Paper elevation={1} className={cx(styles.table)}> */}
           {isNumber(this.props.focusedRow) && this.props.rowCount > 0
             ? <SplitTableContainer
                 {...restProps}
@@ -86,7 +86,7 @@ class _Table extends React.Component {
                 key="split"
               />
             : <NormalTableContainer {...restProps} key="normal" />}
-        </Paper>
+        {/* </Paper> */}
       </CSSTransitionGroup>
     );
   }
@@ -107,8 +107,13 @@ const NormalTableContainer = ({
   ...rest
 }) => {
   return (
-    <div className={styles['table-wrapper']}>
-      <MuiTable>
+    <Paper
+      elevation={1}
+      className={styles['table-wrapper']}
+    >
+      <MuiTable
+        className={cx(styles.table)}
+      >
         {
           showHeader &&
           <TableHead
@@ -141,7 +146,7 @@ const NormalTableContainer = ({
             </TableRow>
           </TableFooter>}
       </MuiTable>
-    </div>
+    </Paper>
   );
 }
 
@@ -174,34 +179,6 @@ class SplitTableContainer extends React.Component {
     children: node
   };
 
-  translateCellClick = (row, column) => {
-    return this.props.onCellClick(row, column);
-  };
-
-  renderSplitRow = () => {
-    const { focusedRow, rowGetter, children } = this.props;
-
-    return (
-      <MuiTableBody>
-        <TableRow style={{ maxHeight: 48, height: this.props.rowHeight }}>
-          {injectInto(children, {
-            data: rowGetter(focusedRow),
-            row: focusedRow,
-            onCellClick: this.props.onCellClick
-          })}
-        </TableRow>
-        <TableRow>
-          <TableCell
-            colSpan={children.length}
-            style={{ whiteSpace: 'inherit', padding: 0 }}
-          >
-            {this.props.renderFocusedRowDetails(rowGetter(focusedRow))}
-          </TableCell>
-        </TableRow>
-      </MuiTableBody>
-    );
-  }
-
   render() {
     const {
       onCellClick,
@@ -217,8 +194,13 @@ class SplitTableContainer extends React.Component {
 
     return (
       <div>
-        <Paper elevation={1} className={styles['table-wrapper']}>
-          <MuiTable>
+        <Paper
+          elevation={1}
+          className={styles['table-wrapper']}
+        >
+          <MuiTable
+            className={cx(styles.table)}
+          >
             {
               showHeader &&
               <TableHead
@@ -229,27 +211,25 @@ class SplitTableContainer extends React.Component {
             }
             {
               rowCount === 0
-              ? <MuiTableBody>
-                  <TableRow>
-                    <TableCell colSpan={children.length}>
-                      {this.props.emptyRenderer()}
-                    </TableCell>
-                  </TableRow>
-                </MuiTableBody>
-              : focusedRow === 0
-              ? this.renderSplitRow()
-              : <TableBody
-                  {...rest}
-                  rowRangeStart={rowRange && rowRange[0]}
-                  rowRangeEnd={focusedRow}
-                  rowGetter={rowGetter}
-                  onCellClick={onCellClick}
-                  style={{
-                    display: focusedRow ? 'inherit' : 'none !important'
-                  }}
-                >
-                  {children}
-                </TableBody>
+                ? <MuiTableBody>
+                    <TableRow>
+                      <TableCell colSpan={children.length}>
+                        {this.props.emptyRenderer()}
+                      </TableCell>
+                    </TableRow>
+                  </MuiTableBody>
+                : <TableBody
+                    {...rest}
+                    rowRangeStart={rowRange && rowRange[0]}
+                    rowRangeEnd={focusedRow}
+                    rowGetter={rowGetter}
+                    onCellClick={onCellClick}
+                    style={{
+                      display: focusedRow ? 'inherit' : 'none !important'
+                    }}
+                  >
+                    {children}
+                  </TableBody>
             }
           </MuiTable>
         </Paper>
@@ -263,20 +243,42 @@ class SplitTableContainer extends React.Component {
           className={cx(styles['focusTable'], styles['focused-row'], styles['table-wrapper'])}
           key={focusedRow}
         >
-          {focusedRow > 0 
-            ? <MuiTable>
-                {this.renderSplitRow()}
-              </MuiTable>
-            : undefined}
+          <MuiTable
+            className={cx(styles.table)}
+          >
+            <MuiTableBody>
+              <TableRow style={{ maxHeight: 48, height: this.props.rowHeight }}>
+                {injectInto(children, {
+                  data: rowGetter(focusedRow),
+                  row: focusedRow,
+                  onCellClick: this.props.onCellClick
+                })}
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={children.length}
+                  style={{ whiteSpace: 'inherit', padding: 0 }}
+                >
+                  {this.props.renderFocusedRowDetails(rowGetter(focusedRow))}
+                </TableCell>
+              </TableRow>
+            </MuiTableBody>
+          </MuiTable>
         </Paper>
 
-        <Paper elevation={1} className={styles['table-wrapper']}>
-          <MuiTable>
+        <Paper
+          elevation={1}
+          className={styles['table-wrapper']}
+        >
+          <MuiTable
+            className={cx(styles.table)}
+          >
             <TableBody
+              {...rest}
               rowRangeStart={this.props.focusedRow + 1}
               rowRangeEnd={(rowRange && rowRange[1]) || rowCount}
               rowGetter={rowGetter}
-              onCellClick={this.translateCellClick}
+              onCellClick={onCellClick}
             >
               {children}
             </TableBody>
@@ -356,7 +358,6 @@ export const Column = ({
   align = 'left',
   style,
   row,
-  width,
   onCellClick,
   ...rest
 }) => {
@@ -376,10 +377,10 @@ export const Column = ({
 
   return (
     <TableCell
+      {...rest}
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',
         textAlign: align,
-        width,
         ...style
       }}
       onClick={onCellClick && handleCellClick}
@@ -411,11 +412,12 @@ const TableHead = ({
       <TableRow>
         {React.Children.map(children, c =>
           <TableCell
+            width={c.props.width}
             className={styles['table-cell']}
             key={c.props.header}
             style={{
               textAlign: c.props.align || 'left',
-              width: c.props.width
+              // width: c.props.width
             }}
           >
             {c.props.header}

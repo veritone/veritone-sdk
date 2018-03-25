@@ -12,8 +12,8 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Divider from 'material-ui/Divider';
-
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
+import { Column } from './'
 
 export default class MenuColumn extends React.Component {
   static propTypes = {
@@ -39,7 +39,10 @@ export default class MenuColumn extends React.Component {
   };
 
   openMenu = event => {
-    this.setState({ open: true, anchorEl: event.currentTarget });
+    this.setState({
+      open: true,
+      anchorEl: event.currentTarget
+    });
   };
 
   closeMenu = () => {
@@ -61,8 +64,7 @@ export default class MenuColumn extends React.Component {
     ].filter(a => !!a);
   }
 
-  render () {
-    const actions = this.props.data[this.props.dataKey];
+  renderMenuCell = (actions = [], ...rest) => {
     const allActions = [...actions, ...this.props.additionalActions];
 
     return (
@@ -90,13 +92,32 @@ export default class MenuColumn extends React.Component {
                 ? <Divider key={`divider-${i}`} />
                 : <MenuItem
                     key={s}
-                    onClick={partial(this.props.onSelectItem, s)}
+                    onClick={partial(this.props.onSelectItem, s, ...rest)}
                   >
-                    {startCase(camelCase(this.props.transformLabel(s)))}
-                  </MenuItem>
+                  {startCase(camelCase(this.props.transformLabel(s)))}
+                </MenuItem>
           )}
-        </Menu>      
+        </Menu>
       </div>
     );
   };
+
+  render() {
+    return (
+      <Column
+        cursorPointer={false}
+        width={50}
+        align="right"
+        cellRenderer={this.renderMenuCell}
+        {...omit(
+          this.props,
+          'onSelectItem',
+          'protectedActions',
+          'additionalActions',
+          'transformLabel'
+        )}
+        style={{ paddingRight: 0, ...this.props.style }}
+      />                
+    );
+  }
 }

@@ -2,15 +2,17 @@
 @import 'src/styles/modules/variables';
 
 .table {
+  table-layout: fixed;
   width: 100%;
 }
 
 .table-wrapper {
-  overflow-x: auto
+  display: block;
+  overflow: hidden;
 }
 
 .table-cell {
-  padding-right: 24px
+  padding-right: 24px;
 }
 
 

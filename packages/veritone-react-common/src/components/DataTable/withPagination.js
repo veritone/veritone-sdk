@@ -14,11 +14,7 @@ const withPagination = WrappedTable => {
       onCellClick: func,
       onShowCellRange: func,
       onRefreshPageData: func,
-      handlePageChange: func,
-      handleChangeRowsPerPage: func,
-      children: node,
-      page: number,
-      rowsPerPage: number
+      children: node
     };
     
     static defaultProps = {
@@ -29,21 +25,13 @@ const withPagination = WrappedTable => {
 
     state = {
       page: 0,
-      rowsPerPage: this.props.rowsPerPage || this.props.initialItemsPerPage
+      rowsPerPage: this.props.initialItemsPerPage
     }
 
     componentWillReceiveProps(nextProps) {
-      const newState = {};
-
       if (nextProps.rowCount < this.props.rowCount) { // if the dataset is a different size, flip to first page
-        newState.page = 0;
+        return this.setState({ page: 0 });
       }
-
-      if (nextProps.rowsPerPage !== this.props.rowsPerPage) {
-        newState.rowsPerPage = nextProps.rowsPerPage;
-      }
-
-      return this.setState(newState);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -59,7 +47,7 @@ const withPagination = WrappedTable => {
       return this.props.rowGetter(i)
     }
 
-    handlePageChange = (e, page) => {
+    handlePageChange = (page) => {
       let lastPossiblePage = Math.ceil(this.props.rowCount / this.state.rowsPerPage) - 1;
 
       if (lastPossiblePage < 0) {

@@ -4,9 +4,8 @@ import { constant } from 'lodash';
 import { mount } from 'enzyme';
 
 import { Table, Column } from './';
-// import withBasicBeahvior from './withBasicBehavior';
 
-describe.only('withBasicBehavior', function() {
+describe('withBasicBehavior', function() {
   it("shows the Column's loading indicator for loading rows", function() {
     const rowData = {
       0: { id: 'a' },
