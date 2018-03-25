@@ -27,6 +27,7 @@ storiesOf('FaceEngineOutput', module)
           summary: 'Summary',
           byFrame: 'by Frame'
         }, 'summary')}
+        onFaceOccurrenceClicked={action("Set the media player position")}
       />
     )
   });

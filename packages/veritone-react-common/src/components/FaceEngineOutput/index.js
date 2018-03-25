@@ -38,7 +38,8 @@ class FaceEngineOutput extends Component {
     mediaPlayerPosition: number,
     viewMode: string,
     onAddNewEntity: func,
-    className: string
+    className: string,
+    onFaceOccurrenceClicked: func
   };
 
   state = {
@@ -137,7 +138,8 @@ class FaceEngineOutput extends Component {
       viewMode, 
       onAddNewEntity, 
       entitySearchResults, 
-      className 
+      className,
+      onFaceOccurrenceClicked
     } = this.props;
 
     let filteredFaces = this.filterFaces(faces, viewMode);
@@ -159,6 +161,7 @@ class FaceEngineOutput extends Component {
                     entity={this.state.selectedEntity} 
                     faces={filteredFaces.facesRecognized}
                     onBackClicked={this.removeSelectedEntity}
+                    onOccurrenceClicked={onFaceOccurrenceClicked}
                   /> :
                   this.drawLibraryEntityBoxes(filteredFaces.facesRecognized)
               }

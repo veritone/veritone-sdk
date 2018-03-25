@@ -45,3 +45,19 @@
   font-size: 14px;
   line-height: 21px;
 }
+
+.faceOccurenceList {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.faceOccurenceTimestamp {
+  flex: 1 0 125px;
+  color: $blue-1;
+  font-size: 14px;
+  line-height: 30px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}

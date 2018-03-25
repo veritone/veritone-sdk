@@ -5,10 +5,13 @@ import Button from 'material-ui/Button';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
 
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 class EntityInformation extends Component {
   static propTypes = {
     entity: shape({
@@ -21,7 +24,8 @@ class EntityInformation extends Component {
       })
     }),
     faces: objectOf(array),
-    onBackClicked: func
+    onBackClicked: func,
+    onOccurrenceClicked: func
   }
 
   state = {
@@ -32,6 +36,10 @@ class EntityInformation extends Component {
     if (activeTab !== this.state.activetab) {
       this.setState({activeTab});
     }
+  }
+
+  handleFaceOccurrenceClicked = face => (evt) => {
+    this.props.onOccurrenceClicked(face, evt);
   }
 
   render() {
@@ -73,7 +81,21 @@ class EntityInformation extends Component {
           </Tabs>
           { this.state.activeTab === 'faceMatches' &&
               <div className={styles.tabContainer}>
-                All face matches will go here
+                { faces[entity.libraryId] ?
+                    <div className={styles.faceOccurrenceList}>
+                      { faces[entity.libraryId].map((face, index) => {
+                          return <div
+                            onClick={this.handleFaceOccurrenceClicked(face)}
+                            className={styles.faceOccurrenceTimestamp}
+                            key={'face-timestamp-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index}
+                          >
+                            {msToReadableString(face.startTimeMs)} - {msToReadableString(face.endTimeMs)}
+                          </div>
+                        })
+                      }
+                    </div> :
+                    <div> No faces found</div>
+                }
               </div>
           }
           { this.state.activeTab === 'metadata' &&
