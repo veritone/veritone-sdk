@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import OAuthLoginButton from './';
 
-describe('AppFooter', () => {
+describe('OAuthLoginButton', () => {
   it('Should exist', () => {
     const wrapper = shallow(<OAuthLoginButton />);
     expect(wrapper.find('button')).toHaveLength(1);
