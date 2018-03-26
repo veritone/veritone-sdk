@@ -162,8 +162,9 @@ class FaceEngineOutput extends Component {
                     faces={filteredFaces.facesRecognized}
                     onBackClicked={this.removeSelectedEntity}
                     onOccurrenceClicked={onFaceOccurrenceClicked}
-                  /> :
-                  this.drawLibraryEntityBoxes(filteredFaces.facesRecognized)
+                  /> : Object.keys(filteredFaces.facesRecognized).length ?
+                    this.drawLibraryEntityBoxes(filteredFaces.facesRecognized) :
+                    <div>No Face Matches Found</div>
               }
             </div>
         }
