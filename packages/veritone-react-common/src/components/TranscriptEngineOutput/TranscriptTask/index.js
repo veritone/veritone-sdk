@@ -16,7 +16,8 @@ class TranscriptTask extends Component {
     }),
     onSnippetClick: func,
     onSnippetEdit: func,
-    editModeEnabled: bool
+    editModeEnabled: bool,
+    mediaPlayerPosition: number
   }
 
   handleSnippetEdit = (snippet, newText) => {
@@ -24,7 +25,7 @@ class TranscriptTask extends Component {
   }
 
   render () {
-    let { chunk, onSnippetClick, editModeEnabled } = this.props;
+    let { chunk, onSnippetClick, editModeEnabled, mediaPlayerPosition } = this.props;
     let snippets = chunk.series.map((snippet, index) => {
       return (
         <Snippet 
@@ -33,6 +34,7 @@ class TranscriptTask extends Component {
           onSnippetClick={onSnippetClick}
           onSnippetEdit={this.handleSnippetEdit}
           editModeEnabled={editModeEnabled}
+          boldText={mediaPlayerPosition >= snippet.startTimeMs && mediaPlayerPosition <= snippet.endTimeMs}
         />
       );
     })

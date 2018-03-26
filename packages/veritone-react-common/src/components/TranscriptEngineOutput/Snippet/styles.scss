@@ -2,6 +2,7 @@
 
 .snippetText {
   display: inline;
+  cursor: pointer;
 
   &:hover {
     color: $blue-1;
@@ -15,4 +16,8 @@
 
 .boldText {
   font-weight: 500;
+}
+
+.editableSnippet {
+  cursor: text;
 }

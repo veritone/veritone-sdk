@@ -1,162 +1,162 @@
 import React, { Component } from 'react';
-import { bool, func } from 'prop-types';
+import { bool, func, arrayOf, string, number, shape } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
+import { boolean, select, number as knobNumber } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
 
 import TranscriptEngineOutput from './';
 
-export const transcriptAssets = [
+const transcriptAssets = [
   {
     startTimeMs: 0,
-    endTimeMs: 13812,
+endTimeMs: 7000,
     sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
     sourceEngineName: "Temporal",
     taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-4fba913a-7fc0-4dbe-9eae-df5892c10683",
     series: [
       {
-        start: 0,
-        end: 13130,
+        startTimeMs: 0,
+        endTimeMs: 1000,
         text: "I have a dream . That 1 day . This nation will rise up . And live out the true meaning of its screen . We hold these truths to be self-evident that all men are created equal ."
       },
       {
-        start: 13131,
-        end: 13146,
+        startTimeMs: 1001,
+        endTimeMs: 1500,
         text: "Hello I am just typing some random stuff to show how "
       },
       {
-        start: 13147,
-        end: 13162,
+        startTimeMs: 1501,
+        endTimeMs: 2000,
         text: "we can display a transcript using"
       },
       {
-        start: 13163,
-        end: 13170,
+        startTimeMs: 2001,
+        endTimeMs: 3000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13171,
-        end: 13176,
+        startTimeMs: 3001,
+        endTimeMs: 5000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13177,
-        end: 13182,
+        startTimeMs: 5001,
+        endTimeMs: 7000,
         text: "Just a random string for dummy data that I made up. "
       }
     ]
   },
   {
-    startTimeMs:13183,
-    endTimeMs: 13236,
+    startTimeMs:7001,
+    endTimeMs: 12500,
     sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
     sourceEngineName: "Temporal",
     taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-1e5e61a6-ad67-4116-a810-73aaad01353a",
     series: [
       {
-        start: 13183,
-        end: 13188,
+        startTimeMs: 7001,
+        endTimeMs: 8000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13189,
-        end: 13194,
+        startTimeMs: 8001,
+        endTimeMs: 8500,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13195,
-        end: 13200,
+        startTimeMs: 8501,
+        endTimeMs: 9500,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13201,
-        end: 13206,
+        startTimeMs: 9501,
+        endTimeMs: 10000,
         text: "Hello I a m just typing some random stuff to show how "
       },
       {
-        start: 13207,
-        end: 13212,
+        startTimeMs: 10001,
+        endTimeMs: 10500,
         text: "we can display a transcript using"
       },
       {
-        start: 13213,
-        end: 13218,
+        startTimeMs: 10501,
+        endTimeMs: 11000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13219,
-        end: 13224,
+        startTimeMs: 11001,
+        endTimeMs: 11500,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13225,
-        end: 13230,
+        startTimeMs: 11501,
+        endTimeMs: 12000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13231,
-        end: 13236,
+        startTimeMs: 12001,
+        endTimeMs: 12500,
         text: "Just a random string for dummy data that I made up. "
       },
     ]
   },
   {
-    startTimeMs: 13237,
-    endTimeMs: 13292,
+    startTimeMs: 12501,
+    endTimeMs: 20000,
     sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
     sourceEngineName: "Temporal",
     taskId: "e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf",
     series: [
       {
-        start: 13237,
-        end: 13242,
+        startTimeMs: 12501,
+        endTimeMs: 13000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13243,
-        end: 13248,
+        startTimeMs: 13001,
+        endTimeMs: 13250,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13249,
-        end: 13250,
+        startTimeMs: 13251,
+        endTimeMs: 13500,
         text: "Hello I am just typing some random stuff to show how "
       },
       {
-        start: 13251,
-        end: 13256,
+        startTimeMs: 13501,
+        endTimeMs: 14000,
         text: "we can display a transcript using"
       },
       {
-        start: 13257,
-        end: 13262,
+        startTimeMs: 14001,
+        endTimeMs: 14500,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13263,
-        end: 13268,
+        startTimeMs: 14501,
+        endTimeMs: 15000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13269,
-        end: 13274,
+        startTimeMs: 15001,
+        endTimeMs: 15500,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13275,
-        end: 13280,
+        startTimeMs: 15501,
+        endTimeMs: 16000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13281,
-        end: 13286,
+        startTimeMs: 16001,
+        endTimeMs: 18000,
         text: "Just a random string for dummy data that I made up. "
       },
       {
-        start: 13287,
-        end: 13292,
+        startTimeMs: 18001,
+        endTimeMs: 20000,
         text: "Just a random string for dummy data that I made up. "
       },
     ]
@@ -168,47 +168,37 @@ storiesOf('TranscriptEngineOutput', module)
     return (<TranscriptionStory 
         assets={transcriptAssets}
         editModeEnabled={boolean('Edit Mode Enabled', false)}
-        editMode="bulk"
+        editMode={select('editMode', {
+          snippet: 'Snippet',
+          bulk: 'Bulk'
+        }, 'snippet')}
         onSnippetClicked={action('Snippet Clicked')}
+        mediaPlayerPosition={knobNumber('mediaPlayerPosition', 20, {
+          range: true,
+          min: 0,
+          max: 20000,
+          step: 100
+        })}
     />);
   });
 
 class TranscriptionStory extends Component {
   static propTypes = {
+    assets: arrayOf(shape({
+      startTime: number,
+      endTime: number,
+      data: string
+    })),
     editModeEnabled: bool,
-    onSnippetClicked: func
+    onSnippetClicked: func,
+    editMode: string,
+    mediaPlayerPosition: number,
+    viewMode: string
   }
 
   state = {
-    assets: transcriptAssets,
-    editMode: "snippet",
-    selectedEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
-    engines: [
-      {
-        sourceEngineId: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
-        sourceEngineName: "Temporal",
-      }
-    ],
-    viewMode: "time"
+    assets: this.props.assets
   };
-
-  handleEngineChange = (evt) => {
-    this.setState({
-      selectedEngineId: evt.target.value
-    })
-  }
-
-  handleEditModeChange = (evt) => {
-    this.setState({
-      editMode: evt.target.value
-    })
-  }
-
-  handleViewModeChange = (evt) => {
-    this.setState({
-      viewMode: evt.target.value
-    })
-  }
   
   handleSnippetEdit = (snippet, innerHtml, taskId) => {
     this.setState({
@@ -219,7 +209,7 @@ class TranscriptionStory extends Component {
           return {
             ...task,
             series: task.series.map((s) => {
-              if (s.start === snippet.start && s.end === snippet.end) {
+              if (s.startTimeMs === snippet.startTimeMs && s.endTimeMs === snippet.endTimeMs) {
                 return {
                   ...s,
                   text: innerHtml
@@ -235,20 +225,18 @@ class TranscriptionStory extends Component {
   }
 
   render() {
+    let { editModeEnabled, editMode, onSnippetClicked, viewMode, mediaPlayerPosition } = this.props;
+
     return (
       <TranscriptEngineOutput 
         assets={this.state.assets}
-        editModeEnabled={this.props.editModeEnabled}
-        editMode={this.state.editMode}
-        onEditModeChange={this.handleEditModeChange}
-        engines={this.state.engines}
-        selectedEngineId={this.state.selectedEngineId}
-        onEngineChange={this.handleEngineChange}
-        onSnippetClicked={this.props.onSnippetClicked}
+        editModeEnabled={editModeEnabled}
+        editMode={editMode}
+        onSnippetClicked={onSnippetClicked}
         onSnippetEdit={this.handleSnippetEdit}
         className={styles.outputViewRoot}
-        viewMode={this.state.viewMode}
-        onViewModeChange={this.handleViewModeChange}
+        viewMode={viewMode}
+        mediaPlayerPosition={mediaPlayerPosition}
       />
     );
   }

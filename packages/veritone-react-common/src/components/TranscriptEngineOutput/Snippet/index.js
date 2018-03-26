@@ -18,9 +18,9 @@ class Snippet extends Component {
     onSnippetEdit: func
   };
 
-  handleSnippetClick = () => {
-    if (isFunction(this.props.onSnippetClick)) {
-      this.props.onSnippetClick(this.props.snippet);
+  handleSnippetClick = (evt) => {
+    if (isFunction(this.props.onSnippetClick) && !this.props.editModeEnabled) {
+      this.props.onSnippetClick(this.props.snippet, evt);
     }
   }
 
@@ -35,10 +35,15 @@ class Snippet extends Component {
     return (
       <ContentEditable
         tagName="p"
-        className={classNames(styles.snippetText, boldText && styles.boldText)}
+        className={classNames(
+          styles.snippetText, 
+          boldText && styles.boldText, 
+          editModeEnabled && styles.editableSnippet
+        )}
         onChange={this.handleSnippetChange}
         html={snippet.text}
         disabled={!editModeEnabled}
+        onClick={this.handleSnippetClick}
       />
     );
   }
