@@ -9,50 +9,6 @@ import SourceTileView from './SourceTileView';
 import SourceRow from './SourceRow';
 
 
-var sourceInfo = [
-  {
-    name: 'Hillary Clinton Twitter',
-    status: 'active',
-    // adapter: 'Facebook',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    sourceType: 'Facebook'
-  },
-  {
-    name: 'Donald Trump Twitter Posts 2',
-    status: 'paused',
-    // adapter: 'Twitter',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    sourceType: 'Twitter'
-  },
-  {
-    name: 'Donald Trump Twitter Posts 3',
-    status: 'processing',
-    // adapter: 'Twitter',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    sourceType: 'Twitter'
-  },
-  {
-    name: 'Donald Trump Twitter Posts 4',
-    status: 'inactive',
-    // adapter: 'Twitter',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    sourceType: 'Twitter'
-  }
-];
-
-
 var sourceTypes = {
   sourceTypes: {
     records: [
@@ -72,7 +28,10 @@ var sourceTypes = {
               password: {
                 type: 'string'
               }
-            }
+            },
+            required: [
+              'url', 'username', 'password'
+            ]
           }
         }
       },
@@ -161,9 +120,6 @@ storiesOf('SourceManagement', module)
   .add('TileView', () => (
     <SourceTileView sources={sourceResults}/>
   ))
-  // .add('Grid', () => (
-  //   <SourceGridView sourceInfo={sourceInfo} />
-  // ))
   .add('SourceConfiguration', () => (
     <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} submitCallback={submitCallback}/>
   ))

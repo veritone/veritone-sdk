@@ -23,6 +23,7 @@ export default class DynamicSelect extends React.Component {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
     formCallback: func.isRequired, //used to provide state to the parent
     initialValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
+    errorFields: objectOf(any), // since the parent handles the submit button, the parent can pass down which fields are in an error state
     helperText: string,
     selectLabel: string
   };
@@ -31,20 +32,25 @@ export default class DynamicSelect extends React.Component {
   };
 
   state = {
-    error: false,
     oneSourceType: false,
     currentSourceTypeIndex: 0,
     currentFields: {},
   };
 
   componentWillMount = () => {
-    console.log(this.props.sourceTypes);
     if (!this.props.sourceTypes.length) { //TODO: currently will error out and not render if sourceTypes is empty
       console.error('Source types was empty.');
-      this.state.error = true;
     } else if (this.props.sourceTypes.length === 1) {
-      this.state.oneSourceType = true;
+      this.setState({
+        oneSourceType: true
+      });
     }  
+    let initialize = {
+      sourceTypeId: this.props.sourceTypes[this.state.currentSourceTypeIndex].id,
+      sourceTypeIndex: this.state.currentSourceTypeIndex,
+      fieldValues: this.state.currentFields
+    }
+    this.props.formCallback(initialize);
   };
 
   triggerCallback = () => {
@@ -81,9 +87,22 @@ export default class DynamicSelect extends React.Component {
   };
   
   renderFields = (currentSourceTypeIndex) => {
-    let properties = this.props.sourceTypes[currentSourceTypeIndex].sourceSchema.definition.properties
+    let definition = this.props.sourceTypes[currentSourceTypeIndex].sourceSchema.definition;
+    let properties = definition.properties;
+    let requiredFields = [];
+    if (has(definition,'required')) {
+      requiredFields = definition.required;
+    }
     return Object.keys(properties).map((fieldId, index) => {
-      return <SourceTypeField id={fieldId} type={properties[fieldId].type.toLowerCase()} value={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : undefined} onChange={this.handleFieldChange} title={properties[fieldId].title ? properties[fieldId].title : '' } key={index} />
+      return (<SourceTypeField 
+                id={fieldId} 
+                type={properties[fieldId].type.toLowerCase()} 
+                required={requiredFields.indexOf(fieldId) === -1 ? false : true} 
+                value={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : undefined} 
+                onChange={this.handleFieldChange} 
+                title={properties[fieldId].title ? properties[fieldId].title : '' } 
+                error={(has(this.props.errorFields, fieldId) && this.props.errorFields[fieldId]) ? true : false} 
+                key={index} />);
     });
   };
 
@@ -92,7 +111,7 @@ export default class DynamicSelect extends React.Component {
       return <MenuItem value={index} id={type.id} key={index}>{type.name}</MenuItem>
     });
     return (
-      <FormControl className={styles.dynamicFormStyle} error={this.state.error}>
+      <FormControl className={styles.dynamicFormStyle}>
         {(this.props.selectLabel && !this.state.oneSourceType) && <InputLabel className={styles.inputLabel} htmlFor='select-id'>{this.props.selectLabel}</InputLabel>}
         {!this.state.oneSourceType && <Select 
           className={styles.selectField}
@@ -117,13 +136,14 @@ export default class DynamicSelect extends React.Component {
 }
 
 // This functional component will handle field type render logic, TODO: add fields here as needed for different field types
-function SourceTypeField({id, type, value, onChange, title}) {
+function SourceTypeField({id, type, required, value, onChange, title, error}) {
   //all types will be lowercase
+  let element;
   if (!title) {
     title = id;
   }
   if (type.includes('string')) {
-    return (
+    element = (
       <TextField
         className={styles.textFieldExtra}
         type={id.toLowerCase().includes('password') ? 'password': 'text'}
@@ -132,12 +152,13 @@ function SourceTypeField({id, type, value, onChange, title}) {
         id={id}
         label={title}
         value={value}
+        error={error}
         key={id}
         onChange={onChange(id)}
       />
     );
   } else if (type.includes('number') || type.includes('integer')) {
-    return (
+    element = (
       <TextField
         className={styles.textFieldExtra}
         type={'number'}
@@ -146,9 +167,12 @@ function SourceTypeField({id, type, value, onChange, title}) {
         id={id}
         label={title}
         value={value}
+        error={error}
         key={id}
         onChange={onChange(id)}
       />
     );
   }
+
+  return React.cloneElement(element, {required: required});
 }

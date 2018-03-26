@@ -2,7 +2,8 @@ import React from 'react';
 
 import {
   any,
-  string
+  string,
+  func
 } from 'prop-types';
 
 import styles from './styles.scss';
@@ -11,7 +12,8 @@ export default class CircleImage extends React.Component {
   static propTypes = {
     height: string.isRequired,
     width: string,
-    image: string
+    image: string,
+    onClick: func
   };
 
   static defaultProps = {
@@ -39,9 +41,13 @@ export default class CircleImage extends React.Component {
     event.target.src = 'https://static.veritone.com/veritone-ui/default-nullstate.svg';
   };
 
+  handleClick = () => {
+    this.props.onClick();
+  };
+
   render() {
     return (
-      <div className={styles.imageWrapper} style={{height: this.props.height, width: this.props.width}}>
+      <div className={styles.imageWrapper} style={{height: this.props.height, width: this.props.width}} onClick={this.handleClick}>
         <img src={this.state.image} onError={this.addDefaultSrc} alt='' className={styles.imageStyle} style={{height: this.props.height, width: this.props.width}}/>
       </div>
     );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { has } from 'lodash';
 
 import {
   any, 
@@ -17,6 +18,7 @@ import { FormControl, FormHelperText } from 'material-ui/Form';
 
 import ModalHeader from 'components/ModalHeader';
 import DynamicSelect from 'components/SchemaDrivenSelectForm';
+import CircleImage from 'components/CircleImage';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -30,7 +32,8 @@ export default class SourceConfiguration extends React.Component {
   state = {
     placeholder: 'Select a Source Type',
     sourceName: '',
-    schemaFormResult: {}
+    schemaFormResult: {},
+    requiredFields: {}
   };
 
   componentWillMount = () => {
@@ -44,20 +47,19 @@ export default class SourceConfiguration extends React.Component {
   };
 
   handleDynamicFormCallback = (formResult) => {
-    this.setState({schemaFormResult: formResult});
+    //TODO: keep a check on error state and pass it down to child on save
+    let id = formResult.sourceTypeId;
+    let definition = this.props.sourceTypes[formResult.sourceTypeIndex].sourceSchema.definition;
+    this.setState({
+      schemaFormResult: formResult,
+    });
   };
 
   handleSaveConfiguration = () => {
     //TODO: implement an onSave check
     let savedFieldValues = this.state.schemaFormResult.fieldValues;
     let sourceTypeFields = this.props.sourceTypes[this.state.schemaFormResult.sourceTypeIndex].sourceSchema.definition.properties;
-
     
-    if (Object.keys(savedFieldValues).length !== Object.keys(sourceTypeFields).length) {
-      return; // don't allow saving incomplete form
-    } else if (!this.state.sourceName) {
-      return;
-    }
     let toSave = {
       sourceName: this.state.sourceName,
       schemaResult: this.state.schemaFormResult
@@ -70,6 +72,10 @@ export default class SourceConfiguration extends React.Component {
     this.setState({sourceName: event.target.value});
   };
 
+  imageClicked = () => {
+    console.log('clicked');
+  };
+
   render() {
 
     return (
@@ -78,16 +84,20 @@ export default class SourceConfiguration extends React.Component {
         <div className={styles.configurationDescription}>Configure your source below by selecting a source type and inputting the associated data.</div>
         <form className={styles.sourceConfiguration}>
           <FormControl className={styles.formStyle}>
-            <TextField 
-              className={styles.sourceName}
-              fullWidth
-              margin='dense'
-              id='sourceName'
-              label='Source Name' 
-              value={this.state.sourceName}
-              onChange={this.handleNameChange}
-            />
-            <DynamicSelect sourceTypes={this.props.sourceTypes} formCallback={this.handleDynamicFormCallback} selectLabel='Select a Source Type'  helperText='NOTE: Source types available are dynamic based on your ingestion adapter'/>
+            <div className={styles.container}>
+              <CircleImage height='70px' width='70px' onClick={this.imageClicked}/>
+              <TextField 
+                className={styles.sourceName}
+                required
+                fullWidth
+                margin='dense'
+                id='sourceName'
+                label='Source Name' 
+                value={this.state.sourceName}
+                onChange={this.handleNameChange}
+              />
+            </div>
+            <DynamicSelect sourceTypes={this.props.sourceTypes} formCallback={this.handleDynamicFormCallback} errorFields={this.state.requiredFields} selectLabel='Select a Source Type'  helperText='NOTE: Source types available are dynamic based on your ingestion adapter'/>
           </FormControl>
         </form>
         <Button className={styles.buttonStyle} onClick={this.handleSaveConfiguration} raised color='primary' component='span'>

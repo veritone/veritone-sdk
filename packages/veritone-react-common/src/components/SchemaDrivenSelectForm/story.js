@@ -25,7 +25,10 @@ var sourceTypes = {
                 type: 'string'
               }
             }
-          }
+          },
+          required: [
+            'url', 'username', 'password'
+          ]
         }
       },
       {
@@ -47,7 +50,10 @@ var sourceTypes = {
               days: {
                 type: 'number'
               }
-            }
+            },
+            required: [
+              'url'
+            ]
           }
         }
       }
@@ -57,6 +63,7 @@ var sourceTypes = {
 
 function formCallback(formResult) {
   console.log(formResult);
+  
 };
 
 var helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
