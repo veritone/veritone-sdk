@@ -24,11 +24,11 @@ var sourceTypes = {
               password: {
                 type: 'string'
               }
-            }
+            },
+            required: [
+              'url', 'username', 'password'
+            ]
           },
-          required: [
-            'url', 'username', 'password'
-          ]
         }
       },
       {
@@ -52,7 +52,7 @@ var sourceTypes = {
               }
             },
             required: [
-              'url'
+              'url', 'days'
             ]
           }
         }
@@ -73,9 +73,19 @@ var initialValues = {
   url: 'twitter.com',
   username: 'trump',
   password: 'password',
-}
+};
+
+// test passing in an object with fields that are in error state
+var errorFields = {
+  url: true,
+  username: false,
+  password: true
+};
 
 storiesOf('SchemaDrivenSelectForm', module)
   .add('Base', () => (
     <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={initialValues} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
+  ))
+  .add('Error Field', () => (
+    <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={{username:'trump'}} errorFields={errorFields} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
   ))

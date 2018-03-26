@@ -25,18 +25,40 @@ import styles from './styles.scss';
 export default class SourceConfiguration extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
+    source: objectOf(any), // the source if this is to edit a source
     submitCallback: func, // will return an object: {sourceName, schemaResult: {sourceTypeId, fieldValues:{}}}
   };
-  static defaultProps = {};
+  static defaultProps = {
+  };
 
   state = {
     placeholder: 'Select a Source Type',
+    sourceTypeId: null,
     sourceName: '',
+    sourceThumbnail: '',
     schemaFormResult: {},
+    initialValues: {},
     requiredFields: {}
   };
 
   componentWillMount = () => {
+    // if editing a source, initialize the defaults
+    if (this.props.source) {
+      let source = this.props.source;
+      let name = source.name || '';
+      let thumbnail = source.thumbnail || '';
+      let initialValues = source.details || {};
+      let sourceTypeId = source.sourceType.id;
+      let requiredFields = has(source.sourceType.sourceSchema.definition, 'required') ? source.sourceType.sourceSchema.definition : {};
+      this.setState({
+        sourceName: name,
+        sourceThumbnail: thumbnail,
+        initialValues: initialValues,
+        requiredFields: requiredFields,
+        sourceTypeId: sourceTypeId
+      });
+    }
+
     // construct a clear path to the source type schema for each source type
     this.props.sourceTypes.forEach(sourceType => {
       this.setState({
@@ -85,7 +107,7 @@ export default class SourceConfiguration extends React.Component {
         <form className={styles.sourceConfiguration}>
           <FormControl className={styles.formStyle}>
             <div className={styles.container}>
-              <CircleImage height='70px' width='70px' onClick={this.imageClicked}/>
+              <CircleImage height='70px' width='70px' image={this.state.thumbnail} onClick={this.imageClicked}/>
               <TextField 
                 className={styles.sourceName}
                 required
@@ -97,7 +119,7 @@ export default class SourceConfiguration extends React.Component {
                 onChange={this.handleNameChange}
               />
             </div>
-            <DynamicSelect sourceTypes={this.props.sourceTypes} formCallback={this.handleDynamicFormCallback} errorFields={this.state.requiredFields} selectLabel='Select a Source Type'  helperText='NOTE: Source types available are dynamic based on your ingestion adapter'/>
+            <DynamicSelect sourceTypes={this.props.sourceTypes} initialSourceTypeId={this.state.sourceTypeId} initialValues={this.state.initialValues} formCallback={this.handleDynamicFormCallback} errorFields={this.state.requiredFields} selectLabel='Select a Source Type'  helperText='NOTE: Source types available are dynamic based on your ingestion adapter'/>
           </FormControl>
         </form>
         <Button className={styles.buttonStyle} onClick={this.handleSaveConfiguration} raised color='primary' component='span'>

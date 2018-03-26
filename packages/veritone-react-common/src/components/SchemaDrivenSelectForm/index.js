@@ -21,6 +21,7 @@ import styles from './styles.scss';
 export default class DynamicSelect extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
+    initialSourceTypeId: string, // id of initial sourceType if there is a default 
     formCallback: func.isRequired, //used to provide state to the parent
     initialValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
     errorFields: objectOf(any), // since the parent handles the submit button, the parent can pass down which fields are in an error state
@@ -45,12 +46,27 @@ export default class DynamicSelect extends React.Component {
         oneSourceType: true
       });
     }  
+    let saveIndex = 0;
+    if (this.props.initialSourceTypeId) {
+      this.props.sourceTypes.map((sourceType, index)=> {
+        if (sourceType.id === this.props.initialSourceTypeId) {
+          saveIndex = index;
+        }
+      });
+    }
+
     let initialize = {
-      sourceTypeId: this.props.sourceTypes[this.state.currentSourceTypeIndex].id,
-      sourceTypeIndex: this.state.currentSourceTypeIndex,
+      sourceTypeId: this.props.sourceTypes[saveIndex].id,
+      sourceTypeIndex: saveIndex,
       fieldValues: this.state.currentFields
     }
     this.props.formCallback(initialize);
+
+
+    this.setState({
+      currentFields: this.props.initialValues,
+      currentSourceTypeIndex: saveIndex
+    });
   };
 
   triggerCallback = () => {
@@ -67,10 +83,11 @@ export default class DynamicSelect extends React.Component {
     let currentFields = {};
     let properties = this.props.sourceTypes[index].sourceSchema.definition.properties;
     Object.keys(properties).map((field, index) => {
-      currentFields[field] = null;
+      currentFields[field] = '';
     }) 
     this.setState({
       currentSourceTypeIndex: index,
+      currentFields: currentFields
     }, this.triggerCallback);
   };
 
@@ -94,11 +111,13 @@ export default class DynamicSelect extends React.Component {
       requiredFields = definition.required;
     }
     return Object.keys(properties).map((fieldId, index) => {
+      console.log(this.state.currentFields);
       return (<SourceTypeField 
                 id={fieldId} 
                 type={properties[fieldId].type.toLowerCase()} 
                 required={requiredFields.indexOf(fieldId) === -1 ? false : true} 
-                value={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : undefined} 
+                defaultValue={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : ''}
+                value={this.state.currentFields[fieldId]} 
                 onChange={this.handleFieldChange} 
                 title={properties[fieldId].title ? properties[fieldId].title : '' } 
                 error={(has(this.props.errorFields, fieldId) && this.props.errorFields[fieldId]) ? true : false} 

@@ -72,6 +72,11 @@ var sourceResult = {
       createdDateTime: "2014-12-01T18:17:20.675Z",
       modifiedDateTime: "2015-12-01T18:17:20.675Z",
       thumbnail: "https://image.flaticon.com/icons/svg/25/25305.svg",
+      details: {
+        url: 'twitter.com',
+        username: 'therealtrump',
+        password: 'password'
+      },
       sourceType: {
         id: "1",
         name: "Audio",
@@ -80,7 +85,7 @@ var sourceResult = {
           definition: {
             properties: {
               url: {
-                type: "string"
+                type: "string",
               },
               username: {
                 type: "string",
@@ -120,8 +125,11 @@ storiesOf('SourceManagement', module)
   .add('TileView', () => (
     <SourceTileView sources={sourceResults}/>
   ))
-  .add('SourceConfiguration', () => (
+  .add('CreateSource', () => (
     <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} submitCallback={submitCallback}/>
+  ))
+  .add('EditSource', () => (
+    <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} source={sourceResult.data.source} submitCallback={submitCallback}/>
   ))
   .add('Row', () => (
     <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} image={thumbnail} />
