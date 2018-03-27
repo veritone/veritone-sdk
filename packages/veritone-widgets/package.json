@@ -31,10 +31,10 @@
     "build:script-tag": "cross-env NODE_ENV=production BABEL_ENV=production-cjs webpack --config webpack.config.script-tag.js",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook": "NODE_ENV=production build-storybook -c .storybook -o docs-static",
-    "lint": "eslint src/** --ext .js",
+    "lint": "eslint src/** --ext .js --max-warnings 0",
     "clean:build": "rimraf dist",
-    "prebuild": "npm run clean:build",
-    "prepublishOnly": "npm run test && npm run lint && npm run build"
+    "prebuild": "yarn run clean:build",
+    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.9",
