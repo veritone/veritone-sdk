@@ -7,51 +7,53 @@ import styles from './styles.scss';
 
 class FaceGrid extends Component {
   static propTypes = {
-    faces: arrayOf(shape({
-      startTimeMs: number,
-      endTimeMs: number,
-      object: shape({
-        label: string,
-        originalImage: string
+    faces: arrayOf(
+      shape({
+        startTimeMs: number,
+        endTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
       })
-    })),
-    entitySearchResults: arrayOf(shape({
-      entityName: string,
-      libraryName: string,
-      profileImageUrl: string
-    })),
+    ),
+    entitySearchResults: arrayOf(
+      shape({
+        entityName: string,
+        libraryName: string,
+        profileImageUrl: string
+      })
+    ),
     enableEditMode: bool,
     onAddNewEntity: func,
     onFaceOccurrenceClicked: func
   };
 
   handleFaceClick = face => evt => {
-    if(!this.props.enableEditMode) {
+    if (!this.props.enableEditMode) {
       this.props.onFaceOccurrenceClicked(face, evt);
     }
-  }
+  };
 
   renderFaces(faces) {
     return faces.map((face, index) => {
-      return <FaceDetectionBox 
-        key={'face-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index} 
-        face={face} 
-        enableEdit={this.props.enableEditMode}
-        addNewEntity={this.props.onAddNewEntity}
-        searchResults={this.props.entitySearchResults}
-        onClick={this.handleFaceClick(face)}
-      />
-    })
+      return (
+        <FaceDetectionBox
+          key={'face-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index}
+          face={face}
+          enableEdit={this.props.enableEditMode}
+          addNewEntity={this.props.onAddNewEntity}
+          searchResults={this.props.entitySearchResults}
+          onClick={this.handleFaceClick(face)}
+        />
+      );
+    });
   }
 
   render() {
     let { faces } = this.props;
 
-    return (
-      <div className={styles.faceGrid}>
-        {this.renderFaces(faces)}
-      </div>
-    )
+    return <div className={styles.faceGrid}>{this.renderFaces(faces)}</div>;
   }
 }
 

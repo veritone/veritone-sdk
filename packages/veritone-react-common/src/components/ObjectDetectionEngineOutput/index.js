@@ -12,22 +12,28 @@ import styles from './styles.scss';
 
 class ObjectDetectionEngineOutput extends Component {
   static propTypes = {
-    assets: arrayOf(shape({
-      startTime: number,
-      endTime: number,
-      data: arrayOf(shape({
-        end: number,
-        found: string,
-        start: number,
-        saliency: number
-      }))
-    })),
+    assets: arrayOf(
+      shape({
+        startTime: number,
+        endTime: number,
+        data: arrayOf(
+          shape({
+            end: number,
+            found: string,
+            start: number,
+            saliency: number
+          })
+        )
+      })
+    ),
     onObjectOccurrenceClicked: func,
     selectedEngineId: string,
-    engines: arrayOf(shape({
-      sourceEngineId: string,
-      sourceEngineName: string
-    })),
+    engines: arrayOf(
+      shape({
+        sourceEngineId: string,
+        sourceEngineName: string
+      })
+    ),
     onEngineChange: func,
     mediaPlayerLocation: number,
     className: string
@@ -35,53 +41,73 @@ class ObjectDetectionEngineOutput extends Component {
 
   static defaultProps = {
     assets: []
-  }
+  };
 
-  handlePillClicked = (objectName) => (evt) => {
-    this.setState({selectedObject: objectName});
-  }
+  handlePillClicked = objectName => evt => {
+    this.setState({ selectedObject: objectName });
+  };
 
   removeSelectedObject = () => {
-    this.setState({selectedObject: null});
-  }
+    this.setState({ selectedObject: null });
+  };
 
-  handleOccurenceClick = occurrence => (event) => {
+  handleOccurenceClick = occurrence => event => {
     this.props.onObjectOccurrenceClicked(occurrence);
-  }
+  };
 
   render() {
-    let { assets, className, selectedEngineId, engines, onEngineChange, mediaPlayerLocation } = this.props;
+    let {
+      assets,
+      className,
+      selectedEngineId,
+      engines,
+      onEngineChange,
+      mediaPlayerLocation
+    } = this.props;
     return (
       <div className={classNames(styles.objectDetectionOutputView, className)}>
         <EngineOutputHeader title="Object Detection">
-          { engines && engines.length && <Select value={selectedEngineId} onChange={onEngineChange}>
-                { engines.map((e, i) => {
-                    return <MenuItem c
-                      key={i} 
-                      value={e.sourceEngineId}
-                    >
+          {engines &&
+            engines.length && (
+              <Select value={selectedEngineId} onChange={onEngineChange}>
+                {engines.map((e, i) => {
+                  return (
+                    <MenuItem c key={i} value={e.sourceEngineId}>
                       {e.sourceEngineName}
                     </MenuItem>
-                  })
-                }
+                  );
+                })}
               </Select>
-          }
-        </ EngineOutputHeader>
+            )}
+        </EngineOutputHeader>
         <div className={styles.objectDetectionContent}>
-          { reduce(assets, (accumulator, currentValue) => {
+          {reduce(
+            assets,
+            (accumulator, currentValue) => {
               return accumulator.concat(currentValue.series);
-            }, []).map((o, i) => {
-              let highlightObject = mediaPlayerLocation >= o.startTimeMs && mediaPlayerLocation <= o.endTimeMs;
-              return <div 
-                key={i} 
-                className={classNames(styles.objectPill, highlightObject && styles.highlightedObjectPill)} 
+            },
+            []
+          ).map((o, i) => {
+            let highlightObject =
+              mediaPlayerLocation >= o.startTimeMs &&
+              mediaPlayerLocation <= o.endTimeMs;
+            return (
+              <div
+                key={i}
+                className={classNames(
+                  styles.objectPill,
+                  highlightObject && styles.highlightedObjectPill
+                )}
                 onClick={this.handleOccurenceClick(o)}
               >
                 <span className={styles.objectLabel}>{o.object.label}</span>&nbsp;
-                <span className={styles.objectDetectedTime}>{msToReadableString(o.startTimeMs)} - {msToReadableString(o.endTimeMs)}</span>
+                <span className={styles.objectDetectedTime}>
+                  {msToReadableString(o.startTimeMs)} -{' '}
+                  {msToReadableString(o.endTimeMs)}
+                </span>
               </div>
-            })
-          }
+            );
+          })}
         </div>
       </div>
     );

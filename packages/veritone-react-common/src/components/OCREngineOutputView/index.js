@@ -12,27 +12,31 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class OCREngineOutputView extends Component {
   static propTypes = {
-    assets: arrayOf(shape({
-      startTimeMs: number,
-      endTimeMs: number,
-      sourceEngineId: string,
-      sourceEngineName: string,
-      taskId: string,
-      series: arrayOf(shape({
-        end: number,
-        start: number,
-        object: shape({
-          text: string
-        })
-      }))
-    })),
+    assets: arrayOf(
+      shape({
+        startTimeMs: number,
+        endTimeMs: number,
+        sourceEngineId: string,
+        sourceEngineName: string,
+        taskId: string,
+        series: arrayOf(
+          shape({
+            end: number,
+            start: number,
+            object: shape({
+              text: string
+            })
+          })
+        )
+      })
+    ),
     onOcrClicked: func,
     className: string
-  }
+  };
 
   static defaultProps = {
     assets: []
-  }
+  };
 
   render() {
     let { assets, className } = this.props;
@@ -41,21 +45,24 @@ class OCREngineOutputView extends Component {
       <div className={classNames(styles.ocrOutputView, className)}>
         <EngineOutputHeader title="Text Recognition">
           <Select value="cortex">
-              <MenuItem value="cortex">Cortex</MenuItem>
+            <MenuItem value="cortex">Cortex</MenuItem>
           </Select>
         </EngineOutputHeader>
         <div className={styles.ocrContent}>
-          { assets.reduce((accumulator, currentValue) => {
-              return [ ...accumulator, ...currentValue.series]
-            }, []).map((ocrObject, i) => {
-              return <OCRObject 
-                key={i} 
-                text={ocrObject.object.text}
-                startTime={ocrObject.start}
-                endTime={ocrObject.end}
-              />
-            })
-          }
+          {assets
+            .reduce((accumulator, currentValue) => {
+              return [...accumulator, ...currentValue.series];
+            }, [])
+            .map((ocrObject, i) => {
+              return (
+                <OCRObject
+                  key={i}
+                  text={ocrObject.object.text}
+                  startTime={ocrObject.start}
+                  endTime={ocrObject.end}
+                />
+              );
+            })}
         </div>
       </div>
     );

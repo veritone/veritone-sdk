@@ -63,14 +63,18 @@ function smoothAndNormalizeTimeSeries(series, duration) {
   }
 
   // Insert final anchor data-point:
-  if (normalizedSeries.length > 0 && normalizedSeries[normalizedSeries.length - 1].time !== duration) {
+  if (
+    normalizedSeries.length > 0 &&
+    normalizedSeries[normalizedSeries.length - 1].time !== duration
+  ) {
     normalizedSeries.push({
       score: 0,
       time: duration
     });
   }
 
-  let paddingInterval = normalizedSeries.length > 1 ? normalizedSeries[1].time : 0;
+  let paddingInterval =
+    normalizedSeries.length > 1 ? normalizedSeries[1].time : 0;
 
   // Fill gaps (no sentiment data) with zero-padding:
   for (let j = normalizedSeries.length - 1; j >= 1; j--) {
@@ -79,7 +83,7 @@ function smoothAndNormalizeTimeSeries(series, duration) {
     if (t1 - t0 > paddingInterval) {
       let insertions = Math.floor((t1 - t0) / paddingInterval);
       for (let k = 0; k < insertions; k++) {
-        let time = t0 + (paddingInterval * (k + 1));
+        let time = t0 + paddingInterval * (k + 1);
         if (time >= t1) {
           break;
         }
@@ -93,7 +97,7 @@ function smoothAndNormalizeTimeSeries(series, duration) {
   }
 
   // Calculate average of adjusted data (ignoring gaps with no sentiment data):
-  let average = !seriesLength ? 0 : (sumOfScores / seriesLength);
+  let average = !seriesLength ? 0 : sumOfScores / seriesLength;
   // Round average to 1 decimal place:
   average = Math.round(average * 10) / 10;
 
@@ -130,14 +134,16 @@ function smoothAndNormalizeTimeSeries(series, duration) {
       if (positiveEwma === 0) {
         positiveEwma = datum.score;
       } else {
-        positiveEwma = positiveAlpha * datum.score + (1 - positiveAlpha) * positiveEwma;
+        positiveEwma =
+          positiveAlpha * datum.score + (1 - positiveAlpha) * positiveEwma;
       }
       datum.score = positiveEwma;
     } else {
       if (negativeEwma === 0) {
         negativeEwma = datum.score;
       } else {
-        negativeEwma = negativeAlpha * datum.score + (1 - negativeAlpha) * negativeEwma;
+        negativeEwma =
+          negativeAlpha * datum.score + (1 - negativeAlpha) * negativeEwma;
       }
       datum.score = negativeEwma;
     }
@@ -150,11 +156,13 @@ function smoothAndNormalizeTimeSeries(series, duration) {
 
 class SentimentEngineOutput extends Component {
   static propTypes = {
-    data: arrayOf(shape({
-      end: number,
-      start: number,
-      score: number
-    })),
+    data: arrayOf(
+      shape({
+        end: number,
+        start: number,
+        score: number
+      })
+    ),
     className: string
   };
 
@@ -171,9 +179,7 @@ class SentimentEngineOutput extends Component {
           </Select>
         </EngineOutputHeader>
         <div className={styles.sentimentViewContent}>
-          <SentimentGraph 
-            data={taskData.series}
-          />
+          <SentimentGraph data={taskData.series} />
         </div>
       </div>
     );
