@@ -8,9 +8,9 @@
   "scripts": {
     "start": "node index.js",
     "clean:build": "rimraf dist",
-    "prebuild": "npm run clean:build; mkdir dist",
+    "prebuild": "yarn run clean:build; mkdir dist",
     "build": "NODE_ENV=production rollup -c",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn run build"
   },
   "author": "Andrew Tung",
   "license": "Apache-2.0",
