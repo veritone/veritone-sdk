@@ -64,7 +64,7 @@ class TranscriptEngineOutput extends Component {
         console.log(chunk.series[0].startTimeMs, this.props.assets[i-1].series[this.props.assets[i-1].series.length-1].endTimeMs);
       }
       return (
-        <TranscriptTask 
+        <TranscriptChunk 
           key={'transcript-task' + i} 
           chunk={chunk}
           editModeEnabled={this.props.editModeEnabled}
