@@ -56,3 +56,14 @@
 ## 3.0.1
 * FilePicker
   * Change `expires` to `expiresInSeconds` to match API update.
+
+## 4.0.0
+* Add script tag builds, making widgets available for use without a build system like webpack (see the readme for details)
+* Implement OAuth implicit grant flow
+  * (breaking) The OAuthLoginButton widget now uses implicit mode by default. The old behavior is available with `mode: 'authCode'`. See the storybook files and the readme for examples.
+* Added devconfig.json for easier configuration during development.
+* AppBar
+  * Use the correct route when switching apps in the appSwitcher.
+
+## 4.1.0
+* The CJS and script tag bundles are now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
