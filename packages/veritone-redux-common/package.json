@@ -19,15 +19,15 @@
     "start": "",
     "test": "BABEL_ENV=test jest",
     "test:watch": "BABEL_ENV=test jest --watch",
-    "lint": "eslint src/** --ext .js",
+    "lint": "eslint src/** --ext .js --max-warnings 0",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
     "clean:build": "rimraf dist",
-    "prebuild": "npm run clean:build",
+    "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
     "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch": "NODE_ENV=production rollup -c --watch",
-    "prepublishOnly": "npm run test && npm run lint && npm run build"
+    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
