@@ -3,7 +3,7 @@ import { object, func } from 'prop-types';
 import Radio, { RadioGroup } from 'material-ui/Radio';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import { FormLabel, FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
 import { get } from 'lodash';
 
 const RECURRING_SELECTION = {

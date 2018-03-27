@@ -5,7 +5,7 @@ import { action } from '@storybook/addon-actions';
 import SDOAdapterObj from './';
 const SDOAdapter = SDOAdapterObj.adapter;
 
-const adapterConfig = {
+const ADAPTER_CONFIG = {
   "adapterId": "react-adapter",
   "name": "Open Weather Adapter",
   "description": "Pull weather data from Open Weather library",
@@ -20,10 +20,71 @@ const adapterConfig = {
     }
   },
   "namespace": "configuration",
-  "title": "Configuration"
+  "title": "Configuration",
+  "fields": [
+    {
+      "name": "target",
+      "type": "Picklist",
+      "defaultValue": "en-US",
+      "info": "Choose target language",
+      "options": [
+        {
+          "key": "English",
+          "value": "en-US"
+        },
+        {
+          "key": "Spanish",
+          "value": "es-MX"
+        },
+        {
+          "key": "French",
+          "value": "fr-FR"
+        }
+      ]
+    },
+    {
+      "name": "language",
+      "type": "MultiPicklist",
+      "info": "Pick multi-languages",
+      "defaultValues": [
+        "en-US",
+        "es-MX"
+      ],
+      "options": [
+        {
+          "key": "English",
+          "value": "en-US"
+        },
+        {
+          "key": "Spanish",
+          "value": "es-MX"
+        },
+        {
+          "key": "French",
+          "value": "fr-FR"
+        }
+      ]
+    },
+    {
+      "name": "my-field-name",
+      "type": "Text",
+      "defaultValue": "Hello World",
+      "info": "Anything you want"
+    },
+    {
+      "max": 0.9,
+      "min": 0.1,
+      "info": "The threshold is the minimum measure of confidence required for the result to be considered valid.",
+      "name": "threshold",
+      "step": 0.01,
+      "type": "Number",
+      "label": "Threshold",
+      "defaultValue": "0.7"
+    }
+  ]
 };
 
-const sources = [{
+const SOURCES = [{
   "id": "38721",
   "name": "Video Monitor",
   "organization": null,
@@ -131,16 +192,13 @@ const sources = [{
 
 function updateConfiguration(config) {
   console.log('updateConfiguration', config);
-  configuration = config;
-}
-
-function getConfiguration(config) {
-  console.log('getConfiguration', config);
+  Object.keys(config).forEach(key => configuration[key] = config[key]);
+  // configuration = config;
 }
 
 let configuration = {
-  sourceId: sources[0].id
+  sourceId: SOURCES[0].id
 };
 
 storiesOf('SDOAdapter', module)
-  .add('SDOAdapter', () => <SDOAdapter sources={sources} configuration={configuration} adapterConfig={adapterConfig} updateConfiguration={updateConfiguration}/>);
+  .add('SDOAdapter', () => <SDOAdapter sources={SOURCES} configuration={configuration} adapterConfig={ADAPTER_CONFIG} updateConfiguration={updateConfiguration}/>);

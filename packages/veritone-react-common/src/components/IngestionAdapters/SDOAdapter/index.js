@@ -1,10 +1,11 @@
 import React from 'react';
-import { FormControl } from 'material-ui/Form';
+import { FormControl, FormHelperText } from 'material-ui/Form';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
+import TextField from 'material-ui/TextField';
 import Image from '../../Image';
 import Input, { InputLabel } from 'material-ui/Input';
-import { get } from 'lodash';
+import { get, pick, isArray, clone, startCase, toLower } from 'lodash';
 import styles from './styles.scss';
 
 import {
@@ -13,40 +14,56 @@ import {
   arrayOf
 } from 'prop-types';
 
+let currentFields;
+
 class SDOAdapter extends React.Component {
   static propTypes = {
-    getConfiguration: func.isRequired,
-    updateConfiguration: func,
-    configuration: object,
+    updateConfiguration: func.isRequired,
+    configuration: object.isRequired,
     sources: arrayOf(object).isRequired,
     adapterConfig: object.isRequired
   };
 
-  componentDidMount() {
-    // Required function to get configuration set by user
-    if (typeof this.props.getConfiguration === 'function') {
-      // Return the current configuration
-      this.props.getConfiguration(() => this.state.configuration);
-    } else {
-      console.error('Missing required getConfiguration function');
+  constructor(props) {
+    super(props);
+    let fields = currentFields = get(this.props.adapterConfig, ['fields']);
+    this.state = {
+      sourceId: 
+        get(this.props, ['configuration', 'sourceId']) ||
+        (get(this.props, ['sources', 'length']) ? this.props.sources[0].id : '')
+    };
+    if (isArray(fields)) {
+      fields.forEach(field => {
+        if (field.name) {
+          let propValue = get(this.props, ['configuration', field.name]);
+          if (field.defaultValue) {
+            this.state[field.name] =  propValue || (field.defaultValue.indexOf(',') === -1 ? field.defaultValue : field.defaultValue.split(','));
+          } else if (field.defaultValues) {
+            this.state[field.name] = propValue || clone(field.defaultValues) || [];
+          }
+        }
+      });
+      console.log(this.state);
+      this.sendConfiguration();
     }
+  }
+
+  sendConfiguration = () => {
+    this.props.updateConfiguration(this.state);
   }
 
   handleSourceChange = event => {
     let selectedSourceId = event.target.value;
     let newState = { sourceId: selectedSourceId };
-    this.setState(newState);
-    this.props.updateConfiguration(newState);
+    this.setState(newState, this.sendConfiguration);
   }
 
-  // Hydrate the adapter with the provided configuration if it is defined
-  state = {
-    sourceId: 
-      get(this.props, ['configuration', 'sourceId']) ||
-      (get(this.props, ['sources', 'length']) ? this.props.sources[0].id : '')
+  handleFieldChange = fieldKey => event => {
+    let fieldValue = event.target.value;
+    let stateUpdate = {};
+    stateUpdate[fieldKey] = fieldValue;
+    this.setState(stateUpdate, this.sendConfiguration);
   }
-
-  // Adapter specific functions here
  
   render() {
     return (
@@ -90,6 +107,9 @@ class SDOAdapter extends React.Component {
                 </div>
               </div>
             </div>
+            <div>
+              <DynamicFieldForm fields={this.props.adapterConfig.fields} configuration={this.state} handleFieldChange={this.handleFieldChange} />
+            </div>
           </div>
         </div>
       </div>
@@ -97,52 +117,95 @@ class SDOAdapter extends React.Component {
   }
 }
 
-function copyRecurse(obj) {
-  let current;
-  if (typeof obj === 'object') {
-    current = {};
-    Object.keys(obj).forEach(key => {
-      current[key] = copyRecurse(obj[key]);
-    });
-  } else {
-    current = obj;
-  }
-  return current;
+function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
+  return fields.map(field => {
+    let inputId = field.name + 'DynamicField';
+    let camelCasedFieldName = startCase(toLower(field.name));
+    if (field.type === 'Picklist' || field.type === 'MultiPicklist') {
+      return (
+        <FormControl>
+          <InputLabel htmlFor={inputId}>{camelCasedFieldName}</InputLabel>
+          <Select
+            value={configuration[field.name]}
+            onChange={handleFieldChange(field.name)}
+            autoWidth={true}
+            multiple={field.type === 'MultiPicklist'}
+            inputProps={{
+              name: field.name,
+              id: inputId,
+            }}
+          >
+            {
+              field.options.map(option => <MenuItem key={option.key} value={option.value}>{option.key}</MenuItem>)
+            }
+          </Select>
+          { field.info ? <FormHelperText>{field.info}</FormHelperText> : '' }
+        </FormControl>
+      );
+    } else if (field.type === 'Text') {
+      return (
+        <FormControl>
+          <TextField
+            id={inputId}
+            label={camelCasedFieldName}
+            value={configuration[field.name]}
+            onChange={handleFieldChange(field.name)}
+            helperText={field.info}
+          />
+        </FormControl>
+      );
+    } else if (field.type === 'Number') {
+      return (
+        <FormControl>
+          <TextField
+            id={inputId}
+            label={camelCasedFieldName}
+            value={parseFloat(configuration[field.name])}
+            onChange={handleFieldChange(field.name)}
+            type="number"
+            helperText={field.info}
+            inputProps={{
+              max: parseFloat(field.max),
+              min: parseFloat(field.min),
+              step: parseFloat(field.step)
+            }}
+          />
+        </FormControl>
+      );
+    }
+  }).map(fieldInput => (<div className={styles.adapterFieldContainer}>{fieldInput}</div>));
 }
 
 function SourceSelector ({ initialValue, sources, handleSourceChange, selectLabel }) {
   let sourceMenuItems = sources.map(source => <MenuItem key={source.id} value={source.id}>{source.name}</MenuItem>);
 
   return (
-    <div>
-      <FormControl>
-        <InputLabel htmlFor="select-source">Select a Source*</InputLabel>
-        <Select
-          value={initialValue}
-          onChange={handleSourceChange}
-          autoWidth={true}
-          inputProps={{
-            name: 'source',
-            id: 'select-source',
-          }}>
-          {sourceMenuItems}
-        </Select>
-      </FormControl>
-    </div>
-    // <DynamicSelect
-    //   initialValues={initialValues}
-    //   sources={sources}
-    //   handleSourceChange={handleSourceChange}
-    //   selectLabel={selectLabel}/>
+    <FormControl>
+      <InputLabel htmlFor="select-source">Select a Source*</InputLabel>
+      <Select
+        className={styles.sourceSelector}
+        value={initialValue}
+        onChange={handleSourceChange}
+        autoWidth={true}
+        inputProps={{
+          name: 'source',
+          id: 'select-source',
+        }}>
+        {sourceMenuItems}
+      </Select>
+    </FormControl>
   );
 }
 
 export default {
+  title: 'Configuration',
   adapter: SDOAdapter,
+  template: 'ingest/react-adapter',
   config: {
-    adapterId: 'react-adapter',
+    adapterId: 'sdo-adapter',
     enableSchedule: true,
     enableProcess: true,
+    enableContentTemplate: true,
     enableCustomize: {
       setName: true
     }

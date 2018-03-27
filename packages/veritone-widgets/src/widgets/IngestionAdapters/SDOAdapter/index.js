@@ -19,5 +19,5 @@ class SDOAdapter extends React.Component {
 
 export default {
   widget: widget(SDOAdapter),
-  config: config
+  ...LibSDOAdapterObj
 }
