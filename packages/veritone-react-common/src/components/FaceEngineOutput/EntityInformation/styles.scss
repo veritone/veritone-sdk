@@ -19,7 +19,7 @@
   flex-direction: row;
 }
 
-.entityProgramImage {
+.entityProfileImage {
   width: 80px;
   height: 80px;
   flex: none;
@@ -51,13 +51,19 @@
   flex-flow: row wrap;
 }
 
-.faceOccurrenceTimestamp {
-  flex: 1 0 125px;
-  color: $blue-1;
-  font-size: 14px;
-  line-height: 30px;
+.faceOccurrence {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  width: 130px;
 
   &:hover {
     cursor: pointer;
   }
+}
+
+.faceOccurrenceTimestamp {
+  color: $blue-1;
+  font-size: 14px;
+  line-height: 30px;
 }

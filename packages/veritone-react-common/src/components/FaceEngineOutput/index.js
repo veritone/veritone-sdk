@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import { filter, groupBy, remove } from 'lodash';
+import { groupBy, find, isEqual, pick } from 'lodash';
 import { shape, number, string, bool, arrayOf, func } from 'prop-types';
 import classNames from 'classnames';
 
@@ -9,6 +9,7 @@ import FaceGrid from './FaceGrid';
 import Chip from '../Chip';
 import Avatar from '../Avatar';
 import EntityInformation from './EntityInformation';
+import FacesByScene from './FacesByScene';
 
 import noAvatar from 'images/no-avatar.png';
 
@@ -24,11 +25,22 @@ class FaceEngineOutput extends Component {
         label: string,
         uri: string
       })
-    })),
+    })).isRequired,
     libraries: arrayOf(shape({
       id: string,
-      name: string
-    })),
+      name: string,
+      entities: arrayOf(
+        shape({
+          entityId: string,
+          entityName: string,
+          libraryId: string,
+          profileImageUrl: string,
+          jsondata: shape({
+            description: string
+          })
+        })
+      )
+    })).isRequired,
     entitySearchResults: arrayOf(shape({
       entityName: string,
       libraryName: string,
@@ -44,26 +56,114 @@ class FaceEngineOutput extends Component {
 
   state = {
     activeTab: 'faceRecognition',
+    detectedFaces: [],
+    recognizedEntityObjects: [],
+    recognizedEntityObjectMap: {},
     selectedEntity: null
   };
 
-  filterFaces = (faces, viewMode) => {
-    let allFaces = faces.reduce((accumulator, faceSeries) => {
+  componentWillMount() {
+    this.processFaces(this.props.faces);
+  }
+
+  componentWillReceiveProps(nextProps){
+    if (nextProps.viewMode !== this.props.viewMode) {
+      this.setState({selectedEntity: null});
+    }
+    if (!isEqual(nextProps.faces, this.props.faces)) {
+      this.processFaces(this.props.faces);
+    }
+  }
+
+  processFaces = (faceData) => {
+    let detectedFaceObjects = [];
+    let recognizedEntityObjects = [];
+    let recognizedEntityObjectMap = {};
+    if (!faceData || !faceData.length) {
+        return;
+    }
+    let faceSeries = faceData.reduce((accumulator, faceSeries) => {
       if (faceSeries.series && faceSeries.series.length) {
         return [...accumulator, ...faceSeries.series];
       }
     }, []);
 
-    if (viewMode === 'byFrame') {
-      allFaces = allFaces.filter((face) => {
-        return this.props.mediaPlayerPosition >= face.startTimeMs && this.props.mediaPlayerPosition <= face.endTimeMs;
-      })
-    }
+    // Reduce library array to an array of entities to assign to face objects
+    let entities = this.props.libraries.reduce((accumulator, library) => {
+      return accumulator.concat(library.entities);
+    }, []);
 
-    return {
-      facesDetected: remove(allFaces, face => face.entityId === undefined || face.entityId.length === 0),
-      facesRecognized: groupBy(filter(allFaces, face => face.entityId.length > 0), 'libraryId'),
-    };
+    faceSeries.forEach(faceObj => {
+      faceObj.entity = find(entities, { 'entityId': faceObj.entityId});
+      if (faceObj.entity && faceObj.entity.entityName) {
+        faceObj.entity.library = pick(find(this.props.libraries,{"id": faceObj.entity.libraryId}), ['id', 'name']);
+        let face = {
+          entityId: faceObj.entityId,
+          fullName: faceObj.entity.entityName,
+          entity: faceObj.entity,
+          profileImage: faceObj.entity.profileImageUrl,
+          count: 1,
+          timeSlots: [
+            {
+                stopTimeMs: faceObj.stopTimeMs,
+                startTimeMs: faceObj.startTimeMs,
+                originalImage: faceObj.object.uri,
+                confidence: faceObj.object.confidence
+            }
+          ],
+          stopTimeMs: faceObj.stopTimeMs
+        };
+        let flag = true;
+        recognizedEntityObjects.forEach(function checkDuplicate(elem, index, array) {
+            if (elem.entityId === face.entityId) {
+                elem.count++;
+                let timeStamp = {
+                    stopTimeMs: faceObj.stopTimeMs,
+                    startTimeMs: faceObj.startTimeMs,
+                    originalImage: faceObj.object.uri,
+                    confidence: faceObj.object.confidence
+                };
+                elem.timeSlots.push(timeStamp);
+                elem.stopTimeMs = (elem.stopTimeMs <= faceObj.stopTimeMs) ? faceObj.stopTimeMs : elem.stopTimeMs;
+                flag = false;
+            }
+        });
+        if (flag) {
+            recognizedEntityObjectMap[face.entityId] = face;
+            recognizedEntityObjects.push(face);
+        }
+      } else if (!faceObj.entityId) {
+        let face = {
+          originalImage: faceObj.object.uri,
+          startTimeMs: faceObj.startTimeMs,
+          stopTimeMs: faceObj.stopTimeMs
+        }
+        detectedFaceObjects.push(face);
+      }
+    });
+
+    // Loop through and map by library. This may become depricated because it
+    // wont be accurate now that we aren't getting all the data at once.
+    let entitiesByLibrary = {};
+    recognizedEntityObjects && recognizedEntityObjects.forEach(function highLightedFaces(currentFace) {
+      let library = currentFace.entity.library;
+      if (library && library.id && !entitiesByLibrary[library.id]) {
+        entitiesByLibrary[library.id] = {
+          library: library,
+          faces: [currentFace]
+        }
+      } else if (library && library.id) {
+          entitiesByLibrary[library.id].faces.push(currentFace);
+      }
+    });
+
+
+    this.setState({
+      detectedFaces: detectedFaceObjects,
+      recognizedEntityObjects: recognizedEntityObjects,
+      recognizedEntityObjectMap: recognizedEntityObjectMap,
+      entitiesByLibrary: entitiesByLibrary
+    });
   }
 
   handleTabChange = (event, activeTab) => {
@@ -80,20 +180,19 @@ class FaceEngineOutput extends Component {
     return library.entities.find(e => e.entityId === entityId);
   }
 
-  handleEntityClick = (entity, library) => evt => {
+  handleEntitySelect = (entity, evt) => {
     this.setState({
       selectedEntity: {
-        ...entity,
-        libraryInfo: library
+        ...entity
       }
     });
   }
 
-  drawEntityChips = (facesGroupedByEnity, library) => {
+  renderEntityChips = (facesGroupedByEnity, library) => {
     return Object.keys(facesGroupedByEnity).map(entityId => {
       let entity = this.getEntity(library, entityId);
       return <Chip 
-        onClick={this.handleEntityClick(entity, library)}
+        onClick={this.handleEntityClick(entity)}
         key={'entity-' + entityId}
         label={
           <span>{entity.entityName} <a>({facesGroupedByEnity[entityId].length})</a></span>
@@ -106,7 +205,7 @@ class FaceEngineOutput extends Component {
     })
   }
 
-  drawLibraryEntityBoxes = (recognizedFaces) => {
+  renderSummaryEntityBoxes = (recognizedFaces) => {
     return Object.keys(recognizedFaces).map(libraryId => {
       let library = this.getLibraryById(libraryId);
       let facesGroupedByEnity = groupBy(recognizedFaces[libraryId], 'entityId');
@@ -117,7 +216,7 @@ class FaceEngineOutput extends Component {
             <span>Library: <strong>{library.name}</strong></span>
           </div>
           <div className={styles.entityCountContainer}>
-            { this.drawEntityChips(facesGroupedByEnity, library) }
+            { this.renderEntityChips(facesGroupedByEnity, library) }
           </div>
         </div>
       }
@@ -132,17 +231,15 @@ class FaceEngineOutput extends Component {
   }
 
   render() {
-    let { 
-      faces, 
+    let {
       enableEditMode, 
       viewMode, 
       onAddNewEntity, 
       entitySearchResults, 
       className,
-      onFaceOccurrenceClicked
+      onFaceOccurrenceClicked,
+      mediaPlayerPosition
     } = this.props;
-
-    let filteredFaces = this.filterFaces(faces, viewMode);
 
     return (
       <div className={classNames(styles.faceEngineOutput, className)}>
@@ -156,22 +253,26 @@ class FaceEngineOutput extends Component {
         </Tabs>
         { this.state.activeTab === 'faceRecognition' &&
             <div className={styles.faceTab}>
-              { this.state.selectedEntity ?
+              { this.state.selectedEntity &&
                   <EntityInformation 
-                    entity={this.state.selectedEntity} 
-                    faces={filteredFaces.facesRecognized}
+                    selectedEntity={this.state.selectedEntity}
                     onBackClicked={this.removeSelectedEntity}
                     onOccurrenceClicked={onFaceOccurrenceClicked}
-                  /> : Object.keys(filteredFaces.facesRecognized).length ?
-                    this.drawLibraryEntityBoxes(filteredFaces.facesRecognized) :
-                    <div>No Face Matches Found</div>
+                  />
+              }
+              { viewMode === 'byScene' && !this.state.selectedEntity &&
+                  <FacesByScene
+                    mediaPlayerPosition={mediaPlayerPosition}
+                    recognizedEntityObjects={this.state.recognizedEntityObjects}
+                    onSelectEntity={this.handleEntitySelect}
+                  />
               }
             </div>
         }
         { this.state.activeTab === 'faceDetection' && 
             <div className={styles.faceTab}>
               <FaceGrid 
-                faces={filteredFaces.facesDetected} 
+                faces={this.state.detectedFaces} 
                 enableEditMode={enableEditMode}
                 viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}

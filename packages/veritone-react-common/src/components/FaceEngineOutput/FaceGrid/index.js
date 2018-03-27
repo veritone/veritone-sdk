@@ -12,7 +12,7 @@ class FaceGrid extends Component {
       endTimeMs: number,
       object: shape({
         label: string,
-        uri: string
+        originalImage: string
       })
     })),
     entitySearchResults: arrayOf(shape({
@@ -31,7 +31,7 @@ class FaceGrid extends Component {
     }
   }
 
-  drawFaces(faces) {
+  renderFaces(faces) {
     return faces.map((face, index) => {
       return <FaceDetectionBox 
         key={'face-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index} 
@@ -49,7 +49,7 @@ class FaceGrid extends Component {
 
     return (
       <div className={styles.faceGrid}>
-        {this.drawFaces(faces)}
+        {this.renderFaces(faces)}
       </div>
     )
   }

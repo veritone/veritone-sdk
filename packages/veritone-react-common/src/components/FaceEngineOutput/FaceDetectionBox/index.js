@@ -91,7 +91,7 @@ class FaceDetectionBox extends Component {
         onClick={onClick}
       >
         <div className={styles.entityImageContainer}>
-          <img className={styles.entityImage} src={face.object.uri} />
+          <img className={styles.entityImage} src={face.originalImage} />
           { enableEdit && this.state.hovered &&
               <div className={styles.imageButtonOverlay}>
                 <div className={styles.faceActionIcon} onClick={this.makeEditable}>
@@ -105,7 +105,7 @@ class FaceDetectionBox extends Component {
         </div>
         <div className={styles.faceInformation}>
           <span className={styles.faceTimeOccurrence}>
-            {msToReadableString(face.startTimeMs)} - {msToReadableString(face.endTimeMs)}
+            {msToReadableString(face.startTimeMs)} - {msToReadableString(face.stopTimeMs)}
           </span>
           { this.state.editFaceEntity ? <Downshift
                 itemToString={this.itemToString}

@@ -16,7 +16,7 @@ storiesOf('FaceEngineOutput', module)
         enableEditMode={boolean("enableEditMode")}
         entitySearchResults={entitySearchResults}
         className={styles.outputViewRoot}
-        mediaPlayerPosition={number('mediaPlayerPosition', 20, {
+        mediaPlayerPosition={number('mediaPlayerPosition', 0, {
           range: true,
           min: 0,
           max: 6000,
@@ -25,7 +25,8 @@ storiesOf('FaceEngineOutput', module)
         onAddNewEntity={action("Pop the add new entity modal")}
         viewMode={select('viewMode', {
           summary: 'Summary',
-          byFrame: 'by Frame'
+          byFrame: 'by Frame',
+          byScene: 'by Scene'
         }, 'summary')}
         onFaceOccurrenceClicked={action("Set the media player position")}
       />
@@ -95,9 +96,7 @@ storiesOf('FaceEngineOutput', module)
       series: [
         {
           startTimeMs: 0,
-          endTimeMs: 2000,
-          entityId: '',
-          libraryId: '',
+          stopTimeMs: 2000,
           object: {
             type: 'face',
             uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
@@ -105,9 +104,7 @@ storiesOf('FaceEngineOutput', module)
         },
         {
           startTimeMs: 1000,
-          endTimeMs: 3000,
-          entityId: '',
-          libraryId: '',
+          stopTimeMs: 3000,
           object: {
             type: 'face',
             uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
@@ -115,9 +112,22 @@ storiesOf('FaceEngineOutput', module)
         },
         {
           startTimeMs: 1000,
-          endTimeMs: 4000,
-          entityId: '',
-          libraryId: '',
+          stopTimeMs: 4000,
+          entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
+          libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+          object: {
+            type: 'face',
+            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+            boundingPoly: [{
+              'x': 0.1,
+              'y': 0.2
+            }],
+            confidence: 0.75123
+          }
+        },
+        {
+          startTimeMs: 2000,
+          stopTimeMs: 3000,
           object: {
             type: 'face',
             uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
@@ -125,22 +135,32 @@ storiesOf('FaceEngineOutput', module)
         },
         {
           startTimeMs: 2000,
-          endTimeMs: 3000,
-          entityId: '',
-          libraryId: '',
+          stopTimeMs: 3000,
+          entityId: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
+          libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           object: {
             type: 'face',
-            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
+            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+            boundingPoly: [{
+              'x': 0.3,
+              'y': 0.2
+            }],
+            confidence: 0.8456
           }
         },
         {
           startTimeMs: 3000,
-          endTimeMs: 4000,
+          stopTimeMs: 4000,
           entityId: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
           libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           object: {
             type: 'face',
-            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
+            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+            boundingPoly: [{
+              'x': 0.1,
+              'y': 0.2
+            }],
+            confidence: 0.99234
           }
         }
       ]
@@ -149,9 +169,7 @@ storiesOf('FaceEngineOutput', module)
       series: [
         {
           startTimeMs: 4000,
-          endTimeMs: 6000,
-          entityId: '',
-          libraryId: '',
+          stopTimeMs: 6000,
           object: {
             type: 'face',
             uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
@@ -159,12 +177,17 @@ storiesOf('FaceEngineOutput', module)
         },
         {
           startTimeMs: 5000,
-          endTimeMs: 6000,
+          stopTimeMs: 60000000,
           entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
           libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
           object: {
             type: 'face',
-            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png'
+            uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+            boundingPoly: [{
+              'x': 0.1,
+              'y': 0.2
+            }],
+            confidence: 0.84321
           }
         }
       ]
@@ -191,6 +214,15 @@ storiesOf('FaceEngineOutput', module)
           libraryId: "f1297e1c-9c20-48fa-a8fd-46f1e6d62c43",
           profileImageUrl: null,
           jsondata: {}
+        },
+        {
+          entityId: "8e35f28c-34aa-4ee3-8690-f62bf1a704fa",
+          entityName: "George Harrison",
+          libraryId: "f1297e1c-9c20-48fa-a8fd-46f1e6d62c43",
+          profileImageUrl: "https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host",
+          jsondata: {
+            description: ""
+          }
         }
       ]
     },

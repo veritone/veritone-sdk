@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { shape, string, objectOf, array, func } from 'prop-types';
+import { shape, string, number, func, arrayOf } from 'prop-types';
 import classNames from 'classnames';
 import Button from 'material-ui/Button';
 import Icon from 'material-ui/Icon';
@@ -14,16 +14,26 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class EntityInformation extends Component {
   static propTypes = {
-    entity: shape({
+    selectedEntity: shape({
+      count: number,
+      entity: shape({
+        entityId: string,
+        entityName: string,
+        libraryId: string,
+        profileImage: string
+      }),
       entityId: string,
-      entityName: string,
-      libraryId: string,
-      profileImageUrl: string,
-      jsondata: shape({
-        description: string
-      })
+      fullName: string,
+      profileImage: string,
+      timeSlots: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          originalImage: string,
+          confidence: number
+        })
+      )
     }),
-    faces: objectOf(array),
     onBackClicked: func,
     onOccurrenceClicked: func
   }
@@ -43,7 +53,7 @@ class EntityInformation extends Component {
   }
 
   render() {
-    let { entity, faces, onBackClicked } = this.props;
+    let { selectedEntity, onBackClicked } = this.props;
 
     return (
       <div>
@@ -56,17 +66,17 @@ class EntityInformation extends Component {
           <span className={styles.entityBackLabel}>Back</span>
         </Button>
         <div className={styles.selectedEntity}>
-          <img className={styles.entityProgramImage} src={entity.profileImageUrl || noAvatar} />
+          <img className={styles.entityProfileImage} src={selectedEntity.entity.profileImageUrl || noAvatar} />
           <div className={styles.selectedEntityInfo}>
             <div>
-              <span>{entity.entityName} </span>
+              <span>{selectedEntity.entity.entityName} </span>
               <span>
-                ({faces[entity.libraryInfo.id] ? faces[entity.libraryInfo.id].length : '0'})
+                ({selectedEntity.timeSlots.length})
               </span>
             </div>
             <div>
               <i className="icon-library-app"/>&nbsp;
-              <span>Library: <strong>{entity.libraryInfo.name}</strong></span>
+              <span>Library: <strong>{selectedEntity.entity.library.name}</strong></span>
             </div>
           </div>
         </div>
@@ -81,27 +91,26 @@ class EntityInformation extends Component {
           </Tabs>
           { this.state.activeTab === 'faceMatches' &&
               <div className={styles.tabContainer}>
-                { faces[entity.libraryId] ?
-                    <div className={styles.faceOccurrenceList}>
-                      { faces[entity.libraryId].map((face, index) => {
-                          return <div
-                            onClick={this.handleFaceOccurrenceClicked(face)}
-                            className={styles.faceOccurrenceTimestamp}
-                            key={'face-timestamp-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index}
-                          >
-                            {msToReadableString(face.startTimeMs)} - {msToReadableString(face.endTimeMs)}
-                          </div>
-                        })
-                      }
-                    </div> :
-                    <div> No faces found</div>
+                {!selectedEntity.timeSlots.length ?
+                  <div>No Face Matches Found</div> :
+                  <div className={styles.faceOccurrenceList}>
+                    {selectedEntity.timeSlots.map((timeSlot, index) => {
+                        return <div
+                          onClick={this.handleFaceOccurrenceClicked(timeSlot)}
+                          className={styles.faceOccurrence}
+                          key={'face-timestamp-' + timeSlot.startTimeMs + '-' + timeSlot.stopTimeMs + '-' + index}
+                        >
+                          <span className={styles.faceOccurrenceTimestamp}>{msToReadableString(timeSlot.startTimeMs)} - {msToReadableString(timeSlot.stopTimeMs)}</span>
+                        </div>
+                    })}
+                  </div>
                 }
               </div>
           }
           { this.state.activeTab === 'metadata' &&
               <div className={styles.tabContainer}>
                 <div className={styles.metadataLabel}>Description</div>
-                <span className={styles.metadataValue}>{entity.jsondata.description || '-'}</span>
+                <span className={styles.metadataValue}>{selectedEntity.entity.jsondata.description || '-'}</span>
               </div>
           }
         </div>
