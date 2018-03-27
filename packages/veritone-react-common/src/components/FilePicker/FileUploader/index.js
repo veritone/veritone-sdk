@@ -86,7 +86,7 @@ class FileUploader extends Component {
     const readableTypeNames = {
       'video/*': 'video',
       'audio/*': 'audio',
-      'image/*': 'image',
+      'image/*': 'image'
     };
     const readableTypes = acceptedFileTypes
       .map(t => readableTypeNames[t] || mime.extension(t) || t)

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf , bool, number, shape, string, func } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
@@ -15,11 +15,13 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class TranscriptEngineOutput extends Component {
   static propTypes = {
-    assets: arrayOf(shape({
-      startTime: number,
-      endTime: number,
-      data: string
-    })),
+    assets: arrayOf(
+      shape({
+        startTime: number,
+        endTime: number,
+        data: string
+      })
+    ),
     editModeEnabled: bool,
     className: string,
     onSnippetClicked: func,
@@ -27,10 +29,12 @@ class TranscriptEngineOutput extends Component {
     tdoEndTime: number,
     editMode: string,
     selectedEngineId: string,
-    engines: arrayOf(shape({
-      sourceEngineId: string,
-      sourceEngineName: string
-    })),
+    engines: arrayOf(
+      shape({
+        sourceEngineId: string,
+        sourceEngineName: string
+      })
+    ),
     onEngineChange: func,
     onSnippetEdit: func,
     onEditModeChange: func,
@@ -42,14 +46,14 @@ class TranscriptEngineOutput extends Component {
     assets: [],
     classes: {},
     editModeEnabled: false,
-    viewMode: "time"
-  }
+    viewMode: 'time'
+  };
 
   render() {
-    let { 
-      className, 
-      editModeEnabled, 
-      editMode, 
+    let {
+      className,
+      editModeEnabled,
+      editMode,
       assets,
       onSnippetClicked,
       selectedEngineId,
@@ -65,60 +69,52 @@ class TranscriptEngineOutput extends Component {
         <EngineOutputHeader title="Transcription" hideTitle={editModeEnabled}>
           <div className={styles.transcriptInputs}>
             <div>
-              { editModeEnabled && <RadioGroup
-                    onChange={onEditModeChange}
-                    aria-label="edit_mode"
-                    value={editMode}
-                    name="editMode"
-                    row
-                  >
-                    <FormControlLabel 
-                      className={styles.editModeFormControlLabel} 
-                      value="snippet" 
-                      control={<Radio color="primary" />} 
-                      label="Snippet Edit" 
-                    />
-                    <FormControlLabel 
-                      className={styles.editModeFormControlLabel} 
-                      value="bulk" 
-                      control={<Radio color="primary" />} 
-                      label="Bulk Edit" 
-                    />
-                  </RadioGroup>
-              }
+              {editModeEnabled && (
+                <RadioGroup
+                  onChange={onEditModeChange}
+                  aria-label="edit_mode"
+                  value={editMode}
+                  name="editMode"
+                  row
+                >
+                  <FormControlLabel
+                    className={styles.editModeFormControlLabel}
+                    value="snippet"
+                    control={<Radio color="primary" />}
+                    label="Snippet Edit"
+                  />
+                  <FormControlLabel
+                    className={styles.editModeFormControlLabel}
+                    value="bulk"
+                    control={<Radio color="primary" />}
+                    label="Bulk Edit"
+                  />
+                </RadioGroup>
+              )}
             </div>
             <div>
-              <Select 
+              <Select
                 value={viewMode}
                 onChange={onViewModeChange}
                 className={styles.selectWithMargin}
                 autoWidth
               >
-                <MenuItem value="time">
-                  Time
-                </MenuItem>
-                <MenuItem value="overview">
-                  Overview
-                </MenuItem>
+                <MenuItem value="time">Time</MenuItem>
+                <MenuItem value="overview">Overview</MenuItem>
               </Select>
-              <Select 
-                value={selectedEngineId || ""} 
-                onChange={onEngineChange}
-              >
-                { engines.map((e, i) => {
-                    return <MenuItem 
-                      key={i} 
-                      value={e.sourceEngineId}
-                    >
+              <Select value={selectedEngineId || ''} onChange={onEngineChange}>
+                {engines.map((e, i) => {
+                  return (
+                    <MenuItem key={i} value={e.sourceEngineId}>
                       {e.sourceEngineName}
                     </MenuItem>
-                  })
-                }
+                  );
+                })}
               </Select>
             </div>
           </div>
         </EngineOutputHeader>
-        <TranscriptContent 
+        <TranscriptContent
           assets={assets}
           onSnippetClicked={onSnippetClicked}
           onSnippetEdit={onSnippetEdit}
