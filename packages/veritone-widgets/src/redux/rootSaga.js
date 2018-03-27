@@ -7,5 +7,10 @@ import filePickerRootSaga from './modules/filePicker/filePickerSaga';
 import mediaDetailsSaga from './modules/mediaDetails/saga';
 
 export default function* root() {
-  yield all([fork(authRootSaga), fork(filePickerRootSaga), fork(appRootSaga), fork(mediaDetailsSaga)]);
+  yield all([
+    fork(authRootSaga),
+    fork(filePickerRootSaga),
+    fork(appRootSaga),
+    fork(mediaDetailsSaga)
+  ]);
 }
