@@ -63,15 +63,6 @@ class TranscriptEngineOutput extends Component {
 
   getTranscriptChunks = () => {
     return this.props.assets.map((chunk, i) => {
-      console.log(this.props.assets);
-      if (this.props.assets[i - 1] !== undefined) {
-        console.log(
-          chunk.series[0].startTimeMs,
-          this.props.assets[i - 1].series[
-            this.props.assets[i - 1].series.length - 1
-          ].endTimeMs
-        );
-      }
       return (
         <TranscriptChunk
           key={'transcript-task' + i}

@@ -11,7 +11,7 @@ import styles from './story.styles.scss';
 import AppContainer from '.';
 
 storiesOf('AppContainer', module).add('Base', () => {
-  const open = boolean('Sidebar Open', true);
+  const open = boolean('SideBar Open', true);
   return (
     <Fragment>
       <AppBar />

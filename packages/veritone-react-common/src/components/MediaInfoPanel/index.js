@@ -6,22 +6,91 @@ import Icon from 'material-ui/Icon';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
-import { object, func, bool, arrayOf, any } from 'prop-types';
+import { objectOf, func, bool, arrayOf, any } from 'prop-types';
+import EditMetadataDialog from './EditMetadataDialog';
+import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
   static propTypes = {
-    tdo: object,
+    tdo: objectOf(any),
     engineCategories: arrayOf(any),
     onClose: func,
     onSaveMetadata: func,
-    onSaveTags: func,
     isInfoPanelOpen: bool
   };
 
   state = {
     isOpen: true,
-    menuAnchorEl: null
+    menuAnchorEl: null,
+    isOpenEditMetadata: false,
+    isOpenEditTags: false
+  };
+
+  onSaveMetadata = metadataToSave => {
+    this.toggleIsOpenEditMetadata();
+    if (!metadataToSave) {
+      return;
+    }
+    const detailsParams = [];
+    if (metadataToSave.veritoneFile && metadataToSave.veritoneFile.filename) {
+      detailsParams.push(
+        `veritoneFile: { filename: "${metadataToSave.veritoneFile.filename}" }`
+      );
+    }
+    if (metadataToSave.veritoneCustom && metadataToSave.veritoneCustom.source) {
+      detailsParams.push(
+        `veritoneCustom: { source: "${metadataToSave.veritoneCustom.source}" }`
+      );
+    }
+    if (
+      metadataToSave.veritoneProgram &&
+      (metadataToSave.veritoneProgram.programLiveImage ||
+        metadataToSave.veritoneProgram.programImage)
+    ) {
+      let programData = '';
+      if (metadataToSave.veritoneProgram.programLiveImage) {
+        programData += `programLiveImage: "${
+          metadataToSave.veritoneProgram.programLiveImage
+        }"`;
+      }
+      if (metadataToSave.veritoneProgram.programImage) {
+        programData += ` programImage: "${
+          metadataToSave.veritoneProgram.programImage
+        }"`;
+      }
+      if (programData.length) {
+        detailsParams.push(`veritoneProgram: { ${programData} }`);
+      }
+    }
+    if (!detailsParams.length) {
+      return;
+    }
+    const detailsToSave = `details: { ${detailsParams.join(' ')} }`;
+    this.props.onSaveMetadata(detailsToSave);
+  };
+
+  toggleIsOpenEditMetadata = () => {
+    this.setState({
+      isOpenEditMetadata: !this.state.isOpenEditMetadata
+    });
+  };
+
+  onSaveTags = tagsToSave => {
+    this.toggleIsOpenEditTags();
+    if (!tagsToSave || !tagsToSave.length) {
+      return;
+    }
+    const tagsObjects = [];
+    tagsToSave.forEach(tag => tagsObjects.push[`{ value: "${tag}" }`]);
+    const detailsToSave = `details: { tags: [ ${tagsObjects.join(', ')} ] }`;
+    this.props.onSaveMetadata(detailsToSave);
+  };
+
+  toggleIsOpenEditTags = () => {
+    this.setState({
+      isOpenEditTags: !this.state.isOpenEditTags
+    });
   };
 
   toggleIsOpen = () => {
@@ -76,6 +145,16 @@ class MediaInfoPanel extends Component {
     this.setState({ menuAnchorEl: null });
   };
 
+  onMetadataOpen = () => {
+    this.onMenuClose();
+    this.toggleIsOpenEditMetadata();
+  };
+
+  onEditTagsOpen = () => {
+    this.onMenuClose();
+    this.toggleIsOpenEditTags();
+  };
+
   render() {
     const { menuAnchorEl } = this.state;
 
@@ -98,8 +177,8 @@ class MediaInfoPanel extends Component {
                 open={Boolean(menuAnchorEl)}
                 onClose={this.onMenuClose}
               >
-                <MenuItem onClick={this.onMenuClose}>Edit Metadata</MenuItem>
-                <MenuItem onClick={this.onMenuClose}>Edit Tags</MenuItem>
+                <MenuItem onClick={this.onMetadataOpen}>Edit Metadata</MenuItem>
+                <MenuItem onClick={this.onEditTagsOpen}>Edit Tags</MenuItem>
                 {/* TODO: uncomment when can download large/chunked files
                   <MenuItem onClick={this.onMenuClose}>Download</MenuItem>
                 */}
@@ -135,35 +214,31 @@ class MediaInfoPanel extends Component {
                 )}
               </div>
             </div>
-            <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Engines</div>
-              <div className={styles.infoFieldData}>
-                {this.props.engineCategories && (
-                  <div>
-                    {this.props.engineCategories
-                      .filter(
-                        category => category.engines && category.engines.length
-                      )
-                      .map(category => (
-                        <div key={category.id}>
-                          <b>{category.name}:</b>{' '}
-                          {category.engines
-                            .map(engine => engine.name)
-                            .join(', ')}
-                        </div>
-                      ))}
-                  </div>
-                )}
+            {this.props.engineCategories && (
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Engines</div>
+                <div className={styles.infoFieldData}>
+                  {this.props.engineCategories
+                    .filter(
+                      category => category.engines && category.engines.length
+                    )
+                    .map(category => (
+                      <div key={category.id}>
+                        <b>{category.name}:</b>{' '}
+                        {category.engines.map(engine => engine.name).join(', ')}
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
-            <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Tags</div>
-              <div className={styles.infoFieldData}>
-                {this.props.tdo.details.tags && (
-                  <div>{this.props.tdo.details.tags.join(', ')}</div>
-                )}
+            )}
+            {this.props.tdo.details.tags && (
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Tags</div>
+                <div className={styles.infoFieldData}>
+                  {this.props.tdo.details.tags.map(tag => tag.value).join(', ')}
+                </div>
               </div>
-            </div>
+            )}
             <div className={styles.programImagesSection}>
               <div>
                 Program Live Image
@@ -208,6 +283,24 @@ class MediaInfoPanel extends Component {
             </div>
           </Paper>
         </div>
+        {this.props.tdo &&
+          this.props.tdo.details && (
+            <EditMetadataDialog
+              isOpen={this.state.isOpenEditMetadata}
+              metadata={this.props.tdo.details}
+              onClose={this.toggleIsOpenEditMetadata}
+              onSave={this.onSaveMetadata}
+            />
+          )}
+        {this.props.tdo &&
+          this.props.tdo.details && (
+            <EditTagsDialog
+              isOpen={this.state.isOpenEditTags}
+              tags={this.props.tdo.details.tags}
+              onClose={this.toggleIsOpenEditTags}
+              onSave={this.onSaveTags}
+            />
+          )}
       </div>
     );
 
