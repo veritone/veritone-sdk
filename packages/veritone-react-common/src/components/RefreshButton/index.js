@@ -2,9 +2,8 @@ import React from 'react';
 import cx from 'classnames';
 import IconButton from 'material-ui/IconButton';
 import RefreshIcon from 'material-ui-icons/Refresh';
-
-import styles from './styles/index.scss';
 import { func, string, bool } from 'prop-types';
+import styles from './styles/index.scss';
 
 export default class RefreshButton extends React.Component {
   static propTypes = {

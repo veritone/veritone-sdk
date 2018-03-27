@@ -2,7 +2,6 @@ import React from 'react';
 import { range, filter, get, includes } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
-import sinon from 'sinon';
 import MenuColumn from './MenuColumn';
 import { Table, Column, PaginatedTable, LOADING } from './';
 
@@ -254,7 +253,7 @@ describe('Table', function () {
   });
 
   it('exposes row index and column key when table cell is clicked', function () {
-    const spy = sinon.spy();
+    const handler = jest.fn();
 
     class Container extends React.Component {
       getRowData = i => {
@@ -266,7 +265,7 @@ describe('Table', function () {
           <Table
             rowGetter={this.getRowData}
             rowCount={initialData.length}
-            onCellClick={spy}
+            onCellClick={handler}
           >
             <Column dataKey="id" header="id" />
           </Table>
@@ -275,12 +274,12 @@ describe('Table', function () {
     }
 
     const initialData = [{ id: 0 }, { id: 1 }];
-
     const wrapper = mount(<Container data={initialData} />);
 
     wrapper.find('td').last().simulate('click');
-    wrapper.update();
-    expect(spy.calledWith(1, 'id')).toEqual(true);
+
+    expect(handler.mock.calls[0][0]).toBe(1);
+    expect(handler.mock.calls[0][1]).toBe('id');
   })
 
   describe('callback behavior', function () {

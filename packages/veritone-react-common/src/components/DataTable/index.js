@@ -57,19 +57,6 @@ class _Table extends React.Component {
     showHeader: true
   };
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (this.props.watchData !== prevProps.watchData) {
-  //     this.callOnShowCellRange();
-  //   }
-  // }
-
-  // callOnShowCellRange() {
-  //   this.props.onShowCellRange({
-  //     start: 0,
-  //     end: this.props.rowCount - 1
-  //   });
-  // }
-
   render() {
     const restProps = omit(this.props, [
       'onShowCellRange',
