@@ -153,6 +153,10 @@ function BasicTable({ data }) {
   function getRowData(i) {
     return data[i];
   };
+
+  function handleOnCellClick(row, columnKey) {
+    return console.log(`row: ${row}`, `columnKey: ${columnKey}`)
+  }
   
 
   const columns = Object.keys(data[0]).map((column, index) => {
@@ -169,6 +173,7 @@ function BasicTable({ data }) {
         rowGetter={getRowData}
         rowCount={data.length}
         showHeader
+        onCellClick={handleOnCellClick}
       >
         {columns}
       </Table>
@@ -188,8 +193,8 @@ class PagedTable extends React.Component {
     return console.log('Refresh Me');
   }
 
-  handleOnCellClick = (i) => {
-    return console.log('i:', i)
+  handleOnCellClick = (row, columnKey) => {
+    return console.log(`row: ${row}`, `columnKey: ${columnKey}`)
   }
 
   render() {
@@ -231,7 +236,6 @@ PagedTable.propTypes = {
 
 class SplitTable extends React.Component {
   state = {
-    rowsPerPage: 5,
     focusedTableRow: null
   }
 
@@ -243,7 +247,7 @@ class SplitTable extends React.Component {
     return <div style={{textAlign: 'center'}}>{row.name}</div>
   }
 
-  setFocusedRow = (row) => {
+  setFocusedRow = (row, columnKey) => {
     this.setState({ focusedTableRow: row });
   }
 
@@ -265,7 +269,7 @@ class SplitTable extends React.Component {
         key={index}
         cellRenderer={renderCell}
         align="center"
-        width={100}
+        width={Math.min((index + 1) * 10, 100)}
       />
     });
   
@@ -273,6 +277,7 @@ class SplitTable extends React.Component {
       <PaginatedTable
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
+        initialItemsPerPage={5}
         showHeader
         onRefreshPageData={this.handleOnRefreshPageData}
         onCellClick={this.setFocusedRow}

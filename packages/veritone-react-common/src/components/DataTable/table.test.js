@@ -2,8 +2,10 @@ import React from 'react';
 import { range, filter, get, includes } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
+import sinon from 'sinon';
 import MenuColumn from './MenuColumn';
 import { Table, Column, PaginatedTable, LOADING } from './';
+
 
 function assertRowsExist(rows, wrapper, assertion = true) {
   rows.forEach(expected => {
@@ -250,6 +252,36 @@ describe('Table', function () {
       }
     );
   });
+
+  it('exposes row index and column key when table cell is clicked', function () {
+    const spy = sinon.spy();
+
+    class Container extends React.Component {
+      getRowData = i => {
+        return this.props.data[i]; // eslint-disable-line
+      };
+
+      render() {
+        return (
+          <Table
+            rowGetter={this.getRowData}
+            rowCount={initialData.length}
+            onCellClick={spy}
+          >
+            <Column dataKey="id" header="id" />
+          </Table>
+        );
+      }
+    }
+
+    const initialData = [{ id: 0 }, { id: 1 }];
+
+    const wrapper = mount(<Container data={initialData} />);
+
+    wrapper.find('td').last().simulate('click');
+    wrapper.update();
+    expect(spy.calledWith(1, 'id')).toEqual(true);
+  })
 
   describe('callback behavior', function () {
     xit('calls onShowCellRange with the correct data on mount', function () {

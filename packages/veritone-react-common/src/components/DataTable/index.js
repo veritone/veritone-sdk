@@ -51,10 +51,24 @@ class _Table extends React.Component {
 
   static defaultProps = {
     rowHeight: 75,
+    footerHeight: 56,
     onShowCellRange: noop,
     emptyRenderer: noop,
     showHeader: true
   };
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (this.props.watchData !== prevProps.watchData) {
+  //     this.callOnShowCellRange();
+  //   }
+  // }
+
+  // callOnShowCellRange() {
+  //   this.props.onShowCellRange({
+  //     start: 0,
+  //     end: this.props.rowCount - 1
+  //   });
+  // }
 
   render() {
     const restProps = omit(this.props, [
@@ -96,27 +110,19 @@ class _Table extends React.Component {
 
 const NormalTableContainer = ({
   rowCount,
-  rowRange,
+  footerHeight,
   footerElement,
   children,
   emptyRenderer,
   showHeader,
-  selectable,
   ...rest
 }) => {
   return (
-    <Paper
-      elevation={1}
-      className={styles['table-wrapper']}
-    >
-      <MuiTable
-        className={cx(styles.table)}
-      >
+    <Paper elevation={1} className={styles['table-wrapper']}>
+      <MuiTable className={cx(styles.table)}>
         {
           showHeader &&
-          <TableHead
-            rowCount={rowCount}
-          >
+          <TableHead rowCount={rowCount}>
             {children}
           </TableHead>
         }
@@ -129,16 +135,12 @@ const NormalTableContainer = ({
                 </TableCell>
               </TableRow>
             </MuiTableBody>
-          : <TableBody 
-              {...rest}
-              rowRangeStart={(rowRange && rowRange[0])}
-              rowRangeEnd={(rowRange && rowRange[1]) || rowCount}
-            >
+          : <TableBody {...rest} rowRangeEnd={rowCount}>
               {children}
             </TableBody>
         }
         {footerElement &&
-          <TableFooter>
+          <TableFooter style={{ height: footerHeight }}> 
             <TableRow>
               {footerElement}
             </TableRow>
@@ -150,13 +152,11 @@ const NormalTableContainer = ({
 
 NormalTableContainer.propTypes = {
   rowCount: number,
-  rowRange: arrayOf(number),
   footerHeight: number,
   footerElement: node,
   emptyRenderer: func,
   showHeader: bool,
   children: node,
-  selectable: bool
 };
 
 /*
@@ -167,8 +167,8 @@ class SplitTableContainer extends React.Component {
     focusedRow: number,
     onCellClick: func,
     rowCount: number,
-    rowRange: arrayOf(number),
     rowHeight: number,
+    footerHeight: number,
     footerElement: node,
     renderFocusedRowDetails: func,
     rowGetter: func,
@@ -177,12 +177,16 @@ class SplitTableContainer extends React.Component {
     children: node
   };
 
+  translateCellClick = (row, column) => {
+    return this.props.onCellClick(this.props.focusedRow + 1 + row, column);
+  };
+
   render() {
     const {
-      onCellClick,
       focusedRow,
+      renderFocusedRowDetails,
       rowCount,
-      rowRange,
+      footerHeight,
       footerElement,
       children,
       rowGetter,
@@ -190,20 +194,15 @@ class SplitTableContainer extends React.Component {
       ...rest
     } = this.props;
 
+    const restProps = omit(rest, ['emptyRenderer', 'showHeader']);
+
     return (
       <div>
-        <Paper
-          elevation={1}
-          className={styles['table-wrapper']}
-        >
-          <MuiTable
-            className={cx(styles.table)}
-          >
+        <Paper elevation={1} className={styles['table-wrapper']}>
+          <MuiTable className={cx(styles.table)}>
             {
               showHeader &&
-              <TableHead
-                rowCount={rowCount}
-              >
+              <TableHead rowCount={rowCount}>
                 {children}
               </TableHead>
             }
@@ -217,14 +216,9 @@ class SplitTableContainer extends React.Component {
                     </TableRow>
                   </MuiTableBody>
                 : <TableBody
-                    {...rest}
-                    rowRangeStart={rowRange && rowRange[0]}
+                    {...restProps}
                     rowRangeEnd={focusedRow}
                     rowGetter={rowGetter}
-                    onCellClick={onCellClick}
-                    style={{
-                      display: focusedRow ? 'inherit' : 'none !important'
-                    }}
                   >
                     {children}
                   </TableBody>
@@ -241,15 +235,13 @@ class SplitTableContainer extends React.Component {
           className={cx(styles['focusTable'], styles['focused-row'], styles['table-wrapper'])}
           key={focusedRow}
         >
-          <MuiTable
-            className={cx(styles.table)}
-          >
+          <MuiTable className={cx(styles.table)}>
             <MuiTableBody>
               <TableRow style={{ maxHeight: 48, height: this.props.rowHeight }}>
                 {injectInto(children, {
                   data: rowGetter(focusedRow),
                   row: focusedRow,
-                  onCellClick: this.props.onCellClick
+                  onCellClick: this.translateFocusedRowCellClick
                 })}
               </TableRow>
               <TableRow>
@@ -257,32 +249,27 @@ class SplitTableContainer extends React.Component {
                   colSpan={children.length}
                   style={{ whiteSpace: 'inherit', padding: 0 }}
                 >
-                  {this.props.renderFocusedRowDetails(rowGetter(focusedRow))}
+                  {renderFocusedRowDetails(rowGetter(focusedRow))}
                 </TableCell>
               </TableRow>
             </MuiTableBody>
           </MuiTable>
         </Paper>
 
-        <Paper
-          elevation={1}
-          className={styles['table-wrapper']}
-        >
-          <MuiTable
-            className={cx(styles.table)}
-          >
+        <Paper elevation={1} className={styles['table-wrapper']}>
+          <MuiTable className={cx(styles.table)}>
             <TableBody
-              {...rest}
+              {...restProps}
               rowRangeStart={this.props.focusedRow + 1}
-              rowRangeEnd={(rowRange && rowRange[1]) || rowCount}
+              rowRangeEnd={rowCount}
               rowGetter={rowGetter}
-              onCellClick={onCellClick}
+              onCellClick={this.translateCellClick}
             >
               {children}
             </TableBody>
 
             {footerElement &&
-              <TableFooter>
+              <TableFooter style={{ height: footerHeight }}>
                 <TableRow>
                   {footerElement}
                 </TableRow>
@@ -304,23 +291,16 @@ const TableBody = ({
   rowGetter,
   rowHeight,
   onCellClick,
-  selectable,
-  selectedRows,
-  onSelectRow,
   ...rest
 }) => {
   return (
     <MuiTableBody>
-      {(isNumber(rowRangeStart)
+      {(rowRangeStart
         ? range(rowRangeStart, rowRangeEnd)
         : range(rowRangeEnd)).map((
         r
       ) =>
-        <TableRow
-          key={r}
-          style={{ height: rowHeight }}
-          hover
-        >
+        <TableRow key={r} style={{ height: rowHeight }} hover>
           {injectInto(children, {
             data: rowGetter(r),
             row: r,
@@ -337,10 +317,7 @@ TableBody.propTypes = {
   rowHeight: number,
   rowGetter: func,
   children: node,
-  selectable: bool,
-  selectedRows: arrayOf(any),
   onCellClick: func,
-  onSelectRow: func
 };
 TableBody.muiName = 'TableBody'; // trick MUI into thinking this is a MuiTableBody
 
@@ -372,10 +349,11 @@ export const Column = ({
   function handleCellClick(e) {
     return onCellClick(row, dataKey, data[dataKey]);
   }
-
+  
   return (
     <TableCell
       {...rest}
+      className={styles['table-cell']}
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',
         textAlign: align,
@@ -397,8 +375,7 @@ Column.propTypes = {
   align: oneOf(['left', 'right', 'center']),
   style: objectOf(oneOfType([string, number])),
   row: number,
-  onCellClick: func,
-  width: oneOfType([string, number])
+  onCellClick: func
 };
 
 const TableHead = ({
@@ -410,9 +387,9 @@ const TableHead = ({
       <TableRow>
         {React.Children.map(children, c =>
           <TableCell
-            width={c.props.width}
             className={styles['table-cell']}
             key={c.props.header}
+            width={c.props.width}
             style={{
               textAlign: c.props.align || 'left'
             }}

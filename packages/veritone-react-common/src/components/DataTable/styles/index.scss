@@ -12,7 +12,7 @@
 }
 
 .table-cell {
-  padding-right: 24px;
+  padding-right: 24px !important;
 }
 
 
@@ -86,10 +86,6 @@
     button {
       width: 24px !important;
       height: 24px !important;
-    }
-
-    svg {
-      fill: $light-black !important;
     }
 
     padding: 0 !important;

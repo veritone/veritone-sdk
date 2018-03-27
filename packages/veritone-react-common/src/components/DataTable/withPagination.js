@@ -42,9 +42,23 @@ const withPagination = WrappedTable => {
         this.callOnShowCellRange();
       }
     }
+
+    getDisplayedItemIndices = () => {
+      const firstItem = this.state.page * this.state.rowsPerPage;
+      const lastItem =
+        this.state.page * this.state.rowsPerPage +
+        this.state.rowsPerPage -
+        1;
+
+      return [firstItem, lastItem];
+    }
     
     rowGetter = i => {
-      return this.props.rowGetter(i)
+      const requestedIndex = i + this.state.rowsPerPage * this.state.page;
+
+      return requestedIndex <= this.props.rowCount
+        ? this.props.rowGetter(i + this.state.rowsPerPage * this.state.page)
+        : undefined;
     }
 
     handlePageChange = (page) => {
@@ -85,18 +99,12 @@ const withPagination = WrappedTable => {
       });
     };
 
-    getDisplayedItemIndices = () => {
-      const firstItem = this.state.page * this.state.rowsPerPage;
-      const lastItem =
-        this.state.page * this.state.rowsPerPage +
-        this.state.rowsPerPage -
-        1;
-
-      return [firstItem, lastItem];
-    }
-
-    translateCellClick = (row) => {
-      return this.props.onCellClick(row);
+    translateCellClick = (row, columnKey, ...rest) => {
+      return this.props.onCellClick(
+        row + this.state.page * this.state.rowsPerPage,
+        columnKey,
+        ...rest
+      );
     };
 
     translateFocusedRow = () => {
@@ -107,15 +115,16 @@ const withPagination = WrappedTable => {
       return isNumber(this.props.focusedRow) &&
         this.props.focusedRow >= min &&
         this.props.focusedRow <= max
-        ? this.props.focusedRow
+        ? this.props.focusedRow -
+          this.state.page * this.state.rowsPerPage
         : null;
     }
     
     render() {
       let [firstItem, lastItem] = this.getDisplayedItemIndices();
-
       lastItem = Math.min(lastItem, this.props.rowCount - 1);
-
+      
+      const rowCount = this.props.rowCount > 0 ? lastItem - firstItem + 1 : 0;
       const restProps = omit(this.props, [
         'rowGetter',
         'initialItemsPerPage',
@@ -126,7 +135,7 @@ const withPagination = WrappedTable => {
         <WrappedTable
           {...restProps}
           rowGetter={this.rowGetter}
-          rowRange={[firstItem, lastItem + 1]}
+          rowCount={rowCount}          
           footerElement={
             <PaginatedTableFooter
               page={this.state.page}
