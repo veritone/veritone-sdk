@@ -17,7 +17,7 @@ storiesOf('IngestionJobs', module)
   //   <IngestionJobFullScreen data={data} sdoSchemaInfo={sdoSchemaInfo} jobInfo={oneJobInfo} />
   // ))
   .add('Tile View', () => (
-    <IngestionJobTileView jobInfo={jobInfo}/>
+    <IngestionJobTileView jobInfo={{}}/>
   ))
   // .add('Grid Card', () => (
   //   <IngestionJobGridCard checkedAll={false} jobName={jobInfo[0].name} status={jobInfo[0].status} creationDate={jobInfo[0].creationDate} thumbnail={jobInfo[0].thumbnail} />

@@ -111,12 +111,10 @@ export default class DynamicSelect extends React.Component {
       requiredFields = definition.required;
     }
     return Object.keys(properties).map((fieldId, index) => {
-      console.log(this.state.currentFields);
       return (<SourceTypeField 
                 id={fieldId} 
                 type={properties[fieldId].type.toLowerCase()} 
                 required={requiredFields.indexOf(fieldId) === -1 ? false : true} 
-                defaultValue={has(this.props.initialValues, fieldId) ? this.props.initialValues[fieldId] : ''}
                 value={this.state.currentFields[fieldId]} 
                 onChange={this.handleFieldChange} 
                 title={properties[fieldId].title ? properties[fieldId].title : '' } 
