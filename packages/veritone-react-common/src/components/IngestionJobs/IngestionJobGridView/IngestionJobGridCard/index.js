@@ -9,20 +9,25 @@ import {
   objectOf,
   any
 } from 'prop-types';
-
-import styles from './styles.scss';
-
 import {
   Checkbox
 } from 'components/formComponents';
 
+import StatusPill from 'components/StatusPill';
+
+import styles from './styles.scss';
+
+
+
 
 export default class IngestionJobGridCard extends React.Component {
   static propTypes = {
-    checkedAll: bool,
-    sourceName: string,
-    schemaVersion: string,
-    creationDate: string,
+    checkedAll: bool.isRequired,
+    jobName: string.isRequired,
+    sourceType: string.isRequired,
+    status: string.isRequired,
+    creationDate: string.isRequired,
+    lastIngestion: string.isRequired,
     thumbnail: string
   };
 
@@ -31,7 +36,8 @@ export default class IngestionJobGridCard extends React.Component {
   };
 
   state = {
-    checked: this.props.checkedAll || false
+    checked: this.props.checkedAll || false,
+    statusPillStyle: {backgroundColor: '#2196F3', color: '#FFFFFF'}
   };
 
   handleCheckboxChange = () => {
@@ -40,31 +46,75 @@ export default class IngestionJobGridCard extends React.Component {
     });
   };
 
+  handleStatusPill = () => {
+    let pill = this.props.status;
+    if (pill === 'active') {
+      this.state.statusPillStyle = {
+        backgroundColor: '#00C853',
+        color: '#FFFFFF'
+      }
+    } else if (pill === 'paused') {
+      this.state.statusPillStyle = {
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #607D8B',
+        color: '#607D8B'
+      }
+    } else if (pill === 'processing') {
+      this.state.statusPillStyle = {
+        backgroundColor: '#2196F3',
+        color: '#FFFFFF'
+      }
+    } else if (pill === 'inactive') {
+      this.state.statusPillStyle = {
+        backgroundColor: '#9E9E9E',
+        color: '#FFFFFF'
+      }
+    }
+  };
+
+  componentWillMount() {
+    this.handleStatusPill();
+  };
+
+
   render() {
     
     return (
-      <div className={styles.sdoCard}>
-        <div className={styles.sourceThumbnail}>
-          <img className={styles.imageStyle} src={this.props.thumbnail} alt='' />
+      <div className={styles.card}>
+        <div className={styles.thumbnail}>
+          <img className={styles.imageStyle} src={this.props.thumbnail} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' />
         </div>
-        <div className={styles.sourceDetails}>
+        <div className={styles.details}>
         {/* BELOW IS A HACK FOR GETTING CHECKBOX BACKGROUND TO BE WHITE */}
         <div className={styles.checkboxBackground}></div>
         <Checkbox
-          input={{
-            onChange: this.handleCheckboxChange,
-            value: this.state.checked
-          }}
-          className={styles.checkbox}
-          color='primary'
-          classes={{
-            checked: styles.checkboxPrimary
-          }}
-          label=''
-        />
-          <div className={styles.sourceName}>{this.props.sourceName}</div>
-          <div className={styles.schemaVersion}>{this.props.schemaVersion}</div>
-          <div className={styles.creationDate}>{this.props.creationDate}</div>
+            input={{
+              onChange: this.handleCheckboxChange,
+              value: this.state.checked
+            }}
+            className={styles.checkbox}
+            color='primary'
+            classes={{
+              checked: styles.checkboxPrimary
+            }}
+            label=''
+          />
+          <div className={styles.name}>{this.props.jobName}</div>
+          <div className={styles.gridDetails}>
+            <div className={styles.gridDetailsRow}>
+              <div className={styles.detailsTitle}>Source Type: </div>
+              <div className={styles.detailsText}>{this.props.sourceType}</div>
+            </div>
+            <div className={styles.gridDetailsRow}>
+              <div className={styles.detailsTitle}>Created:</div>
+              <div className={styles.detailsText}>{this.props.creationDate}</div>
+            </div>
+            <div className={styles.gridDetailsRow}>
+              <div className={styles.detailsTitle}>Last Ingestion:</div>
+              <div className={styles.detailsText}>{this.props.lastIngestion}</div>
+            </div>
+          </div>
+          <div className={styles.status}><StatusPill status={this.props.status}/></div>
         </div>
       </div>
     );

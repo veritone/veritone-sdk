@@ -3,7 +3,7 @@ import React from 'react';
 import {
   bool,
   any,
-  objectOf
+  string
 } from 'prop-types';
 
 import {
@@ -12,17 +12,21 @@ import {
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
+import StatusPill from 'components/StatusPill';
 import styles from './styles.scss';
 
 export default class JobRow extends React.Component {
   static propTypes = {
     checkAll: bool,
-    rowInfo: objectOf(any)
+    name: string,
+    status: string,
+    adapter: string,
+    ingestionType: string,
+    creationDate: string,
+    lastIngested: string
   };
 
-  static defaultProps = {
-
-  };
+  static defaultProps = {};
 
   state = {
     checked: this.props.checkAll || false,
@@ -54,13 +58,17 @@ export default class JobRow extends React.Component {
           label=''
         />
         <div className={styles.rowTextGroup} onClick={this.handleRowClick}>
-          <span className={styles.columnText}>{this.props.rowInfo.jobName}</span>
-          <span className={styles.columnText}>{this.props.rowInfo.schema}</span>
-          <span className={styles.columnText}>{this.props.rowInfo.startTime}</span>
+          <span className={styles.columnText}>{this.props.name}</span>
+          <span className={styles.status}><StatusPill status={this.props.status} /></span>
+          <span className={styles.columnText}>{this.props.adapter}</span>
+          <span className={styles.columnText}>{this.props.ingestionType}</span>
+          <span className={styles.columnText}>{this.props.creationDate}</span>
+          <span className={styles.columnText}>{this.props.lastIngested}</span>
+          <IconButton className={styles.menuIcon} aria-label='menu'>
+            <Icon className={'icon-more_vert'}></Icon>
+          </IconButton>
         </div>
-        <IconButton className={styles.menuIcon} aria-label='menu'>
-          <Icon className={'icon-more_vert'}></Icon>
-        </IconButton>
+        
       </div>
     );
   };

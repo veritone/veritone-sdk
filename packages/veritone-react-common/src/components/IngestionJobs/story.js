@@ -2,243 +2,50 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import IngestionJobFullScreen from './IngestionJobFullScreen';
+// import IngestionJobFullScreen from './IngestionJobFullScreen';
 import IngestionJobTileView from './IngestionJobTileView';
 import IngestionJobGridCard from './IngestionJobGridView/IngestionJobGridCard';
 import IngestionJobGridView from './IngestionJobGridView';
-import IngestionJobNullstate from './IngestionJobNullstate';
+import IngestionJobNullstate from './Nullstate';
 
 
-var numberOfFields = 8;
-var data = [
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  }
-];
-
-
-// FOR FULLSCREEN VIEW
-var sdoSchemaInfo = {
-  schemas: [
-    {
-      schemaName: 'Tweet Post Schema',
-      version: '1.1',
-    },
-    {
-      schemaName: 'Tweet Post Schema 2',
-      version: '2.0'
+// TODO: new data needed
+var jobInfo = {
+  data: {
+    scheduledJobs: {
+      records: [
+        {
+          id: "35874",
+          name: "test job",
+          isActive: true,
+          jobTemplates: {
+            records: [
+              {
+                id: "jobtemplateguid",
+                
+              }
+            ]
+          }
+        }
+      ]
     }
-  ]
-};
-
-var oneJobInfo = {
-  jobName: 'Donald Trump Twitter Posts',
-  thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
+  }
 }
 
 
-
-// FOR DATA SET VIEWER
-var jobInfo = [
-  {
-    jobName: 'Twitter Data Set 1',
-    schema: 'Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
-  },
-  {
-    jobName: 'Twitter Data Set 2',
-    schema: 'Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
-  },
-  {
-    jobName: 'Twitter Data Set 3',
-    schema: 'Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
-  },
-  {
-    jobName: 'Twitter Data Set 4',
-    schema: 'A different Twitter Schema Version 2.3',
-    startTime: 'Wed Jul 13, 2016 09:23 PM'
-  }
-];
-
-
-// FOR DATA SET SOURCE CARD
-var jobCardData = {
-  sourceName: 'Twitter Dataset 1',
-  schemaName: 'Twitter Schema Version 2.3',
-  creationDate: 'Wed Jul 13, 2016 09:23 PM',
-  thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
-};
-
-
-// FOR DATA SET SOURCE VIEW
-var jobData = [
-  {
-    sourceName: 'Twitter Dataset 1',
-    schemaName: 'Twitter Schema Version 2.3',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
-  },
-  {
-    sourceName: 'Twitter Dataset 2',
-    schemaName: 'Twitter Schema Version 3.3',
-    creationDate: 'Wed Jul 15, 2016 09:23 PM',
-    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg'
-  },
-  {
-    sourceName: 'Twitter Dataset 3',
-    schemaName: 'Twitter Schema Version 4.3',
-    creationDate: 'Wed Jul 13, 2017 09:23 PM',
-  },
-  {
-    sourceName: 'Twitter Dataset 4',
-    schemaName: 'Twitter Schema Version 5.3',
-    creationDate: 'Wed Jul 13, 2016 10:23 PM',
-  }
-]
-
-
 storiesOf('IngestionJobs', module)
-  .add('FullScreen', () => (
-    <IngestionJobFullScreen data={data} sdoSchemaInfo={sdoSchemaInfo} jobInfo={oneJobInfo} />
-  ))
+  // .add('FullScreen', () => (
+  //   <IngestionJobFullScreen data={data} sdoSchemaInfo={sdoSchemaInfo} jobInfo={oneJobInfo} />
+  // ))
   .add('Tile View', () => (
-    <IngestionJobTileView jobInfo={jobInfo}/>
+    <IngestionJobTileView jobInfo={{}}/>
   ))
-  .add('Grid Card', () => (
-    <IngestionJobGridCard checkedAll={false} sourceName={jobCardData.sourceName} schemaVersion={jobCardData.schemaName} creationDate={jobCardData.creationDate} thumbnail={jobCardData.thumbnail} />
-  ))
-  .add('Grid View', () => (
-    <IngestionJobGridView jobData={jobData}/>
-  ))
+  // .add('Grid Card', () => (
+  //   <IngestionJobGridCard checkedAll={false} jobName={jobInfo[0].name} status={jobInfo[0].status} creationDate={jobInfo[0].creationDate} thumbnail={jobInfo[0].thumbnail} />
+  // ))
+  // .add('Grid View', () => (
+  //   <IngestionJobGridView jobInfo={jobInfo}/>
+  // ))
   .add('NullState', () => (
     <IngestionJobNullstate />
   ))

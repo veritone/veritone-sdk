@@ -20,12 +20,10 @@ import styles from './styles.scss';
 
 export default class IngestionJobTileView extends React.Component {
   static propTypes = {
-    jobInfo: arrayOf(objectOf(any))
+    jobInfo: arrayOf(objectOf(any)).isRequired
   };
 
-  static defaultProps = {
-
-  };
+  static defaultProps = {};
 
   state = {
     checkedAll: false,
@@ -39,7 +37,15 @@ export default class IngestionJobTileView extends React.Component {
 
   render() {
     const jobRows = this.props.jobInfo.map((row, index) => {
-      return <JobRow checkAll={this.state.checkedAll} rowInfo={row} key={index} />
+      return <JobRow 
+          checkAll={this.state.checkedAll} 
+          name={row.name} 
+          status={row.status}
+          adapter={row.adapter}
+          ingestionType={row.ingestionType}
+          creationDate={row.creationDate}
+          lastIngested={row.lastIngested}
+          key={index} />
     });
     return (
       <div>
@@ -54,8 +60,11 @@ export default class IngestionJobTileView extends React.Component {
           />
           <div className={styles.titleTextGroup}>
             <span className={styles.tableTitle}>Job name</span>
-            <span className={styles.tableTitle}>Schema</span>
-            <span className={styles.tableTitle}>Start</span>
+            <span className={styles.tableTitle}>Status</span>
+            <span className={styles.tableTitle}>Adapter</span>
+            <span className={styles.tableTitle}>Ingestion Type</span>
+            <span className={styles.tableTitle}>Creation Date</span>
+            <span className={styles.tableTitle}>Last Ingestion</span>
           </div>
           <div style={{width: '55px'}}></div>
         </div>

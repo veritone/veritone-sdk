@@ -23,17 +23,27 @@
       font-weight: 500;
       line-height: 14px;
       align-self: center;
-      width: 33%;
+      width: 17%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      padding-right: 5px;
+    }
+
+    .status {
+      align-self: center;
+      width: 17%;
+      overflow: hidden;
+      padding-right: 5px;
+    }
+
+    .menuIcon {
+      font-size: 22px;
+      align-self: center;
     }
   }
 
-  .menuIcon {
-    font-size: 22px;
-    align-self: center;
-  }
+
  
   &:hover {
     cursor: pointer;
