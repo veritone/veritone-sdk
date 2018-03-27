@@ -1,0 +1,28 @@
+.headerRight {
+  line-height: 45px;
+
+  & > div {
+    float: left;
+  }
+}
+
+.logoDetectionBody {
+  clear: both;
+
+  .item {
+    margin: 0 10px 10px 0;
+
+    .label {
+      max-width: 200px;
+    }
+  }
+}
+
+.expanded {
+  position: absolute;
+  width: 100% !important;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: white;
+}

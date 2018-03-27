@@ -1,14 +1,27 @@
-export function msToReadableString (milliseconds) {
-  let h, m, s;
-  s = Math.floor(milliseconds / 1000);
-  m = Math.floor(s / 60);
-  s = s % 60;
-  h = Math.floor(m / 60);
-  m = m % 60;
+export function msToReadableString (milliseconds, showDays=false, showMilliseconds = false) {
+  let dateObject = new Date(milliseconds);
+  let numDays = dateObject.getUTCDate() - 1;
+  let numHours = dateObject.getUTCHours() + (!showDays ? numDays * 24 : 0);
+  let numMinutes = dateObject.getUTCMinutes();
+  let numSeconds = dateObject.getUTCSeconds();
 
-  h = (h < 10) && (h > 0) ? "0" + h : h;
-  m = (m < 10) ? "0" + m : m;
-  s = (s < 10) ? "0" + s : s;
 
-  return (h > 0 ? h + ":" : "" ) + m + ":" + s;
+  let showHours = showDays || numHours > 0;
+
+  let formattedString = '';
+  if (showDays) {
+    formattedString += numDays.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
+  }
+  if (showHours) {
+    formattedString += numHours.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
+  }
+  formattedString += numMinutes.toLocaleString(undefined, {minimumIntegerDigits: 2}) + ':';
+  formattedString += numSeconds.toLocaleString(undefined, {minimumIntegerDigits: 2});
+
+  if (showMilliseconds) {
+    let numMilliseconds = dateObject.getUTCMilliseconds();
+    formattedString += ':' + numMilliseconds.toLocaleString(undefined, {minimumIntegerDigits: 3});
+  }
+
+  return formattedString;
 }

@@ -1,0 +1,42 @@
+@import 'src/styles/modules/variables';
+
+.pillButton {
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 14px;
+  display: inline-block;
+  background-color: white;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  > div {
+    float: left;
+  }
+
+  .gap {
+    width: 1vw;
+    height: 1ex;
+    display: inline-block;
+  }
+
+  .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .info {
+    color: $blue-1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.highlight {
+  border-color: $blue-1;
+  background-color: #dbf0fe;
+}
