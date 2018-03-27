@@ -39,7 +39,7 @@
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "lint": "yarn run lint:js && yarn run lint:styles",
-    "lint:js": "eslint src/** --ext .js",
+    "lint:js": "eslint src/** --ext .js --max-warnings 0",
     "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
     "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },

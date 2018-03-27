@@ -11,7 +11,7 @@
     "test": "NODE_ENV=test mocha",
     "test:watch": "NODE_ENV=test mocha --watch",
     "coverage": "NODE_ENV=test nyc mocha",
-    "lint": "eslint --ext .js ./ ",
+    "lint": "eslint --ext .js ./  --max-warnings 0",
     "format": "prettier --single-quote --use-tabs --write \"./**/*.js\"",
     "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
