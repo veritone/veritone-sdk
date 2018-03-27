@@ -3,8 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 import Nullstate from './Nullstate';
-// import SourceGridView from './GridView';
-import SourceConfiguration from './SourceConfiguration';
+import SourceConfiguration from './';
 import SourceTileView from './SourceTileView';
 import SourceRow from './SourceRow';
 

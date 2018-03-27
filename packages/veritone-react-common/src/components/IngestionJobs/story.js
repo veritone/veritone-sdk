@@ -10,6 +10,27 @@ import IngestionJobNullstate from './Nullstate';
 
 
 // TODO: new data needed
+var jobInfo = {
+  data: {
+    scheduledJobs: {
+      records: [
+        {
+          id: "35874",
+          name: "test job",
+          isActive: true,
+          jobTemplates: {
+            records: [
+              {
+                id: "jobtemplateguid",
+                
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
 
 
 storiesOf('IngestionJobs', module)
