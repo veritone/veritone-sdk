@@ -1,0 +1,42 @@
+@import 'src/styles/modules/variables';
+
+.editMetadataDialogPaper {
+  min-width: 640px;
+  width: 640px;
+}
+
+.editMetadataDialog {
+  font-family: Roboto;
+  min-width: 640px;
+
+  .dialogContent {
+    display: flex;
+    flex-direction: column;
+
+    .sourceSection {
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 16px;
+      color: $dark-black;
+    }
+
+    .programImagesSection {
+      display: flex;
+      flex-direction: row;
+      margin-top: 20px;
+
+      .programLiveImage {
+        height: 120px;
+        width: 200px;
+        margin-top: 20px;
+      }
+
+      .programImage {
+        height: 120px;
+        width: 120px;
+        margin-top: 20px;
+        margin-left: 10px;
+      }
+    }
+  }
+}

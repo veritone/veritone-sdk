@@ -1,0 +1,10 @@
+.editTagsDialog {
+  font-family: Roboto;
+  display: flex;
+  flex-direction: column;
+
+  .tagsSection {
+    display: flex;
+    flex-flow: row wrap;
+  }
+}

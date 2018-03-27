@@ -22,7 +22,7 @@
       ]
     },
 
-    "production": {
+    "production-es": {
       "presets": [
         [
           "env",
@@ -30,6 +30,38 @@
             "modules": false,
             "targets": {
               "browsers": ["> 5%"]
+            }
+          }
+        ],
+        "react"
+      ],
+      "plugins": [
+        "external-helpers",
+        [
+          "module-resolver",
+          {
+            "alias": {
+              "helpers": "./src/helpers",
+              "modules": "./src/modules",
+              "util": "./src/util"
+            }
+          }
+        ],
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash"
+      ]
+    },
+    "production-cjs": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": ["> 0.5%"]
             }
           }
         ],

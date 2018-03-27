@@ -10,7 +10,7 @@ describe('Snippet', () => {
     const snippetClicked = jest.fn();
     const wrapper = mount(
       <Snippet
-        snippet={{text:"testsnippettext"}}
+        snippet={{ text: 'testsnippettext' }}
         onSnippetClick={snippetClicked}
       />
     );
@@ -21,23 +21,23 @@ describe('Snippet', () => {
     const snippetClicked = jest.fn();
     const wrapper = mount(
       <Snippet
-        snippet={{text:"testsnippettext"}}
+        snippet={{ text: 'testsnippettext' }}
         onSnippetClick={snippetClicked}
         boldText
       />
     );
     expect(wrapper.find('p').hasClass(styles.boldText)).toEqual(true);
-  })
+  });
 
   it('should call onSnippetClicked when the snippet is clicked', () => {
     const snippetClicked = jest.fn();
     const wrapper = mount(
       <Snippet
-        snippet={{text:"testsnippettext"}}
+        snippet={{ text: 'testsnippettext' }}
         onSnippetClick={snippetClicked}
       />
     );
-    wrapper.find('p').simulate('click'); 
+    wrapper.find('p').simulate('click');
     expect(snippetClicked).toHaveBeenCalled();
   });
 });

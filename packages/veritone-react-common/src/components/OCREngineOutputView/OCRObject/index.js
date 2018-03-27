@@ -12,7 +12,7 @@ class OCRObject extends Component {
     onOcrClicked: func
   };
 
-  msToTime = (duration) => {
+  msToTime = duration => {
     let h, m, s;
     s = Math.floor(duration / 1000);
     m = Math.floor(s / 60);
@@ -20,18 +20,18 @@ class OCRObject extends Component {
     h = Math.floor(m / 60);
     m = m % 60;
 
-    h = (h < 10) && (h > 0) ? "0" + h : h;
-    m = (m < 10) ? "0" + m : m;
-    s = (s < 10) ? "0" + s : s;
+    h = h < 10 && h > 0 ? '0' + h : h;
+    m = m < 10 ? '0' + m : m;
+    s = s < 10 ? '0' + s : s;
 
-    return (h > 0 ? h + ":" : "" ) + m + ":" + s;
-  }
+    return (h > 0 ? h + ':' : '') + m + ':' + s;
+  };
 
-  handleOcrClick = (evt) => {
+  handleOcrClick = evt => {
     if (isFunction(this.props.onOcrClicked)) {
       this.props.onOcrClicked(this.props.startTime, this.props.endTime, evt);
     }
-  }
+  };
 
   render() {
     let { text, startTime, endTime } = this.props;
