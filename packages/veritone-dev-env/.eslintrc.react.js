@@ -20,6 +20,7 @@ module.exports = {
     'block-scoped-var': 'warn',
     'no-param-reassign': 'warn',
     curly: 'warn',
+    'no-tabs': 'warn',
 
     'react/jsx-no-bind': 'warn',
     'react/jsx-boolean-value': 'warn',
