@@ -4,8 +4,6 @@ import { storiesOf } from '@storybook/react';
 import styles from './story.styles.scss';
 import SentimentEngineOutput from './';
 
-import SentimentEngineOutput from './';
-
 export const sentimentAssets = [
   { end: 5580, score: 0.6, start: 80 },
   { end: 10599, score: 0.75, start: 5589 },
