@@ -1,9 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-
-import SentimentEngineOutput from './';
-
 import styles from './story.styles.scss';
+import SentimentEngineOutput from './';
 
 storiesOf('SentimentEngineOutput', module)
   .add('Base', () => {

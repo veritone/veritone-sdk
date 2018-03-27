@@ -8,39 +8,37 @@ class TranscriptTask extends Component {
     chunk: shape({
       startTimeMs: number,
       endTimeMs: number,
-      series: arrayOf(shape({
-        start: number,
-        end: number,
-        text: string
-      }))
+      series: arrayOf(
+        shape({
+          start: number,
+          end: number,
+          text: string
+        })
+      )
     }),
     onSnippetClick: func,
     onSnippetEdit: func,
     editModeEnabled: bool
-  }
+  };
 
   handleSnippetEdit = (snippet, newText) => {
     this.props.onSnippetEdit(snippet, newText, this.props.chunk.taskId);
-  }
+  };
 
-  render () {
+  render() {
     let { chunk, onSnippetClick, editModeEnabled } = this.props;
     let snippets = chunk.series.map((snippet, index) => {
       return (
-        <Snippet 
-          key={index} 
-          snippet={snippet} 
+        <Snippet
+          key={index}
+          snippet={snippet}
           onSnippetClick={onSnippetClick}
           onSnippetEdit={this.handleSnippetEdit}
           editModeEnabled={editModeEnabled}
         />
       );
-    })
-    return (
-      <Fragment>
-        {snippets}
-      </Fragment>
-    );
+    });
+    return <Fragment>{snippets}</Fragment>;
   }
 }
 

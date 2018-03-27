@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import {number, string, arrayOf, any, func} from 'prop-types';
 import classNames from 'classnames';
+import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area, ReferenceLine } from 'recharts';
 import { msToReadableString } from '../../helpers/time';
 import styles from './styles.scss';
-
-import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Area, ReferenceLine } from 'recharts';
 
 export default class SentimentEngineOutput extends Component {
   static propTypes = {

@@ -6,7 +6,6 @@ import ContentEditable from 'react-contenteditable';
 
 import styles from './styles.scss';
 
-
 class Snippet extends Component {
   static propTypes = {
     snippet: shape({
@@ -22,13 +21,13 @@ class Snippet extends Component {
     if (isFunction(this.props.onSnippetClick)) {
       this.props.onSnippetClick(this.props.snippet);
     }
-  }
+  };
 
-  handleSnippetChange = (evt) => {
+  handleSnippetChange = evt => {
     if (isFunction(this.props.onSnippetEdit)) {
       this.props.onSnippetEdit(this.props.snippet, evt.target.value);
     }
-  }
+  };
 
   render() {
     let { snippet, boldText, editModeEnabled } = this.props;
