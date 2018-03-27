@@ -6,13 +6,13 @@ import Dialog, {
   DialogTitle
 } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import { object, func, bool } from 'prop-types';
+import { objectOf, func, bool, any } from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import styles from './styles.scss';
 
 class EditMetadataDialog extends Component {
   static propTypes = {
-    metadata: object,
+    metadata: objectOf(any),
     isOpen: bool,
     onSave: func,
     onClose: func

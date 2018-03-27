@@ -40,7 +40,7 @@ class OCREngineOutputView extends Component {
   };
 
   render() {
-    let { classes, assets, className } = this.props;
+    let { assets, className } = this.props;
 
     return (
       <div className={classNames(styles.ocrOutputView, className)}>

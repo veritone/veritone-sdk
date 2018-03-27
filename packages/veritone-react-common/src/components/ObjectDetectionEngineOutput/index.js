@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
-import { reduce, groupBy, uniq } from 'lodash';
+import { reduce, groupBy } from 'lodash';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import Button from 'material-ui/Button';
@@ -35,7 +35,8 @@ class ObjectDetectionEngineOutput extends Component {
         sourceEngineName: string
       })
     ),
-    onEngineChange: func
+    onEngineChange: func,
+    className: string
   };
 
   static defaultProps = {
@@ -129,6 +130,7 @@ class ObjectDetectionEngineOutput extends Component {
             Object.keys(groupedAssets).map(function(objectKey, index) {
               return (
                 <div
+                  key={'pill-button-key' + index}
                   className={styles.objectPill}
                   onClick={this.handlePillClicked(objectKey)}
                 >

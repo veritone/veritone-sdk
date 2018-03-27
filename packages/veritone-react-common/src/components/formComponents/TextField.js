@@ -1,3 +1,4 @@
+import React from 'react';
 import { LibTextField } from 'redux-form-material-ui';
 
 /* eslint-disable react/prop-types */

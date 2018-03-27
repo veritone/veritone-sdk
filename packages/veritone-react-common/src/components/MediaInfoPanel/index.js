@@ -6,14 +6,14 @@ import Icon from 'material-ui/Icon';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
-import { object, func, bool, arrayOf, any } from 'prop-types';
+import { objectOf, func, bool, arrayOf, any } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
   static propTypes = {
-    tdo: object,
+    tdo: objectOf(any),
     engineCategories: arrayOf(any),
     onClose: func,
     onSaveMetadata: func,

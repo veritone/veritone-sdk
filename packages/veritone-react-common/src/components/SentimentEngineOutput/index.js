@@ -167,7 +167,7 @@ class SentimentEngineOutput extends Component {
   };
 
   render() {
-    let { classes, data, className } = this.props;
+    let { data, className } = this.props;
     let duration = data[data.length - 1]['end'] - data[0]['start'];
     let taskData = smoothAndNormalizeTimeSeries(data || [], duration);
     return (
