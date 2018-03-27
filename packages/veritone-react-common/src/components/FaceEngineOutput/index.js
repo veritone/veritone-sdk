@@ -5,13 +5,12 @@ import { shape, number, string, bool, arrayOf, func } from 'prop-types';
 import classNames from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import FaceGrid from './FaceGrid';
+import noAvatar from 'images/no-avatar.png';
 import Chip from '../Chip';
 import Avatar from '../Avatar';
+import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
-
-import noAvatar from 'images/no-avatar.png';
 
 import styles from './styles.scss';
 
