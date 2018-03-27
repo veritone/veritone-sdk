@@ -4,7 +4,6 @@ import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
-import { noop } from 'lodash';
 import { bool, func, number, object, string, arrayOf, any } from 'prop-types';
 import { connect } from 'react-redux';
 import { EngineCategorySelector } from 'veritone-react-common';
@@ -18,11 +17,15 @@ import widget from '../../shared/widget';
 @connect(
   (state, { _widgetId }) => ({
     engineCategories: mediaDetailsModule.engineCategories(state, _widgetId),
-    tdo: mediaDetailsModule.tdo(state, _widgetId)
+    tdo: mediaDetailsModule.tdo(state, _widgetId),
+    engineResultsByEngineId: mediaDetailsModule.engineResultsByEngineId(state, _widgetId)
   }),
   {
     loadEngineCategoriesRequest: mediaDetailsModule.loadEngineCategoriesRequest,
-    loadTdoRequest: mediaDetailsModule.loadTdoRequest
+    loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
+    loadTdoRequest: mediaDetailsModule.loadTdoRequest,
+    updateTdoRequest: mediaDetailsModule.updateTdoRequest
+
   },
   null,
   { withRef: true }
@@ -35,13 +38,16 @@ class MediaDetailsWidget extends React.Component {
     onRunProcess: func,
     onClose: func,
     loadEngineCategoriesRequest: func,
-    loadMediaMetadataRequest: func,
+    loadEngineResultsRequest: func,
+    loadTdoRequest: func,
+    updateTdoRequest: func,
     success: bool,
     error: bool,
     warning: bool,
     statusMessage: string,
     engineCategories: arrayOf(any),
-    tdo: object
+    tdo: object,
+    engineResultsByEngineId: object
   };
 
   state = {
@@ -125,6 +131,13 @@ class MediaDetailsWidget extends React.Component {
     this.setState({
       isInfoPanelOpen : !this.state.isInfoPanelOpen
     });
+  };
+
+  updateTdo = (tdoData) => {
+    if (!tdoData) {
+      return;
+    }
+    this.props.updateTdoRequest(this.props._widgetId, this.props.mediaId, tdoData);
   };
 
   render() {
@@ -242,7 +255,10 @@ class MediaDetailsWidget extends React.Component {
           </div>}
 
           {this.state.isInfoPanelOpen &&
-          <MediaInfoPanel tdo={this.props.tdo} engineCategories={this.props.engineCategories} onClose={this.toggleInfoPanel} />}
+          <MediaInfoPanel tdo={this.props.tdo}
+                          engineCategories={this.props.engineCategories}
+                          onClose={this.toggleInfoPanel}
+                          onSaveMetadata={this.updateTdo}/>}
 
 
           {this.state.selectedTabValue === 1 && <div>Content Template</div>}
