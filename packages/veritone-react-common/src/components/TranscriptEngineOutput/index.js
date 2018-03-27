@@ -3,7 +3,7 @@ import { arrayOf , bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import TranscriptTask from './TranscriptTask';
+import TranscriptChunk from './TranscriptChunk';
 
 import styles from './styles.scss';
 
