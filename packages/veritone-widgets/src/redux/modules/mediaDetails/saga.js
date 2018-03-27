@@ -1,11 +1,4 @@
-import {
-  fork,
-  all,
-  call,
-  put,
-  takeEvery,
-  select
-} from 'redux-saga/effects';
+import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
@@ -17,12 +10,22 @@ import { LOAD_ENGINE_RESULTS, loadEngineResultsComplete } from '.';
 import { LOAD_TDO, loadTdoComplete } from '.';
 import { UPDATE_TDO, updateTdoComplete } from '.';
 
-function* finishLoadEngineCategories(widgetId, result, { warning, error }, callback) {
+function* finishLoadEngineCategories(
+  widgetId,
+  result,
+  { warning, error },
+  callback
+) {
   yield put(loadEngineCategoriesComplete(widgetId, result, { warning, error }));
   yield call(callback, result, { warning, error, cancelled: false });
 }
 
-function* finishLoadEngineResults(widgetId, result, { warning, error }, callback) {
+function* finishLoadEngineResults(
+  widgetId,
+  result,
+  { warning, error },
+  callback
+) {
   yield put(loadEngineResultsComplete(widgetId, result, { warning, error }));
   yield call(callback, result, { warning, error, cancelled: false });
 }
@@ -33,8 +36,8 @@ function* finishLoadTdo(widgetId, result, { warning, error }, callback) {
 }
 
 function* finishUpdateTdo(widgetId, result, { warning, error }, callback) {
-  yield put(updateTdoComplete(widgetId, result, {warning, error}));
-  yield call(callback, result, {warning, error, cancelled: false});
+  yield put(updateTdoComplete(widgetId, result, { warning, error }));
+  yield call(callback, result, { warning, error, cancelled: false });
 }
 
 function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
@@ -64,7 +67,12 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
     }`;
 
   // array of categories that Media Details does not support
-  const unsupportedCategories = ['conductor', 'reducer', 'thumbnail', 'transcode'];
+  const unsupportedCategories = [
+    'conductor',
+    'reducer',
+    'thumbnail',
+    'transcode'
+  ];
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
@@ -80,7 +88,12 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
       token
     });
   } catch (error) {
-    return yield* finishLoadEngineCategories(widgetId, null, { error }, callback);
+    return yield* finishLoadEngineCategories(
+      widgetId,
+      null,
+      { error },
+      callback
+    );
   }
 
   if (!response || !response.data || !response.data.temporalDataObject) {
@@ -88,8 +101,12 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
   }
 
   if (response.errors && response.errors.length) {
-    const isMissingEngineCategoryError = function (error) {
-      return error.name === 'not_found' && error.data && error.data.objectType === 'EngineCategory';
+    const isMissingEngineCategoryError = function(error) {
+      return (
+        error.name === 'not_found' &&
+        error.data &&
+        error.data.objectType === 'EngineCategory'
+      );
     };
     response.errors
       .filter(error => !isMissingEngineCategoryError(error))
@@ -119,13 +136,23 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
         return;
       }
       job.tasks.records
-        .filter(task => task.engine && task.engine.category && task.engine.category.iconClass &&
-            !unsupportedCategories.some(categoryType => categoryType === task.engine.category.categoryType))
+        .filter(
+          task =>
+            task.engine &&
+            task.engine.category &&
+            task.engine.category.iconClass &&
+            !unsupportedCategories.some(
+              categoryType => categoryType === task.engine.category.categoryType
+            )
+        )
         .forEach(task => {
           let engineCategory = engineCategoryById.get(task.engine.category.id);
           if (!engineCategory) {
             engineCategory = Object.assign({}, task.engine.category);
-            engineCategory.iconClass = engineCategory.iconClass.replace('-engine', '');
+            engineCategory.iconClass = engineCategory.iconClass.replace(
+              '-engine',
+              ''
+            );
             engineCategory.engines = [];
             engineCategoryById.set(engineCategory.id, engineCategory);
           }
@@ -135,10 +162,15 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
           engineFromTask.name = task.engine.name;
           engineFromTask.completedDateTime = Number(task.completedDateTime);
 
-          const filteredEngineIdx = engineCategory.engines.findIndex(filteredEngine => filteredEngine.id === engineFromTask.id);
+          const filteredEngineIdx = engineCategory.engines.findIndex(
+            filteredEngine => filteredEngine.id === engineFromTask.id
+          );
           if (filteredEngineIdx == -1) {
             engineCategory.engines.push(engineFromTask);
-          } else if (engineFromTask.completedDateTime > engineCategory.engines[filteredEngineIdx].completedDateTime) {
+          } else if (
+            engineFromTask.completedDateTime >
+            engineCategory.engines[filteredEngineIdx].completedDateTime
+          ) {
             // consider only the latest run engine, disregard previous runs
             engineCategory.engines[filteredEngineIdx] = engineFromTask;
           }
@@ -158,20 +190,32 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
 
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
-    if (category1.categoryType < category2.categoryType)
-      return -1;
-    if (category1.categoryType > category2.categoryType)
-      return 1;
+    if (category1.categoryType < category2.categoryType) return -1;
+    if (category1.categoryType > category2.categoryType) return 1;
     return 0;
   });
-  const orderedCategoryTypes = ['transcript', 'face', 'object', 'logo', 'ocr', 'fingerprint', 'translate', 'sentiment', 'geolocation', 'stationPlayout', 'music'];
+  const orderedCategoryTypes = [
+    'transcript',
+    'face',
+    'object',
+    'logo',
+    'ocr',
+    'fingerprint',
+    'translate',
+    'sentiment',
+    'geolocation',
+    'stationPlayout',
+    'music'
+  ];
   orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
-    const index = engineCategories.findIndex(category => category.categoryType === orderedCategoryType);
-      if (index >= 0) {
-        const category = engineCategories[index];
-        engineCategories.splice(index, 1);
-        engineCategories.unshift(category);
-      }
+    const index = engineCategories.findIndex(
+      category => category.categoryType === orderedCategoryType
+    );
+    if (index >= 0) {
+      const category = engineCategories[index];
+      engineCategories.splice(index, 1);
+      engineCategories.unshift(category);
+    }
   });
 
   yield* finishLoadEngineCategories(
@@ -185,9 +229,15 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
   );
 }
 
-function* loadEngineResultsSaga(widgetId, tdoId, engineId, startOffsetMs, stopOffsetMs, callback = noop) {
-  const getMetadataQuery =
-    `query engineResults($id: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
+function* loadEngineResultsSaga(
+  widgetId,
+  tdoId,
+  engineId,
+  startOffsetMs,
+  stopOffsetMs,
+  callback = noop
+) {
+  const getMetadataQuery = `query engineResults($id: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
       engineResults(id: $id, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
           tdoId
@@ -338,9 +388,23 @@ function* watchLoadEngineCategoriesRequest() {
 
 function* watchLoadEngineResultsRequest() {
   yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const { tdoId, engineId, startOffsetMs, stopOffsetMs, callback } = action.payload;
+    const {
+      tdoId,
+      engineId,
+      startOffsetMs,
+      stopOffsetMs,
+      callback
+    } = action.payload;
     const { widgetId } = action.meta;
-    yield call(loadEngineResultsSaga, widgetId, tdoId, engineId, startOffsetMs, stopOffsetMs, callback);
+    yield call(
+      loadEngineResultsSaga,
+      widgetId,
+      tdoId,
+      engineId,
+      startOffsetMs,
+      stopOffsetMs,
+      callback
+    );
   });
 }
 

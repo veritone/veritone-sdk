@@ -3,7 +3,8 @@ import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
 export const LOAD_ENGINE_CATEGORIES = 'LOAD_ENGINE_CATEGORIES';
-export const LOAD_ENGINE_CATEGORIES_COMPLETE = 'LOAD_ENGINE_CATEGORIES_COMPLETE';
+export const LOAD_ENGINE_CATEGORIES_COMPLETE =
+  'LOAD_ENGINE_CATEGORIES_COMPLETE';
 export const LOAD_ENGINE_RESULTS = 'LOAD_ENGINE_RESULTS';
 export const LOAD_ENGINE_RESULTS_COMPLETE = 'LOAD_ENGINE_RESULTS_COMPLETE';
 export const LOAD_TDO = 'LOAD_TDO';
@@ -20,7 +21,7 @@ const defaultState = {
 };
 
 export default createReducer(defaultState, {
-  [LOAD_ENGINE_CATEGORIES](state, {meta: {widgetId}}) {
+  [LOAD_ENGINE_CATEGORIES](state, { meta: { widgetId } }) {
     return {
       ...state,
       [widgetId]: {
@@ -32,7 +33,10 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_CATEGORIES_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
+  [LOAD_ENGINE_CATEGORIES_COMPLETE](
+    state,
+    { payload, meta: { warn, error, widgetId } }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -56,7 +60,10 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_RESULTS_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
+  [LOAD_ENGINE_RESULTS_COMPLETE](
+    state,
+    { payload, meta: { warn, error, widgetId } }
+  ) {
     const errorMessage = get(error, 'message', error);
 
     // TODO: merge new results with existing instead of replacing
@@ -141,8 +148,7 @@ export const engineCategories = (state, widgetId) =>
   get(local(state), [widgetId, 'engineCategories']);
 export const engineResultsByEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'engineResultsByEngineId']);
-export const tdo = (state, widgetId) =>
-  get(local(state), [widgetId, 'tdo']);
+export const tdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
 
 export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
   type: LOAD_ENGINE_CATEGORIES,
@@ -150,19 +156,34 @@ export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
   meta: { widgetId }
 });
 
-export const loadEngineCategoriesComplete = (widgetId, result, { warn, error }) => ({
+export const loadEngineCategoriesComplete = (
+  widgetId,
+  result,
+  { warn, error }
+) => ({
   type: LOAD_ENGINE_CATEGORIES_COMPLETE,
   payload: result,
   meta: { warn, error, widgetId }
 });
 
-export const loadEngineResultsRequest = (widgetId, tdoId, engineId, startOffsetMs, stopOffsetMs, callback) => ({
+export const loadEngineResultsRequest = (
+  widgetId,
+  tdoId,
+  engineId,
+  startOffsetMs,
+  stopOffsetMs,
+  callback
+) => ({
   type: LOAD_ENGINE_RESULTS,
   payload: { tdoId, engineId, startOffsetMs, stopOffsetMs, callback },
   meta: { widgetId }
 });
 
-export const loadEngineResultsComplete = (widgetId, result, { warn, error }) => ({
+export const loadEngineResultsComplete = (
+  widgetId,
+  result,
+  { warn, error }
+) => ({
   type: LOAD_ENGINE_RESULTS_COMPLETE,
   payload: result,
   meta: { warn, error, widgetId }
@@ -180,7 +201,12 @@ export const loadTdoComplete = (widgetId, result, { warn, error }) => ({
   meta: { warn, error, widgetId }
 });
 
-export const updateTdoRequest = (widgetId, tdoId, tdoDataToUpdate, callback) => ({
+export const updateTdoRequest = (
+  widgetId,
+  tdoId,
+  tdoDataToUpdate,
+  callback
+) => ({
   type: UPDATE_TDO,
   payload: { tdoId, tdoDataToUpdate, callback },
   meta: { widgetId }
