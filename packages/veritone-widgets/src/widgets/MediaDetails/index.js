@@ -328,14 +328,12 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 0 && (
             <div className={styles.mediaScreen}>
               <div className={styles.mediaView}>
-                <div>
+                <div className={styles.mediaPlayerView}>
                   <video.Player
                     src={this.getPrimaryAssetUri()}
-                    className={styles.mediaPlayerView}
+                    className={styles.videoPlayer}
                   >
-                    <video.ControlBar >
-                      <video.CurrentTimeDisplay order={4.1}/>
-                    </video.ControlBar>
+
                   </video.Player>
                 </div>
                 <div className={styles.sourceLabel}>
