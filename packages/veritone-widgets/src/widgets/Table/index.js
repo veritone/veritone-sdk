@@ -1,5 +1,5 @@
 import React from 'react';
-import { func, string, number, arrayOf, bool, shape, object } from 'prop-types';
+import { func, arrayOf, bool, shape, object } from 'prop-types';
 import { Table, PaginatedTable, Column, MenuColumn } from 'veritone-react-common';
 import { omit } from 'lodash';
 import widget from '../../shared/widget';
@@ -9,24 +9,16 @@ class TableWidget extends React.Component {
   static propTypes = {
     data: arrayOf(object).isRequired,
     columns: arrayOf(shape({
-      dataKey: string.isRequired,
-      header: string,
       transform: func,
       menu: bool,
-      onSelectItem: func,
-      cursorPointer: bool,
-      align: string,
-      width: number
+      onSelectItem: func
     })),
-    paginate: bool,
-    initialItemsPerPage: number,
-    onCellClick: func,
-    focusedRow: number,
-    renderFocusedRowDetails: func,
-    onShowCellRange: func,
-    onRefreshPageData: func,
-    emptyMessage: string
+    paginate: bool
   };
+
+  static defaultProps = {
+    paginate: false
+  }
   
   getRowData = (i) => {
     return this.props.data[i];

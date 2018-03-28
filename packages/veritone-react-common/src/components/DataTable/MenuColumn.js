@@ -49,6 +49,12 @@ export default class MenuColumn extends React.Component {
     });
   };
 
+  handleOnClick = ([action, ...rest])  => {
+    this.setState({ open: false }, () => {
+      this.props.onSelectItem(action, ...rest);
+    })
+  }
+
   sortActions(actions) {
     const protectedActions = intersection(actions, this.props.protectedActions);
     const unprotectedActions = without(actions, ...protectedActions);
@@ -90,7 +96,7 @@ export default class MenuColumn extends React.Component {
                 ? <Divider key={`divider-${i}`} />
                 : <MenuItem
                     key={s}
-                    onClick={partial(this.props.onSelectItem, s, ...rest)}
+                    onClick={partial(this.handleOnClick, s, ...rest)}
                   >
                   {startCase(camelCase(this.props.transformLabel(s)))}
                 </MenuItem>
