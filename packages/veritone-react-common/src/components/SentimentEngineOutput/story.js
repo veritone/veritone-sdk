@@ -3,22 +3,21 @@ import { storiesOf } from '@storybook/react';
 import styles from './story.styles.scss';
 import SentimentEngineOutput from './';
 
-storiesOf('SentimentEngineOutput', module)
-  .add('Base', () => {
-    let mockData1 = genMockData(40, 0, 5000);                     //Good data
-    let mockData2 = genMockData(20, 40*5000, 5000, 'pending');    //Bad data
-    let mockData3 = genMockData(900, 60*5000, 5000)               //Good data
-    let dynamicMockData = mockData1.concat(mockData2, mockData3);
-    return (
-      <SentimentEngineOutput
-        className={styles.outputViewRoot}
-        data={dynamicMockData}
-        mediaPlayerTime={6000}
-      />
-    );
-  });
+storiesOf('SentimentEngineOutput', module).add('Base', () => {
+  let mockData1 = genMockData(40, 0, 5000); //Good data
+  let mockData2 = genMockData(20, 40 * 5000, 5000, 'pending'); //Bad data
+  let mockData3 = genMockData(900, 60 * 5000, 5000); //Good data
+  let dynamicMockData = mockData1.concat(mockData2, mockData3);
+  return (
+    <SentimentEngineOutput
+      className={styles.outputViewRoot}
+      data={dynamicMockData}
+      mediaPlayerTime={6000}
+    />
+  );
+});
 
-function genMockData (numValues, startTime, timeInterval, status = 'complete') {
+function genMockData(numValues, startTime, timeInterval, status = 'complete') {
   let startTimeMs;
   let stopTimeMs;
   let data = [];
@@ -43,6 +42,6 @@ function genMockData (numValues, startTime, timeInterval, status = 'complete') {
   return data;
 }
 
-function randomizeValue (max, min) {
+function randomizeValue(max, min) {
   return Math.round((Math.random() * (max - min) + min) * 100) / 100;
 }
