@@ -45,7 +45,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
       temporalDataObject(id: $tdoId) {
         jobs {
           records {
-            tasks (limit: 1000, status: "complete" ) {
+            tasks (limit: 1000, status: complete ) {
               records {
                 completedDateTime
                 engine {
@@ -283,19 +283,23 @@ function* loadEngineResultsSaga(
 }
 
 function* loadTdoSaga(widgetId, tdoId, callback = noop) {
-  const getTdoQuery = `query temporalDataObject($tdoId: ID!){
+  const getTdoQuery = `
+    query temporalDataObject($tdoId: ID!) {
       temporalDataObject(id: $tdoId) {
         id
         details
         startDateTime
         stopDateTime
       }
-    }`;
+    }
+  `;
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
 
   let response;
   try {
@@ -315,6 +319,14 @@ function* loadTdoSaga(widgetId, tdoId, callback = noop) {
 
   if (!response || !response.data || !response.data.temporalDataObject) {
     console.warn('TemporalDataObject not found');
+    return yield* finishLoadTdo(
+      widgetId,
+      response.data.temporalDataObject,
+      {
+        error: 'TemporalDataObject not found'
+      },
+      callback
+    );
   }
 
   yield* finishLoadTdo(
