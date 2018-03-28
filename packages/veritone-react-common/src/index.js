@@ -28,3 +28,4 @@ export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutpu
 export OCREngineOutputView from './components/OCREngineOutputView';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
+export * as video from './components/Video'

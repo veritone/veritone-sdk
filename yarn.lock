@@ -2686,7 +2686,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@2.2.5, classnames@^2.2.5:
+classnames@2.2.5, classnames@^2.2.3, classnames@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
@@ -12678,6 +12678,13 @@ vfile@^2.0.0:
     replace-ext "1.0.0"
     unist-util-stringify-position "^1.0.0"
     vfile-message "^1.0.0"
+
+video-react@^0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/video-react/-/video-react-0.10.4.tgz#5948d99628f711096f6e54c19e832dbe2d77d554"
+  dependencies:
+    classnames "^2.2.3"
+    prop-types "^15.6.0"
 
 vinyl-file@^2.0.0:
   version "2.0.0"
