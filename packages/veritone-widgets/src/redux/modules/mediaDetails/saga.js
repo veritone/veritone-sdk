@@ -290,6 +290,10 @@ function* loadTdoSaga(widgetId, tdoId, callback = noop) {
         details
         startDateTime
         stopDateTime
+        primaryAsset(assetType: "media") {
+          id
+          uri
+        }
       }
     }
   `;
