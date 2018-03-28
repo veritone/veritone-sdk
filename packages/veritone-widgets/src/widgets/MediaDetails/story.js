@@ -8,7 +8,7 @@ class Story extends React.Component {
   componentDidMount() {
     this._mediaDetailsPage = new MediaDetailsPage({
       elId: 'mediaDetails-widget',
-      mediaId: 1234567,
+      mediaId: 400001923,
       onClose: function() {
         console.log('Widget for Media Details onClose clicked.');
       }

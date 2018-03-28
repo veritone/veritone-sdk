@@ -6,8 +6,9 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
 import { bool, func, number, object, string, arrayOf, any } from 'prop-types';
 import { connect } from 'react-redux';
+import { get } from 'lodash';
 import { EngineCategorySelector } from 'veritone-react-common';
-import { MediaInfoPanel } from 'veritone-react-common';
+import { MediaInfoPanel, video } from 'veritone-react-common';
 import { FullScreenDialog } from 'veritone-react-common';
 import styles from './styles.scss';
 
@@ -136,6 +137,10 @@ class MediaDetailsWidget extends React.Component {
       }
     }
     return '';
+  };
+
+  getPrimaryAssetUri = () => {
+    return get(this.props, 'tdo.primaryAsset.uri');
   };
 
   toggleEditMode = () => {
@@ -323,7 +328,16 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 0 && (
             <div className={styles.mediaScreen}>
               <div className={styles.mediaView}>
-                <div className={styles.mediaPlayerView} />
+                <div>
+                  <video.Player
+                    src={this.getPrimaryAssetUri()}
+                    className={styles.mediaPlayerView}
+                  >
+                    <video.ControlBar >
+                      <video.CurrentTimeDisplay order={4.1}/>
+                    </video.ControlBar>
+                  </video.Player>
+                </div>
                 <div className={styles.sourceLabel}>
                   Source: {this.getMediaSource()}
                 </div>
