@@ -25,14 +25,17 @@ export default class ContentTemplates extends React.Component {
   };
   static defaultProps = {};
 
-  state = {
-    schemas: {},
-    addedSchemas: {}
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      schemas: {},
+      addedSchemas: {}
+    };
+  }
 
   componentWillMount = () => {
     let schemaSaver = {};
-    this.props.templates.data.dataRegistries.records.forEach(schemas => {
+    this.props.templates.data && this.props.templates.data.dataRegistries.records.forEach(schemas => {
       // array of data registries containing an array of schemas
       schemas.schemas.records.forEach(schema => {
         // array of schemas containing an individual schema
@@ -47,7 +50,7 @@ export default class ContentTemplates extends React.Component {
     });
 
     let trackAdded = {};
-    if (this.props.source.data.source.contentTemplates) {
+    if (this.props.source.data && this.props.source.data.source.contentTemplates) {
       this.props.source.data.source.contentTemplates.forEach(template => {
         if (has(schemaSaver, template.schemaId)) {
           trackAdded[template.schemaId] = schemaSaver[template.schemaId];
