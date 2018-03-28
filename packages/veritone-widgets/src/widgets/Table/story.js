@@ -4,7 +4,7 @@ import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import TableWidget from './';
-import { startCase, upperCase, map, omit } from 'lodash';
+import { startCase, upperCase, map, omit, flow, truncate } from 'lodash';
 
 const data = [
   {
@@ -34,7 +34,7 @@ const data = [
     b: 'b',
     c: 'c',
     actions: ['View', 'Edit', 'Delete']
-    
+
   },
   {
     created_at: 'Sat Dec 14 04:35:55 +0000 2013',
@@ -48,7 +48,7 @@ const data = [
     a: 'a',
     b: 'b',
     c: 'c',
-    actions: ['View', 'Edit', 'Delete']    
+    actions: ['View', 'Edit', 'Delete']
   },
   {
     created_at: 'Sat Dec 14 04:35:55 +0000 2013',
@@ -154,7 +154,7 @@ const columns = map(omit(data[0], ['a','b','c']), (val, key) => {
   const colDefs = {
     dataKey: key,
     header: startCase(key),
-    transform: upperCase,
+    transform: flow([upperCase, truncate]),
     align: 'center',
     width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
   }
