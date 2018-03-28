@@ -6,11 +6,11 @@ import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
 import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import LastPageIcon from 'material-ui-icons/LastPage';
 import { TableCell } from 'material-ui/Table';
-import Select from 'material-ui/Select';
+import SelectInput from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 
 import { func, number } from 'prop-types';
-import RefreshButton from '/components/RefreshButton';
+import RefreshButton from 'components/RefreshButton';
 import styles from './styles/index.scss';
 
 export default class PaginatedTableFooter extends React.Component {
@@ -64,7 +64,7 @@ export default class PaginatedTableFooter extends React.Component {
         <div className={styles['paginated-footer']}>
           <span className={styles['rows-per-page']}>Rows per page:</span>
 
-          <Select
+          <SelectInput
             value={this.props.perPage}
             onChange={this.props.onChangePerPage}
             className={styles['per-page']}
@@ -78,7 +78,7 @@ export default class PaginatedTableFooter extends React.Component {
             <MenuItem value={10}>10</MenuItem>
             <MenuItem value={20}>20</MenuItem>
             <MenuItem value={30}>30</MenuItem>
-          </Select>
+          </SelectInput>
 
           <span className={styles['num-items']}>
             {firstItem}–{lastItem} of {rowCount}

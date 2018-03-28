@@ -21,9 +21,7 @@ export default class MenuColumn extends React.Component {
     protectedActions: arrayOf(string),
     additionalActions: arrayOf(string),
     transformLabel: func,
-    style: objectOf(any),
-    data: objectOf(any).isRequired,
-    dataKey: string.isRequired
+    style: objectOf(any)
   };
 
   static defaultProps = {
