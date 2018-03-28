@@ -1,9 +1,13 @@
 import React from 'react';
 import { func, arrayOf, bool, shape, object } from 'prop-types';
-import { Table, PaginatedTable, Column, MenuColumn } from 'veritone-react-common';
+import {
+  Table,
+  PaginatedTable,
+  Column,
+  MenuColumn
+} from 'veritone-react-common';
 import { omit } from 'lodash';
 import widget from '../../shared/widget';
-
 
 class TableWidget extends React.Component {
   static propTypes = {
@@ -22,7 +26,7 @@ class TableWidget extends React.Component {
   
   getRowData = (i) => {
     return this.props.data[i];
-  }
+  };
 
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
@@ -30,10 +34,7 @@ class TableWidget extends React.Component {
     const tableColumns = this.props.columns.map((column, idx) => {
       if (column.menu) {
         return (
-          <MenuColumn
-            key={idx}
-            {...omit(column, ['transform', 'menu'])}
-          />
+          <MenuColumn key={idx} {...omit(column, ['transform', 'menu'])} />
         );
       }
 
@@ -43,7 +44,7 @@ class TableWidget extends React.Component {
           cellRenderer={column.transform}
           key={idx}
         />
-      )
+      );
     });
 
     return (
