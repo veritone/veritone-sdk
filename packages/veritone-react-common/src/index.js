@@ -23,6 +23,7 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
 
+export SourceManagement from './components/SourceManagement';
 
 export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
 export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
