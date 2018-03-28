@@ -37,3 +37,11 @@
 .sourceSelector {
   min-width: 200px;
 }
+
+.sourceScrollContainer {
+  &:focus {
+    outline: none;
+  }
+  max-height: 336px;
+  overflow-y: auto;
+}

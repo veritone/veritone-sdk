@@ -85,108 +85,281 @@ const ADAPTER_CONFIG = {
 };
 
 const SOURCES = [{
-  "id": "38721",
-  "name": "Video Monitor",
-  "organization": null,
-  "isPublic": true,
-  "details": {
-    "liveTimezone": "US/Pacific",
-    "youtubeChannelId": null,
-    "youtubeChannelUrl": null,
-    "youtubeChannelCreatedDate": null,
-    "stationChannel": "123",
-    "radioStationCode": "XXXX",
-    "radioStreamUrl": "http://veritone.com/",
-    "biaStationCode": null,
-    "stationCallSign": null,
-    "stationBand": null,
-    "businessUnit": null
-  }
-},
-{
-  "id": "21495",
-  "name": "WHBY-AM",
+  "id": "23957",
+  "name": "gabbers77",
   "organization": {
-    "id": "6572",
-    "name": "Woodward Communications Incorporated",
+    "id": "7478",
+    "name": "Maker Studios",
     "jsondata": {
       "platformType": "existing",
-      "features": {},
-      "dataSources": [],
-      "metadata": {
-        "fields": []
-      },
-      "url": "http://www.wcinet.com/",
-      "companyType": "Radio station owner",
-      "primaryContactName": "Veritone PartnerOps",
-      "primaryContactEmail": "partnerops@veritone.com",
-      "primaryContactPhone": "0123456789",
-      "employeeCount": "2",
       "applicationIds": [
         "92269e7a-2859-406a-ad5e-1a00c30b3512",
-        "30c6668d-ebc3-47b6-9c04-927c26375919",
+        "7f402a84-4ae6-451f-85ca-9447397610b7",
+        "1b8d45db-dc7e-4a19-b5f0-7096f711c0bd",
         "8a37c1d0-3f3b-48d0-a84e-2b8e3646fbe5",
         "cc4e0e89-3420-49c2-b06d-8d9a929c941c",
         "ea1d26ab-0d29-4e97-8ae7-d998a243374e"
       ],
-      "image": "https://s3.amazonaws.com/prod-veritone-ugc/organizations/6572/h7izeqTTOGZXvXyi2swQ_logo.png",
+      "dataSources": [
+        "arbitron"
+      ],
+      "features": {
+        "media": "enabled",
+        "mentionListing": {
+          "comments": true,
+          "edit": true
+        },
+        "notifications": {
+          "email": true,
+          "sms": true
+        },
+        "shareMentions": {
+          "email": true,
+          "twitter": true,
+          "facebook": true,
+          "link": true
+        },
+        "postToCollections": "enabled",
+        "shareCollections": {
+          "internal": "enabled"
+        },
+        "ratings": "enabled",
+        "sendMentionsToSalesForce": "enabled",
+        "sendMentionsToWebService": "enabled",
+        "includeDataSources": "enabled"
+      },
+      "metadata": {
+        "fields": []
+      },
+      "url": "http://www.makerstudios.com/",
+      "primaryContactName": "Veritone PartnerOps",
+      "primaryContactEmail": "partnerops@veritone.com",
+      "companyType": "YouTube MCN",
+      "employeeCount": "2",
+      "primaryContactPhone": "0123456789",
+      "image": "https://s3.amazonaws.com/prod-veritone-ugc/organizations/7478/KEInQrCSSmKwqWRllbgz_j7xsiq7-_400x400.png",
       "customCmsAndAclApplicationIds": [
         "92269e7a-2859-406a-ad5e-1a00c30b3512",
-        "30c6668d-ebc3-47b6-9c04-927c26375919"
+        "7f402a84-4ae6-451f-85ca-9447397610b7",
+        "1b8d45db-dc7e-4a19-b5f0-7096f711c0bd"
       ]
     }
   },
   "isPublic": true,
   "details": {
-    "liveTimezone": "US/Central",
-    "youtubeChannelId": null,
-    "youtubeChannelUrl": null,
-    "youtubeChannelCreatedDate": null,
-    "stationChannel": "1150",
-    "radioStationCode": "WHBY-AM",
-    "radioStreamUrl": "http://50.22.253.46:80/whby-am.mp3",
-    "biaStationCode": 18667,
-    "stationCallSign": "WHBY",
-    "stationBand": "AM",
-    "businessUnit": null,
-    "description": "THE VOICE OF FOX CITIES",
-    "frequency": "1150",
-    "webSiteUrl": "http://www.whby.com/",
-    "image": "https://s3.amazonaws.com/prod-veritone-ugc/media_sources/21495/a8U7bT4rTQ6bb8LlVTSF_13179246_10153957282150358_5900200230495528277_n.png"
+    "liveTimezone": "US/Pacific",
+    "youtubeChannelId": "UCZTR9wnEghg8FnN0jNBZaow",
+    "youtubeChannelUrl": "https://www.youtube.com/channel/UCZTR9wnEghg8FnN0jNBZaow"
+  },
+  "sourceType": {
+    "id": "3",
+    "name": "YouTube",
+    "sourceSchema": {
+      "id": "f8af5c4b-3326-40ce-bd63-ce5611afe0d3",
+      "definition": {
+        "type": "object",
+        "definitions": {},
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "properties": {
+          "youtubeChannelUrl": {
+            "$id": "/properties/youtubeChannelUrl",
+            "type": "string",
+            "title": "YouTube Channel URL"
+          },
+          "youtubeChannelId": {
+            "$id": "/properties/youtubeChannelId",
+            "type": "string",
+            "title": "YouTube Channel ID"
+          }
+        },
+        "required": [
+          "youtubeChannelUrl"
+        ]
+      },
+      "validActions": [
+        "view",
+        "edit",
+        "deactivate",
+        "delete"
+      ],
+      "status": "published"
+    }
   }
 },
 {
-  "id": "19089",
-  "name": "KKEA-AM",
+  "id": "38910",
+  "name": "Nicolas11x12TECHX",
   "organization": {
-    "id": "5412",
-    "name": "Blow Up LLC",
+    "id": "8276",
+    "name": "Nicolas11x12TECHX",
     "jsondata": {
+      "applicationIds": [
+        "92269e7a-2859-406a-ad5e-1a00c30b3512",
+        "e29a028b-4948-43c2-8036-2794dab2d4b5",
+        "8a37c1d0-3f3b-48d0-a84e-2b8e3646fbe5",
+        "cc4e0e89-3420-49c2-b06d-8d9a929c941c",
+        "ea1d26ab-0d29-4e97-8ae7-d998a243374e"
+      ],
+      "companyType": "YouTube channel owner",
+      "sfAccountId": "001U000001jh8lJ",
       "platformType": "existing",
       "features": {},
       "dataSources": [],
       "metadata": {
         "fields": []
       },
+      "url": "http://www.veritone.com",
+      "primaryContactName": "Veritone PartnerOps",
+      "primaryContactEmail": "partnerops@veritone.com",
+      "employeeCount": "0",
+      "primaryContactPhone": "0123456789",
+      "image": "https://s3.amazonaws.com/prod-veritone-ugc/organizations/8276/TFHAwppuTgCMOBTboC9j_tacho.png",
+      "customCmsAndAclApplicationIds": [
+        "92269e7a-2859-406a-ad5e-1a00c30b3512",
+        "e29a028b-4948-43c2-8036-2794dab2d4b5"
+      ]
+    }
+  },
+  "isPublic": true,
+  "details": {
+    "youtubeChannelId": "UCb0N0jgHiCwoGgkf5slDVUg",
+    "youtubeChannelCreatedDate": "2011-09-30 12:53:26"
+  },
+  "sourceType": {
+    "id": "3",
+    "name": "YouTube",
+    "sourceSchema": {
+      "id": "f8af5c4b-3326-40ce-bd63-ce5611afe0d3",
+      "definition": {
+        "type": "object",
+        "definitions": {},
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "properties": {
+          "youtubeChannelUrl": {
+            "$id": "/properties/youtubeChannelUrl",
+            "type": "string",
+            "title": "YouTube Channel URL"
+          },
+          "youtubeChannelId": {
+            "$id": "/properties/youtubeChannelId",
+            "type": "string",
+            "title": "YouTube Channel ID"
+          }
+        },
+        "required": [
+          "youtubeChannelUrl"
+        ]
+      },
+      "validActions": [
+        "view",
+        "edit",
+        "deactivate",
+        "delete"
+      ],
+      "status": "published"
+    }
+  }
+},
+{
+  "id": "23995",
+  "name": "Ana Viernes TV",
+  "organization": {
+    "id": "7478",
+    "name": "Maker Studios",
+    "jsondata": {
+      "platformType": "existing",
       "applicationIds": [
         "92269e7a-2859-406a-ad5e-1a00c30b3512",
-        "8592c4f4-371a-45fa-b561-f47e92eb1942",
+        "7f402a84-4ae6-451f-85ca-9447397610b7",
+        "1b8d45db-dc7e-4a19-b5f0-7096f711c0bd",
         "8a37c1d0-3f3b-48d0-a84e-2b8e3646fbe5",
         "cc4e0e89-3420-49c2-b06d-8d9a929c941c",
         "ea1d26ab-0d29-4e97-8ae7-d998a243374e"
       ],
-      "url": "http://www.espn1420am.com/",
-      "companyType": "Radio station owner",
-      "employeeCount": "2",
-      "primaryContactName": "Veritone Partner Ops",
+      "dataSources": [
+        "arbitron"
+      ],
+      "features": {
+        "media": "enabled",
+        "mentionListing": {
+          "comments": true,
+          "edit": true
+        },
+        "notifications": {
+          "email": true,
+          "sms": true
+        },
+        "shareMentions": {
+          "email": true,
+          "twitter": true,
+          "facebook": true,
+          "link": true
+        },
+        "postToCollections": "enabled",
+        "shareCollections": {
+          "internal": "enabled"
+        },
+        "ratings": "enabled",
+        "sendMentionsToSalesForce": "enabled",
+        "sendMentionsToWebService": "enabled",
+        "includeDataSources": "enabled"
+      },
+      "metadata": {
+        "fields": []
+      },
+      "url": "http://www.makerstudios.com/",
+      "primaryContactName": "Veritone PartnerOps",
       "primaryContactEmail": "partnerops@veritone.com",
-      "primaryContactPhone": "1234567890",
-      "image": "https://s3.amazonaws.com/prod-veritone-ugc/organizations/5412/7k85KZYuRymmtoaGlnEt_radio_tower.gif",
+      "companyType": "YouTube MCN",
+      "employeeCount": "2",
+      "primaryContactPhone": "0123456789",
+      "image": "https://s3.amazonaws.com/prod-veritone-ugc/organizations/7478/KEInQrCSSmKwqWRllbgz_j7xsiq7-_400x400.png",
       "customCmsAndAclApplicationIds": [
         "92269e7a-2859-406a-ad5e-1a00c30b3512",
-        "8592c4f4-371a-45fa-b561-f47e92eb1942"
+        "7f402a84-4ae6-451f-85ca-9447397610b7",
+        "1b8d45db-dc7e-4a19-b5f0-7096f711c0bd"
       ]
     }
+  }
+}];
+
+const SOURCE_TYPES = [{
+  "id": "3",
+  "name": "YouTube",
+  "isPublic": true,
+  "organizationId": "7682",
+  "sourceSchema": {
+    "id": "f8af5c4b-3326-40ce-bd63-ce5611afe0d3",
+    "definition": {
+      "type": "object",
+      "definitions": {},
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "properties": {
+        "youtubeChannelUrl": {
+          "$id": "/properties/youtubeChannelUrl",
+          "type": "string",
+          "title": "YouTube Channel URL"
+        },
+        "youtubeChannelId": {
+          "$id": "/properties/youtubeChannelId",
+          "type": "string",
+          "title": "YouTube Channel ID"
+        }
+      },
+      "required": [
+        "youtubeChannelUrl"
+      ]
+    },
+    "status": "published",
+    "majorVersion": 1,
+    "minorVersion": 0,
+    "validActions": [
+      "view",
+      "edit",
+      "deactivate",
+      "delete"
+    ],
+    "dataRegistryId": "7adfa472-2bad-4961-bd7d-2ec0ae8f4dab"
   }
 }];
 
@@ -201,4 +374,4 @@ let configuration = {
 };
 
 storiesOf('SDOAdapter', module)
-  .add('SDOAdapter', () => <SDOAdapter sources={SOURCES} configuration={configuration} adapterConfig={ADAPTER_CONFIG} updateConfiguration={updateConfiguration}/>);
+  .add('SDOAdapter', () => <SDOAdapter sources={SOURCES} configuration={configuration} adapterConfig={ADAPTER_CONFIG} updateConfiguration={updateConfiguration} sourceTypes={SOURCE_TYPES}/>);

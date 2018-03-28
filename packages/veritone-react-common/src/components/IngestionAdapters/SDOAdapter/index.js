@@ -1,26 +1,40 @@
 import React from 'react';
+
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Menu, { MenuItem } from 'material-ui/Menu';
 import TextField from 'material-ui/TextField';
-import Image from '../../Image';
+import IconButton from 'material-ui/IconButton';
+import Typography from 'material-ui/Typography';
+import Toolbar from 'material-ui/Toolbar';
+import Dialog from 'material-ui/Dialog';
 import Input, { InputLabel } from 'material-ui/Input';
-import { get, pick, isArray, clone, startCase, toLower } from 'lodash';
-import styles from './styles.scss';
+import ArrowBack from 'material-ui-icons/ArrowBack';
 
+import { get, pick, isArray, clone, startCase, toLower } from 'lodash';
 import {
   object,
   func,
-  arrayOf
+  arrayOf,
+  bool,
+  string
 } from 'prop-types';
 
-let currentFields;
+import Image from '../../Image';
+import SourceManagerModal from '../../SourceManagerModal';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
+import styles from './styles.scss';
+
+
+let currentFields;
+@withMuiThemeProvider
 class SDOAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
     configuration: object.isRequired,
     sources: arrayOf(object).isRequired,
+    sourceTypes: arrayOf(object).isRequired,
     adapterConfig: object.isRequired
   };
 
@@ -50,20 +64,19 @@ class SDOAdapter extends React.Component {
 
   sendConfiguration = () => {
     this.props.updateConfiguration(this.state);
-  }
+  };
 
-  handleSourceChange = event => {
-    let selectedSourceId = event.target.value;
+  handleSourceChange = selectedSourceId => {
     let newState = { sourceId: selectedSourceId };
     this.setState(newState, this.sendConfiguration);
-  }
+  };
 
   handleFieldChange = fieldKey => event => {
     let fieldValue = event.target.value;
     let stateUpdate = {};
     stateUpdate[fieldKey] = fieldValue;
     this.setState(stateUpdate, this.sendConfiguration);
-  }
+  };
  
   render() {
     return (
@@ -77,9 +90,10 @@ class SDOAdapter extends React.Component {
           </div>
         </div>
         <div className={styles.adapterContainer}>
-            <SourceSelector
+            <SourceContainer
               initialValue={this.state.sourceId}
               sources={this.props.sources}
+              sourceTypes={this.props.sourceTypes}
               handleSourceChange={this.handleSourceChange}
               selectLabel="Select a Source*"/>
         </div>
@@ -90,14 +104,19 @@ class SDOAdapter extends React.Component {
               Configure Ingestion Adapter
             </div>
             <div className={styles.adapterDescription}>
-              Complete the required fields below to configure the adapter that will ingesti your content.
+              Complete the required fields below to configure the adapter that will ingest your content.
             </div>
           </div>
           <div>
             <div className={styles.adapterContainer} style={{display: 'flex', flexDirection: 'row'}}>
-              <div className={styles.adapterIconContainer}>
-                <Image src={this.props.adapterConfig.logoPath} width={44} height={44} border={true} />
-              </div>
+              {
+                this.props.adapterConfig.iconPath
+                ? (
+                  <div className={styles.adapterIconContainer}>
+                    <Image src={this.props.adapterConfig.iconPath} width={44} height={44} border={true} />
+                  </div>
+                ) : ''
+              }
               <div>
                 <div className={styles.adapterHeader}>
                   {this.props.adapterConfig.name}
@@ -106,6 +125,13 @@ class SDOAdapter extends React.Component {
                   {this.props.adapterConfig.description}
                 </div>
               </div>
+            </div>
+            <div className={styles.adapterContainer}>
+              <TextField
+                label="Cluster"
+                value="Veritone CPU"
+                disabled
+              ></TextField>
             </div>
             <div>
               <DynamicFieldForm fields={this.props.adapterConfig.fields} configuration={this.state} handleFieldChange={this.handleFieldChange} />
@@ -176,23 +202,141 @@ function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
   }).map(fieldInput => (<div className={styles.adapterFieldContainer}>{fieldInput}</div>));
 }
 
-function SourceSelector ({ initialValue, sources, handleSourceChange, selectLabel }) {
-  let sourceMenuItems = sources.map(source => <MenuItem key={source.id} value={source.id}>{source.name}</MenuItem>);
+@withMuiThemeProvider
+class SourceContainer extends React.Component {
+  static propTypes = {
+    initialValue: string,
+    sources: arrayOf(object),
+    handleSourceChange: func.isRequired,
+    selectLabel: string,
+    sourceTypes: arrayOf(object).isRequired
+  };
 
+  state = {
+    anchorEl: null
+  };
+
+  handleMenuClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleMenuClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
+  openCreateSource = () => {
+    this.setState({ isCreateSourceOpen: true });
+  };
+
+  closeCreateSource = () => {
+    this.setState({ isCreateSourceOpen: false, anchorEl: null });
+  };
+
+  handleCreateSource = (source) => {
+    console.log(source);
+  }
+
+  render() {
+    return (
+      <SourceSelector
+        initialValue={this.props.initialValue}
+        sources={this.props.sources}
+        sourceTypes={this.props.sourceTypes}
+        handleSourceChange={this.props.handleSourceChange}
+        handleMenuClose={this.handleMenuClose}
+        handleMenuClick={this.handleMenuClick}
+        selectLabel={this.props.selectLabel}
+        anchorEl={this.state.anchorEl}
+        openCreateSource={this.openCreateSource}
+        isCreateSourceOpen={this.state.isCreateSourceOpen}
+        handleCreateSource={this.handleCreateSource}
+        closeCreateSource={this.closeCreateSource}
+      ></SourceSelector>
+    );
+  }
+}
+
+function SourceSelector ({
+  initialValue,
+  sources,
+  handleSourceChange,
+  selectLabel,
+  handleMenuClick,
+  handleMenuClose,
+  anchorEl,
+  openCreateSource,
+  isCreateSourceOpen,
+  sourceTypes,
+  handleCreateSource,
+  closeCreateSource
+}) {
+  let sourceMenuItems = sources.map(source => {
+
+    function handleItemClick () {
+      handleSourceChange(source.id);
+      handleMenuClose();
+    }
+
+    return (
+      <MenuItem
+        key={source.id}
+        value={source.id}
+        selected={source.id === initialValue}
+        onClick={handleItemClick}
+      >
+        {source.name}
+      </MenuItem>
+    );
+  }
+  );
+  const menuId = 'long-menu';
+  let selectedSource = sources.find(source => source.id === initialValue);
+  console.log(selectedSource);
   return (
     <FormControl>
       <InputLabel htmlFor="select-source">Select a Source*</InputLabel>
-      <Select
+      <Select 
         className={styles.sourceSelector}
         value={initialValue}
-        onChange={handleSourceChange}
-        autoWidth={true}
+        onClick={handleMenuClick} 
+        aria-label="Select Source"
+        aria-owns={anchorEl ? menuId : null}
+        aria-haspopup="true"
+        readOnly
         inputProps={{
           name: 'source',
           id: 'select-source',
-        }}>
-        {sourceMenuItems}
+        }}
+      >
+        <MenuItem key="dummy-item" value={initialValue}>{selectedSource.name}</MenuItem>
       </Select>
+      <Menu
+        id={menuId}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorEl={anchorEl}
+        PaperProps={{
+          style: {
+            maxHeight: 400,
+            overflow: 'hidden',
+            width: 'auto'
+          }
+        }}
+      >
+        <div key="scroll-container" className={styles.sourceScrollContainer}>
+          {sourceMenuItems}
+        </div>
+        <div>
+          <MenuItem key="create-source-menu-item" value={null} onClick={openCreateSource}>
+            Create New Source
+          </MenuItem>
+          <SourceManagerModal
+            open={isCreateSourceOpen}
+            handleClose={closeCreateSource}
+            getSavedSource={handleCreateSource}
+            sourceTypes={sourceTypes}></SourceManagerModal>
+        </div>
+      </Menu>
     </FormControl>
   );
 }
