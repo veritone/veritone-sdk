@@ -1,19 +1,17 @@
 @import 'src/styles/modules/variables';
 
 .pillButton {
-  border: 1px solid #e0e0e0;
-  border-radius: 20px;
   padding: 10px;
   font-size: 14px;
-  display: inline-block;
-  background-color: white;
+  border-radius: 20px;
+  border: 1px solid $grey-4;
+  background-color: $fullWhite;
+
+  display: inline-flex;
+  flex-flow: row nowrap;
 
   &:hover {
     cursor: pointer;
-  }
-
-  > div {
-    float: left;
   }
 
   .gap {
@@ -27,7 +25,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .info {
     color: $blue-1;
     white-space: nowrap;

@@ -4,100 +4,73 @@ import { storiesOf } from '@storybook/react';
 import styles from './story.styles.scss';
 import LogoDetectionEngineOutput from './';
 
-
 storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {
-	return (
-		<div className={styles.container}>
-			<div className={styles.left}>
-				Left Box
-			</div>
-			<LogoDetectionEngineOutput
-				className={styles.outputViewRoot}
-				data={mockData}
-			/>
-			<div className={styles.right}>
-				Right Box
-			</div>
-			<div className={styles.bottom}>
-				Bottom Box
-			</div>
-		</div>
-	);
+  let mockData = genMockData(140, 5000000);
+
+  return (
+    <div className={styles.outputViewRoot}>
+      <LogoDetectionEngineOutput
+        data={mockData}
+        mediaPlayerTime={500000}
+        className={styles.outputViewRoot}
+      />
+    </div>
+  );
 });
 
-const mockData = [
-	{
-		startTimeMs: 0,
-		endTimeMs: 9000,
-		sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
-		sourceEngineName: 'Server-R',
-		taskId: 'e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf',
-		series: [
-			{
-				startTimeMs: 0,
-				endTimeMs: 1000,
-				logo: {
-					label: 'ESPN',
-					confidence: 0.942457377910614
-				}
-			},
-			{
-				startTimeMs: 4000,
-				endTimeMs: 5000,
-				logo: {
-          label: 'Google',
-          confidence: 0.942457377910614
-				}
-			},
-			{
-				startTimeMs: 4000,
-				endTimeMs: 15000,
-				logo: {
-					label: 'Veritone',
-					confidence: 0.942457377910614
-				}
-			},
-			{
-				startTimeMs: 7500,
-				endTimeMs: 238000,
-				logo: {
-					label: 'Veritone',
-					confidence: 0.942457377910614
-				}
-			},
-			{
-				startTimeMs: 7500,
-				endTimeMs: 238000,
-				logo: {
-					label: 'This is a very long logo name it goes on for a while',
-					confidence: 0.942457377910614
-				}
-			}
-		]
-	},
-	{
-		startTimeMs: 0,
-		endTimeMs: 9000,
-		sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d358',
-		sourceEngineName: 'Machine X',
-		taskId: 'e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf',
-		series: [
-			{
-				startTimeMs: 0,
-				endTimeMs: 1000,
-				logo: {
-					label: 'data1',
-					confidence: 0.942457377910614
-				}
-			},
-			{
-				startTimeMs: 2000,
-				endTimeMs: 123000,
-				logo: {
-					label: 'data2',
-					confidence: 0.942457377910614
-				}
-			}
-		]
-	}
-]
+function genMockData(
+  numEntry = 88,
+  latestStartTime = 2000000,
+  minTimeIntervals = 1000,
+  maxTimeIntervals = 10000
+) {
+  let data = [];
+  let labelOptions = [
+    'ESPN',
+    'Veritone',
+    'Google',
+    'Facebook',
+    'Fox',
+    'Some random long name 1',
+    'Some random very long long long name 2',
+    'CNN',
+    'Walmart',
+    'Toyota Motor',
+    'Apple',
+    'Exxon Mobil',
+    'Some random very long long long long name 3',
+    'Some random long name 4',
+    'Broadcom',
+    'Qualcomm',
+    'Xerox',
+    'Blizzard',
+    'Sony',
+    'Samsung',
+    'BMW',
+    'GMC',
+    'Warner Bros.',
+    'Walt Disney Studios',
+    'Sony Picture',
+    'Universal Pictures'
+  ];
+
+  let maxOptionIndex = labelOptions.length - 1;
+  for (let entryIndex = 0; entryIndex < numEntry; entryIndex++) {
+    let labelIndex = Math.round(Math.random() * maxOptionIndex);
+    let startTime = Math.round(Math.random() * latestStartTime);
+    let displayTime =
+      Math.round(Math.random() * (maxTimeIntervals - minTimeIntervals)) +
+      minTimeIntervals;
+    let entry = {
+      startTimeMs: startTime,
+      stopTimeMs: startTime + displayTime,
+      logo: {
+        label: labelOptions[labelIndex],
+        confidence: Math.random()
+      }
+    };
+    data.push(entry);
+  }
+
+  return data;
+}

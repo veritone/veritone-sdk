@@ -1,60 +1,73 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { string, bool, func, objectOf, any } from 'prop-types';
 import classNames from 'classnames';
 import defaultStyles from './styles.scss';
 
 export default class PillButton extends Component {
-	static propTypes = {
-		label: PropTypes.string,
-		info: PropTypes.string,
-		style: PropTypes.instanceOf(Object),
-		gapStyle: PropTypes.instanceOf(Object),
-		labelStyle: PropTypes.instanceOf(Object),
-		infoStyle: PropTypes.instanceOf(Object),
-		className: PropTypes.string,
-		gapClassName: PropTypes.string,
-		labelClassName: PropTypes.string,
-		infoClassName: PropTypes.string,
-		highlight: PropTypes.bool,
-		onClick: PropTypes.func
-	};
+  static propTypes = {
+    label: string,
+    info: string,
+    style: objectOf(any),
+    gapStyle: objectOf(any),
+    labelStyle: objectOf(any),
+    infoStyle: objectOf(any),
+    className: string,
+    gapClassName: string,
+    labelClassName: string,
+    infoClassName: string,
+    highlight: bool,
+    onClick: func,
+    data: objectOf(any)
+  };
 
-	static defaultProps = {
-		style: {},
-		gapStyle: {},
-		infoStyle: {},
-		labelStyle: {}
-	};
+  handleButtonClicked = event => {
+    let { onClick, data } = this.props;
+    onClick && onClick(event, data);
+  };
 
-	render () {
-		let {
-			label, 
-			info, 
-			style,
-			gapStyle,
-			labelStyle,
-			infoStyle,
-			className, 
-			gapClassName, 
-			labelClassName, 
-			infoClassName,
-			highlight,
-			onClick
-		} = this.props;
-		let hasGap = label && label.length > 0 && info && info.length > 0;
+  render() {
+    let {
+      label,
+      info,
+      style,
+      gapStyle,
+      labelStyle,
+      infoStyle,
+      className,
+      gapClassName,
+      labelClassName,
+      infoClassName,
+      highlight
+    } = this.props;
+    let hasGap = label && label.length > 0 && info && info.length > 0;
 
-		return (
-			<div className={highlight? classNames(defaultStyles.pillButton, defaultStyles.highlight, className) : classNames(defaultStyles.pillButton, className)} style={style} onClick={onClick}>
-				<div className={classNames(defaultStyles.label, labelClassName)} style={labelStyle}>
-					{label}
-				</div>
-				{
-					hasGap ? <div className={classNames(defaultStyles.gap, gapClassName)} style={gapStyle} /> : null
-				}
-				<div className={classNames(defaultStyles.info, infoClassName)} style={infoStyle}>
-					{info}
-				</div>
-			</div>
-		);
-	}
+    return (
+      <div
+        className={classNames(defaultStyles.pillButton, className, {
+          [defaultStyles.highlight]: highlight
+        })}
+        style={style}
+        onClick={this.handleButtonClicked}
+      >
+        <div
+          className={classNames(defaultStyles.label, labelClassName)}
+          style={labelStyle}
+        >
+          {label}
+        </div>
+        {hasGap && (
+          <div
+            className={classNames(defaultStyles.gap, gapClassName)}
+            style={gapStyle}
+          />
+        )}
+        <div
+          className={classNames(defaultStyles.info, infoClassName)}
+          style={infoStyle}
+        >
+          {info}
+        </div>
+      </div>
+    );
+  }
 }
