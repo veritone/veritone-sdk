@@ -1,0 +1,18 @@
+.nullStateView {
+  margin: auto;
+  width: 310px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .titleText {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 24px;
+    margin-bottom: 250px;
+  }
+
+}

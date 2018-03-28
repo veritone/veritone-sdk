@@ -21,12 +21,18 @@ export default class FormCard extends React.Component {
   // take in a number of form components and populate them
   static propTypes = {
     fields: arrayOf(any), // take in an array of field elements, i.e. <TextField/>; styling of form elements is intended to be done by the parent
-    name: string,
+    name: string.isRequired,
+    removeCallback: func.isRequired,
+    id: any.isRequired
   };
   static defaultProps = {};
 
   state = {
 
+  };
+
+  handleRemoveForm = () => {
+    this.props.removeCallback(this.props.id);
   };
 
   renderFields = () => {
@@ -39,7 +45,7 @@ export default class FormCard extends React.Component {
     return (
       <div className={styles.formCard}>
         <div className={styles.name}>{this.props.name}</div>
-        <IconButton className={styles.trashIcon} aria-label='trash'>
+        <IconButton className={styles.trashIcon} onClick={this.handleRemoveForm} aria-label='trash'>
           <Icon className={'icon-trash'}></Icon>
         </IconButton>
         <form>

@@ -3,58 +3,13 @@ import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 import Nullstate from './Nullstate';
-// import SourceGridView from './GridView';
-import SourceConfiguration from './SourceConfiguration';
+import SourceConfiguration from './';
 import SourceTileView from './SourceTileView';
 import SourceRow from './SourceRow';
 
 
-var sourceInfo = [
-  {
-    name: 'Hillary Clinton Twitter',
-    status: 'active',
-    // adapter: 'Facebook',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    sourceType: 'Facebook'
-  },
-  {
-    name: 'Donald Trump Twitter Posts 2',
-    status: 'paused',
-    // adapter: 'Twitter',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    sourceType: 'Twitter'
-  },
-  {
-    name: 'Donald Trump Twitter Posts 3',
-    status: 'processing',
-    // adapter: 'Twitter',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    sourceType: 'Twitter'
-  },
-  {
-    name: 'Donald Trump Twitter Posts 4',
-    status: 'inactive',
-    // adapter: 'Twitter',
-    ingestionType: 'Data set',
-    creationDate: 'Wed Jul 13, 2016 09:23 PM',
-    lastIngested: 'Wed Jul 13, 2016 09:23 PM',
-    thumbnail: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
-    sourceType: 'Twitter'
-  }
-];
-
-
 var sourceTypes = {
-  data: {
+  sourceTypes: {
     records: [
       {
         name: "Audio",
@@ -72,7 +27,10 @@ var sourceTypes = {
               password: {
                 type: 'string'
               }
-            }
+            },
+            required: [
+              'url', 'username', 'password'
+            ]
           }
         }
       },
@@ -113,6 +71,11 @@ var sourceResult = {
       createdDateTime: "2014-12-01T18:17:20.675Z",
       modifiedDateTime: "2015-12-01T18:17:20.675Z",
       thumbnail: "https://image.flaticon.com/icons/svg/25/25305.svg",
+      details: {
+        url: 'twitter.com',
+        username: 'therealtrump',
+        password: 'password'
+      },
       sourceType: {
         id: "1",
         name: "Audio",
@@ -121,7 +84,7 @@ var sourceResult = {
           definition: {
             properties: {
               url: {
-                type: "string"
+                type: "string",
               },
               username: {
                 type: "string",
@@ -161,11 +124,11 @@ storiesOf('SourceManagement', module)
   .add('TileView', () => (
     <SourceTileView sources={sourceResults}/>
   ))
-  // .add('Grid', () => (
-  //   <SourceGridView sourceInfo={sourceInfo} />
-  // ))
-  .add('SourceConfiguration', () => (
-    <SourceConfiguration sourceTypes={sourceTypes.data.records} submitCallback={submitCallback}/>
+  .add('CreateSource', () => (
+    <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} submitCallback={submitCallback}/>
+  ))
+  .add('EditSource', () => (
+    <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} source={sourceResult.data.source} submitCallback={submitCallback}/>
   ))
   .add('Row', () => (
     <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} image={thumbnail} />

@@ -24,8 +24,11 @@ var sourceTypes = {
               password: {
                 type: 'string'
               }
-            }
-          }
+            },
+            required: [
+              'url', 'username', 'password'
+            ]
+          },
         }
       },
       {
@@ -47,7 +50,10 @@ var sourceTypes = {
               days: {
                 type: 'number'
               }
-            }
+            },
+            required: [
+              'url', 'days'
+            ]
           }
         }
       }
@@ -57,6 +63,7 @@ var sourceTypes = {
 
 function formCallback(formResult) {
   console.log(formResult);
+  
 };
 
 var helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
@@ -66,9 +73,19 @@ var initialValues = {
   url: 'twitter.com',
   username: 'trump',
   password: 'password',
-}
+};
+
+// test passing in an object with fields that are in error state
+var errorFields = {
+  url: true,
+  username: false,
+  password: true
+};
 
 storiesOf('SchemaDrivenSelectForm', module)
   .add('Base', () => (
     <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={initialValues} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
+  ))
+  .add('Error Field', () => (
+    <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={{username:'trump'}} errorFields={errorFields} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
   ))

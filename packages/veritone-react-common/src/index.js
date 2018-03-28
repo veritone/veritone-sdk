@@ -27,16 +27,10 @@ export AppContainer from './components/AppContainer';
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
 
-export SDOCard from './components/SDO/SDOCard';
-export SDOFullScreenCard from './components/SDO/SDOFullScreenCard';
-export SDOMediaDetailsCard from './components/SDO/SDOMediaDetailsCard';
-export SDOTile from './components/SDO/SDOTile';
-
-export IngestionJobFullScreen from './components/IngestionJobs/IngestionJobFullScreen';
 export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
 export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
-export StatusPill from './components/IngestionJobs/StatusPill';
+export StatusPill from './components/StatusPill';
 
 export RefreshButton from './components/RefreshButton';

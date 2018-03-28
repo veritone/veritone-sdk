@@ -19,15 +19,23 @@
   .sourceConfiguration {
     color: blue;
     .formStyle {
-      width: 60%;
+      width: 80%;
       min-width: 350px;
 
-      .imageStyle {
+      .container {
+        flex-direction: row;
+        align-items: center;
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        margin-top: 20px;
 
+        .sourceName {
+          margin-left: 20px;
+          margin-bottom: 30px;
+        }
       }
-      .sourceName {
-        margin-bottom: 30px;
-      }
+      
     }
     
   }
