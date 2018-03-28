@@ -37,8 +37,7 @@ export default {
     'react-infinite-calendar',
     'react-redux',
     'redux',
-    'redux-form',
-    'redux-form-material-ui'
+    'redux-form'
   ],
   plugins: [
     replace({
