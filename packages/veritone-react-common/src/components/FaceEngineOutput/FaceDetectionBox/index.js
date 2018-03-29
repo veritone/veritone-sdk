@@ -9,6 +9,7 @@ import { MenuItem } from 'material-ui/Menu';
 import Avatar from 'material-ui/Avatar';
 
 import { msToReadableString } from 'helpers/time';
+import noAvatar from 'images/no-avatar.png';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
@@ -31,15 +32,24 @@ class FaceDetectionBox extends Component {
       })
     ),
     enableEdit: bool,
-    updateEntity: func,
+    onUpdateEntity: func,
     addNewEntity: func,
-    onClick: func
+    onRemoveFaceDetection: func,
+    onEditFaceDetection: func,
+    onClick: func,
+    onSearchForEntities: func
   };
 
   state = {
     editFaceEntity: false,
     hovered: false
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.enableEdit === false) {
+      this.setState({ editFaceEntity: false });
+    }
+  }
 
   handleMouseOver = () => {
     this.setState({ hovered: true });
@@ -53,8 +63,16 @@ class FaceDetectionBox extends Component {
     this.setState({ editFaceEntity: true });
   };
 
-  handleAddNewEntity = face => evt => {
-    this.props.addNewEntity(face, evt);
+  handleAddNewEntity = entity => evt => {
+    this.props.addNewEntity(this.props.face, entity);
+  };
+
+  handleEntitySelect = entity => {
+    this.props.onEditFaceDetection(this.props.face, entity);
+  };
+
+  handleDeleteFaceDetection = face => {
+    this.props.onRemoveFaceDetection(this.props.face);
   };
 
   inputRef = c => {
@@ -85,7 +103,13 @@ class FaceDetectionBox extends Component {
   itemToString = item => item && item.entityName;
 
   render() {
-    let { face, searchResults, updateEntity, enableEdit, onClick } = this.props;
+    let {
+      face,
+      searchResults,
+      enableEdit,
+      onClick,
+      onSearchForEntities
+    } = this.props;
 
     return (
       <div
@@ -98,7 +122,7 @@ class FaceDetectionBox extends Component {
         onClick={onClick}
       >
         <div className={styles.entityImageContainer}>
-          <img className={styles.entityImage} src={face.originalImage} />
+          <img className={styles.entityImage} src={face.object.uri} />
           {enableEdit &&
             this.state.hovered && (
               <div className={styles.imageButtonOverlay}>
@@ -108,7 +132,10 @@ class FaceDetectionBox extends Component {
                 >
                   <i className="icon-mode_edit2" />
                 </div>
-                <div className={styles.faceActionIcon}>
+                <div
+                  className={styles.faceActionIcon}
+                  onClick={this.handleDeleteFaceDetection}
+                >
                   <i className="icon-trashcan" />
                 </div>
               </div>
@@ -120,7 +147,12 @@ class FaceDetectionBox extends Component {
             {msToReadableString(face.stopTimeMs)}
           </span>
           {this.state.editFaceEntity ? (
-            <Downshift itemToString={this.itemToString} onSelect={updateEntity}>
+            <Downshift
+              inputValue={styles.entityName}
+              itemToString={this.itemToString}
+              onSelect={this.handleEntitySelect}
+              onInputValueChange={onSearchForEntities}
+            >
               {({
                 getInputProps,
                 getItemProps,
@@ -156,7 +188,13 @@ class FaceDetectionBox extends Component {
                               })}
                             >
                               {result.profileImageUrl ? (
-                                <Avatar src={result.profileImageUrl} />
+                                <Avatar
+                                  src={
+                                    result.profileImageUrl
+                                      ? result.profileImageUrl
+                                      : noAvatar
+                                  }
+                                />
                               ) : null}
                               <div className={styles.entityInfo}>
                                 <div className={styles.menuEntityName}>

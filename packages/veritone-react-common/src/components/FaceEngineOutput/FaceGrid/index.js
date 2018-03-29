@@ -26,7 +26,10 @@ class FaceGrid extends Component {
     ),
     enableEditMode: bool,
     onAddNewEntity: func,
-    onFaceOccurrenceClicked: func
+    onEditFaceDetection: func,
+    onFaceOccurrenceClicked: func,
+    onRemoveFaceDetection: func,
+    onSearchForEntities: func
   };
 
   handleFaceClick = face => evt => {
@@ -39,12 +42,15 @@ class FaceGrid extends Component {
     return faces.map((face, index) => {
       return (
         <FaceDetectionBox
-          key={'face-' + face.startTimeMs + '-' + face.endTimeMs + '-' + index}
+          key={'face-' + face.startTimeMs + '-' + face.stopTimeMs + '-' + index}
           face={face}
           enableEdit={this.props.enableEditMode}
           addNewEntity={this.props.onAddNewEntity}
           searchResults={this.props.entitySearchResults}
+          onEditFaceDetection={this.props.onEditFaceDetection}
+          onRemoveFaceDetection={this.props.onRemoveFaceDetection}
           onClick={this.handleFaceClick(face)}
+          onSearchForEntities={this.props.onSearchForEntities}
         />
       );
     });

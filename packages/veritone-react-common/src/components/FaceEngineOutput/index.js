@@ -8,7 +8,7 @@ import { shape, number, string, bool, arrayOf, func, oneOf } from 'prop-types';
 import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import noAvatar from 'resources/images/no-avatar.png';
+import noAvatar from 'images/no-avatar.png';
 import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
@@ -19,14 +19,18 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class FaceEngineOutput extends Component {
   static propTypes = {
-    faces: arrayOf(
+    faceEngineOutput: arrayOf(
       shape({
-        startTimeMs: number,
-        endTimeMs: number,
-        object: shape({
-          label: string,
-          uri: string
-        })
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            endTimeMs: number,
+            object: shape({
+              label: string,
+              uri: string
+            })
+          })
+        )
       })
     ).isRequired,
     libraries: arrayOf(
@@ -58,7 +62,10 @@ class FaceEngineOutput extends Component {
     viewMode: oneOf(['summary', 'byFrame', 'byScene']),
     onAddNewEntity: func,
     className: string,
-    onFaceOccurrenceClicked: func
+    onFaceOccurrenceClicked: func,
+    onRemoveFaceDetection: func,
+    onEditFaceDetection: func,
+    onSearchForEntities: func
   };
 
   state = {
@@ -71,15 +78,15 @@ class FaceEngineOutput extends Component {
   };
 
   componentWillMount() {
-    this.processFaces(this.props.faces);
+    this.processFaces(this.props.faceEngineOutput);
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.viewMode !== this.props.viewMode) {
       this.setState({ selectedEntity: null });
     }
-    if (!isEqual(nextProps.faces, this.props.faces)) {
-      this.processFaces(this.props.faces);
+    if (!isEqual(nextProps.faceEngineOutput, this.props.faceEngineOutput)) {
+      this.processFaces(nextProps.faceEngineOutput);
     }
   }
 
@@ -173,45 +180,38 @@ class FaceEngineOutput extends Component {
           recognizedEntityObjectMap[face.entityId] = face;
           recognizedEntityObjects.push(face);
         }
-      } else if (!faceObj.entityId) {
-        let face = {
-          originalImage: faceObj.object.uri,
-          startTimeMs: faceObj.startTimeMs,
-          stopTimeMs: faceObj.stopTimeMs
-        };
-        detectedFaceObjects.push(face);
-      }
 
-      let matchNamespace = this.getFrameNamespaceForMatch(faceObj);
-      if (matchNamespace) {
-        let secondSpots = this.getArrayOfSecondSpots(faceObj);
-        secondSpots.forEach(second => {
-          if (!secondMap[second]) {
-            secondMap[second] = {};
-          }
-          if (!secondMap[second][matchNamespace]) {
-            secondMap[second][matchNamespace] = {
-              startTimeMs: faceObj.startTimeMs,
-              stopTimeMs: faceObj.stopTimeMs,
-              originalImage: faceObj.object.uri,
-              entities: [],
-              boundingPoly: faceObj.object.boundingPoly
+        let matchNamespace = this.getFrameNamespaceForMatch(faceObj);
+        if (matchNamespace) {
+          let secondSpots = this.getArrayOfSecondSpots(faceObj);
+          secondSpots.forEach(second => {
+            if (!secondMap[second]) {
+              secondMap[second] = {};
+            }
+            if (!secondMap[second][matchNamespace]) {
+              secondMap[second][matchNamespace] = {
+                startTimeMs: faceObj.startTimeMs,
+                stopTimeMs: faceObj.stopTimeMs,
+                originalImage: faceObj.object.uri,
+                entities: [],
+                boundingPoly: faceObj.object.boundingPoly
+              };
+            }
+
+            let match = {
+              confidence: faceObj.object.confidence,
+              entityId: faceObj.entityId
             };
-          }
 
-          let match = {
-            confidence: faceObj.object.confidence
-          };
-          if (faceObj.entityId) {
-            match.entityId = faceObj.entityId;
-          }
+            secondMap[second][matchNamespace].entities.push(match);
 
-          secondMap[second][matchNamespace].entities.push(match);
-
-          secondMap[second][matchNamespace].entities.sort((a, b) => {
-            return b.confidence - a.confidence;
+            secondMap[second][matchNamespace].entities.sort((a, b) => {
+              return b.confidence - a.confidence;
+            });
           });
-        });
+        }
+      } else if (!faceObj.entityId) {
+        detectedFaceObjects.push(faceObj);
       }
     });
 
@@ -277,7 +277,10 @@ class FaceEngineOutput extends Component {
       entitySearchResults,
       className,
       onFaceOccurrenceClicked,
-      mediaPlayerPosition
+      mediaPlayerPosition,
+      onRemoveFaceDetection,
+      onEditFaceDetection,
+      onSearchForEntities
     } = this.props;
 
     return (
@@ -402,6 +405,9 @@ class FaceEngineOutput extends Component {
               onAddNewEntity={onAddNewEntity}
               entitySearchResults={entitySearchResults}
               onFaceOccurrenceClicked={onFaceOccurrenceClicked}
+              onRemoveFaceDetection={onRemoveFaceDetection}
+              onEditFaceDetection={onEditFaceDetection}
+              onSearchForEntities={onSearchForEntities}
             />
           </div>
         )}
