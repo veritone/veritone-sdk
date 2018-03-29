@@ -4,7 +4,7 @@ import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
-import { bool, func, number, string, shape, arrayOf, any } from 'prop-types';
+import { bool, func, number, string, shape, arrayOf, any, object } from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { EngineCategorySelector } from 'veritone-react-common';
@@ -90,6 +90,10 @@ class MediaDetailsWidget extends React.Component {
     engineResultsByEngineId: shape({
       engineId: arrayOf(any)
     })
+  };
+
+  static contextTypes = {
+    store: object.isRequired // eslint-disable-line
   };
 
   state = {
@@ -365,9 +369,8 @@ class MediaDetailsWidget extends React.Component {
                   <video.Player
                     src={this.getPrimaryAssetUri()}
                     className={styles.videoPlayer}
-                  >
-
-                  </video.Player>
+                    store={this.context.store}
+                  />
                 </div>
                 <div className={styles.sourceLabel}>
                   Source: {this.getMediaSource()}
