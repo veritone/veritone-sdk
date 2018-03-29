@@ -165,7 +165,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
           const filteredEngineIdx = engineCategory.engines.findIndex(
             filteredEngine => filteredEngine.id === engineFromTask.id
           );
-          if (filteredEngineIdx == -1) {
+          if (filteredEngineIdx === -1) {
             engineCategory.engines.push(engineFromTask);
           } else if (
             engineFromTask.completedDateTime >
@@ -190,8 +190,8 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
 
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
-    if (category1.categoryType < category2.categoryType) return -1;
-    if (category1.categoryType > category2.categoryType) return 1;
+    if (category1.categoryType < category2.categoryType) {return -1;}
+    if (category1.categoryType > category2.categoryType) {return 1;}
     return 0;
   });
   const orderedCategoryTypes = [

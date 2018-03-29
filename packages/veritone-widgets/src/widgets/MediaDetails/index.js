@@ -4,8 +4,9 @@ import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
-import { bool, func, number, object, string, arrayOf, any } from 'prop-types';
+import { bool, func, number, string, shape, arrayOf, any } from 'prop-types';
 import { connect } from 'react-redux';
+import { get } from 'lodash';
 import { EngineCategorySelector } from 'veritone-react-common';
 import { MediaInfoPanel } from 'veritone-react-common';
 import { FullScreenDialog } from 'veritone-react-common';
@@ -46,9 +47,43 @@ class MediaDetailsWidget extends React.Component {
     error: bool,
     warning: bool,
     statusMessage: string,
-    engineCategories: arrayOf(any),
-    tdo: object,
-    engineResultsByEngineId: object
+    engineCategories: arrayOf(shape({
+      name: string,
+      id: string,
+      editable: bool,
+      iconClass: string,
+      engines: arrayOf(shape({
+        id: string,
+        name: string,
+        completedDateTime: string
+      }))}
+    )),
+    tdo: shape({
+      id: string,
+      details: shape({
+        veritoneCustom: shape({
+          source: string
+        }),
+        date: string,
+        veritoneFile: shape({
+          filename: string
+        }),
+        veritoneProgram: shape({
+          programId: string,
+          programName: string,
+          programImage: string,
+          programLiveImage: string
+        }),
+        tags: arrayOf(shape({
+          value: string
+        }))
+      }),
+      startDateTime: string,
+      stopDateTime: string
+    }),
+    engineResultsByEngineId: shape({
+      engineId: arrayOf(any)
+    })
   };
 
   state = {
@@ -111,31 +146,16 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getMediaFileName = () => {
-    if (
-      this.props.tdo &&
-      this.props.tdo.details &&
-      this.props.tdo.details.veritoneFile &&
-      this.props.tdo.details.veritoneFile.filename
-    ) {
-      return this.props.tdo.details.veritoneFile.filename;
-    }
-    return this.props.mediaId;
+    const filename = get(this.props.tdo, 'details.veritoneFile.filename');
+    return filename || this.props.mediaId;
   };
 
   getMediaSource = () => {
-    if (
-      this.props.tdo &&
-      this.props.tdo.details &&
-      this.props.tdo.details.veritoneProgram
-    ) {
-      const veritoneProgram = this.props.tdo.details.veritoneProgram;
-      if (veritoneProgram.programId === '-1') {
-        return 'Private Media';
-      } else {
-        return veritoneProgram.programName;
-      }
+    const veritoneProgram = get(this.props.tdo, 'details.veritoneProgram');
+    if (veritoneProgram.programId === '-1') {
+      return 'Private Media';
     }
-    return '';
+    return veritoneProgram.programName;
   };
 
   toggleEditMode = () => {
@@ -171,7 +191,7 @@ class MediaDetailsWidget extends React.Component {
 
   render() {
     return (
-      <FullScreenDialog open={true}>
+      <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
           {!this.state.isEditMode && (
             <div>
