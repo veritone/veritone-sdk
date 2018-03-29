@@ -29,3 +29,6 @@ export OCREngineOutputView from './components/OCREngineOutputView';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
 export * as video from './components/Video'
+export OAuthLoginButton from './components/OAuthLoginButton';
+export { Table, PaginatedTable, Column } from './components/DataTable';
+export MenuColumn from './components/DataTable/MenuColumn';

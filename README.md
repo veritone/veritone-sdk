@@ -21,7 +21,7 @@ _This is WIP and may change as we find a better process_
     * Tag version: version-packagename, ie. `1.0.0-veritone-client-js`
     * Release title: packagename vVersion, ie. veritone-client-js v1.0.0
 6. On your local machine, checkout the `master` branch and `git pull`.
-7. Run `npm publish` in each package directory as needed to push your release to NPM.
+7. Run `yarn publish` in each package directory as needed to push your release to NPM.
 
 # Creating development/integration bundles (for internal Veritone use)
 Occasionally you may need to integrate unfinished work on an SDK package with another project. In cases where that project must be deployed or shared, we cannot rely on `yarn link`. Rather than cluttering our ecosystem with with prerelease package versions, you can publish a tar archive to an S3 bucket and reference that archive in the package.json of your project (using yarn's ability to download tarball dependencies).
