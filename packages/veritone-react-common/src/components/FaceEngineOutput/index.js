@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import { find, isEqual, pick, isObject } from 'lodash';
+import Icon from 'material-ui/Icon';
+import Chip from 'material-ui/Chip';
+import Avatar from 'material-ui/Avatar';
+import { find, isEqual, pick, isObject, isEmpty } from 'lodash';
 import { shape, number, string, bool, arrayOf, func, oneOf } from 'prop-types';
-import classNames from 'classnames';
+import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import noAvatar from 'resources/images/no-avatar.png';
 import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
@@ -51,7 +55,7 @@ class FaceEngineOutput extends Component {
     ),
     enableEditMode: bool,
     mediaPlayerPosition: number,
-    viewMode: oneOf(['byFrame', 'byScene']),
+    viewMode: oneOf(['summary', 'byFrame', 'byScene']),
     onAddNewEntity: func,
     className: string,
     onFaceOccurrenceClicked: func
@@ -211,10 +215,26 @@ class FaceEngineOutput extends Component {
       }
     });
 
+    // Loop through faces and namespace by library
+    let entitiesByLibrary = {};
+    recognizedEntityObjects &&
+      recognizedEntityObjects.forEach(currentFace => {
+        let library = currentFace.entity.library;
+        if (library && library.id && !entitiesByLibrary[library.id]) {
+          entitiesByLibrary[library.id] = {
+            library: library,
+            faces: [currentFace]
+          };
+        } else if (library && library.id) {
+          entitiesByLibrary[library.id].faces.push(currentFace);
+        }
+      });
+
     this.setState({
       detectedFaces: detectedFaceObjects,
       recognizedEntityObjects: recognizedEntityObjects,
       recognizedEntityObjectMap: recognizedEntityObjectMap,
+      entitiesByLibrary: entitiesByLibrary,
       framesBySeconds: secondMap
     });
   };
@@ -233,7 +253,7 @@ class FaceEngineOutput extends Component {
     return library.entities.find(e => e.entityId === entityId);
   };
 
-  handleEntitySelect = entityId => {
+  handleEntitySelect = entityId => evt => {
     if (this.state.recognizedEntityObjectMap[entityId]) {
       this.setState({
         selectedEntity: {
@@ -261,7 +281,7 @@ class FaceEngineOutput extends Component {
     } = this.props;
 
     return (
-      <div className={classNames(styles.faceEngineOutput, className)}>
+      <div className={cx(styles.faceEngineOutput, className)}>
         <Tabs
           value={this.state.activeTab}
           onChange={this.handleTabChange}
@@ -287,6 +307,69 @@ class FaceEngineOutput extends Component {
                 onOccurrenceClicked={onFaceOccurrenceClicked}
               />
             )}
+            {viewMode === 'summary' &&
+              !this.state.selectedEntity && (
+                <div>
+                  {isEmpty(this.state.entitiesByLibrary) ? (
+                    <div>No Face Matches Found</div>
+                  ) : (
+                    <div>
+                      {Object.keys(this.state.entitiesByLibrary).map(
+                        (key, index) => {
+                          let library = this.state.entitiesByLibrary[key]
+                            .library;
+                          return (
+                            <div key={'faces-by-libary-' + key}>
+                              <div className={styles.libraryName}>
+                                <Icon
+                                  className={cx(
+                                    styles.libraryIcon,
+                                    'icon-library-app'
+                                  )}
+                                />
+                                <span>
+                                  Library: <strong>{library.name}</strong>
+                                </span>
+                              </div>
+                              <div className={styles.entityCountContainer}>
+                                {this.state.entitiesByLibrary[key].faces.map(
+                                  (face, index) => {
+                                    return (
+                                      <Chip
+                                        key={'face-' + face.entityId}
+                                        className={styles.entityCountChip}
+                                        label={
+                                          <span>
+                                            {face.fullName}{' '}
+                                            <a>({face.count})</a>
+                                          </span>
+                                        }
+                                        avatar={
+                                          <Avatar
+                                            className={styles.faceAvatar}
+                                            src={
+                                              face.profileImage
+                                                ? face.profileImage
+                                                : noAvatar
+                                            }
+                                          />
+                                        }
+                                        onClick={this.handleEntitySelect(
+                                          face.entityId
+                                        )}
+                                      />
+                                    );
+                                  }
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             {viewMode === 'byFrame' &&
               !this.state.selectedEntity && (
                 <FacesByFrame

@@ -12,7 +12,7 @@ storiesOf('FaceEngineOutput', module).add('Base', () => {
     <FaceEngineOutput
       faces={faceObjects}
       libraries={libraries}
-      enableEditMode={boolean('enableEditMode')}
+      enableEditMode={boolean('enableEditMode', false)}
       entitySearchResults={entitySearchResults}
       className={styles.outputViewRoot}
       mediaPlayerPosition={number('mediaPlayerPosition', 0, {
@@ -138,7 +138,24 @@ let faceObjects = [
               y: 0.2
             }
           ],
-          confidence: 0.75123
+          confidence: 0.81
+        }
+      },
+      {
+        startTimeMs: 1000,
+        stopTimeMs: 4000,
+        entityId: '1945a3ba-f0a3-411e-8419-78e31c73150a',
+        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.1,
+              y: 0.2
+            }
+          ],
+          confidence: 0.81
         }
       },
       {
@@ -159,11 +176,11 @@ let faceObjects = [
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
           boundingPoly: [
             {
-              x: 0.3,
+              x: 0.1,
               y: 0.2
             }
           ],
-          confidence: 0.8456
+          confidence: 0.86
         }
       },
       {
@@ -180,7 +197,7 @@ let faceObjects = [
               y: 0.2
             }
           ],
-          confidence: 0.99234
+          confidence: 0.9
         }
       }
     ]
@@ -197,7 +214,7 @@ let faceObjects = [
       },
       {
         startTimeMs: 5000,
-        stopTimeMs: 60000000,
+        stopTimeMs: 6000,
         entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
         libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
         object: {
@@ -209,7 +226,7 @@ let faceObjects = [
               y: 0.2
             }
           ],
-          confidence: 0.84321
+          confidence: 0.94
         }
       }
     ]

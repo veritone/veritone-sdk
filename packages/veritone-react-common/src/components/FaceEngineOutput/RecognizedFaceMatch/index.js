@@ -11,12 +11,8 @@ class RecognizedFaceMatch extends Component {
     confidence: number
   };
 
-  handleViewDetailsClick = entityId => evt => {
-    this.props.onViewDetailsClick(entityId);
-  };
-
   render() {
-    let { entity, confidence } = this.props;
+    let { entity, confidence, onViewDetailsClick } = this.props;
     let confidenceColor =
       Math.round(confidence * 100) >= 90
         ? styles.greenBackground
@@ -33,7 +29,7 @@ class RecognizedFaceMatch extends Component {
           </div>
           <div
             className={styles.viewDetailsLink}
-            onClick={this.handleViewDetailsClick(entity.entityId)}
+            onClick={onViewDetailsClick(entity.entityId)}
           >
             View Details
           </div>
