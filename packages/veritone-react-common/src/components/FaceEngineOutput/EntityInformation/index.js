@@ -96,9 +96,7 @@ class EntityInformation extends Component {
           </Tabs>
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>
-              {!timeSlots.length ? (
-                <div>No Face Matches Found</div>
-              ) : (
+              {timeSlots.length && (
                 <div className={styles.faceOccurrenceList}>
                   {timeSlots.map((timeSlot, index) => {
                     return (

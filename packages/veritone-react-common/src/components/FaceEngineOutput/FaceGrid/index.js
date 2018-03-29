@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, bool, func } from 'prop-types';
 
+import NoFacesFound from '../NoFacesFound';
 import FaceDetectionBox from '../FaceDetectionBox';
 
 import styles from './styles.scss';
@@ -59,7 +60,11 @@ class FaceGrid extends Component {
   render() {
     let { faces } = this.props;
 
-    return <div className={styles.faceGrid}>{this.renderFaces(faces)}</div>;
+    return (
+      <div className={styles.faceGrid}>
+        {!faces.length ? <NoFacesFound /> : this.renderFaces(faces)}
+      </div>
+    );
   }
 }
 

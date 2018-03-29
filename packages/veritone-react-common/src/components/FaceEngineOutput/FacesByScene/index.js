@@ -4,6 +4,7 @@ import { compact } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import RecognizedFaceMatch from '../RecognizedFaceMatch';
+import NoFacesFound from '../NoFacesFound';
 
 import styles from './styles.scss';
 
@@ -64,7 +65,7 @@ class FacesByScene extends Component {
     return (
       <div className={styles.facesByScene}>
         {!compact(recognizedEntityObjects).length ? (
-          <div>No Face Matches Found</div>
+          <NoFacesFound />
         ) : (
           recognizedEntityObjects
         )}

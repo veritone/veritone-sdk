@@ -9,6 +9,7 @@ import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import noAvatar from 'images/no-avatar.png';
+import NoFacesFound from './NoFacesFound';
 import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
@@ -316,7 +317,7 @@ class FaceEngineOutput extends Component {
               !this.state.selectedEntity && (
                 <div>
                   {isEmpty(this.state.entitiesByLibrary) ? (
-                    <div>No Face Matches Found</div>
+                    <NoFacesFound />
                   ) : (
                     <div>
                       {Object.keys(this.state.entitiesByLibrary).map(

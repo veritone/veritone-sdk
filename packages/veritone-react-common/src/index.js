@@ -25,6 +25,7 @@ export AppContainer from './components/AppContainer';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
 //export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
+export FaceEngineOutput from './components/FaceEngineOutput';
 export OCREngineOutputView from './components/OCREngineOutputView';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';

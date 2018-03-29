@@ -36,6 +36,26 @@
   padding-top: 20px;
   max-height: calc(100% - 48px);
   overflow: scroll;
+  border-top: 1px solid $grey-4;
+}
+
+.noFacesFound {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+
+  img {
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+}
+
+.noFaceMatchText {
+  text-align: center;
+  line-height: 24px;
+  font-size: 20px;
+  font-weight: 300;
 }
 
 .entityCountContainer {
