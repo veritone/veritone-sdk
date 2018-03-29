@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -18,11 +18,12 @@
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-test-backend": "^2.5.4",
     "react-dom": "^16.2.0",
+    "react-dotdotdot": "^1.2.3",
     "react-infinite-calendar": "^2.3.1",
     "react-redux": "^5.0.6",
+    "react-transition-group": "1.x",
     "redux": "^3.7.2",
-    "redux-form": "^7.1.2",
-    "redux-form-material-ui": "^5.0.0-beta.2"
+    "redux-form": "^7.1.2"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
@@ -30,7 +31,7 @@
     "now-build": "yarn run build:storybook",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
     "clean:build": "rimraf dist",
-    "prebuild": "npm run clean:build",
+    "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
     "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
@@ -38,10 +39,10 @@
     "build:storybook": "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
-    "lint": "npm run lint:js; npm run lint:styles",
-    "lint:js": "eslint src/** --ext .js",
+    "lint": "yarn run lint:js && yarn run lint:styles",
+    "lint:js": "eslint src/** --ext .js --max-warnings 0",
     "lint:styles": "stylelint \"src/**/*.{scss, css}\"",
-    "prepublishOnly": "npm run test && npm run lint && npm run build"
+    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.9",

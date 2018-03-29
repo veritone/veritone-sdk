@@ -1,3 +1,6 @@
-import { TextField } from 'redux-form-material-ui';
+import TextField from 'material-ui/TextField';
+import { createComponent, mapError } from './redux-form-material-ui';
 
-export default TextField;
+export default createComponent(TextField, ({ defaultValue, ...props }) => ({
+  ...mapError(props)
+}));
