@@ -37,9 +37,12 @@ export default class SentimentEngineOutput extends Component {
     sentimentTicks: [100, 80, 60, 40, 20, 0, -20, -40, -60, -80, -100]
   };
 
-  //================================================================================
-  //=============================Interaction Functions==============================
-  //================================================================================
+  componentWillReceiveProps (newProps) {
+    if(newProps.timeWindowStartMs !== this.props.timeWindowStartMs) {
+      this.scrollTo(newProps.timeWindowStartMs);
+    }
+  }
+
   handleTimeScroll = event => {
     if (this.props.onTimeScroll) {
       this.scrollTimeOut && clearTimeout(this.scrollTimeOut);
@@ -66,9 +69,6 @@ export default class SentimentEngineOutput extends Component {
     this.props.onTimeClick && this.props.onTimeClick(event);
   };
 
-  //================================================================================
-  //================================Helper Functions================================
-  //================================================================================
   extractPropsData = () => {
     let {
       data,
@@ -146,9 +146,10 @@ export default class SentimentEngineOutput extends Component {
     this.scrollContent = target;
   };
 
-  scrollTo(timeMs, totalTimeMs) {
+  scrollTo = (timeMs) => {
+    let data = this.props.data;
     let scrollTarget = this.scrollContent;
-    let scrollRatio = timeMs / totalTimeMs;
+    let scrollRatio = timeMs / data[data.length - 1].stopTimeMs;
 
     scrollTarget.scrollLeft = scrollRatio * scrollTarget.scrollWidth;
   }
@@ -161,9 +162,6 @@ export default class SentimentEngineOutput extends Component {
     return value + '%';
   }
 
-  //================================================================================
-  //================================Render Function=================================
-  //================================================================================
   renderSummary(average) {
     return (
       <div
@@ -185,9 +183,7 @@ export default class SentimentEngineOutput extends Component {
       yTicks,
       yDomain,
       scaleX,
-      referenceValue,
-      totalTime,
-      scrollToTime
+      referenceValue
     } = extractedData;
 
     // Compute color offset
@@ -200,10 +196,6 @@ export default class SentimentEngineOutput extends Component {
     } else if (maxSentiment > 0) {
       offset = maxSentiment / (maxSentiment - minSentiment); // Above 0 is green & below 0 is red
     }
-
-    setTimeout(() => {
-      this.scrollTo(scrollToTime, totalTime);
-    });
 
     return (
       <div className={styles.sentimentBody}>

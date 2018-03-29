@@ -13,6 +13,7 @@ storiesOf('SentimentEngineOutput', module).add('Base', () => {
       className={styles.outputViewRoot}
       data={dynamicMockData}
       mediaPlayerTime={6000}
+      timeWindowStartMs={0}
     />
   );
 });
