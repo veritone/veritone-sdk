@@ -2,6 +2,7 @@
 
 .faceEngineOutput {
   padding: 20px 40px 0 30px;
+  max-height: 100%;
 }
 
 .libraryName {
@@ -24,8 +25,15 @@
 }
 
 .faceTab {
-  margin-top: 20px;
-  flex: 1;
+  text-transform: none !important;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.faceTabBody {
+  padding-top: 20px;
+  max-height: calc(100% - 48px);
   overflow: scroll;
 }
 

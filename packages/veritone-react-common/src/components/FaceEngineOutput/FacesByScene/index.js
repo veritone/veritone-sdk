@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
-import cx from 'classnames';
 import { compact } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import RecognizedFaceMatch from '../RecognizedFaceMatch';
 
 import styles from './styles.scss';
 
@@ -36,12 +36,8 @@ class FacesByScene extends Component {
     onSelectEntity: func
   };
 
-  handleViewDetailsClick = entityObject => evt => {
-    this.props.onSelectEntity(entityObject);
-  };
-
   renderRecognizedEntityObjects = () => {
-    let { mediaPlayerPosition } = this.props;
+    let { mediaPlayerPosition, onSelectEntity } = this.props;
     return this.props.recognizedEntityObjects.map(entityObject => {
       let entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
         return (
@@ -50,36 +46,13 @@ class FacesByScene extends Component {
         );
       });
       if (entityCurrentlyInFrame) {
-        let confidenceColor =
-          Math.round(entityCurrentlyInFrame.confidence * 100) >= 90
-            ? styles.greenBackground
-            : styles.orangeBackground;
         return (
-          <div
-            key={'entity-by-scene-' + entityObject.entityId}
-            className={styles.recognizedMatchBox}
-          >
-            <div>
-              <img
-                className={styles.entityImage}
-                src={entityObject.profileImage}
-              />
-              <div className={styles.entityFullName}>
-                {entityObject.fullName}
-              </div>
-            </div>
-            <div>
-              <div className={cx(styles.timeSlotConfidence, confidenceColor)}>
-                {Math.round(entityCurrentlyInFrame.confidence * 100)}% Match
-              </div>
-              <div
-                className={styles.viewDetailsLink}
-                onClick={this.handleViewDetailsClick(entityObject)}
-              >
-                View Details
-              </div>
-            </div>
-          </div>
+          <RecognizedFaceMatch
+            key={'scene-view-recognized-entity-' + entityObject.entityId}
+            entity={entityObject}
+            confidence={entityCurrentlyInFrame.confidence}
+            onViewDetailsClick={onSelectEntity}
+          />
         );
       }
       return null;

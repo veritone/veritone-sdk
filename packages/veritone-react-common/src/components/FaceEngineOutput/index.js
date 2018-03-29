@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import { groupBy, find, isEqual, pick } from 'lodash';
-import { shape, number, string, bool, arrayOf, func } from 'prop-types';
+import { find, isEqual, pick, isObject } from 'lodash';
+import { shape, number, string, bool, arrayOf, func, oneOf } from 'prop-types';
 import classNames from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import noAvatar from 'images/no-avatar.png';
-import Chip from '../Chip';
-import Avatar from '../Avatar';
 import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
+import FacesByFrame from './FacesByFrame';
 
 import styles from './styles.scss';
 
@@ -53,7 +51,7 @@ class FaceEngineOutput extends Component {
     ),
     enableEditMode: bool,
     mediaPlayerPosition: number,
-    viewMode: string,
+    viewMode: oneOf(['byFrame', 'byScene']),
     onAddNewEntity: func,
     className: string,
     onFaceOccurrenceClicked: func
@@ -64,6 +62,7 @@ class FaceEngineOutput extends Component {
     detectedFaces: [],
     recognizedEntityObjects: [],
     recognizedEntityObjectMap: {},
+    framesBySeconds: {},
     selectedEntity: null
   };
 
@@ -79,6 +78,26 @@ class FaceEngineOutput extends Component {
       this.processFaces(this.props.faces);
     }
   }
+
+  getFrameNamespaceForMatch = faceObj => {
+    if (faceObj.object.boundingPoly) {
+      return JSON.stringify(faceObj.object.boundingPoly);
+    }
+  };
+
+  // Gets list of nearest seconds which the face/entity appears in (MS)
+  getArrayOfSecondSpots = timeSlot => {
+    let secondSpots = [];
+    if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
+      return secondSpots;
+    }
+    let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
+    while (timeCursor <= timeSlot.stopTimeMs) {
+      secondSpots.push(timeCursor);
+      timeCursor += 1000;
+    }
+    return secondSpots;
+  };
 
   processFaces = faceData => {
     let detectedFaceObjects = [];
@@ -98,6 +117,7 @@ class FaceEngineOutput extends Component {
       return accumulator.concat(library.entities);
     }, []);
 
+    let secondMap = {};
     faceSeries.forEach(faceObj => {
       faceObj.entity = find(entities, { entityId: faceObj.entityId });
       if (faceObj.entity && faceObj.entity.entityName) {
@@ -107,6 +127,8 @@ class FaceEngineOutput extends Component {
         );
         let face = {
           entityId: faceObj.entityId,
+          libraryId: faceObj.entity.library.id,
+          libraryName: faceObj.entity.library.name,
           fullName: faceObj.entity.entityName,
           entity: faceObj.entity,
           profileImage: faceObj.entity.profileImageUrl,
@@ -155,29 +177,45 @@ class FaceEngineOutput extends Component {
         };
         detectedFaceObjects.push(face);
       }
-    });
 
-    // Loop through and map by library. This may become depricated because it
-    // wont be accurate now that we aren't getting all the data at once.
-    let entitiesByLibrary = {};
-    recognizedEntityObjects &&
-      recognizedEntityObjects.forEach(function highLightedFaces(currentFace) {
-        let library = currentFace.entity.library;
-        if (library && library.id && !entitiesByLibrary[library.id]) {
-          entitiesByLibrary[library.id] = {
-            library: library,
-            faces: [currentFace]
+      let matchNamespace = this.getFrameNamespaceForMatch(faceObj);
+      if (matchNamespace) {
+        let secondSpots = this.getArrayOfSecondSpots(faceObj);
+        secondSpots.forEach(second => {
+          if (!secondMap[second]) {
+            secondMap[second] = {};
+          }
+          if (!secondMap[second][matchNamespace]) {
+            secondMap[second][matchNamespace] = {
+              startTimeMs: faceObj.startTimeMs,
+              stopTimeMs: faceObj.stopTimeMs,
+              originalImage: faceObj.object.uri,
+              entities: [],
+              boundingPoly: faceObj.object.boundingPoly
+            };
+          }
+
+          let match = {
+            confidence: faceObj.object.confidence
           };
-        } else if (library && library.id) {
-          entitiesByLibrary[library.id].faces.push(currentFace);
-        }
-      });
+          if (faceObj.entityId) {
+            match.entityId = faceObj.entityId;
+          }
+
+          secondMap[second][matchNamespace].entities.push(match);
+
+          secondMap[second][matchNamespace].entities.sort((a, b) => {
+            return b.confidence - a.confidence;
+          });
+        });
+      }
+    });
 
     this.setState({
       detectedFaces: detectedFaceObjects,
       recognizedEntityObjects: recognizedEntityObjects,
       recognizedEntityObjectMap: recognizedEntityObjectMap,
-      entitiesByLibrary: entitiesByLibrary
+      framesBySeconds: secondMap
     });
   };
 
@@ -195,57 +233,14 @@ class FaceEngineOutput extends Component {
     return library.entities.find(e => e.entityId === entityId);
   };
 
-  handleEntitySelect = (entity, evt) => {
-    this.setState({
-      selectedEntity: {
-        ...entity
-      }
-    });
-  };
-
-  renderEntityChips = (facesGroupedByEnity, library) => {
-    return Object.keys(facesGroupedByEnity).map(entityId => {
-      let entity = this.getEntity(library, entityId);
-      return (
-        <Chip
-          onClick={this.handleEntityClick(entity)}
-          key={'entity-' + entityId}
-          label={
-            <span>
-              {entity.entityName}{' '}
-              <a>({facesGroupedByEnity[entityId].length})</a>
-            </span>
-          }
-          classes={{
-            root: styles.entityCountChip
-          }}
-          avatar={<Avatar src={entity.profileImageUrl || noAvatar} size={40} />}
-        />
-      );
-    });
-  };
-
-  renderSummaryEntityBoxes = recognizedFaces => {
-    return Object.keys(recognizedFaces).map(libraryId => {
-      let library = this.getLibraryById(libraryId);
-      let facesGroupedByEnity = groupBy(recognizedFaces[libraryId], 'entityId');
-      if (library) {
-        return (
-          <div key={'library-' + library.id}>
-            <div className={styles.libraryName}>
-              <i className="icon-library-app" />&nbsp;
-              <span>
-                Library: <strong>{library.name}</strong>
-              </span>
-            </div>
-            <div className={styles.entityCountContainer}>
-              {this.renderEntityChips(facesGroupedByEnity, library)}
-            </div>
-          </div>
-        );
-      }
-      return null;
-    });
+  handleEntitySelect = entityId => {
+    if (this.state.recognizedEntityObjectMap[entityId]) {
+      this.setState({
+        selectedEntity: {
+          ...this.state.recognizedEntityObjectMap[entityId]
+        }
+      });
+    }
   };
 
   removeSelectedEntity = () => {
@@ -272,11 +267,19 @@ class FaceEngineOutput extends Component {
           onChange={this.handleTabChange}
           indicatorColor="primary"
         >
-          <Tab label="Face Recognition" value="faceRecognition" />
-          <Tab label="Face Detection" value="faceDetection" />
+          <Tab
+            classes={{ root: styles.faceTab }}
+            label="Face Recognition"
+            value="faceRecognition"
+          />
+          <Tab
+            classes={{ root: styles.faceTab }}
+            label="Face Detection"
+            value="faceDetection"
+          />
         </Tabs>
         {this.state.activeTab === 'faceRecognition' && (
-          <div className={styles.faceTab}>
+          <div className={styles.faceTabBody}>
             {this.state.selectedEntity && (
               <EntityInformation
                 selectedEntity={this.state.selectedEntity}
@@ -284,6 +287,17 @@ class FaceEngineOutput extends Component {
                 onOccurrenceClicked={onFaceOccurrenceClicked}
               />
             )}
+            {viewMode === 'byFrame' &&
+              !this.state.selectedEntity && (
+                <FacesByFrame
+                  mediaPlayerPosition={mediaPlayerPosition}
+                  recognizedEntityObjectMap={
+                    this.state.recognizedEntityObjectMap
+                  }
+                  framesBySeconds={this.state.framesBySeconds}
+                  onSelectEntity={this.handleEntitySelect}
+                />
+              )}
             {viewMode === 'byScene' &&
               !this.state.selectedEntity && (
                 <FacesByScene
@@ -295,7 +309,7 @@ class FaceEngineOutput extends Component {
           </div>
         )}
         {this.state.activeTab === 'faceDetection' && (
-          <div className={styles.faceTab}>
+          <div className={styles.faceTabBody}>
             <FaceGrid
               faces={this.state.detectedFaces}
               enableEditMode={enableEditMode}
