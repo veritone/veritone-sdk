@@ -1,0 +1,38 @@
+.frameContainer {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #e0e0e0;
+  padding: 20px 20px 0;
+  margin-bottom: 20px;
+}
+
+.recognizedFaceContainer {
+  display: flex;
+  flex-direction: column;
+  padding-right: 20px;
+  align-items: center;
+}
+
+.sourceImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.sourceImageTimestamp {
+  text-align: center;
+  font-size: 12px;
+}
+
+.sourceImageSubtitle {
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+}
+
+.recognizedMatches {
+  display: flex;
+  flex-flow: row wrap;
+  flex: auto;
+}

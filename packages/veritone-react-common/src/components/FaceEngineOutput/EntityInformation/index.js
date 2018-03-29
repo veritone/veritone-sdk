@@ -73,17 +73,17 @@ class EntityInformation extends Component {
         <div className={styles.selectedEntity}>
           <img
             className={styles.entityProfileImage}
-            src={selectedEntity.entity.profileImageUrl || noAvatar}
+            src={selectedEntity.profileImageUrl || noAvatar}
           />
           <div className={styles.selectedEntityInfo}>
             <div>
-              <span>{selectedEntity.entity.entityName} </span>
+              <span>{selectedEntity.fullName} </span>
               <span>({selectedEntity.timeSlots.length})</span>
             </div>
             <div>
               <i className="icon-library-app" />&nbsp;
               <span>
-                Library: <strong>{selectedEntity.entity.library.name}</strong>
+                Library: <strong>{selectedEntity.libraryName}</strong>
               </span>
             </div>
           </div>
