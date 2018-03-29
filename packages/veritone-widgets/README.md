@@ -238,6 +238,38 @@ The Veritone file upload dialog. Handles selecting and uploading files to S3 for
 
 * cancel(): close the filepicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
 
+**Table**
+
+A Veritone table to display data.
+
+*Options:*
+
+* data: arrayOf(object) (required), the dataset
+* columns: arrayOf(shape) (required), a set of defintions for each column to be displayed
+  * shape: object with the following keys:
+    * dataKey: string (required), the data attribute to display within column 
+    * header: string, the column heading
+    * transform: function, specifies how column data should be displayed
+      * signature: `(cellValue) => {}`
+    * menu: bool, identifies a column as a menu column
+    * onSelectItem: function, when `menu` is `true`, specifies action(s) to take when a menu option is clicked
+      * signature: `(menuAction) => {}`
+    * cursorPointer: bool, show cursor pointer over table cells
+    * align: string, specifies columm alignment: `['left', 'right', 'center']`
+    * width: number, specifies the width of a column
+* paginate: bool, specifies whether table data should be paginated
+* initialItemsPerPage: number, the number of items to display per page in a paginated table,
+* onCellClick: function, specifies action to take when a table cell is clicked
+  * signature: `(cellRow, cellColumn, cellData) => {}`
+* focusedRow: number, identifies a row to display additional content for
+* renderFocusedRowDetails: function, specifies additional content to display for `focusedRow`
+  * signature: `(focusedRowData) => (string | react component)`
+* onShowCellRange: function, fires when table page or rows (on page) changes;
+  * signature: `({ start: firstRowIndex, end: lastRowIndex }) => {}`
+* onRefreshPageData: function, specifies how to refresh data (if needed)
+  * signature: `() => {}`
+* emptyMessage: string, text to display when table has no data
+
 ## Running the development environment (storybook)
 1. Set up your local clone of veritone-sdk, following the instructions in the [main readme](https://github.com/veritone/veritone-sdk#development)
 2. cd to this package
