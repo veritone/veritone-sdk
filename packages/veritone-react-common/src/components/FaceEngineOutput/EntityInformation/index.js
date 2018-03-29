@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import Button from 'material-ui/Button';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import { startCase } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { msToReadableString } from 'helpers/time';
@@ -14,26 +15,21 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class EntityInformation extends Component {
   static propTypes = {
-    selectedEntity: shape({
-      count: number,
-      entity: shape({
-        entityId: string,
-        entityName: string,
-        libraryId: string,
-        profileImage: string
-      }),
+    entity: shape({
       entityId: string,
-      fullName: string,
-      profileImage: string,
-      timeSlots: arrayOf(
-        shape({
-          startTimeMs: number,
-          stopTimeMs: number,
-          originalImage: string,
-          confidence: number
-        })
-      )
+      entityName: string,
+      libraryId: string,
+      profileImage: string
     }),
+    count: number,
+    timeSlots: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        originalImage: string,
+        confidence: number
+      })
+    ),
     onBackClicked: func,
     onOccurrenceClicked: func
   };
@@ -53,7 +49,8 @@ class EntityInformation extends Component {
   };
 
   render() {
-    let { selectedEntity, onBackClicked } = this.props;
+    let { entity, count, timeSlots, onBackClicked } = this.props;
+    console.log(entity);
 
     return (
       <div>
@@ -73,17 +70,17 @@ class EntityInformation extends Component {
         <div className={styles.selectedEntity}>
           <img
             className={styles.entityProfileImage}
-            src={selectedEntity.profileImageUrl || noAvatar}
+            src={entity.profileImageUrl || noAvatar}
           />
           <div className={styles.selectedEntityInfo}>
             <div>
-              <span>{selectedEntity.fullName} </span>
-              <span>({selectedEntity.timeSlots.length})</span>
+              <span>{entity.entityName} </span>
+              <span>({count})</span>
             </div>
             <div>
               <i className="icon-library-app" />&nbsp;
               <span>
-                Library: <strong>{selectedEntity.libraryName}</strong>
+                Library: <strong>{entity.library.name}</strong>
               </span>
             </div>
           </div>
@@ -99,11 +96,11 @@ class EntityInformation extends Component {
           </Tabs>
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>
-              {!selectedEntity.timeSlots.length ? (
+              {!timeSlots.length ? (
                 <div>No Face Matches Found</div>
               ) : (
                 <div className={styles.faceOccurrenceList}>
-                  {selectedEntity.timeSlots.map((timeSlot, index) => {
+                  {timeSlots.map((timeSlot, index) => {
                     return (
                       <div
                         onClick={this.handleFaceOccurrenceClicked(timeSlot)}
@@ -130,10 +127,26 @@ class EntityInformation extends Component {
           )}
           {this.state.activeTab === 'metadata' && (
             <div className={styles.tabContainer}>
-              <div className={styles.metadataLabel}>Description</div>
-              <span className={styles.metadataValue}>
-                {selectedEntity.entity.jsondata.description || '-'}
-              </span>
+              <div className={styles.entityJson}>
+                {!!Object.keys(entity.jsondata).length &&
+                  Object.keys(entity.jsondata).map((objKey, index) => {
+                    return (
+                      <div
+                        key={
+                          'entity-' + entity.entityId + '-jsondata-' + objKey
+                        }
+                        className={styles.jsondataItem}
+                      >
+                        <div className={styles.metadataLabel}>
+                          {startCase(objKey)}
+                        </div>
+                        <div className={styles.metadataValue}>
+                          {entity.jsondata[objKey]}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           )}
         </div>

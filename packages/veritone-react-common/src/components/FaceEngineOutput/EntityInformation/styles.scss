@@ -67,3 +67,14 @@
   font-size: 14px;
   line-height: 30px;
 }
+
+.entityJson {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.jsondataItem {
+  margin-bottom: 20px;
+  margin-right: 10px;
+}

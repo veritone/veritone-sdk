@@ -302,7 +302,9 @@ class FaceEngineOutput extends Component {
           <div className={styles.faceTabBody}>
             {this.state.selectedEntity && (
               <EntityInformation
-                selectedEntity={this.state.selectedEntity}
+                entity={this.state.selectedEntity.entity}
+                count={this.state.selectedEntity.count}
+                timeSlots={this.state.selectedEntity.timeSlots}
                 onBackClicked={this.removeSelectedEntity}
                 onOccurrenceClicked={onFaceOccurrenceClicked}
               />

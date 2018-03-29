@@ -245,7 +245,12 @@ let libraries = [
         profileImageUrl:
           'https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg',
         jsondata: {
-          description: 'A member of the beatles'
+          name: 'Paul McCartney',
+          middleName: 'Bob',
+          age: 75,
+          gender: 'Male',
+          description:
+            'A member of the beatles. I am typing this to test a long string that will be used in a description for this person or not.'
         }
       },
       {
