@@ -1,9 +1,6 @@
-import React from 'react';
-import { LibTextField } from 'redux-form-material-ui';
+import TextField from 'material-ui/TextField';
+import { createComponent, mapError } from './redux-form-material-ui';
 
-/* eslint-disable react/prop-types */
-const TextField = ({ meta, input, ...props }) => {
-  return <LibTextField {...input} {...props} />;
-};
-
-export default TextField;
+export default createComponent(TextField, ({ defaultValue, ...props }) => ({
+  ...mapError(props)
+}));

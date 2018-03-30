@@ -8,6 +8,7 @@ const {
   auth: { requestOAuthGrant, requestOAuthGrantImplicit },
   config: { getConfig }
 } = modules;
+import { OAuthLoginButton as OAuthLoginButtonComponent } from 'veritone-react-common';
 
 import widget from '../../shared/widget';
 
@@ -68,7 +69,7 @@ class OAuthLoginButton extends React.Component {
   render() {
     return (
       !this.props.userIsAuthenticated && (
-        <button onClick={this.handleLogin}>Log in with Veritone</button>
+        <OAuthLoginButtonComponent {...this.props} onClick={this.handleLogin} />
       )
     );
   }

@@ -1,9 +1,23 @@
-import React from 'react';
-import LibSelect from 'redux-form-material-ui';
+import Select from 'material-ui/Select';
+import { createComponent, mapError } from './redux-form-material-ui';
 
-/* eslint-disable react/prop-types */
-const Select = ({ meta, input, ...props }) => {
-  return <LibSelect {...input} {...props} />;
-};
-
-export default Select;
+export default createComponent(
+  Select,
+  ({
+    input: { onChange, value, onBlur, ...inputProps },
+    onChange: onChangeFromField,
+    defaultValue,
+    ...props
+  }) => ({
+    ...mapError(props),
+    ...inputProps,
+    value: value,
+    onChange: event => {
+      onChange(event.target.value);
+      if (onChangeFromField) {
+        onChangeFromField(event.target.value);
+      }
+    },
+    onBlur: () => onBlur(value)
+  })
+);

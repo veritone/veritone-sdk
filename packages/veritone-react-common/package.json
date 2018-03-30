@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -20,13 +20,14 @@
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-test-backend": "^2.5.4",
     "react-dom": "^16.2.0",
+    "react-dotdotdot": "^1.2.3",
     "react-infinite-calendar": "^2.3.1",
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
     "recharts": "^1.0.0-beta.10",
+    "react-transition-group": "1.x",
     "redux": "^3.7.2",
-    "redux-form": "^7.1.2",
-    "redux-form-material-ui": "^5.0.0-beta.2"
+    "redux-form": "^7.1.2"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",

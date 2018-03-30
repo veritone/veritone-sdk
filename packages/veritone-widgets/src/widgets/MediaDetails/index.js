@@ -47,17 +47,21 @@ class MediaDetailsWidget extends React.Component {
     error: bool,
     warning: bool,
     statusMessage: string,
-    engineCategories: arrayOf(shape({
-      name: string,
-      id: string,
-      editable: bool,
-      iconClass: string,
-      engines: arrayOf(shape({
-        id: string,
+    engineCategories: arrayOf(
+      shape({
         name: string,
-        completedDateTime: string
-      }))}
-    )),
+        id: string,
+        editable: bool,
+        iconClass: string,
+        engines: arrayOf(
+          shape({
+            id: string,
+            name: string,
+            completedDateTime: string
+          })
+        )
+      })
+    ),
     tdo: shape({
       id: string,
       details: shape({
@@ -74,9 +78,11 @@ class MediaDetailsWidget extends React.Component {
           programImage: string,
           programLiveImage: string
         }),
-        tags: arrayOf(shape({
-          value: string
-        }))
+        tags: arrayOf(
+          shape({
+            value: string
+          })
+        )
       }),
       startDateTime: string,
       stopDateTime: string
@@ -146,15 +152,23 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getMediaFileName = () => {
-    const filename = get(this.props.tdo, 'details.veritoneFile.filename');
-    return filename || this.props.mediaId;
+    return get(
+      this.props,
+      'tdo.details.veritoneFile.filename',
+      this.props.mediaId
+    );
   };
 
   getMediaSource = () => {
-    const veritoneProgram = get(this.props.tdo, 'details.veritoneProgram');
+    const veritoneProgram = get(this.props, 'tdo.details.veritoneProgram');
+    if (!veritoneProgram) {
+      return '';
+    }
+
     if (veritoneProgram.programId === '-1') {
       return 'Private Media';
     }
+
     return veritoneProgram.programName;
   };
 

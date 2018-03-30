@@ -52,3 +52,7 @@
 
 ## 4.2.0
 * Added `NavigationSideBar` component. See the story for more details.
+
+## 4.2.1
+* Removed dependency on redux-form-material-ui as it was causing dependency issues.
+* Fixed storybook build so docs deployments work.
