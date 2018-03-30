@@ -43,6 +43,10 @@ import {
   TagConditionGenerator
 } from '../TagSearchModal';
 import {
+  StructuredDataModal,
+  StructuredDataDisplay,
+} from '../StructuredDataModal';
+import {
   TimeSearchModal,
   TimeDisplay,
   TimeConditionGenerator
@@ -62,7 +66,7 @@ import { SearchBar } from '.';
 const transcript = {
   id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
   name: 'Transcript',
-  iconClass: 'icon-engine-transcription',
+  iconClass: 'icon-transcription',
   tooltip: 'Search by Keyword',
   enablePill: true,
   showPill: true
@@ -123,6 +127,14 @@ const tag = {
   enablePill: true,
   showPill: true
 };
+const structured = {
+  id: '72c3ccbb-8c90-48a9-99ee-1c57315b9690',
+  name: 'Structured Data',
+  iconClass: 'icon-third-party-data',
+  tooltip: 'Search by Structured Data',
+  enablePill: true,
+  showPill: true
+};
 const time = {
   id: 'time-search-id',
   name: 'Time Search',
@@ -141,7 +153,7 @@ const geolocation = {
 }
 
 const appBarColor = '#ff2200';
-const enabledEngineCategories = [transcript, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, time];
+const enabledEngineCategories = [transcript, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
 
 const engineCategoryMapping = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -199,6 +211,12 @@ const engineCategoryMapping = {
     generateCondition: TagConditionGenerator,
     title: 'Search by Tag',
     subtitle: 'Search by tags within our database.'
+  },
+  '72c3ccbb-8c90-48a9-99ee-1c57315b9690': {
+    modal: StructuredDataModal,
+    getLabel: StructuredDataDisplay,
+    title: 'Search by Structured Data',
+    subtitle: 'Search by third party structured data.'
   },
   'time-search-id': {
     modal: TimeSearchModal,

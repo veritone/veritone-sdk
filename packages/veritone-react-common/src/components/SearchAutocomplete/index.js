@@ -2,11 +2,11 @@ import React from 'react';
 import { Avatar, Button, Chip, Paper, TextField } from 'material-ui';
 import Downshift from 'downshift';
 import { isArray } from 'lodash';
-import Rx from 'rxjs/Rx';
 import cx from 'classnames';
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import styles from './styles.scss';
 
+import Rx from 'rxjs/Rx';
 import {Observable} from "rxjs/Observable";
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeUntil";
@@ -154,7 +154,7 @@ const SearchAutocompleteDownshift = ({
           { isOpen && results && results.length ?
             <Paper square
               style={{
-                maxHeight: '300px', 
+                maxHeight: '300px',
                 overflow: 'auto',
               }}
             >
