@@ -27,6 +27,28 @@ const RecognizedTextConditionGenerator = modalState => {
   return query;
 };
 
+const StructuredDataGenerator = modalState => {
+  if (modalState.type === 'string') {
+    if(modalState.operator === 'contains' || modalState.operator === 'not_contains') {
+      return {
+        operator: 'query_string',
+        field: modalState.field,
+        value: `*${modalState.value1}*`,
+        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
+      }
+    } else {
+      return {
+        operator: 'terms',
+        field: modalState.field,
+        values: [`${modalState.value1}`],
+        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
+      }
+    }
+  } else if (modalState.type === 'dateTime') {
+
+  }
+}
+
 const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
     return {
@@ -367,7 +389,8 @@ const engineCategoryMapping = {
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': LogoConditionGenerator,
   'tag-search-id': TagConditionGenerator,
   'time-search-id': TimeConditionGenerator,
-  '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator,
+  '72c3ccbb-8c90-48a9-99ee-1c57315b9690' : StructuredDataGenerator
 };
 
 const engineCategoryMetadataMapping = {
@@ -446,7 +469,7 @@ const dedupeArray = arr => {
 const selectMetadataFromCsp = csp => {
   let metadataKeys = [];
   if(csp && csp.engineCategoryId) {
-    const metadataKey = engineCategoryMetadataMapping[csp.engineCategoryId];
+    const metadataKey = csp.engineCategoryId === '72c3ccbb-8c90-48a9-99ee-1c57315b9690' ? csp.state.select : engineCategoryMetadataMapping[csp.engineCategoryId];
     if(metadataKey) {
       metadataKeys.push(metadataKey);
     }
