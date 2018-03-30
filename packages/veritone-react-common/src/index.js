@@ -23,6 +23,11 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
 
+export RefreshButton from './components/RefreshButton';
+export OAuthLoginButton from './components/OAuthLoginButton';
+export { Table, PaginatedTable, Column } from './components/DataTable';
+export MenuColumn from './components/DataTable/MenuColumn';
+
 export SourceManagement from './components/SourceManagement';
 
 export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
@@ -31,4 +36,3 @@ export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileVie
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
 
-export RefreshButton from './components/RefreshButton';
