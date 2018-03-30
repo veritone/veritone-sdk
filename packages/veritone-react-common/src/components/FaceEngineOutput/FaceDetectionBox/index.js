@@ -2,16 +2,45 @@ import React, { Component } from 'react';
 import { shape, number, string, arrayOf, bool, func } from 'prop-types';
 import classNames from 'classnames';
 import Downshift from 'downshift';
-import TextField from 'material-ui/TextField';
+import Input from 'material-ui/Input';
 import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import { MenuItem } from 'material-ui/Menu';
 import Avatar from 'material-ui/Avatar';
+import { Manager, Target, Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
+
+const renderEntitySearchMenu = ({
+  results,
+  getItemProps,
+  highlightedIndex
+}) => {
+  return results.map((result, index) => {
+    return (
+      <MenuItem
+        key={'menu_entity_' + index}
+        component="div"
+        {...getItemProps({
+          item: result,
+          index: index,
+          selected: highlightedIndex === index
+        })}
+      >
+        <Avatar
+          src={result.profileImageUrl ? result.profileImageUrl : noAvatar}
+        />
+        <div className={styles.entityInfo}>
+          <div className={styles.menuEntityName}>{result.entityName}</div>
+          <div className={styles.menuLibraryName}>{result.libraryName}</div>
+        </div>
+      </MenuItem>
+    );
+  });
+};
 
 @withMuiThemeProvider
 class FaceDetectionBox extends Component {
@@ -75,32 +104,14 @@ class FaceDetectionBox extends Component {
     this.props.onRemoveFaceDetection(this.props.face);
   };
 
-  inputRef = c => {
-    this._input = c;
+  dropdownRef = r => {
+    this._dropdown = r;
   };
 
   /*TODO: come back to this and fix it*/
-  calculatePositionAndHeight = () => {
-    let distanceFromBottom =
-      document.body.clientHeight - this._input.getBoundingClientRect().bottom;
-    let distanceFromTop = this._input.getBoundingClientRect().top;
-    let autocompleteMenuStyle = {
-      maxHeight: '350px'
-    };
+  calculatePositionAndHeight = ref => {};
 
-    if (distanceFromBottom > 150) {
-      autocompleteMenuStyle.maxHeight =
-        distanceFromBottom > 350 ? '350px' : distanceFromBottom;
-    } else if (distanceFromTop > distanceFromBottom && distanceFromTop > 150) {
-      autocompleteMenuStyle.maxHeight =
-        distanceFromTop > 350 ? '350px' : distanceFromBottom;
-      autocompleteMenuStyle.bottom =
-        document.body.clientHeight - distanceFromTop;
-    }
-    return autocompleteMenuStyle;
-  };
-
-  itemToString = item => item && item.entityName;
+  itemToString = item => (item ? item.entityName : '');
 
   render() {
     let {
@@ -121,113 +132,95 @@ class FaceDetectionBox extends Component {
         onMouseLeave={this.handleMouseOut}
         onClick={onClick}
       >
-        <div className={styles.entityImageContainer}>
-          <img className={styles.entityImage} src={face.object.uri} />
-          {enableEdit &&
-            this.state.hovered && (
-              <div className={styles.imageButtonOverlay}>
-                <div
-                  className={styles.faceActionIcon}
-                  onClick={this.makeEditable}
-                >
-                  <i className="icon-mode_edit2" />
-                </div>
-                <div
-                  className={styles.faceActionIcon}
-                  onClick={this.handleDeleteFaceDetection}
-                >
-                  <i className="icon-trashcan" />
-                </div>
-              </div>
-            )}
-        </div>
-        <div className={styles.faceInformation}>
-          <span className={styles.faceTimeOccurrence}>
-            {msToReadableString(face.startTimeMs)} -{' '}
-            {msToReadableString(face.stopTimeMs)}
-          </span>
-          {this.state.editFaceEntity ? (
-            <Downshift
-              inputValue={styles.entityName}
-              itemToString={this.itemToString}
-              onSelect={this.handleEntitySelect}
-              onInputValueChange={onSearchForEntities}
-            >
-              {({
-                getInputProps,
-                getItemProps,
-                isOpen,
-                inputValue,
-                selectedItem,
-                highlightedIndex
-              }) => (
-                <div>
-                  <TextField
-                    inputProps={{
-                      className: styles.entitySearchInput,
-                      ref: this.inputRef
-                    }}
-                    {...getInputProps({
-                      value: face.entityName,
-                      placeholder: 'Unkown',
-                      autoFocus: true
-                    })}
-                  />
-                  {isOpen ? (
-                    <Paper className={styles.autoCompleteDropdown} square>
-                      <div className={styles.searchResultsList}>
-                        {searchResults && searchResults.length ? (
-                          searchResults.map((result, index) => (
-                            <MenuItem
-                              key={'menu_entity_' + index}
-                              component="div"
-                              {...getItemProps({
-                                item: result,
-                                index: index,
-                                selected: highlightedIndex === index
-                              })}
-                            >
-                              {result.profileImageUrl ? (
-                                <Avatar
-                                  src={
-                                    result.profileImageUrl
-                                      ? result.profileImageUrl
-                                      : noAvatar
-                                  }
-                                />
-                              ) : null}
-                              <div className={styles.entityInfo}>
-                                <div className={styles.menuEntityName}>
-                                  {result.entityName}
-                                </div>
-                                <div className={styles.menuLibraryName}>
-                                  {result.libraryName}
-                                </div>
-                              </div>
-                            </MenuItem>
-                          ))
-                        ) : (
-                          <div>Results Not Found</div>
-                        )}
-                      </div>
-                      <div className={styles.addNewEntity}>
-                        <Button
-                          color="primary"
-                          className={styles.addNewEntityButton}
-                          onClick={this.handleAddNewEntity(face)}
-                        >
-                          ADD NEW
-                        </Button>
-                      </div>
-                    </Paper>
-                  ) : null}
+        <Manager>
+          <div className={styles.entityImageContainer}>
+            <img className={styles.entityImage} src={face.object.uri} />
+            {enableEdit &&
+              this.state.hovered && (
+                <div className={styles.imageButtonOverlay}>
+                  <div
+                    className={styles.faceActionIcon}
+                    onClick={this.makeEditable}
+                  >
+                    <i className="icon-mode_edit2" />
+                  </div>
+                  <div
+                    className={styles.faceActionIcon}
+                    onClick={this.handleDeleteFaceDetection}
+                  >
+                    <i className="icon-trashcan" />
+                  </div>
                 </div>
               )}
-            </Downshift>
-          ) : (
-            <div className={styles.unknownEntityText}>Unkown</div>
-          )}
-        </div>
+          </div>
+          <div className={styles.faceInformation}>
+            <span className={styles.faceTimeOccurrence}>
+              {msToReadableString(face.startTimeMs)} -{' '}
+              {msToReadableString(face.stopTimeMs)}
+            </span>
+            {this.state.editFaceEntity ? (
+              <Downshift
+                isOpen={this.state.dropdownOpen}
+                inputValue={styles.entityName}
+                itemToString={this.itemToString}
+                onSelect={this.handleEntitySelect}
+                onInputValueChange={onSearchForEntities}
+              >
+                {({
+                  getInputProps,
+                  getItemProps,
+                  isOpen,
+                  inputValue,
+                  selectedItem,
+                  highlightedIndex
+                }) => (
+                  <div>
+                    <Target>
+                      <Input
+                        {...getInputProps({
+                          value: inputValue,
+                          placeholder: 'Unkown',
+                          autoFocus: true,
+                          className: styles.entitySearchInput
+                        })}
+                      />
+                    </Target>
+                    {isOpen ? (
+                      <Popper placement="auto-start" style={{ zIndex: 1 }}>
+                        <div ref={this.dropdownRef}>
+                          <Paper className={styles.autoCompleteDropdown} square>
+                            <div className={styles.searchResultsList}>
+                              {searchResults && searchResults.length ? (
+                                renderEntitySearchMenu({
+                                  results: searchResults,
+                                  getItemProps,
+                                  highlightedIndex
+                                })
+                              ) : (
+                                <div>Results Not Found</div>
+                              )}
+                            </div>
+                            <div className={styles.addNewEntity}>
+                              <Button
+                                color="primary"
+                                className={styles.addNewEntityButton}
+                                onClick={this.handleAddNewEntity(face)}
+                              >
+                                ADD NEW
+                              </Button>
+                            </div>
+                          </Paper>
+                        </div>
+                      </Popper>
+                    ) : null}
+                  </div>
+                )}
+              </Downshift>
+            ) : (
+              <div className={styles.unknownEntityText}>Unkown</div>
+            )}
+          </div>
+        </Manager>
       </div>
     );
   }

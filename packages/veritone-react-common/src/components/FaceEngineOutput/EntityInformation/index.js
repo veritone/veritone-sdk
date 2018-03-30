@@ -50,7 +50,6 @@ class EntityInformation extends Component {
 
   render() {
     let { entity, count, timeSlots, onBackClicked } = this.props;
-    console.log(entity);
 
     return (
       <div>

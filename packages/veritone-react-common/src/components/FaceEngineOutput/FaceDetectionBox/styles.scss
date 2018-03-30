@@ -67,17 +67,14 @@
 }
 
 .autoCompleteDropdown {
-  width: 244px;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  z-index: 2;
   max-height: 350px;
 }
 
 .entitySearchInput {
   font-size: 13px !important;
-  padding: 7px 0 9px !important;
+  padding: 0 !important;
 }
 
 .searchResultsList {
