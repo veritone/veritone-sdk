@@ -349,7 +349,6 @@ export default {
     adapterId: 'sdo-adapter',
     enableSchedule: true,
     enableProcess: true,
-    enableContentTemplate: true,
     enableCustomize: {
       setName: true
     }
