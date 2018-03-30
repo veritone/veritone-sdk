@@ -1,5 +1,19 @@
-@import './modules/variables';
-@import './modules/muiTypography';
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table-wrapper {
+  display: block;
+  overflow: hidden;
+}
+
+.table-cell {
+  padding-right: 24px !important;
+}
 
 .focusTable {
   //overflow: hidden;
@@ -44,8 +58,10 @@
 .paginated-footer {
   color: $light-black !important;
   display: flex;
+  align-content: center;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  flex-shrink: 0;
 
   .rows-per-page {
     @include mui-text('caption');
@@ -69,10 +85,6 @@
     button {
       width: 24px !important;
       height: 24px !important;
-    }
-
-    svg {
-      fill: $light-black !important;
     }
 
     padding: 0 !important;

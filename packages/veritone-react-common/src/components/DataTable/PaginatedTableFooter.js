@@ -1,93 +1,131 @@
 import React from 'react';
 import cx from 'classnames';
-import { TableFooter, TableRow, TableRowColumn } from 'material-ui/Table';
-import Select from 'material-ui/Select';
-import MenuItem from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
-import RightIcon from 'material-ui-icons/ChevronRight';
-import LeftIcon from 'material-ui-icons/ChevronLeft';
+import FirstPageIcon from 'material-ui-icons/FirstPage';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
+import LastPageIcon from 'material-ui-icons/LastPage';
+import { TableCell } from 'material-ui/Table';
+import SelectInput from 'material-ui/Select';
+import { MenuItem } from 'material-ui/Menu';
 
-import RefreshButton from '/components/RefreshButton';
+import { func, number } from 'prop-types';
+import RefreshButton from 'components/RefreshButton';
 import styles from './styles/index.scss';
-import { bool, number, func } from 'prop-types';
 
 export default class PaginatedTableFooter extends React.Component {
   static propTypes = {
     page: number.isRequired,
     perPage: number.isRequired,
-    onPageLeft: func.isRequired,
-    onPageRight: func.isRequired,
+    onChangePage: func.isRequired,
     onChangePerPage: func.isRequired,
     onRefreshPageData: func,
     rowCount: number,
-    colSpan: number,
-    adjustForCheckbox: bool
+    colSpan: number
   };
+
   static defaultProps = {
     colSpan: 1
   };
 
+  handleFirstPageButtonClick = event => {
+    this.props.onChangePage(0);
+  };
+
+  handleBackButtonClick = event => {
+    this.props.onChangePage(this.props.page - 1);
+  };
+
+  handleNextButtonClick = event => {
+    this.props.onChangePage(this.props.page + 1);
+  };
+
+  handleLastPageButtonClick = event => {
+    this.props.onChangePage(
+      Math.max(0, Math.ceil(this.props.rowCount / this.props.perPage) - 1)
+    );
+  };
+
   render() {
-    const firstItem = this.props.page * this.props.perPage + 1;
+    const { rowCount, page, perPage } = this.props;
+    const firstItem = page * perPage + 1;
     const lastItem = Math.min(
-      this.props.page * this.props.perPage + this.props.perPage,
-      this.props.rowCount
+      page * perPage + perPage,
+      rowCount
     );
 
     return (
-      <TableFooter adjustForCheckbox={this.props.adjustForCheckbox}>
-        <TableRow className={styles['paginated-footer']}>
-          <TableRowColumn
+      <TableCell
+        colSpan={this.props.colSpan}        
+        style={{
+          textAlign: 'right'
+        }}
+      >
+        <div className={styles['paginated-footer']}>
+          <span className={styles['rows-per-page']}>Rows per page:</span>
+
+          <SelectInput
+            value={this.props.perPage}
+            onChange={this.props.onChangePerPage}
+            className={styles['per-page']}
             style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center'
-            }} // fixme
+              width: '4em',
+              padding: '0 5px',
+              margin: '0 5px'
+            }}
+            autoWidth
           >
-            <span className={styles['rows-per-page']}>Rows per page:</span>
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={30}>30</MenuItem>
+          </SelectInput>
 
-            <Select
-              value={this.props.perPage}
-              onChange={this.props.onChangePerPage}
-              className={styles['per-page']}
-              style={{ width: '4em' }}
-              autoWidth
-            >
-              <MenuItem value={10} primaryText="10" />
-              <MenuItem value={20} primaryText="20" />
-              <MenuItem value={30} primaryText="30" />
-            </Select>
+          <span className={styles['num-items']}>
+            {firstItem}–{lastItem} of {rowCount}
+          </span>
 
-            <span className={styles['num-items']}>
-              {firstItem}–{lastItem} of {this.props.rowCount}
-            </span>
+          {/* .pageLeft and .pageRight are unit test targets */}
+          <IconButton
+            onClick={this.handleFirstPageButtonClick}
+            disabled={page === 0}
+          >
+            <FirstPageIcon />
+          </IconButton>
 
-            {/* .pageLeft and .pageRight are unit test targets */}
-            <IconButton
-              className={cx(styles['page-left'], 'pageLeft')}
-              onClick={this.props.onPageLeft}
-              disabled={firstItem === 1}
-            >
-              <LeftIcon />
-            </IconButton>
+          <IconButton
+            className={cx(styles['page-left'], 'pageLeft')}
+            onClick={this.handleBackButtonClick}
+            disabled={page === 0}
+          >
+            <KeyboardArrowLeft />
+          </IconButton>
 
-            <IconButton
-              className={cx(styles['page-right'], 'pageRight')}
-              onClick={this.props.onPageRight}
-              disabled={lastItem === this.props.rowCount}
-            >
-              <RightIcon />
-            </IconButton>
+          <IconButton
+            className={cx(styles['page-right'], 'pageRight')}
+            onClick={this.handleNextButtonClick}
+            disabled={page >= Math.ceil(rowCount / perPage) - 1}
+          >
+            <KeyboardArrowRight />
+          </IconButton>
 
-            {this.props.onRefreshPageData &&
-              <RefreshButton
-                onRefresh={this.props.onRefreshPageData}
-                className={cx(styles['refresh'], 'refresh')}
-              />}
-          </TableRowColumn>
-        </TableRow>
-      </TableFooter>
-    );
+          <IconButton
+            onClick={this.handleLastPageButtonClick}
+            disabled={page >= Math.ceil(rowCount / perPage) - 1}
+          >
+            <LastPageIcon />
+          </IconButton>
+
+          {this.props.onRefreshPageData &&
+            <RefreshButton
+              onRefresh={this.props.onRefreshPageData}
+              className={cx(styles['refresh'], 'refresh')}
+            />}
+        
+        </div>
+      </TableCell>
+    )
   }
 }
+
 PaginatedTableFooter.muiName = 'TableFooter';
+

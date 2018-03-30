@@ -1,118 +1,92 @@
 import React from 'react';
 import { isNumber, noop, omit } from 'lodash';
 
-import { shape, func, number, children } from 'prop-types';
-
-// import withUIState from 'shared-components/withUIState';
+import { func, number, node } from 'prop-types';
 import PaginatedTableFooter from './PaginatedTableFooter';
 
-const withPagination = WrappedTable => {
-  // @withUIState({
-  //   defaultState: props => ({
-  //     page: 0,
-  //     perPage: props.initialItemsPerPage || 10
-  //   })
-  // })
+const withPagination = WrappedTable => { 
   class WrappedWithPagination extends React.Component {
     static propTypes = {
-      uiState: shape({
-        page: number.isRequired,
-        perPage: number.isRequired
-      }).isRequired,
-      setUIState: func.isRequired,
-
       rowGetter: func.isRequired,
-      rowCount: number,
+      rowCount: number.isRequired,
       initialItemsPerPage: number,
       focusedRow: number,
       onCellClick: func,
       onShowCellRange: func,
       onRefreshPageData: func,
-      children
+      children: node
     };
-
+    
     static defaultProps = {
       initialItemsPerPage: 10,
       onShowCellRange: noop,
       onCellClick: noop
     };
 
-    componentWillUpdate(nextProps) {
-      if (nextProps.rowCount < this.props.rowCount) {
-        // if the dataset is a different size, flip to first page
-        this.transitionToPage(0);
+    state = {
+      page: 0,
+      rowsPerPage: this.props.initialItemsPerPage
+    }
+
+    componentWillReceiveProps(nextProps) {
+      if (nextProps.rowCount < this.props.rowCount) { // if the dataset is a different size, flip to first page
+        return this.setState({ page: 0 });
       }
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
       if (
-        this.props.uiState.page !== prevProps.uiState.page ||
-        this.props.uiState.perPage !== prevProps.uiState.perPage
+        this.state.page !== prevState.page ||
+        this.state.rowsPerPage !== prevState.rowsPerPage
       ) {
         this.callOnShowCellRange();
       }
     }
 
-    getDisplayedItemIndices(props = this.props) {
-      const firstItem = this.props.uiState.page * this.props.uiState.perPage;
+    getDisplayedItemIndices = () => {
+      const firstItem = this.state.page * this.state.rowsPerPage;
       const lastItem =
-        this.props.uiState.page * this.props.uiState.perPage +
-        this.props.uiState.perPage -
+        this.state.page * this.state.rowsPerPage +
+        this.state.rowsPerPage -
         1;
 
       return [firstItem, lastItem];
     }
-
+    
     rowGetter = i => {
-      const requestedIndex =
-        i + this.props.uiState.perPage * this.props.uiState.page;
+      const requestedIndex = i + this.state.rowsPerPage * this.state.page;
 
       return requestedIndex <= this.props.rowCount
-        ? this.props.rowGetter(
-            i + this.props.uiState.perPage * this.props.uiState.page
-          )
+        ? this.props.rowGetter(i + this.state.rowsPerPage * this.state.page)
         : undefined;
-    };
+    }
 
-    handlePageRight = () => {
-      // can't move to next page if its first item will be >rowCount
-      const firstNextPage =
-        (this.props.uiState.page + 1) * this.props.uiState.perPage;
-      if (firstNextPage <= this.props.rowCount) {
-        this.transitionToPage(this.props.uiState.page + 1);
-      }
-    };
-
-    handlePageLeft = () => {
-      const page =
-        this.props.uiState.page > 0
-          ? this.props.uiState.page - 1
-          : this.props.uiState.page;
-
-      this.transitionToPage(page);
-    };
-
-    handlePerPageChange = (e, i, v) => {
-      const value = v || e.target.value; // (target.value for tests)
-      let lastPossiblePage = Math.ceil(this.props.rowCount / Number(value)) - 1;
+    handlePageChange = (page) => {
+      let lastPossiblePage = Math.ceil(this.props.rowCount / this.state.rowsPerPage) - 1;
 
       if (lastPossiblePage < 0) {
         lastPossiblePage = 0;
       }
 
       // don't show empty pages
-      if (this.props.uiState.page > lastPossiblePage) {
-        this.transitionToPage(lastPossiblePage);
-      }
+      this.setState({ 
+        page: page > lastPossiblePage ? lastPossiblePage : page
+      })
+    }
 
-      this.props.setUIState({
-        perPage: Number(value)
-      });
-    };
+    handleRowsPerPageChange = (e) => {
+      this.setState({
+        page: 0,
+        rowsPerPage: Number(e.target.value)
+      })      
+    }
+    
+    handleRefreshData = () => {
+      const [firstItem, lastItem] = this.getDisplayedItemIndices();
 
-    transitionToPage(n) {
-      this.props.setUIState({
-        page: n
+      this.props.onRefreshPageData({
+        start: firstItem,
+        end: lastItem
       });
     }
 
@@ -125,51 +99,33 @@ const withPagination = WrappedTable => {
       });
     };
 
-    handleRefreshData = () => {
-      const [firstItem, lastItem] = this.getDisplayedItemIndices();
-
-      this.props.onRefreshPageData({
-        start: firstItem,
-        end: lastItem
-      });
-    };
-
-    translateCellClick = (row, column, ...rest) => {
+    translateCellClick = (row, columnKey, ...rest) => {
       return this.props.onCellClick(
-        row + this.props.uiState.page * this.props.uiState.perPage,
-        column,
+        row + this.state.page * this.state.rowsPerPage,
+        columnKey,
         ...rest
       );
     };
 
-    translateFocusedRow() {
+    translateFocusedRow = () => {
       // focused row is null unless the row is on this page
-      const min = this.props.uiState.perPage * this.props.uiState.page;
-      const max =
-        this.props.uiState.perPage -
-        1 +
-        this.props.uiState.perPage * this.props.uiState.page;
+      const min = this.state.rowsPerPage * this.state.page;
+      const max = this.state.rowsPerPage - 1 + this.state.rowsPerPage * this.state.page;
 
       return isNumber(this.props.focusedRow) &&
-      this.props.focusedRow >= min &&
-      this.props.focusedRow <= max
+        this.props.focusedRow >= min &&
+        this.props.focusedRow <= max
         ? this.props.focusedRow -
-          this.props.uiState.page * this.props.uiState.perPage
+          this.state.page * this.state.rowsPerPage
         : null;
     }
-
+    
     render() {
       let [firstItem, lastItem] = this.getDisplayedItemIndices();
-
       lastItem = Math.min(lastItem, this.props.rowCount - 1);
-
+      
       const rowCount = this.props.rowCount > 0 ? lastItem - firstItem + 1 : 0;
-
       const restProps = omit(this.props, [
-        'uiState',
-        'uiStateKey',
-        'setUIState',
-        'resetUIState',
         'rowGetter',
         'initialItemsPerPage',
         'onRefreshPageData'
@@ -179,14 +135,13 @@ const withPagination = WrappedTable => {
         <WrappedTable
           {...restProps}
           rowGetter={this.rowGetter}
-          rowCount={rowCount}
+          rowCount={rowCount}          
           footerElement={
             <PaginatedTableFooter
-              page={this.props.uiState.page}
-              perPage={this.props.uiState.perPage}
-              onPageLeft={this.handlePageLeft}
-              onPageRight={this.handlePageRight}
-              onChangePerPage={this.handlePerPageChange}
+              page={this.state.page}
+              perPage={this.state.rowsPerPage}
+              onChangePage={this.handlePageChange}
+              onChangePerPage={this.handleRowsPerPageChange}
               colSpan={this.props.children.length}
               rowCount={this.props.rowCount}
               onRefreshPageData={
@@ -205,6 +160,6 @@ const withPagination = WrappedTable => {
   }
 
   return WrappedWithPagination;
-};
+}
 
 export default withPagination;
