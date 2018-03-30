@@ -1,25 +1,48 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-
 import styles from './story.styles.scss';
 import SentimentEngineOutput from './';
 
-export const sentimentAssets = [
-  { end: 5580, score: 0.6, start: 80 },
-  { end: 10599, score: 0.75, start: 5589 },
-  { end: 16340, score: 0.55, start: 10610 },
-  { end: 18130, score: 0.65, start: 16350 },
-  { end: 23610, score: 0.45, start: 18110 },
-  { end: 24010, score: 0.25, start: 23620 },
-  { end: 29010, score: 0.45, start: 24020 },
-  { end: 34150, score: 0.75, start: 29022 }
-];
-
 storiesOf('SentimentEngineOutput', module).add('Base', () => {
+  let mockData1 = genMockData(40, 0, 5000); //Good data
+  let mockData2 = genMockData(20, 40 * 5000, 5000, 'pending'); //Bad data
+  let mockData3 = genMockData(900, 60 * 5000, 5000); //Good data
+  let dynamicMockData = mockData1.concat(mockData2, mockData3);
   return (
     <SentimentEngineOutput
-      data={sentimentAssets}
       className={styles.outputViewRoot}
+      data={dynamicMockData}
+      mediaPlayerTime={6000}
+      timeWindowStartMs={0}
     />
   );
 });
+
+function genMockData(numValues, startTime, timeInterval, status = 'complete') {
+  let startTimeMs;
+  let stopTimeMs;
+  let data = [];
+  for (let index = 0; index < numValues; index++) {
+    startTimeMs = startTime + index * timeInterval;
+    stopTimeMs = startTimeMs + timeInterval;
+    let dynamicData = {
+      startTimeMs: startTimeMs,
+      stopTimeMs: stopTimeMs,
+      status: status,
+      sentiment: {
+        positiveValue: randomizeValue(1, 0),
+        positiveConfidence: randomizeValue(1, 0),
+        negativeValue: randomizeValue(0, -1),
+        negativeConfidence: randomizeValue(1, 0)
+      }
+    };
+
+    data.push(dynamicData);
+  }
+
+  return data;
+}
+
+function randomizeValue(max, min) {
+  return Math.round((Math.random() * (max - min) + min) * 100) / 100;
+}
