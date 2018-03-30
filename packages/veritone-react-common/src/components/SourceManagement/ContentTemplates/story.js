@@ -13,7 +13,7 @@ import Select from 'material-ui/Select';
 import InputLabel from 'material-ui/Input/InputLabel';
 
 // CONTENT TEMPLATES SETUP
-var source = {
+let source = {
   data: {
     source: {
       id: '666',
@@ -32,8 +32,8 @@ var source = {
 };
 
 // FORM CARD SETUP
-var value = 1;
-var selectObj = {
+let value = 1;
+let selectObj = {
   1: 'Lorem ipsum',
   2: 'other'
 };
@@ -41,7 +41,7 @@ function handleSelect(event) {
   value = event.target.value;
 };
 
-var fields = [
+let fields = [
   <TextField
     type={'text'}
     fullWidth
@@ -61,26 +61,24 @@ var fields = [
     </Select>
   </div>
 ];
-var formName = 'Twitter Account';
+let formName = 'Twitter Account';
 
 function removeForm(schemaId) {
   console.log('remove this form');
 };
 
 //// FORM CARDS LIST SETUP
-var result = {
+let result = {
   data: {
     dataRegistries: {
       records: [
         {
+          name: 'Twitter Schema',
           schemas: {
             records: [
               {
                 id: "schemaGuid1",
                 status: "published",
-                dataRegistry: {
-                  name: 'Twitter Schema'
-                },
                 definition: {
                   properties: {
                     url: {
@@ -96,9 +94,9 @@ var result = {
               {
                 id: "schemaGuid2",
                 status: 'published',
-                dataRegistry: {
-                  name: 'Twitter Schema 2'
-                },
+                // dataRegistry: {
+                //   name: 'Twitter Schema 2'
+                // },
                 definition: {
                   properties: {
                     url: {
@@ -116,9 +114,9 @@ var result = {
               {
                 id: "schemaGuid2",
                 status: 'published',
-                dataRegistry: {
-                  name: 'Twitter Schema'
-                },
+                // dataRegistry: {
+                //   name: 'Twitter Schema'
+                // },
                 definition: {
                   test: "citest"
                 }
@@ -126,9 +124,9 @@ var result = {
               {
                 id: "schemaGuid2",
                 status: 'draft',
-                dataRegistry: {
-                  name: 'Twitter Schema'
-                },
+                // dataRegistry: {
+                //   name: 'Twitter Schema'
+                // },
                 definition: {
                   properties: {
                     url: {
@@ -149,7 +147,7 @@ var result = {
 }
 
 //// Template list setup
-var initialSchemas = {
+let initialSchemas = {
   schemaGuid1: {
     schemaId: 'schemaGuid1',
     data: {
@@ -159,7 +157,7 @@ var initialSchemas = {
   }
 };
 
-var addedSchemas = {
+let addedSchemas = {
   schemaGuid1: result.data.dataRegistries.records[0].schemas.records[0]
 };
 // function for template list
@@ -169,8 +167,16 @@ function receiveSchemaState(added) {
 
 storiesOf('ContentTemplates', module)
   .add('Base', () => (
-    <ContentTemplates templates={result} source={source} />
+    <ContentTemplates
+      templates={result}
+      source={source}
+    />
   ))
   .add('Form Card', () => (
-    <FormCard fields={fields} name={formName} removeCallback={removeForm} id={'id'} />
+    <FormCard
+      fields={fields}
+      name={formName}
+      removeCallback={removeForm}
+      id={'id'}
+    />
   ))

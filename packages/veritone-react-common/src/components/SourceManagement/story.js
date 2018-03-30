@@ -1,14 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-
-import Nullstate from './Nullstate';
-import SourceConfiguration from './';
-import SourceTileView from './SourceTileView';
-import SourceRow from './SourceRow';
+import Nullstate from './SourceConfiguration/Nullstate';
+import SourceConfiguration from './SourceConfiguration';
+import SourceTileView from './SourceConfiguration/SourceTileView';
+import SourceRow from './SourceConfiguration/SourceRow';
 
 
-var sourceTypes = {
+let sourceTypes = {
   sourceTypes: {
     records: [
       {
@@ -63,7 +61,7 @@ var sourceTypes = {
 
 
 // a mock return result on a source from graphql
-var sourceResult = {
+let sourceResult = {
   data: {
     source: {
       id: "666",
@@ -102,13 +100,13 @@ var sourceResult = {
   }
 }
 
-var sourceName = sourceResult.data.source.name;
-var sourceType = sourceResult.data.source.sourceType.name;
-var creationDate = sourceResult.data.source.createdDateTime;
-var lastUpdated = sourceResult.data.source.modifiedDateTime;
-var thumbnail = sourceResult.data.source.thumbnail;
+let sourceName = sourceResult.data.source.name;
+let sourceType = sourceResult.data.source.sourceType.name;
+let creationDate = sourceResult.data.source.createdDateTime;
+let lastUpdated = sourceResult.data.source.modifiedDateTime;
+let thumbnail = sourceResult.data.source.thumbnail;
 
-var sourceResults = [];
+let sourceResults = [];
 for (let i=0;i<4;i++) {
   sourceResults.push(sourceResult);
 }
@@ -125,11 +123,24 @@ storiesOf('SourceManagement', module)
     <SourceTileView sources={sourceResults}/>
   ))
   .add('CreateSource', () => (
-    <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} submitCallback={submitCallback}/>
+    <SourceConfiguration
+      sourceTypes={sourceTypes.sourceTypes.records}
+      submitCallback={submitCallback}
+    />
   ))
   .add('EditSource', () => (
-    <SourceConfiguration sourceTypes={sourceTypes.sourceTypes.records} source={sourceResult.data.source} submitCallback={submitCallback}/>
+    <SourceConfiguration
+      sourceTypes={sourceTypes.sourceTypes.records} 
+      source={sourceResult.data.source}
+      submitCallback={submitCallback}
+    />
   ))
   .add('Row', () => (
-    <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} image={thumbnail} />
+    <SourceRow 
+      name={sourceName}
+      sourceType={sourceType}
+      creationDate={creationDate}
+      lastUpdated={lastUpdated}
+      image={thumbnail}
+    />
   ))

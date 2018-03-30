@@ -1,17 +1,10 @@
 import React from 'react';
-
 import {
   any, 
-  arrayOf, 
-  objectOf,
+  arrayOf,
   func,
   string
 } from 'prop-types';
-
-// import TextField from 'material-ui/TextField';
-import { MenuItem } from 'material-ui/Menu';
-import Select from 'material-ui/Select';
-import { FormControl, FormHelperText } from 'material-ui/Form';
 
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -22,31 +15,35 @@ export default class FormCard extends React.Component {
   static propTypes = {
     fields: arrayOf(any), // take in an array of field elements, i.e. <TextField/>; styling of form elements is intended to be done by the parent
     name: string.isRequired,
-    removeCallback: func.isRequired,
-    id: any.isRequired
-  };
-  static defaultProps = {};
-
-  state = {
-
+    remove: func.isRequired,
+    id: string.isRequired
   };
 
-  handleRemoveForm = () => {
-    this.props.removeCallback(this.props.id);
+  handleClick = () => {
+    this.props.remove(this.props.id);
   };
 
   renderFields = () => {
     return this.props.fields.map((field, index) => {
-      return React.cloneElement(field, {key: index, className: styles.formElements});
+      return React.cloneElement(field, {
+        key: index,
+        className: styles.formElements
+      });
     });
   };
 
   render() {
     return (
       <div className={styles.formCard}>
-        <div className={styles.name}>{this.props.name}</div>
-        <IconButton className={styles.trashIcon} onClick={this.handleRemoveForm} aria-label='trash'>
-          <Icon className={'icon-trash'}></Icon>
+        <div className={styles.name}>
+          {this.props.name}
+        </div>
+        <IconButton
+          className={styles.trashIcon}
+          onClick={this.handleClick}
+          aria-label='trash'
+        >
+          <Icon className={'icon-trash'} />
         </IconButton>
         <form>
           {this.renderFields()}

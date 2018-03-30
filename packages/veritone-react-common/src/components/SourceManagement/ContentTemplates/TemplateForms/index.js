@@ -2,24 +2,21 @@ import React from 'react';
 import { has } from 'lodash';
 
 import {
-  any, 
-  arrayOf, 
+  any,
   objectOf,
   func
 } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
-
-import FormCard from 'components/ContentTemplates/FormCard';
-
+import FormCard from 'components/SourceManagement/ContentTemplates/FormCard';
 import styles from './styles.scss';
 
 //TODO: make most recently added content template appear at the top
 export default class TemplateForms extends React.Component {
   static propTypes = {
     schemas: objectOf(any).isRequired,
-    removeSchemaCallback: func.isRequired,
-    returnDataCallback: func.isRequired
+    removeSchema: func.isRequired,
+    onFormChange: func.isRequired
   };
   static defaultProps = {};
 
@@ -27,51 +24,58 @@ export default class TemplateForms extends React.Component {
     schemas: {}, // object key = schema guid and value is the schema object
   };
 
-  componentWillMount = () => {
-    this.setState({
-      schemas: this.props.schemas
-    });
-  };
+  // componentWillMount = () => {
+  //   this.setState({
+  //     schemas: this.props.schemas
+  //   });
+  // };
 
   handleRemoveForm = (schemaId) => {
-    this.props.removeSchemaCallback(schemaId);
+    this.props.removeSchema(schemaId);
   };
 
   handleFieldChange = (schemaId, fieldId, value) => {
-    this.setState({
-      schemas: {
-        ...this.state.schemas,
-        [schemaId]: {
-          ...this.state.schemas[schemaId],
-          data: {
-            ...this.state.schemas[schemaId].data,
-            [fieldId]: value
-          }
-        }
-      }
-    }, () => this.props.returnDataCallback(this.state.schemas));
+    return this.props.onFormChange(schemaId, fieldId, value);
   };
 
-
   formBuilder = () => {
-    let elements = [];
-    return Object.keys(this.props.schemas).map((schemaId, index) => {
-      let schema = this.props.schemas[schemaId].definition.properties;
-      let name = this.props.schemas[schemaId].dataRegistry.name;
-      let data = this.state.schemas[schemaId].data;
+    const { schemas } = this.props;
+    console.log('schemas:', schemas)
+    // let elements = [];
 
-      let elements = Object.keys(schema).map((fieldId, index2) => {
-        let field = schema[fieldId];
-        return (<BuildFormElements 
-                  fieldId={fieldId} 
-                  schemaId={schemaId} 
-                  type={field.type} 
-                  value={this.state.schemas[schemaId].data[fieldId]} 
-                  title={field.title ? field.title : fieldId} 
-                  onChange={this.handleFieldChange} 
-                  key={index2}/>);
+    // return Object.keys(schemas).map((schemaId, index) => {
+    return Object.keys(schemas).map((schemaId, index) => {
+      const schemaProps = schemas[schemaId].definition.properties;
+      // let name = schemas[schemaId].dataRegistry.name;
+
+      // elements = Object.keys(schema).map((fieldId, index2) => {
+      const formFields = Object.keys(schemaProps).map((schemaProp, index2) => {
+        const field = schemaProps[schemaProp];
+
+        return (
+          <BuildFormElements 
+            fieldId={schemaProp} 
+            schemaId={schemaId} 
+            type={field.type} 
+            // value={this.state.schemas[schemaId].data[fieldId]} 
+            value={schemas[schemaId].data[schemaProp]}
+            title={field.title || schemaProp} 
+            onChange={this.handleFieldChange} 
+            key={index2}
+          />
+        );
       });
-      return <FormCard fields={elements} name={name} id={schemaId} removeCallback={this.handleRemoveForm} key={index}/>;
+      
+      return (
+        <FormCard
+          key={index}
+          id={schemaId}
+          fields={formFields}
+          // name={schemas[schemaId].dataRegistry.name}
+          name={schemas[schemaId].name}
+          remove={this.handleRemoveForm}
+        />
+      );
     });
   };
 
@@ -86,12 +90,13 @@ export default class TemplateForms extends React.Component {
 
 
 function BuildFormElements({fieldId, schemaId, type, title, value, required, onChange, error }) {
-  if (!required) {
-    required = false;
-  }
+  // if (!required) {
+  //   required = false;
+  // }
   const handleFieldChange = (schemaId, fieldId) => (event) => {
     return onChange(schemaId, fieldId, event.target.value);
   }
+
   let element;
   if (type.includes('string')) {
     element = (
@@ -122,5 +127,6 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
       />
     );
   }
-  return React.cloneElement(element, {required: required});
+
+  return React.cloneElement(element, { required: !!required });
 }

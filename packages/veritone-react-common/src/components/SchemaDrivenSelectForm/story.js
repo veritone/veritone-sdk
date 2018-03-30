@@ -1,11 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-
 import DynamicSelect from './';
 
 
-var sourceTypes = {
+const sourceTypes = {
   data: {
     records: [
       {
@@ -66,17 +64,17 @@ function formCallback(formResult) {
   
 };
 
-var helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
-var selectLabel = 'Select a Source Type';
+let helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
+let selectLabel = 'Select a Source Type';
 
-var initialValues = {
+let initialValues = {
   url: 'twitter.com',
   username: 'trump',
   password: 'password',
 };
 
 // test passing in an object with fields that are in error state
-var errorFields = {
+let errorFields = {
   url: true,
   username: false,
   password: true
@@ -84,8 +82,22 @@ var errorFields = {
 
 storiesOf('SchemaDrivenSelectForm', module)
   .add('Base', () => (
-    <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={initialValues} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
+    <DynamicSelect
+      sourceTypes={sourceTypes.data.records}
+      currentSource={0}
+      fieldValues={initialValues}
+      onInputChange={formCallback}
+      helperText={helperText}
+      selectLabel={selectLabel} 
+    />
   ))
   .add('Error Field', () => (
-    <DynamicSelect sourceTypes={sourceTypes.data.records} initialValues={{username:'trump'}} errorFields={errorFields} formCallback={formCallback} helperText={helperText} selectLabel={selectLabel} />
+    <DynamicSelect
+      sourceTypes={sourceTypes.data.records}
+      fieldValues={{username:'trump'}}
+      errorFields={errorFields}
+      onInputChange={formCallback}
+      helperText={helperText}
+      selectLabel={selectLabel}
+    />
   ))

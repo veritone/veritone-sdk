@@ -1,49 +1,5 @@
-.fullPage {
-  height: 100%;
-  width: 100%;
-  margin-top: 30px;
-  margin-left: 30px;
-
-  .configurationTitle {
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 20px;
-    line-height: 24px;
-  }
-  .configurationDescription {
-    opacity: 0.6;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 14px;
-    line-height: 16px;
-  }
-
-  .sourceConfiguration {
-    color: blue;
-    .formStyle {
-      width: 80%;
-      min-width: 350px;
-
-      .container {
-        flex-direction: row;
-        align-items: center;
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 20px;
-        margin-top: 20px;
-
-        .sourceName {
-          margin-left: 20px;
-          margin-bottom: 30px;
-        }
-      }
-      
-    }
-    
-  }
-
-  .buttonStyle {
-    width: fit-content;
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-  }
+.separator {
+  align-self: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.54);
+  height: 27px;
 }

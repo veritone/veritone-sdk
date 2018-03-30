@@ -1,5 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import cx from 'classnames';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import styles from './styles.scss';
@@ -11,18 +12,18 @@ storiesOf('ModalHeader', module)
     <ModalHeader
       title={'Fullscreen'}
       icons={[
-        <IconButton className={styles.helpIcon} aria-label='help' key={1}>
-          <Icon className='icon-help2' />
+        <IconButton aria-label='help' key={1}>
+          <Icon className={cx('icon-help2', styles.icon)} />
         </IconButton>,
-        <IconButton className={styles.menuIcon} aria-label='menu' key={2}>
-          <Icon className='icon-more_vert' />
+        <IconButton aria-label='menu' key={2}>
+          <Icon className={cx('icon-more_vert', styles.icon)} />
         </IconButton>,
-        <IconButton className={styles.trashIcon} aria-label='trash' key={3}>
-          <Icon className='icon-trash' />
+        <IconButton aria-label='trash' key={3}>
+          <Icon className={cx('icon-trash', styles.icon)} />
         </IconButton>,
-        <span className={styles.separator} key={4} />,
-        <IconButton className={styles.exitIcon} aria-label='exit' key={5}>
-          <Icon className='icon-close-exit' />
+        <span className={cx(styles.separator, styles.icon)} key={4} />,
+        <IconButton aria-label='exit' key={5}>
+          <Icon className={cx('icon-close-exit', styles.icon)} />
         </IconButton>
       ]}
     />

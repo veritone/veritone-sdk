@@ -1,19 +1,20 @@
 import React from 'react';
-import { has } from 'lodash';
+import { has, includes } from 'lodash';
 
 import {
   any, 
   arrayOf, 
   objectOf,
   func,
-  string
+  string,
+  number
 } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
-import {FormHelperText, FormControl} from 'material-ui/Form';
-import Input, {InputLabel} from 'material-ui/Input';
+import { FormHelperText, FormControl } from 'material-ui/Form';
+import { InputLabel } from 'material-ui/Input';
 
 import styles from './styles.scss';
 
@@ -21,131 +22,134 @@ import styles from './styles.scss';
 export default class DynamicSelect extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
-    initialSourceTypeId: string, // id of initial sourceType if there is a default 
-    formCallback: func.isRequired, //used to provide state to the parent
-    initialValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
+    // sourceTypeId: string, // id of initial sourceType if there is a default 
+    currentSource: number, // id of initial sourceType if there is a default 
+    onInputChange: func.isRequired, //used to provide state to the parent
+    fieldValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
     errorFields: objectOf(any), // since the parent handles the submit button, the parent can pass down which fields are in an error state
     helperText: string,
     selectLabel: string
   };
   static defaultProps = {
-    initialValues: {}
+    fieldValues: {}
   };
 
   state = {
     oneSourceType: false,
-    currentSourceTypeIndex: 0,
-    currentFields: {},
   };
 
-  componentWillMount = () => {
+  componentWillMount() {
+    const state = {};
+
     if (!this.props.sourceTypes.length) { //TODO: currently will error out and not render if sourceTypes is empty
       console.error('Source types was empty.');
     } else if (this.props.sourceTypes.length === 1) {
-      this.setState({
-        oneSourceType: true
-      });
-    }  
-    let saveIndex = 0;
-    if (this.props.initialSourceTypeId) {
-      this.props.sourceTypes.map((sourceType, index)=> {
-        if (sourceType.id === this.props.initialSourceTypeId) {
-          saveIndex = index;
-        }
-      });
+      state.oneSourceType = true
     }
 
-    let initialize = {
-      sourceTypeId: this.props.sourceTypes[saveIndex].id,
-      sourceTypeIndex: saveIndex,
-      fieldValues: this.state.currentFields
-    }
-    this.props.formCallback(initialize);
-
-
-    this.setState({
-      currentFields: this.props.initialValues,
-      currentSourceTypeIndex: saveIndex
-    });
-  };
-
-  triggerCallback = () => {
-    let toSend = {
-      sourceTypeId: this.props.sourceTypes[this.state.currentSourceTypeIndex].id,
-      sourceTypeIndex: this.state.currentSourceTypeIndex,
-      fieldValues: this.state.currentFields
-    };
-    this.props.formCallback(toSend);
+    this.setState(state);
   };
 
   handleSourceTypeChange = (event) => {
-    let index = event.target.value;
-    let currentFields = {};
-    let properties = this.props.sourceTypes[index].sourceSchema.definition.properties;
-    Object.keys(properties).map((field, index) => {
-      currentFields[field] = '';
-    }) 
-    this.setState({
-      currentSourceTypeIndex: index,
-      currentFields: currentFields
-    }, this.triggerCallback);
+    const sourceTypeIndex = event.target.value;
+
+    if (sourceTypeIndex !== this.props.currentSource) {
+      const currentFields = {};
+      const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties;
+    
+      Object.keys(properties).forEach((field) => {
+        currentFields[field] = '';
+      });
+
+      this.props.onInputChange({
+        sourceTypeIndex,
+        fieldValues: currentFields
+      });
+    }
   };
 
   handleFieldChange = fieldId => (event) => {
-    let fieldCopy = {};
-    fieldCopy[fieldId] = event.target.value;
-    this.setState({
-      currentFields: Object.assign({}, this.state.currentFields, fieldCopy)
-    }, this.triggerCallback);
+    this.props.onInputChange({
+      fieldValues: {
+        ...this.props.fieldValues,
+        [fieldId]: event.target.value
+      }
+    });
   };
 
   handleTooltip = () => {
     console.log('tooltip clicked');
   };
   
-  renderFields = (currentSourceTypeIndex) => {
-    let definition = this.props.sourceTypes[currentSourceTypeIndex].sourceSchema.definition;
-    let properties = definition.properties;
+  renderFields = () => {
+    const definition = this.props.sourceTypes[this.props.currentSource].sourceSchema.definition;
+    const properties = definition.properties;
     let requiredFields = [];
+
     if (has(definition,'required')) {
       requiredFields = definition.required;
     }
+
     return Object.keys(properties).map((fieldId, index) => {
-      return (<SourceTypeField 
-                id={fieldId} 
-                type={properties[fieldId].type.toLowerCase()} 
-                required={requiredFields.indexOf(fieldId) === -1 ? false : true} 
-                value={this.state.currentFields[fieldId]} 
-                onChange={this.handleFieldChange} 
-                title={properties[fieldId].title ? properties[fieldId].title : '' } 
-                error={(has(this.props.errorFields, fieldId) && this.props.errorFields[fieldId]) ? true : false} 
-                key={index} />);
+      return (
+        <SourceTypeField 
+          id={fieldId} 
+          type={properties[fieldId].type.toLowerCase()} 
+          required={includes(requiredFields, fieldId)} 
+          value={this.props.fieldValues[fieldId]}  
+          onChange={this.handleFieldChange} 
+          title={properties[fieldId].title || ""} 
+          error={(has(this.props.errorFields, fieldId) && this.props.errorFields[fieldId]) ? true : false} 
+          key={index}
+        />
+      );
     });
   };
 
   render() {
-    const sourceTypes = this.props.sourceTypes.map((type, index) => {
-      return <MenuItem value={index} id={type.id} key={index}>{type.name}</MenuItem>
+    const { sourceTypes, currentSource } = this.props;
+    const sourceTypesMenu = sourceTypes.map((type, index) => {
+      return (
+        <MenuItem value={index} id={type.id} key={index}>
+          {type.name}
+        </MenuItem>
+      );
     });
+
     return (
       <FormControl className={styles.dynamicFormStyle}>
-        {(this.props.selectLabel && !this.state.oneSourceType) && <InputLabel className={styles.inputLabel} htmlFor='select-id'>{this.props.selectLabel}</InputLabel>}
-        {!this.state.oneSourceType && <Select 
-          className={styles.selectField}
-          fullWidth
-          inputProps={{name: this.props.sourceTypes[this.state.currentSourceTypeIndex].name, id:'select-id' }}
-          value={this.state.currentSourceTypeIndex}
-          onChange={this.handleSourceTypeChange}
-        >
-          {sourceTypes}
-        </Select>}
-        {this.state.oneSourceType && <div className={styles.sourceTypeNameLabel}>Source Type</div>}
+        {
+          (this.props.selectLabel && !this.state.oneSourceType) &&
+          <InputLabel className={styles.inputLabel} htmlFor='select-id'>
+            {this.props.selectLabel}
+          </InputLabel>
+        }
+        {
+          !this.state.oneSourceType && 
+          <Select 
+            className={styles.selectField}
+            fullWidth
+            inputProps={{
+              name: sourceTypes[currentSource].name,
+              id:'select-id'
+            }}
+            value={currentSource}
+            onChange={this.handleSourceTypeChange}
+          >
+            {sourceTypesMenu}
+          </Select>
+        }
+        {this.state.oneSourceType && 
+          <div className={styles.sourceTypeNameLabel}>Source Type</div>}
         {this.state.oneSourceType && 
           <div className={styles.sourceTypeNameContainer}>
-            <div className={styles.sourceTypeName}>{this.props.sourceTypes[this.state.currentSourceTypeIndex].name}</div>
-            <div className={styles.sourceTypeNameTooltip} onClick={this.handleTooltip}>Why can't I change this?</div>
+            <div className={styles.sourceTypeName}>{sourceTypes[currentSource].name}</div>
+            <div className={styles.sourceTypeNameTooltip} onClick={this.handleTooltip}>
+              {"Why can't I change this?"}
+            </div>
           </div>}
-        {(this.props.helperText && !this.state.oneSourceType) && <FormHelperText>{this.props.helperText}</FormHelperText>}
+        {(this.props.helperText && !this.state.oneSourceType) &&
+          <FormHelperText>{this.props.helperText}</FormHelperText>}
         {this.renderFields(this.state.currentSourceTypeIndex)}
       </FormControl>
     );
@@ -153,12 +157,11 @@ export default class DynamicSelect extends React.Component {
 }
 
 // This functional component will handle field type render logic, TODO: add fields here as needed for different field types
-function SourceTypeField({id, type, required, value, onChange, title, error}) {
+function SourceTypeField({ id, type, required, value, onChange, title, error }) {
   //all types will be lowercase
   let element;
-  if (!title) {
-    title = id;
-  }
+  const label = title || id;
+
   if (type.includes('string')) {
     element = (
       <TextField
@@ -167,7 +170,7 @@ function SourceTypeField({id, type, required, value, onChange, title, error}) {
         fullWidth
         margin='dense'
         id={id}
-        label={title}
+        label={label}
         value={value}
         error={error}
         key={id}
@@ -182,7 +185,7 @@ function SourceTypeField({id, type, required, value, onChange, title, error}) {
         fullWidth
         margin='dense'
         id={id}
-        label={title}
+        label={label}
         value={value}
         error={error}
         key={id}
@@ -191,5 +194,5 @@ function SourceTypeField({id, type, required, value, onChange, title, error}) {
     );
   }
 
-  return React.cloneElement(element, {required: required});
+  return React.cloneElement(element, { required: required });
 }
