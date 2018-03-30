@@ -1,5 +1,4 @@
 import React from 'react';
-import { object, func } from 'prop-types';
 import { Scheduler as LibScheduler } from 'veritone-react-common';
 import widget from '../../shared/widget';
 

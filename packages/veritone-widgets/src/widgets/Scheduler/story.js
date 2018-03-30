@@ -1,7 +1,6 @@
 import React from 'react';
 import { bool, string } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import SchedulerWidget from './';
