@@ -7,7 +7,6 @@ import {
   instanceOf,
   func,
   shape,
-  number,
   string,
   oneOfType,
   bool
@@ -110,8 +109,7 @@ export default class DateTimePicker extends React.Component {
   }
 }
 
-function DateSelector({ value, min, max, onChange, clearable }) {
-
+const DateSelector = ({ value, min, max, onChange, clearable }) => {
   let date = getDateString(value);
 
   return (
@@ -120,12 +118,19 @@ function DateSelector({ value, min, max, onChange, clearable }) {
       min={min}
       max={max}
       defaultValue={date}
-      onChange={onChange}>
-    </TextField>
+      onChange={onChange}/>
   );
-}
+};
 
-function TimeSelector({ value, min, max, onChange, clearable }) {
+DateSelector.propTypes = {
+  min: instanceOf(Date),
+  max: instanceOf(Date),
+  clearable: bool,
+  value: oneOfType([instanceOf(Date), string]).isRequired,
+  onChange: func.isRequired
+};
+
+const TimeSelector = ({ value, min, max, onChange, clearable }) => {
   let time = getTimeString(value);
 
   return (
@@ -142,6 +147,14 @@ function TimeSelector({ value, min, max, onChange, clearable }) {
         step: 60, // 1 min
       }}/>
   );
+};
+
+TimeSelector.propTypes = {
+  min: instanceOf(Date),
+  max: instanceOf(Date),
+  clearable: bool,
+  value: oneOfType([instanceOf(Date), string]).isRequired,
+  onChange: func.isRequired  
 }
 
 function consolidate(dateObject, timeObject) {

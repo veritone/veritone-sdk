@@ -1,6 +1,11 @@
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+
+import {
+  objectOf,
+  any
+} from 'prop-types';
 
 import SourceManagerModal from './';
 
@@ -150,6 +155,10 @@ const SOURCE_TYPES = [{
 }];
 
 class ModalContainer extends React.Component {
+  static propTypes = {
+    source: objectOf(any)
+  };
+
   constructor(props) {
     super(props);
     this.state = {

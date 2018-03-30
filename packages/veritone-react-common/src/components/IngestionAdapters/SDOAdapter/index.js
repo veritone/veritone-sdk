@@ -4,54 +4,49 @@ import { FormControl, FormHelperText } from 'material-ui/Form';
 import Select from 'material-ui/Select';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import TextField from 'material-ui/TextField';
-import IconButton from 'material-ui/IconButton';
-import Typography from 'material-ui/Typography';
-import Toolbar from 'material-ui/Toolbar';
-import Dialog from 'material-ui/Dialog';
-import Input, { InputLabel } from 'material-ui/Input';
-import ArrowBack from 'material-ui-icons/ArrowBack';
+import { InputLabel } from 'material-ui/Input';
 
-import { get, pick, isArray, clone, startCase, toLower } from 'lodash';
+import { get, isArray, clone, startCase, toLower, includes } from 'lodash';
 import {
-  object,
+  objectOf,
+  any,
   func,
   arrayOf,
-  bool,
-  string
+  string,
+  bool
 } from 'prop-types';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
 import SourceManagerModal from '../../SourceManagerModal';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 
 
-let currentFields;
 @withMuiThemeProvider
 class SDOAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
-    configuration: object.isRequired,
-    sources: arrayOf(object).isRequired,
-    sourceTypes: arrayOf(object).isRequired,
-    adapterConfig: object.isRequired
+    configuration: objectOf(any).isRequired,
+    sources: arrayOf(objectOf(any)).isRequired,
+    sourceTypes: arrayOf(objectOf(any)).isRequired,
+    adapterConfig: objectOf(any).isRequired
   };
 
   constructor(props) {
     super(props);
-    let fields = currentFields = get(this.props.adapterConfig, ['fields']);
+    let fields = get(this.props.adapterConfig, 'fields');
     this.state = {
       sourceId: 
-        get(this.props, ['configuration', 'sourceId']) ||
-        (get(this.props, ['sources', 'length']) ? this.props.sources[0].id : '')
+        get(this.props, 'configuration.sourceId') ||
+        (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
     };
     if (isArray(fields)) {
       fields.forEach(field => {
         if (field.name) {
           let propValue = get(this.props, ['configuration', field.name]);
           if (field.defaultValue) {
-            this.state[field.name] =  propValue || (field.defaultValue.indexOf(',') === -1 ? field.defaultValue : field.defaultValue.split(','));
+            this.state[field.name] =  propValue || (!includes(field.defaultValue, ',') ? field.defaultValue : field.defaultValue.split(','));
           } else if (field.defaultValues) {
             this.state[field.name] = propValue || clone(field.defaultValues) || [];
           }
@@ -97,7 +92,7 @@ class SDOAdapter extends React.Component {
               handleSourceChange={this.handleSourceChange}
               selectLabel="Select a Source*"/>
         </div>
-        <div className={styles.adapterDivider}></div>
+        <div className={styles.adapterDivider}/>
         <div>
           <div className={styles.adapterContainer}>
             <div className={styles.adapterHeader}>
@@ -113,7 +108,7 @@ class SDOAdapter extends React.Component {
                 this.props.adapterConfig.iconPath
                 ? (
                   <div className={styles.adapterIconContainer}>
-                    <Image src={this.props.adapterConfig.iconPath} width={44} height={44} border={true} />
+                    <Image src={this.props.adapterConfig.iconPath} width={44} height={44} border />
                   </div>
                 ) : ''
               }
@@ -130,8 +125,7 @@ class SDOAdapter extends React.Component {
               <TextField
                 label="Cluster"
                 value="Veritone CPU"
-                disabled
-              ></TextField>
+                disabled />
             </div>
             <div>
               <DynamicFieldForm fields={this.props.adapterConfig.fields} configuration={this.state} handleFieldChange={this.handleFieldChange} />
@@ -147,14 +141,17 @@ function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
   return fields.map(field => {
     let inputId = field.name + 'DynamicField';
     let camelCasedFieldName = startCase(toLower(field.name));
+    let fieldObj = {
+      key: inputId
+    };
     if (field.type === 'Picklist' || field.type === 'MultiPicklist') {
-      return (
+      fieldObj.input = (
         <FormControl>
           <InputLabel htmlFor={inputId}>{camelCasedFieldName}</InputLabel>
           <Select
             value={configuration[field.name]}
             onChange={handleFieldChange(field.name)}
-            autoWidth={true}
+            autoWidth
             multiple={field.type === 'MultiPicklist'}
             inputProps={{
               name: field.name,
@@ -169,7 +166,7 @@ function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
         </FormControl>
       );
     } else if (field.type === 'Text') {
-      return (
+      fieldObj.input = (
         <FormControl>
           <TextField
             id={inputId}
@@ -181,7 +178,7 @@ function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
         </FormControl>
       );
     } else if (field.type === 'Number') {
-      return (
+      fieldObj.input = (
         <FormControl>
           <TextField
             id={inputId}
@@ -199,17 +196,18 @@ function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
         </FormControl>
       );
     }
-  }).map(fieldInput => (<div className={styles.adapterFieldContainer}>{fieldInput}</div>));
+    return fieldObj;
+  }).map(fieldObj => (<div key={fieldObj.key} className={styles.adapterFieldContainer}>{fieldObj.input}</div>));
 }
 
 @withMuiThemeProvider
 class SourceContainer extends React.Component {
   static propTypes = {
     initialValue: string,
-    sources: arrayOf(object),
+    sources: arrayOf(objectOf(any)),
     handleSourceChange: func.isRequired,
     selectLabel: string,
-    sourceTypes: arrayOf(object).isRequired
+    sourceTypes: arrayOf(objectOf(any)).isRequired
   };
 
   state = {
@@ -250,13 +248,12 @@ class SourceContainer extends React.Component {
         openCreateSource={this.openCreateSource}
         isCreateSourceOpen={this.state.isCreateSourceOpen}
         handleCreateSource={this.handleCreateSource}
-        closeCreateSource={this.closeCreateSource}
-      ></SourceSelector>
+        closeCreateSource={this.closeCreateSource} />
     );
   }
 }
 
-function SourceSelector ({
+const SourceSelector = ({
   initialValue,
   sources,
   handleSourceChange,
@@ -269,7 +266,7 @@ function SourceSelector ({
   sourceTypes,
   handleCreateSource,
   closeCreateSource
-}) {
+}) => {
   let sourceMenuItems = sources.map(source => {
 
     function handleItemClick () {
@@ -334,12 +331,27 @@ function SourceSelector ({
             open={isCreateSourceOpen}
             handleClose={closeCreateSource}
             getSavedSource={handleCreateSource}
-            sourceTypes={sourceTypes}></SourceManagerModal>
+            sourceTypes={sourceTypes} />
         </div>
       </Menu>
     </FormControl>
   );
-}
+};
+
+SourceSelector.propTypes = {
+  initialValue: string,
+  sources: arrayOf(objectOf(any)).isRequired,
+  handleSourceChange: func.isRequired,
+  selectLabel: string,
+  handleMenuClick: func,
+  handleMenuClose: func,
+  anchorEl: objectOf(any),
+  openCreateSource: func.isRequired,
+  isCreateSourceOpen: bool,
+  sourceTypes: arrayOf(objectOf(any)).isRequired,
+  handleCreateSource: func.isRequired,
+  closeCreateSource: func.isRequired
+};
 
 export default {
   title: 'Configuration',

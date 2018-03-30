@@ -7,26 +7,26 @@ import Dialog from 'material-ui/Dialog';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import ArrowBack from 'material-ui-icons/ArrowBack';
 
-import { get, pick, isArray, clone, startCase, toLower } from 'lodash';
 import {
-  object,
+  objectOf,
+  any,
   func,
   arrayOf,
   bool
 } from 'prop-types';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import SourceConfiguration from '../SourceManagement';
 import ContentTemplates from '../ContentTemplates';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 @withMuiThemeProvider
 export default class SourceManagerModal extends React.Component {
   static propTypes = {
     open: bool,
     handleClose: func.isRequired,
-    source: object,
+    source: objectOf(any),
     getSavedSource: func,
-    sourceTypes: arrayOf(object).isRequired
+    sourceTypes: arrayOf(objectOf(any)).isRequired
   };
 
   constructor(props) {
@@ -114,14 +114,14 @@ export default class SourceManagerModal extends React.Component {
           <ContentTemplates templates={this.state.contentTemplates} source={this.state.source} />
       )
     }];
-    const TAB_HEADERS = TAB_TEMPLATES.map(tab => <Tab label={tab.label} />);
-    const TAB_CONTENTS = TAB_TEMPLATES.map(tab => <TabContainer>{tab.content}</TabContainer>)
+    const TAB_HEADERS = TAB_TEMPLATES.map(tab => <Tab key={tab.label} label={tab.label} />);
+    const TAB_CONTENTS = TAB_TEMPLATES.map(tab => <TabContainer key={tab.label}>{tab.content}</TabContainer>)
 
     return (
       <Dialog
         modal="true"
         open={this.props.open}
-        fullScreen={true}
+        fullScreen
       >
         <Toolbar>
           <IconButton color="inherit" onClick={this.props.handleClose} aria-label="Close">
@@ -146,10 +146,14 @@ export default class SourceManagerModal extends React.Component {
   }
 }
 
-function TabContainer(props) {
+const TabContainer = (props) => {
   return (
     <Typography component="div" style={{ padding: 8 * 3 }}>
       {props.children}
     </Typography>
   );
 }
+
+TabContainer.propTypes = {
+  children: objectOf(any)
+};

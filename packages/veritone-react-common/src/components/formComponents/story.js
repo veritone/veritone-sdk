@@ -356,11 +356,11 @@ storiesOf('Form Components', module)
         <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
           <Field component={DateTimePicker} name="date-time" input={{ value: date.value, onChange: handleChange}}/>
           <br/>
-          <Field component={DateTimePicker} name="date-time-icon" showIcon={true} input={{ value: date.value, onChange: handleChange}}/>
+          <Field component={DateTimePicker} name="date-time-icon" showIcon input={{ value: date.value, onChange: handleChange}}/>
           <br/>
-          <Field component={DateTimePicker} name="date-time-clearable" clearable={true} input={{ value: date.value, onChange: handleChange}}/>
+          <Field component={DateTimePicker} name="date-time-clearable" clearable input={{ value: date.value, onChange: handleChange}}/>
           <br/>
-          <Field component={DateTimePicker} name="date-time-timzone" clearable={true} showTimezone={true} input={{ value: date.value, onChange: handleChange}}/>
+          <Field component={DateTimePicker} name="date-time-timzone" clearable showTimezone input={{ value: date.value, onChange: handleChange}}/>
         </StoryForm>
       </Provider>
     );

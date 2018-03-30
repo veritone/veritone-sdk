@@ -33,7 +33,9 @@ Image.propTypes = {
   height: number,
   width: number,
   type: string,
-  onClick: func
+  onClick: func,
+  border: string,
+  label: string
 };
 
 export default Image;
