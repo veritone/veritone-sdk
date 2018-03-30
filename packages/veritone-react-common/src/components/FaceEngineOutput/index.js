@@ -20,7 +20,7 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class FaceEngineOutput extends Component {
   static propTypes = {
-    faceEngineOutput: arrayOf(
+    data: arrayOf(
       shape({
         series: arrayOf(
           shape({
@@ -79,15 +79,15 @@ class FaceEngineOutput extends Component {
   };
 
   componentWillMount() {
-    this.processFaces(this.props.faceEngineOutput);
+    this.processFaces(this.props.data);
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.viewMode !== this.props.viewMode) {
       this.setState({ selectedEntity: null });
     }
-    if (!isEqual(nextProps.faceEngineOutput, this.props.faceEngineOutput)) {
-      this.processFaces(nextProps.faceEngineOutput);
+    if (!isEqual(nextProps.data, this.props.data)) {
+      this.processFaces(nextProps.data);
     }
   }
 

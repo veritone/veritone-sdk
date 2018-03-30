@@ -142,7 +142,7 @@ class FaceEngineOutputStory extends Component {
 
     return (
       <FaceEngineOutput
-        faceEngineOutput={this.state.faceEngineOutput}
+        data={this.state.faceEngineOutput}
         libraries={libraries}
         enableEditMode={enableEditMode}
         entitySearchResults={this.state.entitySearchResults}
