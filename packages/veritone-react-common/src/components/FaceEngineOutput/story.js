@@ -118,15 +118,21 @@ class FaceEngineOutputStory extends Component {
   };
 
   searchForEntities = searchQuery => {
-    let entities = this.props.libraries.reduce((accumulator, library) => {
-      return [...accumulator, ...library.entities];
-    }, []);
-    let searchRegex = new RegExp(searchQuery, 'gi');
-    this.setState({
-      entitySearchResults: entities.filter(entity => {
-        return entity.entityName.match(searchRegex);
-      })
-    });
+    if (searchQuery && searchQuery.length) {
+      let entities = this.props.libraries.reduce((accumulator, library) => {
+        return [...accumulator, ...library.entities];
+      }, []);
+      let searchRegex = new RegExp(searchQuery, 'gi');
+      this.setState({
+        entitySearchResults: entities.filter(entity => {
+          return entity.entityName.match(searchRegex);
+        })
+      });
+    } else {
+      this.setState({
+        entitySearchResults: []
+      });
+    }
   };
 
   render() {
@@ -305,6 +311,300 @@ let faceObjects = [
   },
   {
     series: [
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
+      {
+        startTimeMs: 4000,
+        stopTimeMs: 6000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          boundingPoly: [
+            {
+              x: 0.4,
+              y: 0.3
+            }
+          ]
+        }
+      },
       {
         startTimeMs: 4000,
         stopTimeMs: 6000,
