@@ -1,6 +1,6 @@
 import React from 'react';
 
-import NullstateImage from 'resources/images/cms-content-templates-null.svg';
+import NullstateImage from '../../../resources/images/cms-content-templates-null.svg';
 import styles from './styles.scss';
 
 export default class ContentTemplatesNullstate extends React.Component {

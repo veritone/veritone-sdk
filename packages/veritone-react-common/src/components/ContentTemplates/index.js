@@ -21,7 +21,7 @@ export default class ContentTemplates extends React.Component {
   static propTypes = {
     templates: objectOf(any).isRequired, //make a graphql query for the list of all schemas through "dataRegistries"
     source: objectOf(any).isRequired, // make a graphql query for the source by id
-
+    updateContentTemplates: func.isRequired
   };
   static defaultProps = {};
 
@@ -31,11 +31,12 @@ export default class ContentTemplates extends React.Component {
       schemas: {},
       addedSchemas: {}
     };
+    this.state.templates = this.props.templates || [];
   }
 
   componentWillMount = () => {
     let schemaSaver = {};
-    this.props.templates.data && this.props.templates.data.dataRegistries.records.forEach(schemas => {
+    this.state.templates.data && this.state.templates.data.dataRegistries.records.forEach(schemas => {
       // array of data registries containing an array of schemas
       schemas.schemas.records.forEach(schema => {
         // array of schemas containing an individual schema
@@ -87,6 +88,7 @@ export default class ContentTemplates extends React.Component {
 
   handleFormChange = (schemaState) => {
     console.log(schemaState);
+    this.props.updateContentTemplates(schemaState);
   };
 
   render() {

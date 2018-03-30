@@ -6,6 +6,8 @@ import { MenuItem } from 'material-ui/Menu';
 import { FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
 import { get } from 'lodash';
 
+import DateTimePicker from '../formComponents/DateTimePicker';
+
 const RECURRING_SELECTION = {
   label: 'Recurring',
   value: 'recurring'
@@ -69,22 +71,24 @@ export default class Scheduler extends React.Component {
     schedule: object
   };
 
-  componentDidMount() {
-  }
-
-  // Hydrate the adapter with the provided schedule if it is defined
-  state = {
-    occurrenceType: get(this.props, ['schedule', 'occurrenceType']) || NONE_SELECTION.value,
-    repeatType: get(this.props, ['schedule', 'repeatType']) || HOUR_SELECTION.value,
-    repeatValue: get(this.props, ['schedule', 'repeatValue']) || REPEAT_HOUR_VALUES[0],
-    startDateTime: get(this.props, ['schedule', 'startDateTime']) || new Date(),
-    stopDateTime: get(this.props, ['schedule', 'stopDateTime'])
+  constructor(props) {
+    super(props);
+    let today = new Date();
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.state = {
+      occurrenceType: get(this.props, ['schedule', 'occurrenceType']) || NONE_SELECTION.value,
+      repeatIntervalUnit: get(this.props, ['schedule', 'repeatIntervalUnit']) || HOUR_SELECTION.value,
+      repeatValue: get(this.props, ['schedule', 'repeatValue']) || REPEAT_HOUR_VALUES[0],
+      startDateTime: get(this.props, ['schedule', 'startDateTime']) || today,
+      stopDateTime: get(this.props, ['schedule', 'stopDateTime']) || tomorrow
+    }
   }
 
   // Component specific functions here
   getRepeatValueSelector = () => {
     let childrenSelection = [];
-    switch (this.state.repeatType) {
+    switch (this.state.repeatIntervalUnit) {
       case HOUR_SELECTION.value:
         childrenSelection = REPEAT_HOUR_SELECTIONS;
         break;
@@ -112,12 +116,16 @@ export default class Scheduler extends React.Component {
     this.setState(Object.assign({}, this.state, { occurrenceType: value }), this.sendSchedule);
   }
 
-  handleEndsChange = event => {
-    this.setState(Object.assign({}, this.state, { ends: event.target.value }), this.sendSchedule);
+  handleStartChange = value => {
+    this.setState(Object.assign({}, this.state, { startDateTime: value }), this.sendSchedule);
   }
 
-  handleRepeatTypeChange = event => {
-    this.setState(Object.assign({}, this.state, { repeatType: event.target.value }), this.sendSchedule);
+  handleEndChange = value => {
+    this.setState(Object.assign({}, this.state, { stopDateTime: value }), this.sendSchedule);
+  }
+
+  handleRepeatIntervalUnitChange = event => {
+    this.setState(Object.assign({}, this.state, { repeatIntervalUnit: event.target.value }), this.sendSchedule);
   }
 
   handleRepeatValueChange = event => {
@@ -126,7 +134,7 @@ export default class Scheduler extends React.Component {
 
   render() {
     let ends = this.state.ends;
-    let repeatType = this.state.repeatType;
+    let repeatIntervalUnit = this.state.repeatIntervalUnit;
     let occurrenceType = this.state.occurrenceType;
     let dynamicSection = [];
     if (occurrenceType === RECURRING_SELECTION.value) {
@@ -139,8 +147,8 @@ export default class Scheduler extends React.Component {
             </div>
             <div>
               <Select
-                value={repeatType}
-                onChange={this.handleRepeatTypeChange}
+                value={repeatIntervalUnit}
+                onChange={this.handleRepeatIntervalUnitChange}
                 children={REPEAT_TYPE_SELECTIONS}>
               </Select>
             </div>
@@ -153,11 +161,18 @@ export default class Scheduler extends React.Component {
         <div style={{display: 'flex', flexDirection: 'row'}}>
           <div>Starts</div>
           <div style={{display: 'flex', flexDirection: 'row'}}>
-            Start DateTime Picker
+            <DateTimePicker
+              min={new Date()}
+              max={this.state.stopDateTime}
+              showTimezone={true}
+              input={{
+                value: this.state.startDateTime,
+                onChange: this.handleStartChange
+              }} />
           </div>
         </div>
       );
-      if (repeatType === DAY_SELECTION.value) {
+      if (repeatIntervalUnit === DAY_SELECTION.value) {
         dynamicSection.push(
           <div>
             <div style={{display: 'flex', flexDirection: 'row'}}>
@@ -169,7 +184,7 @@ export default class Scheduler extends React.Component {
           </div>
         );
       }
-      if (repeatType === WEEK_SELECTION.value) {
+      if (repeatIntervalUnit === WEEK_SELECTION.value) {
         dynamicSection.push(
           <div>
             <div style={{display: 'flex', flexDirection: 'row'}}>
@@ -185,7 +200,13 @@ export default class Scheduler extends React.Component {
         <div style={{display: 'flex', flexDirection: 'row'}}>
           <div>Ends</div>
           <div style={{display: 'flex', flexDirection: 'row'}}>
-            End DateTime Picker
+            <DateTimePicker
+              min={this.state.startDateTime}
+              showTimezone={true}
+              input={{
+                value: this.state.stopDateTime,
+                onChange: this.handleEndChange
+              }} />
           </div>
         </div>
       );

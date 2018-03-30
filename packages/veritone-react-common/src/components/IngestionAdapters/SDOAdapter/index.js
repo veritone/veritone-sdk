@@ -290,14 +290,14 @@ function SourceSelector ({
   }
   );
   const menuId = 'long-menu';
+  const dummyItem = 'dummy-item';
   let selectedSource = sources.find(source => source.id === initialValue);
-  console.log(selectedSource);
   return (
     <FormControl>
       <InputLabel htmlFor="select-source">Select a Source*</InputLabel>
       <Select 
         className={styles.sourceSelector}
-        value={initialValue}
+        value={initialValue || dummyItem}
         onClick={handleMenuClick} 
         aria-label="Select Source"
         aria-owns={anchorEl ? menuId : null}
@@ -308,7 +308,7 @@ function SourceSelector ({
           id: 'select-source',
         }}
       >
-        <MenuItem key="dummy-item" value={initialValue}>{selectedSource.name}</MenuItem>
+        <MenuItem key={dummyItem} value={initialValue || dummyItem}>{selectedSource ? selectedSource.name : '---'}</MenuItem>
       </Select>
       <Menu
         id={menuId}

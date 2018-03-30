@@ -133,6 +133,7 @@ export default class SourceManagerModal extends React.Component {
         </Toolbar>
         <Toolbar>
           <Tabs
+            indicatorColor="primary"
             onChange={this.handleChange}
             value={this.state.tabIndex}
             fullWidth>

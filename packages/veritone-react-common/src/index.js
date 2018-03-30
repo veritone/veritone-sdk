@@ -26,6 +26,7 @@ export AppContainer from './components/AppContainer';
 
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
+export SourceManagerModal from './components/SourceManagerModal';
 
 export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
 export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
