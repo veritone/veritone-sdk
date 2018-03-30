@@ -168,8 +168,8 @@ function receiveSchemaState(added) {
 storiesOf('ContentTemplates', module)
   .add('Base', () => (
     <ContentTemplates
-      templates={result}
-      source={source}
+      templates={result.data.dataRegistries.records}
+      initialTemplates={source.data.source.contentTemplates}
     />
   ))
   .add('Form Card', () => (

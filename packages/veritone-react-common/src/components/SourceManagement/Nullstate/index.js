@@ -27,7 +27,12 @@ export default class SourceManagementNullState extends React.Component {
         <div className={styles.titleText}>No Sources</div>
         <div className={styles.greyText}>If you need help getting started, take a look at the</div>
         <div className={styles.linkText}>How to Create a Source</div>
-        <Button className={styles.buttonStyle} raised color='primary' component='span' onClick={this.props.onClick}>
+        <Button
+          className={styles.buttonStyle}
+          raised
+          color='primary'
+          // component='span'
+          onClick={this.props.onClick}>
           Create a Source
         </Button>
       </div>

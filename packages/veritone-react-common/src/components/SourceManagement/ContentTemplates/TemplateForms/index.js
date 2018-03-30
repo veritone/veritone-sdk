@@ -1,5 +1,4 @@
 import React from 'react';
-import { has } from 'lodash';
 
 import {
   any,
@@ -11,27 +10,21 @@ import TextField from 'material-ui/TextField';
 import FormCard from 'components/SourceManagement/ContentTemplates/FormCard';
 import styles from './styles.scss';
 
-//TODO: make most recently added content template appear at the top
+
 export default class TemplateForms extends React.Component {
   static propTypes = {
-    schemas: objectOf(any).isRequired,
-    removeSchema: func.isRequired,
+    templates: objectOf(any).isRequired,
+    removeTemplate: func.isRequired,
     onFormChange: func.isRequired
   };
   static defaultProps = {};
 
   state = {
-    schemas: {}, // object key = schema guid and value is the schema object
+    templates: {}, // object key = schema guid and value is the schema object
   };
 
-  // componentWillMount = () => {
-  //   this.setState({
-  //     schemas: this.props.schemas
-  //   });
-  // };
-
   handleRemoveForm = (schemaId) => {
-    this.props.removeSchema(schemaId);
+    this.props.removeTemplate(schemaId);
   };
 
   handleFieldChange = (schemaId, fieldId, value) => {
@@ -39,27 +32,18 @@ export default class TemplateForms extends React.Component {
   };
 
   formBuilder = () => {
-    const { schemas } = this.props;
-    console.log('schemas:', schemas)
-    // let elements = [];
+    const { templates } = this.props;
 
-    // return Object.keys(schemas).map((schemaId, index) => {
-    return Object.keys(schemas).map((schemaId, index) => {
-      const schemaProps = schemas[schemaId].definition.properties;
-      // let name = schemas[schemaId].dataRegistry.name;
-
-      // elements = Object.keys(schema).map((fieldId, index2) => {
+    return Object.keys(templates).map((schemaId, index) => {
+      const schemaProps = templates[schemaId].definition.properties;
       const formFields = Object.keys(schemaProps).map((schemaProp, index2) => {
-        const field = schemaProps[schemaProp];
-
         return (
           <BuildFormElements 
             fieldId={schemaProp} 
             schemaId={schemaId} 
-            type={field.type} 
-            // value={this.state.schemas[schemaId].data[fieldId]} 
-            value={schemas[schemaId].data[schemaProp]}
-            title={field.title || schemaProp} 
+            type={schemaProps[schemaProp].type} 
+            value={templates[schemaId].data[schemaProp]}
+            title={schemaProps[schemaProp].title || schemaProp} 
             onChange={this.handleFieldChange} 
             key={index2}
           />
@@ -71,8 +55,7 @@ export default class TemplateForms extends React.Component {
           key={index}
           id={schemaId}
           fields={formFields}
-          // name={schemas[schemaId].dataRegistry.name}
-          name={schemas[schemaId].name}
+          name={templates[schemaId].name}
           remove={this.handleRemoveForm}
         />
       );
@@ -90,11 +73,13 @@ export default class TemplateForms extends React.Component {
 
 
 function BuildFormElements({fieldId, schemaId, type, title, value, required, onChange, error }) {
-  // if (!required) {
-  //   required = false;
-  // }
   const handleFieldChange = (schemaId, fieldId) => (event) => {
     return onChange(schemaId, fieldId, event.target.value);
+  }
+
+  const additionalProps = {};
+  if (required) {
+    additionalProps.required = true;
   }
 
   let element;
@@ -110,6 +95,7 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         error={error}
         key={fieldId}
         onChange={handleFieldChange(schemaId, fieldId)}
+        {...additionalProps}
       />
     );
   } else if (type.includes('number') || type.includes('integer')) {
@@ -124,9 +110,10 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         error={error}
         key={fieldId}
         onChange={handleFieldChange(schemaId, fieldId)}
+        {...additionalProps}        
       />
     );
   }
 
-  return React.cloneElement(element, { required: !!required });
+  return element;
 }

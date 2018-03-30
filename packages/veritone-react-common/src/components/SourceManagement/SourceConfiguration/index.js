@@ -1,5 +1,5 @@
 import React from 'react';
-import { has } from 'lodash';
+import { has, pick } from 'lodash';
 
 import {
   any, 
@@ -13,12 +13,11 @@ import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
-
 import ModalHeader from 'components/ModalHeader';
-import DynamicSelect from 'components/SchemaDrivenSelectForm';
 import CircleImage from 'components/CircleImage';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import DynamicSelect from './SchemaDrivenSelectForm';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -26,8 +25,8 @@ export default class SourceConfiguration extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
     source: objectOf(any), // the source if this is to edit a source
-    submitCallback: func, // will return an object: {sourceName, schemaResult: {sourceTypeId, fieldValues:{}}}
-    onClose: func
+    // onSubmit: func.isRequired // will return an object: {sourceName, schemaResult: {sourceTypeId, fieldValues:{}}}
+    onInputChange: func.isRequired
   };
   static defaultProps = {};
 
@@ -42,16 +41,16 @@ export default class SourceConfiguration extends React.Component {
   };
 
   componentWillMount = () => {
-    if (this.props.source) { // if editing a source, initialize the defaults
-      const source = this.props.source;
+    const { source } = this.props;
 
+    if (source) { // if editing a source, initialize the defaults
       return this.setState({
         sourceName: source.name || '',
         sourceThumbnail: source.thumbnail || '',
         fieldValues: source.details || {},
         requiredFields: has(source.sourceType.sourceSchema.definition, 'required') ? source.sourceType.sourceSchema.definition : {},
         sourceTypeId: source.sourceType.id,
-        sourceTypeIndex: Math.max(this.props.sourceTypes.findIndex((sourceType) => sourceType.id === source.sourceType.id), 0)
+        // sourceTypeIndex: Math.max(this.props.sourceTypes.findIndex((sourceType) => sourceType.id === source.sourceType.id), 0)
       });
     }
 
@@ -59,7 +58,8 @@ export default class SourceConfiguration extends React.Component {
       sourceTypeIndex: 0,
       fieldValues: {}
     };
-    const properties = this.props.sourceTypes[stateVals.sourceTypeIndex].sourceSchema.definition.properties;
+    // const properties = this.props.sourceTypes[stateVals.sourceTypeIndex].sourceSchema.definition.properties;
+    const properties = source.sourceSchema.definition.properties;
     Object.keys(properties).forEach((field) => {
       stateVals.fieldValues[field] = '';
     });
@@ -69,55 +69,37 @@ export default class SourceConfiguration extends React.Component {
 
   handleFormInputChange = (formResult) => {
     //TODO: keep a check on error state and pass it down to child on save   
-    this.setState({
-      ...formResult
+    // this.setState({
+    //   ...formResult
+    // });
+    this.props.onInputChange({
+      fieldValues: {
+        ...formResult
+      }
     });
   };
 
-  handleSaveConfiguration = (e) => {
-    e.preventDefault();
-    //TODO: implement an onSave check
-    // const savedFieldValues = this.state.schemaFormResult.fieldValues;
-    // const sourceTypeFields = this.props.sourceTypes[this.state.schemaFormResult.sourceTypeIndex].sourceSchema.definition.properties;
+  // handleSaveConfiguration = (e) => {
+  //   e.preventDefault();
     
-    const toSave = {
-      sourceName: this.state.sourceName,
-      schemaResult: this.state.schemaFormResult
-    };
-    console.log('toSave:', toSave);
-    // this.props.submitCallback(toSave);
-  };
+  //   const sourceConfigData = {
+  //     sourceName: this.state.sourceName,
+  //     configuration: pick(this.state, ['sourceTypeId', 'fieldValues'])
+  //   };
+  //   console.log('sourceConfigData:', sourceConfigData);
+  //   this.props.onSubmit(sourceConfigData);
+  // };
 
   handleNameChange = (event) => {
-    this.setState({ sourceName: event.target.value });
+    // this.setState({ sourceName: event.target.value });
+    this.props.onInputChange({
+      sourceName: event.target.value
+    });
   };
 
   imageClicked = () => {
     console.log('clicked');
   };
-
-  // renderModalHeader = () => {
-  //   return (
-  //     <ModalHeader
-  //       title={this.props.source ? this.props.source.name : "New Source"}
-  //       icons={[
-  //         <IconButton className={styles.helpIcon} aria-label='help' key={1}>
-  //           <Icon className='icon-help2' />
-  //         </IconButton>,
-  //         <IconButton className={styles.menuIcon} aria-label='menu' key={2}>
-  //           <Icon className='icon-more_vert' />
-  //         </IconButton>,
-  //         <IconButton className={styles.trashIcon} aria-label='trash' key={3}>
-  //           <Icon className='icon-trash' />
-  //         </IconButton>,
-  //         <span className={styles.separator} key={4} />,
-  //         <IconButton className={styles.exitIcon} aria-label='exit' key={5}>
-  //           <Icon className='icon-close-exit' onClick={this.props.onClose} />
-  //         </IconButton>
-  //       ]}
-  //     />
-  //   );
-  // }
 
   render() {
     return (
@@ -155,11 +137,11 @@ export default class SourceConfiguration extends React.Component {
                 helperText='NOTE: Source types available are dynamic based on your ingestion adapter'
               />
             </FormControl>
-            <Button raised
+            <Button
+              raised
               className={styles.buttonStyle}
               color='primary'
               type="submit"
-            // component='span'
             >
               Create
             </Button>
