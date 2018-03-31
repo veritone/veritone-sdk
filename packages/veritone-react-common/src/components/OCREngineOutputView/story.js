@@ -22,12 +22,6 @@ storiesOf('OCREngineOutputView', module).add('Base', () => {
 
 let ocrAssets = [
   {
-    startTimeMs: 0,
-    endTimeMs: 22000,
-    sourceEngineId: '9a6ac62d-a881-8884-6ee0-f15ab84fcbe2',
-    sourceEngineName: 'Cortex',
-    taskId:
-      '23969da8-c532-46ae-b4cf-b002d44b31ce-82e4453e-b1a9-425f-8b5c-488915939bac',
     series: [
       {
         end: 1000,
