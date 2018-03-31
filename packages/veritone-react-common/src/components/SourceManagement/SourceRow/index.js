@@ -1,19 +1,12 @@
 import React from 'react';
 
 import {
-  bool,
-  any,
   string
 } from 'prop-types';
 
-import {
-  Checkbox,
-} from 'components/formComponents';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
-
 import CircleImage from 'components/CircleImage';
-
 import styles from './styles.scss';
 
 export default class JobRow extends React.Component {
@@ -62,7 +55,7 @@ export default class JobRow extends React.Component {
           
         </div>
         <IconButton className={styles.menuIcon} onClick={this.handleMenuClick} aria-label='menu'>
-          <Icon className={'icon-more_vert'}></Icon>
+          <Icon className='icon-more_vert' />
         </IconButton>
       </div>
     );

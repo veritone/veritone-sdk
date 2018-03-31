@@ -13,12 +13,9 @@ export default class SourceManagementNullState extends React.Component {
     onClick: func
   };
 
-  static defaultProps = {};
-
   render() {
     return (
       <div className={styles.nullStateView}>
-        {/* <Icon className={'icon-translation'} style={{fontSize: '100px'}}></Icon> USE THIS ICON FOR NOW SINCE IT LOOKS MOST SIMILAR TO DATASETS ICON  */}
         <img
           style={{fontSize: '100px', marginBottom: '30px'}}
           src={NullstateImage}
@@ -31,8 +28,8 @@ export default class SourceManagementNullState extends React.Component {
           className={styles.buttonStyle}
           raised
           color='primary'
-          // component='span'
-          onClick={this.props.onClick}>
+          onClick={this.props.onClick}
+        >
           Create a Source
         </Button>
       </div>

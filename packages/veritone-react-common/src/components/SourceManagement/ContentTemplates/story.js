@@ -239,20 +239,10 @@ export default class SMOverview extends React.Component {
           [templateSchemaId]: {
             ...this.props.templateData[templateSchemaId],
             data
-            // data: {
-            //   ...data
-            // }
           }
         }
       });
     }
-
-    // return this.setState({
-    //   contentTemplates: {
-    //     ...this.state.contentTemplates,
-    //     ...template
-    //   }
-    // });
   }
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {

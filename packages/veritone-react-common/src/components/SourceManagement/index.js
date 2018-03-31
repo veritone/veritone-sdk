@@ -1,6 +1,6 @@
 import React from 'react';
-import { arrayOf, objectOf, any, func, shape, string, object } from 'prop-types';
-import { has, pick } from 'lodash';
+import { arrayOf, objectOf, any, func, shape, string } from 'prop-types';
+import { pick } from 'lodash';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -58,34 +58,19 @@ export default class SourceManagementOverview extends React.Component {
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
     };
+    const fieldValues = {};
+    const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
 
-    // if (this.props.source) { // if editing a source, initialize the defaults
-    //   const source = this.props.source;
-    //   // return this.setState({
-    //     newState.sourceConfig = {
-    //       ...pick(source, ['name', 'thumbnail', 'details']),
-    //       // name: source.name || '',
-    //       // thumbnail: source.thumbnail || '',
-    //       // details: source.details || {},
-    //       sourceTypeId: source.sourceType.id
-    //     }
-    //   // });
-    // } 
-    // else {
-      const fieldValues = {};
-      const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
+    Object.keys(properties).forEach((field) => {
+      fieldValues[field] = '';
+    });
   
-      Object.keys(properties).forEach((field) => {
-        fieldValues[field] = '';
-      });
-  
-      // return this.setState({
-        newState.sourceConfig = {
-          ...this.state.sourceConfig,
-          details: {
-            ...fieldValues
-          }
-        }
+    newState.sourceConfig = {
+      ...this.state.sourceConfig,
+      details: {
+        ...fieldValues
+      }
+    }
 
     return this.setState(newState);
   };
@@ -189,9 +174,7 @@ export default class SourceManagementOverview extends React.Component {
     const { activeTab } = this.state;
 
     return (
-      <FullScreenDialog
-        open={this.state.openFormDialog}
-      >
+      <FullScreenDialog open={this.state.openFormDialog}>
         <ModalHeader
           title={this.state.selectedSource ? this.state.selectedSource.name : "New Source"}
           icons={[

@@ -11,7 +11,6 @@ import IconButton from 'material-ui/IconButton';
 import styles from './styles.scss';
 
 export default class FormCard extends React.Component {
-  // take in a number of form components and populate them
   static propTypes = {
     fields: arrayOf(any), // take in an array of field elements, i.e. <TextField/>; styling of form elements is intended to be done by the parent
     name: string.isRequired,

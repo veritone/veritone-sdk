@@ -16,19 +16,13 @@ export default class TemplateForms extends React.Component {
     onTemplateDetailsChange: func.isRequired,
     onRemoveTemplate: func.isRequired
   };
-  static defaultProps = {};
-
-  state = {
-    templates: {}, // object key = schema guid and value is the schema object
+  static defaultProps = {
+    templates: {}
   };
 
   handleRemoveTemplate = (schemaId) => {
     this.props.onRemoveTemplate(schemaId, true);
   };
-
-  // handleFieldChange = (schemaId, fieldId, value) => {
-  //   return this.props.onFormChange(schemaId, fieldId, value);
-  // };
 
   formBuilder = () => {
     const { templates } = this.props;
@@ -43,7 +37,6 @@ export default class TemplateForms extends React.Component {
             type={schemaProps[schemaProp].type} 
             value={templates[schemaId].data[schemaProp]}
             title={schemaProps[schemaProp].title || schemaProp} 
-            // onChange={this.handleFieldChange} 
             onChange={this.props.onTemplateDetailsChange} 
             key={index2}
           />
@@ -102,7 +95,7 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
     element = (
       <TextField
         className={styles.textFieldExtra}
-        type={'number'}
+        type='number'
         fullWidth
         margin='dense'
         label={title}

@@ -3,7 +3,8 @@ import React from 'react';
 import {
   arrayOf,
   any,
-  objectOf
+  objectOf,
+  func
 } from 'prop-types';
 import SourceRow from 'components/SourceManagement/SourceRow';
 import CircleImage from 'components/CircleImage';
@@ -12,7 +13,8 @@ import styles from './styles.scss';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
-    sources: arrayOf(objectOf(any)).isRequired // an array of source objects
+    sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
+    onSelectSource: func.isRequired
   };
 
   static defaultProps = {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { has, pick } from 'lodash';
+import { has } from 'lodash';
 
 import {
   any, 
@@ -8,7 +8,6 @@ import {
   func
 } from 'prop-types';
 
-import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
 import CircleImage from 'components/CircleImage';
@@ -53,7 +52,8 @@ export default class SourceConfiguration extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.source.sourceTypeId !== this.props.source.sourceTypeId) { // if editing a source, initialize the defaults
-      const sourceTypeIndex = nextProps.sourceTypes.findIndex((sourceType) => sourceType.id === nextProps.source.sourceTypeId);
+      const sourceTypeIndex = nextProps.sourceTypes
+        .findIndex((sourceType) => sourceType.id === nextProps.source.sourceTypeId);
 
       if (sourceTypeIndex > -1) {
         this.setState({ sourceTypeIndex });

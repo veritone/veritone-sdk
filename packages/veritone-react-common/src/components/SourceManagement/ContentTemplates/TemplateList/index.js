@@ -17,7 +17,6 @@ export default class TemplateList extends React.Component {
   };
 
   addTemplate = (schemaId) => () => {
-    console.log('schemaId:', schemaId)
     this.props.addOrRemoveTemplate(schemaId);
   };
 
@@ -25,16 +24,15 @@ export default class TemplateList extends React.Component {
     this.props.addOrRemoveTemplate(schemaId, true);
   };
 
-
   buildTemplateList = () => {
     const { templates, selectedTemplates } = this.props;
-    console.log('this.props.templates:', this.props.templates)
+
     return Object.keys(templates).map((schemaId, index) => {
       const isAdded = !!selectedTemplates[schemaId];
 
       return ( 
         <div className={styles.templateRow} key={index}>
-          <div className={styles.name} style={isAdded ? {fontWeight: 500} : {}}>
+          <div className={styles.name} style={isAdded ? { fontWeight: 500 } : undefined}>
             {templates[schemaId].name} 
           </div>
           {

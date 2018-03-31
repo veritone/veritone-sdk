@@ -41,7 +41,7 @@ export default class DynamicSelect extends React.Component {
   componentWillMount() {
     const state = {};
 
-    if (!this.props.sourceTypes.length) { //TODO: currently will error out and not render if sourceTypes is empty
+    if (!this.props.sourceTypes.length) {
       console.error('Source types was empty.');
     } else if (this.props.sourceTypes.length === 1) {
       state.oneSourceType = true
@@ -85,7 +85,6 @@ export default class DynamicSelect extends React.Component {
     const properties = definition.properties;
     const requiredFields = has(definition, 'required') ? definition.required : [];
 
-    // return Object.keys(properties).map((fieldId, index) => {
     return Object.keys(this.props.fieldValues).map((fieldId, index) => {
       return (
         <SourceTypeField 
@@ -131,7 +130,6 @@ export default class DynamicSelect extends React.Component {
             }}
             value={currentSourceType}
             onChange={this.handleSourceTypeChange}
-            // onChange={this.props.onSelectChange}
           >
             {sourceTypesMenu}
           </Select>
@@ -145,9 +143,6 @@ export default class DynamicSelect extends React.Component {
             <div className={styles.sourceTypeName}>
               {sourceTypes[currentSourceType].name}
             </div>
-            {/* <div className={styles.sourceTypeNameTooltip} onClick={this.handleTooltip}>
-              {"Why can't I change this?"}
-            </div> */}
           </div>}
         {(this.props.helperText && !this.state.oneSourceType) &&
           <FormHelperText>{this.props.helperText}</FormHelperText>}
