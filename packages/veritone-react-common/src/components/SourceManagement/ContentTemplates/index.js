@@ -2,8 +2,10 @@ import React from 'react';
 import { has } from 'lodash';
 
 import {
-  arrayOf,
-  object,
+  string,
+  shape,
+  objectOf,
+  any,
   func
 } from 'prop-types';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -16,114 +18,130 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 export default class ContentTemplates extends React.Component {
   static propTypes = {
-    templates: arrayOf(object).isRequired,
-    initialTemplates: arrayOf(object),
-    onSubmit: func.isRequired,
-    onCancel: func.isRequired,
+    templateData: objectOf(shape({
+      id: string,
+      name: string.isRequired,
+      status: string,
+      definition: objectOf(any)
+    })).isRequired,
+    selectedTemplateSchemas: objectOf(shape({
+      id: string,
+      name: string.isRequired,
+      status: string,
+      definition: objectOf(any),
+      data: objectOf(any)
+    })),
+    onListChange: func.isRequired,
+    onInputChange: func.isRequired
   };
-  static defaultProps = {};
-
-  state = {
-    templateSchemas: {},
+  static defaultProps = {
+    templateData:{},
     selectedTemplateSchemas: {}
   };
 
-  componentWillMount() {
-    const templateSchemas = {};
-    // array of data registries containing an array of schemas
-    this.props.templates.reduce((schemaStore, registryData) => {
-      registryData.schemas.records.forEach(schema => {
-        // only take schemas that are 'published' and also define field types
-        if (schema.status === 'published' && has(schema.definition, 'properties')) {
-          schemaStore[schema.id] = { 
-            name: registryData.name,
-            ...schema
-          };
-        }
-      });
-    }, templateSchemas);
+  // state = {
+  //   templateSchemas: {},
+  //   selectedTemplateSchemas: {}
+  // };
 
-    const selectedTemplateSchemas = {};
+  // componentWillMount() {
+  //   const templateSchemas = {};
+  //   // array of data registries containing an array of schemas
+  //   this.props.templates.reduce((schemaStore, registryData) => {
+  //     registryData.schemas.records.forEach(schema => {
+  //       // only take schemas that are 'published' and also define field types
+  //       if (schema.status === 'published' && has(schema.definition, 'properties')) {
+  //         schemaStore[schema.id] = { 
+  //           name: registryData.name,
+  //           ...schema
+  //         };
+  //       }
+  //     });
+  //   }, templateSchemas);
 
-    if (this.props.initialTemplates) {
-      this.props.initialTemplates.forEach(template => {
-        if (has(templateSchemas, template.schemaId)) {
-          selectedTemplateSchemas[template.schemaId] = templateSchemas[template.schemaId];
-          if (template.data) { // if we need to fill out the form with pre-data
-            selectedTemplateSchemas[template.schemaId].data = template.data;
-          }
-        }
-      });
-    }
+  //   const selectedTemplateSchemas = {};
 
-    this.setState({
-      templateSchemas,
-      selectedTemplateSchemas
-    });
-  };
+  //   if (this.props.initialTemplates) {
+  //     this.props.initialTemplates.forEach(template => {
+  //       if (has(templateSchemas, template.schemaId)) {
+  //         selectedTemplateSchemas[template.schemaId] = templateSchemas[template.schemaId];
+  //         if (template.data) { // if we need to fill out the form with pre-data
+  //           selectedTemplateSchemas[template.schemaId].data = template.data;
+  //         }
+  //       }
+  //     });
+  //   }
 
-  handleAddOrRemoveTemplate = (schemaId, remove = false) => {
-    if (remove) {
-      return this.handleRemoveTemplate(schemaId);
-    }
+  //   this.setState({
+  //     templateSchemas,
+  //     selectedTemplateSchemas
+  //   });
+  // };
 
-    const data = {};
-    Object.keys(this.state.templateSchemas[schemaId].definition.properties)
-    .reduce((fields, schemaDefProp) => {
-      data[schemaDefProp] = '';
-    }, data)
+  // handleAddOrRemoveTemplate = (schemaId, remove = false) => {
+  //   if (remove) {
+  //     return this.handleRemoveTemplate(schemaId);
+  //   }
 
-    this.setState({
-      selectedTemplateSchemas: {
-        ...this.state.selectedTemplateSchemas,
-        [schemaId]: {
-          ...this.state.templateSchemas[schemaId],
-          data: {
-            ...data
-          }
-        }
-      }
-    });
-  };
+  //   const data = {};
+  //   Object.keys(this.state.templateSchemas[schemaId].definition.properties)
+  //   .reduce((fields, schemaDefProp) => {
+  //     data[schemaDefProp] = '';
+  //   }, data)
 
-  handleRemoveTemplate = (schemaId) => { 
-    if (this.state.selectedTemplateSchemas[schemaId]) {
-      const selectedTemplateSchemas = { ...this.state.selectedTemplateSchemas };
-      delete selectedTemplateSchemas[schemaId];
+  //   this.setState({
+  //     selectedTemplateSchemas: {
+  //       ...this.state.selectedTemplateSchemas,
+  //       [schemaId]: {
+  //         ...this.state.templateSchemas[schemaId],
+  //         data: {
+  //           ...data
+  //         }
+  //       }
+  //     }
+  //   });
+  // };
 
-      this.setState({ selectedTemplateSchemas });
-    }
-  };
+  // handleRemoveTemplate = (schemaId) => { 
+  //   if (this.state.selectedTemplateSchemas[schemaId]) {
+  //     const selectedTemplateSchemas = { ...this.state.selectedTemplateSchemas };
+  //     delete selectedTemplateSchemas[schemaId];
 
-  handleFormChange = (schemaId, fieldId, value) => {
-    const selectedTemplateSchemas = this.state.selectedTemplateSchemas;
+  //     this.setState({ selectedTemplateSchemas });
+  //   }
+  // };
 
-    this.setState({
-      selectedTemplateSchemas: {
-        ...selectedTemplateSchemas,
-        [schemaId]: {
-          ...selectedTemplateSchemas[schemaId],
-          data: {
-            ...selectedTemplateSchemas[schemaId].data,
-            [fieldId]: value
-          }
-        }
-      }
-    });
-  };
+  // handleFormChange = (schemaId, fieldId, value) => {
+  //   const selectedTemplateSchemas = this.state.selectedTemplateSchemas;
+
+  //   this.setState({
+  //     selectedTemplateSchemas: {
+  //       ...selectedTemplateSchemas,
+  //       [schemaId]: {
+  //         ...selectedTemplateSchemas[schemaId],
+  //         data: {
+  //           ...selectedTemplateSchemas[schemaId].data,
+  //           [fieldId]: value
+  //         }
+  //       }
+  //     }
+  //   });
+  // };
 
   render() {
-    console.log('this.state:', this.state)
-    const { selectedTemplateSchemas } = this.state;
+    console.log('this.props:', this.props)
+    // const { selectedTemplateSchemas } = this.state;
+    const { selectedTemplateSchemas } = this.props;
     const showNullstate = !Object.keys(selectedTemplateSchemas).length;
 
     return (
       <div className={styles.templatePage}>
         <TemplateList 
-          templates={this.state.templateSchemas} 
-          // initialTemplates={selectedTemplateSchemas}
+          // templates={this.state.templateSchemas}
+          templates={this.props.templateData} 
           selectedTemplates={selectedTemplateSchemas}
-          addOrRemoveTemplate={this.handleAddOrRemoveTemplate}
+          // addOrRemoveTemplate={this.handleAddOrRemoveTemplate}
+          addOrRemoveTemplate={this.props.onListChange}
         />
         <div className={styles['content-templates']}>
           {
@@ -131,10 +149,10 @@ export default class ContentTemplates extends React.Component {
               ? <ContentTemplatesNullstate />
               : <TemplateForms
                   templates={selectedTemplateSchemas}
-                  removeTemplate={this.handleRemoveTemplate}
-                  onFormChange={this.handleFormChange}
-                  onSubmit={this.props.onSubmit}
-                  onCancel={this.props.onCancel}
+                  // removeTemplate={this.handleRemoveTemplate}
+                  onRemoveTemplate={this.props.onListChange}
+                  // onFormChange={this.handleFormChange}
+                  onTemplateDetailsChange={this.props.onInputChange}
                 />
           }
         </div>

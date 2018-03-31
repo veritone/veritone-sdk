@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   any,
   objectOf,
@@ -14,8 +13,8 @@ import styles from './styles.scss';
 export default class TemplateForms extends React.Component {
   static propTypes = {
     templates: objectOf(any).isRequired,
-    removeTemplate: func.isRequired,
-    onFormChange: func.isRequired
+    onTemplateDetailsChange: func.isRequired,
+    onRemoveTemplate: func.isRequired
   };
   static defaultProps = {};
 
@@ -23,13 +22,13 @@ export default class TemplateForms extends React.Component {
     templates: {}, // object key = schema guid and value is the schema object
   };
 
-  handleRemoveForm = (schemaId) => {
-    this.props.removeTemplate(schemaId);
+  handleRemoveTemplate = (schemaId) => {
+    this.props.onRemoveTemplate(schemaId, true);
   };
 
-  handleFieldChange = (schemaId, fieldId, value) => {
-    return this.props.onFormChange(schemaId, fieldId, value);
-  };
+  // handleFieldChange = (schemaId, fieldId, value) => {
+  //   return this.props.onFormChange(schemaId, fieldId, value);
+  // };
 
   formBuilder = () => {
     const { templates } = this.props;
@@ -44,7 +43,8 @@ export default class TemplateForms extends React.Component {
             type={schemaProps[schemaProp].type} 
             value={templates[schemaId].data[schemaProp]}
             title={schemaProps[schemaProp].title || schemaProp} 
-            onChange={this.handleFieldChange} 
+            // onChange={this.handleFieldChange} 
+            onChange={this.props.onTemplateDetailsChange} 
             key={index2}
           />
         );
@@ -56,7 +56,7 @@ export default class TemplateForms extends React.Component {
           id={schemaId}
           fields={formFields}
           name={templates[schemaId].name}
-          remove={this.handleRemoveForm}
+          remove={this.handleRemoveTemplate}
         />
       );
     });

@@ -1,6 +1,8 @@
-.fullScreenTopBar {
+.modal-header {
   background-color: #1F2532;
-  height: 65px;
+}
+.fullScreenTopBar {
+  // height: 65px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -30,3 +32,8 @@
 .icon {
   color: #fff;
 }
+
+// .modal-container {
+//   display: flex;
+//   flex-direction: column;
+// }

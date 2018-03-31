@@ -1,44 +1,106 @@
 import React from 'react';
-import { arrayOf, objectOf, any, func, number } from 'prop-types';
+import { arrayOf, objectOf, any, func, shape, string, object } from 'prop-types';
+import { has, pick } from 'lodash';
 import Tabs, { Tab } from 'material-ui/Tabs';
+import Icon from 'material-ui/Icon';
+import IconButton from 'material-ui/IconButton';
+import Button from 'material-ui/Button';
 import FullScreenDialog from 'components/FullScreenDialog';
+import ModalHeader from 'components/ModalHeader';
 import SourceManagementNullState from './Nullstate';
 import SourceTileView from './SourceRow';
 import SourceConfiguration from './SourceConfiguration';
 import ContentTemplates from './ContentTemplates';
-import ModalHeader from 'components/ModalHeader';
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
-import Button from 'material-ui/Button';
 import styles from './styles.scss';
-// import ModalHeader from 'components/ModalHeader';
+
 
 export default class SourceManagementOverview extends React.Component {
   static propTypes = {
+    sourceTypes: arrayOf(objectOf(any)).isRequired,
     sources: arrayOf(objectOf(any)),
+    templateData: objectOf(shape({
+      id: string,
+      name: string.isRequired,
+      status: string,
+      definition: objectOf(any)
+    })).isRequired,
+    initialTemplates: objectOf(shape({
+      id: string,
+      name: string.isRequired,
+      status: string,
+      definition: objectOf(any),
+      data: objectOf(any)
+    })),
     onSubmit: func.isRequired,
   }
 
   static defaultProps = {
-    sources: []
+    sourceTypes: [],
+    sources: [],
+    templateData: {},
+    initialTemplates: {}
   }
 
   state = {
     selectedSource: null,
     sourceConfig: {
-      sourceName: '',
-      sourceThumbnail: '',
-      fieldValues: {},
-      requiredFields: {},
-      sourceTypeId: ''
+      sourceTypeId: '',
+      name: '',
+      thumbnail: '',
+      details: {}
     },
     contentTemplates: {},
     openFormDialog: false,
     activeTab: 0
   }
 
+  componentWillMount() {
+    const newState = {
+      contentTemplates: { ...this.props.initialTemplates }
+    };
+
+    // if (this.props.source) { // if editing a source, initialize the defaults
+    //   const source = this.props.source;
+    //   // return this.setState({
+    //     newState.sourceConfig = {
+    //       ...pick(source, ['name', 'thumbnail', 'details']),
+    //       // name: source.name || '',
+    //       // thumbnail: source.thumbnail || '',
+    //       // details: source.details || {},
+    //       sourceTypeId: source.sourceType.id
+    //     }
+    //   // });
+    // } 
+    // else {
+      const fieldValues = {};
+      const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
+  
+      Object.keys(properties).forEach((field) => {
+        fieldValues[field] = '';
+      });
+  
+      // return this.setState({
+        newState.sourceConfig = {
+          ...this.state.sourceConfig,
+          details: {
+            ...fieldValues
+          }
+        }
+
+    return this.setState(newState);
+  };
+
   selectSource = (selectedSource) => {
-    this.setState({ selectedSource })
+    const source = this.state.sources[selectedSource];
+    const sourceConfig = pick(
+      source,
+      ['name', 'details', 'thumbnail', 'sourceTypeId', 'sourceType']
+    );
+  
+    this.setState({
+      selectedSource,
+      sourceConfig
+    })
   }
 
   openDialog = () => {
@@ -54,7 +116,6 @@ export default class SourceManagementOverview extends React.Component {
   }
 
   saveConfiguration = (config) => {
-    // return this.props.onSubmit(config);
     return this.setState({
       sourceConfig: {
         ...this.state.sourceConfig,
@@ -62,9 +123,66 @@ export default class SourceManagementOverview extends React.Component {
       }
     });
   }
+
+  manageTemplatesList = (templateSchemaId, remove = false) => {
+    const { templateData, initialTemplates } = this.props;
+
+    if (remove) {
+      if (this.state.contentTemplates[templateSchemaId]) {
+        const contentTemplates = { ...this.state.contentTemplates };
+        delete contentTemplates[templateSchemaId];
   
-  handleSubmitContentTemplates = (templates) => {
-    return this.props.onSubmit(templates);
+        return this.setState({ contentTemplates });
+      }
+    } else {
+      const data = {};
+      Object.keys(templateData[templateSchemaId].definition.properties)
+        .reduce((fields, schemaDefProp) => {
+          data[schemaDefProp] = (initialTemplates[templateSchemaId] && initialTemplates[templateSchemaId].data)
+            ? initialTemplates[templateSchemaId].data[schemaDefProp]
+            : '';
+        }, data)
+
+        console.log('data:', data)
+
+      this.setState({
+        contentTemplates: {
+          ...this.state.contentTemplates,
+          [templateSchemaId]: {
+            ...templateData[templateSchemaId],
+            data
+            // data: {
+            //   ...data
+            // }
+          }
+        }
+      });
+    }
+  }
+
+  updateTemplateDetails = (templateSchemaId, fieldId, value) => {
+    const { contentTemplates } = this.state;
+
+    this.setState({
+      contentTemplates: {
+        ...contentTemplates,
+        [templateSchemaId]: {
+          ...contentTemplates[templateSchemaId],
+          data: {
+            ...contentTemplates[templateSchemaId].data,
+            [fieldId]: value
+          }
+        }
+      }
+    });
+  };
+  
+  handleSubmit = (e) => {
+    e.preventDefault();
+    return this.props.onSubmit({
+      sourceConfiguration: this.state.sourceConfig,
+      contentTemplates: this.state.contentTemplates
+    });
   }
 
   renderDialog = () => {
@@ -97,23 +215,30 @@ export default class SourceManagementOverview extends React.Component {
             <Tab label="Content Templates" />
           </Tabs>
         </ModalHeader>
-        {activeTab === 0 &&
-          <SourceConfiguration
-            source={this.props.sources[this.state.selectedSource] || this.state.sourceConfig}
-            onInputChange={this.saveConfiguration}
-            onClose={this.handleOnClose} />}
-        {activeTab === 1 && 
-          <ContentTemplates
-            onSubmit={this.handleSubmitContentTemplates}
-            onCancel={this.handleOnClose} />}
-        <div className={styles.btnContainer}>
-          <Button onClick={this.props.onCancel}>
-            Cancel
-          </Button>
-          <Button raised color='primary' type="submit">
-            Create
-          </Button>
-        </div>
+        <form onSubmit={this.handleSubmit}>
+          {activeTab === 0 &&
+            <SourceConfiguration
+              sourceTypes={this.props.sourceTypes}
+              source={this.state.sourceConfig}
+              onInputChange={this.saveConfiguration}
+              onClose={this.handleOnClose} />}
+          {activeTab === 1 && 
+            <ContentTemplates
+              templateData={this.props.templateData}
+              selectedTemplateSchemas={this.state.contentTemplates}
+              onListChange={this.manageTemplatesList}
+              onInputChange={this.updateTemplateDetails}
+            />
+          }
+          <div className={styles.btnContainer}>
+            <Button onClick={this.handleOnClose}>
+              Cancel
+            </Button>
+            <Button raised color='primary' type="submit">
+              Create
+            </Button>
+          </div>        
+        </form>
       </FullScreenDialog>
     );
   }

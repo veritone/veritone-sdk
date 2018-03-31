@@ -17,6 +17,7 @@ export default class TemplateList extends React.Component {
   };
 
   addTemplate = (schemaId) => () => {
+    console.log('schemaId:', schemaId)
     this.props.addOrRemoveTemplate(schemaId);
   };
 
@@ -27,7 +28,7 @@ export default class TemplateList extends React.Component {
 
   buildTemplateList = () => {
     const { templates, selectedTemplates } = this.props;
-
+    console.log('this.props.templates:', this.props.templates)
     return Object.keys(templates).map((schemaId, index) => {
       const isAdded = !!selectedTemplates[schemaId];
 

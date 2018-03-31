@@ -5,7 +5,7 @@ import {
   any,
   objectOf
 } from 'prop-types';
-import SourceRow from 'components/SourceManagement/SourceConfiguration/SourceRow';
+import SourceRow from 'components/SourceManagement/SourceRow';
 import CircleImage from 'components/CircleImage';
 
 import styles from './styles.scss';

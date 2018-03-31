@@ -45,9 +45,7 @@ export default class FormCard extends React.Component {
         >
           <Icon className={'icon-trash'} />
         </IconButton>
-        <form>
-          {this.renderFields()}
-        </form>
+        {this.renderFields()}
       </div>
     );
   };

@@ -1,16 +1,17 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-
+import { has } from 'lodash';
 import FormCard from './FormCard';
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
-import ContentTemplates from './';
 
+import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
 import InputLabel from 'material-ui/Input/InputLabel';
+import ContentTemplates from './';
 
 // CONTENT TEMPLATES SETUP
 let source = {
@@ -165,11 +166,130 @@ function receiveSchemaState(added) {
   console.log(added);
 }
 
+function createTemplateData(dataSchemas) {
+  const templateSchemas = {};
+  // array of data registries containing an array of schemas
+  dataSchemas.reduce((schemaStore, registryData) => {
+    registryData.schemas.records.forEach(schema => {
+      // only take schemas that are 'published' and also define field types
+      if (schema.status === 'published' && has(schema.definition, 'properties')) {
+        schemaStore[schema.id] = {
+          name: registryData.name,
+          ...schema
+        };
+      }
+    });
+  }, templateSchemas);
+
+  return templateSchemas;
+}
+
+function createInitialTemplates(templateSources) {
+  const selectedTemplateSchemas = {};
+
+  const templateSchemas = createTemplateData(result.data.dataRegistries.records);
+  templateSources.forEach(template => {
+    if (has(templateSchemas, template.schemaId)) {
+      selectedTemplateSchemas[template.schemaId] = templateSchemas[template.schemaId];
+      if (template.data) { // if we need to fill out the form with pre-data
+        selectedTemplateSchemas[template.schemaId].data = template.data;
+      }
+    }
+  });
+
+  return selectedTemplateSchemas;
+}
+
+const templateData = createTemplateData(result.data.dataRegistries.records);
+const initialTemplates = createInitialTemplates(source.data.source.contentTemplates);
+
+export default class SMOverview extends React.Component {
+  state = {
+    contentTemplates: {}
+  }
+
+  componentWillMount() {
+    const newState = {
+      contentTemplates: { ...this.props.initialTemplates }
+    };
+
+    return this.setState(newState);
+  };
+
+  manageTemplatesList = (templateSchemaId, remove = false) => {
+    if (remove) {
+      if (this.state.contentTemplates[templateSchemaId]) {
+        const contentTemplates = { ...this.state.contentTemplates };
+        delete contentTemplates[templateSchemaId];
+
+        return this.setState({ contentTemplates });
+      }
+    } else {
+      const data = {};
+      Object.keys(templateData[templateSchemaId].definition.properties)
+        .reduce((fields, schemaDefProp) => {
+          data[schemaDefProp] = (initialTemplates[templateSchemaId] && initialTemplates[templateSchemaId].data)
+            ? initialTemplates[templateSchemaId].data[schemaDefProp]
+            : '';
+        }, data)
+
+      this.setState({
+        contentTemplates: {
+          ...this.state.contentTemplates,
+          [templateSchemaId]: {
+            ...this.props.templateData[templateSchemaId],
+            data
+            // data: {
+            //   ...data
+            // }
+          }
+        }
+      });
+    }
+
+    // return this.setState({
+    //   contentTemplates: {
+    //     ...this.state.contentTemplates,
+    //     ...template
+    //   }
+    // });
+  }
+
+  updateTemplateDetails = (templateSchemaId, fieldId, value) => {
+    const { contentTemplates } = this.state;
+
+    this.setState({
+      contentTemplates: {
+        ...contentTemplates,
+        [templateSchemaId]: {
+          ...contentTemplates[templateSchemaId],
+          data: {
+            ...contentTemplates[templateSchemaId].data,
+            [fieldId]: value
+          }
+        }
+      }
+    });
+  };
+
+  render() {
+    return (
+        <ContentTemplates
+          templateData={this.props.templateData}
+          selectedTemplateSchemas={this.state.contentTemplates}
+          onListChange={this.manageTemplatesList}
+          onInputChange={this.updateTemplateDetails}
+        />
+    );
+  }
+}
+
+
 storiesOf('ContentTemplates', module)
   .add('Base', () => (
-    <ContentTemplates
-      templates={result.data.dataRegistries.records}
-      initialTemplates={source.data.source.contentTemplates}
+    <SMOverview
+      templateData={templateData}
+      initialTemplates={initialTemplates}
     />
   ))
   .add('Form Card', () => (

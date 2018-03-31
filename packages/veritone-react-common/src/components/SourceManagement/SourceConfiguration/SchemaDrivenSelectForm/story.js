@@ -84,7 +84,7 @@ storiesOf('SchemaDrivenSelectForm', module)
   .add('Base', () => (
     <DynamicSelect
       sourceTypes={sourceTypes.data.records}
-      currentSource={0}
+      currentSourceType={0}
       fieldValues={initialValues}
       onInputChange={formCallback}
       helperText={helperText}

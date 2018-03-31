@@ -1,10 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import Nullstate from './SourceConfiguration/Nullstate';
+import Nullstate from './Nullstate';
 import SourceConfiguration from './SourceConfiguration';
-import SourceTileView from './SourceConfiguration/SourceTileView';
-import SourceRow from './SourceConfiguration/SourceRow';
-
+import SourceTileView from './SourceTileView';
+import SourceRow from './SourceRow';
+import { pick } from 'lodash';
 
 let sourceTypes = {
   sourceTypes: {
@@ -115,6 +115,101 @@ function submitCallback(result) {
   console.log(result);
 };
 
+export default class SourceManagementOverview extends React.Component {
+  static propTypes = {
+    // sourceTypes: arrayOf(objectOf(any)),
+    // sources: arrayOf(objectOf(any)),
+    // onSubmit: func.isRequired,
+  }
+
+  static defaultProps = {
+    sourceTypes: [],
+    sources: []
+  }
+
+  state = {
+    selectedSource: null,
+    sourceConfig: {
+      sourceTypeId: '',
+      name: '',
+      thumbnail: '',
+      details: {}
+    },
+    contentTemplates: {},
+    openFormDialog: false,
+    activeTab: 0
+  }
+
+  componentWillMount() {
+    if (this.props.source) { // if editing a source, initialize the defaults
+      const source = this.props.source;
+      return this.setState({
+        sourceConfig: {
+          name: source.name || '',
+          thumbnail: source.thumbnail || '',
+          details: source.details || {},
+          sourceTypeId: source.sourceType.id
+        }
+      });
+    }
+
+    const fieldValues = {};
+    const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
+
+    Object.keys(properties).forEach((field) => {
+      fieldValues[field] = '';
+    });
+
+    return this.setState({
+      sourceConfig: {
+        ...this.state.sourceConfig,
+        details: {
+          ...fieldValues
+        }
+      }
+    });
+  };
+
+  selectSource = (selectedSource) => {
+    const source = this.state.sources[selectedSource];
+    const sourceConfig = pick(
+      source,
+      ['name', 'details', 'thumbnail', 'sourceTypeId', 'sourceType']
+    );
+
+    this.setState({
+      selectedSource,
+      sourceConfig
+    })
+  }
+
+  saveConfiguration = (config) => {
+    // return this.props.onSubmit(config);
+    return this.setState({
+      sourceConfig: {
+        ...this.state.sourceConfig,
+        ...config
+      }
+    });
+  }
+
+  handleSubmitContentTemplates = (templates) => {
+    return this.props.onSubmit(templates);
+  }
+
+  render() {
+    return (
+      <SourceConfiguration
+        sourceTypes={this.props.sourceTypes}
+        source={this.state.sourceConfig}
+        // selectedSource={this.state.selectedSource}
+        onInputChange={this.saveConfiguration}
+        onClose={this.handleOnClose}
+      />
+    );
+  }
+}
+
 storiesOf('SourceManagement', module)
   .add('Nullstate', () => (
     <Nullstate />
@@ -122,19 +217,39 @@ storiesOf('SourceManagement', module)
   .add('TileView', () => (
     <SourceTileView sources={sourceResults}/>
   ))
-  .add('CreateSource', () => (
-    <SourceConfiguration
-      sourceTypes={sourceTypes.sourceTypes.records}
-      submitCallback={submitCallback}
-    />
-  ))
-  .add('EditSource', () => (
-    <SourceConfiguration
-      sourceTypes={sourceTypes.sourceTypes.records} 
-      source={sourceResult.data.source}
-      submitCallback={submitCallback}
-    />
-  ))
+  .add('CreateSource', () => {
+    const sourceConfig = {
+      name: '',
+      thumbnail: '',
+      details: {},
+      sourceTypeId: ''
+    };
+    
+    return (
+      <SourceManagementOverview
+        sourceTypes={sourceTypes.sourceTypes.records}
+        // source={sourceConfig}    
+        // onInputChange={submitCallback}
+      />
+    );
+  })
+  .add('EditSource', () => {
+    const sourceConfig = {
+      ...pick(
+        sourceResult.data.source,
+        ['name', 'thumbnail', 'details', 'sourceTypeId']
+      ),
+      requiredFields: {},
+    };
+
+    return (
+      <SourceConfiguration
+        sourceTypes={sourceTypes.sourceTypes.records} 
+        source={sourceConfig}
+        onInputChange={submitCallback}
+      />
+    );
+  })
   .add('Row', () => (
     <SourceRow 
       name={sourceName}

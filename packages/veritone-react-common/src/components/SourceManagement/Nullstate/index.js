@@ -3,7 +3,7 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from 'material-ui/Button';
 import { func } from 'prop-types';
 
-import NullstateImage from 'resources/images/cms-sources-null.svg';
+import NullstateImage from 'images/cms-sources-null.svg';
 import styles from './styles.scss';
 
 
