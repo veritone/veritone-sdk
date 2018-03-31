@@ -5,7 +5,6 @@ import { action } from '@storybook/addon-actions';
 import styles from './story.styles.scss';
 import ObjectDetectionOuput from './';
 
-
 const objectDetectionAssets = [
   {
     startTimeMs: 0,

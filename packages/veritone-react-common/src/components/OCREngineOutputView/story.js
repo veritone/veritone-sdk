@@ -1,11 +1,26 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
+
 import OCREngineOutputView from './';
 
+storiesOf('OCREngineOutputView', module).add('Base', () => {
+  return (
+    <OCREngineOutputView
+      data={ocrAssets}
+      className={styles.outputViewRoot}
+      engines={engines}
+      selectedEngineId="9a6ac62d-a881-8884-6ee0-f15ab84fcbe2"
+      onEngineChange={action('onEngineChange')}
+      onExpandClicked={action('onExpandClicked')}
+      onOcrClicked={action('onOcrClicked')}
+    />
+  );
+});
 
-const ocrAssets = [
+let ocrAssets = [
   {
     startTimeMs: 0,
     endTimeMs: 22000,
@@ -58,8 +73,9 @@ const ocrAssets = [
   }
 ];
 
-storiesOf('OCREngineOutputView', module).add('Base', () => {
-  return (
-    <OCREngineOutputView assets={ocrAssets} className={styles.outputViewRoot} />
-  );
-});
+let engines = [
+  {
+    id: '9a6ac62d-a881-8884-6ee0-f15ab84fcbe2',
+    name: 'Cortex'
+  }
+];

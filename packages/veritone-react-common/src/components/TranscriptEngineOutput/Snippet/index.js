@@ -30,11 +30,12 @@ class Snippet extends Component {
   };
 
   render() {
-    let { snippet, boldText, editModeEnabled } = this.props;
+    let { snippet, boldText, editModeEnabled, onSnippetClick } = this.props;
     return (
       <ContentEditable
         tagName="p"
         className={classNames(styles.snippetText, boldText && styles.boldText)}
+        onClick={onSnippetClick}
         onChange={this.handleSnippetChange}
         html={snippet.text}
         disabled={!editModeEnabled}
