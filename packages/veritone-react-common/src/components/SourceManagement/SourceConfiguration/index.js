@@ -11,7 +11,7 @@ import {
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
 import CircleImage from 'components/CircleImage';
-
+import Avatar from 'material-ui/Avatar';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import DynamicSelect from './SchemaDrivenSelectForm';
 import styles from './styles.scss';
@@ -109,7 +109,11 @@ export default class SourceConfiguration extends React.Component {
           <div className={styles.sourceConfiguration}>
             <FormControl className={styles.formStyle}>
               <div className={styles.container}>
-                <CircleImage height='70px' width='70px' image={this.props.source.thumbnail} onClick={this.imageClicked} />
+                <Avatar
+                  alt={this.props.source.name}
+                  src={this.props.source.thumbnail}
+                  className={styles.avatar}
+                />
                 <TextField
                   className={styles.sourceName}
                   required

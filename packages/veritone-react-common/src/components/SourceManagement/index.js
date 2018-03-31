@@ -18,6 +18,7 @@ export default class SourceManagementOverview extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
     sources: arrayOf(objectOf(any)),
+    source: objectOf(any),
     templateData: objectOf(shape({
       id: string,
       name: string.isRequired,
@@ -58,17 +59,25 @@ export default class SourceManagementOverview extends React.Component {
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
     };
-    const fieldValues = {};
-    const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
+    if (this.props.source) { // if editing a source, initialize the defaults
+      newState.sourceConfig = {
+        ...pick(this.props.source, ['name', 'thumbnail', 'details']),
+        sourceTypeId: this.props.source.sourceType.id
+      }
+    } 
+    else {
+      const fieldValues = {};
+      const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
 
-    Object.keys(properties).forEach((field) => {
-      fieldValues[field] = '';
-    });
-  
-    newState.sourceConfig = {
-      ...this.state.sourceConfig,
-      details: {
-        ...fieldValues
+      Object.keys(properties).forEach((field) => {
+        fieldValues[field] = '';
+      });
+    
+      newState.sourceConfig = {
+        ...this.state.sourceConfig,
+        details: {
+          ...fieldValues
+        }
       }
     }
 

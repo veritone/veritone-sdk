@@ -184,17 +184,12 @@ export default class SourceManagementOverview extends React.Component {
   }
 
   saveConfiguration = (config) => {
-    // return this.props.onSubmit(config);
     return this.setState({
       sourceConfig: {
         ...this.state.sourceConfig,
         ...config
       }
     });
-  }
-
-  handleSubmitContentTemplates = (templates) => {
-    return this.props.onSubmit(templates);
   }
 
   render() {
@@ -228,8 +223,7 @@ storiesOf('SourceManagement', module)
     return (
       <SourceManagementOverview
         sourceTypes={sourceTypes.sourceTypes.records}
-        // source={sourceConfig}    
-        // onInputChange={submitCallback}
+        onInputChange={submitCallback}
       />
     );
   })
@@ -237,16 +231,14 @@ storiesOf('SourceManagement', module)
     const sourceConfig = {
       ...pick(
         sourceResult.data.source,
-        ['name', 'thumbnail', 'details', 'sourceTypeId']
-      ),
-      requiredFields: {},
+        ['name', 'thumbnail', 'details', 'sourceTypeId', 'sourceType']
+      )
     };
 
     return (
-      <SourceConfiguration
+      <SourceManagementOverview
         sourceTypes={sourceTypes.sourceTypes.records} 
         source={sourceConfig}
-        onInputChange={submitCallback}
       />
     );
   })

@@ -1,16 +1,15 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 import { has } from 'lodash';
-import FormCard from './FormCard';
-import TemplateForms from './TemplateForms';
-import TemplateList from './TemplateList';
 
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
 import InputLabel from 'material-ui/Input/InputLabel';
+import TemplateForms from './TemplateForms';
+import TemplateList from './TemplateList';
+import FormCard from './FormCard';
 import ContentTemplates from './';
 
 // CONTENT TEMPLATES SETUP
