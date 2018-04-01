@@ -6,6 +6,7 @@ export AppBar from './widgets/AppBar';
 export OAuthLoginButton from './widgets/OAuthLoginButton';
 export FilePicker from './widgets/FilePicker';
 export Table from './widgets/Table';
+export SourceManagementForm from './widgets/SourceManagementForm';
+export ContentTemplateForm from './widgets/ContentTemplateForm';
 export IngestionAdapters from './widgets/IngestionAdapters';
 export Scheduler from './widgets/Scheduler';
-export SourceManagementForm from './widgets/SourceManagementForm';

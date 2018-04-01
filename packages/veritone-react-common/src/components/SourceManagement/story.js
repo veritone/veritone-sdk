@@ -5,6 +5,7 @@ import Nullstate from './Nullstate';
 import SourceManagementForm from './SourceManagementForm';
 import SourceTileView from './SourceTileView';
 import SourceRow from './SourceRow';
+import ContentTemplateForm from './ContentTemplateForm';
 
 const sourceTypes = {
   sourceTypes: {
@@ -290,5 +291,12 @@ storiesOf('SourceManagement', module)
       creationDate={creationDate}
       lastUpdated={lastUpdated}
       image={thumbnail}
+    />
+  ))
+  .add('ContentTemplate Form', () => (
+    <ContentTemplateForm
+      templateData={templateData}
+      initialTemplates={initialTemplates}
+      onSubmit={noop}
     />
   ))

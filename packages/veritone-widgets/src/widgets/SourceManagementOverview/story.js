@@ -1,15 +1,109 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { text } from '@storybook/addon-knobs';
+
+import VeritoneApp from '../../shared/VeritoneApp';
+import SourceManagementWidget from './';
 import { has } from 'lodash';
 
-import { objectOf, any } from 'prop-types';
+let sourceTypes = {
+  sourceTypes: {
+    records: [
+      {
+        name: "Audio",
+        id: "audio_1",
+        sourceSchema: {
+          definition: {
+            properties: {
+              url: {
+                type: 'string',
+              },
+              username: {
+                type: 'string',
+                title: 'User Name'
+              },
+              password: {
+                type: 'string'
+              }
+            },
+            required: [
+              'url', 'username', 'password'
+            ]
+          }
+        }
+      },
+      {
+        name: "Audio2",
+        id: "audio_2",
+        sourceSchema: {
+          definition: {
+            properties: {
+              url: {
+                type: 'string',
+              },
+              username: {
+                type: 'string',
+                title: 'User Name 2'
+              },
+              password: {
+                type: 'string'
+              },
+              days: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+};
 
-import TextField from 'material-ui/TextField';
-import { MenuItem } from 'material-ui/Menu';
-import Select from 'material-ui/Select';
-import InputLabel from 'material-ui/Input/InputLabel';
-import FormCard from './FormCard';
-import ContentTemplates from './';
+
+// a mock return result on a source from graphql
+let sourceResult = {
+  data: {
+    source: {
+      id: "666",
+      name: "KWOL--FM",
+      createdDateTime: "2014-12-01T18:17:20.675Z",
+      modifiedDateTime: "2015-12-01T18:17:20.675Z",
+      thumbnail: "https://image.flaticon.com/icons/svg/25/25305.svg",
+      details: {
+        url: 'twitter.com',
+        username: 'therealtrump',
+        password: 'password'
+      },
+      sourceType: {
+        id: "1",
+        name: "Audio",
+        sourceSchema: {
+          id: "schemaId1",
+          definition: {
+            properties: {
+              url: {
+                type: "string",
+              },
+              username: {
+                type: "string",
+                title: "User Name"
+              },
+              password: {
+                type: "string",
+                title: "Password"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+let sources = [];
+for (let i = 0; i < 4; i++) {
+  sources.push(sourceResult.data.source);
+}
 
 // CONTENT TEMPLATES SETUP
 let source = {
@@ -28,43 +122,6 @@ let source = {
       ]
     }
   }
-};
-
-// FORM CARD SETUP
-let value = 1;
-let selectObj = {
-  1: 'Lorem ipsum',
-  2: 'other'
-};
-function handleSelect(event) {
-  value = event.target.value;
-};
-
-let fields = [
-  <TextField
-    key={'key1'}
-    type={'text'}
-    fullWidth
-    margin='dense'
-    label={'Twitter Name'}
-  />,
-  <div key={'key2'}>
-    <InputLabel style={{ fontSize: '12px', lineHeight: '14px'}}>Bio</InputLabel>
-    <Select
-      fullWidth
-      name={selectObj[value]}
-      onChange={handleSelect}
-      value={value}
-    >
-      <MenuItem key={1} value={1}>Lorem ipsum</MenuItem>
-      <MenuItem key={2} value={2}>Other</MenuItem>
-    </Select>
-  </div>
-];
-let formName = 'Twitter Account';
-
-function removeForm(schemaId) {
-  console.log('remove this form');
 };
 
 //// FORM CARDS LIST SETUP
@@ -146,24 +203,6 @@ let result = {
   }
 }
 
-//// Template list setup
-// let initialSchemas = {
-//   schemaGuid1: {
-//     schemaId: 'schemaGuid1',
-//     data: {
-//       url: 'twitter.com',
-//       username: 'THEREALTRUMP'
-//     }
-//   }
-// };
-
-// let addedSchemas = {
-//   schemaGuid1: result.data.dataRegistries.records[0].schemas.records[0]
-// };
-// function for template list
-// function receiveSchemaState(added) {
-//   console.log(added);
-// }
 
 function createTemplateData(dataSchemas) {
   const templateSchemas = {};
@@ -202,95 +241,35 @@ function createInitialTemplates(templateSources) {
 const templateData = createTemplateData(result.data.dataRegistries.records);
 const initialTemplates = createInitialTemplates(source.data.source.contentTemplates);
 
-export default class SMOverview extends React.Component {
-  static propTypes = {
-    initialTemplates: objectOf(any),
-    templateData: objectOf(any)
-  }
-
-  state = {
-    contentTemplates: {}
-  }
-
-  componentWillMount() {
-    const newState = {
-      contentTemplates: { ...this.props.initialTemplates }
-    };
-
-    return this.setState(newState);
-  };
-
-  manageTemplatesList = (templateSchemaId, remove = false) => {
-    if (remove) {
-      if (this.state.contentTemplates[templateSchemaId]) {
-        const contentTemplates = { ...this.state.contentTemplates };
-        delete contentTemplates[templateSchemaId];
-
-        return this.setState({ contentTemplates });
-      }
-    } else {
-      const data = {};
-      Object.keys(templateData[templateSchemaId].definition.properties)
-        .reduce((fields, schemaDefProp) => {
-          data[schemaDefProp] = (initialTemplates[templateSchemaId] && initialTemplates[templateSchemaId].data)
-            ? initialTemplates[templateSchemaId].data[schemaDefProp]
-            : '';
-        }, data)
-
-      this.setState({
-        contentTemplates: {
-          ...this.state.contentTemplates,
-          [templateSchemaId]: {
-            ...this.props.templateData[templateSchemaId],
-            data
-          }
-        }
-      });
-    }
-  }
-
-  updateTemplateDetails = (templateSchemaId, fieldId, value) => {
-    const { contentTemplates } = this.state;
-
-    this.setState({
-      contentTemplates: {
-        ...contentTemplates,
-        [templateSchemaId]: {
-          ...contentTemplates[templateSchemaId],
-          data: {
-            ...contentTemplates[templateSchemaId].data,
-            [fieldId]: value
-          }
-        }
-      }
+class Story extends React.Component {
+  componentDidMount() {
+    this._smWidget = new SourceManagementWidget({
+      elId: 'sm-widget',
+      title: 'Source Management Widget',
+      sourceTypes: sourceTypes.sourceTypes.records,
+      sources,
+      templateData,
+      initialTemplates
     });
-  };
+  }
+
+  componentWillUnmount() {
+    this._smWidget.destroy();
+  }
 
   render() {
     return (
-        <ContentTemplates
-          templateData={this.props.templateData}
-          selectedTemplateSchemas={this.state.contentTemplates}
-          onListChange={this.manageTemplatesList}
-          onInputChange={this.updateTemplateDetails}
-        />
+      <div>
+        <span id="sm-widget" />
+      </div>
     );
   }
 }
 
+const app = VeritoneApp();
 
-storiesOf('ContentTemplates', module)
-  .add('Base', () => (
-    <SMOverview
-      templateData={templateData}
-      initialTemplates={initialTemplates}
-    />
-  ))
-  .add('Form Card', () => (
-    <FormCard
-      fields={fields}
-      name={formName}
-      removeCallback={removeForm}
-      id={'id'}
-    />
-  ))
+storiesOf('Source Management Overview', module).add('Base', () => {
+  const sessionToken = text('Api Session Token', '');
+
+  return <Story sessionToken={sessionToken} store={app._store} />;
+});

@@ -34,6 +34,7 @@ export Scheduler from './components/Scheduler';
 
 export SourceManagementOverview from './components/SourceManagement';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
+export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 
 export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
 export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';

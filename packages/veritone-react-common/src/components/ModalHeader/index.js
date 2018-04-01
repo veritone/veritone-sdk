@@ -38,9 +38,9 @@ export default class ModalHeader extends React.Component {
     return (
       <div className={styles['modal-header']}>
         <div className={styles.fullScreenTopBar}>
-            <div className={styles.topBarTitle}>
+            <span className={styles.topBarTitle}>
               {this.props.title}
-            </div>
+            </span>
             <div className={styles.iconGroup}>
               {this.props.icons}
             </div>
