@@ -6,7 +6,7 @@ import {
 } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
-import FormCard from 'components/SourceManagement/ContentTemplates/FormCard';
+import FormCard from '../FormCard';
 import styles from './styles.scss';
 
 

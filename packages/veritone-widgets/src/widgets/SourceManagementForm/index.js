@@ -1,11 +1,10 @@
 import React from 'react';
 import { arrayOf, object, objectOf, any } from 'prop-types';
-import { SourceManagement } from 'veritone-react-common';
-
+import { SourceManagementForm } from 'veritone-react-common';
 
 import widget from '../../shared/widget';
 
-class SourceManagementWidget extends React.Component {
+class SourceManagementFormWidget extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(object).isRequired,
     sources: arrayOf(object).isRequired,
@@ -16,7 +15,7 @@ class SourceManagementWidget extends React.Component {
 
   render() {
     return (
-      <SourceManagement
+      <SourceManagementForm
         sourceTypes={this.props.sourceTypes}
         sources={this.props.sources}
         source={this.props.source}
@@ -27,4 +26,4 @@ class SourceManagementWidget extends React.Component {
   }
 }
 
-export default widget(SourceManagementWidget);
+export default widget(SourceManagementFormWidget);
