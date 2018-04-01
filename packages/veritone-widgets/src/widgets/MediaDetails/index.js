@@ -137,14 +137,12 @@ class MediaDetailsWidget extends React.Component {
     this.props.onClose();
   };
 
-  handleTabChange = (event, value) => {
-    this.setState({ selectedTabValue: value });
-  };
-
   handleEngineCategoryChange = selectedCategoryId => {
     const selectedCategory = this.props.engineCategories.find(
       category => category.id === selectedCategoryId
     );
+
+    // Set the new engine category and set engine id to the first engine in the list.
     this.props.selectEngineCategory(this.props._widgetId, selectedCategory);
   };
 
@@ -284,7 +282,7 @@ class MediaDetailsWidget extends React.Component {
                         <EngineCategorySelector
                           engineCategories={this.props.engineCategories}
                           selectedEngineCategoryId={selectedEngineCategory.id}
-                          onSelectEngineCategory={this.onSelectEngineCategory}
+                          onSelectEngineCategory={this.handleEngineCategoryChange}
                         />
                       </div>
                       {selectedEngineCategory.editable && (
