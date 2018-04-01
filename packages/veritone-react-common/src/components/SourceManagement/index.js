@@ -26,7 +26,16 @@ export default class SourceManagementOverview extends React.Component {
   }
 
   state = {
-    sourceConfig: null
+    sourceConfig: null,
+    openFormDialog: false
+  }
+
+  openDialog = () => {
+    this.setState({ openFormDialog: true })
+  }
+
+  closeDialog = () => {
+    this.setState({ openFormDialog: false });
   }
 
   selectSource = (selectedSource) => {
@@ -55,6 +64,7 @@ export default class SourceManagementOverview extends React.Component {
         templateData={this.props.templateData}
         initialTemplates={this.props.initialTemplates}
         onSubmit={this.handleFormSubmit}
+        onClose={this.closeDialog}
       />
     );
   }

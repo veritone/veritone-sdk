@@ -176,7 +176,7 @@ export default class SourceManagementForm extends React.Component {
     return (
       <FullScreenDialog open={this.state.openDialog}>
         <ModalHeader
-          title={this.state.selectedSource ? this.state.selectedSource.name : "New Source"}
+          title={this.state.sourceConfig.name ? this.state.sourceConfig.name : "New Source"}
           icons={[
             <IconButton aria-label='help' key={1}>
               <Icon className='icon-help2' />
