@@ -1,5 +1,4 @@
 import '../src/styles/global.scss';
-import ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
