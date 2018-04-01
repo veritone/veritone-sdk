@@ -54,7 +54,7 @@ export default class SentimentEngineOutput extends Component {
     this.scrollTimeOut = null;
 
     if (this.props.onTimeScroll) {
-      let seriesData = this.props.data;
+      let seriesData = this.flattenEngineResultsToSeries(this.props.data);
       let totalTime = seriesData[seriesData.length - 1].stopTimeMs;
 
       let chartWidth = event.target.scrollWidth;
@@ -67,6 +67,43 @@ export default class SentimentEngineOutput extends Component {
 
   handleTimeClick = event => {
     this.props.onTimeClick && this.props.onTimeClick(event);
+  };
+
+  flattenEngineResultsToSeries = (data) => {
+    if (!data || !data.length) {
+      return [];
+    }
+    const allSeries = [];
+    data.forEach(dataItem => {
+      if (dataItem.series && dataItem.series.length) {
+        dataItem.series.forEach(seriesItem => {
+          if (isNaN(seriesItem.positiveValue) && isNaN(seriesItem.negativeValue)) {
+            // No data case - engine results has a no-value series item - set sentiment = 0
+            allSeries.push({
+              startTimeMs: seriesItem.startTimeMs,
+              stopTimeMs: seriesItem.stopTimeMs,
+              sentiment: {
+                positiveConfidence: 1,
+                positiveValue: 0
+              }
+            });
+          } else {
+            allSeries.push(seriesItem);
+          }
+        });
+      } else {
+        // No data case - engine result has no data for the offset range - set sentiment = 0
+        allSeries.push({
+          startTimeMs: dataItem.startOffsetMs,
+          stopTimeMs: dataItem.stopOffsetMs,
+          sentiment: {
+            positiveConfidence: 1,
+            positiveValue: 0
+          }
+        });
+      }
+    });
+    return allSeries;
   };
 
   extractPropsData = () => {
@@ -83,41 +120,28 @@ export default class SentimentEngineOutput extends Component {
     let chartData = [{ sartTimeMs: 0, stopTimeMs: 0, sentiment: 0 }];
     let numValidValue = 0;
     let totalSentiment = 0;
-    if (data && Array.isArray(data) && data.length > 0) {
-      data.map((entry, index) => {
-        if (!entry.hasOwnProperty('status') || entry.status === 'complete') {
-          let sentimentValue = 0;
-          let sentiment = entry.sentiment;
-          if (sentiment.positiveConfidence > sentiment.negativeConfidence) {
-            sentimentValue = sentiment.positiveValue * 100;
-          } else if (
-            sentiment.positiveConfidence < sentiment.negativeConfidence
-          ) {
-            sentimentValue = sentiment.negativeValue * 100;
-          }
+    const seriesData = this.flattenEngineResultsToSeries(data);
+    seriesData.map((entry, index) => {
+      let sentimentValue = 0;
+      let sentiment = entry.sentiment;
+      if (sentiment.positiveConfidence > sentiment.negativeConfidence) {
+        sentimentValue = sentiment.positiveValue * 100;
+      } else if (
+        sentiment.positiveConfidence < sentiment.negativeConfidence
+      ) {
+        sentimentValue = sentiment.negativeValue * 100;
+      }
+      numValidValue++;
+      totalSentiment = totalSentiment + sentimentValue;
+      let chartFriendlyData = {
+        startTimeMs: entry.startTimeMs,
+        stopTimeMs: entry.stopTimeMs,
+        sentiment: sentimentValue
+      };
+      chartData.push(chartFriendlyData);
+    });
 
-          numValidValue++;
-          totalSentiment = totalSentiment + sentimentValue;
-
-          let chartFriendlyData = {
-            startTimeMs: entry.startTimeMs,
-            stopTimeMs: entry.stopTimeMs,
-            sentiment: sentimentValue
-          };
-
-          chartData.push(chartFriendlyData);
-        } else {
-          //handle failed & pending status
-          chartData.push({
-            startTimeMs: entry.startTimeMs,
-            stopTimeMs: entry.stopTimeMs,
-            sentiment: 0
-          });
-        }
-      });
-    }
-
-    let totalTime = data[data.length - 1].stopTimeMs;
+    let totalTime = seriesData.length ? seriesData[seriesData.length - 1].stopTimeMs : 0;
     let xDomain = [0, totalTime];
     let xTicks = [];
     for (

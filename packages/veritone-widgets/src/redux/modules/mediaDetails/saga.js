@@ -45,7 +45,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
       temporalDataObject(id: $tdoId) {
         jobs {
           records {
-            tasks (limit: 1000, status: "complete" ) {
+            tasks (limit: 1000, status: complete ) {
               records {
                 completedDateTime
                 engine {
@@ -237,8 +237,8 @@ function* loadEngineResultsSaga(
   stopOffsetMs,
   callback = noop
 ) {
-  const getMetadataQuery = `query engineResults($id: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
-      engineResults(id: $id, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
+      engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
           tdoId
           engineId
@@ -259,8 +259,8 @@ function* loadEngineResultsSaga(
     const engineIds = [engineId];
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
-      query: getMetadataQuery,
-      variables: { tdoId, engineIds, startOffsetMs, stopOffsetMs },
+      query: getEngineResultsQuery,
+      variables: { tdoId, engineIds },
       token
     });
   } catch (error) {

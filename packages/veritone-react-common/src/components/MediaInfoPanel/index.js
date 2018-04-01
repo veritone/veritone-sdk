@@ -7,8 +7,8 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
 import { objectOf, func, bool, arrayOf, any } from 'prop-types';
-import EditMetadataDialog from './EditMetadataDialog';
-import EditTagsDialog from './EditTagsDialog';
+// import EditMetadataDialog from './EditMetadataDialog';
+// import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
@@ -283,6 +283,8 @@ class MediaInfoPanel extends Component {
             </div>
           </Paper>
         </div>
+        {/*
+        TODO: uncomment when styling is fixed. Commented out for MVP.
         {this.props.tdo &&
           this.props.tdo.details && (
             <EditMetadataDialog
@@ -300,7 +302,7 @@ class MediaInfoPanel extends Component {
               onClose={this.toggleIsOpenEditTags}
               onSave={this.onSaveTags}
             />
-          )}
+          )}*/}
       </div>
     );
 
