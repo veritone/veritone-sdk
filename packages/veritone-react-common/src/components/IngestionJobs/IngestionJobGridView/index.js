@@ -1,11 +1,7 @@
 import React from 'react';
 
 import {
-  string,
-  bool,
-  func,
   arrayOf,
-  number,
   objectOf,
   any
 } from 'prop-types';

@@ -1,11 +1,7 @@
 import React from 'react';
 
-import {
-  string
-} from 'prop-types';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from 'material-ui/Button';
-import Icon from 'material-ui/Icon';
 
 import NullstateImage from 'images/cms-ingestion-jobs-null.svg';
 import styles from './styles.scss';

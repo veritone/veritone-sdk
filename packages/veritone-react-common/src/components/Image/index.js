@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { string, number, func } from 'prop-types';
+import { string, number, func, bool } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -34,7 +34,7 @@ Image.propTypes = {
   width: number,
   type: string,
   onClick: func,
-  border: string,
+  border: bool,
   label: string
 };
 

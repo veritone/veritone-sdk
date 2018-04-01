@@ -10,7 +10,6 @@ import {
 
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
-import CircleImage from 'components/CircleImage';
 import Avatar from 'material-ui/Avatar';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import DynamicSelect from './SchemaDrivenSelectForm';

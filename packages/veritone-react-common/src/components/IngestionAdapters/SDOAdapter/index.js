@@ -18,7 +18,6 @@ import {
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
-import SourceManagerModal from '../../SourceManagerModal';
 
 import styles from './styles.scss';
 
@@ -30,7 +29,9 @@ class SDOAdapter extends React.Component {
     configuration: objectOf(any).isRequired,
     sources: arrayOf(objectOf(any)).isRequired,
     sourceTypes: arrayOf(objectOf(any)).isRequired,
-    adapterConfig: objectOf(any).isRequired
+    adapterConfig: objectOf(any).isRequired,
+    openCreateSource: func.isRequired,
+    closeCreateSource: func.isRequired
   };
 
   constructor(props) {
@@ -90,6 +91,8 @@ class SDOAdapter extends React.Component {
               sources={this.props.sources}
               sourceTypes={this.props.sourceTypes}
               handleSourceChange={this.handleSourceChange}
+              openCreateSource={this.props.openCreateSource}
+              closeCreateSource={this.props.closeCreateSource}
               selectLabel="Select a Source*"/>
         </div>
         <div className={styles.adapterDivider}/>
@@ -207,7 +210,9 @@ class SourceContainer extends React.Component {
     sources: arrayOf(objectOf(any)),
     handleSourceChange: func.isRequired,
     selectLabel: string,
-    sourceTypes: arrayOf(objectOf(any)).isRequired
+    sourceTypes: arrayOf(objectOf(any)).isRequired,
+    openCreateSource: func.isRequired,
+    closeCreateSource: func.isRequired
   };
 
   state = {
@@ -223,16 +228,14 @@ class SourceContainer extends React.Component {
   };
 
   openCreateSource = () => {
-    this.setState({ isCreateSourceOpen: true });
+    console.log('closing menu and opening source modal');
+    this.setState({ anchorEl: null, isCreateSourceOpen: true }, this.props.openCreateSource);
   };
 
   closeCreateSource = () => {
+    this.props.closeCreateSource();
     this.setState({ isCreateSourceOpen: false, anchorEl: null });
   };
-
-  handleCreateSource = (source) => {
-    console.log(source);
-  }
 
   render() {
     return (
@@ -245,9 +248,8 @@ class SourceContainer extends React.Component {
         handleMenuClick={this.handleMenuClick}
         selectLabel={this.props.selectLabel}
         anchorEl={this.state.anchorEl}
-        openCreateSource={this.openCreateSource}
         isCreateSourceOpen={this.state.isCreateSourceOpen}
-        handleCreateSource={this.handleCreateSource}
+        openCreateSource={this.openCreateSource}
         closeCreateSource={this.closeCreateSource} />
     );
   }
@@ -264,7 +266,6 @@ const SourceSelector = ({
   openCreateSource,
   isCreateSourceOpen,
   sourceTypes,
-  handleCreateSource,
   closeCreateSource
 }) => {
   let sourceMenuItems = sources.map(source => {
@@ -327,11 +328,6 @@ const SourceSelector = ({
           <MenuItem key="create-source-menu-item" value={null} onClick={openCreateSource}>
             Create New Source
           </MenuItem>
-          <SourceManagerModal
-            open={isCreateSourceOpen}
-            handleClose={closeCreateSource}
-            getSavedSource={handleCreateSource}
-            sourceTypes={sourceTypes} />
         </div>
       </Menu>
     </FormControl>
@@ -349,7 +345,6 @@ SourceSelector.propTypes = {
   openCreateSource: func.isRequired,
   isCreateSourceOpen: bool,
   sourceTypes: arrayOf(objectOf(any)).isRequired,
-  handleCreateSource: func.isRequired,
   closeCreateSource: func.isRequired
 };
 

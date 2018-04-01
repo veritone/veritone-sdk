@@ -221,6 +221,7 @@ function createTemplateData(dataSchemas) {
         };
       }
     });
+    return schemaStore;
   }, templateSchemas);
 
   return templateSchemas;

@@ -2,13 +2,12 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { has } from 'lodash';
 
-import Button from 'material-ui/Button';
+import { objectOf, any } from 'prop-types';
+
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
 import InputLabel from 'material-ui/Input/InputLabel';
-import TemplateForms from './TemplateForms';
-import TemplateList from './TemplateList';
 import FormCard from './FormCard';
 import ContentTemplates from './';
 
@@ -43,12 +42,13 @@ function handleSelect(event) {
 
 let fields = [
   <TextField
+    key={'key1'}
     type={'text'}
     fullWidth
     margin='dense'
     label={'Twitter Name'}
   />,
-  <div>
+  <div key={'key2'}>
     <InputLabel style={{ fontSize: '12px', lineHeight: '14px'}}>Bio</InputLabel>
     <Select
       fullWidth
@@ -56,8 +56,8 @@ let fields = [
       onChange={handleSelect}
       value={value}
     >
-      <MenuItem value={1}>Lorem ipsum</MenuItem>
-      <MenuItem value={2}>Other</MenuItem>
+      <MenuItem key={1} value={1}>Lorem ipsum</MenuItem>
+      <MenuItem key={2} value={2}>Other</MenuItem>
     </Select>
   </div>
 ];
@@ -147,23 +147,23 @@ let result = {
 }
 
 //// Template list setup
-let initialSchemas = {
-  schemaGuid1: {
-    schemaId: 'schemaGuid1',
-    data: {
-      url: 'twitter.com',
-      username: 'THEREALTRUMP'
-    }
-  }
-};
+// let initialSchemas = {
+//   schemaGuid1: {
+//     schemaId: 'schemaGuid1',
+//     data: {
+//       url: 'twitter.com',
+//       username: 'THEREALTRUMP'
+//     }
+//   }
+// };
 
-let addedSchemas = {
-  schemaGuid1: result.data.dataRegistries.records[0].schemas.records[0]
-};
+// let addedSchemas = {
+//   schemaGuid1: result.data.dataRegistries.records[0].schemas.records[0]
+// };
 // function for template list
-function receiveSchemaState(added) {
-  console.log(added);
-}
+// function receiveSchemaState(added) {
+//   console.log(added);
+// }
 
 function createTemplateData(dataSchemas) {
   const templateSchemas = {};
@@ -203,6 +203,11 @@ const templateData = createTemplateData(result.data.dataRegistries.records);
 const initialTemplates = createInitialTemplates(source.data.source.contentTemplates);
 
 export default class SMOverview extends React.Component {
+  static propTypes = {
+    initialTemplates: objectOf(any),
+    templateData: objectOf(any)
+  }
+
   state = {
     contentTemplates: {}
   }

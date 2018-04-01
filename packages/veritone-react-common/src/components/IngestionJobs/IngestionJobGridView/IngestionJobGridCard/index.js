@@ -2,12 +2,7 @@ import React from 'react';
 
 import {
   string,
-  bool,
-  func,
-  arrayOf,
-  number,
-  objectOf,
-  any
+  bool
 } from 'prop-types';
 import {
   Checkbox
@@ -40,6 +35,10 @@ export default class IngestionJobGridCard extends React.Component {
     statusPillStyle: {backgroundColor: '#2196F3', color: '#FFFFFF'}
   };
 
+  componentWillMount() {
+    this.handleStatusPill();
+  };
+
   handleCheckboxChange = () => {
     this.setState({
       checked: !this.state.checked
@@ -48,34 +47,33 @@ export default class IngestionJobGridCard extends React.Component {
 
   handleStatusPill = () => {
     let pill = this.props.status;
+    let statusPillStyle;
     if (pill === 'active') {
-      this.state.statusPillStyle = {
+      statusPillStyle = {
         backgroundColor: '#00C853',
         color: '#FFFFFF'
       }
     } else if (pill === 'paused') {
-      this.state.statusPillStyle = {
+      statusPillStyle = {
         backgroundColor: '#FFFFFF',
         border: '1px solid #607D8B',
         color: '#607D8B'
       }
     } else if (pill === 'processing') {
-      this.state.statusPillStyle = {
+      statusPillStyle = {
         backgroundColor: '#2196F3',
         color: '#FFFFFF'
       }
     } else if (pill === 'inactive') {
-      this.state.statusPillStyle = {
+      statusPillStyle = {
         backgroundColor: '#9E9E9E',
         color: '#FFFFFF'
       }
     }
+    if (statusPillStyle) {
+      this.setState({ statusPillStyle });
+    }
   };
-
-  componentWillMount() {
-    this.handleStatusPill();
-  };
-
 
   render() {
     
@@ -86,7 +84,7 @@ export default class IngestionJobGridCard extends React.Component {
         </div>
         <div className={styles.details}>
         {/* BELOW IS A HACK FOR GETTING CHECKBOX BACKGROUND TO BE WHITE */}
-        <div className={styles.checkboxBackground}></div>
+        <div className={styles.checkboxBackground} />
         <Checkbox
             input={{
               onChange: this.handleCheckboxChange,

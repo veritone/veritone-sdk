@@ -8,5 +8,4 @@ export FilePicker from './widgets/FilePicker';
 export Table from './widgets/Table';
 export IngestionAdapters from './widgets/IngestionAdapters';
 export Scheduler from './widgets/Scheduler';
-export ContentTemplates from './widgets/ContentTemplates';
-export SourceManagerModal from './widgets/SourceManagerModal';
+export SourceManagementForm from './widgets/SourceManagementForm';

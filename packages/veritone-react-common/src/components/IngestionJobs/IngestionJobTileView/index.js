@@ -1,10 +1,7 @@
 import React from 'react';
 
 import {
-  string,
-  bool,
   arrayOf,
-  number,
   any,
   objectOf
 } from 'prop-types';
@@ -12,7 +9,6 @@ import {
 import {
   Checkbox,
 } from 'components/formComponents';
-import { MenuItem } from 'material-ui/Menu';
 
 import JobRow from './JobRow';
 
@@ -66,7 +62,7 @@ export default class IngestionJobTileView extends React.Component {
             <span className={styles.tableTitle}>Creation Date</span>
             <span className={styles.tableTitle}>Last Ingestion</span>
           </div>
-          <div style={{width: '55px'}}></div>
+          <div style={{width: '55px'}} />
         </div>
         {jobRows}
       </div>

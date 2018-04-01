@@ -2,7 +2,6 @@ import React from 'react';
 
 import {
   bool,
-  any,
   string
 } from 'prop-types';
 
@@ -32,14 +31,14 @@ export default class JobRow extends React.Component {
     checked: this.props.checkAll || false,
   };
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({checked: nextProps.checkAll});
+  };
+
   handleCheckboxChange = () => {
     this.setState({
       checked: !this.state.checked
     });
-  };
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({checked: nextProps.checkAll});
   };
 
   handleRowClick = (event) => {
@@ -65,7 +64,7 @@ export default class JobRow extends React.Component {
           <span className={styles.columnText}>{this.props.creationDate}</span>
           <span className={styles.columnText}>{this.props.lastIngested}</span>
           <IconButton className={styles.menuIcon} aria-label='menu'>
-            <Icon className={'icon-more_vert'}></Icon>
+            <Icon className={'icon-more_vert'} />
           </IconButton>
         </div>
         

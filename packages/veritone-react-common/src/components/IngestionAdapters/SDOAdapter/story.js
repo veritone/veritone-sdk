@@ -368,9 +368,25 @@ function updateConfiguration(config) {
   // configuration = config;
 }
 
+function openCreateSource() {
+  console.log('openCreateSource');
+}
+
+function closeCreateSource() {
+  console.log('closeCreateSource');
+}
+
 let configuration = {
   sourceId: SOURCES[0].id
 };
 
 storiesOf('SDOAdapter', module)
-  .add('SDOAdapter', () => <SDOAdapter sources={SOURCES} configuration={configuration} adapterConfig={ADAPTER_CONFIG} updateConfiguration={updateConfiguration} sourceTypes={SOURCE_TYPES}/>);
+  .add('SDOAdapter', () => <SDOAdapter
+    sources={SOURCES}
+    configuration={configuration}
+    adapterConfig={ADAPTER_CONFIG}
+    updateConfiguration={updateConfiguration}
+    sourceTypes={SOURCE_TYPES}
+    openCreateSource={openCreateSource}
+    closeCreateSource={closeCreateSource}/>
+  );

@@ -8,8 +8,6 @@ import {
   node
 } from 'prop-types';
 
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
 import styles from './styles.scss';
 
 //TODO: icons should pass in the icon elements, so the onClick is included already

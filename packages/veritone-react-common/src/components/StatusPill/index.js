@@ -18,37 +18,44 @@ export default class StatusPill extends React.Component {
     status: this.props.status,
     statusPillStyle: {backgroundColor: '#2196F3', color: '#FFFFFF'}
   };  
+
+  componentWillMount() {
+    this.handleStatusPill();
+  };
+
   handleStatusPill = () => {
-    let pill = this.state.status;
-    if (pill === 'active') {
-      this.state.statusPillStyle = {
+    let status = this.state.status;
+    if (this.props.status !== 'active' && this.props.status !== 'paused' && this.props.status !== 'processing' && this.props.status !== 'inactive') {
+      status = 'processing';
+    }
+    let statusPillStyle;
+    if (status === 'active') {
+      statusPillStyle = {
         backgroundColor: '#00C853',
         color: '#FFFFFF'
       }
-    } else if (pill === 'paused') {
-      this.state.statusPillStyle = {
+    } else if (status === 'paused') {
+      statusPillStyle = {
         backgroundColor: '#FFFFFF',
         border: '1px solid #607D8B',
         color: '#607D8B'
       }
-    } else if (pill === 'processing') {
-      this.state.statusPillStyle = {
+    } else if (status === 'processing') {
+      statusPillStyle = {
         backgroundColor: '#2196F3',
         color: '#FFFFFF'
       }
-    } else if (pill === 'inactive') {
-      this.state.statusPillStyle = {
+    } else if (status === 'inactive') {
+      statusPillStyle = {
         backgroundColor: '#9E9E9E',
         color: '#FFFFFF'
       }
     }
-  };
-
-  componentWillMount() {
-    if (this.props.status !== 'active' && this.props.status !== 'paused' && this.props.status !== 'processing' && this.props.status !== 'inactive') {
-      this.state.status = 'processing';
+    let newState = { status };
+    if (statusPillStyle) {
+      newState.statusPillStyle = statusPillStyle;
     }
-    this.handleStatusPill();
+    this.setState(newState);
   };
 
   render() {

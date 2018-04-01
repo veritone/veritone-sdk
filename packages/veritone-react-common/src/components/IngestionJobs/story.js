@@ -1,36 +1,35 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 // import IngestionJobFullScreen from './IngestionJobFullScreen';
 import IngestionJobTileView from './IngestionJobTileView';
-import IngestionJobGridCard from './IngestionJobGridView/IngestionJobGridCard';
-import IngestionJobGridView from './IngestionJobGridView';
+// import IngestionJobGridCard from './IngestionJobGridView/IngestionJobGridCard';
+// import IngestionJobGridView from './IngestionJobGridView';
 import IngestionJobNullstate from './Nullstate';
 
 
 // TODO: new data needed
-var jobInfo = {
-  data: {
-    scheduledJobs: {
-      records: [
-        {
-          id: "35874",
-          name: "test job",
-          isActive: true,
-          jobTemplates: {
-            records: [
-              {
-                id: "jobtemplateguid",
+// const jobInfo = {
+//   data: {
+//     scheduledJobs: {
+//       records: [
+//         {
+//           id: "35874",
+//           name: "test job",
+//           isActive: true,
+//           jobTemplates: {
+//             records: [
+//               {
+//                 id: "jobtemplateguid",
                 
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
+//               }
+//             ]
+//           }
+//         }
+//       ]
+//     }
+//   }
+// }
 
 
 storiesOf('IngestionJobs', module)

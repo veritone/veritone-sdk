@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {
-  any,
   string,
   func
 } from 'prop-types';
@@ -33,7 +32,7 @@ export default class CircleImage extends React.Component {
     }
 
     if (this.props.image) {
-      this.state.image = this.props.image;
+      this.setState({ image: this.props.image });
     }
   }
 
