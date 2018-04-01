@@ -19,8 +19,8 @@ class OCREngineOutputView extends Component {
         taskId: string,
         series: arrayOf(
           shape({
-            end: number,
-            start: number,
+            startTimeMs: number,
+            stopTimeMs: number,
             object: shape({
               text: string
             })
@@ -42,7 +42,7 @@ class OCREngineOutputView extends Component {
   };
 
   static defaultProps = {
-    assets: []
+    data: []
   };
 
   render() {
@@ -74,8 +74,8 @@ class OCREngineOutputView extends Component {
                 <OCRObject
                   key={i}
                   text={ocrObject.object.text}
-                  startTime={ocrObject.start}
-                  endTime={ocrObject.end}
+                  startTime={ocrObject.startTimeMs}
+                  endTime={ocrObject.stopTimeMs}
                 />
               );
             })}
