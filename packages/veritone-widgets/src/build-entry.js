@@ -8,3 +8,4 @@ export FilePicker from './widgets/FilePicker';
 export Table from './widgets/Table';
 export SourceManagement from './widgets/SourceManagement';
 export SourceManagementForm from './widgets/SourceManagementForm';
+export ContentTemplateForm from './widgets/ContentTemplateForm';

@@ -8,8 +8,8 @@ import Button from 'material-ui/Button';
 
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
-import SourceConfiguration from './SourceConfiguration';
-import ContentTemplates from './ContentTemplates';
+import SourceConfiguration from '../SourceConfiguration';
+import ContentTemplates from '../ContentTemplates';
 
 import styles from './styles.scss';
 
