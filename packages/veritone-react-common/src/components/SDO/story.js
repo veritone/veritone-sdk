@@ -4,7 +4,7 @@ import { action } from '@storybook/addon-actions';
 
 
 
-var sdoData = [
+let sdoData = [
   {
     humidity: 54,
     pressure: 1019,
@@ -35,7 +35,7 @@ var sdoData = [
   },
 ];
 
-var schemaData = {
+let schemaData = {
   humidity: {
     $id: "/properties/humidity",
     type: "integer"

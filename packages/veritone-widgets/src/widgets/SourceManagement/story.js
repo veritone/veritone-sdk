@@ -1,12 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { pick, has, noop } from 'lodash';
-import Nullstate from './Nullstate';
-import SourceManagementForm from './SourceManagementForm';
-import SourceTileView from './SourceTileView';
-import SourceRow from './SourceRow';
+import { text } from '@storybook/addon-knobs';
 
-const sourceTypes = {
+import VeritoneApp from '../../shared/VeritoneApp';
+import SourceManagementWidget from './';
+import { has } from 'lodash';
+
+let sourceTypes = {
   sourceTypes: {
     records: [
       {
@@ -61,7 +61,7 @@ const sourceTypes = {
 
 
 // a mock return result on a source from graphql
-const sourceResult = {
+let sourceResult = {
   data: {
     source: {
       id: "666",
@@ -100,19 +100,13 @@ const sourceResult = {
   }
 }
 
-let sourceName = sourceResult.data.source.name;
-let sourceType = sourceResult.data.source.sourceType.name;
-let creationDate = sourceResult.data.source.createdDateTime;
-let lastUpdated = sourceResult.data.source.modifiedDateTime;
-let thumbnail = sourceResult.data.source.thumbnail;
-
-let sourceResults = [];
-for (let i=0;i<4;i++) {
-  sourceResults.push(sourceResult);
+let sources = [];
+for (let i = 0; i < 4; i++) {
+  sources.push(sourceResult.data.source);
 }
 
 // CONTENT TEMPLATES SETUP
-const templateSource = {
+let source = {
   data: {
     source: {
       id: '666',
@@ -130,7 +124,8 @@ const templateSource = {
   }
 };
 
-const dataSchemas = {
+//// FORM CARDS LIST SETUP
+let result = {
   data: {
     dataRegistries: {
       records: [
@@ -208,6 +203,7 @@ const dataSchemas = {
   }
 }
 
+
 function createTemplateData(dataSchemas) {
   const templateSchemas = {};
   // array of data registries containing an array of schemas
@@ -229,7 +225,7 @@ function createTemplateData(dataSchemas) {
 function createInitialTemplates(templateSources) {
   const selectedTemplateSchemas = {};
 
-  const templateSchemas = createTemplateData(dataSchemas.data.dataRegistries.records);
+  const templateSchemas = createTemplateData(result.data.dataRegistries.records);
   templateSources.forEach(template => {
     if (has(templateSchemas, template.schemaId)) {
       selectedTemplateSchemas[template.schemaId] = templateSchemas[template.schemaId];
@@ -242,52 +238,38 @@ function createInitialTemplates(templateSources) {
   return selectedTemplateSchemas;
 }
 
-const templateData = createTemplateData(dataSchemas.data.dataRegistries.records);
-const initialTemplates = createInitialTemplates(templateSource.data.source.contentTemplates);
+const templateData = createTemplateData(result.data.dataRegistries.records);
+const initialTemplates = createInitialTemplates(source.data.source.contentTemplates);
 
-storiesOf('SourceManagement', module)
-  .add('Nullstate', () => (
-    <Nullstate />
-  ))
-  .add('TileView', () => (
-    <SourceTileView sources={sourceResults}/>
-  ))
-  .add('Create Source', () => {
-    return (
-      <SourceManagementForm
-        sourceTypes={sourceTypes.sourceTypes.records}
-        templateData={templateData}
-        initialTemplates={initialTemplates}
-        onSubmit={noop}
-        onClose={noop}
-      />
-    );
-  })
-  .add('Edit Source', () => {
-    const sourceConfig = {
-      ...pick(
-        sourceResult.data.source,
-        ['name', 'thumbnail', 'details', 'sourceTypeId', 'sourceType']
-      )
-    };
+class Story extends React.Component {
+  componentDidMount() {
+    this._smWidget = new SourceManagementWidget({
+      elId: 'sm-widget',
+      title: 'Source Management Widget',
+      sourceTypes: sourceTypes.sourceTypes.records,
+      sources,
+      templateData,
+      initialTemplates
+    });
+  }
 
+  componentWillUnmount() {
+    this._smWidget.destroy();
+  }
+
+  render() {
     return (
-      <SourceManagementForm
-        sourceTypes={sourceTypes.sourceTypes.records}
-        source={sourceConfig}
-        templateData={templateData}
-        initialTemplates={initialTemplates}
-        onSubmit={noop}
-        onClose={noop}
-      />
+      <div>
+        <span id="sm-widget" />
+      </div>
     );
-  })
-  .add('Row', () => (
-    <SourceRow 
-      name={sourceName}
-      sourceType={sourceType}
-      creationDate={creationDate}
-      lastUpdated={lastUpdated}
-      image={thumbnail}
-    />
-  ))
+  }
+}
+
+const app = VeritoneApp();
+
+storiesOf('Source Management', module).add('Base', () => {
+  const sessionToken = text('Api Session Token', '');
+
+  return <Story sessionToken={sessionToken} store={app._store} />;
+});

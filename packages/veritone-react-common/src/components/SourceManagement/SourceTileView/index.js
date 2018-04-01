@@ -1,17 +1,11 @@
 import React from 'react';
 
 import {
-  string,
-  bool,
   arrayOf,
-  number,
   any,
-  objectOf
+  objectOf,
+  func
 } from 'prop-types';
-
-
-import { MenuItem } from 'material-ui/Menu';
-
 import SourceRow from 'components/SourceManagement/SourceRow';
 import CircleImage from 'components/CircleImage';
 
@@ -19,23 +13,29 @@ import styles from './styles.scss';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
-    sources: arrayOf(objectOf(any)).isRequired // an array of source objects
+    sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
+    onSelectSource: func.isRequired
   };
 
-  static defaultProps = {};
-
-  state = {
+  static defaultProps = {
+    sources: []
   };
 
   render() {
     const sourceRows = this.props.sources.map((source, index) => {
-      let sourceName = source.data.source.name;
-      let sourceType = source.data.source.sourceType.name;
-      let creationDate = source.data.source.createdDateTime;
-      let lastUpdated = source.data.source.modifiedDateTime;
-      let thumbnail = source.data.source.thumbnail;
-      return <SourceRow name={sourceName} sourceType={sourceType} creationDate={creationDate} lastUpdated={lastUpdated} thumbnail={thumbnail} key={index}/>
+      const dataSource = source.data.source;
+      return (
+        <SourceRow
+          name={dataSource.name}
+          sourceType={dataSource.sourceType.name}
+          creationDate={dataSource.createdDateTime}
+          lastUpdated={dataSource.modifiedDateTime}
+          thumbnail={dataSource.thumbnail}
+          key={index}
+        />
+      );
     });
+
     return (
       <div>
         <div className={styles.tableTitleRow}>
@@ -48,7 +48,7 @@ export default class SourceTileView extends React.Component {
             <span className={styles.tableTitle}>Created</span>
             <span className={styles.tableTitle}>Updated</span>
           </div>
-          <div style={{width: '55px'}}></div>
+          <div style={{width: '55px'}} />
         </div>
         {sourceRows}
       </div>
