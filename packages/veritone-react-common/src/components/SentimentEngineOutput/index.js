@@ -37,8 +37,8 @@ export default class SentimentEngineOutput extends Component {
     sentimentTicks: [100, 80, 60, 40, 20, 0, -20, -40, -60, -80, -100]
   };
 
-  componentWillReceiveProps (newProps) {
-    if(newProps.timeWindowStartMs !== this.props.timeWindowStartMs) {
+  componentWillReceiveProps(newProps) {
+    if (newProps.timeWindowStartMs !== this.props.timeWindowStartMs) {
       this.scrollTo(newProps.timeWindowStartMs);
     }
   }
@@ -69,7 +69,7 @@ export default class SentimentEngineOutput extends Component {
     this.props.onTimeClick && this.props.onTimeClick(event);
   };
 
-  flattenEngineResultsToSeries = (data) => {
+  flattenEngineResultsToSeries = data => {
     if (!data || !data.length) {
       return [];
     }
@@ -77,7 +77,10 @@ export default class SentimentEngineOutput extends Component {
     data.forEach(dataItem => {
       if (dataItem.series && dataItem.series.length) {
         dataItem.series.forEach(seriesItem => {
-          if (isNaN(seriesItem.positiveValue) && isNaN(seriesItem.negativeValue)) {
+          if (
+            isNaN(seriesItem.positiveValue) &&
+            isNaN(seriesItem.negativeValue)
+          ) {
             // No data case - engine results has a no-value series item - set sentiment = 0
             allSeries.push({
               startTimeMs: seriesItem.startTimeMs,
@@ -126,9 +129,7 @@ export default class SentimentEngineOutput extends Component {
       let sentiment = entry.sentiment;
       if (sentiment.positiveConfidence > sentiment.negativeConfidence) {
         sentimentValue = sentiment.positiveValue * 100;
-      } else if (
-        sentiment.positiveConfidence < sentiment.negativeConfidence
-      ) {
+      } else if (sentiment.positiveConfidence < sentiment.negativeConfidence) {
         sentimentValue = sentiment.negativeValue * 100;
       }
       numValidValue++;
@@ -141,7 +142,9 @@ export default class SentimentEngineOutput extends Component {
       chartData.push(chartFriendlyData);
     });
 
-    let totalTime = seriesData.length ? seriesData[seriesData.length - 1].stopTimeMs : 0;
+    let totalTime = seriesData.length
+      ? seriesData[seriesData.length - 1].stopTimeMs
+      : 0;
     let xDomain = [0, totalTime];
     let xTicks = [];
     for (
@@ -170,13 +173,13 @@ export default class SentimentEngineOutput extends Component {
     this.scrollContent = target;
   };
 
-  scrollTo = (timeMs) => {
+  scrollTo = timeMs => {
     let data = this.props.data;
     let scrollTarget = this.scrollContent;
     let scrollRatio = timeMs / data[data.length - 1].stopTimeMs;
 
     scrollTarget.scrollLeft = scrollRatio * scrollTarget.scrollWidth;
-  }
+  };
 
   formatXValues(value) {
     return msToReadableString(value);

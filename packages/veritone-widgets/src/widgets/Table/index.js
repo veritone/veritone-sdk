@@ -12,19 +12,21 @@ import widget from '../../shared/widget';
 class TableWidget extends React.Component {
   static propTypes = {
     data: arrayOf(object).isRequired,
-    columns: arrayOf(shape({
-      transform: func,
-      menu: bool,
-      onSelectItem: func
-    })),
+    columns: arrayOf(
+      shape({
+        transform: func,
+        menu: bool,
+        onSelectItem: func
+      })
+    ),
     paginate: bool
   };
 
   static defaultProps = {
     paginate: false
-  }
-  
-  getRowData = (i) => {
+  };
+
+  getRowData = i => {
     return this.props.data[i];
   };
 

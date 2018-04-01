@@ -39,11 +39,13 @@ function genMockData(numValues, startTime, timeInterval) {
     seriesData.push(dynamicData);
   }
 
-  return [{
-    startOffsetMs: seriesData[0].startTimeMs,
-    stopOffsetMs: seriesData[seriesData.length - 1].stopTimeMs,
-    series: seriesData
-  }];
+  return [
+    {
+      startOffsetMs: seriesData[0].startTimeMs,
+      stopOffsetMs: seriesData[seriesData.length - 1].stopTimeMs,
+      series: seriesData
+    }
+  ];
 }
 
 function randomizeValue(max, min) {

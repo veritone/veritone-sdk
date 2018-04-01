@@ -8,9 +8,7 @@ import styles from './styles/highlightCell.scss';
 
 const HighlightCell = ({ children, color }) => {
   return (
-    <div className={cx(styles['container'], styles[color])}>
-      {children}
-    </div>
+    <div className={cx(styles['container'], styles[color])}>{children}</div>
   );
 };
 

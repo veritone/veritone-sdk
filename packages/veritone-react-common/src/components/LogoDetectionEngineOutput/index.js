@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, number, string, func, shape } from 'prop-types';
 import classNames from 'classnames';
-import {sortBy} from 'lodash';
+import { sortBy } from 'lodash';
 import PillButton from '../Parts/Buttons/PillButton';
 import { msToReadableString } from '../../helpers/time';
 import styles from './styles.scss';
@@ -36,20 +36,22 @@ export default class LogoDetectionEngineOutput extends Component {
     this.props.onItemSelected && this.props.onItemSelected(item);
   };
 
-  handleScrolled = (event) => {
+  handleScrolled = event => {
     if (this.props.onScroll) {
       this.scrollCheck && clearTimeout(this.scrollCheck);
       this.scrollCheck = setTimeout(this.onScrollComplete, 500, event.target);
     }
-  }
+  };
 
-  onScrollComplete (scrollElement) {
+  onScrollComplete(scrollElement) {
     if (this.props.onScroll) {
       let scrollInfo = {
         scrollTop: scrollElement.scrollTop,
         scrollHeight: scrollElement.scrollHeight,
         clientHeight: scrollElement.clientHeight,
-        scrollRatio: scrollElement.scrollTop / (scrollElement.scrollHeight - scrollElement.clientHeight)
+        scrollRatio:
+          scrollElement.scrollTop /
+          (scrollElement.scrollHeight - scrollElement.clientHeight)
       };
 
       this.props.onScroll(scrollInfo);
@@ -99,10 +101,11 @@ export default class LogoDetectionEngineOutput extends Component {
 
   render() {
     return (
-      <div className={classNames(styles.logoDetection, this.props.className)} onScroll={this.handleScrolled}>
-        <div className={styles.scrolableContent}>
-          {this.renderItems()}
-        </div>
+      <div
+        className={classNames(styles.logoDetection, this.props.className)}
+        onScroll={this.handleScrolled}
+      >
+        <div className={styles.scrolableContent}>{this.renderItems()}</div>
       </div>
     );
   }

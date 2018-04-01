@@ -23,13 +23,33 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td').at(0).text()).toEqual('a');
+    expect(
+      wrapper
+        .find('td')
+        .at(0)
+        .text()
+    ).toEqual('a');
 
-    expect(wrapper.find('td').at(1).text()).toEqual('Loading...');
+    expect(
+      wrapper
+        .find('td')
+        .at(1)
+        .text()
+    ).toEqual('Loading...');
 
-    expect(wrapper.find('td').at(2).text()).toEqual('c');
+    expect(
+      wrapper
+        .find('td')
+        .at(2)
+        .text()
+    ).toEqual('c');
 
-    expect(wrapper.find('td').at(3).text()).toEqual('Loading...');
+    expect(
+      wrapper
+        .find('td')
+        .at(3)
+        .text()
+    ).toEqual('Loading...');
   });
 
   it('shows the empty failure message', function() {
@@ -106,8 +126,18 @@ describe('withBasicBehavior', function() {
       </Table>
     );
 
-    expect(wrapper.find('td').at(0).text()).toEqual('a');
+    expect(
+      wrapper
+        .find('td')
+        .at(0)
+        .text()
+    ).toEqual('a');
 
-    expect(wrapper.find('td').at(1).text()).toEqual('Loading...');
+    expect(
+      wrapper
+        .find('td')
+        .at(1)
+        .text()
+    ).toEqual('Loading...');
   });
 });

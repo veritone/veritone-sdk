@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { CSSTransitionGroup } from 'react-transition-group'
+import { CSSTransitionGroup } from 'react-transition-group';
 import { omit, noop, range, isFunction, isNumber } from 'lodash';
 import MuiTable, {
   TableBody as MuiTableBody,
@@ -28,7 +28,6 @@ import {
 import withPagination from './withPagination';
 import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index.scss';
-
 
 /*
  * BASE TABLE
@@ -78,14 +77,16 @@ class _Table extends React.Component {
         }}
         component="div"
       >
-        {isNumber(this.props.focusedRow) && this.props.rowCount > 0
-          ? <SplitTableContainer
-              {...restProps}
-              focusedRow={this.props.focusedRow}
-              renderFocusedRowDetails={this.props.renderFocusedRowDetails}
-              key="split"
-            />
-          : <NormalTableContainer {...restProps} key="normal" />}
+        {isNumber(this.props.focusedRow) && this.props.rowCount > 0 ? (
+          <SplitTableContainer
+            {...restProps}
+            focusedRow={this.props.focusedRow}
+            renderFocusedRowDetails={this.props.renderFocusedRowDetails}
+            key="split"
+          />
+        ) : (
+          <NormalTableContainer {...restProps} key="normal" />
+        )}
       </CSSTransitionGroup>
     );
   }
@@ -107,35 +108,27 @@ const NormalTableContainer = ({
   return (
     <Paper elevation={1} className={styles['table-wrapper']}>
       <MuiTable className={cx(styles.table)}>
-        {
-          showHeader &&
-          <TableHead rowCount={rowCount}>
-            {children}
-          </TableHead>
-        }
-        {
-          rowCount === 0
-          ? <MuiTableBody>
-              <TableRow>
-                <TableCell colSpan={children.length}>
-                  {emptyRenderer()}
-                </TableCell>
-              </TableRow>
-            </MuiTableBody>
-          : <TableBody {...rest} rowRangeEnd={rowCount}>
-              {children}
-            </TableBody>
-        }
-        {footerElement &&
-          <TableFooter style={{ height: footerHeight }}> 
+        {showHeader && <TableHead rowCount={rowCount}>{children}</TableHead>}
+        {rowCount === 0 ? (
+          <MuiTableBody>
             <TableRow>
-              {footerElement}
+              <TableCell colSpan={children.length}>{emptyRenderer()}</TableCell>
             </TableRow>
-          </TableFooter>}
+          </MuiTableBody>
+        ) : (
+          <TableBody {...rest} rowRangeEnd={rowCount}>
+            {children}
+          </TableBody>
+        )}
+        {footerElement && (
+          <TableFooter style={{ height: footerHeight }}>
+            <TableRow>{footerElement}</TableRow>
+          </TableFooter>
+        )}
       </MuiTable>
     </Paper>
   );
-}
+};
 
 NormalTableContainer.propTypes = {
   rowCount: number,
@@ -143,7 +136,7 @@ NormalTableContainer.propTypes = {
   footerElement: node,
   emptyRenderer: func,
   showHeader: bool,
-  children: node,
+  children: node
 };
 
 /*
@@ -187,29 +180,26 @@ class SplitTableContainer extends React.Component {
       <div>
         <Paper elevation={1} className={styles['table-wrapper']}>
           <MuiTable className={cx(styles.table)}>
-            {
-              showHeader &&
-              <TableHead rowCount={rowCount}>
+            {showHeader && (
+              <TableHead rowCount={rowCount}>{children}</TableHead>
+            )}
+            {rowCount === 0 ? (
+              <MuiTableBody>
+                <TableRow>
+                  <TableCell colSpan={children.length}>
+                    {this.props.emptyRenderer()}
+                  </TableCell>
+                </TableRow>
+              </MuiTableBody>
+            ) : (
+              <TableBody
+                {...restProps}
+                rowRangeEnd={focusedRow}
+                rowGetter={rowGetter}
+              >
                 {children}
-              </TableHead>
-            }
-            {
-              rowCount === 0
-                ? <MuiTableBody>
-                    <TableRow>
-                      <TableCell colSpan={children.length}>
-                        {this.props.emptyRenderer()}
-                      </TableCell>
-                    </TableRow>
-                  </MuiTableBody>
-                : <TableBody
-                    {...restProps}
-                    rowRangeEnd={focusedRow}
-                    rowGetter={rowGetter}
-                  >
-                    {children}
-                  </TableBody>
-            }
+              </TableBody>
+            )}
           </MuiTable>
         </Paper>
 
@@ -219,7 +209,11 @@ class SplitTableContainer extends React.Component {
             marginTop: 15,
             marginBottom: 15
           }}
-          className={cx(styles['focusTable'], styles['focused-row'], styles['table-wrapper'])}
+          className={cx(
+            styles['focusTable'],
+            styles['focused-row'],
+            styles['table-wrapper']
+          )}
           key={focusedRow}
         >
           <MuiTable className={cx(styles.table)}>
@@ -255,12 +249,11 @@ class SplitTableContainer extends React.Component {
               {children}
             </TableBody>
 
-            {footerElement &&
+            {footerElement && (
               <TableFooter style={{ height: footerHeight }}>
-                <TableRow>
-                  {footerElement}
-                </TableRow>
-              </TableFooter>}
+                <TableRow>{footerElement}</TableRow>
+              </TableFooter>
+            )}
           </MuiTable>
         </Paper>
       </div>
@@ -284,9 +277,8 @@ const TableBody = ({
     <MuiTableBody>
       {(rowRangeStart
         ? range(rowRangeStart, rowRangeEnd)
-        : range(rowRangeEnd)).map((
-        r
-      ) =>
+        : range(rowRangeEnd)
+      ).map(r => (
         <TableRow key={r} style={{ height: rowHeight }} hover>
           {injectInto(children, {
             data: rowGetter(r),
@@ -294,7 +286,7 @@ const TableBody = ({
             onCellClick
           })}
         </TableRow>
-      )}
+      ))}
     </MuiTableBody>
   );
 };
@@ -304,7 +296,7 @@ TableBody.propTypes = {
   rowHeight: number,
   rowGetter: func,
   children: node,
-  onCellClick: func,
+  onCellClick: func
 };
 TableBody.muiName = 'TableBody'; // trick MUI into thinking this is a MuiTableBody
 
@@ -336,7 +328,7 @@ export const Column = ({
   function handleCellClick(e) {
     return onCellClick(row, dataKey, data[dataKey]);
   }
-  
+
   return (
     <TableCell
       {...rest}
@@ -365,14 +357,11 @@ Column.propTypes = {
   onCellClick: func
 };
 
-const TableHead = ({
-  children,
-  rowCount
-}) => {
+const TableHead = ({ children, rowCount }) => {
   return (
     <MuiTableHead>
       <TableRow>
-        {React.Children.map(children, c =>
+        {React.Children.map(children, c => (
           <TableCell
             className={styles['table-cell']}
             key={c.props.header}
@@ -383,11 +372,11 @@ const TableHead = ({
           >
             {c.props.header}
           </TableCell>
-        )}
+        ))}
       </TableRow>
     </MuiTableHead>
   );
-}
+};
 
 TableHead.propTypes = {
   rowCount: number.isRequired,

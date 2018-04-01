@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 
-import styles from './story.styles.scss'; 
+import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
 
 export const transcriptAssets = [
