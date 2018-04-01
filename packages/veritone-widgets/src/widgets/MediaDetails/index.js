@@ -22,13 +22,18 @@ import widget from '../../shared/widget';
     engineResultsByEngineId: mediaDetailsModule.engineResultsByEngineId(
       state,
       _widgetId
+    ),
+    selectedEngineCategory: mediaDetailsModule.selectedEngineCategory(
+      state,
+      _widgetId
     )
   }),
   {
     loadEngineCategoriesRequest: mediaDetailsModule.loadEngineCategoriesRequest,
     loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
-    updateTdoRequest: mediaDetailsModule.updateTdoRequest
+    updateTdoRequest: mediaDetailsModule.updateTdoRequest,
+    selectEngineCategory: mediaDetailsModule.selectEngineCategory
   },
   null,
   { withRef: true }
@@ -57,7 +62,7 @@ class MediaDetailsWidget extends React.Component {
           shape({
             id: string,
             name: string,
-            completedDateTime: string
+            completedDateTime: number
           })
         )
       })
@@ -89,14 +94,25 @@ class MediaDetailsWidget extends React.Component {
     }),
     engineResultsByEngineId: shape({
       engineId: arrayOf(any)
+    }),
+    selectEngineCategory: func,
+    selectedEngineCategory: shape({
+      id: string,
+      name: string,
+      iconClass: string,
+      editable: bool,
+      categoryType: string,
+      engines: arrayOf(
+        shape({
+          id: string,
+          name: string,
+          completedDateTime: number
+        })
+      )
     })
   };
 
   state = {
-    selectedEngineCategory:
-      this.props.engineCategories && this.props.engineCategories.length
-        ? this.props.engineCategories[0]
-        : null,
     selectedTabValue: 0,
     isEditMode: false,
     isInfoPanelOpen: false,
@@ -109,19 +125,6 @@ class MediaDetailsWidget extends React.Component {
       this.props.mediaId
     );
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // preselect 1st engine category - only on the first load
-    if (
-      !this.state.selectedEngineCategory &&
-      nextProps.engineCategories &&
-      nextProps.engineCategories.length
-    ) {
-      this.setState({
-        selectedEngineCategory: nextProps.engineCategories[0]
-      });
-    }
   }
 
   handleRunProcess = () => {
@@ -138,15 +141,13 @@ class MediaDetailsWidget extends React.Component {
     const selectedCategory = this.props.engineCategories.find(
       category => category.id === selectedCategoryId
     );
-    this.setState({
-      selectedEngineCategory: selectedCategory
-    });
+    this.props.selectEngineCategory(this.props._widgetId, selectedCategory);
   };
 
   getSelectedCategoryMessage = () => {
     return (
       'Use the edit screen below to correct ' +
-      this.state.selectedEngineCategory.name.toLowerCase() +
+      this.props.selectedEngineCategory.name.toLowerCase() +
       's.'
     );
   };
@@ -204,6 +205,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   render() {
+    let { selectedEngineCategory } = this.props;
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -270,22 +272,20 @@ class MediaDetailsWidget extends React.Component {
                 />
               </Tabs>
 
-              {this.state.selectedEngineCategory &&
+              {selectedEngineCategory &&
                 this.state.selectedTabValue === 0 && (
                   <div className={styles.engineActionHeader}>
                     <div className={styles.engineActionContainer}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={this.props.engineCategories}
-                          selectedEngineCategoryId={
-                            this.state.selectedEngineCategory.id
-                          }
+                          selectedEngineCategoryId={selectedEngineCategory.id}
                           onSelectEngineCategory={
                             this.handleEngineCategoryChange
                           }
                         />
                       </div>
-                      {this.state.selectedEngineCategory.editable && (
+                      {selectedEngineCategory.editable && (
                         <Button
                           variant="raised"
                           color="primary"
@@ -317,7 +317,7 @@ class MediaDetailsWidget extends React.Component {
                     />
                   </IconButton>
                   <div className={styles.pageHeaderTitleLabelEditMode}>
-                    Edit Mode: {this.state.selectedEngineCategory.name}
+                    Edit Mode: {selectedEngineCategory.name}
                   </div>
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
@@ -364,79 +364,49 @@ class MediaDetailsWidget extends React.Component {
               </div>
 
               <div className={styles.engineCategoryView}>
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'transcript' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'transcript' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType === 'face' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'face' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'object' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'object' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType === 'logo' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'logo' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType === 'ocr' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'ocr' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'fingerprint' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'fingerprint' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'translate' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'translate' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'sentiment' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'sentiment' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'geolocation' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'geolocation' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'stationPlayout' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'stationPlayout' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'music' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'music' && (
+                    <div>{selectedEngineCategory.categoryType} component</div>
                   )}
               </div>
             </div>

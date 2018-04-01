@@ -5,10 +5,17 @@ import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
-import { LOAD_ENGINE_CATEGORIES, loadEngineCategoriesComplete } from '.';
-import { LOAD_ENGINE_RESULTS, loadEngineResultsComplete } from '.';
-import { LOAD_TDO, loadTdoComplete } from '.';
-import { UPDATE_TDO, updateTdoComplete } from '.';
+import {
+  LOAD_ENGINE_CATEGORIES,
+  LOAD_ENGINE_RESULTS,
+  LOAD_TDO,
+  UPDATE_TDO,
+  loadEngineCategoriesComplete,
+  loadEngineResultsComplete,
+  loadTdoSuccess,
+  updateTdoComplete,
+  selectEngineCategory
+} from '.';
 
 function* finishLoadEngineCategories(
   widgetId,
@@ -31,7 +38,7 @@ function* finishLoadEngineResults(
 }
 
 function* finishLoadTdo(widgetId, result, { warning, error }, callback) {
-  yield put(loadTdoComplete(widgetId, result, { warning, error }));
+  yield put(loadTdoSuccess(widgetId, result, { warning, error }));
   yield call(callback, result, { warning, error, cancelled: false });
 }
 
@@ -40,12 +47,12 @@ function* finishUpdateTdo(widgetId, result, { warning, error }, callback) {
   yield call(callback, result, { warning, error, cancelled: false });
 }
 
-function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
+function* loadEngineCategoriesSaga(widgetId, tdoId) {
   const getTasksAndStatusesQuery = `query temporalDataObject($tdoId: ID!){
       temporalDataObject(id: $tdoId) {
         jobs {
           records {
-            tasks (limit: 1000, status: "complete" ) {
+            tasks (limit: 1000, status: complete ) {
               records {
                 completedDateTime
                 engine {
@@ -88,12 +95,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
       token
     });
   } catch (error) {
-    return yield* finishLoadEngineCategories(
-      widgetId,
-      null,
-      { error },
-      callback
-    );
+    return yield* finishLoadEngineCategories(widgetId, null, { error });
   }
 
   if (!response || !response.data || !response.data.temporalDataObject) {
@@ -190,8 +192,12 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
 
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
-    if (category1.categoryType < category2.categoryType) {return -1;}
-    if (category1.categoryType > category2.categoryType) {return 1;}
+    if (category1.categoryType < category2.categoryType) {
+      return -1;
+    }
+    if (category1.categoryType > category2.categoryType) {
+      return 1;
+    }
     return 0;
   });
   const orderedCategoryTypes = [
@@ -218,15 +224,12 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
     }
   });
 
-  yield* finishLoadEngineCategories(
-    widgetId,
-    engineCategories,
-    {
-      warning: false,
-      error: false
-    },
-    callback
-  );
+  yield put(selectEngineCategory(widgetId, engineCategories[0]));
+
+  yield* finishLoadEngineCategories(widgetId, engineCategories, {
+    warning: false,
+    error: false
+  });
 }
 
 function* loadEngineResultsSaga(
@@ -410,9 +413,9 @@ function* watchLoadEngineResultsRequest() {
 
 function* watchLoadTdoRequest() {
   yield takeEvery(LOAD_TDO, function*(action) {
-    const { tdoId, callback } = action.payload;
+    const { tdoId } = action.payload;
     const { widgetId } = action.meta;
-    yield call(loadTdoSaga, widgetId, tdoId, callback);
+    yield call(loadTdoSaga, widgetId, tdoId);
   });
 }
 

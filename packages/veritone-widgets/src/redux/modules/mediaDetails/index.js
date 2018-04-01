@@ -8,16 +8,19 @@ export const LOAD_ENGINE_CATEGORIES_COMPLETE =
 export const LOAD_ENGINE_RESULTS = 'LOAD_ENGINE_RESULTS';
 export const LOAD_ENGINE_RESULTS_COMPLETE = 'LOAD_ENGINE_RESULTS_COMPLETE';
 export const LOAD_TDO = 'LOAD_TDO';
-export const LOAD_TDO_COMPLETE = 'LOAD_TDO_COMPLETE';
+export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const UPDATE_TDO = 'UPDATE_TDO';
 export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
+export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
 
 export const namespace = 'mediaDetails';
 
 const defaultState = {
   engineCategories: [],
   engineResultsByEngineId: {},
-  tdo: null
+  tdo: null,
+  selectedEngineCategory: null,
+  selectedEngineId: null
 };
 
 export default createReducer(defaultState, {
@@ -102,7 +105,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
+  [LOAD_TDO_SUCCESS](state, { payload, meta: { warn, error, widgetId } }) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -139,6 +142,17 @@ export default createReducer(defaultState, {
         tdo: payload
       }
     };
+  },
+  [SELECT_ENGINE_CATEGORY](state, { payload, meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        selectedEngineCategory: {
+          ...payload
+        }
+      }
+    };
   }
 });
 
@@ -149,6 +163,8 @@ export const engineCategories = (state, widgetId) =>
 export const engineResultsByEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'engineResultsByEngineId']);
 export const tdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
+export const selectedEngineCategory = (state, widgetId) =>
+  get(local(state), [widgetId, 'selectedEngineCategory']);
 
 export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
   type: LOAD_ENGINE_CATEGORIES,
@@ -195,8 +211,8 @@ export const loadTdoRequest = (widgetId, tdoId, callback) => ({
   meta: { widgetId }
 });
 
-export const loadTdoComplete = (widgetId, result, { warn, error }) => ({
-  type: LOAD_TDO_COMPLETE,
+export const loadTdoSuccess = (widgetId, result, { warn, error }) => ({
+  type: LOAD_TDO_SUCCESS,
   payload: result,
   meta: { warn, error, widgetId }
 });
@@ -216,4 +232,10 @@ export const updateTdoComplete = (widgetId, result, { warn, error }) => ({
   type: UPDATE_TDO_COMPLETE,
   payload: result,
   meta: { warn, error, widgetId }
+});
+
+export const selectEngineCategory = (widgetId, engineCategory) => ({
+  type: SELECT_ENGINE_CATEGORY,
+  payload: engineCategory,
+  meta: { widgetId }
 });
