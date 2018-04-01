@@ -12,6 +12,7 @@ export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const UPDATE_TDO = 'UPDATE_TDO';
 export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
 export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
+export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
 
 export const namespace = 'mediaDetails';
 
@@ -70,15 +71,11 @@ export default createReducer(defaultState, {
     const errorMessage = get(error, 'message', error);
 
     // TODO: merge new results with existing instead of replacing
-    const engineResultsByEngineId = {};
-    if (payload && payload.length) {
-      payload.forEach(result => {
-        let engineResults = engineResultsByEngineId[result.engineId];
-        if (!engineResults) {
-          engineResults = [];
-          engineResultsByEngineId[result.engineId] = engineResults;
-        }
-        engineResults.push(result.jsondata);
+    const engineResultsByEngineId =
+      state[widgetId].engineResultsByEngineId || {};
+    if (payload && get(payload, 'records.length')) {
+      payload.records.forEach(result => {
+        engineResultsByEngineId[result.engineId] = [result.jsondata];
       });
     }
 
@@ -89,7 +86,9 @@ export default createReducer(defaultState, {
         success: !(warn || error) || null,
         error: error ? errorMessage : null,
         warning: warn || null,
-        engineResultsByEngineId: engineResultsByEngineId
+        engineResultsByEngineId: {
+          ...engineResultsByEngineId
+        }
       }
     };
   },
@@ -153,6 +152,15 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [SET_SELECTED_ENGINE_ID](state, { payload, meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        selectedEngineId: payload
+      }
+    };
   }
 });
 
@@ -165,6 +173,8 @@ export const engineResultsByEngineId = (state, widgetId) =>
 export const tdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
 export const selectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
+export const selectedEngineId = (state, widgetId) =>
+  get(local(state), [widgetId, 'selectedEngineId']);
 
 export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
   type: LOAD_ENGINE_CATEGORIES,
@@ -237,5 +247,11 @@ export const updateTdoComplete = (widgetId, result, { warn, error }) => ({
 export const selectEngineCategory = (widgetId, engineCategory) => ({
   type: SELECT_ENGINE_CATEGORY,
   payload: engineCategory,
+  meta: { widgetId }
+});
+
+export const setEngineId = (widgetId, engineId) => ({
+  type: SET_SELECTED_ENGINE_ID,
+  payload: engineId,
   meta: { widgetId }
 });
