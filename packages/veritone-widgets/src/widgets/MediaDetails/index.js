@@ -2,12 +2,16 @@ import React from 'react';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
+import { MenuItem } from 'material-ui/Menu';
+import Select from 'material-ui/Select';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
 import { bool, func, number, string, shape, arrayOf, any } from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { EngineCategorySelector } from 'veritone-react-common';
+import { EngineOutputHeader } from 'veritone-react-common';
+import { SentimentEngineOutput } from 'veritone-react-common';
 import { MediaInfoPanel } from 'veritone-react-common';
 import { FullScreenDialog } from 'veritone-react-common';
 import styles from './styles.scss';
@@ -280,9 +284,7 @@ class MediaDetailsWidget extends React.Component {
                         <EngineCategorySelector
                           engineCategories={this.props.engineCategories}
                           selectedEngineCategoryId={selectedEngineCategory.id}
-                          onSelectEngineCategory={
-                            this.handleEngineCategoryChange
-                          }
+                          onSelectEngineCategory={this.onSelectEngineCategory}
                         />
                       </div>
                       {selectedEngineCategory.editable && (
@@ -364,49 +366,106 @@ class MediaDetailsWidget extends React.Component {
               </div>
 
               <div className={styles.engineCategoryView}>
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'transcript' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineId && (
+                    <EngineOutputHeader
+                      title={this.state.selectedEngineCategory.name}
+                    >
+                      <Select
+                        value={this.state.selectedEngineId}
+                        onChange={this.onSelectEngine}
+                      >
+                        {this.state.selectedEngineCategory.engines.map(
+                          engine => (
+                            <MenuItem key={engine.id} value={engine.id}>
+                              {engine.name}
+                            </MenuItem>
+                          )
+                        )}
+                      </Select>
+                    </EngineOutputHeader>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'face' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'transcript' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'object' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType === 'face' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'logo' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'object' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'ocr' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType === 'logo' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'fingerprint' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType === 'ocr' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'translate' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'fingerprint' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'sentiment' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'translate' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'geolocation' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'sentiment' &&
+                  this.state.selectedEngineId && (
+                    <SentimentEngineOutput
+                      data={
+                        this.props.engineResultsByEngineId[
+                          this.state.selectedEngineId
+                        ]
+                      }
+                      mediaPlayerTime={this.state.mediaPlayerTimeMs}
+                      onTimeClick={this.onTimeClick}
+                    />
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'stationPlayout' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'geolocation' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'music' && (
-                    <div>{selectedEngineCategory.categoryType} component</div>
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'stationPlayout' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {this.state.selectedEngineCategory &&
+                  this.state.selectedEngineCategory.categoryType ===
+                    'music' && (
+                    <div>
+                      {this.state.selectedEngineCategory.categoryType} component
+                    </div>
                   )}
               </div>
             </div>
@@ -421,7 +480,9 @@ class MediaDetailsWidget extends React.Component {
             />
           )}
 
-          {this.state.selectedTabValue === 1 && <div>Content Template</div>}
+          {/* TODO: uncomment when implemented. Commented out for MVP.
+          this.state.selectedTabValue === 1 && <div>Content Template</div>
+          */}
         </Paper>
       </FullScreenDialog>
     );

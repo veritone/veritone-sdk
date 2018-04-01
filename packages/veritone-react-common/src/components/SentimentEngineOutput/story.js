@@ -5,7 +5,7 @@ import SentimentEngineOutput from './';
 
 storiesOf('SentimentEngineOutput', module).add('Base', () => {
   let mockData1 = genMockData(40, 0, 5000); //Good data
-  let mockData2 = genMockData(20, 40 * 5000, 5000, 'pending'); //Bad data
+  let mockData2 = genMockData(20, 40 * 5000, 5000); //Bad data
   let mockData3 = genMockData(900, 60 * 5000, 5000); //Good data
   let dynamicMockData = mockData1.concat(mockData2, mockData3);
   return (
@@ -18,17 +18,16 @@ storiesOf('SentimentEngineOutput', module).add('Base', () => {
   );
 });
 
-function genMockData(numValues, startTime, timeInterval, status = 'complete') {
+function genMockData(numValues, startTime, timeInterval) {
   let startTimeMs;
   let stopTimeMs;
-  let data = [];
+  let seriesData = [];
   for (let index = 0; index < numValues; index++) {
     startTimeMs = startTime + index * timeInterval;
     stopTimeMs = startTimeMs + timeInterval;
     let dynamicData = {
       startTimeMs: startTimeMs,
       stopTimeMs: stopTimeMs,
-      status: status,
       sentiment: {
         positiveValue: randomizeValue(1, 0),
         positiveConfidence: randomizeValue(1, 0),
@@ -37,10 +36,16 @@ function genMockData(numValues, startTime, timeInterval, status = 'complete') {
       }
     };
 
-    data.push(dynamicData);
+    seriesData.push(dynamicData);
   }
 
-  return data;
+  return [
+    {
+      startOffsetMs: seriesData[0].startTimeMs,
+      stopOffsetMs: seriesData[seriesData.length - 1].stopTimeMs,
+      series: seriesData
+    }
+  ];
 }
 
 function randomizeValue(max, min) {

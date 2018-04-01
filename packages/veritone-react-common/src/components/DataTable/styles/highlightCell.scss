@@ -2,7 +2,7 @@
 @import './modules/muiTypography';
 
 .container {
-  @include mui-text("subhead");
+  @include mui-text('subhead');
 
   padding: 5px 10px;
   background: $barely-black;

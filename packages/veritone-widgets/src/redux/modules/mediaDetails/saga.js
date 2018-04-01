@@ -228,8 +228,8 @@ function* loadEngineResultsSaga(
   startOffsetMs,
   stopOffsetMs
 ) {
-  const getMetadataQuery = `query engineResults($id: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
-      engineResults(id: $id, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
+      engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
           tdoId
           engineId
@@ -250,8 +250,8 @@ function* loadEngineResultsSaga(
     const engineIds = [engineId];
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
-      query: getMetadataQuery,
-      variables: { tdoId, engineIds, startOffsetMs, stopOffsetMs },
+      query: getEngineResultsQuery,
+      variables: { tdoId, engineIds },
       token
     });
   } catch (error) {

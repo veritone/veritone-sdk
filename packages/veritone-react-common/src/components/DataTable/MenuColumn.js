@@ -13,7 +13,7 @@ import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Divider from 'material-ui/Divider';
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
-import { Column } from './'
+import { Column } from './';
 
 export default class MenuColumn extends React.Component {
   static propTypes = {
@@ -49,11 +49,11 @@ export default class MenuColumn extends React.Component {
     });
   };
 
-  handleOnClick = ([action, ...rest])  => {
+  handleOnClick = ([action, ...rest]) => {
     this.setState({ open: false }, () => {
       this.props.onSelectItem(action, ...rest);
-    })
-  }
+    });
+  };
 
   sortActions(actions) {
     const protectedActions = intersection(actions, this.props.protectedActions);
@@ -72,37 +72,40 @@ export default class MenuColumn extends React.Component {
     const allActions = [...actions, ...this.props.additionalActions];
 
     return (
-      allActions.length > 0 &&
-      <div>
-        <IconButton
-          aria-label="Actions"
-          aria-owns={this.state.anchorEl ? 'actions-menu' : null}
-          aria-haspopup="true"
-          onClick={this.openMenu}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="actions-menu"
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-          open={this.state.open}
-          onRequestClose={this.closeMenu}
-        >
-          {this.sortActions(allActions).map(
-            (s, i) =>
-              s === '@@divider'
-                ? <Divider key={`divider-${i}`} />
-                : <MenuItem
+      allActions.length > 0 && (
+        <div>
+          <IconButton
+            aria-label="Actions"
+            aria-owns={this.state.anchorEl ? 'actions-menu' : null}
+            aria-haspopup="true"
+            onClick={this.openMenu}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            id="actions-menu"
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+            transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+            open={this.state.open}
+            onRequestClose={this.closeMenu}
+          >
+            {this.sortActions(allActions).map(
+              (s, i) =>
+                s === '@@divider' ? (
+                  <Divider key={`divider-${i}`} />
+                ) : (
+                  <MenuItem
                     key={s}
                     onClick={partial(this.handleOnClick, s, ...rest)}
                   >
-                  {startCase(camelCase(this.props.transformLabel(s)))}
-                </MenuItem>
-          )}
-        </Menu>
-      </div>
+                    {startCase(camelCase(this.props.transformLabel(s)))}
+                  </MenuItem>
+                )
+            )}
+          </Menu>
+        </div>
+      )
     );
   };
 
@@ -121,7 +124,7 @@ export default class MenuColumn extends React.Component {
           'transformLabel'
         )}
         style={{ paddingRight: 0, ...this.props.style }}
-      />                
+      />
     );
   }
 }

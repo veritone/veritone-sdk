@@ -4,10 +4,10 @@ import Icon from 'material-ui/Icon';
 import { func, string, arrayOf, any } from 'prop-types';
 import styles from './styles.scss';
 
-class EngineCategorySelector extends Component {
+export default class EngineCategorySelector extends Component {
   static propTypes = {
     engineCategories: arrayOf(any),
-    selectedEngineCategoryId: string.isRequired,
+    selectedEngineCategoryId: string,
     onSelectEngineCategory: func
   };
 
@@ -56,5 +56,3 @@ class EngineCategorySelector extends Component {
     );
   }
 }
-
-export default EngineCategorySelector;
