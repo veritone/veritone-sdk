@@ -8,7 +8,7 @@ class ContentTemplateFormWidget extends React.Component {
   static propTypes = {
     templateData: objectOf(any).isRequired,
     initialTemplates: objectOf(any),
-    onSubmit: func.isRequired
+    handleUpdateContentTemplates: func.isRequired
   };
 
   render() {
@@ -16,7 +16,7 @@ class ContentTemplateFormWidget extends React.Component {
       <ContentTemplateForm
         templateData={this.props.templateData}
         initialTemplates={this.props.initialTemplates}
-        onSubmit={this.props.onSubmit}
+        handleUpdateContentTemplates={this.props.handleUpdateContentTemplates}
       />
     )
   }

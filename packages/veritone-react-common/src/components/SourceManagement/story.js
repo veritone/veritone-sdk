@@ -247,6 +247,11 @@ function createInitialTemplates(templateSources) {
 const templateData = createTemplateData(dataSchemas.data.dataRegistries.records);
 const initialTemplates = createInitialTemplates(templateSource.data.source.contentTemplates);
 
+function handleUpdateContentTemplates(contentTemplates) {
+  console.log('handleUpdateContentTemplates');
+  console.log(contentTemplates)
+}
+
 storiesOf('SourceManagement', module)
   .add('Nullstate', () => (
     <Nullstate />
@@ -297,6 +302,6 @@ storiesOf('SourceManagement', module)
     <ContentTemplateForm
       templateData={templateData}
       initialTemplates={initialTemplates}
-      onSubmit={noop}
+      handleUpdateContentTemplates={handleUpdateContentTemplates}
     />
   ))

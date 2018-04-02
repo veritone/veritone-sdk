@@ -20,7 +20,7 @@ export default class ContentTemplateForm extends React.Component {
       definition: objectOf(any),
       data: objectOf(any)
     })),
-    onSubmit: func.isRequired
+    handleUpdateContentTemplates: func.isRequired
   }
 
   static defaultProps = {
@@ -42,13 +42,13 @@ export default class ContentTemplateForm extends React.Component {
 
   manageTemplatesList = (templateSchemaId, remove = false) => {
     const { templateData, initialTemplates } = this.props;
-
+    let newState;
     if (remove) {
       if (this.state.contentTemplates[templateSchemaId]) {
         const contentTemplates = { ...this.state.contentTemplates };
         delete contentTemplates[templateSchemaId];
-
-        return this.setState({ contentTemplates });
+        newState = { contentTemplates };
+        return this.setState(newState);
       }
     } else {
       const data = {};
@@ -58,8 +58,7 @@ export default class ContentTemplateForm extends React.Component {
             ? initialTemplates[templateSchemaId].data[schemaDefProp]
             : '';
         }, data)
-
-      this.setState({
+      newState = {
         contentTemplates: {
           ...this.state.contentTemplates,
           [templateSchemaId]: {
@@ -67,14 +66,17 @@ export default class ContentTemplateForm extends React.Component {
             data
           }
         }
-      });
+      };
+      this.setState(newState);
+    }
+    if (newState) {
+      this.props.handleUpdateContentTemplates(newState.contentTemplates);
     }
   }
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     const { contentTemplates } = this.state;
-
-    this.setState({
+    let newState = {
       contentTemplates: {
         ...contentTemplates,
         [templateSchemaId]: {
@@ -85,30 +87,20 @@ export default class ContentTemplateForm extends React.Component {
           }
         }
       }
-    });
+    };
+    this.setState(newState);
+    this.props.handleUpdateContentTemplates(newState.contentTemplates);
   };
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-    return this.props.onSubmit({
-      contentTemplates: this.state.contentTemplates
-    });
-  }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form>
         <ContentTemplates
           templateData={this.props.templateData}
           selectedTemplateSchemas={this.state.contentTemplates}
           onListChange={this.manageTemplatesList}
           onInputChange={this.updateTemplateDetails}
         />
-        <div className={styles.btnContainer}>
-          <Button raised color='primary' type="submit">
-            Save
-          </Button>
-        </div>
       </form>
     );
   }
