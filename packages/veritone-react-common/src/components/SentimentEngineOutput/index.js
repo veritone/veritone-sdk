@@ -40,7 +40,7 @@ export default class SentimentEngineOutput extends Component {
   static defaultProps = {
     data: [],
     mediaPlayerTime: 0,
-    timeWindowSizeMs: 400000,
+    timeWindowSizeMs: 200000,
     timeWindowStartMs: 0,
     timeTickIntervalMs: 50000,
     sentimentDomain: [100, -100],
@@ -87,7 +87,7 @@ export default class SentimentEngineOutput extends Component {
     data.forEach(dataItem => {
       if (dataItem.series && dataItem.series.length) {
         dataItem.series.forEach(seriesItem => {
-          if (
+          if ( seriesItem.sentiment &&
             isNaN(seriesItem.sentiment.positiveValue) &&
             isNaN(seriesItem.sentiment.negativeValue)
           ) {
@@ -137,8 +137,8 @@ export default class SentimentEngineOutput extends Component {
     seriesData.map((entry, index) => {
       let sentimentValue = 0;
       let sentiment = entry.sentiment;
-      const positiveConfidence = sentiment.positiveConfidence || 0;
-      const negativeConfidence = sentiment.negativeConfidence || 0;
+      const positiveConfidence = sentiment && sentiment.positiveConfidence || 0;
+      const negativeConfidence = sentiment && sentiment.negativeConfidence || 0;
       if (positiveConfidence > negativeConfidence) {
         sentimentValue = sentiment.positiveValue * 100;
       } else if (positiveConfidence < negativeConfidence) {
@@ -224,7 +224,6 @@ export default class SentimentEngineOutput extends Component {
       scaleX,
       referenceValue
     } = extractedData;
-
     // Compute color offset
     let maxSentiment = Math.max(...chartData.map(entry => entry.sentiment));
     let minSentiment = Math.min(...chartData.map(entry => entry.sentiment));
@@ -235,8 +234,6 @@ export default class SentimentEngineOutput extends Component {
     } else if (maxSentiment > 0) {
       offset = maxSentiment / (maxSentiment - minSentiment); // Above 0 is green & below 0 is red
     }
-
-    console.log(xTicks, yTicks, yDomain, xDomain);
 
     return (
       <div className={styles.sentimentBody}>

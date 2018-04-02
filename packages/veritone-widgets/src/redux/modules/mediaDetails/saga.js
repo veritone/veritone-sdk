@@ -112,6 +112,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId) {
   //  id
   //  editable
   //  iconClass
+  //  categoryType
   //  engines [{
   //    id
   //    name
@@ -179,6 +180,16 @@ function* loadEngineCategoriesSaga(widgetId, tdoId) {
     engineCategories = filteredCategories;
   }
 
+  // TODO: dynamically add Structured Data Category - depending whether there is such data for TDO
+  engineCategories.push({
+    name: 'Structured Data',
+    id: 'thirdPartyData',
+    categoryType: 'thirdPartyData',
+    editable: false,
+    iconClass : 'icon-third-party-data',
+    engines: []
+  });
+
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
     if (category1.categoryType < category2.categoryType) {
@@ -200,6 +211,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId) {
     'sentiment',
     'geolocation',
     'stationPlayout',
+    'thirdPartyData',
     'music'
   ];
   orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
@@ -219,57 +231,6 @@ function* loadEngineCategoriesSaga(widgetId, tdoId) {
     warning: false,
     error: false
   });
-}
-
-function* loadEngineResultsSaga(
-  widgetId,
-  tdoId,
-  engineId,
-  startOffsetMs,
-  stopOffsetMs
-) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
-      engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
-        records {
-          tdoId
-          engineId
-          startOffsetMs
-          stopOffsetMs
-          jsondata
-        }
-      }
-    }`;
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-
-  let response;
-  try {
-    const engineIds = [engineId];
-    response = yield call(callGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: getEngineResultsQuery,
-      variables: { tdoId, engineIds },
-      token
-    });
-  } catch (error) {
-    return yield* finishLoadEngineResults(widgetId, null, { error });
-  }
-
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.warn(error));
-  }
-
-  yield* finishLoadEngineResults(
-    widgetId,
-    response.data.engineResults.records,
-    {
-      warning: false,
-      error: false
-    }
-  );
 }
 
 function* loadTdoSaga(widgetId, tdoId) {
@@ -358,7 +319,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   });
 }
 
-function* requestEngineResultsSaga(widgetId, engineId) {
+function* loadEngineResultsSaga(widgetId, engineId, startOffsetMs, stopOffsetMs) {
   const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
       engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
@@ -376,14 +337,20 @@ function* requestEngineResultsSaga(widgetId, engineId) {
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
   const requestTdo = yield select(tdo, widgetId);
+  const variables = { tdoId: requestTdo.id, engineIds: [engineId]};
+  if (startOffsetMs) {
+    variables.startOffsetMs = startOffsetMs;
+  }
+  if (stopOffsetMs) {
+    variables.stopOffsetMs = stopOffsetMs;
+  }
 
   let response;
   try {
-    const engineIds = [engineId];
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: getEngineResultsQuery,
-      variables: { tdoId: requestTdo.id, engineIds },
+      variables,
       token
     });
   } catch (error) {
@@ -440,16 +407,21 @@ function* watchSetEngineId() {
     const selectedEngineId = action.payload;
     const { widgetId } = action.meta;
 
-    yield call(requestEngineResultsSaga, widgetId, selectedEngineId);
+    if (!selectedEngineId) {
+      return;
+    }
+
+    yield call(loadEngineResultsSaga, widgetId, selectedEngineId);
   });
 }
 
-function* watchSelectEngineCatagory() {
+function* watchSelectEngineCategory() {
   yield takeEvery(SELECT_ENGINE_CATEGORY, function*(action) {
     const { engines } = action.payload;
     const { widgetId } = action.meta;
+    const engineId = engines.length ? engines[0].id : undefined;
 
-    yield put(setEngineId(widgetId, engines[0].id));
+    yield put(setEngineId(widgetId, engineId));
   });
 }
 
@@ -460,6 +432,6 @@ export default function* root() {
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
     fork(watchSetEngineId),
-    fork(watchSelectEngineCatagory)
+    fork(watchSelectEngineCategory)
   ]);
 }

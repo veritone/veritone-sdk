@@ -369,8 +369,7 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === 0 &&
-            selectedEngineId && (
+          {this.state.selectedTabValue === 0 && (
               <div className={styles.mediaScreen}>
                 <div className={styles.mediaView}>
                   <div className={styles.mediaPlayerView} />
@@ -452,6 +451,13 @@ class MediaDetailsWidget extends React.Component {
                       {selectedEngineCategory.categoryType} component
                     </div>
                   )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'thirdPartyData' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                )}
                 {selectedEngineCategory &&
                   selectedEngineCategory.categoryType ===
                     'music' && (
