@@ -165,7 +165,7 @@ const columns = map(omit(data[0], ['a', 'b', 'c']), (val, key) => {
     header: startCase(key),
     transform: flow([upperCase, truncate]),
     align: 'center',
-    width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
+    // width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
   };
 
   if (key === 'actions') {

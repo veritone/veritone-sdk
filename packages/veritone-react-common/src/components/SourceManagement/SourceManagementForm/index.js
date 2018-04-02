@@ -48,7 +48,7 @@ export default class SourceManagementForm extends React.Component {
     sourceConfig: {
       sourceTypeId: '',
       name: '',
-      thumbnail: '',
+      thumbnailUrl: '',
       details: {}
     },
     contentTemplates: {},
@@ -66,7 +66,7 @@ export default class SourceManagementForm extends React.Component {
     }
     if (this.props.source) { // if editing a source, initialize the defaults
       newState.sourceConfig = {
-        ...pick(this.props.source, ['name', 'thumbnail', 'details']),
+        ...pick(this.props.source, ['name', 'thumbnailUrl', 'details']),
         sourceTypeId: this.props.source.sourceType.id
       }
     }

@@ -4,7 +4,6 @@ import { pick, has, noop } from 'lodash';
 import Nullstate from './Nullstate';
 import SourceManagementForm from './SourceManagementForm';
 import SourceTileView from './SourceTileView';
-import SourceRow from './SourceRow';
 import ContentTemplateForm from './ContentTemplateForm';
 
 const sourceTypes = {
@@ -69,7 +68,7 @@ const sourceResult = {
       name: "KWOL--FM",
       createdDateTime: "2014-12-01T18:17:20.675Z",
       modifiedDateTime: "2015-12-01T18:17:20.675Z",
-      thumbnail: "https://image.flaticon.com/icons/svg/25/25305.svg",
+      thumbnailUrl: "https://image.flaticon.com/icons/svg/25/25305.svg",
       details: {
         url: 'twitter.com',
         username: 'therealtrump',
@@ -94,22 +93,22 @@ const sourceResult = {
                 title: "Password"
               }
             }
-          }
+          },
+          "validActions": [
+            "view",
+            "edit",
+            "deactivate",
+            "delete"
+          ]
         }
       }
     }
   }
 }
 
-let sourceName = sourceResult.data.source.name;
-let sourceType = sourceResult.data.source.sourceType.name;
-let creationDate = sourceResult.data.source.createdDateTime;
-let lastUpdated = sourceResult.data.source.modifiedDateTime;
-let thumbnail = sourceResult.data.source.thumbnail;
-
-let sourceResults = [];
+const sourceResults = [];
 for (let i=0;i<4;i++) {
-  sourceResults.push(sourceResult);
+  sourceResults.push(sourceResult.data.source);
 }
 
 // CONTENT TEMPLATES SETUP
@@ -268,7 +267,7 @@ storiesOf('SourceManagement', module)
     const sourceConfig = {
       ...pick(
         sourceResult.data.source,
-        ['name', 'thumbnail', 'details', 'sourceTypeId', 'sourceType']
+        ['name', 'thumbnailUrl', 'details', 'sourceTypeId', 'sourceType']
       )
     };
 
@@ -283,15 +282,6 @@ storiesOf('SourceManagement', module)
       />
     );
   })
-  .add('Row', () => (
-    <SourceRow 
-      name={sourceName}
-      sourceType={sourceType}
-      creationDate={creationDate}
-      lastUpdated={lastUpdated}
-      image={thumbnail}
-    />
-  ))
   .add('ContentTemplate Form', () => (
     <ContentTemplateForm
       templateData={templateData}

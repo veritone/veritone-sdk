@@ -1,5 +1,5 @@
 import React from 'react';
-import { has } from 'lodash';
+import { has, noop } from 'lodash';
 
 import {
   any, 
@@ -10,9 +10,11 @@ import {
 
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
-import CircleImage from 'components/CircleImage';
 import Avatar from 'material-ui/Avatar';
+import Dialog from 'material-ui/Dialog';
+import FilePicker from 'components/FilePicker';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import defaultThumbnail from 'images/cms-sources-null.svg';
 import DynamicSelect from './SchemaDrivenSelectForm';
 import styles from './styles.scss';
 
@@ -27,7 +29,8 @@ export default class SourceConfiguration extends React.Component {
 
   state = {
     sourceTypeIndex: 0,
-    requiredFields: {}
+    requiredFields: {},
+    openFilePicker: false
   };
 
   componentWillMount = () => {
@@ -92,9 +95,27 @@ export default class SourceConfiguration extends React.Component {
     });
   };
 
-  imageClicked = () => {
-    console.log('clicked');
+  openFilePicker = () => {
+    this.setState({ openFilePicker: true });
   };
+
+  closeFilePicker = () => {
+    this.setState({ openFilePicker: false });
+  };
+
+  renderFilePicker = () => {
+    return (
+      <Dialog open={this.state.openFilePicker}>
+        <FilePicker
+          accept={['image/svg+xml', '.png', '.jpg']}
+          height={500}
+          width={500}
+          onPickFiles={noop}
+          onRequestClose={this.closeFilePicker}
+        />
+      </Dialog>
+    )
+  }
 
   render() {
     return (
@@ -111,8 +132,9 @@ export default class SourceConfiguration extends React.Component {
               <div className={styles.container}>
                 <Avatar
                   alt={this.props.source.name}
-                  src={this.props.source.thumbnail}
+                  src={this.props.source.thumbnailUrl || defaultThumbnail}
                   className={styles.avatar}
+                  onClick={this.openFilePicker}
                 />
                 <TextField
                   className={styles.sourceName}
@@ -121,10 +143,10 @@ export default class SourceConfiguration extends React.Component {
                   margin='dense'
                   id='sourceName'
                   label='Source Name'
-                  // value={this.state.sourceName}
                   value={this.props.source.name}
                   onChange={this.handleNameChange}
                 />
+                {this.state.openFilePicker && this.renderFilePicker()}
               </div>
               <DynamicSelect
                 sourceTypes={this.props.sourceTypes}

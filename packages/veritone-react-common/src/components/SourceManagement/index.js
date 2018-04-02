@@ -23,6 +23,7 @@ export default class SourceManagementOverview extends React.Component {
       data: objectOf(any)
     })),
     onFormSubmit: func.isRequired,
+    onSelectMenuAction: func
   }
 
   state = {
@@ -42,7 +43,7 @@ export default class SourceManagementOverview extends React.Component {
     const source = this.state.sources[selectedSource];
     const sourceConfig = pick(
       source,
-      ['name', 'details', 'thumbnail', 'sourceTypeId', 'sourceType']
+      ['name', 'details', 'thumbnailUrl', 'sourceTypeId', 'sourceType']
     );
   
     this.setState({
@@ -78,6 +79,7 @@ export default class SourceManagementOverview extends React.Component {
           : <SourceTileView
               onSelectSource={this.selectSource}
               sources={this.props.sources}
+              onSelectItem={this.props.onSelectMenuAction}
             />
         }
         {this.state.openFormDialog && this.renderDialog()}

@@ -69,6 +69,7 @@ export default class MenuColumn extends React.Component {
   }
 
   renderMenuCell = (actions = [], ...rest) => {
+    console.log('actions:', actions)
     const allActions = [...actions, ...this.props.additionalActions];
 
     return (
