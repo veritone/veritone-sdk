@@ -13,6 +13,8 @@ export const UPDATE_TDO = 'UPDATE_TDO';
 export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
 export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
 export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
+export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
+export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
 
 export const namespace = 'mediaDetails';
 
@@ -21,7 +23,8 @@ const defaultState = {
   engineResultsByEngineId: {},
   tdo: null,
   selectedEngineCategory: null,
-  selectedEngineId: null
+  selectedEngineId: null,
+  editModeEnabled: false
 };
 
 export default createReducer(defaultState, {
@@ -161,6 +164,24 @@ export default createReducer(defaultState, {
         selectedEngineId: payload
       }
     };
+  },
+  [TOGGLE_EDIT_MODE](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editModeEnabled: !state[widgetId].editModeEnabled
+      }
+    };
+  },
+  [TOGGLE_INFO_PANEL](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        infoPanelIsOpen: !state[widgetId].infoPanelIsOpen
+      }
+    };
   }
 });
 
@@ -175,6 +196,10 @@ export const selectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
 export const selectedEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineId']);
+export const editModeEnabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'editModeEnabled']);
+export const infoPanelIsOpen = (state, widgetId) =>
+  get(local(state), [widgetId, 'infoPanelIsOpen']);
 
 export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
   type: LOAD_ENGINE_CATEGORIES,
@@ -253,5 +278,15 @@ export const selectEngineCategory = (widgetId, engineCategory) => ({
 export const setEngineId = (widgetId, engineId) => ({
   type: SET_SELECTED_ENGINE_ID,
   payload: engineId,
+  meta: { widgetId }
+});
+
+export const toggleEditMode = widgetId => ({
+  type: TOGGLE_EDIT_MODE,
+  meta: { widgetId }
+});
+
+export const toggleInfoPanel = widgetId => ({
+  type: TOGGLE_INFO_PANEL,
   meta: { widgetId }
 });

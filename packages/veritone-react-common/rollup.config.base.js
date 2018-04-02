@@ -37,7 +37,9 @@ export default {
     'react-infinite-calendar',
     'react-redux',
     'redux',
-    'redux-form'
+    'redux-form',
+    'rechart',
+    'recharts-scale'
   ],
   plugins: [
     replace({

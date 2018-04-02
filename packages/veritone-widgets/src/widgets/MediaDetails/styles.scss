@@ -1,9 +1,11 @@
 .mediaDetailsPageContent {
-  max-width: 100% !important;
-  max-height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
   min-height: 400px;
   position: relative;
   font-family: Roboto;
+  display: flex;
+  flex-direction: column;
 
   .pageHeader {
     display: flex;
@@ -164,7 +166,6 @@
 
   .mediaScreen {
     margin: 20px;
-    padding-bottom: 20px;
     display: flex;
     flex-direction: row;
 
