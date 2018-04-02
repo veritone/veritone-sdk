@@ -122,7 +122,8 @@ class MediaDetailsWidget extends React.Component {
     toggleEditMode: func,
     toggleInfoPanel: func,
     editModeEnabled: bool,
-    infoPanelIsOpen: bool
+    infoPanelIsOpen: bool,
+    setEngineId: func
   };
 
   state = {
@@ -197,6 +198,10 @@ class MediaDetailsWidget extends React.Component {
   toggleInfoPanel = () => {
     this.props.toggleInfoPanel(this.props._widgetId);
   };
+
+  handleSelectEngine = (engineId) => {
+    this.props.setEngineId(this.props._widgetId, engineId);
+  }
 
   updateTdo = tdoData => {
     if (!tdoData) {
@@ -398,6 +403,8 @@ class MediaDetailsWidget extends React.Component {
                       <OCREngineOutputView
                         data={engineResultsByEngineId[selectedEngineId]}
                         className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        onEngineChange={this.handleSelectEngine}
                       />
                     )}
                   {selectedEngineCategory &&
