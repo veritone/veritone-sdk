@@ -192,6 +192,11 @@
       flex-direction: column;
       margin-left: 30px;
       width: 100%;
+
+      .sentimentChartViewRoot {
+        height: 340px;
+        width: 100%;
+      }
     }
   }
 

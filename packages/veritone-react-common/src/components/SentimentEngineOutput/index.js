@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, any, func } from 'prop-types';
+import { number, string, arrayOf, any, func, shape } from 'prop-types';
 import classNames from 'classnames';
 import {
   ResponsiveContainer,
@@ -10,12 +10,22 @@ import {
   Area,
   ReferenceLine
 } from 'recharts';
+import EngineOutputHeader from '../EngineOutputHeader';
 import { msToReadableString } from '../../helpers/time';
 import styles from './styles.scss';
 
 export default class SentimentEngineOutput extends Component {
   static propTypes = {
     data: arrayOf(any),
+    engines: arrayOf(
+      shape({
+        sourceEngineId: string,
+        sourceEngineName: string
+      })
+    ),
+    selectedEngineId: string,
+    onEngineChange: func,
+    onExpandClicked: func,
     className: string,
     mediaPlayerTime: number,
     timeWindowSizeMs: number,
@@ -78,8 +88,8 @@ export default class SentimentEngineOutput extends Component {
       if (dataItem.series && dataItem.series.length) {
         dataItem.series.forEach(seriesItem => {
           if (
-            isNaN(seriesItem.positiveValue) &&
-            isNaN(seriesItem.negativeValue)
+            isNaN(seriesItem.sentiment.positiveValue) &&
+            isNaN(seriesItem.sentiment.negativeValue)
           ) {
             // No data case - engine results has a no-value series item - set sentiment = 0
             allSeries.push({
@@ -117,7 +127,7 @@ export default class SentimentEngineOutput extends Component {
       mediaPlayerTime,
       timeWindowSizeMs,
       timeWindowStartMs,
-      timeTickIntervalMs
+      timeTickIntervalMs,
     } = this.props;
 
     let chartData = [{ sartTimeMs: 0, stopTimeMs: 0, sentiment: 0 }];
@@ -127,9 +137,11 @@ export default class SentimentEngineOutput extends Component {
     seriesData.map((entry, index) => {
       let sentimentValue = 0;
       let sentiment = entry.sentiment;
-      if (sentiment.positiveConfidence > sentiment.negativeConfidence) {
+      const positiveConfidence = sentiment.positiveConfidence || 0;
+      const negativeConfidence = sentiment.negativeConfidence || 0;
+      if (positiveConfidence > negativeConfidence) {
         sentimentValue = sentiment.positiveValue * 100;
-      } else if (sentiment.positiveConfidence < sentiment.negativeConfidence) {
+      } else if (positiveConfidence < negativeConfidence) {
         sentimentValue = sentiment.negativeValue * 100;
       }
       numValidValue++;
@@ -157,7 +169,7 @@ export default class SentimentEngineOutput extends Component {
 
     return {
       chartData: chartData,
-      average: totalSentiment / numValidValue,
+      average: parseFloat(totalSentiment / numValidValue).toFixed(2),
       xTicks: xTicks,
       xDomain: xDomain,
       yTicks: sentimentTicks,
@@ -165,7 +177,7 @@ export default class SentimentEngineOutput extends Component {
       referenceValue: mediaPlayerTime,
       totalTime: totalTime,
       scrollToTime: timeWindowStartMs,
-      scaleX: totalTime / timeWindowSizeMs
+      scaleX: (totalTime > timeWindowSizeMs ) ? totalTime / timeWindowSizeMs : 1,
     };
   };
 
@@ -223,6 +235,8 @@ export default class SentimentEngineOutput extends Component {
     } else if (maxSentiment > 0) {
       offset = maxSentiment / (maxSentiment - minSentiment); // Above 0 is green & below 0 is red
     }
+
+    console.log(xTicks, yTicks, yDomain, xDomain);
 
     return (
       <div className={styles.sentimentBody}>
@@ -306,6 +320,14 @@ export default class SentimentEngineOutput extends Component {
 
     return (
       <div className={classNames(styles.sentimentOutput, this.props.className)}>
+        {this.props.engines && this.props.engines.length && this.props.selectedEngineId &&
+          <EngineOutputHeader
+            title="Sentiment"
+            engines={this.props.engines}
+            selectedEngineId={this.props.selectedEngineId}
+            onEngineChange={this.props.onEngineChange}
+            onExpandClicked={this.props.onExpandClicked}
+          />}
         {this.renderSummary(extractedData.average)}
         {this.renderChart(extractedData)}
       </div>
