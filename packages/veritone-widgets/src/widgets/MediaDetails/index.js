@@ -127,7 +127,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
-    selectedTabValue: 0,
+    selectedTabValue: "mediaDetails",
     hasPendingChanges: false
   };
 
@@ -203,6 +203,10 @@ class MediaDetailsWidget extends React.Component {
     this.props.setEngineId(this.props._widgetId, engineId);
   }
 
+  handleTabChange = (evt, selectedTabValue) => {
+    this.setState({ selectedTabValue });
+  }
+
   updateTdo = tdoData => {
     if (!tdoData) {
       return;
@@ -223,6 +227,7 @@ class MediaDetailsWidget extends React.Component {
       infoPanelIsOpen
     } = this.props;
     
+    console.log(this.state, selectedEngineId);
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -276,6 +281,7 @@ class MediaDetailsWidget extends React.Component {
                 <Tab
                   label="Media Details"
                   classes={{ root: styles.pageTabLabel }}
+                  value="mediaDetails"
                   style={{
                     fontWeight: this.state.selectedTabValue === 0 ? 500 : 400
                   }}
@@ -283,6 +289,7 @@ class MediaDetailsWidget extends React.Component {
                 <Tab
                   label="Content Templates"
                   classes={{ root: styles.pageTabLabel }}
+                  value="contentTemplates"
                   style={{
                     fontWeight: this.state.selectedTabValue === 1 ? 500 : 400
                   }}
@@ -290,7 +297,7 @@ class MediaDetailsWidget extends React.Component {
               </Tabs>
 
               {selectedEngineCategory &&
-                this.state.selectedTabValue === 0 && (
+                this.state.selectedTabValue === "mediaDetails" && (
                   <div className={styles.engineActionHeader}>
                     <div className={styles.engineActionContainer}>
                       <div className={styles.engineCategorySelector}>
@@ -319,7 +326,7 @@ class MediaDetailsWidget extends React.Component {
           )}
 
           {editModeEnabled &&
-            this.state.selectedTabValue === 0 && (
+            this.state.selectedTabValue === "mediaDetails" && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
@@ -371,7 +378,7 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === 0 &&
+          {this.state.selectedTabValue === "mediaDetails" &&
             selectedEngineId && (
               <div className={styles.mediaScreen}>
                 <div className={styles.mediaView}>
