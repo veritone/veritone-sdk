@@ -11,6 +11,7 @@ import { EngineCategorySelector } from 'veritone-react-common';
 import { MediaInfoPanel } from 'veritone-react-common';
 import { FullScreenDialog } from 'veritone-react-common';
 import { OCREngineOutputView } from 'veritone-react-common';
+import { SentimentEngineOutput } from 'veritone-react-common';
 
 import styles from './styles.scss';
 
@@ -119,11 +120,11 @@ class MediaDetailsWidget extends React.Component {
       )
     }),
     selectedEngineId: string,
+    setEngineId: func,
     toggleEditMode: func,
     toggleInfoPanel: func,
     editModeEnabled: bool,
-    infoPanelIsOpen: bool,
-    setEngineId: func
+    infoPanelIsOpen: bool
   };
 
   state = {
@@ -149,7 +150,6 @@ class MediaDetailsWidget extends React.Component {
     const selectedCategory = this.props.engineCategories.find(
       category => category.id === selectedCategoryId
     );
-
     // Set the new engine category and set engine id to the first engine in the list.
     this.props.selectEngineCategory(this.props._widgetId, selectedCategory);
   };
@@ -220,14 +220,14 @@ class MediaDetailsWidget extends React.Component {
 
   render() {
     let {
+      engineCategories,
       selectedEngineCategory,
       selectedEngineId,
       engineResultsByEngineId,
       editModeEnabled,
-      infoPanelIsOpen
+      infoPanelIsOpen,
+      setEngineId
     } = this.props;
-    
-    console.log(this.state, selectedEngineId);
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -388,65 +388,96 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 </div>
 
-                <div className={styles.engineCategoryView}>
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'transcript' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'face' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'object' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'logo' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'ocr' && (
-                      <OCREngineOutputView
-                        data={engineResultsByEngineId[selectedEngineId]}
-                        className={styles.engineOuputContainer}
-                        engines={selectedEngineCategory.engines}
-                        onEngineChange={this.handleSelectEngine}
-                      />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'translate' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'sentiment' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType ===
-                      'stationPlayout' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'music' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
-                    )}
-                </div>
+              <div className={styles.engineCategoryView}>
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'transcript' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'face' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'object' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'logo' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType === 'ocr' && (
+                    <OCREngineOutputView
+                      data={engineResultsByEngineId[selectedEngineId]}
+                      className={styles.engineOuputContainer}
+                      engines={selectedEngineCategory.engines}
+                      onEngineChange={this.handleSelectEngine}
+                    />
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'fingerprint' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'translate' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'sentiment' && (
+                    <SentimentEngineOutput
+                      data={engineResultsByEngineId[selectedEngineId]}
+                      engines={selectedEngineCategory.engines}
+                      selectedEngineId={selectedEngineId}
+                      onEngineChange={setEngineId}
+                      className={styles.sentimentChartViewRoot}
+                    />
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'geolocation' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'stationPlayout' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
+                {selectedEngineCategory &&
+                  selectedEngineCategory.categoryType ===
+                    'music' && (
+                    <div>
+                      {selectedEngineCategory.categoryType} component
+                    </div>
+                  )}
               </div>
-            )}
+            </div>
+          )}
 
           {infoPanelIsOpen && (
             <MediaInfoPanel
               tdo={this.props.tdo}
-              engineCategories={this.props.engineCategories}
+              engineCategories={engineCategories}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
             />
