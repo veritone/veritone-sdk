@@ -22,6 +22,19 @@ export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
+
+export RefreshButton from './components/RefreshButton';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
+
+export SourceManagementOverview from './components/SourceManagement';
+export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
+export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
+
+export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
+export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
+export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
+export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
+export StatusPill from './components/StatusPill';
+
