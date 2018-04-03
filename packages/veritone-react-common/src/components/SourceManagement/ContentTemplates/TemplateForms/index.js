@@ -163,6 +163,10 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         {element}
       </div>
     );
+  } else {
+    return (
+      <div>Unsupported Type: {type} for {fieldId}</div>
+    );
   }
   if (depth) {
     element = (

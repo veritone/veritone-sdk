@@ -81,7 +81,7 @@ export default class DynamicSelect extends React.Component {
   };
   
   renderFields = () => {
-    const definition = this.props.sourceTypes[this.props.currentSourceType] ? this.props.sourceTypes[this.props.currentSourceType].sourceSchema.definition : {};
+    const definition = this.props.sourceTypes[this.props.currentSourceType] && this.props.sourceTypes[this.props.currentSourceType].sourceSchema ? this.props.sourceTypes[this.props.currentSourceType].sourceSchema.definition : {};
     const properties = definition.properties;
     const requiredFields = has(definition, 'required') ? definition.required : [];
 

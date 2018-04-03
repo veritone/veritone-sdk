@@ -69,7 +69,7 @@ export default class SourceConfiguration extends React.Component {
   handleSelectChange = (sourceTypeIndex) => {
     if (sourceTypeIndex !== this.state.sourceTypeIndex) {
       const currentFields = {};
-      const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties;
+      const properties = this.props.sourceTypes[sourceTypeIndex] && this.props.sourceTypes[sourceTypeIndex].sourceSchema ? this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties : {};
 
       Object.keys(properties).forEach((field) => {
         currentFields[field] = '';
