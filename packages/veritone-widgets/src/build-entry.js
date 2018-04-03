@@ -9,3 +9,4 @@ export Table from './widgets/Table';
 export SourceManagement from './widgets/SourceManagementOverview';
 export SourceManagementForm from './widgets/SourceManagementForm';
 export ContentTemplateForm from './widgets/ContentTemplateForm';
+export SDOTable from './widgets/SDOTable';

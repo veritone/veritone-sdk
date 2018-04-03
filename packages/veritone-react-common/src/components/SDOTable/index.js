@@ -5,7 +5,7 @@ import {
   PaginatedTable,
   Column,
 } from 'components/DataTable';
-import { map, startCase, partial } from 'lodash';
+import { map, startCase, partial, omit } from 'lodash';
 import DotDotDot from 'react-dotdotdot'
 
 export default class SDOTable extends React.Component {
@@ -34,6 +34,8 @@ export default class SDOTable extends React.Component {
   }
 
   render() {
+    const tableProps = omit(this.props, ['data', 'schema', 'paginate']);
+
     const TableComp = this.props.paginate ? PaginatedTable : Table;
     const tableColumns = map(this.props.schema, (propDetails, prop) => {
       return (
@@ -48,6 +50,7 @@ export default class SDOTable extends React.Component {
             
     return (
       <TableComp
+        {...tableProps}
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
       >
