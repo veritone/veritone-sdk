@@ -40,7 +40,7 @@ export default class SentimentEngineOutput extends Component {
   static defaultProps = {
     data: [],
     mediaPlayerTime: 0,
-    timeWindowSizeMs: 200000,
+    timeWindowSizeMs: 400000,
     timeWindowStartMs: 0,
     timeTickIntervalMs: 50000,
     sentimentDomain: [100, -100],
