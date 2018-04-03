@@ -4,11 +4,20 @@ import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
-import { bool, func, number, string, shape, arrayOf, any } from 'prop-types';
+import {
+  bool,
+  func,
+  number,
+  string,
+  shape,
+  arrayOf,
+  any,
+  object
+} from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { EngineCategorySelector } from 'veritone-react-common';
-import { MediaInfoPanel } from 'veritone-react-common';
+import { MediaInfoPanel, video } from 'veritone-react-common';
 import { FullScreenDialog } from 'veritone-react-common';
 import { OCREngineOutputView } from 'veritone-react-common';
 import { SentimentEngineOutput } from 'veritone-react-common';
@@ -127,8 +136,12 @@ class MediaDetailsWidget extends React.Component {
     infoPanelIsOpen: bool
   };
 
+  static contextTypes = {
+    store: object.isRequired // eslint-disable-line
+  };
+
   state = {
-    selectedTabValue: "mediaDetails",
+    selectedTabValue: 'mediaDetails',
     hasPendingChanges: false
   };
 
@@ -183,6 +196,10 @@ class MediaDetailsWidget extends React.Component {
     return veritoneProgram.programName;
   };
 
+  getPrimaryAssetUri = () => {
+    return get(this.props, 'tdo.primaryAsset.uri');
+  };
+
   toggleEditMode = () => {
     this.props.toggleEditMode(this.props._widgetId);
   };
@@ -199,7 +216,7 @@ class MediaDetailsWidget extends React.Component {
     this.props.toggleInfoPanel(this.props._widgetId);
   };
 
-  handleSelectEngine = (engineId) => {
+  handleSelectEngine = engineId => {
     this.props.setEngineId(this.props._widgetId, engineId);
   };
 
@@ -297,7 +314,7 @@ class MediaDetailsWidget extends React.Component {
               </Tabs>
 
               {selectedEngineCategory &&
-                this.state.selectedTabValue === "mediaDetails" && (
+                this.state.selectedTabValue === 'mediaDetails' && (
                   <div className={styles.engineActionHeader}>
                     <div className={styles.engineActionContainer}>
                       <div className={styles.engineCategorySelector}>
@@ -326,7 +343,7 @@ class MediaDetailsWidget extends React.Component {
           )}
 
           {editModeEnabled &&
-            this.state.selectedTabValue === "mediaDetails" && (
+            this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
@@ -378,108 +395,87 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === "mediaDetails" &&
+          {this.state.selectedTabValue === 'mediaDetails' &&
             selectedEngineId && (
               <div className={styles.mediaScreen}>
                 <div className={styles.mediaView}>
-                  <div className={styles.mediaPlayerView} />
+                  <div className={styles.mediaPlayerView}>
+                    <video.Player
+                      src={this.getPrimaryAssetUri()}
+                      className={styles.videoPlayer}
+                      store={this.context.store}
+                    />
+                  </div>
                   <div className={styles.sourceLabel}>
                     Source: {this.getMediaSource()}
                   </div>
                 </div>
 
-              <div className={styles.engineCategoryView}>
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'transcript' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'face' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'object' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'logo' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType === 'ocr' && (
-                    <OCREngineOutputView
-                      data={engineResultsByEngineId[selectedEngineId]}
-                      className={styles.engineOuputContainer}
-                      engines={selectedEngineCategory.engines}
-                      onEngineChange={this.handleSelectEngine}
-                    />
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'fingerprint' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'translate' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'sentiment' && (
-                    <SentimentEngineOutput
-                      data={engineResultsByEngineId[selectedEngineId]}
-                      engines={selectedEngineCategory.engines}
-                      selectedEngineId={selectedEngineId}
-                      onEngineChange={this.handleSelectEngine}
-                      className={styles.sentimentChartViewRoot}
-                    />
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'geolocation' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'stationPlayout' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'thirdPartyData' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                )}
-                {selectedEngineCategory &&
-                  selectedEngineCategory.categoryType ===
-                    'music' && (
-                    <div>
-                      {selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
+                <div className={styles.engineCategoryView}>
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'transcript' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'face' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'object' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'logo' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'ocr' && (
+                      <OCREngineOutputView
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        onEngineChange={this.handleSelectEngine}
+                      />
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'fingerprint' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'translate' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'sentiment' && (
+                      <SentimentEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        className={styles.sentimentChartViewRoot}
+                      />
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'geolocation' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType ===
+                      'stationPlayout' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType ===
+                      'thirdPartyData' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'music' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {infoPanelIsOpen && (
             <MediaInfoPanel

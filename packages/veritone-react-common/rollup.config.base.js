@@ -66,7 +66,9 @@ export default {
     }),
 
     postcss({
-      modules: true,
+      modules: {
+        globalModulePaths: [/video-react/]
+      },
       loaders: [sass]
     }),
 

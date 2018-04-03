@@ -173,10 +173,14 @@
       .mediaPlayerView {
         height: 330px;
         width: 450px;
-        background: url('//static.veritone.com/veritone-ui/default-nullstate.svg');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
+        //background: url('//static.veritone.com/veritone-ui/default-nullstate.svg');
+        //background-size: cover;
+        //background-repeat: no-repeat;
+        //background-position: center;
+      }
+
+      .videoPlayer {
+
       }
 
       .sourceLabel {

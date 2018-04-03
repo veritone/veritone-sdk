@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
+import { video } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
+
+const { playerReducer, operationReducer } = video;
 
 import filePickerReducer, {
   namespace as filePickerNamespace
@@ -25,6 +28,8 @@ export default function createReducer(asyncReducers) {
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
+    player: playerReducer,
+    operation: operationReducer,
     ...asyncReducers
   });
 }
