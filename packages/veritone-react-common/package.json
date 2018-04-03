@@ -8,7 +8,7 @@
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
     "lodash": "^4.17.4",
-    "material-ui": "v1.0.0-beta.20",
+    "material-ui": "v1.0.0-beta.36",
     "material-ui-icons": "^1.0.0-beta.17",
     "mime-types": "^2.1.17",
     "pluralize": "^7.0.0",
@@ -33,10 +33,13 @@
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
-    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
-    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
+    "build:es":
+      "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:cjs":
+      "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
-    "build:storybook": "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
+    "build:storybook":
+      "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "lint": "yarn run lint:js && yarn run lint:styles",
@@ -97,18 +100,13 @@
   },
   "license": "Apache-2.0",
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "../../node_modules"
-    ],
+    "moduleFileExtensions": ["js", "jsx"],
+    "moduleDirectories": ["node_modules", "../../node_modules"],
     "moduleNameMapper": {
       "^helpers(.*)$": "<rootDir>/src/helpers$1",
       "^components(.*)$": "<rootDir>/src/components$1",
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
+        "<rootDir>/test/__mocks__/fileMock.js",
       "\\.(css|scss)$": "identity-obj-proxy"
     },
     "setupFiles": [
