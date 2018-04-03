@@ -67,3 +67,6 @@
 
 ## 4.1.0
 * The CJS and script tag bundles are now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
+
+## 4.2.0
+* Added Table widget

@@ -186,7 +186,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId) {
     id: 'thirdPartyData',
     categoryType: 'thirdPartyData',
     editable: false,
-    iconClass : 'icon-third-party-data',
+    iconClass: 'icon-third-party-data',
     engines: []
   });
 
@@ -240,13 +240,20 @@ function* loadTdoSaga(widgetId, tdoId) {
         details
         startDateTime
         stopDateTime
+        primaryAsset(assetType: "media") {
+          id
+          uri
+        }
       }
-    }`;
+    }
+  `;
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
 
   let response;
   try {
@@ -266,6 +273,9 @@ function* loadTdoSaga(widgetId, tdoId) {
 
   if (!response || !response.data || !response.data.temporalDataObject) {
     console.warn('TemporalDataObject not found');
+    return yield* finishLoadTdo(widgetId, response.data.temporalDataObject, {
+      error: 'TemporalDataObject not found'
+    });
   }
 
   yield* finishLoadTdo(widgetId, response.data.temporalDataObject, {
@@ -319,7 +329,12 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   });
 }
 
-function* loadEngineResultsSaga(widgetId, engineId, startOffsetMs, stopOffsetMs) {
+function* loadEngineResultsSaga(
+  widgetId,
+  engineId,
+  startOffsetMs,
+  stopOffsetMs
+) {
   const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
       engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
@@ -337,7 +352,7 @@ function* loadEngineResultsSaga(widgetId, engineId, startOffsetMs, stopOffsetMs)
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
   const requestTdo = yield select(tdo, widgetId);
-  const variables = { tdoId: requestTdo.id, engineIds: [engineId]};
+  const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
   if (startOffsetMs) {
     variables.startOffsetMs = startOffsetMs;
   }

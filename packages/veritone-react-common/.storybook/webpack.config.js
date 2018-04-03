@@ -5,7 +5,7 @@ module.exports = {
     alias: {
       helpers: path.join(__dirname, 'src/helpers'),
       components: path.join(__dirname, 'src/components'),
-      images: path.join(__dirname, 'src/resources/images'),
+      images: path.join(__dirname, 'src/resources/images')
     }
   },
   module: {
@@ -28,7 +28,15 @@ module.exports = {
               localIdentName: '[local]--[hash:base64:5]'
             }
           },
-          'sass-loader'
+          {
+            loader: 'sass-loader',
+            options: {
+              includePaths: [
+                path.resolve(__dirname, '../node_modules'),
+                path.resolve(__dirname, '../../../node_modules')
+              ]
+            }
+          }
         ],
         include: path.resolve('./src')
       },

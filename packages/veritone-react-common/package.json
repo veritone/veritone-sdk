@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -25,7 +25,8 @@
     "recharts": "^1.0.0-beta.10",
     "react-transition-group": "1.x",
     "redux": "^3.7.2",
-    "redux-form": "^7.1.2"
+    "redux-form": "^7.1.2",
+    "video-react": "^0.10.4"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
