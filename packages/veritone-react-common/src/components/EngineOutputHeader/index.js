@@ -67,14 +67,15 @@ class EngineOutputHeader extends Component {
               </Select>
             )}
         </div>
-        <div className={styles.actionIconDivider} />
-        <IconButton
-          aria-label="Expanded View"
-          className={styles.expandedViewButton}
-          onClick={onExpandClicked}
-        >
-          <Icon className="icon-expand2" />
-        </IconButton>
+        {onExpandClicked && <div className={styles.actionIconDivider} />}
+        {onExpandClicked &&
+          <IconButton
+            aria-label="Expanded View"
+            className={styles.expandedViewButton}
+            onClick={onExpandClicked}
+          >
+            <Icon className="icon-max-view" />
+          </IconButton>}
       </div>
     );
   }
