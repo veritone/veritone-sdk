@@ -1,7 +1,8 @@
 import React from 'react';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
+import { createLogger } from 'redux-logger';
 import { storiesOf } from '@storybook/react';
 import { InputLabel, InputAdornment } from 'material-ui/Input';
 import {
@@ -28,11 +29,18 @@ import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
 import DateTimePicker from './DateTimePicker';
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     form: formReducer
   }),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  composeEnhancers(
+    applyMiddleware(
+      createLogger({
+        collapsed: true
+      })
+    )
+  )
 );
 
 const StoryForm = reduxForm({

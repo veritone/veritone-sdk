@@ -64,7 +64,6 @@ export default class DateTimePicker extends React.Component {
     value = consolidate(value, this.state.value);
     this.setState({ value });
     this.props.input.onChange(value);
-    console.log(value);
   };
 
   handleTimeChange = event => {
@@ -72,7 +71,6 @@ export default class DateTimePicker extends React.Component {
     value = consolidate(this.state.value, value);
     this.setState({ value });
     this.props.input.onChange(value);
-    console.log(value);
   };
 
   render() {
@@ -154,7 +152,7 @@ TimeSelector.propTypes = {
   max: instanceOf(Date),
   clearable: bool,
   value: oneOfType([instanceOf(Date), string]).isRequired,
-  onChange: func.isRequired  
+  onChange: func.isRequired
 }
 
 function consolidate(dateObject, timeObject) {

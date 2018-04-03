@@ -7,3 +7,45 @@
 .scheduleTypeContainer {
   flex-direction: row !important;
 }
+
+.activeSectionContainer {
+  display: flex;
+  flex-direction: column;
+
+  .formSectionRow {
+    padding-top: 15px;
+  }
+}
+
+.fieldsetGroup {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100% !important;
+
+  .label {
+    width: 150px;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .input {
+    flex-grow: 1;
+  }
+}
+
+.inputsGroup {
+  flex-direction: row !important;
+
+  .leftInput,
+  .rightInput {
+    width: 100px;
+  }
+
+  .leftInput {
+    padding-right: 15px;
+  }
+
+  .leftInput input {
+    text-align: right;
+  }
+}

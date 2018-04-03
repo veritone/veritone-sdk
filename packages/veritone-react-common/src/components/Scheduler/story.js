@@ -1,35 +1,35 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { Provider } from 'react-redux';
-import { reducer as formReducer, reduxForm, Field } from 'redux-form';
+import { reducer as formReducer } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
+
+import { createLogger } from 'redux-logger';
+import { applyMiddleware, compose } from 'redux';
 
 import Scheduler from './';
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     form: formReducer
   }),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  composeEnhancers(
+    applyMiddleware(
+      createLogger({
+        collapsed: true
+      })
+    )
+  )
 );
-
-const StoryForm = reduxForm({
-  form: 'story',
-  initialValues: {}
-})(({ handleSubmit, children, submitting, pristine }) => (
-  <form onSubmit={handleSubmit}>
-    {children}
-    <br />
-    <button type="submit" disabled={pristine || submitting}>
-      Submit
-    </button>
-  </form>
-));
-
-/* eslint-disable react/jsx-no-bind */
 
 storiesOf('Scheduler', module).add('Empty Scheduler', () => (
   <Provider store={store}>
-    <Scheduler />
+    <Scheduler
+      form="scheduler"
+      initialValues={{
+        scheduleType: 'immediate'
+      }}
+    />
   </Provider>
 ));

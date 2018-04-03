@@ -1,33 +1,25 @@
 import React from 'react';
 // import { any, objectOf, func } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
-import {
-  FormHelperText,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  FormGroup
-} from 'material-ui/Form';
+import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 
-import DateTimePicker from '../formComponents/DateTimePicker';
 import RadioGroup from '../formComponents/RadioGroup';
 import styles from './styles.scss';
+import ImmediateSection from './ImmediateSection';
+import RecurringSection from './RecurringSection';
+import OnDemandSection from './OnDemandSection';
+import ContinuousSection from './ContinuousSection';
 
-@reduxForm({
-  form: 'scheduler',
-  initialValues: {
-    scheduleType: 'immediate'
-  }
-})
+@reduxForm()
 @formValues('scheduleType')
 export default class Scheduler extends React.Component {
   render() {
-    const activeSection = {
-      recurring: <div>recurring section</div>,
-      continuous: <div>continuous section</div>,
-      immediate: <div>immediate section</div>,
-      ondemand: <div>ondemand section</div>,
+    const ActiveSectionComponent = {
+      recurring: RecurringSection,
+      continuous: ContinuousSection,
+      immediate: ImmediateSection,
+      ondemand: OnDemandSection
     }[this.props.scheduleType];
 
     return (
@@ -59,7 +51,9 @@ export default class Scheduler extends React.Component {
             label="On Demand"
           />
         </Field>
-        { activeSection }
+        <div className={styles.activeSectionContainer}>
+          <ActiveSectionComponent />
+        </div>
       </div>
     );
   }
