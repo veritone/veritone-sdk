@@ -1,0 +1,15 @@
+.logoDetection {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+
+  .scrolableContent {
+    .item {
+      margin: 0 10px 10px 0;
+
+      .label {
+        max-width: 200px;
+      }
+    }
+  }
+}

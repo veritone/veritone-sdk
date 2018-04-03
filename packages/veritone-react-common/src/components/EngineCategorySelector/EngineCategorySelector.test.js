@@ -48,7 +48,7 @@ describe('EngineCategorySelector', () => {
       />
     );
     const tabs = wrapper.find(Tabs);
-    expect(tabs.instance()['value']).toBe(FACE_ENGINE_CATEGORY.id);
+    expect(tabs.props()['value']).toBe(FACE_ENGINE_CATEGORY.id);
   });
 
   it('onSelectEngineCategory should be called when selected engine category', () => {

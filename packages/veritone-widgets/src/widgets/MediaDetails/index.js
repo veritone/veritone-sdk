@@ -4,12 +4,24 @@ import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Paper from 'material-ui/Paper';
-import { bool, func, number, string, shape, arrayOf, any, object } from 'prop-types';
+import {
+  bool,
+  func,
+  number,
+  string,
+  shape,
+  arrayOf,
+  any,
+  object
+} from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { EngineCategorySelector } from 'veritone-react-common';
 import { MediaInfoPanel, video } from 'veritone-react-common';
 import { FullScreenDialog } from 'veritone-react-common';
+import { OCREngineOutputView } from 'veritone-react-common';
+import { SentimentEngineOutput } from 'veritone-react-common';
+
 import styles from './styles.scss';
 
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
@@ -22,13 +34,24 @@ import widget from '../../shared/widget';
     engineResultsByEngineId: mediaDetailsModule.engineResultsByEngineId(
       state,
       _widgetId
-    )
+    ),
+    selectedEngineCategory: mediaDetailsModule.selectedEngineCategory(
+      state,
+      _widgetId
+    ),
+    selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
+    editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
+    infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId)
   }),
   {
     loadEngineCategoriesRequest: mediaDetailsModule.loadEngineCategoriesRequest,
     loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
-    updateTdoRequest: mediaDetailsModule.updateTdoRequest
+    updateTdoRequest: mediaDetailsModule.updateTdoRequest,
+    selectEngineCategory: mediaDetailsModule.selectEngineCategory,
+    setEngineId: mediaDetailsModule.setEngineId,
+    toggleEditMode: mediaDetailsModule.toggleEditMode,
+    toggleInfoPanel: mediaDetailsModule.toggleInfoPanel
   },
   null,
   { withRef: true }
@@ -57,7 +80,7 @@ class MediaDetailsWidget extends React.Component {
           shape({
             id: string,
             name: string,
-            completedDateTime: string
+            completedDateTime: number
           })
         )
       })
@@ -89,7 +112,28 @@ class MediaDetailsWidget extends React.Component {
     }),
     engineResultsByEngineId: shape({
       engineId: arrayOf(any)
-    })
+    }),
+    selectEngineCategory: func,
+    selectedEngineCategory: shape({
+      id: string,
+      name: string,
+      iconClass: string,
+      editable: bool,
+      categoryType: string,
+      engines: arrayOf(
+        shape({
+          id: string,
+          name: string,
+          completedDateTime: number
+        })
+      )
+    }),
+    selectedEngineId: string,
+    setEngineId: func,
+    toggleEditMode: func,
+    toggleInfoPanel: func,
+    editModeEnabled: bool,
+    infoPanelIsOpen: bool
   };
 
   static contextTypes = {
@@ -97,13 +141,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
-    selectedEngineCategory:
-      this.props.engineCategories && this.props.engineCategories.length
-        ? this.props.engineCategories[0]
-        : null,
-    selectedTabValue: 0,
-    isEditMode: false,
-    isInfoPanelOpen: false,
+    selectedTabValue: 'mediaDetails',
     hasPendingChanges: false
   };
 
@@ -115,42 +153,24 @@ class MediaDetailsWidget extends React.Component {
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
   }
 
-  componentWillReceiveProps(nextProps) {
-    // preselect 1st engine category - only on the first load
-    if (
-      !this.state.selectedEngineCategory &&
-      nextProps.engineCategories &&
-      nextProps.engineCategories.length
-    ) {
-      this.setState({
-        selectedEngineCategory: nextProps.engineCategories[0]
-      });
-    }
-  }
-
   handleRunProcess = () => {
     this.props.onRunProcess();
     // close MediaDetails dialog to focus on the run process dialog
     this.props.onClose();
   };
 
-  handleTabChange = (event, value) => {
-    this.setState({ selectedTabValue: value });
-  };
-
   handleEngineCategoryChange = selectedCategoryId => {
     const selectedCategory = this.props.engineCategories.find(
       category => category.id === selectedCategoryId
     );
-    this.setState({
-      selectedEngineCategory: selectedCategory
-    });
+    // Set the new engine category and set engine id to the first engine in the list.
+    this.props.selectEngineCategory(this.props._widgetId, selectedCategory);
   };
 
   getSelectedCategoryMessage = () => {
     return (
       'Use the edit screen below to correct ' +
-      this.state.selectedEngineCategory.name.toLowerCase() +
+      this.props.selectedEngineCategory.name.toLowerCase() +
       's.'
     );
   };
@@ -181,9 +201,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   toggleEditMode = () => {
-    this.setState({
-      isEditMode: !this.state.isEditMode
-    });
+    this.props.toggleEditMode(this.props._widgetId);
   };
 
   onSaveEdit = () => {
@@ -195,9 +213,15 @@ class MediaDetailsWidget extends React.Component {
   };
 
   toggleInfoPanel = () => {
-    this.setState({
-      isInfoPanelOpen: !this.state.isInfoPanelOpen
-    });
+    this.props.toggleInfoPanel(this.props._widgetId);
+  };
+
+  handleSelectEngine = engineId => {
+    this.props.setEngineId(this.props._widgetId, engineId);
+  };
+
+  handleTabChange = (evt, selectedTabValue) => {
+    this.setState({ selectedTabValue });
   };
 
   updateTdo = tdoData => {
@@ -212,10 +236,19 @@ class MediaDetailsWidget extends React.Component {
   };
 
   render() {
+    let {
+      engineCategories,
+      selectedEngineCategory,
+      selectedEngineId,
+      engineResultsByEngineId,
+      editModeEnabled,
+      infoPanelIsOpen
+    } = this.props;
+
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
-          {!this.state.isEditMode && (
+          {!editModeEnabled && (
             <div>
               <div className={styles.pageHeader}>
                 <div className={styles.pageHeaderTitleLabel}>
@@ -265,6 +298,7 @@ class MediaDetailsWidget extends React.Component {
                 <Tab
                   label="Media Details"
                   classes={{ root: styles.pageTabLabel }}
+                  value="mediaDetails"
                   style={{
                     fontWeight: this.state.selectedTabValue === 0 ? 500 : 400
                   }}
@@ -272,28 +306,27 @@ class MediaDetailsWidget extends React.Component {
                 <Tab
                   label="Content Templates"
                   classes={{ root: styles.pageTabLabel }}
+                  value="contentTemplates"
                   style={{
                     fontWeight: this.state.selectedTabValue === 1 ? 500 : 400
                   }}
                 />
               </Tabs>
 
-              {this.state.selectedEngineCategory &&
-                this.state.selectedTabValue === 0 && (
+              {selectedEngineCategory &&
+                this.state.selectedTabValue === 'mediaDetails' && (
                   <div className={styles.engineActionHeader}>
                     <div className={styles.engineActionContainer}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={this.props.engineCategories}
-                          selectedEngineCategoryId={
-                            this.state.selectedEngineCategory.id
-                          }
+                          selectedEngineCategoryId={selectedEngineCategory.id}
                           onSelectEngineCategory={
                             this.handleEngineCategoryChange
                           }
                         />
                       </div>
-                      {this.state.selectedEngineCategory.editable && (
+                      {selectedEngineCategory.editable && (
                         <Button
                           variant="raised"
                           color="primary"
@@ -309,8 +342,8 @@ class MediaDetailsWidget extends React.Component {
             </div>
           )}
 
-          {this.state.isEditMode &&
-            this.state.selectedTabValue === 0 && (
+          {editModeEnabled &&
+            this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
@@ -325,7 +358,7 @@ class MediaDetailsWidget extends React.Component {
                     />
                   </IconButton>
                   <div className={styles.pageHeaderTitleLabelEditMode}>
-                    Edit Mode: {this.state.selectedEngineCategory.name}
+                    Edit Mode: {selectedEngineCategory.name}
                   </div>
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
@@ -362,110 +395,100 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === 0 && (
-            <div className={styles.mediaScreen}>
-              <div className={styles.mediaView}>
-                <div className={styles.mediaPlayerView}>
-                  <video.Player
-                    src={this.getPrimaryAssetUri()}
-                    className={styles.videoPlayer}
-                    store={this.context.store}
-                  />
+          {this.state.selectedTabValue === 'mediaDetails' &&
+            selectedEngineId && (
+              <div className={styles.mediaScreen}>
+                <div className={styles.mediaView}>
+                  <div className={styles.mediaPlayerView}>
+                    <video.Player
+                      src={this.getPrimaryAssetUri()}
+                      className={styles.videoPlayer}
+                      store={this.context.store}
+                    />
+                  </div>
+                  <div className={styles.sourceLabel}>
+                    Source: {this.getMediaSource()}
+                  </div>
                 </div>
-                <div className={styles.sourceLabel}>
-                  Source: {this.getMediaSource()}
+
+                <div className={styles.engineCategoryView}>
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'transcript' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'face' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'object' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'logo' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'ocr' && (
+                      <OCREngineOutputView
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        onEngineChange={this.handleSelectEngine}
+                      />
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'fingerprint' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'translate' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'sentiment' && (
+                      <SentimentEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        className={styles.sentimentChartViewRoot}
+                      />
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'geolocation' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType ===
+                      'stationPlayout' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType ===
+                      'thirdPartyData' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
+                  {selectedEngineCategory &&
+                    selectedEngineCategory.categoryType === 'music' && (
+                      <div>{selectedEngineCategory.categoryType} component</div>
+                    )}
                 </div>
               </div>
+            )}
 
-              <div className={styles.engineCategoryView}>
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'transcript' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType === 'face' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'object' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType === 'logo' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType === 'ocr' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'fingerprint' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'translate' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'sentiment' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'geolocation' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'stationPlayout' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-                {this.state.selectedEngineCategory &&
-                  this.state.selectedEngineCategory.categoryType ===
-                    'music' && (
-                    <div>
-                      {this.state.selectedEngineCategory.categoryType} component
-                    </div>
-                  )}
-              </div>
-            </div>
-          )}
-
-          {this.state.isInfoPanelOpen && (
+          {infoPanelIsOpen && (
             <MediaInfoPanel
               tdo={this.props.tdo}
-              engineCategories={this.props.engineCategories}
+              engineCategories={engineCategories}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
             />
           )}
 
-          {this.state.selectedTabValue === 1 && <div>Content Template</div>}
+          {/* TODO: uncomment when implemented. Commented out for MVP.
+          this.state.selectedTabValue === 1 && <div>Content Template</div>
+          */}
         </Paper>
       </FullScreenDialog>
     );

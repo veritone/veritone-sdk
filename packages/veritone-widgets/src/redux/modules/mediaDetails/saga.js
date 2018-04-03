@@ -1,46 +1,42 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { noop } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
-import { LOAD_ENGINE_CATEGORIES, loadEngineCategoriesComplete } from '.';
-import { LOAD_ENGINE_RESULTS, loadEngineResultsComplete } from '.';
-import { LOAD_TDO, loadTdoComplete } from '.';
-import { UPDATE_TDO, updateTdoComplete } from '.';
+import {
+  LOAD_ENGINE_CATEGORIES,
+  LOAD_ENGINE_RESULTS,
+  LOAD_TDO,
+  UPDATE_TDO,
+  SET_SELECTED_ENGINE_ID,
+  SELECT_ENGINE_CATEGORY,
+  loadEngineCategoriesComplete,
+  loadEngineResultsComplete,
+  loadTdoSuccess,
+  updateTdoComplete,
+  selectEngineCategory,
+  setEngineId,
+  tdo
+} from '.';
 
-function* finishLoadEngineCategories(
-  widgetId,
-  result,
-  { warning, error },
-  callback
-) {
+function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
   yield put(loadEngineCategoriesComplete(widgetId, result, { warning, error }));
-  yield call(callback, result, { warning, error, cancelled: false });
 }
 
-function* finishLoadEngineResults(
-  widgetId,
-  result,
-  { warning, error },
-  callback
-) {
+function* finishLoadEngineResults(widgetId, result, { warning, error }) {
   yield put(loadEngineResultsComplete(widgetId, result, { warning, error }));
-  yield call(callback, result, { warning, error, cancelled: false });
 }
 
-function* finishLoadTdo(widgetId, result, { warning, error }, callback) {
-  yield put(loadTdoComplete(widgetId, result, { warning, error }));
-  yield call(callback, result, { warning, error, cancelled: false });
+function* finishLoadTdo(widgetId, result, { warning, error }) {
+  yield put(loadTdoSuccess(widgetId, result, { warning, error }));
 }
 
-function* finishUpdateTdo(widgetId, result, { warning, error }, callback) {
+function* finishUpdateTdo(widgetId, result, { warning, error }) {
   yield put(updateTdoComplete(widgetId, result, { warning, error }));
-  yield call(callback, result, { warning, error, cancelled: false });
 }
 
-function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
+function* loadEngineCategoriesSaga(widgetId, tdoId) {
   const getTasksAndStatusesQuery = `query temporalDataObject($tdoId: ID!){
       temporalDataObject(id: $tdoId) {
         jobs {
@@ -88,12 +84,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
       token
     });
   } catch (error) {
-    return yield* finishLoadEngineCategories(
-      widgetId,
-      null,
-      { error },
-      callback
-    );
+    return yield* finishLoadEngineCategories(widgetId, null, { error });
   }
 
   if (!response || !response.data || !response.data.temporalDataObject) {
@@ -121,6 +112,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
   //  id
   //  editable
   //  iconClass
+  //  categoryType
   //  engines [{
   //    id
   //    name
@@ -188,10 +180,24 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
     engineCategories = filteredCategories;
   }
 
+  // TODO: dynamically add Structured Data Category - depending whether there is such data for TDO
+  engineCategories.push({
+    name: 'Structured Data',
+    id: 'thirdPartyData',
+    categoryType: 'thirdPartyData',
+    editable: false,
+    iconClass: 'icon-third-party-data',
+    engines: []
+  });
+
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
-    if (category1.categoryType < category2.categoryType) {return -1;}
-    if (category1.categoryType > category2.categoryType) {return 1;}
+    if (category1.categoryType < category2.categoryType) {
+      return -1;
+    }
+    if (category1.categoryType > category2.categoryType) {
+      return 1;
+    }
     return 0;
   });
   const orderedCategoryTypes = [
@@ -205,6 +211,7 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
     'sentiment',
     'geolocation',
     'stationPlayout',
+    'thirdPartyData',
     'music'
   ];
   orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
@@ -218,73 +225,16 @@ function* loadEngineCategoriesSaga(widgetId, tdoId, callback = noop) {
     }
   });
 
-  yield* finishLoadEngineCategories(
-    widgetId,
-    engineCategories,
-    {
-      warning: false,
-      error: false
-    },
-    callback
-  );
+  yield put(selectEngineCategory(widgetId, engineCategories[0]));
+
+  yield* finishLoadEngineCategories(widgetId, engineCategories, {
+    warning: false,
+    error: false
+  });
 }
 
-function* loadEngineResultsSaga(
-  widgetId,
-  tdoId,
-  engineId,
-  startOffsetMs,
-  stopOffsetMs,
-  callback = noop
-) {
-  const getMetadataQuery = `query engineResults($id: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
-      engineResults(id: $id, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
-        records {
-          tdoId
-          engineId
-          startOffsetMs
-          stopOffsetMs
-          jsondata
-        }
-      }
-    }`;
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-
-  let response;
-  try {
-    const engineIds = [engineId];
-    response = yield call(callGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: getMetadataQuery,
-      variables: { tdoId, engineIds, startOffsetMs, stopOffsetMs },
-      token
-    });
-  } catch (error) {
-    return yield* finishLoadEngineResults(widgetId, null, { error }, callback);
-  }
-
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.warn(error));
-  }
-
-  yield* finishLoadEngineResults(
-    widgetId,
-    response.data.engineResults.records,
-    {
-      warning: false,
-      error: false
-    },
-    callback
-  );
-}
-
-function* loadTdoSaga(widgetId, tdoId, callback = noop) {
-  const getTdoQuery = `
-    query temporalDataObject($tdoId: ID!) {
+function* loadTdoSaga(widgetId, tdoId) {
+  const getTdoQuery = `query temporalDataObject($tdoId: ID!){
       temporalDataObject(id: $tdoId) {
         id
         details
@@ -314,7 +264,7 @@ function* loadTdoSaga(widgetId, tdoId, callback = noop) {
       token
     });
   } catch (error) {
-    return yield* finishLoadTdo(widgetId, null, { error }, callback);
+    return yield* finishLoadTdo(widgetId, null, { error });
   }
 
   if (response.errors && response.errors.length) {
@@ -323,28 +273,18 @@ function* loadTdoSaga(widgetId, tdoId, callback = noop) {
 
   if (!response || !response.data || !response.data.temporalDataObject) {
     console.warn('TemporalDataObject not found');
-    return yield* finishLoadTdo(
-      widgetId,
-      response.data.temporalDataObject,
-      {
-        error: 'TemporalDataObject not found'
-      },
-      callback
-    );
+    return yield* finishLoadTdo(widgetId, response.data.temporalDataObject, {
+      error: 'TemporalDataObject not found'
+    });
   }
 
-  yield* finishLoadTdo(
-    widgetId,
-    response.data.temporalDataObject,
-    {
-      warning: false,
-      error: false
-    },
-    callback
-  );
+  yield* finishLoadTdo(widgetId, response.data.temporalDataObject, {
+    warning: false,
+    error: false
+  });
 }
 
-function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate, callback = noop) {
+function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   const updateTdoQuery = `mutation updateTDO($tdoId: ID!){
       updateTDO( input: {
         id: $tdoId
@@ -372,7 +312,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate, callback = noop) {
       token
     });
   } catch (error) {
-    return yield* finishUpdateTdo(widgetId, null, { error }, callback);
+    return yield* finishUpdateTdo(widgetId, null, { error });
   }
 
   if (response.errors && response.errors.length) {
@@ -383,34 +323,72 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate, callback = noop) {
     console.warn('TemporalDataObject not found after update');
   }
 
-  yield* finishUpdateTdo(
-    widgetId,
-    response.data.updateTDO,
-    {
-      warning: false,
-      error: false
-    },
-    callback
-  );
+  yield* finishUpdateTdo(widgetId, response.data.updateTDO, {
+    warning: false,
+    error: false
+  });
+}
+
+function* loadEngineResultsSaga(
+  widgetId,
+  engineId,
+  startOffsetMs,
+  stopOffsetMs
+) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
+      engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
+        records {
+          tdoId
+          engineId
+          startOffsetMs
+          stopOffsetMs
+          jsondata
+        }
+      }
+    }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+  const requestTdo = yield select(tdo, widgetId);
+  const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
+  if (startOffsetMs) {
+    variables.startOffsetMs = startOffsetMs;
+  }
+  if (stopOffsetMs) {
+    variables.stopOffsetMs = stopOffsetMs;
+  }
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: getEngineResultsQuery,
+      variables,
+      token
+    });
+  } catch (error) {
+    return yield* finishLoadEngineResults(widgetId, null, { error });
+  }
+
+  yield* finishLoadEngineResults(widgetId, response.data.engineResults, {
+    warning: false,
+    error: false
+  });
 }
 
 function* watchLoadEngineCategoriesRequest() {
   yield takeEvery(LOAD_ENGINE_CATEGORIES, function*(action) {
-    const { tdoId, callback } = action.payload;
+    const { tdoId } = action.payload;
     const { widgetId } = action.meta;
-    yield call(loadEngineCategoriesSaga, widgetId, tdoId, callback);
+    yield call(loadEngineCategoriesSaga, widgetId, tdoId);
   });
 }
 
 function* watchLoadEngineResultsRequest() {
   yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const {
-      tdoId,
-      engineId,
-      startOffsetMs,
-      stopOffsetMs,
-      callback
-    } = action.payload;
+    const { tdoId, engineId, startOffsetMs, stopOffsetMs } = action.payload;
     const { widgetId } = action.meta;
     yield call(
       loadEngineResultsSaga,
@@ -418,25 +396,47 @@ function* watchLoadEngineResultsRequest() {
       tdoId,
       engineId,
       startOffsetMs,
-      stopOffsetMs,
-      callback
+      stopOffsetMs
     );
   });
 }
 
 function* watchLoadTdoRequest() {
   yield takeEvery(LOAD_TDO, function*(action) {
-    const { tdoId, callback } = action.payload;
+    const { tdoId } = action.payload;
     const { widgetId } = action.meta;
-    yield call(loadTdoSaga, widgetId, tdoId, callback);
+    yield call(loadTdoSaga, widgetId, tdoId);
   });
 }
 
 function* watchUpdateTdoRequest() {
   yield takeEvery(UPDATE_TDO, function*(action) {
-    const { tdoId, tdoDataToUpdate, callback } = action.payload;
+    const { tdoId, tdoDataToUpdate } = action.payload;
     const { widgetId } = action.meta;
-    yield call(updateTdoSaga, widgetId, tdoId, tdoDataToUpdate, callback);
+    yield call(updateTdoSaga, widgetId, tdoId, tdoDataToUpdate);
+  });
+}
+
+function* watchSetEngineId() {
+  yield takeEvery(SET_SELECTED_ENGINE_ID, function*(action) {
+    const selectedEngineId = action.payload;
+    const { widgetId } = action.meta;
+
+    if (!selectedEngineId) {
+      return;
+    }
+
+    yield call(loadEngineResultsSaga, widgetId, selectedEngineId);
+  });
+}
+
+function* watchSelectEngineCategory() {
+  yield takeEvery(SELECT_ENGINE_CATEGORY, function*(action) {
+    const { engines } = action.payload;
+    const { widgetId } = action.meta;
+    const engineId = engines.length ? engines[0].id : undefined;
+
+    yield put(setEngineId(widgetId, engineId));
   });
 }
 
@@ -445,6 +445,8 @@ export default function* root() {
     fork(watchLoadEngineCategoriesRequest),
     fork(watchLoadEngineResultsRequest),
     fork(watchLoadTdoRequest),
-    fork(watchUpdateTdoRequest)
+    fork(watchUpdateTdoRequest),
+    fork(watchSetEngineId),
+    fork(watchSelectEngineCategory)
   ]);
 }

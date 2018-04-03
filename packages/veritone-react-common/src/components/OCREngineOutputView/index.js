@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
@@ -12,7 +10,7 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class OCREngineOutputView extends Component {
   static propTypes = {
-    assets: arrayOf(
+    data: arrayOf(
       shape({
         startTimeMs: number,
         endTimeMs: number,
@@ -21,8 +19,8 @@ class OCREngineOutputView extends Component {
         taskId: string,
         series: arrayOf(
           shape({
-            end: number,
-            start: number,
+            startTimeMs: number,
+            stopTimeMs: number,
             object: shape({
               text: string
             })
@@ -30,27 +28,44 @@ class OCREngineOutputView extends Component {
         )
       })
     ),
+    engines: arrayOf(
+      shape({
+        sourceEngineId: string,
+        sourceEngineName: string
+      })
+    ),
+    selectedEngineId: string,
+    onEngineChange: func,
+    onExpandClicked: func,
     onOcrClicked: func,
     className: string
   };
 
   static defaultProps = {
-    assets: [],
-    classes: {}
+    data: []
   };
 
   render() {
-    let { assets, className } = this.props;
+    let {
+      data,
+      className,
+      engines,
+      selectedEngineId,
+      onEngineChange,
+      onExpandClicked
+    } = this.props;
 
     return (
       <div className={classNames(styles.ocrOutputView, className)}>
-        <EngineOutputHeader title="Text Recognition">
-          <Select value="cortex">
-            <MenuItem value="cortex">Cortex</MenuItem>
-          </Select>
-        </EngineOutputHeader>
+        <EngineOutputHeader
+          title="Text Recognition"
+          engines={engines}
+          selectedEngineId={selectedEngineId}
+          onEngineChange={onEngineChange}
+          onExpandClicked={onExpandClicked}
+        />
         <div className={styles.ocrContent}>
-          {assets
+          {data
             .reduce((accumulator, currentValue) => {
               return [...accumulator, ...currentValue.series];
             }, [])
@@ -59,8 +74,8 @@ class OCREngineOutputView extends Component {
                 <OCRObject
                   key={i}
                   text={ocrObject.object.text}
-                  startTime={ocrObject.start}
-                  endTime={ocrObject.end}
+                  startTime={ocrObject.startTimeMs}
+                  endTime={ocrObject.stopTimeMs}
                 />
               );
             })}

@@ -23,9 +23,11 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export AppContainer from './components/AppContainer';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
-//export SentimentEngineOutput from './components/SentimentEngineOutput';
+export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
+export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';
 export OCREngineOutputView from './components/OCREngineOutputView';
+export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
 export * as video from './components/Video'

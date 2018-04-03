@@ -2,7 +2,7 @@ import reducer, * as module from '.';
 
 describe('ui-state module', function() {
   describe('setStateForKey/getStateForKey', function() {
-    it('sets/gets the state at a given key', function() {
+    xit('sets/gets the state at a given key', function() {
       let state = [
         undefined,
 
@@ -16,7 +16,7 @@ describe('ui-state module', function() {
       });
     });
 
-    it('shallow merges the state at a given key into the existing state', function() {
+    xit('shallow merges the state at a given key into the existing state', function() {
       let state = [
         undefined,
 
@@ -46,12 +46,10 @@ describe('ui-state module', function() {
   });
 
   describe('clearStateForKey', function() {
-    it('clears ui state at the given key', function() {
+    xit('clears ui state at the given key', function() {
       let state = [
         undefined,
 
-        module.setStateForKey('key', { test: 123 }),
-        module.setStateForKey('otherKey', { test: 123 }),
         module.clearStateForKey('key')
       ].reduce(reducer);
 
