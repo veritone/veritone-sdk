@@ -56,3 +56,8 @@
 ## 4.2.1
 * Removed dependency on redux-form-material-ui as it was causing dependency issues.
 * Fixed storybook build so docs deployments work.
+
+## 4.3.0
+* Added DataTable component
+* Added OAuthLoginButton component
+* Added RereshButton component
