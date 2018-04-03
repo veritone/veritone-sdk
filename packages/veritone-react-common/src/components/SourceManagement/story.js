@@ -203,6 +203,94 @@ const dataSchemas = {
               }
             ]
           }
+        }, {
+          "id": "d67be727-f858-4067-a7d6-33ad4d68545a",
+          "name": "Another Weather",
+          "description": "Another weather schema",
+          "source": "Weather",
+          "schemas": {
+            "records": [
+              {
+                "id": "2e8561ca-29d0-49e9-b3a3-475e38fc56ce",
+                "status": "published",
+                "definition": {
+                  "$id": "http://example.com/example.json",
+                  "type": "object",
+                  "definitions": {},
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "geoLocation": {
+                      "$id": "/properties/geoLocation",
+                      "type": "string"
+                    },
+                    "temperature": {
+                      "$id": "/properties/temperature",
+                      "type": "number"
+                    },
+                    "pressure": {
+                      "$id": "/properties/pressure",
+                      "type": "integer"
+                    },
+                    "isForecast": {
+                      "$id": "/properties/isForecast",
+                      "type": "boolean"
+                    },
+                    "wind": {
+                      "$id": "/properties/wind",
+                      "type": "object",
+                      "properties": {
+                        "windSpeed": {
+                          "$id": "/properties/wind/properties/windSpeed",
+                          "type": "number"
+                        },
+                        "windDegree": {
+                          "$id": "/properties/wind/properties/windDegree",
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "humidity": {
+                      "$id": "/properties/humidity",
+                      "type": "integer"
+                    },
+                    "temperatureMin": {
+                      "$id": "/properties/temperatureMin",
+                      "type": "integer"
+                    },
+                    "temperatureMax": {
+                      "$id": "/properties/temperatureMax",
+                      "type": "number"
+                    },
+                    "visibility": {
+                      "$id": "/properties/visibility",
+                      "type": "integer"
+                    },
+                    "datetimeStart": {
+                      "$id": "/properties/datetimeStart",
+                      "type": "string"
+                    },
+                    "datetimeEnd": {
+                      "$id": "/properties/datetimeEnd",
+                      "type": "string"
+                    },
+                    "locationName": {
+                      "$id": "/properties/locationName",
+                      "type": "string"
+                    }
+                  }
+                },
+                "majorVersion": 1,
+                "minorVersion": 0,
+                "validActions": [
+                  "view",
+                  "edit",
+                  "deactivate",
+                  "delete"
+                ]
+              }
+            ]
+          },
+          "organizationId": "7682"
         }
       ]
     }

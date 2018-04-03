@@ -5,7 +5,11 @@ import {
   func
 } from 'prop-types';
 
+import { isObject } from 'lodash';
+
 import TextField from 'material-ui/TextField';
+import { FormControlLabel } from 'material-ui/Form';
+import Checkbox from 'material-ui/Checkbox';
 import FormCard from '../FormCard';
 import styles from './styles.scss';
 
@@ -24,6 +28,32 @@ export default class TemplateForms extends React.Component {
     this.props.onRemoveTemplate(schemaId, true);
   };
 
+  handleFieldChange = (schemaId, fieldId) => (event) => {
+    // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
+    let currentValue;
+    let fields = fieldId.split('.');
+    let rootObject = fields[0];
+    let pointer;
+    if (fields.length > 1) {
+      let objectTraverse = fields.slice(1 - fields.length);
+      currentValue = Object.assign({}, this.props.templates[schemaId].data[rootObject]);
+      pointer = currentValue;
+      objectTraverse.forEach((field, index) => {
+        // Initialize any undefined nested objects
+        if (!isObject(pointer[field]) && index !== objectTraverse.length - 1) {
+          pointer[field] = {};
+          pointer = pointer[field];
+        } else {
+          pointer[field] = event.target.value;
+        }
+        
+      });
+    } else {
+      currentValue = event.target.value;
+    }
+    return this.props.onTemplateDetailsChange(schemaId, rootObject, currentValue);
+  }
+
   formBuilder = () => {
     const { templates } = this.props;
 
@@ -37,7 +67,8 @@ export default class TemplateForms extends React.Component {
             type={schemaProps[schemaProp].type} 
             value={templates[schemaId].data[schemaProp]}
             title={schemaProps[schemaProp].title || schemaProp} 
-            onChange={this.props.onTemplateDetailsChange} 
+            objectProperties={schemaProps[schemaProp].properties} 
+            onChange={this.handleFieldChange} 
             key={index2}
           />
         );
@@ -65,11 +96,7 @@ export default class TemplateForms extends React.Component {
 }
 
 
-function BuildFormElements({fieldId, schemaId, type, title, value, required, onChange, error }) {
-  const handleFieldChange = (schemaId, fieldId) => (event) => {
-    return onChange(schemaId, fieldId, event.target.value);
-  }
-
+function BuildFormElements({fieldId, schemaId, type, title, value, required, onChange, error, objectProperties, depth = 0 }) {
   const additionalProps = {};
   if (required) {
     additionalProps.required = true;
@@ -87,9 +114,8 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         value={value}
         error={error}
         key={fieldId}
-        onChange={handleFieldChange(schemaId, fieldId)}
-        {...additionalProps}
-      />
+        onChange={onChange(schemaId, fieldId)}
+        {...additionalProps} />
     );
   } else if (type.includes('number') || type.includes('integer')) {
     element = (
@@ -102,9 +128,47 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         value={value}
         error={error}
         key={fieldId}
-        onChange={handleFieldChange(schemaId, fieldId)}
-        {...additionalProps}        
-      />
+        onChange={onChange(schemaId, fieldId)}
+        {...additionalProps} />
+    );
+  } else if (type.includes('boolean')) {
+    element = (
+      <FormControlLabel
+        label={title}
+        control={
+          <Checkbox
+            onChange={onChange(schemaId, fieldId)}
+            value={(!value).toString()}
+            color="primary" />
+        } />
+    );
+  } else if (type.includes('object') && objectProperties) {
+    element = Object.keys(objectProperties).map((objProp, indexInner) => {
+      return (
+        <BuildFormElements
+          fieldId={fieldId + '.' + objProp}
+          schemaId={schemaId}
+          type={objectProperties[objProp].type}
+          value={value[objProp] || ''}
+          title={objectProperties[objProp].title || objProp}
+          objectProperties={objectProperties[objProp].properties}
+          onChange={onChange}
+          depth={depth + 1}
+          key={indexInner} />
+      );
+    });
+    element = (
+      <div>
+        <span>{title}</span>
+        {element}
+      </div>
+    );
+  }
+  if (depth) {
+    element = (
+      <div style={{ paddingLeft: (depth * 10) }}>
+        {element}
+      </div>
     );
   }
 
