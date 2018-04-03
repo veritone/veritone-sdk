@@ -1,0 +1,9 @@
+@import 'src/styles/modules/muiTypography';
+
+.header {
+  @include mui-text('headline');
+}
+
+.scheduleTypeContainer {
+  flex-direction: row !important;
+}
