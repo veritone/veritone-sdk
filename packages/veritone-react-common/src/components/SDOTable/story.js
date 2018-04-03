@@ -1,10 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
+import SDOTable from 'components/SDOTable';
 
-
-let sdoData = [
+const sdoData = [
   {
     humidity: 54,
     pressure: 1019,
@@ -35,7 +34,7 @@ let sdoData = [
   },
 ];
 
-let schemaData = {
+const schemaData = {
   humidity: {
     $id: "/properties/humidity",
     type: "integer"
@@ -88,22 +87,10 @@ let schemaData = {
 };
 
 
-
-
-
-
-
-
-// storiesOf('SDO', module)
-//   // .add('FullScreenCard', () => (
-//   //   <SDOFullScreenCard data={data} sdoSourceInfo={sdoSourceInfo} sdoSchemaInfo={sdoSchemaInfo} sdoEngineInfo={sdoEngineInfo} />
-//   // ))
-//   // .add('MediaDetailsCard', () => (
-//   //   <SDOMediaDetailsCard sdoData={data} currentSchema={} sdoEngineInfo={sdoEngineInfo} schemaCallback={schemaCallback} />
-//   // ))
-//   .add('Card', () => (
-//     <SDOCard sdoData={data} schemaData={schemaData1}/>
-//   ))
-//   .add('Tile', () => (
-//     <SDOTile checkAll={checkAll} numberOfFields={numberOfFields} columns={columns} />
-//   ))
+storiesOf('SDO', module)
+  .add('SDO Table', () =>(
+    <SDOTable
+      data={sdoData}
+      schema={schemaData}
+    />
+  ))

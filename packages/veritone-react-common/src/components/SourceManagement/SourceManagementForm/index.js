@@ -193,7 +193,7 @@ export default class SourceManagementForm extends React.Component {
             </IconButton>
           ]}
         >
-          <Tabs value={activeTab} onChange={this.handleChangeTab}>
+          <Tabs value={activeTab} onChange={this.handleChangeTab} classes={{ indicator: styles.tabIndicator }}>
             <Tab label="Configuration" />
             <Tab label="Content Templates" />
           </Tabs>

@@ -248,6 +248,7 @@ class SplitTable extends React.Component {
   }
 
   setFocusedRow = (row, columnKey) => {
+    console.log('row:', row)
     this.setState({ focusedTableRow: row });
   }
 
@@ -269,7 +270,7 @@ class SplitTable extends React.Component {
         key={index}
         cellRenderer={renderCell}
         align="center"
-        width={Math.min((index + 1) * 10, 100)}
+        // width={Math.min((index + 1) * 10, 100)}
       />
     });
   

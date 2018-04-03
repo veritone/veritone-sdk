@@ -133,8 +133,11 @@ export default class SourceConfiguration extends React.Component {
                 <Avatar
                   alt={this.props.source.name}
                   src={this.props.source.thumbnailUrl || defaultThumbnail}
-                  className={styles.avatar}
                   onClick={this.openFilePicker}
+                  style={{
+                    width: '70px',
+                    height: '70px'
+                  }}
                 />
                 <TextField
                   className={styles.sourceName}
