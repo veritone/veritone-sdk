@@ -72,7 +72,7 @@ export default class SourceManagementForm extends React.Component {
     }
     else {
       const fieldValues = {};
-      const properties = this.props.sourceTypes[0].sourceSchema.definition.properties;
+      const properties = this.props.sourceTypes.length ? this.props.sourceTypes[0].sourceSchema.definition.properties : {};
 
       Object.keys(properties).forEach((field) => {
         fieldValues[field] = '';

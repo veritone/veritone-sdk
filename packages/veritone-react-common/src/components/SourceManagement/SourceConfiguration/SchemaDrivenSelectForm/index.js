@@ -81,7 +81,7 @@ export default class DynamicSelect extends React.Component {
   };
   
   renderFields = () => {
-    const definition = this.props.sourceTypes[this.props.currentSourceType].sourceSchema.definition;
+    const definition = this.props.sourceTypes[this.props.currentSourceType] ? this.props.sourceTypes[this.props.currentSourceType].sourceSchema.definition : {};
     const properties = definition.properties;
     const requiredFields = has(definition, 'required') ? definition.required : [];
 
@@ -120,7 +120,7 @@ export default class DynamicSelect extends React.Component {
           </InputLabel>
         }
         {
-          !this.state.oneSourceType && 
+          !this.state.oneSourceType && sourceTypes[currentSourceType] && 
           <Select 
             className={styles.selectField}
             fullWidth
@@ -138,7 +138,7 @@ export default class DynamicSelect extends React.Component {
           <div className={styles.sourceTypeNameLabel}>
             Source Type
           </div>}
-        {this.state.oneSourceType && 
+        {this.state.oneSourceType && sourceTypes[currentSourceType] &&
           <div className={styles.sourceTypeNameContainer}>
             <div className={styles.sourceTypeName}>
               {sourceTypes[currentSourceType].name}

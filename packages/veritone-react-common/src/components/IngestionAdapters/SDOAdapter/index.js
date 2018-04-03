@@ -28,7 +28,6 @@ class SDOAdapter extends React.Component {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
     sources: arrayOf(objectOf(any)).isRequired,
-    sourceTypes: arrayOf(objectOf(any)).isRequired,
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired
@@ -89,7 +88,6 @@ class SDOAdapter extends React.Component {
             <SourceContainer
               initialValue={this.state.sourceId}
               sources={this.props.sources}
-              sourceTypes={this.props.sourceTypes}
               handleSourceChange={this.handleSourceChange}
               openCreateSource={this.props.openCreateSource}
               closeCreateSource={this.props.closeCreateSource}
@@ -210,7 +208,6 @@ class SourceContainer extends React.Component {
     sources: arrayOf(objectOf(any)),
     handleSourceChange: func.isRequired,
     selectLabel: string,
-    sourceTypes: arrayOf(objectOf(any)).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired
   };
@@ -242,7 +239,6 @@ class SourceContainer extends React.Component {
       <SourceSelector
         initialValue={this.props.initialValue}
         sources={this.props.sources}
-        sourceTypes={this.props.sourceTypes}
         handleSourceChange={this.props.handleSourceChange}
         handleMenuClose={this.handleMenuClose}
         handleMenuClick={this.handleMenuClick}
@@ -265,7 +261,6 @@ const SourceSelector = ({
   anchorEl,
   openCreateSource,
   isCreateSourceOpen,
-  sourceTypes,
   closeCreateSource
 }) => {
   let sourceMenuItems = sources.map(source => {
@@ -344,7 +339,6 @@ SourceSelector.propTypes = {
   anchorEl: objectOf(any),
   openCreateSource: func.isRequired,
   isCreateSourceOpen: bool,
-  sourceTypes: arrayOf(objectOf(any)).isRequired,
   closeCreateSource: func.isRequired
 };
 
