@@ -1,0 +1,25 @@
+.pillButtons {
+  .customButton {
+    margin: 0 14px;
+  }
+  
+  .customLabel {
+    color: red;
+    max-width: 70px;
+  }
+  
+  .customBadge {
+    color: black !important;
+    max-width: 30px;
+  }  
+}
+
+.dynamicVScroll {
+  width: 90%;
+  height: 300px;
+  background-color: lightgray;
+}
+
+.dummyContentBox {
+  border: 1px solid #AAAAAA;
+}
