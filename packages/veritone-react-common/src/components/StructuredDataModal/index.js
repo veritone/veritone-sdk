@@ -34,7 +34,6 @@ import { GeolocationModal } from '../GeolocationModal';
 
 import SearchAttribute from './SearchAttribute';
 import {fetchSDOSchema, fetchAutocomplete} from './SearchAttribute/fetchAutocomplete';
-import { select } from '@storybook/addon-knobs/dist/react';
 
 const styles = {
   row: {
