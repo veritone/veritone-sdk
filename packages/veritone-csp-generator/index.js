@@ -32,20 +32,49 @@ const StructuredDataGenerator = modalState => {
     if(modalState.operator === 'contains' || modalState.operator === 'not_contains') {
       return {
         operator: 'query_string',
-        field: modalState.field,
-        value: `*${modalState.value1}*`,
+        field: modalState.field + '.fulltext',
+        value: `*${modalState.value1.toLowerCase()}*`,
         not: modalState.operator.indexOf('not') !== -1 ? true : undefined
       }
     } else {
       return {
-        operator: 'terms',
-        field: modalState.field,
-        values: [`${modalState.value1}`],
+        operator: 'query_string',
+        field: modalState.field + '.fulltext',
+        value: `\"${modalState.value1.toLowerCase()}\"`,
         not: modalState.operator.indexOf('not') !== -1 ? true : undefined
       }
     }
-  } else if (modalState.type === 'dateTime') {
-
+  } else if (modalState.type === 'dateTime' || modalState.type === 'integer' || modalState.type ==='number') {
+    if(modalState.operator === 'is' || modalState.operator === 'is_not') {
+      return {
+        operator: 'query_string',
+        field: modalState.field,
+        value: modalState.value1,
+        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
+      }
+    } else if(modalState.operator === 'range') {
+      return {
+        operator: 'range',
+        field: modalState.field,
+        gte: modalState.value1,
+        lte: modalState.value2
+      }
+    } else {
+      return {
+        operator: 'range',
+        field: modalState.field,
+        [modalState.operator]: modalState.value1
+      }
+    }
+  } else if (modalState.type === 'geoPoint') {
+    return {
+      operator: 'geo_distance',
+      field: modalState.field,
+      latitude: modalState.value1.latitude,
+      longitude: modalState.value1.longitude,
+      distance: modalState.value1.distance,
+      units: 'm'
+    };
   }
 }
 
