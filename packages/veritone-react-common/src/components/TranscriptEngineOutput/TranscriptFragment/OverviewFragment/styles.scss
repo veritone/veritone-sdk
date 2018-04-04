@@ -1,0 +1,10 @@
+@import 'src/styles/modules/variables';
+
+.overviewFragment {
+  margin-right: 1ch;
+  cursor: pointer;
+
+  &:hover {
+    border-bottom: 2px solid $blue-1;
+  }
+}

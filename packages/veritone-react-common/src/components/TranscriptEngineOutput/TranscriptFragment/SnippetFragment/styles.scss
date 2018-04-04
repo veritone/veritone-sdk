@@ -1,0 +1,18 @@
+@import 'src/styles/modules/variables';
+
+.transcriptSnippet {
+  margin-right: 1px;
+  outline: none;
+
+  &:hover {
+    border-bottom: 2px solid $blue-1;
+  }
+}
+
+.read {
+  cursor: pointer;
+}
+
+.edit:focus {
+  border-bottom: 2px solid $blue-1;
+}

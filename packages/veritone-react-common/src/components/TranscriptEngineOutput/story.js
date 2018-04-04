@@ -1,259 +1,176 @@
 import React, { Component } from 'react';
-import { bool, func } from 'prop-types';
+import { bool } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
-import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
 
-export const transcriptAssets = [
-  {
-    startTimeMs: 0,
-    endTimeMs: 13812,
-    sourceEngineId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-    sourceEngineName: 'Temporal',
-    taskId:
-      'e1fa7d7c-6f1c-480e-b181-68940509f070-4fba913a-7fc0-4dbe-9eae-df5892c10683',
-    series: [
-      {
-        start: 0,
-        end: 13130,
-        text:
-          'I have a dream . That 1 day . This nation will rise up . And live out the true meaning of its screen . We hold these truths to be self-evident that all men are created equal .'
-      },
-      {
-        start: 13131,
-        end: 13146,
-        text: 'Hello I am just typing some random stuff to show how '
-      },
-      {
-        start: 13147,
-        end: 13162,
-        text: 'we can display a transcript using'
-      },
-      {
-        start: 13163,
-        end: 13170,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13171,
-        end: 13176,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13177,
-        end: 13182,
-        text: 'Just a random string for dummy data that I made up. '
-      }
-    ]
-  },
-  {
-    startTimeMs: 13183,
-    endTimeMs: 13236,
-    sourceEngineId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-    sourceEngineName: 'Temporal',
-    taskId:
-      'e1fa7d7c-6f1c-480e-b181-68940509f070-1e5e61a6-ad67-4116-a810-73aaad01353a',
-    series: [
-      {
-        start: 13183,
-        end: 13188,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13189,
-        end: 13194,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13195,
-        end: 13200,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13201,
-        end: 13206,
-        text: 'Hello I a m just typing some random stuff to show how '
-      },
-      {
-        start: 13207,
-        end: 13212,
-        text: 'we can display a transcript using'
-      },
-      {
-        start: 13213,
-        end: 13218,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13219,
-        end: 13224,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13225,
-        end: 13230,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13231,
-        end: 13236,
-        text: 'Just a random string for dummy data that I made up. '
-      }
-    ]
-  },
-  {
-    startTimeMs: 13237,
-    endTimeMs: 13292,
-    sourceEngineId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-    sourceEngineName: 'Temporal',
-    taskId:
-      'e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf',
-    series: [
-      {
-        start: 13237,
-        end: 13242,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13243,
-        end: 13248,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13249,
-        end: 13250,
-        text: 'Hello I am just typing some random stuff to show how '
-      },
-      {
-        start: 13251,
-        end: 13256,
-        text: 'we can display a transcript using'
-      },
-      {
-        start: 13257,
-        end: 13262,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13263,
-        end: 13268,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13269,
-        end: 13274,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13275,
-        end: 13280,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13281,
-        end: 13286,
-        text: 'Just a random string for dummy data that I made up. '
-      },
-      {
-        start: 13287,
-        end: 13292,
-        text: 'Just a random string for dummy data that I made up. '
-      }
-    ]
-  }
-];
-
-storiesOf('TranscriptEngineOutput', module).add('Base', () => {
+storiesOf('TranscriptEngineOutput', module).add('Without Lazy Loading', () => {
   return (
-    <TranscriptionStory
-      assets={transcriptAssets}
-      editModeEnabled={boolean('Edit Mode Enabled', false)}
-      editMode="bulk"
-      onSnippetClicked={action('Snippet Clicked')}
-    />
+    <TranscriptExample/>
+  );
+}).add('With Lazy Loading', () => {
+  return (
+    <TranscriptExample lazyLoading/>
   );
 });
 
-class TranscriptionStory extends Component {
+
+export class TranscriptExample extends Component {
   static propTypes = {
-    editModeEnabled: bool,
-    onSnippetClicked: func
+    lazyLoading: bool
+  }
+
+  static defaultProps = {
+    lazyLoading: false
   };
 
-  state = {
-    assets: transcriptAssets,
-    editMode: 'snippet',
-    selectedEngineId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-    engines: [
-      {
-        sourceEngineId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-        sourceEngineName: 'Temporal'
-      }
-    ],
-    viewMode: 'time'
-  };
+  constructor (props) {
+    super(props);
 
-  handleEngineChange = evt => {
-    this.setState({
-      selectedEngineId: evt.target.value
-    });
-  };
+    let initialStartTime = 0;
+    let initialStopTime = 200000;
+    let initialNumDataChunks = 7;
+    let maxSerieSize = 60;
+    let minSerieSize = 1;
+    let type = 'VLF';
+    let badSerieRatio = 0.3;
 
-  handleEditModeChange = evt => {
-    this.setState({
-      editMode: evt.target.value
-    });
-  };
+    let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio);
 
-  handleViewModeChange = evt => {
-    this.setState({
-      viewMode: evt.target.value
-    });
-  };
+    this.state = {
+      data: mockData
+    }
+  }
 
-  handleSnippetEdit = (snippet, innerHtml, taskId) => {
-    this.setState({
-      assets: this.state.assets.map(task => {
-        if (task.taskId !== taskId) {
-          return task;
-        } else {
-          return {
-            ...task,
-            series: task.series.map(s => {
-              if (s.start === snippet.start && s.end === snippet.end) {
-                return {
-                  ...s,
-                  text: innerHtml
-                };
-              } else {
-                return s;
-              }
-            })
-          };
-        }
+  handleDataRequesting = (requestInfo) => {
+    if (this.props.lazyLoading) {
+      let startTime = requestInfo.start;
+      let stopTime = requestInfo.stop;
+      let additionalData = genMockData(startTime, stopTime, 3, 50, 1, 'VLF', 0.2);
+      let newMockData = this.state.data.concat(additionalData);
+      this.setState({
+        data: newMockData
       })
-    });
-  };
+    }
+  }
 
-  render() {
+  render () {
     return (
-      <TranscriptEngineOutput
-        assets={this.state.assets}
-        editModeEnabled={this.props.editModeEnabled}
-        editMode={this.state.editMode}
-        onEditModeChange={this.handleEditModeChange}
-        engines={this.state.engines}
-        selectedEngineId={this.state.selectedEngineId}
-        onEngineChange={this.handleEngineChange}
-        onSnippetClicked={this.props.onSnippetClicked}
-        onSnippetEdit={this.handleSnippetEdit}
+      <TranscriptEngineOutput 
+        data={this.state.data}
         className={styles.outputViewRoot}
-        viewMode={this.state.viewMode}
-        onViewModeChange={this.handleViewModeChange}
+        overview
+        mediaPlayerTime={0}
+        numMaxRequest={2}
+        requestSizeMs={300000}
+        mediaLengthMs={3000000}
+        neglectableTimeMs={2000}
+        onScroll={this.handleDataRequesting}
       />
-    );
+    )
   }
 }
+
+
+function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, minSerieSize = 0, type = 'TTML', badSerieRatio = 0.2) {
+  let dataChunks = [];
+
+  let chunkStartTime = startTime;
+  let timeChunk = (stopTime - startTime) / numDataChunks;
+  for (let chunkIndex = 0; chunkIndex < numDataChunks; chunkIndex++) {
+    let chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
+
+    let isBadSerie = Math.random() < badSerieRatio;
+    let series = genMockSerie(chunkStartTime, chunkStoptime, maxSerieSize, minSerieSize, type, isBadSerie);
+    dataChunks.push({ 
+      startTimeMs: chunkStartTime,
+      stopTimeMs: chunkStoptime,
+      status: 'success',
+      series: series 
+    });
+
+    chunkStartTime = chunkStoptime;
+  }
+
+  return dataChunks;
+}
+
+function genMockSerie (startTimeMs, stopTimeMs, maxSerieSize, minSerieSize, type = 'TTML', badSerie = false) {
+  let mockSeries = [];
+  if (badSerie === false) {
+    let serieSize = Math.round(Math.random() * (maxSerieSize - minSerieSize)) + minSerieSize;
+    let timeInterval = (stopTimeMs - startTimeMs) / serieSize;
+
+    let lastStopTime = startTimeMs;
+    for (let entryIndex = 0; entryIndex < serieSize; entryIndex++) {
+      let numWords = Math.round(Math.random() * 10);
+      let words = genMockWords(numWords, type);
+      let newStopTime = Math.ceil(lastStopTime + timeInterval);
+      let entry = {
+        startTimeMs: lastStopTime,
+        stopTimeMs: newStopTime,
+        words: words
+      };
+
+      lastStopTime = newStopTime;
+
+      mockSeries.push(entry);
+    }
+  } else {
+    // bad series only has one entry & doesn't contain words
+    mockSeries.push({
+      startTimeMs: startTimeMs,
+      stopTimeMs: stopTimeMs
+    })
+  }
+
+  return mockSeries;
+}
+
+function genMockWords (size, type = 'TTML') {
+  let words = [];
+  if (type === 'TTML') {
+    let sentenceIndex = Math.round(Math.random() * (ttmlSentences.length - 1));
+    words.push({
+      word: ttmlSentences[sentenceIndex],
+      confidence: 1
+    })
+  } else {
+    for (let index = 0; index < size; index++) {
+      let wordIndex = Math.round(Math.random()  * (vlfWords.length - 1));
+      words.push({
+        word: vlfWords[wordIndex],
+        confidence: Math.round(Math.random() * 100)/100
+      })
+    }
+  }
+
+  return words;
+}
+
+const ttmlSentences = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+  'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+  'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+  'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+  'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+  'eque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.',
+  'Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?'
+];
+
+const vlfWords = [
+  'obese', 'cushion', 'shivering', 'parallel', 'hill', 'impartial',
+  'creator', 'live', 'correct', 'flood', 'inquisitive', 'cars',
+  'absorbing', 'chess', 'large', 'mixed', 'horses', 'stupid',
+  'tree', 'selective', 'seemly', 'skillful', 'awesome', 'sharp',
+  'island', 'dress', 'skirt', 'clip', 'confess', 'nose',
+  'cheese', 'carve', 'caption', 'cry', 'knot', 'smile',
+  'silent', 'rapid', 'funny', 'superb', 'tranquil', 'hug',
+  'hands', 'flowers', 'permit', 'cheer', 'belligerent', 'mice',
+  'grey', 'wave', 'grate', 'royal', 'number', 'sheep',
+  'naughty', 'actor', 'dress', 'wound', 'material', 'joyous', 
+  'handle', 'adorable', 'prevent', 'fruit', 'festive', 'puzzling',
+  'erratic', 'befitting', 'check', 'wiggly'
+];

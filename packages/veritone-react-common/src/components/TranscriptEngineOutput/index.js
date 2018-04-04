@@ -1,129 +1,298 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import { sortBy } from 'lodash';
 import classNames from 'classnames';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import Radio, { RadioGroup } from 'material-ui/Radio';
-import { FormControlLabel } from 'material-ui/Form';
 
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
-import EngineOutputHeader from '../EngineOutputHeader';
-import TranscriptContent from './TranscriptContent';
+import DynamicContentScroll from '../Parts/Scrolls/DynamicContentScroll';
+import NoDataSegment from './TranscriptSegment/NoDataSegment';
+import SnippetSegment from './TranscriptSegment/SnippetSegment';
+import OverviewSegment from './TranscriptSegment/OverviewSegment';
+import TranscriptBulkEdit from './TranscriptBulkEdit';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
-class TranscriptEngineOutput extends Component {
+export default class TranscriptEngineOutput extends Component {
+
   static propTypes = {
-    assets: arrayOf(
-      shape({
-        startTime: number,
-        endTime: number,
-        data: string
-      })
-    ),
-    editModeEnabled: bool,
+    data: arrayOf(shape({
+      startTimeMs: number,
+      stopTimeMs: number,
+      status: string,
+      series: arrayOf(shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        words: arrayOf(shape({
+          word: string,
+          confidence: number
+        }))
+      }))
+    })),
+    editMode: bool,
+    overview: bool,
     className: string,
-    onSnippetClicked: func,
-    tdoStartTime: number,
-    tdoEndTime: number,
-    editMode: string,
-    selectedEngineId: string,
-    engines: arrayOf(
-      shape({
-        sourceEngineId: string,
-        sourceEngineName: string
-      })
-    ),
-    onEngineChange: func,
-    onSnippetEdit: func,
-    onEditModeChange: func,
-    viewMode: string,
-    onViewModeChange: func
+    onClick: func,
+    onScroll: func,
+    numMaxRequest: number,
+    requestSizeMs: number,
+    mediaLengthMs: number,
+    mediaPlayerTime: number,
+    neglectableTimeMs: number,
   };
 
   static defaultProps = {
-    assets: [],
-    classes: {},
-    editModeEnabled: false,
-    viewMode: 'time'
+    editMode: false,
+    overview: false,
+    numMaxRequest: 2,
+    mediaPlayerTime: 0,
   };
 
-  render() {
-    let {
+  handleOnScroll = (openSlotInfo) => {
+    (this.props.onScroll) && this.props.onScroll(openSlotInfo);
+  }
+
+  
+  parseData () {
+    let snippetSegments = [];
+    let overviewSegments = [];
+
+    let overviewStartTime = 0;
+    let overviewStopTime = 0;
+    let overviewParts = [];
+    let overviewSentences = '';
+    let overviewStatus = undefined;
+
+    let saveOverviewData = () => {
+      //---Save Previous Overview Data---
+      overviewSegments.push({
+        startTimeMs: overviewStartTime,
+        stopTimeMs: overviewStopTime,
+        status: overviewStatus,
+        sentences: overviewSentences,
+        fragments: overviewParts.concat([])
+      })
+      //---Reset Overview Data to Handle New Status---
+      overviewStatus = undefined;
+      overviewStartTime = undefined;
+      overviewStopTime = undefined;
+      overviewParts = [];
+      overviewSentences = '';
+    }
+
+    let lazyLoading = true;
+    this.props.data.forEach(chunk => {
+      let groupStartTime = chunk.startTimeMs;
+      let groupStopTime = chunk.stopTimeMs;
+      let groupStatus = chunk.status;
+
+      lazyLoading = lazyLoading && groupStartTime !== undefined && groupStopTime !== undefined && groupStatus !== undefined;
+
+      let series = chunk.series;
+      if (series && series.length > 0) {
+        let snippetStatus = undefined;
+        let snippetStartTime = groupStartTime;
+        let snippetStopTime = undefined;
+        let snippetParts = [];
+        let snippetSentences = '';
+        
+        let saveSnippetData = () => {
+          //---Save Previous Snippets Data---
+          snippetSegments.push({
+            startTimeMs: snippetStartTime,
+            stopTimeMs: snippetStopTime,
+            status: snippetStatus,
+            sentences: snippetSentences,
+            fragments: snippetParts.concat([])
+          });
+
+          //---Reset Snippets Data---
+          snippetStatus = undefined;
+          snippetStartTime = undefined;
+          snippetStopTime = undefined;
+          snippetParts = [];
+          snippetSentences = '';
+        }
+
+        series.forEach((entry, entryIndex) => {
+          //---Updata Content Value---
+          if (entry.words) {                                                              // Has Transcript Data
+            (snippetStatus !== undefined && snippetStatus !== 'success')    &&  saveSnippetData();
+            (overviewStatus !== undefined && overviewStatus !== 'success')  &&  saveOverviewData();
+            
+            snippetStatus = 'success';
+            overviewStatus = 'success';
+
+            //---Get Correct Word---
+            let selectedWord;
+            let words = entry.words;
+            (words) ? words = sortBy(words, 'confidence') : words = [];
+            (words.length > 0) ? selectedWord = words[0].word : selectedWord = '';
+
+            //---Update Snippet Data---
+            snippetSentences = snippetSentences + selectedWord + ' ';
+            snippetParts.push({
+              startTimeMs: entry.startTimeMs,
+              stopTimeMs: entry.stopTimeMs,
+              value: selectedWord
+            })
+
+            //---Update Overview Data---
+            overviewSentences = overviewSentences + selectedWord + ' ';
+            overviewParts.push({
+              startTimeMs: entry.startTimeMs,
+              stopTimeMs: entry.stopTimeMs,
+              value: selectedWord
+            });
+          } else {                                                                      // No Transcript Data
+            (snippetStatus !== undefined && snippetStatus !== 'no-transcript')    &&  saveSnippetData();
+            (overviewStatus !== undefined && overviewStatus !== 'no-transcript')  &&  saveOverviewData();
+
+            snippetStatus = 'no-transcript';
+            overviewStatus = 'no-transcript';
+          }
+
+          //---Update Start & Stop Time---
+          (snippetStartTime === undefined || snippetStartTime > entry.startTimeMs)               && (snippetStartTime = entry.startTimeMs);
+          (snippetStopTime === undefined || snippetStopTime < entry.stopTimeMs)                  && (snippetStopTime = entry.stopTimeMs);
+          (entryIndex === series.length - 1 && groupStopTime && groupStopTime > snippetStopTime) && (snippetStopTime = groupStopTime);
+
+          (overviewStartTime === undefined || overviewStartTime > snippetStartTime)  && (overviewStartTime = snippetStartTime);
+          (overviewStopTime === undefined || overviewStopTime < snippetStopTime)     && (overviewStopTime = snippetStopTime);
+        });
+
+        saveSnippetData();
+      }
+    });
+
+    saveOverviewData();
+
+    return {
+      lazyLoading: lazyLoading,
+      snippetSegments: snippetSegments,
+      overviewSegments: overviewSegments
+    };
+  }
+
+  renderSnippetSegments = (parsedData) => {
+    let snippetSegments = [];
+    parsedData.snippetSegments.forEach(segmentData => {
+      let segment = {
+        start: segmentData.startTimeMs,
+        stop: segmentData.stopTimeMs
+      };
+
+      switch (segmentData.status) {
+      case 'success':
+        segment.value = (
+          <SnippetSegment 
+            key={'transcript-snippet'+segmentData.startTimeMs} 
+            content={segmentData} 
+            editMode={this.props.editMode} 
+            classNames={classNames(styles.contentSegment)}
+          />
+        );
+        break;
+      
+      case 'no-transcript':
+        segment.value = (
+          <NoDataSegment 
+            key={'transcript--snippet'+segmentData.startTimeMs} 
+            startTimeMs={segmentData.startTimeMs} 
+            stopTimeMs={segmentData.stopTimeMs} 
+          />
+        );
+        break;
+      }
+
+      snippetSegments.push(segment);
+    });
+    return snippetSegments;
+  }
+
+  renderOverviewSegments = (parsedData) => {
+    let editMode = this.props.editMode;
+    let overalStartTime = 0;
+    let overalStopTime = 0;
+    let overalString = '';
+
+    let overviewSegments = [];
+    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
+      let segmentStartTime = segmentData.startTimeMs;
+      let segmentStopTime = segmentData.stopTimeMs;
+
+      if (editMode) {
+        (overalStartTime > segmentStartTime)  && (overalStartTime = segmentStartTime);
+        (overalStopTime < segmentStopTime)    && (overalStopTime = segmentStopTime);
+
+        if (segmentData.status === 'success') {
+          overalString = overalString + segmentData.sentences;
+        } else {
+          overalString = overalString + '\n\n\n';
+        }
+
+        if (segmentIndex === parsedData.overviewSegments.length - 1) {      // Reach the last segment
+          overviewSegments.push({
+            start: overalStartTime,
+            stop: overalStopTime,
+            value: (<TranscriptBulkEdit key={'transcript-bulk-edit' + overalStopTime} content={overalString}/>)
+          });
+        }
+      } else {
+        let segmentValue;
+        switch (segmentData.status) {
+        case 'success':
+          segmentValue = (
+            <OverviewSegment 
+              key={'transcript-overview' + segmentStartTime} 
+              content={segmentData} 
+              classNames={classNames(styles.contentSegment)}
+            />
+          );
+          break;
+        case 'no-transcript':
+          segmentValue = (
+            <NoDataSegment key={'transcript--overview' + segmentStartTime} 
+              overview 
+              startTimeMs={segmentStartTime} 
+              stopTimeMs={segmentStopTime} 
+            />
+          );
+          break;
+        }
+    
+        overviewSegments.push({
+          start: segmentStartTime,
+          stop: segmentStopTime,
+          value: segmentValue
+        });
+      }
+    });
+
+    return overviewSegments;
+  }
+
+  render () {
+    let { 
+      overview,
       className,
-      editModeEnabled,
-      editMode,
-      assets,
-      onSnippetClicked,
-      selectedEngineId,
-      engines,
-      onEngineChange,
-      onSnippetEdit,
-      onEditModeChange,
-      viewMode,
-      onViewModeChange
-    } = this.props;
+      numMaxRequest,
+      requestSizeMs,
+      mediaLengthMs,
+      neglectableTimeMs,
+     } = this.props;
+
+    let parsedData = this.parseData();
     return (
-      <div className={classNames(styles.transcriptOutputView, className)}>
-        <EngineOutputHeader title="Transcription" hideTitle={editModeEnabled}>
-          <div className={styles.transcriptInputs}>
-            <div>
-              {editModeEnabled && (
-                <RadioGroup
-                  onChange={onEditModeChange}
-                  aria-label="edit_mode"
-                  value={editMode}
-                  name="editMode"
-                  row
-                >
-                  <FormControlLabel
-                    className={styles.editModeFormControlLabel}
-                    value="snippet"
-                    control={<Radio color="primary" />}
-                    label="Snippet Edit"
-                  />
-                  <FormControlLabel
-                    className={styles.editModeFormControlLabel}
-                    value="bulk"
-                    control={<Radio color="primary" />}
-                    label="Bulk Edit"
-                  />
-                </RadioGroup>
-              )}
-            </div>
-            <div>
-              <Select
-                value={viewMode}
-                onChange={onViewModeChange}
-                className={styles.selectWithMargin}
-                autoWidth
-              >
-                <MenuItem value="time">Time</MenuItem>
-                <MenuItem value="overview">Overview</MenuItem>
-              </Select>
-              <Select value={selectedEngineId || ''} onChange={onEngineChange}>
-                {engines.map((e, i) => {
-                  return (
-                    <MenuItem key={i} value={e.sourceEngineId}>
-                      {e.sourceEngineName}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </div>
-          </div>
-        </EngineOutputHeader>
-        <TranscriptContent
-          assets={assets}
-          onSnippetClicked={onSnippetClicked}
-          onSnippetEdit={onSnippetEdit}
-          editModeEnabled={editModeEnabled}
-          editMode={editMode}
+      <div className={classNames(styles.transcriptOutput, className)}>
+        <DynamicContentScroll 
+          className={classNames(styles.container)}
+          onScroll={this.handleOnScroll}
+          totalSize={mediaLengthMs}
+          segmentSize={requestSizeMs}
+          neglectableSize={neglectableTimeMs}
+          numSegmentPerUpdate={numMaxRequest}
+          contents={overview ? this.renderOverviewSegments(parsedData) : this.renderSnippetSegments(parsedData)}
         />
       </div>
-    );
+    )
   }
 }
-
-export default TranscriptEngineOutput;
