@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, findLastIndex, findIndex, groupBy, forEach, map } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -15,19 +15,36 @@ export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
 export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
+export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
+export const ADD_ENGINE_RESULTS_REQUEST = 'ADD_ENGINE_RESULTS_REQUEST';
 
 export const namespace = 'mediaDetails';
 
-const defaultState = {
+const defaultMDPState = {
   engineCategories: [],
   engineResultsByEngineId: {},
+  engineResultRequestsByEngineId: {}, // A list of engine result request so we don't request already fetched data.
   tdo: null,
   selectedEngineCategory: null,
   selectedEngineId: null,
-  editModeEnabled: false
+  editModeEnabled: false,
+  loadingEngineResults: false
+};
+
+const defaultState = {
+  // populated like:
+  // [widgetId]: { ...defaultMDPState }
 };
 
 export default createReducer(defaultState, {
+  [INITIALIZE_WIDGET](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...defaultMDPState
+      }
+    };
+  },
   [LOAD_ENGINE_CATEGORIES](state, { meta: { widgetId } }) {
     return {
       ...state,
@@ -56,41 +73,112 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_RESULTS](state, { meta: { widgetId } }) {
+  [LOAD_ENGINE_RESULTS](state, { payload, meta: { widgetId } }) {
+    let resultRequests =
+      state[widgetId].engineResultRequestsByEngineId[payload.engineId] || [];
+    let requestInsertIndex = findLastIndex(resultRequests, request => {
+      return request.stopOffsetMs < payload.startOffsetMs;
+    });
+    resultRequests = [
+      ...resultRequests.slice(0, requestInsertIndex + 1),
+      {
+        startOffsetMs: payload.startOffsetMs,
+        stopOffsetMs: payload.stopOffsetMs,
+        status: 'FETCHING'
+      },
+      ...resultRequests.slice(requestInsertIndex + 1)
+    ];
+
+    let engineResults =
+      state[widgetId].engineResultsByEngineId[payload.engineId] || [];
+    let resultInsertIndex = findLastIndex(engineResults, result => {
+      return (
+        result.series[result.series.length - 1].startTimeMs <=
+        payload.startOffsetMs
+      );
+    });
+
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
-        error: null,
-        warning: null
+        engineResultRequestsByEngineId: {
+          [payload.engineId]: [...resultRequests]
+        },
+        engineResultsByEngineId: {
+          [payload.engineId]: [
+            ...engineResults.slice(0, resultInsertIndex + 1),
+            {
+              startOffsetMs: payload.startOffsetMs,
+              stopOffsetMs: payload.stopOffsetMs,
+              status: 'FETCHING'
+            },
+            ...engineResults.slice(resultInsertIndex + 1)
+          ]
+        }
       }
     };
   },
   [LOAD_ENGINE_RESULTS_COMPLETE](
     state,
-    { payload, meta: { warn, error, widgetId } }
+    { payload, meta: { warn, error, widgetId, startOffsetMs, stopOffsetMs } }
   ) {
     const errorMessage = get(error, 'message', error);
 
-    // TODO: merge new results with existing instead of replacing
-    const engineResultsByEngineId =
+    let previousResultsByEngineId =
       state[widgetId].engineResultsByEngineId || {};
-    if (payload && get(payload, 'records.length')) {
-      payload.records.forEach(result => {
-        engineResultsByEngineId[result.engineId] = [result.jsondata];
+    let engineResultRequestsById =
+      state[widgetId].engineResultRequestsByEngineId;
+    // It is possible results were requested by
+    const resultsGroupedByEngineId = groupBy(payload, 'engineId');
+    forEach(resultsGroupedByEngineId, (results, engineId) => {
+      if (!previousResultsByEngineId[engineId]) {
+        // Data hasn't been retrieved for this engineId yet
+        previousResultsByEngineId[engineId] = map(results, 'jsondata');
+      } else {
+        // New results need to be merged with previously fetched results
+        let insertionIndex = findIndex(previousResultsByEngineId[engineId], {
+          startOffsetMs,
+          stopOffsetMs,
+          status: 'FETCHING'
+        });
+
+        // TODO: fitler out any duplicate data that overflows time chunks.
+        previousResultsByEngineId[engineId] = [
+          ...previousResultsByEngineId[engineId].slice(0, insertionIndex),
+          ...map(results, 'jsondata'),
+          ...previousResultsByEngineId[engineId].slice(insertionIndex + 1)
+        ];
+      }
+
+      engineResultRequestsById[engineId] = engineResultRequestsById[
+        engineId
+      ].map(request => {
+        if (
+          request.startOffsetMs === startOffsetMs &&
+          request.stopOffsetMs == stopOffsetMs &&
+          request.status === 'FETCHING'
+        ) {
+          return {
+            ...request,
+            status: 'SUCCESS'
+          };
+        }
+        return request;
       });
-    }
+    });
 
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
+        success: !error || null,
         error: error ? errorMessage : null,
-        warning: warn || null,
         engineResultsByEngineId: {
-          ...engineResultsByEngineId
+          ...previousResultsByEngineId
+        },
+        engineResultRequestsByEngineId: {
+          ...engineResultRequestsById
         }
       }
     };
@@ -191,6 +279,9 @@ export const engineCategories = (state, widgetId) =>
   get(local(state), [widgetId, 'engineCategories']);
 export const engineResultsByEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'engineResultsByEngineId']);
+export const engineResultRequestsByEngineId = (state, widgetId, engineId) =>
+  get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
+  [];
 export const tdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
 export const selectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
@@ -200,6 +291,11 @@ export const editModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'editModeEnabled']);
 export const infoPanelIsOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'infoPanelIsOpen']);
+
+export const initializeWidget = widgetId => ({
+  type: INITIALIZE_WIDGET,
+  meta: { widgetId }
+});
 
 export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
   type: LOAD_ENGINE_CATEGORIES,
@@ -219,25 +315,27 @@ export const loadEngineCategoriesComplete = (
 
 export const loadEngineResultsRequest = (
   widgetId,
-  tdoId,
   engineId,
   startOffsetMs,
-  stopOffsetMs,
-  callback
+  stopOffsetMs
 ) => ({
   type: LOAD_ENGINE_RESULTS,
-  payload: { tdoId, engineId, startOffsetMs, stopOffsetMs, callback },
+  payload: { engineId, startOffsetMs, stopOffsetMs },
   meta: { widgetId }
 });
 
 export const loadEngineResultsComplete = (
-  widgetId,
   result,
-  { warn, error }
+  { warn, error, startOffsetMs, stopOffsetMs, engineId, widgetId }
 ) => ({
   type: LOAD_ENGINE_RESULTS_COMPLETE,
   payload: result,
-  meta: { warn, error, widgetId }
+  meta: { warn, error, widgetId, startOffsetMs, stopOffsetMs, engineId }
+});
+
+export const addEnginesResultsRequest = widgetId => ({
+  type: ADD_ENGINE_RESULTS_REQUEST,
+  meta: { widgetId }
 });
 
 export const loadTdoRequest = (widgetId, tdoId, callback) => ({

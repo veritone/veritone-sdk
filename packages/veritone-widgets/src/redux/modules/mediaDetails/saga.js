@@ -1,4 +1,5 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
+// import { find, findLast } from 'lodash';
 
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
@@ -12,20 +13,18 @@ import {
   SET_SELECTED_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
   loadEngineCategoriesComplete,
+  loadEngineResultsRequest,
   loadEngineResultsComplete,
   loadTdoSuccess,
   updateTdoComplete,
   selectEngineCategory,
   setEngineId,
-  tdo
+  tdo,
+  engineResultRequestsByEngineId
 } from '.';
 
 function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
   yield put(loadEngineCategoriesComplete(widgetId, result, { warning, error }));
-}
-
-function* finishLoadEngineResults(widgetId, result, { warning, error }) {
-  yield put(loadEngineResultsComplete(widgetId, result, { warning, error }));
 }
 
 function* finishLoadTdo(widgetId, result, { warning, error }) {
@@ -335,7 +334,7 @@ function* loadEngineResultsSaga(
   startOffsetMs,
   stopOffsetMs
 ) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: DateTime, $stopOffsetMs: DateTime) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: Int, $stopOffsetMs: Int) {
       engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
           tdoId
@@ -359,23 +358,27 @@ function* loadEngineResultsSaga(
   if (stopOffsetMs) {
     variables.stopOffsetMs = stopOffsetMs;
   }
-
   let response;
   try {
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: getEngineResultsQuery,
-      variables,
+      variables: variables,
       token
     });
   } catch (error) {
-    return yield* finishLoadEngineResults(widgetId, null, { error });
+    yield put(loadEngineResultsComplete(null, { error, widgetId }));
   }
 
-  yield* finishLoadEngineResults(widgetId, response.data.engineResults, {
-    warning: false,
-    error: false
-  });
+  yield put(
+    loadEngineResultsComplete(response.data.engineResults.records, {
+      warning: false,
+      error: false,
+      startOffsetMs,
+      stopOffsetMs,
+      widgetId
+    })
+  );
 }
 
 function* watchLoadEngineCategoriesRequest() {
@@ -388,12 +391,13 @@ function* watchLoadEngineCategoriesRequest() {
 
 function* watchLoadEngineResultsRequest() {
   yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const { tdoId, engineId, startOffsetMs, stopOffsetMs } = action.payload;
+    const { engineId } = action.payload;
+    let { startOffsetMs, stopOffsetMs } = action.payload;
     const { widgetId } = action.meta;
+
     yield call(
       loadEngineResultsSaga,
       widgetId,
-      tdoId,
       engineId,
       startOffsetMs,
       stopOffsetMs
@@ -426,7 +430,56 @@ function* watchSetEngineId() {
       return;
     }
 
-    yield call(loadEngineResultsSaga, widgetId, selectedEngineId);
+    // TODO: Currently fetching the entire tdo assets. Will eventually use mediaplayer time etc to fetch the required data
+    const currentTdo = yield select(tdo, widgetId);
+    const startOfTdo = new Date(currentTdo.startDateTime).getTime();
+    const endOfTdo = new Date(currentTdo.stopDateTime).getTime();
+    let startOffsetMs, stopOffsetMs;
+    if (!startOffsetMs) {
+      startOffsetMs = 0;
+    }
+    if (!stopOffsetMs) {
+      stopOffsetMs = endOfTdo - startOfTdo;
+    }
+
+    let engineResultRequests = yield select(
+      engineResultRequestsByEngineId,
+      widgetId,
+      selectedEngineId
+    );
+    let resultsInTimeBounds = engineResultRequests.filter(result => {
+      return (
+        (result.startOffsetMs >= startOffsetMs &&
+          result.startOffsetMs <= stopOffsetMs) ||
+        (result.startOffsetMs >= startOffsetMs &&
+          result.startOffsetMs <= stopOffsetMs)
+      );
+    });
+
+    // TODO: Optimize this to get all gaps not just the first
+    if (resultsInTimeBounds.length === 1) {
+      if (resultsInTimeBounds[0].startOffsetMs > startOffsetMs) {
+        stopOffsetMs = resultsInTimeBounds[0].startOffsetMs - 1;
+      } else {
+        startOffsetMs = resultsInTimeBounds[0].stopOffsetMs + 1;
+      }
+    } else if (resultsInTimeBounds.length > 1) {
+      startOffsetMs = resultsInTimeBounds[0].stopOffsetMs + 1;
+      stopOffsetMs = resultsInTimeBounds[1].startOffsetMs - 1;
+    }
+
+    if (startOffsetMs > stopOffsetMs) {
+      return;
+    }
+
+    yield put(
+      loadEngineResultsRequest(
+        widgetId,
+        selectedEngineId,
+        startOffsetMs,
+        stopOffsetMs
+      )
+    );
   });
 }
 

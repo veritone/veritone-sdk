@@ -44,6 +44,7 @@ import widget from '../../shared/widget';
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId)
   }),
   {
+    initializeWidget: mediaDetailsModule.initializeWidget,
     loadEngineCategoriesRequest: mediaDetailsModule.loadEngineCategoriesRequest,
     loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
@@ -59,6 +60,7 @@ import widget from '../../shared/widget';
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
     _widgetId: string.isRequired,
+    initializeWidget: func,
     mediaId: number.isRequired,
     onRunProcess: func,
     onClose: func,
@@ -144,6 +146,10 @@ class MediaDetailsWidget extends React.Component {
     selectedTabValue: 'mediaDetails',
     hasPendingChanges: false
   };
+
+  componentWillMount() {
+    this.props.initializeWidget(this.props._widgetId);
+  }
 
   componentDidMount() {
     this.props.loadEngineCategoriesRequest(
