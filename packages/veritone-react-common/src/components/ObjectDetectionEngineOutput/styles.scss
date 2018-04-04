@@ -1,11 +1,11 @@
 .objectDetectionOutputView {
-  padding: 20px 40px 0 30px;
   display: flex;
   flex-direction: column;
 }
 
 .objectDetectionContent {
   overflow: scroll;
+  margin-top: 20px;
 }
 
 .objectPill {

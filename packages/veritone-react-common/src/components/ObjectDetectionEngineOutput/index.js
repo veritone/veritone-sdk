@@ -12,30 +12,31 @@ import styles from './styles.scss';
 const ObjectGroup = ({ objectGroup, mediaPlayerPosition }) => {
   return (
     <span>
-      {objectGroup.series.map(objectData => {
-        return (
-          <PillButton
-            key={
-              'object-pill-' +
-              kebabCase(objectData.object.label) +
-              objectData.startTimeMs +
-              objectData.stopTimeMs
-            }
-            label={objectData.object.label}
-            info={
-              msToReadableString(objectData.startTimeMs) +
-              ' - ' +
-              msToReadableString(objectData.stopTimeMs)
-            }
-            className={styles.objectPill}
-            infoClassName={styles.objectAppearanceTime}
-            highlight={
-              mediaPlayerPosition >= objectData.startTimeMs &&
-              mediaPlayerPosition <= objectData.stopTimeMs
-            }
-          />
-        );
-      })}
+      {objectGroup.series &&
+        objectGroup.series.map(objectData => {
+          return (
+            <PillButton
+              key={
+                'object-pill-' +
+                kebabCase(objectData.object.label) +
+                objectData.startTimeMs +
+                objectData.stopTimeMs
+              }
+              label={objectData.object.label}
+              info={
+                msToReadableString(objectData.startTimeMs) +
+                ' - ' +
+                msToReadableString(objectData.stopTimeMs)
+              }
+              className={styles.objectPill}
+              infoClassName={styles.objectAppearanceTime}
+              highlight={
+                mediaPlayerPosition >= objectData.startTimeMs &&
+                mediaPlayerPosition <= objectData.stopTimeMs
+              }
+            />
+          );
+        })}
     </span>
   );
 };
@@ -133,8 +134,8 @@ class ObjectDetectionEngineOutput extends Component {
               <ObjectGroup
                 key={
                   'object-group-' +
-                  objectGroup.series[0].startTimeMs +
-                  objectGroup.series[objectGroup.series.length - 1].stopTimeMs
+                  objectGroup.sourceEngineId +
+                  objectGroup.taskId
                 }
                 objectGroup={objectGroup}
                 mediaPlayerPosition={mediaPlayerPosition}

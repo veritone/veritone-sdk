@@ -17,6 +17,7 @@ export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
 export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
 export const ADD_ENGINE_RESULTS_REQUEST = 'ADD_ENGINE_RESULTS_REQUEST';
+export const TOGGLE_EXPANDED_MODE = 'TOGGLE_EXPANDED_MODE';
 
 export const namespace = 'mediaDetails';
 
@@ -28,7 +29,8 @@ const defaultMDPState = {
   selectedEngineCategory: null,
   selectedEngineId: null,
   editModeEnabled: false,
-  loadingEngineResults: false
+  loadingEngineResults: false,
+  expandedMode: false
 };
 
 const defaultState = {
@@ -258,7 +260,8 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        editModeEnabled: !state[widgetId].editModeEnabled
+        editModeEnabled: !state[widgetId].editModeEnabled,
+        expandedMode: !state[widgetId].editModeEnabled
       }
     };
   },
@@ -268,6 +271,15 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         infoPanelIsOpen: !state[widgetId].infoPanelIsOpen
+      }
+    };
+  },
+  [TOGGLE_EXPANDED_MODE](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        expandedMode: !state[widgetId].expandedMode
       }
     };
   }
@@ -291,6 +303,8 @@ export const editModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'editModeEnabled']);
 export const infoPanelIsOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'infoPanelIsOpen']);
+export const expandedModeEnabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'expandedMode']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -386,5 +400,10 @@ export const toggleEditMode = widgetId => ({
 
 export const toggleInfoPanel = widgetId => ({
   type: TOGGLE_INFO_PANEL,
+  meta: { widgetId }
+});
+
+export const toggleExpandedMode = widgetId => ({
+  type: TOGGLE_EXPANDED_MODE,
   meta: { widgetId }
 });

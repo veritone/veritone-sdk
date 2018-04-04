@@ -87,7 +87,8 @@ export default class SentimentEngineOutput extends Component {
     data.forEach(dataItem => {
       if (dataItem.series && dataItem.series.length) {
         dataItem.series.forEach(seriesItem => {
-          if ( seriesItem.sentiment &&
+          if (
+            seriesItem.sentiment &&
             isNaN(seriesItem.sentiment.positiveValue) &&
             isNaN(seriesItem.sentiment.negativeValue)
           ) {
@@ -127,7 +128,7 @@ export default class SentimentEngineOutput extends Component {
       mediaPlayerTime,
       timeWindowSizeMs,
       timeWindowStartMs,
-      timeTickIntervalMs,
+      timeTickIntervalMs
     } = this.props;
 
     let chartData = [{ sartTimeMs: 0, stopTimeMs: 0, sentiment: 0 }];
@@ -137,8 +138,10 @@ export default class SentimentEngineOutput extends Component {
     seriesData.map((entry, index) => {
       let sentimentValue = 0;
       let sentiment = entry.sentiment;
-      const positiveConfidence = sentiment && sentiment.positiveConfidence || 0;
-      const negativeConfidence = sentiment && sentiment.negativeConfidence || 0;
+      const positiveConfidence =
+        (sentiment && sentiment.positiveConfidence) || 0;
+      const negativeConfidence =
+        (sentiment && sentiment.negativeConfidence) || 0;
       if (positiveConfidence > negativeConfidence) {
         sentimentValue = sentiment.positiveValue * 100;
       } else if (positiveConfidence < negativeConfidence) {
@@ -177,7 +180,7 @@ export default class SentimentEngineOutput extends Component {
       referenceValue: mediaPlayerTime,
       totalTime: totalTime,
       scrollToTime: timeWindowStartMs,
-      scaleX: (totalTime > timeWindowSizeMs ) ? totalTime / timeWindowSizeMs : 1,
+      scaleX: totalTime > timeWindowSizeMs ? totalTime / timeWindowSizeMs : 1
     };
   };
 
@@ -317,14 +320,17 @@ export default class SentimentEngineOutput extends Component {
 
     return (
       <div className={classNames(styles.sentimentOutput, this.props.className)}>
-        {this.props.engines && this.props.engines.length && this.props.selectedEngineId &&
-          <EngineOutputHeader
-            title="Sentiment"
-            engines={this.props.engines}
-            selectedEngineId={this.props.selectedEngineId}
-            onEngineChange={this.props.onEngineChange}
-            onExpandClicked={this.props.onExpandClicked}
-          />}
+        {this.props.engines &&
+          this.props.engines.length &&
+          this.props.selectedEngineId && (
+            <EngineOutputHeader
+              title="Sentiment"
+              engines={this.props.engines}
+              selectedEngineId={this.props.selectedEngineId}
+              onEngineChange={this.props.onEngineChange}
+              onExpandClicked={this.props.onExpandClicked}
+            />
+          )}
         {this.renderSummary(extractedData.average)}
         {this.renderChart(extractedData)}
       </div>
