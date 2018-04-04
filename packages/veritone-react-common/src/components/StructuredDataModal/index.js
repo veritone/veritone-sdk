@@ -179,7 +179,6 @@ class StructuredDataModal extends React.Component {
     let schemaResults = await Promise.all(schemaPromises);
     schemaResults.map( schemaResult => {
       if(!('errors' in schemaResult)) {
-        console.log("Schema result", schemaResult);
         schemas[ schemaResult.data.schema.id ].schema = schemaResult.data.schema.dataRegistry.name;
         schemas[ schemaResult.data.schema.id ].author = schemaResult.data.schema.dataRegistry.createdBy.organization.name;
         schemas[ schemaResult.data.schema.id ].version = `${schemaResult.data.schema.majorVersion}.${schemaResult.data.schema.minorVersion}`;
@@ -191,7 +190,6 @@ class StructuredDataModal extends React.Component {
     let autocompleteResults = Object.keys(schemas).map( schema => schemas[schema] );
 
     this.setState( { autocompleteResults: autocompleteResults, openModal: true, loading: false } );
-    console.log("Schemas", schemas);
   }
 
   onChangeAutocomplete = async (evt) => {
@@ -304,7 +302,6 @@ class StructuredDataModal extends React.Component {
           new Date(),
           'YYYY-MM-DDTHH:mm'
         )
-        console.log("Value1", value1);
       } else if (selectedAttribute.type === 'boolean') {
         value1 = "true";
       }
