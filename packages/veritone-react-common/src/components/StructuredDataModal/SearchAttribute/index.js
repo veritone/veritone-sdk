@@ -42,13 +42,14 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
   }
 
   const versions = results.reduce((x, y) => {
-    if (y.author in x) {
-      x[y.author] += 1;
+    if (`${y.author}|${y.schema}` in x) {
+      x[`${y.author}|${y.schema}`] += 1;
     } else {
-      x[y.author] = 1;
+      x[`${y.author}|${y.schema}`] = 1;
     }
     return x;
   }, {});
+
 
   return results.reduce((result, section, sectionIndex) => {
     result.sections.push(
@@ -56,7 +57,7 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
         <ListItem dense>
           <ListItemText
             style={{ fontSize: "75%"}}
-            primary={ `${section.schema || 'Unknown Schema'} ${versions[section.author] > 1 ? (`v${section.version}`) : ''}`}
+            primary={ `${section.schema || 'Unknown Schema'} ${versions[`${section.author}|${section.schema}`] > 1 ? (`v${section.version}`) : ''}`}
             secondary={ `by ${section.author || 'Unknown Author'}` }
           />
         </ListItem>
