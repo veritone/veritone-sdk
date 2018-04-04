@@ -75,6 +75,12 @@ const StructuredDataGenerator = modalState => {
       distance: modalState.value1.distance,
       units: 'm'
     };
+  } else if (modalState.type === 'boolean') {
+    return {
+      operator: 'term',
+      field: modalState.field,
+      value: modalState.value1
+    }
   }
 }
 

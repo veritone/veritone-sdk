@@ -232,8 +232,6 @@ class StructuredDataModal extends React.Component {
         return  this.state.value1 && this.state.value2 && this.state.value1.trim().length > 0 && this.state.value2.trim().length > 0;
       } else if (type === 'number' || type === 'integer' || type === 'dateTime') {
         return this.state.value1 && this.state.value2;
-      } else if (type === 'boolean') {
-        return Boolean(this.state.value1) && Boolean(this.state.value2);
       } else {
         console.warn('Unknown range type', type);
       }
@@ -420,7 +418,7 @@ class StructuredDataModal extends React.Component {
   renderGeolocationModal(showGeolocationModal) {
     if(showGeolocationModal) {
       return (
-      <Dialog PaperProps={{ style: { width: '100%'} } } open={ showGeolocationModal }>
+      <Dialog PaperProps={{ style: { width: '100%', minHeight: '65vh', maxWidth: '75%'} } } open={ showGeolocationModal }>
       <DialogTitle>Search by Geolocation</DialogTitle>
       <DialogContent>
         <GeolocationModal modalState={ this.state.value1 } ref={ input => { this.geoModal = input; } } />
