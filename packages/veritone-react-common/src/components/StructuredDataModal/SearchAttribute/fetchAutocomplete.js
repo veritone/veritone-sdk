@@ -12,7 +12,9 @@ const fetchSDOSchema = function fetchSDOSchema(api, auth, schemaId) {
         "query": `
           query {
             schema(id: "${schemaId}") {
-              id
+              id,
+              majorVersion,
+              minorVersion,
               dataRegistry {
                 name,
                 createdBy {

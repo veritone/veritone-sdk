@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react';
-import { bool, func, string, shape } from 'prop-types';
+import { bool, func, string, shape, object } from 'prop-types';
 
 import {
   CardActions,
@@ -34,6 +34,7 @@ import { GeolocationModal } from '../GeolocationModal';
 
 import SearchAttribute from './SearchAttribute';
 import {fetchSDOSchema, fetchAutocomplete} from './SearchAttribute/fetchAutocomplete';
+import { select } from '@storybook/addon-knobs/dist/react';
 
 const styles = {
   row: {
@@ -45,7 +46,7 @@ const styles = {
 class StructuredDataModal extends React.Component {
   static propTypes = {
     open: bool,
-    modalState: shape({ search: string, language: string }),
+    modalState: object,
     cancel: func
   };
   static defaultProps = {
@@ -66,6 +67,19 @@ class StructuredDataModal extends React.Component {
     range: 'between'
   }
 
+  static OPERATOR_ABRV = {
+    is: 'IS',
+    is_not: 'IS NOT',
+    gte: '>=',
+    lte: '<=',
+    gt: '>',
+    lt: '<',
+    contains: 'CONTAINS',
+    not_contains: 'EXCLUDES',
+    within: 'WITHIN',
+    range: 'BETWEEN'
+  }
+
   static SYMBOL_LABELS = {
     gte: '≥',
     lte: '≤',
@@ -79,6 +93,7 @@ class StructuredDataModal extends React.Component {
   static GEOLOCATION_OPERATORS = ['within'];
 
 
+  // converts CSP data structure back to modal's internal types
   rehydrateProps = () => {
     let type = _.get(this.props.modalState, 'type');
     let convertedValue1 = _.get(this.props.modalState, 'value1');
@@ -96,11 +111,12 @@ class StructuredDataModal extends React.Component {
         field: _.get(this.props.modalState, 'field'),
         selectField: _.get(this.props.modalState, 'select'),
       },
-      autocompleteValue: _.get(this.props.modalState, 'field'),
+      autocompleteValue: _.get(this.props.modalState, 'field') ? _.get(this.props.modalState, 'field').split('.').slice(-1)[0] : '',
       value1: convertedValue1,
       value2: convertedValue2,
       select: _.get(this.props.modalState, 'selectField'),
-      field: _.get(this.props.modalState, 'field')
+      field: _.get(this.props.modalState, 'field'),
+      schemaId: _.get(this.props.modalState, 'schemaId')
     }
   }
 
@@ -117,6 +133,7 @@ class StructuredDataModal extends React.Component {
   async searchField(inputValue) {
     if(!inputValue || inputValue.trim().length === 0) {
       this.setState( {
+        loading: false,
         selectedAttribute: undefined,
         selectedOperator: undefined,
         value1: undefined,
@@ -130,6 +147,7 @@ class StructuredDataModal extends React.Component {
     }
 
     // TO DO, debounce and move fetchAutocomplete out of here.
+    this.setState({loading: true, openModal: false});
     let results = await fetchAutocomplete(this.props.api, this.props.auth, inputValue);
 
     let schemas = {};
@@ -140,7 +158,8 @@ class StructuredDataModal extends React.Component {
             displayName: x.doc.name,
             type: x.doc.fieldType,
             field: x.doc.searchField,
-            selectField: x.doc.selectField
+            selectField: x.doc.selectField,
+            schemaId: x.doc.schemaId,
           }
         )
       } else {
@@ -149,7 +168,8 @@ class StructuredDataModal extends React.Component {
             displayName: x.doc.name,
             type: x.doc.fieldType,
             field: x.doc.searchField,
-            selectField: x.doc.selectField
+            selectField: x.doc.selectField,
+            schemaId: x.doc.schemaId
           }
         ] };
       }
@@ -159,14 +179,19 @@ class StructuredDataModal extends React.Component {
 
     let schemaResults = await Promise.all(schemaPromises);
     schemaResults.map( schemaResult => {
-      schemas[ schemaResult.data.schema.id ].schema = schemaResult.data.schema.dataRegistry.name;
-      schemas[ schemaResult.data.schema.id ].author = schemaResult.data.schema.dataRegistry.createdBy.organization.name;
-      schemas[ schemaResult.data.schema.id ].version = `${schemaResult.data.schema.majorVersion}.${schemaResult.data.schema.minorVersion}`;
+      if(!('errors' in schemaResult)) {
+        console.log("Schema result", schemaResult);
+        schemas[ schemaResult.data.schema.id ].schema = schemaResult.data.schema.dataRegistry.name;
+        schemas[ schemaResult.data.schema.id ].author = schemaResult.data.schema.dataRegistry.createdBy.organization.name;
+        schemas[ schemaResult.data.schema.id ].version = `${schemaResult.data.schema.majorVersion}.${schemaResult.data.schema.minorVersion}`;
+      } else {
+        console.warn('Couldn\'t lookup schema', schemaResult.errors);
+      }
     })
 
     let autocompleteResults = Object.keys(schemas).map( schema => schemas[schema] );
 
-    this.setState( { autocompleteResults: autocompleteResults, openModal: true } );
+    this.setState( { autocompleteResults: autocompleteResults, openModal: true, loading: false } );
     console.log("Schemas", schemas);
   }
 
@@ -176,12 +201,20 @@ class StructuredDataModal extends React.Component {
       selectedOperator: undefined,
       value1: undefined,
       value2: undefined,
-      autocompleteValue: evt.target.value
+      autocompleteValue: evt.target.value,
+      autocompleteResults: undefined,
     } );
   }
 
   showGeolocationModal = async (evt) => {
     this.setState({ showGeolocationModal: true });
+  }
+
+  getGeolocationPoint = (evt) => {
+    this.setState({
+      showGeolocationModal: false,
+      value1: this.geoModal.getFilterValue()
+    })
   }
 
   closeGeolocationModal = (evt) => {
@@ -197,7 +230,7 @@ class StructuredDataModal extends React.Component {
   }
 
   hasValue(type, operator) {
-    if(operator === 'within' || operator === 'range') {
+    if(operator === 'range') {
       if(type === 'string') {
         return  this.state.value1 && this.state.value2 && this.state.value1.trim().length > 0 && this.state.value2.trim().length > 0;
       } else if (type === 'number' || type === 'integer' || type === 'dateTime') {
@@ -205,8 +238,7 @@ class StructuredDataModal extends React.Component {
       } else if (type === 'boolean') {
         return Boolean(this.state.value1) && Boolean(this.state.value2);
       } else {
-        // geopoint handle later
-        console.warn('this should be a geovalue?');
+        console.warn('Unknown range type', type);
       }
     } else {
       if(type === 'string') {
@@ -217,7 +249,7 @@ class StructuredDataModal extends React.Component {
         return Boolean(this.state.value1);
       } else {
         // geopoint handle later
-        console.warn('this should be a geovalue?');
+        return this.state.value1;
       }
     }
   }
@@ -253,14 +285,14 @@ class StructuredDataModal extends React.Component {
           value1: convertedValue1,
           value2: convertedValue2,
           select: this.state.selectedAttribute.selectField,
-          field: this.state.selectedAttribute.field
+          field: this.state.selectedAttribute.field,
+          schemaId: this.state.selectedAttribute.schemaId
         }
       );
     }
   }
 
   onSelectAttribute = (selectedAttribute) => {
-    console.log("Selected item", selectedAttribute);
     let defaultOperator;
     let value1 = undefined;
     let value2 = undefined;
@@ -280,18 +312,23 @@ class StructuredDataModal extends React.Component {
     }
     this.setState(
       {
-        autocompleteValue: selectedAttribute.displayName,
+        autocompleteValue: selectedAttribute.field.split('.').slice(-1)[0],
         selectedAttribute: selectedAttribute,
         selectedOperator: defaultOperator,
         value1: value1,
         value2: value2,
-        openModal: false
+        openModal: false,
+        schemaId: selectedAttribute.schemaId
       }
     );
   }
 
   openAttribute = (evt) => {
-    this.setState( { openModal: true} );
+    if(this.state.autocompleteResults) {
+      this.setState( { openModal: true} );
+    } else {
+      this.searchField(this.state.autocompleteValue);
+    }
   }
 
   closeAttribute = () => {
@@ -299,7 +336,6 @@ class StructuredDataModal extends React.Component {
   }
 
   onSelectOperator = (event) => {
-    console.log("Selected operator", event.target.value);
     let value1 = this.state.value1;
     let value2 = this.state.value2;
     if(event.target.value === 'range' && this.state.selectedOperator !== 'range') {
@@ -310,7 +346,6 @@ class StructuredDataModal extends React.Component {
   }
 
   getSelectedOperatorLabel(value) {
-    console.log("Selected operator value", value);
     return StructuredDataModal.OPERATOR_LABELS[value]
   }
 
@@ -379,6 +414,33 @@ class StructuredDataModal extends React.Component {
     }
   }
 
+  renderGeolocationLabel( geoPoint ) {
+    if(!geoPoint) {
+      return;
+    }
+    return `${Number((geoPoint.distance).toFixed(0))} meters of ${Number((geoPoint.latitude).toFixed(2))}, ${Number((geoPoint.longitude).toFixed(2))}`;
+  }
+
+  renderGeolocationModal(showGeolocationModal) {
+    if(showGeolocationModal) {
+      return (
+      <Dialog PaperProps={{ style: { width: '100%'} } } open={ showGeolocationModal }>
+      <DialogTitle>Search by Geolocation</DialogTitle>
+      <DialogContent>
+        <GeolocationModal modalState={ this.state.value1 } ref={ input => { this.geoModal = input; } } />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={this.closeGeolocationModal} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={this.getGeolocationPoint} color="primary">
+          Submit
+        </Button>
+      </DialogActions>
+      </Dialog>)
+    }
+  }
+
   renderValue(operator, type) {
     const valueFields = [];
     if (type === 'boolean') {
@@ -427,7 +489,7 @@ class StructuredDataModal extends React.Component {
           onChange={ this.onChangeValue('value1') }
           onMouseDown={ this.showGeolocationModal }
           margin="normal"
-          value={ this.state.value1 }
+          value={ this.renderGeolocationLabel(this.state.value1) }
           style={ styles.row }
           required
           placeholder="select geolocation"
@@ -464,25 +526,14 @@ class StructuredDataModal extends React.Component {
         selectedItem={ this.state.autocompleteValue }
         onChange={ this.onChangeAutocomplete }
         data={ this.state.autocompleteResults }
+        loading= { this.state.loading }
       />,
       <FormControl fullWidth style={{ display: "flex", flexDirection: "row" }}>
         { this.state.selectedAttribute && this.state.selectedAttribute.type ? this.renderOperators(this.state.selectedAttribute.type) : null }
         { this.state.selectedOperator && this.state.selectedOperator.length > 0 ? this.renderValue(this.state.selectedOperator, this.state.selectedAttribute.type) : null }
+        { this.renderGeolocationModal(this.state.showGeolocationModal) }
       </FormControl>,
-      <Dialog PaperProps={{ style: { width: '100%'} } } open={ this.state.showGeolocationModal }>
-        <DialogTitle>Search by Geolocation</DialogTitle>
-        <DialogContent>
-        <GeolocationModal />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.closeGeolocationModal} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.handleClose} color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+
     ]
   }
 }
@@ -491,9 +542,18 @@ StructuredDataModal.defaultProps = {
 };
 
 const StructuredDataDisplay = modalState => {
+  const getAbbreviation = (modalState) => {
+    if (modalState.operator === 'range') {
+      return `${modalState.field.split('.').slice(-1)[0]} ${StructuredDataModal.OPERATOR_ABRV[modalState.operator]} (${modalState.value1},${modalState.value2})`
+    } else if (modalState.operator === 'within') {
+      return `${Number((modalState.value1.distance).toFixed(0))} meters of ${Number((modalState.value1.latitude).toFixed(2))}, ${Number((modalState.value1.longitude).toFixed(2))}`
+    } else {
+      return  `${modalState.field.split('.').slice(-1)[0]} ${StructuredDataModal.OPERATOR_ABRV[modalState.operator]} ${modalState.value1}`
+    }
+  }
   return {
-    abbreviation: modalState.search && modalState.search.length > 10 ? modalState.search.substring(0, 10) + '...' : modalState.search,
-    exclude: false,
+    abbreviation: getAbbreviation(modalState),
+    exclude: modalState.operator.indexOf('not') !== -1,
     thumbnail: null
   };
 };

@@ -1,6 +1,8 @@
 import React from 'react';
 
 import Downshift from 'downshift';
+
+import { LinearProgress } from 'material-ui/Progress';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import { MenuItem } from 'material-ui/Menu';
@@ -26,8 +28,17 @@ const renderInput = (inputProps) => {
 }
 
 const renderSections = ({results, getItemProps, highlightedIndex}) => {
-  if(!results) {
-    return [];
+  if(results && results.length === 0) {
+    return (
+      <ListItem dense {...getItemProps( { item: null })} key="no_results">
+        <ListItemText
+          style={{ paddingLeft: "1em" }}
+          primary="No results"
+        />
+      </ListItem>
+    )
+  } else if (!results) {
+    return;
   }
 
   const versions = results.reduce((x, y) => {
@@ -42,16 +53,22 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
   return results.reduce((result, section, sectionIndex) => {
     result.sections.push(
       <div key={sectionIndex}>
-        <div>
-          {section.schema} { versions[section.author] > 1 ? (`v${section.version}`) : null }
-          by { section.author }
-        </div>
-        {section.attributes.map((language, languageIndex) => {
+        <ListItem dense>
+          <ListItemText
+            style={{ fontSize: "75%"}}
+            primary={ `${section.schema || 'Unknown Schema'} ${versions[section.author] > 1 ? (`v${section.version}`) : ''}`}
+            secondary={ `by ${section.author || 'Unknown Author'}` }
+          />
+        </ListItem>
+        {section.attributes.map((field, fieldIndex) => {
           const index = result.itemIndex++;
           return (
-            <div style={{ backgroundColor: highlightedIndex === index ? '#eeeeee' : null }} {...getItemProps({item: language, index})} key={`"${language.field}"`}>
-              { language.displayName || language.field }
-            </div>
+            <ListItem dense style={{ backgroundColor: highlightedIndex === index ? '#eeeeee' : null }} {...getItemProps({item: field, index})} key={`"${field.field}"`}>
+              <ListItemText
+                style={{ paddingLeft: "1em" }}
+                primary={ `${ field.displayName || field.field }`}
+              />
+            </ListItem>
           )
         })}
       </div>
@@ -61,7 +78,7 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
   }, { sections: [], itemIndex: 0}).sections
 }
 
-const SearchAttribute = ( { onSelect, selectedItem, isOpen, onOpen, onBlur, onChange, onFocusAutocomplete, data } ) => {
+const SearchAttribute = ( { onSelect, loading, selectedItem, isOpen, onOpen, onBlur, onChange, onFocusAutocomplete, data } ) => {
   const itemToString = (item) => {
     return item ? item.displayName || item.field : '';
   }
@@ -80,11 +97,12 @@ const SearchAttribute = ( { onSelect, selectedItem, isOpen, onOpen, onBlur, onCh
                   onFocus: onFocusAutocomplete,
                   open: onOpen,
                   onChange: onChange,
-                  value: selectedItem || '',
+                  value: selectedItem,
                   placeholder: 'Search by attribute',
                   id: 'integration-downshift'
                 }))}
-              {isOpen ? <Paper>
+              { loading ? <LinearProgress style={ {height: "0.1em" }} /> : null }
+              {isOpen && !loading ? <Paper>
                   {
                     renderSections({
                       results: data,
