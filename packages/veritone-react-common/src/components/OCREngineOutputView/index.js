@@ -67,12 +67,16 @@ class OCREngineOutputView extends Component {
         <div className={styles.ocrContent}>
           {data
             .reduce((accumulator, currentValue) => {
-              return [...accumulator, ...currentValue.series];
+              if (currentValue.series) {
+                return [...accumulator, ...currentValue.series];
+              }
+              return [...accumulator, []];
             }, [])
-            .map((ocrObject, i) => {
+            .filter(ocrObject => !!ocrObject.object && !!ocrObject.object.text)
+            .map((ocrObject) => {
               return (
                 <OCRObject
-                  key={i}
+                  key={ocrObject.object.text + ocrObject.startTimeMs + ocrObject.stopTimeMs}
                   text={ocrObject.object.text}
                   startTime={ocrObject.startTimeMs}
                   endTime={ocrObject.stopTimeMs}
