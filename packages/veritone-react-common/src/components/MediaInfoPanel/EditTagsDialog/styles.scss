@@ -1,10 +1,78 @@
-.editTagsDialog {
-  font-family: Roboto;
-  display: flex;
-  flex-direction: column;
+@import 'src/styles/modules/variables';
 
-  .tagsSection {
-    display: flex;
-    flex-flow: row wrap;
-  }
+.editTagsDialogPaper {
+  min-width: 640px;
+  width: 640px;
+
+    .dialogTitle {
+      h2 {
+        height: 28px;
+        line-height: 28px;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h2 .dialogTitleLabel {
+        color: $dark-black;
+        font-family: Roboto;
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      .closeButton {
+        height: 28px;
+        width: 28px;
+      }
+    }
+
+    .dialogHintText {
+      height: 18px;
+      color: $light-black;
+      font-family: Roboto;
+      font-size: 12px;
+      line-height: 18px;
+      margin-bottom: 30px;
+    }
+
+    .tagsLabel {
+      height: 16px;
+      color: $dark-black;
+      font-family: Roboto;
+      font-size: 14px;
+      line-height: 16px;
+      margin-bottom: 15px;
+    }
+
+    .tagsSection {
+      display: flex;
+      flex-flow: row wrap;
+
+      .addNewTagButton {
+        font-weight: 100;
+        text-transform: capitalize;
+      }
+
+      .tagInputArea {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+
+        .tagTextInput {
+          color: $dark-black;
+          line-height: 16px;
+          width: 100px;
+          input {
+            font-family: Roboto;
+            font-size: 14px;
+          }
+        }
+
+        .addNewTagConfirm {
+          width: 100px;
+          height: 38px;
+        }
+      }
+    }
 }
