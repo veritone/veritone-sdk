@@ -23,7 +23,7 @@ import styles from './styles.scss';
 
 
 @withMuiThemeProvider
-class SDOAdapter extends React.Component {
+class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
@@ -344,14 +344,51 @@ SourceSelector.propTypes = {
 
 export default {
   title: 'Configuration',
-  adapter: SDOAdapter,
+  adapter: DynamicAdapter,
   template: 'ingest/react-adapter',
   config: {
-    adapterId: 'sdo-adapter',
+    adapterId: 'dynamic-adapter',
     enableSchedule: true,
     enableProcess: true,
     enableCustomize: {
       setName: true
     }
+  },
+  validate: adapterStep => (configuration, cb) => {
+    let errors = [];
+    if (!configuration.sourceId) {
+      errors.push('Invalid Source');
+    }
+    if (_.isArray(adapterStep.fields)) {
+      adapterStep.fields.forEach(field => {
+        if (field.defaultValue && !configuration[field.name]) {
+          errors.push(startCase(toLower(field.name)) + ' is invalid');
+        } else if (field.defaultValues && isArray(configuration[field.name]) && configuration[field.name].length) {
+          errors.push('At least one ' + startCase(toLower(field.name)) + ' must be selected');
+        }
+      });
+    }
+    errors.length ?
+      cb('Configuration: ' + errors.join(', ')) :
+      cb(null, configuration);
+  },
+  getHydratedData: adapterStep => hydrateData => {
+    let configuration = {};
+    let tasks = get(hydrateData, 'jobTemplates.records[0].taskTemplates.records');
+    let ingestionTask, sourceId, sourceSchema;
+    if (tasks) {
+      ingestionTask = tasks.filter(task => get(task, 'engine.category.type.name') === 'Ingestion')[0];
+    }
+    if (ingestionTask) {
+      sourceId = get(ingestionTask, 'payload.sourceId');
+      configuration.sourceId = sourceId;
+      let fields = get(adapterStep, 'fields')
+      if (fields) {
+          fields.forEach(field => configuration[field.name] = ingestionTask.payload[field.name]);
+        }
+      }
+    }
+
+    return configuration;
   }
 }

@@ -3,8 +3,8 @@ import { bool, string } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import VeritoneApp from '../../../shared/VeritoneApp';
-import SDOAdapterObj from './';
-const SDOAdapter = SDOAdapterObj.widget;
+import DynamicAdapterObj from './';
+const DynamicAdapter = DynamicAdapterObj.widget;
 
 class Story extends React.Component {
   static propTypes = {
@@ -14,19 +14,19 @@ class Story extends React.Component {
   };
 
   componentDidMount() {
-    this._scheduler = new SDOAdapter({
-      elId: 'sdo-adapter-widget'
+    this._adapter = new DynamicAdapter({
+      elId: 'dynamic-adapter-widget'
     });
   }
 
   componentWillUnmount() {
-    this._scheduler.destroy();
+    this._adapter.destroy();
   }
 
   render() {
     return (
       <div>
-        <span id="sdo-adapter-widget" />
+        <span id="dynamic-adapter-widget" />
       </div>
     );
   }
@@ -34,6 +34,6 @@ class Story extends React.Component {
 
 const app = VeritoneApp();
 
-storiesOf('SDOAdapter', module).add('Base', () => {
+storiesOf('DynamicAdapter', module).add('Base', () => {
   return <Story store={app._store} />;
 });

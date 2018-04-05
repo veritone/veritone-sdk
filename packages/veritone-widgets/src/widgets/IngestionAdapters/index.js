@@ -1,5 +1,5 @@
-import SDOAdapter from './SDOAdapter/index.js';
+import DynamicAdapter from './DynamicAdapter/index.js';
 
 export default {
-  SDOAdapter
+  DynamicAdapter
 }
