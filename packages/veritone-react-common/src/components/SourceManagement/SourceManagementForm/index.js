@@ -84,6 +84,9 @@ export default class SourceManagementForm extends React.Component {
           ...fieldValues
         }
       }
+      if (this.props.sourceTypes.length) {
+        newState.sourceConfig.sourceTypeId = this.props.sourceTypes[0].id;
+      }
     }
 
     return this.setState(newState);
