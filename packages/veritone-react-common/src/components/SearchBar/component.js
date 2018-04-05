@@ -128,7 +128,7 @@ const tag = {
   showPill: true
 };
 const structured = {
-  id: '72c3ccbb-8c90-48a9-99ee-1c57315b9690',
+  id: 'sdo-search-id',
   name: 'Structured Data',
   iconClass: 'icon-third-party-data',
   tooltip: 'Search by Structured Data',
@@ -212,7 +212,7 @@ const engineCategoryMapping = {
     title: 'Search by Tag',
     subtitle: 'Search by tags within our database.'
   },
-  '72c3ccbb-8c90-48a9-99ee-1c57315b9690': {
+  'sdo-search-id': {
     modal: StructuredDataModal,
     getLabel: StructuredDataDisplay,
     title: 'Search by Structured Data',

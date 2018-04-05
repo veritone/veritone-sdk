@@ -53,8 +53,8 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
 
   return results.reduce((result, section, sectionIndex) => {
     result.sections.push(
-      <div key={sectionIndex}>
-        <ListItem dense>
+      <div key={`${section.schema}_${section.author}_${section.version}`}>
+        <ListItem dense key={`${sectionIndex}_header`}>
           <ListItemText
             style={{ fontSize: "75%"}}
             primary={ `${section.schema || 'Unknown Schema'} ${versions[`${section.author}|${section.schema}`] > 1 ? (`v${section.version}`) : ''}`}
@@ -93,7 +93,7 @@ const SearchAttribute = ( { onSelect, loading, selectedItem, isOpen, onOpen, onB
       render={({ getInputProps, getItemProps, isOpen, highlightedIndex }) =>
         {
           return (
-          <div>
+          <div key="autocomplete_sections">
               {renderInput(getInputProps({
                   onFocus: onFocusAutocomplete,
                   open: onOpen,

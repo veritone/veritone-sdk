@@ -419,18 +419,18 @@ class StructuredDataModal extends React.Component {
     if(showGeolocationModal) {
       return (
       <Dialog PaperProps={{ style: { width: '100%', minHeight: '65vh', maxWidth: '75%'} } } open={ showGeolocationModal }>
-      <DialogTitle>Search by Geolocation</DialogTitle>
-      <DialogContent>
-        <GeolocationModal modalState={ this.state.value1 } ref={ input => { this.geoModal = input; } } />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={this.closeGeolocationModal} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={this.getGeolocationPoint} color="primary">
-          Submit
-        </Button>
-      </DialogActions>
+        <DialogTitle>Search by Geolocation</DialogTitle>
+        <DialogContent>
+          <GeolocationModal modalState={ this.state.value1 } ref={ input => { this.geoModal = input; } } />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.closeGeolocationModal} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={this.getGeolocationPoint} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
       </Dialog>)
     }
   }
