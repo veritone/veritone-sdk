@@ -164,12 +164,9 @@ class SplitTableContainer extends React.Component {
     children: node
   };
 
-  translateCellClick = (row, column) => {
-    return this.props.onCellClick(this.props.focusedRow + 1 + row, column);
-  };
-
   render() {
     const {
+      onCellClick,
       focusedRow,
       renderFocusedRowDetails,
       rowCount,
@@ -206,6 +203,7 @@ class SplitTableContainer extends React.Component {
                     {...restProps}
                     rowRangeEnd={focusedRow}
                     rowGetter={rowGetter}
+                    onCellClick={onCellClick}
                   >
                     {children}
                   </TableBody>
@@ -228,7 +226,7 @@ class SplitTableContainer extends React.Component {
                 {injectInto(children, {
                   data: rowGetter(focusedRow),
                   row: focusedRow,
-                  onCellClick: this.translateFocusedRowCellClick
+                  onCellClick
                 })}
               </TableRow>
               <TableRow>
@@ -250,7 +248,7 @@ class SplitTableContainer extends React.Component {
               rowRangeStart={this.props.focusedRow + 1}
               rowRangeEnd={rowCount}
               rowGetter={rowGetter}
-              onCellClick={this.translateCellClick}
+              onCellClick={onCellClick}
             >
               {children}
             </TableBody>

@@ -157,10 +157,10 @@ function BasicTable({ data }) {
   function handleOnCellClick(row, columnKey) {
     return console.log(`row: ${row}`, `columnKey: ${columnKey}`)
   }
-  
+
 
   const columns = Object.keys(data[0]).map((column, index) => {
-    return <Column 
+    return <Column
       dataKey={column}
       header={column}
       key={index}
@@ -169,14 +169,14 @@ function BasicTable({ data }) {
   });
 
   return (
-      <Table
-        rowGetter={getRowData}
-        rowCount={data.length}
-        showHeader
-        onCellClick={handleOnCellClick}
-      >
-        {columns}
-      </Table>
+    <Table
+      rowGetter={getRowData}
+      rowCount={data.length}
+      showHeader
+      onCellClick={handleOnCellClick}
+    >
+      {columns}
+    </Table>
   );
 }
 
@@ -184,7 +184,57 @@ BasicTable.propTypes = {
   data: arrayOf(object)
 }
 
+class BasicSplitTable extends React.Component {
+  static propTypes ={
+    data: arrayOf(object)
+  }
+
+  state = {
+    focusedTableRow: null
+  }
+
+  getRowData = (i) => {
+    return data[i];
+  };
+
+  renderFocusedRowDetails = (row) => {
+    return <div style={{ textAlign: 'center' }}>{row.name} - {this.state.focusedTableRow + 1}</div>
+  }
+
+  setFocusedRow = (row, columnKey) => {
+    this.setState({ focusedTableRow: row });
+  }
+  
+  render() {
+    const columns = Object.keys(data[0]).map((column, index) => {
+      return <Column 
+        dataKey={column}
+        header={column}
+        key={index}
+        cellRenderer={renderCell}
+      />
+    });
+  
+    return (
+        <Table
+          rowGetter={this.getRowData}
+          rowCount={data.length}
+          showHeader
+          onCellClick={this.setFocusedRow}
+          focusedRow={this.state.focusedTableRow}
+          renderFocusedRowDetails={this.renderFocusedRowDetails}
+        >
+          {columns}
+        </Table>
+    );
+  }
+}
+
 class PagedTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  }
+  
   getRowData = (i) => {
     return this.props.data[i];
   };
@@ -230,10 +280,6 @@ class PagedTable extends React.Component {
   }
 }
 
-PagedTable.propTypes = {
-  data: arrayOf(object)
-}
-
 class SplitTable extends React.Component {
   state = {
     focusedTableRow: null
@@ -244,7 +290,7 @@ class SplitTable extends React.Component {
   };
 
   renderFocusedRowDetails = (row) => {
-    return <div style={{textAlign: 'center'}}>{row.name}</div>
+    return <div style={{ textAlign: 'center' }}>{row.name} - {this.state.focusedTableRow + 1}</div>
   }
 
   setFocusedRow = (row, columnKey) => {
@@ -300,10 +346,13 @@ storiesOf('Table', module)
   .add('Basic Table', () => (
     <BasicTable data={data}/>
   ))
+  .add('Basic Split Table', () => (
+    <BasicSplitTable data={data}/>
+  ))
   .add('Paginated Table', () => (
     <PagedTable data={data} />
   ))
-  .add('Split Table', () => (
+  .add('Paginated Split Table', () => (
     <SplitTable data={data} />
   ))
   .add('Menu Column', () => {
