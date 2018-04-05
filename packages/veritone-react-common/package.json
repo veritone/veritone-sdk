@@ -8,7 +8,7 @@
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
     "lodash": "^4.17.4",
-    "material-ui": "v1.0.0-beta.20",
+    "material-ui": "v1.0.0-beta.36",
     "material-ui-icons": "^1.0.0-beta.17",
     "mime-types": "^2.1.17",
     "pluralize": "^7.0.0",
