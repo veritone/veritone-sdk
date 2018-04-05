@@ -1,196 +1,50 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
+import faker from 'faker';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import TableWidget from './';
-import { startCase, upperCase, map, omit, flow, truncate } from 'lodash';
+import { startCase, upperCase, map, flow, truncate, range } from 'lodash';
 
-const data = [
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text:
-      'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name',
-    Attribute2: 'description',
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c',
-    actions: ['View', 'Edit', 'Delete']
-  }
-];
+const row = () => ({
+  date: faker.date.future(),
+  name: faker.internet.userName(),
+  text: faker.lorem.paragraph(),
+  ip: faker.internet.ip(),
+  actions: ['View', 'Edit', 'Delete']
+});
+const data = range(50).map(row);
 
-const columns = map(omit(data[0], ['a', 'b', 'c']), (val, key) => {
-  const colDefs = {
+const menuHandler = action('menu item selected');
+const columns = map(data[0], (val, key) => {
+  const isMenu = key === 'actions';
+  return {
     dataKey: key,
     header: startCase(key),
     transform: flow([upperCase, truncate]),
     align: 'center',
-    width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
+    width: Math.min((Math.min(key.length, 4) + 1) * 10, 100),
+    menu: isMenu,
+    onSelectItem: isMenu ? menuHandler : undefined
   };
-
-  if (key === 'actions') {
-    colDefs.menu = true;
-    colDefs.onSelectItem = action => {
-      console.log('action:', action);
-    };
-  }
-  return colDefs;
 });
 
 class Story extends React.Component {
   componentDidMount() {
-    this._sdoTableWidget = new TableWidget({
+    this._table = new TableWidget({
       elId: 'table-widget',
       title: 'TableWidget Widget',
       paginate: true,
-      initialItemsPerPage: 5,
+      initialItemsPerPage: 10,
       data,
       columns
     });
   }
 
   componentWillUnmount() {
-    this._sdoTableWidget.destroy();
+    this._table.destroy();
   }
 
   render() {

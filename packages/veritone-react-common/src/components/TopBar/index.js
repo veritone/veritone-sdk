@@ -127,7 +127,7 @@ export default class TopBar extends React.Component {
                 <Menu
                   key="menu"
                   open={this.state.rightMenuOpen}
-                  onRequestClose={this.closeRightMenu}
+                  onClose={this.closeRightMenu}
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                   anchorEl={this.state.rightMenuAnchorEl}
                   getContentAnchorEl={null}

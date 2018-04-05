@@ -54,11 +54,11 @@ export default class AppSwitcher extends React.Component {
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <IconButton onClick={this.openMenu}>
-          <AppsIcon color="white" />
+          <AppsIcon nativeColor="white" />
         </IconButton>
         <Menu
           open={this.state.open}
-          onRequestClose={this.closeMenu}
+          onClose={this.closeMenu}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           anchorEl={this.state.anchorEl}
           getContentAnchorEl={null}
