@@ -1,5 +1,6 @@
 export function msToReadableString(
   milliseconds,
+  showHours = false,
   showDays = false,
   showMilliseconds = false
 ) {
@@ -9,14 +10,14 @@ export function msToReadableString(
   let numMinutes = dateObject.getUTCMinutes();
   let numSeconds = dateObject.getUTCSeconds();
 
-  let showHours = showDays || numHours > 0;
+  let hasHours = showHours || showDays || numHours > 0;
 
   let formattedString = '';
   if (showDays) {
     formattedString +=
       numDays.toLocaleString(undefined, { minimumIntegerDigits: 2 }) + ':';
   }
-  if (showHours) {
+  if (hasHours) {
     formattedString +=
       numHours.toLocaleString(undefined, { minimumIntegerDigits: 2 }) + ':';
   }

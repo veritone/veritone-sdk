@@ -1,21 +1,29 @@
-.transcriptOutputView {
-  padding: 20px 40px 0 30px;
-  display: flex;
-  flex-direction: column;
-}
+@import 'src/styles/modules/variables';
 
-.transcriptInputs {
+.transcriptOutput {
   width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
+  height: 100%;
+  overflow: hidden;
 
-.editModeFormControlLabel {
-  font-size: 14px;
-}
+  color: $min-black;
 
-.selectWithMargin {
-  margin-right: 30px;
+  .controllers {
+    width: 100%;
+
+    .radioButton {
+      float: left;
+      font-size: 14px;
+    }
+
+    .viewDropdown {
+      float: right;
+      margin-right: 20px;
+    }
+  }
+
+  .content {
+    clear: both;
+    width: 100%;
+    height: calc(100% - 45px);
+  }
 }

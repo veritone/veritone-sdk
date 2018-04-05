@@ -1,129 +1,207 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
+
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import Radio, { RadioGroup } from 'material-ui/Radio';
 import { FormControlLabel } from 'material-ui/Form';
 
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent from './TranscriptContent';
-
 import styles from './styles.scss';
 
-@withMuiThemeProvider
-class TranscriptEngineOutput extends Component {
+export default class TranscriptEngineOutput extends Component {
   static propTypes = {
-    assets: arrayOf(
+    data: arrayOf(
       shape({
-        startTime: number,
-        endTime: number,
-        data: string
+        startTimeMs: number,
+        stopTimeMs: number,
+        status: string,
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            words: arrayOf(
+              shape({
+                word: string,
+                confidence: number
+              })
+            )
+          })
+        )
       })
     ),
-    editModeEnabled: bool,
-    className: string,
-    onSnippetClicked: func,
-    tdoStartTime: number,
-    tdoEndTime: number,
-    editMode: string,
+
     selectedEngineId: string,
     engines: arrayOf(
       shape({
-        sourceEngineId: string,
-        sourceEngineName: string
+        id: string,
+        name: string
       })
     ),
+    title: string,
+
+    className: string,
+    headerClassName: string,
+    contentClassName: string,
+
+    editMode: bool,
+
+    onClick: func,
+    onScroll: func,
     onEngineChange: func,
-    onSnippetEdit: func,
-    onEditModeChange: func,
-    viewMode: string,
-    onViewModeChange: func
+    onExpandClicked: func,
+
+    numMaxRequest: number,
+    requestSizeMs: number,
+    mediaLengthMs: number,
+    neglectableTimeMs: number,
+
+    mediaPlayerTime: number,
+    mediaPlayerTimeInterval: number
   };
 
   static defaultProps = {
-    assets: [],
-    classes: {},
-    editModeEnabled: false,
-    viewMode: 'time'
+    title: 'Transcription',
+    editMode: false,
+    numMaxRequest: 2,
+    mediaPlayerTime: 0,
+    mediaPlayerTimeInterval: 1000
   };
 
-  render() {
-    let {
-      className,
-      editModeEnabled,
-      editMode,
-      assets,
-      onSnippetClicked,
-      selectedEngineId,
-      engines,
-      onEngineChange,
-      onSnippetEdit,
-      onEditModeChange,
-      viewMode,
-      onViewModeChange
-    } = this.props;
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      overview: false
+    };
+  }
+
+  handleViewChange = event => {
+    event.target.value === 'overview' && this.setState({ overview: true });
+    event.target.value === 'time' && this.setState({ overview: false });
+  };
+
+  renderEditOptions() {
     return (
-      <div className={classNames(styles.transcriptOutputView, className)}>
-        <EngineOutputHeader title="Transcription" hideTitle={editModeEnabled}>
-          <div className={styles.transcriptInputs}>
-            <div>
-              {editModeEnabled && (
-                <RadioGroup
-                  onChange={onEditModeChange}
-                  aria-label="edit_mode"
-                  value={editMode}
-                  name="editMode"
-                  row
-                >
-                  <FormControlLabel
-                    className={styles.editModeFormControlLabel}
-                    value="snippet"
-                    control={<Radio color="primary" />}
-                    label="Snippet Edit"
-                  />
-                  <FormControlLabel
-                    className={styles.editModeFormControlLabel}
-                    value="bulk"
-                    control={<Radio color="primary" />}
-                    label="Bulk Edit"
-                  />
-                </RadioGroup>
-              )}
-            </div>
-            <div>
-              <Select
-                value={viewMode}
-                onChange={onViewModeChange}
-                className={styles.selectWithMargin}
-                autoWidth
-              >
-                <MenuItem value="time">Time</MenuItem>
-                <MenuItem value="overview">Overview</MenuItem>
-              </Select>
-              <Select value={selectedEngineId || ''} onChange={onEngineChange}>
-                {engines.map((e, i) => {
-                  return (
-                    <MenuItem key={i} value={e.sourceEngineId}>
-                      {e.sourceEngineName}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </div>
-          </div>
-        </EngineOutputHeader>
+      <RadioGroup
+        row
+        aria-label="edit_mode"
+        value={this.state.overview ? 'overview' : 'time'}
+        name="editMode"
+        className={classNames(styles.radioButton)}
+        onChange={this.handleViewChange}
+      >
+        <FormControlLabel
+          value="time"
+          className={styles.label}
+          control={<Radio color="primary" />}
+          label="Snippet Edit"
+        />
+        <FormControlLabel
+          value="overview"
+          className={styles.label}
+          control={<Radio color="primary" />}
+          label="Bulk Edit"
+        />
+      </RadioGroup>
+    );
+  }
+
+  renderViewOptions() {
+    return (
+      <Select
+        autoWidth
+        value={this.state.overview ? 'overview' : 'time'}
+        className={styles.viewDropdown}
+        onChange={this.handleViewChange}
+      >
+        <MenuItem value="time">Time</MenuItem>
+        <MenuItem value="overview">Overview</MenuItem>
+      </Select>
+    );
+  }
+
+  renderHeader() {
+    let {
+      title,
+      engines,
+      selectedEngineId,
+      editMode,
+      onEngineChange,
+      onExpandClicked,
+      headerClassName
+    } = this.props;
+
+    return (
+      <EngineOutputHeader
+        title={title}
+        hideTitle
+        engines={engines}
+        selectedEngineId={selectedEngineId}
+        onEngineChange={onEngineChange}
+        onExpandClicked={onExpandClicked}
+        className={classNames(headerClassName)}
+      >
+        <div className={classNames(styles.controllers)}>
+          {editMode ? this.renderEditOptions() : this.renderViewOptions()}
+        </div>
+      </EngineOutputHeader>
+    );
+  }
+
+  renderBody() {
+    let {
+      data,
+      onClick,
+      onScroll,
+      editMode,
+      numMaxRequest,
+      requestSizeMs,
+      mediaLengthMs,
+      neglectableTimeMs,
+      contentClassName,
+      mediaPlayerTime,
+      mediaPlayerTimeInterval
+    } = this.props;
+
+    return (
+      <div className={classNames(styles.content)}>
         <TranscriptContent
-          assets={assets}
-          onSnippetClicked={onSnippetClicked}
-          onSnippetEdit={onSnippetEdit}
-          editModeEnabled={editModeEnabled}
+          data={data}
           editMode={editMode}
+          overview={this.state.overview}
+          mediaPlayerTime={mediaPlayerTime}
+          mediaPlayerTimeInterval={mediaPlayerTimeInterval}
+          numMaxRequest={numMaxRequest}
+          requestSizeMs={requestSizeMs}
+          mediaLengthMs={mediaLengthMs}
+          neglectableTimeMs={neglectableTimeMs}
+          onClick={onClick}
+          onScroll={onScroll}
+          className={classNames(contentClassName)}
         />
       </div>
     );
   }
-}
+  /*
+  
+  editMode: bool,
+  overview: bool,
+  className: string,
+  onClick: func,
+  onScroll: func,
 
-export default TranscriptEngineOutput;
+*/
+  render() {
+    let { className } = this.props;
+
+    return (
+      <div className={classNames(styles.transcriptOutput, className)}>
+        {this.renderHeader()}
+        {this.renderBody()}
+      </div>
+    );
+  }
+}

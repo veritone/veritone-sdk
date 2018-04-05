@@ -1,88 +1,374 @@
 import React, { Component } from 'react';
-import { arrayOf, object, bool, number, func, string } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import { sortBy } from 'lodash';
+import classNames from 'classnames';
 
-import TranscriptTask from '../TranscriptTask';
+import DynamicContentScroll from '../../Parts/Scrolls/DynamicContentScroll';
+import NoDataSegment from '../TranscriptSegment/NoDataSegment';
+import SnippetSegment from '../TranscriptSegment/SnippetSegment';
+import OverviewSegment from '../TranscriptSegment/OverviewSegment';
+import TranscriptBulkEdit from '../TranscriptBulkEdit';
 
 import styles from './styles.scss';
 
-const scrollBuffer = 100;
-
-class TranscriptContent extends Component {
+export default class TranscriptContent extends Component {
   static propTypes = {
-    assets: arrayOf(object),
-    editModeEnabled: bool,
-    editMode: string,
-    onSnippetClicked: func,
-    tdoStartTime: number,
-    tdoEndTime: number,
-    onSnippetEdit: func
+    data: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        status: string,
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            words: arrayOf(
+              shape({
+                word: string,
+                confidence: number
+              })
+            )
+          })
+        )
+      })
+    ),
+    className: string,
+
+    editMode: bool,
+    overview: bool,
+
+    onClick: func,
+    onScroll: func,
+
+    requestSizeMs: number,
+    mediaLengthMs: number,
+    neglectableTimeMs: number,
+    mediaPlayerTime: number,
+    mediaPlayerTimeInterval: number
   };
 
-  componentDidMount() {
-    this.transcriptContent.addEventListener('scroll', this.onScroll, false);
-  }
+  static defaultProps = {
+    editMode: false,
+    overview: false,
+    mediaPlayerTime: 0,
+    mediaPlayerTimeInterval: 1000
+  };
 
-  componentWillUnmount() {
-    this.transcriptContent.removeEventListener('scroll', this.onScroll, false);
-  }
+  handleOnScroll = openSlotInfo => {
+    this.props.onScroll && this.props.onScroll(openSlotInfo);
+  };
 
-  onScroll = () => {
-    if (this.transcriptContent.scrollTop <= scrollBuffer) {
-      // There will be logic here to check if the asset[0] contains the start of the recording
-      console.log('Check if we should get the previous set of assets');
-    } else if (
-      this.transcriptContent.offsetHeight + this.transcriptContent.scrollTop >=
-      this.transcriptContent.scrollHeight - scrollBuffer
-    ) {
-      // There will be logic here to check we have reached the end fo the recording
-      // or if we need to fetch more assets
-      console.log('Check if we should get the next set of assets');
+  parseData() {
+    if (!this.props.data) {
+      return {
+        lazyLoading: false,
+        snippetSegments: [],
+        overviewSegments: []
+      };
     }
-  };
 
-  elementRef = element => {
-    this.transcriptContent = element;
-  };
+    let snippetSegments = [];
+    let overviewSegments = [];
 
-  getTranscriptChunks = () => {
-    return this.props.assets.map((chunk, i) => {
-      return (
-        <TranscriptTask
-          key={i}
-          chunk={chunk}
-          editModeEnabled={this.props.editModeEnabled}
-          onSnippetClick={this.props.onSnippetClicked}
-          onSnippetEdit={this.props.onSnippetEdit}
-        />
-      );
+    let overviewStartTime = 0;
+    let overviewStopTime = 0;
+    let overviewParts = [];
+    let overviewSentences = '';
+    let overviewStatus = undefined;
+
+    let saveOverviewData = () => {
+      //---Save Previous Overview Data---
+      overviewSegments.push({
+        startTimeMs: overviewStartTime,
+        stopTimeMs: overviewStopTime,
+        status: overviewStatus,
+        sentences: overviewSentences,
+        fragments: overviewParts.concat([])
+      });
+      //---Reset Overview Data to Handle New Status---
+      overviewStatus = undefined;
+      overviewStartTime = undefined;
+      overviewStopTime = undefined;
+      overviewParts = [];
+      overviewSentences = '';
+    };
+
+    let lazyLoading = true;
+    this.props.data.forEach(chunk => {
+      let groupStartTime = chunk.startTimeMs;
+      let groupStopTime = chunk.stopTimeMs;
+      let groupStatus = chunk.status;
+
+      lazyLoading =
+        lazyLoading &&
+        groupStartTime !== undefined &&
+        groupStopTime !== undefined &&
+        groupStatus !== undefined;
+
+      let series = chunk.series;
+      if (series && series.length > 0) {
+        let snippetStatus = undefined;
+        let snippetStartTime = groupStartTime;
+        let snippetStopTime = undefined;
+        let snippetParts = [];
+        let snippetSentences = '';
+
+        let saveSnippetData = () => {
+          //---Save Previous Snippets Data---
+          snippetSegments.push({
+            startTimeMs: snippetStartTime,
+            stopTimeMs: snippetStopTime,
+            status: snippetStatus,
+            sentences: snippetSentences,
+            fragments: snippetParts.concat([])
+          });
+
+          //---Reset Snippets Data---
+          snippetStatus = undefined;
+          snippetStartTime = undefined;
+          snippetStopTime = undefined;
+          snippetParts = [];
+          snippetSentences = '';
+        };
+
+        series.forEach((entry, entryIndex) => {
+          //---Updata Content Value---
+          if (entry.words) {
+            // Has Transcript Data
+            snippetStatus !== undefined &&
+              snippetStatus !== 'success' &&
+              saveSnippetData();
+            overviewStatus !== undefined &&
+              overviewStatus !== 'success' &&
+              saveOverviewData();
+
+            snippetStatus = 'success';
+            overviewStatus = 'success';
+
+            //---Get Correct Word---
+            let selectedWord;
+            let words = entry.words;
+            words ? (words = sortBy(words, 'confidence')) : (words = []);
+            words.length > 0
+              ? (selectedWord = words[0].word)
+              : (selectedWord = '');
+
+            //---Update Snippet Data---
+            snippetSentences = snippetSentences + selectedWord + ' ';
+            snippetParts.push({
+              startTimeMs: entry.startTimeMs,
+              stopTimeMs: entry.stopTimeMs,
+              value: selectedWord
+            });
+
+            //---Update Overview Data---
+            overviewSentences = overviewSentences + selectedWord + ' ';
+            overviewParts.push({
+              startTimeMs: entry.startTimeMs,
+              stopTimeMs: entry.stopTimeMs,
+              value: selectedWord
+            });
+          } else {
+            // No Transcript Data
+            snippetStatus !== undefined &&
+              snippetStatus !== 'no-transcript' &&
+              saveSnippetData();
+            overviewStatus !== undefined &&
+              overviewStatus !== 'no-transcript' &&
+              saveOverviewData();
+
+            snippetStatus = 'no-transcript';
+            overviewStatus = 'no-transcript';
+          }
+
+          //---Update Start & Stop Time---
+          (snippetStartTime === undefined ||
+            snippetStartTime > entry.startTimeMs) &&
+            (snippetStartTime = entry.startTimeMs);
+          (snippetStopTime === undefined ||
+            snippetStopTime < entry.stopTimeMs) &&
+            (snippetStopTime = entry.stopTimeMs);
+          entryIndex === series.length - 1 &&
+            groupStopTime &&
+            groupStopTime > snippetStopTime &&
+            (snippetStopTime = groupStopTime);
+
+          (overviewStartTime === undefined ||
+            overviewStartTime > snippetStartTime) &&
+            (overviewStartTime = snippetStartTime);
+          (overviewStopTime === undefined ||
+            overviewStopTime < snippetStopTime) &&
+            (overviewStopTime = snippetStopTime);
+        });
+
+        saveSnippetData();
+      }
     });
+
+    saveOverviewData();
+
+    return {
+      lazyLoading: lazyLoading,
+      snippetSegments: snippetSegments,
+      overviewSegments: overviewSegments
+    };
+  }
+
+  renderSnippetSegments = parsedData => {
+    let {
+      onClick,
+      editMode,
+      mediaPlayerTime,
+      mediaPlayerTimeInterval
+    } = this.props;
+
+    let stopMediaPlayHeadMs = mediaPlayerTime + mediaPlayerTimeInterval;
+
+    let snippetSegments = [];
+    parsedData.snippetSegments.forEach(segmentData => {
+      let segment = {
+        start: segmentData.startTimeMs,
+        stop: segmentData.stopTimeMs
+      };
+
+      switch (segmentData.status) {
+        case 'success':
+          segment.value = (
+            <SnippetSegment
+              key={'transcript-snippet' + segmentData.startTimeMs}
+              content={segmentData}
+              editMode={editMode}
+              onClick={onClick}
+              startMediaPlayHeadMs={mediaPlayerTime}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+              classNames={classNames(styles.contentSegment)}
+            />
+          );
+          break;
+
+        case 'no-transcript':
+          segment.value = (
+            <NoDataSegment
+              key={'transcript--snippet' + segmentData.startTimeMs}
+              startTimeMs={segmentData.startTimeMs}
+              stopTimeMs={segmentData.stopTimeMs}
+            />
+          );
+          break;
+      }
+
+      snippetSegments.push(segment);
+    });
+    return snippetSegments;
+  };
+
+  renderOverviewSegments = parsedData => {
+    let {
+      onClick,
+      editMode,
+      mediaPlayerTime,
+      mediaPlayerTimeInterval
+    } = this.props;
+
+    let stopMediaPlayHeadMs = mediaPlayerTime + mediaPlayerTimeInterval;
+
+    let overalStartTime = 0;
+    let overalStopTime = 0;
+    let overalString = '';
+
+    let overviewSegments = [];
+    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
+      let segmentStartTime = segmentData.startTimeMs;
+      let segmentStopTime = segmentData.stopTimeMs;
+
+      if (editMode) {
+        overalStartTime > segmentStartTime &&
+          (overalStartTime = segmentStartTime);
+        overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
+
+        if (segmentData.status === 'success') {
+          overalString = overalString + segmentData.sentences;
+        } else {
+          overalString = overalString + '\n\n\n';
+        }
+
+        if (segmentIndex === parsedData.overviewSegments.length - 1) {
+          // Reach the last segment
+          overviewSegments.push({
+            start: overalStartTime,
+            stop: overalStopTime,
+            value: (
+              <TranscriptBulkEdit
+                key={'transcript-bulk-edit' + overalStopTime}
+                content={overalString}
+              />
+            )
+          });
+        }
+      } else {
+        let segmentValue;
+        switch (segmentData.status) {
+          case 'success':
+            segmentValue = (
+              <OverviewSegment
+                key={'transcript-overview' + segmentStartTime}
+                content={segmentData}
+                onClick={onClick}
+                startMediaPlayHeadMs={mediaPlayerTime}
+                stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+                classNames={classNames(styles.contentSegment)}
+              />
+            );
+            break;
+          case 'no-transcript':
+            segmentValue = (
+              <NoDataSegment
+                key={'transcript--overview' + segmentStartTime}
+                overview
+                startTimeMs={segmentStartTime}
+                stopTimeMs={segmentStopTime}
+              />
+            );
+            break;
+        }
+
+        overviewSegments.push({
+          start: segmentStartTime,
+          stop: segmentStopTime,
+          value: segmentValue
+        });
+      }
+    });
+
+    return overviewSegments;
   };
 
   render() {
-    let { editMode, editModeEnabled } = this.props;
+    let {
+      overview,
+      className,
+      requestSizeMs,
+      mediaLengthMs,
+      neglectableTimeMs
+    } = this.props;
 
-    let bulkText = this.props.assets.reduce((accumulator, currentValue) => {
-      return (
-        accumulator +
-        currentValue.series.reduce((a, c) => {
-          return a + c.text + ' ';
-        }, '')
-      );
-    }, '');
+    let parsedData = this.parseData();
 
     return (
-      <div className={styles.transcriptContent} ref={this.elementRef}>
-        {editMode === 'bulk' && editModeEnabled ? (
-          <textarea
-            className={styles.bulkEditTextArea}
-            defaultValue={bulkText}
-          />
-        ) : (
-          this.getTranscriptChunks()
-        )}
+      <div className={classNames(styles.transcriptContent, className)}>
+        <DynamicContentScroll
+          className={classNames(styles.container)}
+          onScroll={this.handleOnScroll}
+          totalSize={parsedData.lazyLoading ? mediaLengthMs : 0}
+          segmentSize={requestSizeMs}
+          neglectableSize={neglectableTimeMs}
+          contents={
+            overview
+              ? this.renderOverviewSegments(parsedData)
+              : this.renderSnippetSegments(parsedData)
+          }
+        />
       </div>
     );
   }
 }
-
-export default TranscriptContent;
