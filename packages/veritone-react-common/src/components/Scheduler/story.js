@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
 import { subDays } from 'date-fns';
@@ -24,23 +24,35 @@ const store = createStore(
   )
 );
 
-storiesOf('Scheduler', module).add('Empty Scheduler', () => (
+@connect(state => ({
+  form: state.form.scheduler
+}))
+class DisplayState extends React.Component {
+  render() {
+    return <pre>{JSON.stringify(this.props.form.values, null, '\t')}</pre>;
+  }
+}
+
+storiesOf('Scheduler', module).add('Base', () => (
   <Provider store={store}>
-    <Scheduler
-      form="scheduler"
-      initialValues={{
-        scheduleType: 'recurring',
-        start: subDays(new Date(), 3),
-        end: new Date(),
-        maxSegment: {
-          number: '5',
-          period: 'week'
-        },
-        repeatEvery: {
-          number: '1',
-          period: 'day'
-        }
-      }}
-    />
+    <div>
+      <Scheduler
+        form="scheduler"
+        initialValues={{
+          scheduleType: 'recurring',
+          start: subDays(new Date(), 3),
+          end: new Date(),
+          maxSegment: {
+            number: '5',
+            period: 'week'
+          },
+          repeatEvery: {
+            number: '1',
+            period: 'day'
+          }
+        }}
+      />
+      <DisplayState />
+    </div>
   </Provider>
 ));
