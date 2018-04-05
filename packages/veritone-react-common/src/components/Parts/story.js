@@ -76,7 +76,6 @@ class DynamicScrollContainer extends Component {
           totalSize={5000}
           segmentSize={100}
           neglectableSize={50}
-          numSegmentPerUpdate={3}
           currentValue={0}
           onScroll={this.handleScrolling}
         />

@@ -18,7 +18,6 @@ export default class DynamicContentScroll extends Component {
     totalSize: number,
 
     segmentSize: number,
-    numSegmentPerUpdate: number,
 
     neglectableSize: number,
 
@@ -28,8 +27,7 @@ export default class DynamicContentScroll extends Component {
 
   static defaultProps = {
     currentValue: 0,
-    neglectableSize: 0,
-    numSegmentPerUpdate: 2
+    neglectableSize: 0
   };
 
   componentWillReceiveProps(newProps) {
@@ -118,9 +116,9 @@ export default class DynamicContentScroll extends Component {
   };
 
   renderFillers(start, stop) {
-    let { segmentSize, numSegmentPerUpdate, neglectableSize } = this.props;
+    let { segmentSize, neglectableSize } = this.props;
 
-    let segmentHeight = 100 / numSegmentPerUpdate + '%';
+    let segmentHeight = 100 / 5 + '%';      // 5 is num empty segment can be displayed in the scrollabe window
 
     let fillers = [];
     let currentStart = start;

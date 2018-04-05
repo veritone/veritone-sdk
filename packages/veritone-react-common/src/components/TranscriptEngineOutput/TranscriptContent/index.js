@@ -40,7 +40,6 @@ export default class TranscriptContent extends Component {
     onClick: func,
     onScroll: func,
 
-    numMaxRequest: number,
     requestSizeMs: number,
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -51,7 +50,6 @@ export default class TranscriptContent extends Component {
   static defaultProps = {
     editMode: false,
     overview: false,
-    numMaxRequest: 2,
     mediaPlayerTime: 0,
     mediaPlayerTimeInterval: 1000
   };
@@ -349,7 +347,6 @@ export default class TranscriptContent extends Component {
     let {
       overview,
       className,
-      numMaxRequest,
       requestSizeMs,
       mediaLengthMs,
       neglectableTimeMs
@@ -365,7 +362,6 @@ export default class TranscriptContent extends Component {
           totalSize={parsedData.lazyLoading ? mediaLengthMs : 0}
           segmentSize={requestSizeMs}
           neglectableSize={neglectableTimeMs}
-          numSegmentPerUpdate={numMaxRequest}
           contents={
             overview
               ? this.renderOverviewSegments(parsedData)

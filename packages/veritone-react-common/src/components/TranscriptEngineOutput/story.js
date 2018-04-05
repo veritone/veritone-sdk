@@ -86,7 +86,6 @@ export class TranscriptExample extends Component {
         className={styles.outputViewRoot}
         mediaPlayerTime={1000 * number('media player time', 0)}
         mediaPlayerTimeInterval={1000 * number('media player time Interval', 1)}
-        numMaxRequest={2}
         requestSizeMs={300000}
         mediaLengthMs={3000000}
         neglectableTimeMs={2000}
