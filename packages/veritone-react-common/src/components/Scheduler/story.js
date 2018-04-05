@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
+import { subDays } from 'date-fns';
 
 import { createLogger } from 'redux-logger';
 import { applyMiddleware, compose } from 'redux';
@@ -28,7 +29,17 @@ storiesOf('Scheduler', module).add('Empty Scheduler', () => (
     <Scheduler
       form="scheduler"
       initialValues={{
-        scheduleType: 'immediate'
+        scheduleType: 'recurring',
+        start: subDays(new Date(), 3),
+        end: new Date(),
+        maxSegment: {
+          number: '5',
+          period: 'week'
+        },
+        repeatEvery: {
+          number: '1',
+          period: 'day'
+        }
       }}
     />
   </Provider>
