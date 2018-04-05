@@ -8,27 +8,24 @@ import { action } from '@storybook/addon-actions';
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
 
-storiesOf('TranscriptEngineOutput', module).add('Without Lazy Loading', () => {
-  return (
-    <TranscriptExample/>
-  );
-}).add('With Lazy Loading', () => {
-  return (
-    <TranscriptExample lazyLoading/>
-  );
-});
-
+storiesOf('TranscriptEngineOutput', module)
+  .add('Without Lazy Loading', () => {
+    return <TranscriptExample />;
+  })
+  .add('With Lazy Loading', () => {
+    return <TranscriptExample lazyLoading />;
+  });
 
 export class TranscriptExample extends Component {
   static propTypes = {
     lazyLoading: bool
-  }
+  };
 
   static defaultProps = {
     lazyLoading: false
   };
 
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     let initialStartTime = 0;
@@ -40,52 +37,80 @@ export class TranscriptExample extends Component {
     let badSerieRatio = 0.3;
 
     this.selectedEngineId = '1';
-    this.engines = [{id: '1', name:'Engine-X'}, {id: '2', name:'Engine-Y'}, {id: '3', name:'Engine-Z'}];
+    this.engines = [
+      { id: '1', name: 'Engine-X' },
+      { id: '2', name: 'Engine-Y' },
+      { id: '3', name: 'Engine-Z' }
+    ];
 
-    let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio, props.lazyLoading);
+    let mockData = genMockData(
+      initialStartTime,
+      initialStopTime,
+      initialNumDataChunks,
+      maxSerieSize,
+      minSerieSize,
+      type,
+      badSerieRatio,
+      props.lazyLoading
+    );
     this.state = {
       data: mockData
-    }
+    };
   }
 
-  handleDataRequesting = (requestInfo) => {
+  handleDataRequesting = requestInfo => {
     if (this.props.lazyLoading) {
       let startTime = requestInfo.start;
       let stopTime = requestInfo.stop;
-      let additionalData = genMockData(startTime, stopTime, 3, 50, 1, 'VLF', 0.2);
+      let additionalData = genMockData(
+        startTime,
+        stopTime,
+        3,
+        50,
+        1,
+        'VLF',
+        0.2
+      );
       let newMockData = this.state.data.concat(additionalData);
       this.setState({
         data: newMockData
-      })
+      });
     }
-  }
+  };
 
-  render () {
+  render() {
     return (
-      <TranscriptEngineOutput 
+      <TranscriptEngineOutput
         editMode={boolean('Edit Mode', false)}
         data={this.state.data}
         className={styles.outputViewRoot}
-        mediaPlayerTime={1000*number('media player time', 0)}
-        mediaPlayerTimeInterval={1000*number('media player time Interval', 1)}
+        mediaPlayerTime={1000 * number('media player time', 0)}
+        mediaPlayerTimeInterval={1000 * number('media player time Interval', 1)}
         numMaxRequest={2}
         requestSizeMs={300000}
         mediaLengthMs={3000000}
         neglectableTimeMs={2000}
         onScroll={this.handleDataRequesting}
         onClick={action('on click')}
-
         engines={this.engines}
         selectedEngineId={this.selectedEngineId}
         onEngineChange={action('engine changed')}
         onExpandClicked={action('expand view clicked')}
       />
-    )
+    );
   }
 }
 
-
-function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, minSerieSize = 0, type = 'TTML', badSerieRatio = 0.2, enableLazyLoading = true) {
+function genMockData(
+  startTime,
+  stopTime,
+  numDataChunks,
+  maxSerieSize = 10,
+  minSerieSize = 0,
+  type = 'TTML',
+  badSerieRatio = 0.2,
+  enableLazyLoading = true
+) {
   let dataChunks = [];
 
   let chunkStartTime = startTime;
@@ -94,18 +119,25 @@ function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, min
     let chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
 
     let isBadSerie = Math.random() < badSerieRatio;
-    let series = genMockSerie(chunkStartTime, chunkStoptime, maxSerieSize, minSerieSize, type, isBadSerie);
+    let series = genMockSerie(
+      chunkStartTime,
+      chunkStoptime,
+      maxSerieSize,
+      minSerieSize,
+      type,
+      isBadSerie
+    );
 
     if (enableLazyLoading) {
-      dataChunks.push({ 
+      dataChunks.push({
         startTimeMs: chunkStartTime,
         stopTimeMs: chunkStoptime,
         status: 'success',
-        series: series 
+        series: series
       });
     } else {
-      dataChunks.push({ 
-        series: series 
+      dataChunks.push({
+        series: series
       });
     }
 
@@ -115,10 +147,18 @@ function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, min
   return dataChunks;
 }
 
-function genMockSerie (startTimeMs, stopTimeMs, maxSerieSize, minSerieSize, type = 'TTML', badSerie = false) {
+function genMockSerie(
+  startTimeMs,
+  stopTimeMs,
+  maxSerieSize,
+  minSerieSize,
+  type = 'TTML',
+  badSerie = false
+) {
   let mockSeries = [];
   if (badSerie === false) {
-    let serieSize = Math.round(Math.random() * (maxSerieSize - minSerieSize)) + minSerieSize;
+    let serieSize =
+      Math.round(Math.random() * (maxSerieSize - minSerieSize)) + minSerieSize;
     let timeInterval = (stopTimeMs - startTimeMs) / serieSize;
 
     let lastStopTime = startTimeMs;
@@ -141,27 +181,27 @@ function genMockSerie (startTimeMs, stopTimeMs, maxSerieSize, minSerieSize, type
     mockSeries.push({
       startTimeMs: startTimeMs,
       stopTimeMs: stopTimeMs
-    })
+    });
   }
 
   return mockSeries;
 }
 
-function genMockWords (size, type = 'TTML') {
+function genMockWords(size, type = 'TTML') {
   let words = [];
   if (type === 'TTML') {
     let sentenceIndex = Math.round(Math.random() * (ttmlSentences.length - 1));
     words.push({
       word: ttmlSentences[sentenceIndex],
       confidence: 1
-    })
+    });
   } else {
     for (let index = 0; index < size; index++) {
-      let wordIndex = Math.round(Math.random()  * (vlfWords.length - 1));
+      let wordIndex = Math.round(Math.random() * (vlfWords.length - 1));
       words.push({
         word: vlfWords[wordIndex],
-        confidence: Math.round(Math.random() * 100)/100
-      })
+        confidence: Math.round(Math.random() * 100) / 100
+      });
     }
   }
 
@@ -180,16 +220,74 @@ const ttmlSentences = [
 ];
 
 const vlfWords = [
-  'obese', 'cushion', 'shivering', 'parallel', 'hill', 'impartial',
-  'creator', 'live', 'correct', 'flood', 'inquisitive', 'cars',
-  'absorbing', 'chess', 'large', 'mixed', 'horses', 'stupid',
-  'tree', 'selective', 'seemly', 'skillful', 'awesome', 'sharp',
-  'island', 'dress', 'skirt', 'clip', 'confess', 'nose',
-  'cheese', 'carve', 'caption', 'cry', 'knot', 'smile',
-  'silent', 'rapid', 'funny', 'superb', 'tranquil', 'hug',
-  'hands', 'flowers', 'permit', 'cheer', 'belligerent', 'mice',
-  'grey', 'wave', 'grate', 'royal', 'number', 'sheep',
-  'naughty', 'actor', 'dress', 'wound', 'material', 'joyous', 
-  'handle', 'adorable', 'prevent', 'fruit', 'festive', 'puzzling',
-  'erratic', 'befitting', 'check', 'wiggly'
+  'obese',
+  'cushion',
+  'shivering',
+  'parallel',
+  'hill',
+  'impartial',
+  'creator',
+  'live',
+  'correct',
+  'flood',
+  'inquisitive',
+  'cars',
+  'absorbing',
+  'chess',
+  'large',
+  'mixed',
+  'horses',
+  'stupid',
+  'tree',
+  'selective',
+  'seemly',
+  'skillful',
+  'awesome',
+  'sharp',
+  'island',
+  'dress',
+  'skirt',
+  'clip',
+  'confess',
+  'nose',
+  'cheese',
+  'carve',
+  'caption',
+  'cry',
+  'knot',
+  'smile',
+  'silent',
+  'rapid',
+  'funny',
+  'superb',
+  'tranquil',
+  'hug',
+  'hands',
+  'flowers',
+  'permit',
+  'cheer',
+  'belligerent',
+  'mice',
+  'grey',
+  'wave',
+  'grate',
+  'royal',
+  'number',
+  'sheep',
+  'naughty',
+  'actor',
+  'dress',
+  'wound',
+  'material',
+  'joyous',
+  'handle',
+  'adorable',
+  'prevent',
+  'fruit',
+  'festive',
+  'puzzling',
+  'erratic',
+  'befitting',
+  'check',
+  'wiggly'
 ];

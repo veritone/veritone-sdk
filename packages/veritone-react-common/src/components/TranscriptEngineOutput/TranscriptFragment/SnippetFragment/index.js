@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { string, number, func, bool } from 'prop-types';
 
-import classNames from 'classnames'
+import classNames from 'classnames';
 import ContentEditable from 'react-contenteditable';
 
 import styles from './styles.scss';
@@ -15,41 +15,29 @@ export default class SnippetFragment extends Component {
     editMode: bool,
     onClick: func,
     onChange: func,
-    className: string,
+    className: string
   };
 
   static defaultProps = {
-    active: false,    
+    active: false,
     editMode: false
   };
 
-  handleSnippetClick = (event) => {
-    let {
-      value,
-      startTimeMs,
-      stopTimeMs,
-      editMode,
-      onClick
-    } = this.props;
+  handleSnippetClick = event => {
+    let { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
 
     if (!editMode && onClick) {
       let data = {
         value: value,
         startTimeMs: startTimeMs,
         stopTimeMs: stopTimeMs
-      }
+      };
       onClick(event, data);
     }
-  }
+  };
 
-  handleSnippetChange = (event) => {
-    let {
-      value,
-      startTimeMs,
-      stopTimeMs,
-      editMode,
-      onChange
-    } = this.props;
+  handleSnippetChange = event => {
+    let { value, startTimeMs, stopTimeMs, editMode, onChange } = this.props;
 
     if (editMode && onChange) {
       let data = {
@@ -57,30 +45,27 @@ export default class SnippetFragment extends Component {
         originalValue: value,
         startTimeMs: startTimeMs,
         stopTimeMs: stopTimeMs
-      }
+      };
       onChange(event, data);
     }
-  }
+  };
 
-
-  render () {
-    let {
-      value,
-      active,
-      editMode,
-      className
-    } = this.props;
+  render() {
+    let { value, active, editMode, className } = this.props;
 
     return (
-      <ContentEditable 
-        tagName='span'
+      <ContentEditable
+        tagName="span"
         html={value}
         disabled={!editMode}
         onClick={this.handleSnippetClick}
         onChange={this.handleSnippetChange}
-        className={classNames(styles.transcriptSnippet, className, {[styles.read]: !editMode, [styles.edit]: editMode, [styles.highlight]: active})}
+        className={classNames(styles.transcriptSnippet, className, {
+          [styles.read]: !editMode,
+          [styles.edit]: editMode,
+          [styles.highlight]: active
+        })}
       />
     );
   }
-
 }

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { shape, bool, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 
@@ -16,27 +16,22 @@ export default class OverviewSegment extends Component {
     onClick: func
   };
 
-  handleFragmentClicked = (event) => {
-    let {
-      content,
-      onClick
-    } = this.props;
+  handleFragmentClicked = event => {
+    let { content, onClick } = this.props;
 
     if (onClick) {
       onClick(event, content);
     }
-  }
+  };
 
-  render () {
-    let {
-      content,
-      active,
-      className,
-    } = this.props;
+  render() {
+    let { content, active, className } = this.props;
 
     return (
-      <span 
-        className={classNames(styles.overviewFragment, className, {[styles.highlight]: active})} 
+      <span
+        className={classNames(styles.overviewFragment, className, {
+          [styles.highlight]: active
+        })}
         onClick={this.handleFragmentClicked}
       >
         {content.value}

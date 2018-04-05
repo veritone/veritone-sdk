@@ -6,15 +6,15 @@
   display: flex;
   flex-direction: row;
   border-bottom: 1px solid $faint-black;
-  
+
   .time {
     font-weight: bold;
-    padding: 20px 20px 20px 0px;
+    padding: 20px 20px 20px 0;
   }
 
   .content {
     width: 100%;
-    padding: 20px 0px;
+    padding: 20px 0;
     text-align: center;
     font-size: 22px;
     font-weight: lighter;
@@ -26,7 +26,7 @@
     .time {
       text-align: center;
       font-weight: lighter;
-      padding: 20px 0px 0px 0px;
+      padding: 20px 0 0;
     }
   }
 }

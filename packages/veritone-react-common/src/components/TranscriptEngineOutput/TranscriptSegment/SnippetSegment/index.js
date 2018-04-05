@@ -3,7 +3,7 @@ import { arrayOf, shape, bool, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 
 import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
-import { msToReadableString } from '../../../../helpers/time'
+import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 
@@ -13,11 +13,13 @@ export default class SnippetSegment extends Component {
       startTimeMs: number,
       stopTimeMs: number,
       sentences: string,
-      fragments: arrayOf(shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        value: string
-      }))
+      fragments: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          value: string
+        })
+      )
     }),
     className: string,
     timeClassName: string,
@@ -27,7 +29,7 @@ export default class SnippetSegment extends Component {
     onClick: func,
     onChange: func,
     startMediaPlayHeadMs: number,
-    stopMediaPlayHeadMs: number,
+    stopMediaPlayHeadMs: number
   };
 
   static defaultProps = {
@@ -35,36 +37,26 @@ export default class SnippetSegment extends Component {
     sentenceMode: false,
     startMediaPlayHeadMs: 0,
     stopMediaPlayHeadMs: 1000
-  }
+  };
 
   handleSnippetClick = (event, entryData) => {
-    let {
-      editMode,
-      onClick
-    } = this.props;
+    let { editMode, onClick } = this.props;
 
     if (!editMode && onClick) {
-      onClick(event, entryData)
+      onClick(event, entryData);
     }
-  }
+  };
 
   handleSnippetChange = (event, entryData) => {
-    let {
-      editMode,
-      onChange
-    } = this.props;
+    let { editMode, onChange } = this.props;
 
     if (editMode && onChange) {
-      onChange(event, entryData)
+      onChange(event, entryData);
     }
-  }
+  };
 
-  renderTime (startTime) {
-    let {
-      content,
-      timeClassName
-    } = this.props;
-
+  renderTime(startTime) {
+    let { content, timeClassName } = this.props;
 
     let formatedTime = msToReadableString(content.startTimeMs, true);
     return (
@@ -74,7 +66,7 @@ export default class SnippetSegment extends Component {
     );
   }
 
-  renderFragments () {
+  renderFragments() {
     let {
       content,
       editMode,
@@ -89,10 +81,14 @@ export default class SnippetSegment extends Component {
       let stopTime = entry.stopTimeMs;
 
       contentComponents.push(
-        <SnippetFragment 
+        <SnippetFragment
           key={'snippet-' + entry.value + '-' + startTime + '-' + stopTime}
           value={entry.value + ' '}
-          active={!(stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime)}
+          active={
+            !(
+              stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
+            )
+          }
           startTimeMs={startTime}
           stopTimeMs={stopTime}
           editMode={editMode}
@@ -104,12 +100,12 @@ export default class SnippetSegment extends Component {
 
     return (
       <div className={classNames(styles.content, contentClassName)}>
-        { contentComponents }
+        {contentComponents}
       </div>
     );
   }
 
-  renderSentence () {
+  renderSentence() {
     let {
       content,
       editMode,
@@ -123,30 +119,31 @@ export default class SnippetSegment extends Component {
 
     return (
       <div className={classNames(styles.content, contentClassName)}>
-        <SnippetFragment 
-            key={'sentence-'+startTime+'-'+stopTime}
-            value={content.sentences}
-            startTimeMs={startTime}
-            stopTimeMs={stopTime}
-            active={!(stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime)}
-            editMode={editMode}
-            onClick={this.handleSnippetClick}
-            onChange={this.handleSnippetChange}
+        <SnippetFragment
+          key={'sentence-' + startTime + '-' + stopTime}
+          value={content.sentences}
+          startTimeMs={startTime}
+          stopTimeMs={stopTime}
+          active={
+            !(
+              stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
+            )
+          }
+          editMode={editMode}
+          onClick={this.handleSnippetClick}
+          onChange={this.handleSnippetChange}
         />
       </div>
-    )
+    );
   }
 
-  render () {
-    let {
-      className,
-      sentenceMode,
-    } = this.props;
+  render() {
+    let { className, sentenceMode } = this.props;
 
     return (
       <div className={classNames(styles.transcriptSegment, className)}>
-        { this.renderTime() }
-        { sentenceMode ? this.renderSentence() : this.renderFragments() }
+        {this.renderTime()}
+        {sentenceMode ? this.renderSentence() : this.renderFragments()}
       </div>
     );
   }

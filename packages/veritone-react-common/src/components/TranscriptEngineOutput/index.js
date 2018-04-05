@@ -13,27 +13,35 @@ import styles from './styles.scss';
 
 export default class TranscriptEngineOutput extends Component {
   static propTypes = {
-    data: arrayOf(shape({
-      startTimeMs: number,
-      stopTimeMs: number,
-      status: string,
-      series: arrayOf(shape({
+    data: arrayOf(
+      shape({
         startTimeMs: number,
         stopTimeMs: number,
-        words: arrayOf(shape({
-          word: string,
-          confidence: number
-        }))
-      }))
-    })),
-    
+        status: string,
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            words: arrayOf(
+              shape({
+                word: string,
+                confidence: number
+              })
+            )
+          })
+        )
+      })
+    ),
+
     selectedEngineId: string,
-    engines: arrayOf(shape({
-      id: string,
-      name: string
-    })),
+    engines: arrayOf(
+      shape({
+        id: string,
+        name: string
+      })
+    ),
     title: string,
-    
+
     className: string,
     headerClassName: string,
     contentClassName: string,
@@ -44,14 +52,14 @@ export default class TranscriptEngineOutput extends Component {
     onScroll: func,
     onEngineChange: func,
     onExpandClicked: func,
-    
+
     numMaxRequest: number,
     requestSizeMs: number,
     mediaLengthMs: number,
     neglectableTimeMs: number,
 
     mediaPlayerTime: number,
-    mediaPlayerTimeInterval: number,
+    mediaPlayerTimeInterval: number
   };
 
   static defaultProps = {
@@ -62,46 +70,46 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeInterval: 1000
   };
 
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     this.state = {
       overview: false
-    }
+    };
   }
 
-  handleViewChange = (event) => {
-    (event.target.value === 'overview')  && this.setState({overview: true});
-    (event.target.value === 'time')      && this.setState({overview: false});
-  }
+  handleViewChange = event => {
+    event.target.value === 'overview' && this.setState({ overview: true });
+    event.target.value === 'time' && this.setState({ overview: false });
+  };
 
-  renderEditOptions () {
+  renderEditOptions() {
     return (
       <RadioGroup
         row
-        aria-label='edit_mode'
+        aria-label="edit_mode"
         value={this.state.overview ? 'overview' : 'time'}
-        name='editMode'
+        name="editMode"
         className={classNames(styles.radioButton)}
         onChange={this.handleViewChange}
       >
         <FormControlLabel
-          value='time'
+          value="time"
           className={styles.label}
-          control={<Radio color='primary' />}
-          label='Snippet Edit'
+          control={<Radio color="primary" />}
+          label="Snippet Edit"
         />
         <FormControlLabel
-          value='overview'
+          value="overview"
           className={styles.label}
-          control={<Radio color='primary' />}
-          label='Bulk Edit'
+          control={<Radio color="primary" />}
+          label="Bulk Edit"
         />
       </RadioGroup>
     );
   }
 
-  renderViewOptions () {
+  renderViewOptions() {
     return (
       <Select
         autoWidth
@@ -109,13 +117,13 @@ export default class TranscriptEngineOutput extends Component {
         className={styles.viewDropdown}
         onChange={this.handleViewChange}
       >
-        <MenuItem value='time'>Time</MenuItem>
-        <MenuItem value='overview'>Overview</MenuItem>
+        <MenuItem value="time">Time</MenuItem>
+        <MenuItem value="overview">Overview</MenuItem>
       </Select>
     );
   }
 
-  renderHeader () {
+  renderHeader() {
     let {
       title,
       engines,
@@ -123,7 +131,7 @@ export default class TranscriptEngineOutput extends Component {
       editMode,
       onEngineChange,
       onExpandClicked,
-      headerClassName,
+      headerClassName
     } = this.props;
 
     return (
@@ -137,13 +145,13 @@ export default class TranscriptEngineOutput extends Component {
         className={classNames(headerClassName)}
       >
         <div className={classNames(styles.controllers)}>
-          {editMode? this.renderEditOptions() : this.renderViewOptions()}
+          {editMode ? this.renderEditOptions() : this.renderViewOptions()}
         </div>
       </EngineOutputHeader>
-    )
+    );
   }
 
-  renderBody () {
+  renderBody() {
     let {
       data,
       onClick,
@@ -155,15 +163,15 @@ export default class TranscriptEngineOutput extends Component {
       neglectableTimeMs,
       contentClassName,
       mediaPlayerTime,
-      mediaPlayerTimeInterval,
+      mediaPlayerTimeInterval
     } = this.props;
 
     return (
       <div className={classNames(styles.content)}>
-        <TranscriptContent 
+        <TranscriptContent
           data={data}
           editMode={editMode}
-          overview={(this.state.overview)}
+          overview={this.state.overview}
           mediaPlayerTime={mediaPlayerTime}
           mediaPlayerTimeInterval={mediaPlayerTimeInterval}
           numMaxRequest={numMaxRequest}
@@ -175,9 +183,9 @@ export default class TranscriptEngineOutput extends Component {
           className={classNames(contentClassName)}
         />
       </div>
-    )
+    );
   }
-/*
+  /*
   
   editMode: bool,
   overview: bool,
@@ -186,16 +194,14 @@ export default class TranscriptEngineOutput extends Component {
   onScroll: func,
 
 */
-  render () {
-    let {
-      className
-    } = this.props;
+  render() {
+    let { className } = this.props;
 
     return (
       <div className={classNames(styles.transcriptOutput, className)}>
         {this.renderHeader()}
         {this.renderBody()}
       </div>
-    )
+    );
   }
 }

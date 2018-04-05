@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { string, func } from 'prop-types';
 import classNames from 'classnames';
 
@@ -15,7 +15,7 @@ export default class TranscriptBulkEdit extends Component {
     if (this.inputArea) {
       this.inputArea.style.height = this.inputArea.scrollHeight + 'px';
     }
-  }
+  };
 
   setTextArea = target => {
     if (target) {
@@ -25,11 +25,14 @@ export default class TranscriptBulkEdit extends Component {
     }
   };
 
-  render () {
+  render() {
     let { className } = this.props;
     return (
       <div className={classNames(styles.transcriptBulkEdit, className)}>
-        <textarea ref={this.setTextArea} className={classNames(styles.inputArea)} />
+        <textarea
+          ref={this.setTextArea}
+          className={classNames(styles.inputArea)}
+        />
       </div>
     );
   }

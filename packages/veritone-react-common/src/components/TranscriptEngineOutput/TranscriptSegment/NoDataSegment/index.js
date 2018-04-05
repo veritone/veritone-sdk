@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import classNames from 'classnames';
 import { string, number, bool } from 'prop-types';
-import { msToReadableString } from '../../../../helpers/time'
+import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 
@@ -18,10 +18,10 @@ export default class NoDataSegment extends Component {
   static defaultProps = {
     overview: false,
     startTimeMs: 0,
-    stopTimeMs: 0,
-  }
+    stopTimeMs: 0
+  };
 
-  render () {
+  render() {
     let {
       overview,
       startTimeMs,
@@ -37,9 +37,17 @@ export default class NoDataSegment extends Component {
     }
 
     return (
-      <div className={classNames(styles.transcriptNoData, className, {[styles.overview]: overview})}>
-        <div className={classNames(styles.time, timeClassName)}>{timeString}</div>
-        <div className={classNames(styles.content, contentClassName)}>No Transcript Data Available</div>
+      <div
+        className={classNames(styles.transcriptNoData, className, {
+          [styles.overview]: overview
+        })}
+      >
+        <div className={classNames(styles.time, timeClassName)}>
+          {timeString}
+        </div>
+        <div className={classNames(styles.content, contentClassName)}>
+          No Transcript Data Available
+        </div>
       </div>
     );
   }
