@@ -67,9 +67,13 @@ class OCREngineOutputView extends Component {
         <div className={styles.ocrContent}>
           {data
             .reduce((accumulator, currentValue) => {
-              return [...accumulator, ...currentValue.series];
+              if (currentValue.series) {
+                return [...accumulator, ...currentValue.series];
+              }
+              return [...accumulator, []];
             }, [])
-            .map((ocrObject, i) => {
+            .filter(ocrObject => !!ocrObject.object && !!ocrObject.object.text)
+            .map((ocrObject) => {
               {
                 /* TDO: key may not be unique enough */
               }
