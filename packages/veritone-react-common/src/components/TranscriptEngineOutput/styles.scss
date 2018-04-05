@@ -7,8 +7,23 @@
 
   color: $min-black;
 
-  .container {
+  .controllers{
     width: 100%;
-    height: 100%;
+    
+    .radioButton{
+      float: left;
+      font-size: 14px;
+    }
+
+    .viewDropdown{
+      float: right;
+      margin-right: 20px;
+    }
+  }
+
+  .content{
+    clear: both;
+    width: 100%;
+    height: calc(100% - 45px);
   }
 }

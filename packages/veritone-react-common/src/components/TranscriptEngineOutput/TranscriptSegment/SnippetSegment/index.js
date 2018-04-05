@@ -19,6 +19,7 @@ export default class SnippetSegment extends Component {
         value: string
       }))
     }),
+    mediaPlayerTime: number,
     className: string,
     timeClassName: string,
     contentClassName: string,
@@ -30,7 +31,8 @@ export default class SnippetSegment extends Component {
 
   static defaultProps = {
     editMode: false,
-    sentenceMode: false
+    sentenceMode: false,
+    mediaPlayerTime: 0
   }
 
   handleSnippetClick = (event, entryData) => {
@@ -73,18 +75,23 @@ export default class SnippetSegment extends Component {
   renderFragments () {
     let {
       content,
+      editMode,
+      mediaPlayerTime,
       contentClassName,
-      editMode
     } = this.props;
 
     let contentComponents = [];
     content.fragments.forEach((entry, index) => {
+      let startTime = entry.startTime;
+      let stopTime = entry.stopTime;
+
       contentComponents.push(
         <SnippetFragment 
-          key={'snippet-'+entry.value+'-'+entry.startTimeMs+'-'+entry.stopTimeMs}
+          key={'snippet-' + entry.value + '-' + startTime + '-' + stopTime}
           value={entry.value + ' '}
-          startTimeMs={entry.startTimeMs}
-          stopTimeMs={entry.stopTimeMs}
+          active={mediaPlayerTime >= startTime && mediaPlayerTime <= stopTime}
+          startTimeMs={startTime}
+          stopTimeMs={stopTime}
           editMode={editMode}
           onClick={this.handleSnippetClick}
           onChange={this.handleSnippetChange}

@@ -11,10 +11,17 @@ export default class TranscriptBulkEdit extends Component {
     onChange: func
   };
 
+  scaleToFit = () => {
+    if (this.inputArea) {
+      this.inputArea.style.height = this.inputArea.scrollHeight + 'px';
+    }
+  }
+
   setTextArea = target => {
     if (target) {
       target.value = this.props.content;
       this.inputArea = target;
+      this.scaleToFit();
     }
   };
 

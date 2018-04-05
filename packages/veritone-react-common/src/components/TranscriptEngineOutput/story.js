@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { bool } from 'prop-types';
 import { storiesOf } from '@storybook/react';
+import { boolean } from '@storybook/addon-knobs/react';
 
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
@@ -36,10 +37,13 @@ export class TranscriptExample extends Component {
     let type = 'VLF';
     let badSerieRatio = 0.3;
 
-    let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio);
+    this.selectedEngineId = '1';
+    this.engines = [{id: '1', name:'Engine-X'}, {id: '2', name:'Engine-Y'}, {id: '3', name:'Engine-Z'}];
 
+    let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio);
     this.state = {
-      data: mockData
+      data: mockData,
+      mediaPlayerTime: 0
     }
   }
 
@@ -55,18 +59,35 @@ export class TranscriptExample extends Component {
     }
   }
 
+  handleEngineChange (value) {
+    console.log('engine change', value)
+  }
+
+  handleExpandView () {}
+
+  updatePlayerTime = () => {
+    console.log('tick');
+  }
+
   render () {
+    //setInterval(this.updatePlayerTime, 1000);
+    
     return (
       <TranscriptEngineOutput 
+        editMode={boolean('Edit Mode', false)}
         data={this.state.data}
         className={styles.outputViewRoot}
-        overview
-        mediaPlayerTime={0}
+        mediaPlayerTime={this.state.mediaPlayerTime}
         numMaxRequest={2}
         requestSizeMs={300000}
         mediaLengthMs={3000000}
         neglectableTimeMs={2000}
         onScroll={this.handleDataRequesting}
+
+        engines={this.engines}
+        selectedEngineId={this.selectedEngineId}
+        onEngineChange={this.handleEngineChange}
+        onExpandClicked={this.handleExpandView}
       />
     )
   }

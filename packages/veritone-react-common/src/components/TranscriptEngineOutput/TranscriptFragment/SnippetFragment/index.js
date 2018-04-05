@@ -9,6 +9,7 @@ import styles from './styles.scss';
 export default class SnippetFragment extends Component {
   static propTypes = {
     value: string,
+    active: bool,
     startTimeMs: number,
     stopTimeMs: number,
     editMode: bool,
@@ -18,6 +19,7 @@ export default class SnippetFragment extends Component {
   };
 
   static defaultProps = {
+    active: false,    
     editMode: false
   };
 
@@ -64,6 +66,7 @@ export default class SnippetFragment extends Component {
   render () {
     let {
       value,
+      active,
       editMode,
       className
     } = this.props;
@@ -75,7 +78,7 @@ export default class SnippetFragment extends Component {
         disabled={!editMode}
         onClick={this.handleSnippetClick}
         onChange={this.handleSnippetChange}
-        className={classNames(styles.transcriptSnippet, className, {[styles.read]: !editMode, [styles.edit]: editMode})}
+        className={classNames(styles.transcriptSnippet, className, {[styles.read]: !editMode, [styles.edit]: editMode, [styles.highlight]: active})}
       />
     );
   }

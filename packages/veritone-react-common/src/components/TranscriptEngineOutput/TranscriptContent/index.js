@@ -3,11 +3,11 @@ import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { sortBy } from 'lodash';
 import classNames from 'classnames';
 
-import DynamicContentScroll from '../Parts/Scrolls/DynamicContentScroll';
-import NoDataSegment from './TranscriptSegment/NoDataSegment';
-import SnippetSegment from './TranscriptSegment/SnippetSegment';
-import OverviewSegment from './TranscriptSegment/OverviewSegment';
-import TranscriptBulkEdit from './TranscriptBulkEdit';
+import DynamicContentScroll from '../../Parts/Scrolls/DynamicContentScroll';
+import NoDataSegment from '../TranscriptSegment/NoDataSegment';
+import SnippetSegment from '../TranscriptSegment/SnippetSegment';
+import OverviewSegment from '../TranscriptSegment/OverviewSegment';
+import TranscriptBulkEdit from '../TranscriptBulkEdit';
 
 import styles from './styles.scss';
 
@@ -26,11 +26,14 @@ export default class TranscriptContent extends Component {
         }))
       }))
     })),
+    className: string,
+    
     editMode: bool,
     overview: bool,
-    className: string,
+    
     onClick: func,
     onScroll: func,
+    
     numMaxRequest: number,
     requestSizeMs: number,
     mediaLengthMs: number,
@@ -51,6 +54,14 @@ export default class TranscriptContent extends Component {
 
   
   parseData () {
+    if (!this.props.data) {
+      return {
+        lazyLoading: false,
+        snippetSegments: [],
+        overviewSegments: []
+      };
+    }
+
     let snippetSegments = [];
     let overviewSegments = [];
 
@@ -172,6 +183,11 @@ export default class TranscriptContent extends Component {
   }
 
   renderSnippetSegments = (parsedData) => {
+    let { 
+      editMode, 
+      mediaPlayerTime 
+    } = this.props;
+
     let snippetSegments = [];
     parsedData.snippetSegments.forEach(segmentData => {
       let segment = {
@@ -185,7 +201,8 @@ export default class TranscriptContent extends Component {
           <SnippetSegment 
             key={'transcript-snippet'+segmentData.startTimeMs} 
             content={segmentData} 
-            editMode={this.props.editMode} 
+            editMode={editMode} 
+            mediaPlayerTime={mediaPlayerTime}
             classNames={classNames(styles.contentSegment)}
           />
         );
@@ -208,7 +225,11 @@ export default class TranscriptContent extends Component {
   }
 
   renderOverviewSegments = (parsedData) => {
-    let editMode = this.props.editMode;
+    let { 
+      editMode, 
+      mediaPlayerTime 
+    } = this.props;
+
     let overalStartTime = 0;
     let overalStopTime = 0;
     let overalString = '';
@@ -243,6 +264,7 @@ export default class TranscriptContent extends Component {
             <OverviewSegment 
               key={'transcript-overview' + segmentStartTime} 
               content={segmentData} 
+              mediaPlayerTime={mediaPlayerTime}
               classNames={classNames(styles.contentSegment)}
             />
           );
@@ -281,7 +303,7 @@ export default class TranscriptContent extends Component {
 
     let parsedData = this.parseData();
     return (
-      <div className={classNames(styles.transcriptOutput, className)}>
+      <div className={classNames(styles.transcriptContent, className)}>
         <DynamicContentScroll 
           className={classNames(styles.container)}
           onScroll={this.handleOnScroll}

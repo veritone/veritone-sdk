@@ -11,12 +11,15 @@ export default class DynamicContentScroll extends Component {
       stop: number,
       value: any
     })),
-
     className: string,
+
     totalSize: number,
+
     segmentSize: number,
-    neglectableSize: number,
     numSegmentPerUpdate: number,
+
+    neglectableSize: number,
+
     currentValue: number,
     onScroll: func
   }

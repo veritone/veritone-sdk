@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { sortBy } from 'lodash';
 import classNames from 'classnames';
 
-import DynamicContentScroll from '../Parts/Scrolls/DynamicContentScroll';
-import NoDataSegment from './TranscriptSegment/NoDataSegment';
-import SnippetSegment from './TranscriptSegment/SnippetSegment';
-import OverviewSegment from './TranscriptSegment/OverviewSegment';
-import TranscriptBulkEdit from './TranscriptBulkEdit';
+import Select from 'material-ui/Select';
+import { MenuItem } from 'material-ui/Menu';
+import Radio, { RadioGroup } from 'material-ui/Radio';
+import { FormControlLabel } from 'material-ui/Form';
 
+import EngineOutputHeader from '../EngineOutputHeader';
+import TranscriptContent from './TranscriptContent';
 import styles from './styles.scss';
 
 export default class TranscriptEngineOutput extends Component {
-
   static propTypes = {
     data: arrayOf(shape({
       startTimeMs: number,
@@ -27,271 +26,176 @@ export default class TranscriptEngineOutput extends Component {
         }))
       }))
     })),
-    editMode: bool,
-    overview: bool,
+    
+    selectedEngineId: string,
+    engines: arrayOf(shape({
+      id: string,
+      name: string
+    })),
+    title: string,
+    
     className: string,
+    headerClassName: string,
+    contentClassName: string,
+    mediaPlayerTime: number,
+
+    editMode: bool,
+
     onClick: func,
     onScroll: func,
+    onEngineChange: func,
+    onExpandClicked: func,
+    
     numMaxRequest: number,
     requestSizeMs: number,
     mediaLengthMs: number,
-    mediaPlayerTime: number,
     neglectableTimeMs: number,
   };
 
   static defaultProps = {
+    title: 'Transcription',
     editMode: false,
-    overview: false,
     numMaxRequest: 2,
     mediaPlayerTime: 0,
   };
+
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      overview: false
+    }
+  }
 
   handleOnScroll = (openSlotInfo) => {
     (this.props.onScroll) && this.props.onScroll(openSlotInfo);
   }
 
-  
-  parseData () {
-    let snippetSegments = [];
-    let overviewSegments = [];
-
-    let overviewStartTime = 0;
-    let overviewStopTime = 0;
-    let overviewParts = [];
-    let overviewSentences = '';
-    let overviewStatus = undefined;
-
-    let saveOverviewData = () => {
-      //---Save Previous Overview Data---
-      overviewSegments.push({
-        startTimeMs: overviewStartTime,
-        stopTimeMs: overviewStopTime,
-        status: overviewStatus,
-        sentences: overviewSentences,
-        fragments: overviewParts.concat([])
-      })
-      //---Reset Overview Data to Handle New Status---
-      overviewStatus = undefined;
-      overviewStartTime = undefined;
-      overviewStopTime = undefined;
-      overviewParts = [];
-      overviewSentences = '';
-    }
-
-    let lazyLoading = true;
-    this.props.data.forEach(chunk => {
-      let groupStartTime = chunk.startTimeMs;
-      let groupStopTime = chunk.stopTimeMs;
-      let groupStatus = chunk.status;
-
-      lazyLoading = lazyLoading && groupStartTime !== undefined && groupStopTime !== undefined && groupStatus !== undefined;
-
-      let series = chunk.series;
-      if (series && series.length > 0) {
-        let snippetStatus = undefined;
-        let snippetStartTime = groupStartTime;
-        let snippetStopTime = undefined;
-        let snippetParts = [];
-        let snippetSentences = '';
-        
-        let saveSnippetData = () => {
-          //---Save Previous Snippets Data---
-          snippetSegments.push({
-            startTimeMs: snippetStartTime,
-            stopTimeMs: snippetStopTime,
-            status: snippetStatus,
-            sentences: snippetSentences,
-            fragments: snippetParts.concat([])
-          });
-
-          //---Reset Snippets Data---
-          snippetStatus = undefined;
-          snippetStartTime = undefined;
-          snippetStopTime = undefined;
-          snippetParts = [];
-          snippetSentences = '';
-        }
-
-        series.forEach((entry, entryIndex) => {
-          //---Updata Content Value---
-          if (entry.words) {                                                              // Has Transcript Data
-            (snippetStatus !== undefined && snippetStatus !== 'success')    &&  saveSnippetData();
-            (overviewStatus !== undefined && overviewStatus !== 'success')  &&  saveOverviewData();
-            
-            snippetStatus = 'success';
-            overviewStatus = 'success';
-
-            //---Get Correct Word---
-            let selectedWord;
-            let words = entry.words;
-            (words) ? words = sortBy(words, 'confidence') : words = [];
-            (words.length > 0) ? selectedWord = words[0].word : selectedWord = '';
-
-            //---Update Snippet Data---
-            snippetSentences = snippetSentences + selectedWord + ' ';
-            snippetParts.push({
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
-            })
-
-            //---Update Overview Data---
-            overviewSentences = overviewSentences + selectedWord + ' ';
-            overviewParts.push({
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
-            });
-          } else {                                                                      // No Transcript Data
-            (snippetStatus !== undefined && snippetStatus !== 'no-transcript')    &&  saveSnippetData();
-            (overviewStatus !== undefined && overviewStatus !== 'no-transcript')  &&  saveOverviewData();
-
-            snippetStatus = 'no-transcript';
-            overviewStatus = 'no-transcript';
-          }
-
-          //---Update Start & Stop Time---
-          (snippetStartTime === undefined || snippetStartTime > entry.startTimeMs)               && (snippetStartTime = entry.startTimeMs);
-          (snippetStopTime === undefined || snippetStopTime < entry.stopTimeMs)                  && (snippetStopTime = entry.stopTimeMs);
-          (entryIndex === series.length - 1 && groupStopTime && groupStopTime > snippetStopTime) && (snippetStopTime = groupStopTime);
-
-          (overviewStartTime === undefined || overviewStartTime > snippetStartTime)  && (overviewStartTime = snippetStartTime);
-          (overviewStopTime === undefined || overviewStopTime < snippetStopTime)     && (overviewStopTime = snippetStopTime);
-        });
-
-        saveSnippetData();
-      }
-    });
-
-    saveOverviewData();
-
-    return {
-      lazyLoading: lazyLoading,
-      snippetSegments: snippetSegments,
-      overviewSegments: overviewSegments
-    };
+  handleOnClick = (event, value) => {
+    (this.props.onClick) && this.props.onClick(event, value);
   }
 
-  renderSnippetSegments = (parsedData) => {
-    let snippetSegments = [];
-    parsedData.snippetSegments.forEach(segmentData => {
-      let segment = {
-        start: segmentData.startTimeMs,
-        stop: segmentData.stopTimeMs
-      };
-
-      switch (segmentData.status) {
-      case 'success':
-        segment.value = (
-          <SnippetSegment 
-            key={'transcript-snippet'+segmentData.startTimeMs} 
-            content={segmentData} 
-            editMode={this.props.editMode} 
-            classNames={classNames(styles.contentSegment)}
-          />
-        );
-        break;
-      
-      case 'no-transcript':
-        segment.value = (
-          <NoDataSegment 
-            key={'transcript--snippet'+segmentData.startTimeMs} 
-            startTimeMs={segmentData.startTimeMs} 
-            stopTimeMs={segmentData.stopTimeMs} 
-          />
-        );
-        break;
-      }
-
-      snippetSegments.push(segment);
-    });
-    return snippetSegments;
+  handleViewChange = (event) => {
+    (event.target.value === 'overview')  && this.setState({overview: true});
+    (event.target.value === 'time')      && this.setState({overview: false});
   }
 
-  renderOverviewSegments = (parsedData) => {
-    let editMode = this.props.editMode;
-    let overalStartTime = 0;
-    let overalStopTime = 0;
-    let overalString = '';
-
-    let overviewSegments = [];
-    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
-      let segmentStartTime = segmentData.startTimeMs;
-      let segmentStopTime = segmentData.stopTimeMs;
-
-      if (editMode) {
-        (overalStartTime > segmentStartTime)  && (overalStartTime = segmentStartTime);
-        (overalStopTime < segmentStopTime)    && (overalStopTime = segmentStopTime);
-
-        if (segmentData.status === 'success') {
-          overalString = overalString + segmentData.sentences;
-        } else {
-          overalString = overalString + '\n\n\n';
-        }
-
-        if (segmentIndex === parsedData.overviewSegments.length - 1) {      // Reach the last segment
-          overviewSegments.push({
-            start: overalStartTime,
-            stop: overalStopTime,
-            value: (<TranscriptBulkEdit key={'transcript-bulk-edit' + overalStopTime} content={overalString}/>)
-          });
-        }
-      } else {
-        let segmentValue;
-        switch (segmentData.status) {
-        case 'success':
-          segmentValue = (
-            <OverviewSegment 
-              key={'transcript-overview' + segmentStartTime} 
-              content={segmentData} 
-              classNames={classNames(styles.contentSegment)}
-            />
-          );
-          break;
-        case 'no-transcript':
-          segmentValue = (
-            <NoDataSegment key={'transcript--overview' + segmentStartTime} 
-              overview 
-              startTimeMs={segmentStartTime} 
-              stopTimeMs={segmentStopTime} 
-            />
-          );
-          break;
-        }
-    
-        overviewSegments.push({
-          start: segmentStartTime,
-          stop: segmentStopTime,
-          value: segmentValue
-        });
-      }
-    });
-
-    return overviewSegments;
+  renderEditOptions () {
+    return (
+      <RadioGroup
+        row
+        aria-label='edit_mode'
+        value={this.state.overview ? 'overview' : 'time'}
+        name='editMode'
+        className={classNames(styles.radioButton)}
+        onChange={this.handleViewChange}
+      >
+        <FormControlLabel
+          value='time'
+          className={styles.label}
+          control={<Radio color='primary' />}
+          label='Snippet Edit'
+        />
+        <FormControlLabel
+          value='overview'
+          className={styles.label}
+          control={<Radio color='primary' />}
+          label='Bulk Edit'
+        />
+      </RadioGroup>
+    );
   }
 
-  render () {
-    let { 
-      overview,
-      className,
+  renderViewOptions () {
+    return (
+      <Select
+        autoWidth
+        value={this.state.overview ? 'overview' : 'time'}
+        className={styles.viewDropdown}
+        onChange={this.handleViewChange}
+      >
+        <MenuItem value='time'>Time</MenuItem>
+        <MenuItem value='overview'>Overview</MenuItem>
+      </Select>
+    );
+  }
+
+  renderHeader () {
+    let {
+      title,
+      engines,
+      selectedEngineId,
+      editMode,
+      onEngineChange,
+      onExpandClicked,
+      headerClassName,
+    } = this.props;
+
+    return (
+      <EngineOutputHeader
+        title={title}
+        hideTitle
+        engines={engines}
+        selectedEngineId={selectedEngineId}
+        onEngineChange={onEngineChange}
+        onExpandClicked={onExpandClicked}
+        className={classNames(headerClassName)}
+      >
+        <div className={classNames(styles.controllers)}>
+          {editMode? this.renderEditOptions() : this.renderViewOptions()}
+        </div>
+      </EngineOutputHeader>
+    )
+  }
+
+  renderBody () {
+    let {
+      data,
+      onClick,
+      onScroll,
+      editMode,
       numMaxRequest,
       requestSizeMs,
       mediaLengthMs,
       neglectableTimeMs,
-     } = this.props;
+      contentClassName
+    } = this.props;
 
-    let parsedData = this.parseData();
+    return (
+      <div className={classNames(styles.content)}>
+        <TranscriptContent 
+          data={data}
+          editMode={editMode}
+          overview={(this.state.overview)}
+          numMaxRequest={numMaxRequest}
+          requestSizeMs={requestSizeMs}
+          mediaLengthMs={mediaLengthMs}
+          neglectableTimeMs={neglectableTimeMs}
+          onClick={onClick}
+          onScroll={onScroll}
+          className={classNames(contentClassName)}
+        />
+      </div>
+    )
+  }
+/*
+  
+  editMode: bool,
+  overview: bool,
+  className: string,
+  onClick: func,
+  onScroll: func,
+
+*/
+  render () {
+    let {
+      className
+    } = this.props;
+
     return (
       <div className={classNames(styles.transcriptOutput, className)}>
-        <DynamicContentScroll 
-          className={classNames(styles.container)}
-          onScroll={this.handleOnScroll}
-          totalSize={mediaLengthMs}
-          segmentSize={requestSizeMs}
-          neglectableSize={neglectableTimeMs}
-          numSegmentPerUpdate={numMaxRequest}
-          contents={overview ? this.renderOverviewSegments(parsedData) : this.renderSnippetSegments(parsedData)}
-        />
+        {this.renderHeader()}
+        {this.renderBody()}
       </div>
     )
   }
