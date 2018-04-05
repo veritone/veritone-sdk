@@ -8,10 +8,19 @@
   "license": "Apache-2.0",
   "scripts": {
     "buildall": "./buildall.sh",
-    "publish-dev": "./publish-dev.sh"
+    "publish-dev": "./publish-dev.sh",
+    "lintall": "yarn wsrun lint --fast-exit --exclude-missing",
+    "testall": "yarn wsrun test --fast-exit --exclude-missing"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run lintall && yarn run testall"
+    }
   },
   "workspaces": ["packages/*"],
   "devDependencies": {
-    "prettier": "^1.7.2"
+    "husky": "^0.15.0-rc.13",
+    "prettier": "^1.7.2",
+    "wsrun": "^2.0.0"
   }
 }

@@ -110,6 +110,32 @@ const appBar = new AppBarWidget({
 });
 ```
 
+## Use via script tag
+For environments that do not support javascript module imports, widgets can also be included in an app via script tags.
+
+```
+<body>
+  <div id="appBar-widget"></div>
+
+  <script src="https://unpkg.com/veritone-widgets@^4/dist/umd/VeritoneApp.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^4/dist/umd/AppBar.js"></script>
+
+  <script>
+    const app = VeritoneApp();
+
+    const appBar = new AppBar({
+      elId: 'appBar-widget',
+      title: 'AppBar Widget',
+      profileMenu: true,
+      appSwitcher: true
+    });
+  </script>
+</body>
+```
+
+As you can see, each widget is bundled individually to keep file sizes small. In addition, VeritoneApp is separately bundled and required to use widgets. Scripts can be accessed from the the [unpkg](https://unpkg.com/) cdn or downloaded and hosted on your own infrastructure. Unpkg supports [semver ranges](https://docs.npmjs.com/misc/semver), or a specific version can be specified exactly. 
+
+
 ## Configuring widgets
 Note that the OAuthLoginButton widget in the example above is being configured with five properties: elId, clientId, OAuthURI, onAuthSuccess and onAuthFailure. As mentioned earlier, an elId is required for every widget. OAuthURI, clientId, onAuthSuccess and onAuthFailure are specific configurable properties on the OAuthLoginButton. As it is in the example, configuration is always provided to the widget constructor.
 
@@ -155,6 +181,7 @@ The title and navigation bar common between all Veritone applications. Includes 
 *Options:*
 
 * title: string, a title to show in the center of the AppBar
+* logoSrc: string, a URL or image (like an SVG) to use as the logo on the left-hand side of the AppBar.
 * backgroundColor: string, a color (in hex) to use for the AppBar background
 * profileMenu: bool, whether or not to show the profile menu
 * appSwitcher: bool, whether or not to show the app switcher menu
@@ -210,6 +237,38 @@ The Veritone file upload dialog. Handles selecting and uploading files to S3 for
     * cancelled: bool, whether or not the filepicker interaction was cancelled (by the user, or by calling cancel()).
 
 * cancel(): close the filepicker dialog. The callback provided to pick() will be called with `(null, { cancelled: true })`.
+
+**Table**
+
+A Veritone table to display data.
+
+*Options:*
+
+* data: arrayOf(object) (required), the dataset
+* columns: arrayOf(shape) (required), a set of defintions for each column to be displayed
+  * shape: object with the following keys:
+    * dataKey: string (required), the data attribute to display within column 
+    * header: string, the column heading
+    * transform: function, specifies how column data should be displayed
+      * signature: `(cellValue) => {}`
+    * menu: bool, identifies a column as a menu column
+    * onSelectItem: function, when `menu` is `true`, specifies action(s) to take when a menu option is clicked
+      * signature: `(menuAction) => {}`
+    * cursorPointer: bool, show cursor pointer over table cells
+    * align: string, specifies columm alignment: `['left', 'right', 'center']`
+    * width: number, specifies the width of a column
+* paginate: bool, specifies whether table data should be paginated
+* initialItemsPerPage: number, the number of items to display per page in a paginated table,
+* onCellClick: function, specifies action to take when a table cell is clicked
+  * signature: `(cellRow, cellColumn, cellData) => {}`
+* focusedRow: number, identifies a row to display additional content for
+* renderFocusedRowDetails: function, specifies additional content to display for `focusedRow`
+  * signature: `(focusedRowData) => (string | react component)`
+* onShowCellRange: function, fires when table page or rows (on page) changes;
+  * signature: `({ start: firstRowIndex, end: lastRowIndex }) => {}`
+* onRefreshPageData: function, specifies how to refresh data (if needed)
+  * signature: `() => {}`
+* emptyMessage: string, text to display when table has no data
 
 ## Running the development environment (storybook)
 1. Set up your local clone of veritone-sdk, following the instructions in the [main readme](https://github.com/veritone/veritone-sdk#development)

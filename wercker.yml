@@ -1,0 +1,32 @@
+box: node:8
+build:
+  steps:
+    - script:
+      name: install yarn
+      code: |
+        npm install -g yarn
+
+    - script:
+      name: set yarn cache
+      code: |
+        export YARN_CACHE=$WERCKER_CACHE_DIR/yarn
+
+    - script:
+      name: install dependencies
+      code: |
+        HOME=$YARN_CACHE yarn
+
+    - script:
+      name: lint all packages
+      code: |
+        yarn run lintall
+
+    - script:
+      name: test all packages
+      code: |
+        yarn run testall
+
+    - script:
+      name: build all packages
+      code: |
+        yarn run buildall

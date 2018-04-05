@@ -3,16 +3,12 @@
   "version": "1.0.2",
   "description": "common configs for devtools",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/veritone/veritone-sdk.git"
   },
-  "keywords": [
-    "veritone"
-  ],
+  "keywords": ["veritone"],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {

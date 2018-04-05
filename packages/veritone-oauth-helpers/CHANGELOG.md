@@ -19,3 +19,6 @@
 ## 2.0.1
 * Added a commonjs build to support older bundlers.
 * Tweaked the existing ES module build to run through rollup. Behavior should be unchanged.
+
+## 2.1.0
+* Added `handleImplicitRedirect` helper. Designed to be used in a popup-window based implicit oauth flow, it will extract the returned token (or error) from the oauth response, and post it back to the opener parent window.

@@ -19,7 +19,7 @@ class FilePickerFooter extends Component {
       <div className={styles.filePickerFooter}>
         <Button onClick={this.props.onCancel}>Cancel</Button>
         <Button
-          raised
+          variant="raised"
           disabled={this.props.fileCount < 1}
           color="primary"
           onClick={this.props.onSubmit}
