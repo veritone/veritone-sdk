@@ -7,8 +7,8 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
 import { objectOf, func, bool, arrayOf, any } from 'prop-types';
-// import EditMetadataDialog from './EditMetadataDialog';
-// import EditTagsDialog from './EditTagsDialog';
+import EditMetadataDialog from './EditMetadataDialog';
+import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
@@ -82,7 +82,7 @@ class MediaInfoPanel extends Component {
       return;
     }
     const tagsObjects = [];
-    tagsToSave.forEach(tag => tagsObjects.push[`{ value: "${tag}" }`]);
+    tagsToSave.forEach(tag => tagsObjects.push(`{ value: "${tag.value}" }`));
     const detailsToSave = `details: { tags: [ ${tagsObjects.join(', ')} ] }`;
     this.props.onSaveMetadata(detailsToSave);
   };
@@ -141,7 +141,6 @@ class MediaInfoPanel extends Component {
   };
 
   onMenuClose = () => {
-    console.log('on menu close click');
     this.setState({ menuAnchorEl: null });
   };
 
@@ -194,17 +193,18 @@ class MediaInfoPanel extends Component {
           </div>
           <Paper className={styles.infoPanelContent}>
             <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Foo</div>
+              <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
                 {this.props.tdo.details.veritoneFile.filename}
               </div>
             </div>
-            <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Date Created</div>
-              <div className={styles.infoFieldData}>
-                {this.toFormattedDate(this.props.tdo.details.date)}
-              </div>
-            </div>
+            {this.props.tdo.details.date &&
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Date Created</div>
+                <div className={styles.infoFieldData}>
+                  {this.toFormattedDate(this.props.tdo.details.date)}
+                </div>
+              </div>}
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Duration</div>
               <div className={styles.infoFieldData}>
@@ -214,7 +214,7 @@ class MediaInfoPanel extends Component {
                 )}
               </div>
             </div>
-            {this.props.engineCategories && (
+            {this.props.engineCategories && this.props.engineCategories.length && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Engines</div>
                 <div className={styles.infoFieldData}>
@@ -231,7 +231,7 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            {this.props.tdo.details.tags && (
+            {this.props.tdo.details.tags && this.props.tdo.details.tags.length > 0 && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Tags</div>
                 <div className={styles.infoFieldData}>
@@ -283,26 +283,26 @@ class MediaInfoPanel extends Component {
             </div>
           </Paper>
         </div>
-        {/*
-        TODO: uncomment when styling is fixed. Commented out for MVP.
         {this.props.tdo &&
-          this.props.tdo.details && (
-            <EditMetadataDialog
-              isOpen={this.state.isOpenEditMetadata}
-              metadata={this.props.tdo.details}
-              onClose={this.toggleIsOpenEditMetadata}
-              onSave={this.onSaveMetadata}
-            />
+          this.props.tdo.details &&
+            this.state.isOpenEditMetadata && (
+              <EditMetadataDialog
+                isOpen={this.state.isOpenEditMetadata}
+                metadata={this.props.tdo.details}
+                onClose={this.toggleIsOpenEditMetadata}
+                onSave={this.onSaveMetadata}
+              />
           )}
         {this.props.tdo &&
-          this.props.tdo.details && (
-            <EditTagsDialog
-              isOpen={this.state.isOpenEditTags}
-              tags={this.props.tdo.details.tags}
-              onClose={this.toggleIsOpenEditTags}
-              onSave={this.onSaveTags}
-            />
-          )}*/}
+          this.props.tdo.details &&
+            this.state.isOpenEditTags && (
+              <EditTagsDialog
+                isOpen={this.state.isOpenEditTags}
+                tags={this.props.tdo.details.tags}
+                onClose={this.toggleIsOpenEditTags}
+                onSave={this.onSaveTags}
+              />
+          )}
       </div>
     );
 

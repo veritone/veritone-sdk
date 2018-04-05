@@ -1,0 +1,38 @@
+@import 'src/styles/modules/variables';
+
+.tagPillContainer {
+  display: inline-block;
+  border-radius: 100px;
+  height: 32px;
+  background-color: $grey-4;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 13px;
+  line-height: 15px;
+  align-items: center;
+  margin: 5px;
+
+  .tagText {
+    display: inline-block;
+    vertical-align: middle;
+    height: 16px;
+    color: $dark-black;
+    margin-left: 15px;
+  }
+
+  .removeButton {
+    display: inline-block;
+    vertical-align: middle;
+    height: 16px;
+    width: 16px;
+    margin: 8px;
+    border-radius: 16px;
+    background-color: $grey-5;
+
+    .removeButtonIcon {
+      font-size: 14px;
+      font-weight: bold;
+      color: $grey-4;
+    }
+  }
+}
