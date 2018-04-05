@@ -481,6 +481,8 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
+                        onOcrClicked={this.handleUpdateMediaPlayerTime}
+                        currentMediaPlayerTime={mediaPlayerTimeInMs}
                       />
                     )}
                   {selectedEngineCategory &&

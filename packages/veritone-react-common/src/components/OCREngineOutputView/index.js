@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 
@@ -38,11 +38,16 @@ class OCREngineOutputView extends Component {
     onEngineChange: func,
     onExpandClicked: func,
     onOcrClicked: func,
-    className: string
+    className: string,
+    currentMediaPlayerTime: number
   };
 
   static defaultProps = {
     data: []
+  };
+
+  handleOcrClick = (startTime, stopTime) => evt => {
+    this.props.onOcrClicked && this.props.onOcrClicked(startTime, stopTime);
   };
 
   render() {
@@ -52,7 +57,8 @@ class OCREngineOutputView extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked
+      onExpandClicked,
+      currentMediaPlayerTime
     } = this.props;
 
     return (
@@ -65,31 +71,48 @@ class OCREngineOutputView extends Component {
           onExpandClicked={onExpandClicked}
         />
         <div className={styles.ocrContent}>
-          {data
-            .reduce((accumulator, currentValue) => {
-              if (currentValue.series) {
-                return [...accumulator, ...currentValue.series];
-              }
-              return [...accumulator, []];
-            }, [])
-            .filter(ocrObject => !!ocrObject.object && !!ocrObject.object.text)
-            .map((ocrObject) => {
-              {
-                /* TDO: key may not be unique enough */
-              }
-              return (
-                <OCRObject
-                  key={
-                    'ocr-object-group-' +
-                    ocrObject.startTimeMs +
-                    ocrObject.stopTimeMs
-                  }
-                  text={ocrObject.object.text}
-                  startTime={ocrObject.startTimeMs}
-                  endTime={ocrObject.stopTimeMs}
-                />
-              );
-            })}
+          {data.map(dataObject => {
+            return (
+              <Fragment
+                key={
+                  'ocr-object-group-' +
+                  dataObject.sourceEngineId +
+                  dataObject.taskId
+                }
+              >
+                {dataObject.status === 'FETCHING' && (
+                  <div>Display a progress</div>
+                )}
+                {dataObject.series && (
+                  <span>
+                    {dataObject.series.map((ocrObject, i) => {
+                      {
+                        /* TDO: key may not be unique enough */
+                      }
+                      return (
+                        <OCRObject
+                          key={
+                            'ocr-object-' +
+                            ocrObject.startTimeMs +
+                            ocrObject.stopTimeMs +
+                            i
+                          }
+                          text={ocrObject.object.text}
+                          startTime={ocrObject.startTimeMs}
+                          endTime={ocrObject.stopTimeMs}
+                          onClick={this.handleOcrClick(
+                            ocrObject.startTimeMs,
+                            ocrObject.stopTimeMs
+                          )}
+                          currentMediaPlayerTime={currentMediaPlayerTime}
+                        />
+                      );
+                    })}
+                  </span>
+                )}
+              </Fragment>
+            );
+          })}
         </div>
       </div>
     );

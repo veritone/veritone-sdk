@@ -20,14 +20,14 @@ describe('OCRObject', () => {
     expect(wrapper.find('.ocrObjectTimestamp').text()).toMatch(/00:01 - 00:02/);
   });
 
-  it('should call onOcrObjectClicked when clicked', () => {
+  it('should call callback function when clicked', () => {
     const objectClicked = jest.fn();
     const wrapper = mount(
       <OCRObject
         text="TEST OCR OBJECT TEXT"
         startTime={1000}
         endTime={2000}
-        onOcrClicked={objectClicked}
+        onClick={objectClicked}
       />
     );
 
