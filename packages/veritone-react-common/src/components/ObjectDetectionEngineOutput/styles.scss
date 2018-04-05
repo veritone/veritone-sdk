@@ -1,81 +1,16 @@
 .objectDetectionOutputView {
-  padding: 20px 40px 0 30px;
   display: flex;
   flex-direction: column;
-}
-
-.objectDetectionViewHeader {
-  height: 45px;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex: none;
-
-  .headerTitle {
-    font-size: 16px;
-    font-weight: 500;
-  }
 }
 
 .objectDetectionContent {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
   overflow: scroll;
-}
-
-.selectedObjectInfo {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
-  font-size: 14px;
-
-  .backButtonHeader {
-    width: 100%;
-
-    .backButton {
-      font-size: 16px;
-      padding-left: 0;
-
-      i {
-        font-size: 20px;
-        margin-right: 5px;
-      }
-    }
-  }
-
-  .objectNameAndCount {
-    font-size: 16px;
-    width: 100%;
-    font-weight: 500;
-    padding: 15px 0;
-  }
-
-  .objectOccurrenceList {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-
-    .objectOccurrence {
-      width: 120px;
-      box-sizing: border-box;
-      color: #2196f3;
-      padding-top: 5px;
-      padding-bottom: 5px;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
+  margin-top: 20px;
 }
 
 .objectPill {
   height: 40px;
   max-width: 250px;
-  display: flex;
   align-items: center;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
@@ -88,13 +23,7 @@
   }
 }
 
-.objectLabel {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.objectCount {
-  flex: 0;
+.objectAppearanceTime {
+  overflow: visible !important;
+  text-overflow: initial !important;
 }

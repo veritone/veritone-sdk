@@ -1,29 +1,24 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { number } from '@storybook/addon-knobs/react';
 
 import styles from './story.styles.scss';
 import ObjectDetectionOuput from './';
 
 const objectDetectionAssets = [
   {
-    startTimeMs: 0,
-    endTimeMs: 9000,
-    sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
-    sourceEngineName: 'Google Cloud Video Intelligence - Label Detection',
-    taskId:
-      'e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf',
     series: [
       {
         startTimeMs: 0,
-        endTimeMs: 1000,
+        stopTimeMs: 1000,
         object: {
           label: 'data',
           confidence: 0.942457377910614
         }
       },
       {
-        endTimeMs: 1000,
+        stopTimeMs: 1000,
         startTimeMs: 0,
         object: {
           label: 'very long name 32 char abbreviated',
@@ -31,7 +26,7 @@ const objectDetectionAssets = [
         }
       },
       {
-        endTimeMs: 2000,
+        stopTimeMs: 2000,
         startTimeMs: 0,
         object: {
           label: 'data',
@@ -41,15 +36,9 @@ const objectDetectionAssets = [
     ]
   },
   {
-    startTimeMs: 9000,
-    endTimeMs: 13000,
-    sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
-    sourceEngineName: 'Google Cloud Video Intelligence - Label Detection',
-    taskId:
-      'e1fa7d7c-6f1c-480e-b181-68940509f070-fef496da-f36e-49ec-a304-426d96017ddf',
     series: [
       {
-        endTimeMs: 12000,
+        stopTimeMs: 12000,
         startTimeMs: 9000,
         object: {
           label: 'desktop',
@@ -57,7 +46,7 @@ const objectDetectionAssets = [
         }
       },
       {
-        endTimeMs: 11000,
+        stopTimeMs: 11000,
         startTimeMs: 9000,
         object: {
           label: 'data',
@@ -65,7 +54,7 @@ const objectDetectionAssets = [
         }
       },
       {
-        endTimeMs: 10000,
+        stopTimeMs: 10000,
         startTimeMs: 9000,
         object: {
           label: 'data',
@@ -73,7 +62,7 @@ const objectDetectionAssets = [
         }
       },
       {
-        endTimeMs: 13000,
+        stopTimeMs: 13000,
         startTimeMs: 9000,
         object: {
           label: 'desktop',
@@ -87,23 +76,30 @@ const objectDetectionAssets = [
 storiesOf('ObjectDetectionEngineOutput', module).add('Base', () => {
   let engines = [
     {
-      sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
-      sourceEngineName: 'Google Cloud Video Intelligence - Label Detection'
+      id: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
+      name: 'Google Cloud Video Intelligence - Label Detection'
     },
     {
-      sourceEngineId: '12345',
-      sourceEngineName: 'Test Engine Name'
+      id: '12345',
+      name: 'Test Engine Name'
     }
   ];
 
   return (
     <ObjectDetectionOuput
-      assets={objectDetectionAssets}
+      data={objectDetectionAssets}
       className={styles.outputViewRoot}
       selectedEngineId="2dc5166f-c0ad-4d84-8a85-515c42b5d357"
       engines={engines}
       onEngineChange={action('Engine Changed')}
       onObjectOccurrenceClicked={action('Object occurence clicked')}
+      mediaPlayerPosition={number('mediaPlayerPosition', 0, {
+        range: true,
+        min: 0,
+        max: 13000,
+        step: 100
+      })}
+      onExpandClicked={action('Expand Clicked')}
     />
   );
 });

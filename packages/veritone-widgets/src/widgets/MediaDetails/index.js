@@ -16,11 +16,16 @@ import {
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
-import { EngineCategorySelector } from 'veritone-react-common';
-import { MediaInfoPanel, video } from 'veritone-react-common';
-import { FullScreenDialog } from 'veritone-react-common';
-import { OCREngineOutputView } from 'veritone-react-common';
-import { SentimentEngineOutput } from 'veritone-react-common';
+import {
+  EngineCategorySelector,
+  ObjectDetectionEngineOutput,
+  MediaInfoPanel,
+  video,
+  FullScreenDialog,
+  OCREngineOutputView,
+  SentimentEngineOutput
+} from 'veritone-react-common';
+import cx from 'classnames';
 
 import styles from './styles.scss';
 
@@ -41,7 +46,8 @@ import widget from '../../shared/widget';
     ),
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
-    infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId)
+    infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
+    expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -52,7 +58,8 @@ import widget from '../../shared/widget';
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
     toggleEditMode: mediaDetailsModule.toggleEditMode,
-    toggleInfoPanel: mediaDetailsModule.toggleInfoPanel
+    toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
+    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
   },
   null,
   { withRef: true }
@@ -135,7 +142,9 @@ class MediaDetailsWidget extends React.Component {
     toggleEditMode: func,
     toggleInfoPanel: func,
     editModeEnabled: bool,
-    infoPanelIsOpen: bool
+    infoPanelIsOpen: bool,
+    expandedMode: bool,
+    toggleExpandedMode: func
   };
 
   static contextTypes = {
@@ -210,6 +219,10 @@ class MediaDetailsWidget extends React.Component {
     this.props.toggleEditMode(this.props._widgetId);
   };
 
+  toggleExpandedMode = () => {
+    this.props.toggleExpandedMode(this.props._widgetId);
+  };
+
   onSaveEdit = () => {
     this.toggleEditMode();
   };
@@ -247,14 +260,14 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineCategory,
       selectedEngineId,
       engineResultsByEngineId,
-      editModeEnabled,
-      infoPanelIsOpen
+      infoPanelIsOpen,
+      expandedMode
     } = this.props;
 
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
-          {!editModeEnabled && (
+          {!expandedMode && (
             <div>
               <div className={styles.pageHeader}>
                 <div className={styles.pageHeaderTitleLabel}>
@@ -348,7 +361,7 @@ class MediaDetailsWidget extends React.Component {
             </div>
           )}
 
-          {editModeEnabled &&
+          {expandedMode &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
@@ -428,7 +441,13 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'object' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <ObjectDetectionEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        engines={selectedEngineCategory.engines}
+                        onEngineChange={this.handleSelectEngine}
+                        selectedEngineId={selectedEngineId}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
@@ -441,6 +460,7 @@ class MediaDetailsWidget extends React.Component {
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
+                        selectedEngineId={selectedEngineId}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -455,10 +475,13 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'sentiment' && (
                       <SentimentEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
+                        className={cx(
+                          styles.engineOuputContainer,
+                          styles.sentimentChartViewRoot
+                        )}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        className={styles.sentimentChartViewRoot}
                       />
                     )}
                   {selectedEngineCategory &&

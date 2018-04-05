@@ -10,7 +10,7 @@ import {
 } from 'prop-types';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import Icon from 'material-ui/Icon';
+import ZoomOutMap from 'material-ui-icons/ZoomOutMap';
 import IconButton from 'material-ui/IconButton';
 
 import styles from './styles.scss';
@@ -29,6 +29,10 @@ class EngineOutputHeader extends Component {
     onEngineChange: func,
     onExpandClicked: func,
     children: oneOfType([arrayOf(node), node])
+  };
+
+  static defaultProps = {
+    engines: []
   };
 
   handleEngineChange = evt => {
@@ -51,31 +55,28 @@ class EngineOutputHeader extends Component {
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
         <div className={styles.headerActions}>
           {children}
-          {engines &&
-            engines.length && (
-              <Select
-                value={selectedEngineId || engines[0].id}
-                onChange={this.handleEngineChange}
-              >
-                {engines.map((e, i) => {
-                  return (
-                    <MenuItem key={'engine-menu-item-' - e.id} value={e.id}>
-                      {e.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            )}
+          {engines.length && (
+            <Select
+              value={selectedEngineId || engines[0].id}
+              className={styles.engineSelect}
+              onChange={this.handleEngineChange}
+            >
+              {engines.map((e, i) => {
+                return (
+                  <MenuItem key={'engine-menu-item-' + e.id} value={e.id}>
+                    {e.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          )}
         </div>
         {onExpandClicked && <div className={styles.actionIconDivider} />}
-        {onExpandClicked &&
-          <IconButton
-            aria-label="Expanded View"
-            className={styles.expandedViewButton}
-            onClick={onExpandClicked}
-          >
-            <Icon className="icon-max-view" />
-          </IconButton>}
+        {onExpandClicked && (
+          <IconButton aria-label="Expanded View" onClick={onExpandClicked}>
+            <ZoomOutMap />
+          </IconButton>
+        )}
       </div>
     );
   }

@@ -1,28 +1,74 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
-import { reduce, groupBy } from 'lodash';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import Button from 'material-ui/Button';
+import { kebabCase } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
+import PillButton from '../Parts/Buttons/PillButton';
 import { msToReadableString } from '../../helpers/time';
 
 import styles from './styles.scss';
 
+const ObjectGroup = ({ objectGroup, mediaPlayerPosition }) => {
+  return (
+    <span>
+      {objectGroup.series &&
+        objectGroup.series.map(objectData => {
+          return (
+            <PillButton
+              key={
+                'object-pill-' +
+                kebabCase(objectData.object.label) +
+                objectData.startTimeMs +
+                objectData.stopTimeMs
+              }
+              label={objectData.object.label}
+              info={
+                msToReadableString(objectData.startTimeMs) +
+                ' - ' +
+                msToReadableString(objectData.stopTimeMs)
+              }
+              className={styles.objectPill}
+              infoClassName={styles.objectAppearanceTime}
+              highlight={
+                mediaPlayerPosition >= objectData.startTimeMs &&
+                mediaPlayerPosition <= objectData.stopTimeMs
+              }
+            />
+          );
+        })}
+    </span>
+  );
+};
+
+ObjectGroup.propTypes = {
+  objectGroup: shape({
+    series: arrayOf(
+      shape({
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
+        object: shape({
+          label: string.isRequired,
+          confidence: number
+        }).isRequired
+      })
+    )
+  }),
+  mediaPlayerPosition: number
+};
+
 class ObjectDetectionEngineOutput extends Component {
   static propTypes = {
-    assets: arrayOf(
+    data: arrayOf(
       shape({
-        startTime: number,
-        endTime: number,
-        data: arrayOf(
+        series: arrayOf(
           shape({
-            end: number,
-            found: string,
-            start: number,
-            saliency: number
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            object: shape({
+              label: string.isRequired,
+              confidence: number
+            }).isRequired
           })
         )
       })
@@ -31,16 +77,19 @@ class ObjectDetectionEngineOutput extends Component {
     selectedEngineId: string,
     engines: arrayOf(
       shape({
-        sourceEngineId: string,
-        sourceEngineName: string
+        id: string,
+        name: string
       })
     ),
     onEngineChange: func,
-    className: string
+    className: string,
+    mediaPlayerPosition: number,
+    onExpandClicked: func
   };
 
   static defaultProps = {
-    assets: []
+    data: [],
+    engines: []
   };
 
   state = {
@@ -56,93 +105,43 @@ class ObjectDetectionEngineOutput extends Component {
   };
 
   handleOccurenceClick = occurrence => event => {
-    console.log(occurrence);
     this.props.onObjectOccurrenceClicked(occurrence);
   };
 
   render() {
     let {
-      assets,
+      data,
       className,
       selectedEngineId,
       engines,
-      onEngineChange
+      onEngineChange,
+      mediaPlayerPosition,
+      onExpandClicked
     } = this.props;
-    let groupedAssets = groupBy(
-      reduce(
-        assets,
-        (accumulator, currentValue) => {
-          return accumulator.concat(currentValue.series);
-        },
-        []
-      ),
-      'object.label'
-    );
+
     return (
       <div className={classNames(styles.objectDetectionOutputView, className)}>
-        <EngineOutputHeader title="Object Detection">
-          {engines &&
-            engines.length && (
-              <Select value={selectedEngineId} onChange={onEngineChange}>
-                {engines.map((e, i) => {
-                  return (
-                    <MenuItem c key={i} value={e.sourceEngineId}>
-                      {e.sourceEngineName}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            )}
-        </EngineOutputHeader>
+        <EngineOutputHeader
+          title="Object Detection"
+          onExpandClicked={onExpandClicked}
+          onEngineChange={onEngineChange}
+          selectedEngineId={selectedEngineId}
+          engines={engines}
+        />
         <div className={styles.objectDetectionContent}>
-          {this.state.selectedObject ? (
-            <div className={styles.selectedObjectInfo}>
-              <div className={styles.backButtonHeader}>
-                <Button
-                  className={styles.backButton}
-                  onClick={this.removeSelectedObject}
-                  size="small"
-                >
-                  <i className="icon-keyboard_backspace" /> Back
-                </Button>
-              </div>
-              <div className={styles.objectNameAndCount}>
-                {this.state.selectedObject} ({
-                  groupedAssets[this.state.selectedObject].length
-                })
-              </div>
-              <div className={styles.objectOccurrenceList}>
-                {groupedAssets[this.state.selectedObject].map((o, i) => {
-                  return (
-                    <div
-                      key={i}
-                      onClick={this.handleOccurenceClick(o)}
-                      className={styles.objectOccurrence}
-                    >
-                      {msToReadableString(o.startTimeMs)} -{' '}
-                      {msToReadableString(o.endTimeMs)}
-                    </div>
-                  );
-                }, this)}
-              </div>
-            </div>
-          ) : (
-            Object.keys(groupedAssets).map(function(objectKey, index) {
-              return (
-                <div
-                  key={'pill-button-key' + index}
-                  className={styles.objectPill}
-                  onClick={this.handlePillClicked(objectKey)}
-                >
-                  <span className={styles.objectLabel}>{objectKey}</span>&nbsp;<a
-                    className={styles.objectCount}
-                  >
-                    ({groupedAssets[objectKey].length})
-                  </a>
-                </div>
-              );
-            }, this)
-          )}
+          {data.map(objectGroup => {
+            return (
+              <ObjectGroup
+                key={
+                  'object-group-' +
+                  objectGroup.sourceEngineId +
+                  objectGroup.taskId
+                }
+                objectGroup={objectGroup}
+                mediaPlayerPosition={mediaPlayerPosition}
+              />
+            );
+          })}
         </div>
       </div>
     );
