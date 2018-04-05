@@ -2,7 +2,6 @@ import React from 'react';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
-import { subDays } from 'date-fns';
 import { createLogger } from 'redux-logger';
 import { storiesOf } from '@storybook/react';
 import { InputLabel, InputAdornment } from 'material-ui/Input';

@@ -1,5 +1,5 @@
 import React from 'react';
-// import { any, objectOf, func } from 'prop-types';
+import { oneOf } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
@@ -16,6 +16,10 @@ import ContinuousSection from './ContinuousSection';
 @reduxForm()
 @formValues('scheduleType')
 export default class Scheduler extends React.Component {
+  static propTypes = {
+    scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
+      .isRequired
+  };
   render() {
     const ActiveSectionComponent = {
       recurring: RecurringSection,

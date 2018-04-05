@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { shape, string, objectOf, bool, arrayOf, any } from 'prop-types';
+import { shape, string, objectOf, bool, any } from 'prop-types';
 import { formValues, Field, FieldArray } from 'redux-form';
 import { capitalize } from 'lodash';
 
@@ -89,5 +89,5 @@ const MultiTimeRange = ({ fields }) => {
 };
 
 MultiTimeRange.propTypes = {
-  fields: arrayOf(any)
+  fields: objectOf(any)
 };
