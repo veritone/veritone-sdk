@@ -27,7 +27,7 @@ export default class SentimentEngineOutput extends Component {
     onEngineChange: func,
     onExpandClicked: func,
     className: string,
-    mediaPlayerTime: number,
+    currentMediaPlayerTime: number,
     timeWindowSizeMs: number,
     timeWindowStartMs: number,
     timeTickIntervalMs: number,
@@ -39,7 +39,7 @@ export default class SentimentEngineOutput extends Component {
 
   static defaultProps = {
     data: [],
-    mediaPlayerTime: 0,
+    currentMediaPlayerTime: 0,
     timeWindowSizeMs: 400000,
     timeWindowStartMs: 0,
     timeTickIntervalMs: 50000,
@@ -76,7 +76,7 @@ export default class SentimentEngineOutput extends Component {
   };
 
   handleTimeClick = event => {
-    this.props.onTimeClick && this.props.onTimeClick(event);
+    this.props.onTimeClick && this.props.onTimeClick(event.activeLabel);
   };
 
   flattenEngineResultsToSeries = data => {
@@ -125,7 +125,7 @@ export default class SentimentEngineOutput extends Component {
       data,
       sentimentTicks,
       sentimentDomain,
-      mediaPlayerTime,
+      currentMediaPlayerTime,
       timeWindowSizeMs,
       timeWindowStartMs,
       timeTickIntervalMs
@@ -177,7 +177,7 @@ export default class SentimentEngineOutput extends Component {
       xDomain: xDomain,
       yTicks: sentimentTicks,
       yDomain: sentimentDomain,
-      referenceValue: mediaPlayerTime,
+      referenceValue: currentMediaPlayerTime,
       totalTime: totalTime,
       scrollToTime: timeWindowStartMs,
       scaleX: totalTime > timeWindowSizeMs ? totalTime / timeWindowSizeMs : 1

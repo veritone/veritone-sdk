@@ -70,9 +70,16 @@ class OCREngineOutputView extends Component {
               return [...accumulator, ...currentValue.series];
             }, [])
             .map((ocrObject, i) => {
+              {
+                /* TDO: key may not be unique enough */
+              }
               return (
                 <OCRObject
-                  key={i}
+                  key={
+                    'ocr-object-group-' +
+                    ocrObject.startTimeMs +
+                    ocrObject.stopTimeMs
+                  }
                   text={ocrObject.object.text}
                   startTime={ocrObject.startTimeMs}
                   endTime={ocrObject.stopTimeMs}

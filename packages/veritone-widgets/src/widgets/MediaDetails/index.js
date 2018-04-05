@@ -47,7 +47,8 @@ import widget from '../../shared/widget';
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
-    expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId)
+    expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
+    currentMediaPlayerTime: state.player.currentTime
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -144,7 +145,8 @@ class MediaDetailsWidget extends React.Component {
     editModeEnabled: bool,
     infoPanelIsOpen: bool,
     expandedMode: bool,
-    toggleExpandedMode: func
+    toggleExpandedMode: func,
+    currentMediaPlayerTime: number
   };
 
   static contextTypes = {
@@ -167,6 +169,14 @@ class MediaDetailsWidget extends React.Component {
     );
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
   }
+
+  mediaPlayerRef = ref => {
+    this.mediaPlayer = ref;
+  };
+
+  handleUpdateMediaPlayerTime = (startTime, stopTime) => {
+    this.mediaPlayer.seek(startTime / 1000);
+  };
 
   handleRunProcess = () => {
     this.props.onRunProcess();
@@ -261,9 +271,11 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineId,
       engineResultsByEngineId,
       infoPanelIsOpen,
-      expandedMode
+      expandedMode,
+      currentMediaPlayerTime
     } = this.props;
 
+    let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -418,13 +430,17 @@ class MediaDetailsWidget extends React.Component {
             selectedEngineId && (
               <div className={styles.mediaScreen}>
                 <div className={styles.mediaView}>
-                  <div className={styles.mediaPlayerView}>
-                    <video.Player
-                      src={this.getPrimaryAssetUri()}
-                      className={styles.videoPlayer}
-                      store={this.context.store}
+                  <video.Player
+                    src={this.getPrimaryAssetUri()}
+                    className={styles.videoPlayer}
+                    store={this.context.store}
+                    ref={this.mediaPlayerRef}
+                  >
+                    <video.BigPlayButton
+                      className={styles.mediaPlayButton}
+                      position="center"
                     />
-                  </div>
+                  </video.Player>
                   <div className={styles.sourceLabel}>
                     Source: {this.getMediaSource()}
                   </div>
@@ -447,6 +463,10 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         onExpandClicked={this.toggleExpandedMode}
+                        currentMediaPlayerTime={mediaPlayerTimeInMs}
+                        onObjectOccurrenceClicked={
+                          this.handleUpdateMediaPlayerTime
+                        }
                       />
                     )}
                   {selectedEngineCategory &&
@@ -482,6 +502,8 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
+                        currentMediaPlayerTime={mediaPlayerTimeInMs}
+                        onTimeClick={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&

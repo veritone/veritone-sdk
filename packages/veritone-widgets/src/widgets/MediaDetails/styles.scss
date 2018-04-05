@@ -171,16 +171,16 @@
     flex-direction: row;
 
     .mediaView {
-      .mediaPlayerView {
-        height: 330px;
-        width: 450px;
-        //background: url('//static.veritone.com/veritone-ui/default-nullstate.svg');
-        //background-size: cover;
-        //background-repeat: no-repeat;
-        //background-position: center;
-      }
+      width: 450px;
 
       .videoPlayer {
+        .mediaPlayButton {
+          margin-left: -1.5em;
+          height: 1.5em;
+          width: 1.5em;
+          border-radius: 1em;
+          border: none;
+        }
       }
 
       .sourceLabel {
