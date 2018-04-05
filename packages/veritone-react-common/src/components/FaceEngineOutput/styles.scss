@@ -1,0 +1,82 @@
+@import 'src/styles/modules/variables';
+
+.faceEngineOutput {
+  padding: 20px 40px 0 30px;
+  max-height: 100%;
+}
+
+.libraryName {
+  height: 40px;
+  width: 100%;
+  background-color: rgba(33, 150, 243, 0.06);
+  border-bottom: 1px solid $grey-4;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 18px;
+  font-size: 14px;
+  color: $dark-black;
+}
+
+.libraryIcon {
+  font-size: 16px;
+  color: $grey-5;
+  margin-right: 5px;
+}
+
+.faceTab {
+  text-transform: none !important;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.faceTabBody {
+  padding-top: 20px;
+  max-height: calc(100% - 48px);
+  overflow: scroll;
+  border-top: 1px solid $grey-4;
+}
+
+.noFacesFound {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+
+  img {
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+}
+
+.noFaceMatchText {
+  text-align: center;
+  line-height: 24px;
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.entityCountContainer {
+  padding: 20px 0;
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.entityCountChip {
+  background-color: white !important;
+  border: 1px solid $grey-4 !important;
+  height: 40px !important;
+  border-radius: 20px !important;
+  margin: 0 20px 20px 0;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.faceAvatar {
+  height: 40px !important;
+  width: 40px !important;
+}

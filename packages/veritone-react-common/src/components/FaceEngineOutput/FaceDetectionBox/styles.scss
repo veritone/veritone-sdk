@@ -1,0 +1,128 @@
+@import 'src/styles/modules/variables';
+
+.faceContainer {
+  display: flex;
+  flex-direction: column;
+  width: 90px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.faceContainerHover {
+  background-color: $grey-2;
+}
+
+.entityImageContainer {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.entityImage {
+  width: 100%;
+  height: 100%;
+  border: 1px solid $grey-4;
+  border-radius: 4px;
+  position: absolute;
+}
+
+.imageButtonOverlay {
+  width: 100%;
+  height: 26px;
+  bottom: 0;
+  position: absolute;
+  border-radius: 0 0 4px 4px;
+  opacity: 0.75;
+  background: black;
+  display: flex;
+  flex-direction: row;
+}
+
+.faceActionIcon {
+  color: white;
+  font-size: 20px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  width: 50%;
+  text-align: center;
+  opacity: 1;
+
+  &:first-child {
+    padding-left: 6px;
+  }
+
+  &:last-child {
+    padding-right: 6px;
+  }
+}
+
+.faceInformation {
+  font-size: 13px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.faceTimeOccurrence {
+  color: $blue-1;
+}
+
+.autoCompleteDropdown {
+  display: flex;
+  flex-direction: column;
+  max-height: 350px;
+}
+
+.entitySearchInput {
+  font-size: 13px !important;
+  padding: 0 !important;
+}
+
+.searchResultsList {
+  flex: auto;
+  overflow: scroll;
+}
+
+.entityInfo {
+  width: 160px;
+  margin-left: 15px;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  color: $light-black;
+}
+
+.menuEntityName {
+  width: 100%;
+  height: 16px;
+  font-size: 14px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.menulibraryName {
+  width: 100%;
+  height: 14px;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.addNewEntity {
+  bottom: 0;
+  height: 45px;
+  border-top: 1px solid $grey-4;
+}
+
+.addNewEntityButton {
+  width: 100%;
+  height: 100%;
+}
+
+.unknownEntityText {
+  font-size: 14px;
+  line-height: 29px;
+  height: 29px;
+}

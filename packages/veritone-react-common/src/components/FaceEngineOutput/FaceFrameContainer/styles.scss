@@ -1,0 +1,64 @@
+@import 'src/styles/modules/variables';
+
+.frameContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.sourceAndImageContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.recognizedFaceContainer {
+  display: flex;
+  flex-direction: column;
+  padding-right: 20px;
+  align-items: center;
+}
+
+.sourceImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  margin-top: 20px;
+}
+
+.sourceImageTimestamp {
+  text-align: center;
+  font-size: 12px;
+}
+
+.sourceImageSubtitle {
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+}
+
+.recognizedMatches {
+  display: flex;
+  flex-flow: row wrap;
+  flex: auto;
+}
+
+.showMoreMatches {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.showMoreButton {
+  font-size: 12px !important;
+  text-transform: none !important;
+}
+
+.expandMoreIcon {
+  font-size: 20px;
+  color: $light-black;
+  margin-left: 5px;
+}
