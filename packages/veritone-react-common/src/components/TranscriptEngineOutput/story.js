@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bool } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
 
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
@@ -42,8 +42,7 @@ export class TranscriptExample extends Component {
 
     let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio);
     this.state = {
-      data: mockData,
-      mediaPlayerTime: 0
+      data: mockData
     }
   }
 
@@ -70,14 +69,13 @@ export class TranscriptExample extends Component {
   }
 
   render () {
-    //setInterval(this.updatePlayerTime, 1000);
-    
     return (
       <TranscriptEngineOutput 
         editMode={boolean('Edit Mode', false)}
         data={this.state.data}
         className={styles.outputViewRoot}
-        mediaPlayerTime={this.state.mediaPlayerTime}
+        mediaPlayerTime={1000*number('media player time', 0)}
+        mediaPlayerTimeInterval={1000*number('media player time Interval', 1)}
         numMaxRequest={2}
         requestSizeMs={300000}
         mediaLengthMs={3000000}

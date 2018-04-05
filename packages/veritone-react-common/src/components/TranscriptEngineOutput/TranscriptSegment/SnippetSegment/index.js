@@ -19,7 +19,6 @@ export default class SnippetSegment extends Component {
         value: string
       }))
     }),
-    mediaPlayerTime: number,
     className: string,
     timeClassName: string,
     contentClassName: string,
@@ -27,12 +26,15 @@ export default class SnippetSegment extends Component {
     editMode: bool,
     onClick: func,
     onChange: func,
+    startMediaPlayHeadMs: number,
+    stopMediaPlayHeadMs: number,
   };
 
   static defaultProps = {
     editMode: false,
     sentenceMode: false,
-    mediaPlayerTime: 0
+    startMediaPlayHeadMs: 0,
+    stopMediaPlayHeadMs: 1000
   }
 
   handleSnippetClick = (event, entryData) => {
@@ -76,20 +78,21 @@ export default class SnippetSegment extends Component {
     let {
       content,
       editMode,
-      mediaPlayerTime,
       contentClassName,
+      startMediaPlayHeadMs,
+      stopMediaPlayHeadMs
     } = this.props;
 
     let contentComponents = [];
     content.fragments.forEach((entry, index) => {
-      let startTime = entry.startTime;
-      let stopTime = entry.stopTime;
+      let startTime = entry.startTimeMs;
+      let stopTime = entry.stopTimeMs;
 
       contentComponents.push(
         <SnippetFragment 
           key={'snippet-' + entry.value + '-' + startTime + '-' + stopTime}
           value={entry.value + ' '}
-          active={mediaPlayerTime >= startTime && mediaPlayerTime <= stopTime}
+          active={!(stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime)}
           startTimeMs={startTime}
           stopTimeMs={stopTime}
           editMode={editMode}
@@ -109,17 +112,23 @@ export default class SnippetSegment extends Component {
   renderSentence () {
     let {
       content,
+      editMode,
       contentClassName,
-      editMode
+      startMediaPlayHeadMs,
+      stopMediaPlayHeadMs
     } = this.props;
+
+    let startTime = content.startTimeMs;
+    let stopTime = content.stopTimeMs;
 
     return (
       <div className={classNames(styles.content, contentClassName)}>
         <SnippetFragment 
-            key={'sentence-'+content.startTimeMs+'-'+content.stopTimeMs}
+            key={'sentence-'+startTime+'-'+stopTime}
             value={content.sentences}
-            startTimeMs={content.startTimeMs}
-            stopTimeMs={content.stopTimeMs}
+            startTimeMs={startTime}
+            stopTimeMs={stopTime}
+            active={!(stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime)}
             editMode={editMode}
             onClick={this.handleSnippetClick}
             onChange={this.handleSnippetChange}

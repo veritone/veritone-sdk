@@ -37,8 +37,9 @@ export default class TranscriptContent extends Component {
     numMaxRequest: number,
     requestSizeMs: number,
     mediaLengthMs: number,
-    mediaPlayerTime: number,
     neglectableTimeMs: number,
+    mediaPlayerTime: number,
+    mediaPlayerTimeInterval: number
   };
 
   static defaultProps = {
@@ -46,6 +47,7 @@ export default class TranscriptContent extends Component {
     overview: false,
     numMaxRequest: 2,
     mediaPlayerTime: 0,
+    mediaPlayerTimeInterval: 1000,
   };
 
   handleOnScroll = (openSlotInfo) => {
@@ -185,8 +187,11 @@ export default class TranscriptContent extends Component {
   renderSnippetSegments = (parsedData) => {
     let { 
       editMode, 
-      mediaPlayerTime 
+      mediaPlayerTime,
+      mediaPlayerTimeInterval
     } = this.props;
+
+    let stopMediaPlayHeadMs = mediaPlayerTime + mediaPlayerTimeInterval;
 
     let snippetSegments = [];
     parsedData.snippetSegments.forEach(segmentData => {
@@ -202,7 +207,8 @@ export default class TranscriptContent extends Component {
             key={'transcript-snippet'+segmentData.startTimeMs} 
             content={segmentData} 
             editMode={editMode} 
-            mediaPlayerTime={mediaPlayerTime}
+            startMediaPlayHeadMs={mediaPlayerTime}
+            stopMediaPlayHeadMs={stopMediaPlayHeadMs}
             classNames={classNames(styles.contentSegment)}
           />
         );
@@ -227,9 +233,12 @@ export default class TranscriptContent extends Component {
   renderOverviewSegments = (parsedData) => {
     let { 
       editMode, 
-      mediaPlayerTime 
+      mediaPlayerTime,
+      mediaPlayerTimeInterval 
     } = this.props;
 
+    let stopMediaPlayHeadMs = mediaPlayerTime + mediaPlayerTimeInterval;
+    
     let overalStartTime = 0;
     let overalStopTime = 0;
     let overalString = '';
@@ -264,7 +273,8 @@ export default class TranscriptContent extends Component {
             <OverviewSegment 
               key={'transcript-overview' + segmentStartTime} 
               content={segmentData} 
-              mediaPlayerTime={mediaPlayerTime}
+              startMediaPlayHeadMs={mediaPlayerTime}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
               classNames={classNames(styles.contentSegment)}
             />
           );

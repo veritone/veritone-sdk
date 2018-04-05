@@ -37,7 +37,6 @@ export default class TranscriptEngineOutput extends Component {
     className: string,
     headerClassName: string,
     contentClassName: string,
-    mediaPlayerTime: number,
 
     editMode: bool,
 
@@ -50,6 +49,9 @@ export default class TranscriptEngineOutput extends Component {
     requestSizeMs: number,
     mediaLengthMs: number,
     neglectableTimeMs: number,
+
+    mediaPlayerTime: number,
+    mediaPlayerTimeInterval: number,
   };
 
   static defaultProps = {
@@ -57,6 +59,7 @@ export default class TranscriptEngineOutput extends Component {
     editMode: false,
     numMaxRequest: 2,
     mediaPlayerTime: 0,
+    mediaPlayerTimeInterval: 1000
   };
 
   constructor (props) {
@@ -158,7 +161,9 @@ export default class TranscriptEngineOutput extends Component {
       requestSizeMs,
       mediaLengthMs,
       neglectableTimeMs,
-      contentClassName
+      contentClassName,
+      mediaPlayerTime,
+      mediaPlayerTimeInterval,
     } = this.props;
 
     return (
@@ -167,6 +172,8 @@ export default class TranscriptEngineOutput extends Component {
           data={data}
           editMode={editMode}
           overview={(this.state.overview)}
+          mediaPlayerTime={mediaPlayerTime}
+          mediaPlayerTimeInterval={mediaPlayerTimeInterval}
           numMaxRequest={numMaxRequest}
           requestSizeMs={requestSizeMs}
           mediaLengthMs={mediaLengthMs}

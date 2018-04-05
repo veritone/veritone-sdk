@@ -17,11 +17,17 @@ export default class OverviewSegment extends Component {
         value: string
       }))
     }),
-    mediaPlayerTime: number,
     onClick: func,
     className: string,
     fragmentClassName: string,
+    startMediaPlayHeadMs: number,
+    stopMediaPlayHeadMs: number
   };
+
+  static defaultProps = {
+    startMediaPlayHeadMs: 0,
+    stopMediaPlayHeadMs: 1000
+  }
 
   handleFragmentClicked = (event, value) => {
     if (this.props.onClick) {
@@ -32,8 +38,9 @@ export default class OverviewSegment extends Component {
   renderReadContent = () => {
     let {
       content,
-      mediaPlayerTime,
-      fragmentClassName
+      fragmentClassName,
+      startMediaPlayHeadMs,
+      stopMediaPlayHeadMs,
     } = this.props;
 
     let readContents = [];
@@ -43,11 +50,11 @@ export default class OverviewSegment extends Component {
 
       readContents.push(
         <OverviewFragment 
-          key={'overview-fragment' + fragmentData.startTimeMs} 
+          key={'overview-fragment' + startTime + '-' + stopTime} 
           content={fragmentData} 
           className={fragmentClassName} 
           onClick={this.handleFragmentClicked} 
-          active={mediaPlayerTime >= startTime && mediaPlayerTime <= stopTime}
+          active={!(stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime)}
         />
       );
     });
