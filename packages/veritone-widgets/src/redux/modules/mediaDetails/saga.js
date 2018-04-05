@@ -294,6 +294,10 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
         details
         startDateTime
         stopDateTime
+        primaryAsset(assetType: "media") {
+          id
+          uri
+        }
       }
     }`;
 
