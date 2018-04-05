@@ -186,7 +186,8 @@ export default class TranscriptContent extends Component {
 
   renderSnippetSegments = (parsedData) => {
     let { 
-      editMode, 
+      onClick,
+      editMode,
       mediaPlayerTime,
       mediaPlayerTimeInterval
     } = this.props;
@@ -206,7 +207,8 @@ export default class TranscriptContent extends Component {
           <SnippetSegment 
             key={'transcript-snippet'+segmentData.startTimeMs} 
             content={segmentData} 
-            editMode={editMode} 
+            editMode={editMode}
+            onClick={onClick}
             startMediaPlayHeadMs={mediaPlayerTime}
             stopMediaPlayHeadMs={stopMediaPlayHeadMs}
             classNames={classNames(styles.contentSegment)}
@@ -232,6 +234,7 @@ export default class TranscriptContent extends Component {
 
   renderOverviewSegments = (parsedData) => {
     let { 
+      onClick,
       editMode, 
       mediaPlayerTime,
       mediaPlayerTimeInterval 
@@ -273,6 +276,7 @@ export default class TranscriptContent extends Component {
             <OverviewSegment 
               key={'transcript-overview' + segmentStartTime} 
               content={segmentData} 
+              onClick={onClick}
               startMediaPlayHeadMs={mediaPlayerTime}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
               classNames={classNames(styles.contentSegment)}
@@ -312,12 +316,13 @@ export default class TranscriptContent extends Component {
      } = this.props;
 
     let parsedData = this.parseData();
+
     return (
       <div className={classNames(styles.transcriptContent, className)}>
         <DynamicContentScroll 
           className={classNames(styles.container)}
           onScroll={this.handleOnScroll}
-          totalSize={mediaLengthMs}
+          totalSize={parsedData.lazyLoading ? mediaLengthMs : 0}
           segmentSize={requestSizeMs}
           neglectableSize={neglectableTimeMs}
           numSegmentPerUpdate={numMaxRequest}

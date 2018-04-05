@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { bool } from 'prop-types';
+
 import { storiesOf } from '@storybook/react';
 import { boolean, number } from '@storybook/addon-knobs/react';
+import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
@@ -40,7 +42,7 @@ export class TranscriptExample extends Component {
     this.selectedEngineId = '1';
     this.engines = [{id: '1', name:'Engine-X'}, {id: '2', name:'Engine-Y'}, {id: '3', name:'Engine-Z'}];
 
-    let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio);
+    let mockData = genMockData(initialStartTime, initialStopTime, initialNumDataChunks, maxSerieSize, minSerieSize, type, badSerieRatio, props.lazyLoading);
     this.state = {
       data: mockData
     }
@@ -58,16 +60,6 @@ export class TranscriptExample extends Component {
     }
   }
 
-  handleEngineChange (value) {
-    console.log('engine change', value)
-  }
-
-  handleExpandView () {}
-
-  updatePlayerTime = () => {
-    console.log('tick');
-  }
-
   render () {
     return (
       <TranscriptEngineOutput 
@@ -81,18 +73,19 @@ export class TranscriptExample extends Component {
         mediaLengthMs={3000000}
         neglectableTimeMs={2000}
         onScroll={this.handleDataRequesting}
+        onClick={action('on click')}
 
         engines={this.engines}
         selectedEngineId={this.selectedEngineId}
-        onEngineChange={this.handleEngineChange}
-        onExpandClicked={this.handleExpandView}
+        onEngineChange={action('engine changed')}
+        onExpandClicked={action('expand view clicked')}
       />
     )
   }
 }
 
 
-function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, minSerieSize = 0, type = 'TTML', badSerieRatio = 0.2) {
+function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, minSerieSize = 0, type = 'TTML', badSerieRatio = 0.2, enableLazyLoading = true) {
   let dataChunks = [];
 
   let chunkStartTime = startTime;
@@ -102,12 +95,19 @@ function genMockData (startTime, stopTime, numDataChunks, maxSerieSize = 10, min
 
     let isBadSerie = Math.random() < badSerieRatio;
     let series = genMockSerie(chunkStartTime, chunkStoptime, maxSerieSize, minSerieSize, type, isBadSerie);
-    dataChunks.push({ 
-      startTimeMs: chunkStartTime,
-      stopTimeMs: chunkStoptime,
-      status: 'success',
-      series: series 
-    });
+
+    if (enableLazyLoading) {
+      dataChunks.push({ 
+        startTimeMs: chunkStartTime,
+        stopTimeMs: chunkStoptime,
+        status: 'success',
+        series: series 
+      });
+    } else {
+      dataChunks.push({ 
+        series: series 
+      });
+    }
 
     chunkStartTime = chunkStoptime;
   }

@@ -70,14 +70,6 @@ export default class TranscriptEngineOutput extends Component {
     }
   }
 
-  handleOnScroll = (openSlotInfo) => {
-    (this.props.onScroll) && this.props.onScroll(openSlotInfo);
-  }
-
-  handleOnClick = (event, value) => {
-    (this.props.onClick) && this.props.onClick(event, value);
-  }
-
   handleViewChange = (event) => {
     (event.target.value === 'overview')  && this.setState({overview: true});
     (event.target.value === 'time')      && this.setState({overview: false});
