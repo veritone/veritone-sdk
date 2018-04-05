@@ -1,0 +1,42 @@
+.modal-header {
+  background-color: #1F2532;
+  span {
+    color: #FAFAFA;
+  }
+}
+.fullScreenTopBar {
+  // height: 65px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .topBarTitle {
+    color: #FAFAFA;
+    font-size: 20px;
+    line-height: 28px;
+    align-self: center;
+    margin-left: 25px;
+  }
+
+  .iconGroup {
+    display: flex;
+    justify-content: space-between;
+    align-self: center;
+    padding-right: 25px;
+
+    // .separator {
+    //   align-self: center;
+    //   border-right: 1px solid rgba(255, 255, 255, 0.54);
+    //   height: 27px;
+    // }
+  }
+}
+
+.icon {
+  color: #fff;
+}
+
+// .modal-container {
+//   display: flex;
+//   flex-direction: column;
+// }
