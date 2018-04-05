@@ -11,7 +11,11 @@ export default function withMuiThemeProvider(Component) {
         <MuiThemeProvider
           theme={createMuiTheme({
             palette: {
-              primary: blue
+              primary: {
+                light: blue[300],
+                main: blue[500],
+                dark: blue[700]
+              }
             },
             typography: {
               button: {
