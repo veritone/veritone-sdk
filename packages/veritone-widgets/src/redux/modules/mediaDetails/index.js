@@ -105,9 +105,11 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         engineResultRequestsByEngineId: {
+          ...state[widgetId].engineResultRequestsByEngineId,
           [payload.engineId]: [...resultRequests]
         },
         engineResultsByEngineId: {
+          ...state[widgetId].engineResultsByEngineId,
           [payload.engineId]: [
             ...engineResults.slice(0, resultInsertIndex + 1),
             {
