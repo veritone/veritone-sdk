@@ -359,7 +359,7 @@ export default {
     if (!configuration.sourceId) {
       errors.push('Invalid Source');
     }
-    if (_.isArray(adapterStep.fields)) {
+    if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
         if (field.defaultValue && !configuration[field.name]) {
           errors.push(startCase(toLower(field.name)) + ' is invalid');
