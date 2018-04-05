@@ -1,75 +1,80 @@
 import React from 'react';
 
 import {
-  string,
-  bool,
   arrayOf,
-  number,
   any,
-  objectOf
+  objectOf,
+  func
 } from 'prop-types';
 
-import {
-  Checkbox,
-} from 'components/formComponents';
-import { MenuItem } from 'material-ui/Menu';
+import { Table, Column } from 'components/DataTable';
+import { format } from 'date-fns';
 
-import JobRow from './JobRow';
-
-import styles from './styles.scss';
-
-export default class IngestionJobTileView extends React.Component {
+export default class SourceTileView extends React.Component {
   static propTypes = {
-    jobInfo: arrayOf(objectOf(any)).isRequired
+    jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
+    onSelectJob: func.isRequired,
+    onSelectMenuItem: func
   };
 
-  static defaultProps = {};
-
-  state = {
-    checkedAll: false,
+  static defaultProps = {
+    jobs: []
   };
 
-  handleCheckboxChange = () => {
-    this.setState({
-      checkedAll: !this.state.checkedAll
-    });
-  };
+  getIngestionJobData = (i) => {
+    return this.props.jobs[i];
+  }
+
+  renderLastIngestion = (date) => {
+    return format(date, 'M/D/YYYY h:mm A');
+  }
+
+  renderStatus = (isActive) => {
+    return isActive ? 'Active' : 'Inactive';
+  }
 
   render() {
-    const jobRows = this.props.jobInfo.map((row, index) => {
-      return <JobRow 
-          checkAll={this.state.checkedAll} 
-          name={row.name} 
-          status={row.status}
-          adapter={row.adapter}
-          ingestionType={row.ingestionType}
-          creationDate={row.creationDate}
-          lastIngested={row.lastIngested}
-          key={index} />
-    });
     return (
-      <div>
-        <div className={styles.tableTitleRow}>
-          <Checkbox
-            input={{
-              onChange: this.handleCheckboxChange,
-              value: this.state.checkedAll
-            }}
-            className={styles.checkbox}
-            label=''
-          />
-          <div className={styles.titleTextGroup}>
-            <span className={styles.tableTitle}>Job name</span>
-            <span className={styles.tableTitle}>Status</span>
-            <span className={styles.tableTitle}>Adapter</span>
-            <span className={styles.tableTitle}>Ingestion Type</span>
-            <span className={styles.tableTitle}>Creation Date</span>
-            <span className={styles.tableTitle}>Last Ingestion</span>
-          </div>
-          <div style={{width: '55px'}}></div>
-        </div>
-        {jobRows}
-      </div>
+      <Table
+        rowGetter={this.getIngestionJobData}
+        rowCount={this.props.jobs.length}
+        rowHeight={48}
+      >
+        <Column
+          dataKey='name'
+          header='Job Name'
+        />
+        <Column
+          dataKey='isActive'
+          header='Status'
+          cellRenderer={this.renderStatus}
+        />
+        <Column
+          dataKey='engines'
+          header='Engines'
+          cellRenderer={this.renderLastIngestion}
+        />
+        <Column
+          dataKey='adapter'
+          header='Adapter'
+          cellRenderer={this.renderUpdatedDate}
+        />
+        <Column
+          dataKey='ingestionType'
+          header='Ingestion Type'
+          cellRenderer={this.renderUpdatedDate}
+        />
+        <Column
+          dataKey='modifiedDateTime'
+          header='Last Ingestion'
+          cellRenderer={this.renderLastIngestion}
+        />
+        {/* <MenuColumn
+          id="menu"
+          dataKey=''
+          onSelectItem={this.props.onSelectMenuItem}
+        /> */}
+      </Table>
     );
   };
 }

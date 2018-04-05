@@ -18,9 +18,7 @@ export default class SDOTable extends React.Component {
   static defaultProps = {
     paginate: false
   }
-
   
-
   getRowData = (i) => {
     return this.props.data[i];
   };

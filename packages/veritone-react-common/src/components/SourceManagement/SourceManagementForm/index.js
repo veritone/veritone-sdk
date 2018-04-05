@@ -49,7 +49,8 @@ export default class SourceManagementForm extends React.Component {
       sourceTypeId: '',
       name: '',
       thumbnailUrl: '',
-      details: {}
+      details: {},
+      thumbnailFile: null
     },
     contentTemplates: {},
     activeTab: 0,
@@ -193,7 +194,10 @@ export default class SourceManagementForm extends React.Component {
             </IconButton>
           ]}
         >
-          <Tabs value={activeTab} onChange={this.handleChangeTab} classes={{ indicator: styles.tabIndicator }}>
+          <Tabs
+            value={activeTab}
+            onChange={this.handleChangeTab}
+          >
             <Tab label="Configuration" />
             <Tab label="Content Templates" />
           </Tabs>
