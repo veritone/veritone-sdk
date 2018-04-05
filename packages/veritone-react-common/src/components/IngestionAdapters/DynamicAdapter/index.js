@@ -374,18 +374,17 @@ export default {
   },
   getHydratedData: adapterStep => hydrateData => {
     let configuration = {};
+    let ingestionTask, sourceId;
     let tasks = get(hydrateData, 'jobTemplates.records[0].taskTemplates.records');
-    let ingestionTask, sourceId, sourceSchema;
     if (tasks) {
-      ingestionTask = tasks.filter(task => get(task, 'engine.category.type.name') === 'Ingestion')[0];
+      ingestionTask = tasks.filter(task => (get(task, 'engine.category.type.name') === 'Ingestion'))[0];
     }
     if (ingestionTask) {
       sourceId = get(ingestionTask, 'payload.sourceId');
       configuration.sourceId = sourceId;
-      let fields = get(adapterStep, 'fields')
+      let fields = get(adapterStep, 'fields');
       if (fields) {
           fields.forEach(field => configuration[field.name] = ingestionTask.payload[field.name]);
-        }
       }
     }
 

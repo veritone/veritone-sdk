@@ -1,9 +1,6 @@
 import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
-import Button from 'material-ui/Button';
 import ContentTemplates from '../ContentTemplates'
-
-import styles from '../styles.scss';
 
 export default class ContentTemplateForm extends React.Component {
   static propTypes = {
