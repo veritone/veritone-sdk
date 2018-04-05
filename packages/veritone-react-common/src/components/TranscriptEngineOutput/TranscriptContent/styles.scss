@@ -1,21 +1,10 @@
 .transcriptContent {
-  overflow-y: scroll;
-  font-size: 16px;
-  font-weight: 300;
-  color: rgba(0, 0, 0, 0.54);
-  line-height: 25px;
-  flex: 1;
-}
-
-.bulkEditTextArea {
-  flex: auto;
-  overflow: scroll;
   width: 100%;
   height: 100%;
-  font-size: inherit;
-  font-weight: inherit;
-  color: inherit;
-  line-height: inherit;
-  border: none;
-  resize: none;
+  overflow: hidden;
+
+  .container {
+    width: 100%;
+    height: 100%;
+  }
 }

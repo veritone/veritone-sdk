@@ -7,6 +7,7 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
+    "downshift": "^1.31.2",
     "lodash": "^4.17.4",
     "material-ui": "v1.0.0-beta.20",
     "material-ui-icons": "^1.0.0-beta.17",
@@ -21,6 +22,7 @@
     "react-dom": "^16.2.0",
     "react-dotdotdot": "^1.2.3",
     "react-infinite-calendar": "^2.3.1",
+    "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
     "recharts": "^1.0.0-beta.10",
     "react-transition-group": "1.x",

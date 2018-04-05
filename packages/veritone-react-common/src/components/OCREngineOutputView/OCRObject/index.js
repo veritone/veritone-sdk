@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { number, string, func } from 'prop-types';
-import { isFunction } from 'lodash';
+import cx from 'classnames';
 
 import { msToReadableString } from 'helpers/time';
 import styles from './styles.scss';
@@ -10,20 +10,29 @@ class OCRObject extends Component {
     text: string,
     startTime: number,
     endTime: number,
-    onOcrClicked: func
-  };
-
-  handleOcrClick = evt => {
-    if (isFunction(this.props.onOcrClicked)) {
-      this.props.onOcrClicked(this.props.startTime, this.props.endTime, evt);
-    }
+    onClick: func,
+    currentMediaPlayerTime: number
   };
 
   render() {
-    let { text, startTime, endTime } = this.props;
+    let {
+      text,
+      startTime,
+      endTime,
+      onClick,
+      currentMediaPlayerTime
+    } = this.props;
+
+    let highlightOcr =
+      currentMediaPlayerTime >= startTime && currentMediaPlayerTime <= endTime;
 
     return (
-      <div className={styles.ocrContainer} onClick={this.handleOcrClick}>
+      <div
+        className={cx(styles.ocrContainer, {
+          [styles.highlighted]: highlightOcr
+        })}
+        onClick={onClick}
+      >
         <span className={styles.ocrText}>{text}</span>
         <span className={styles.ocrObjectTimestamp}>
           {msToReadableString(startTime)} - {msToReadableString(endTime)}

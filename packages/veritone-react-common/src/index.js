@@ -26,6 +26,7 @@ export TranscriptEngineOutput from './components/TranscriptEngineOutput';
 export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';
+export FaceEngineOutput from './components/FaceEngineOutput';
 export OCREngineOutputView from './components/OCREngineOutputView';
 export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineCategorySelector from './components/EngineCategorySelector';

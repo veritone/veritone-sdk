@@ -1,0 +1,80 @@
+@import 'src/styles/modules/variables';
+
+.entityBackButton {
+  padding-left: 0 !important;
+
+  .entityBackIcon {
+    font-size: 24px;
+  }
+
+  .entityBackLabel {
+    font-weight: 500;
+    line-height: 19px;
+    font-size: 16px;
+  }
+}
+
+.selectedEntity {
+  display: flex;
+  flex-direction: row;
+}
+
+.entityProfileImage {
+  width: 80px;
+  height: 80px;
+  flex: none;
+}
+
+.selectedEntityInfo {
+  font-size: 14px;
+  line-height: 16px;
+  padding-left: 15px;
+}
+
+.tabContainer {
+  padding-top: 20px;
+}
+
+.metadataLabel {
+  font-size: 12px;
+  line-height: 16px;
+  color: $min-black;
+}
+
+.metadataValue {
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.faceOccurrenceList {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.faceOccurrence {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  width: 130px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.faceOccurrenceTimestamp {
+  color: $blue-1;
+  font-size: 14px;
+  line-height: 30px;
+}
+
+.entityJson {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.jsondataItem {
+  margin-bottom: 20px;
+  margin-right: 10px;
+}

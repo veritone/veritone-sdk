@@ -9,7 +9,13 @@ import { msToReadableString } from '../../helpers/time';
 
 import styles from './styles.scss';
 
-const ObjectGroup = ({ objectGroup, mediaPlayerPosition }) => {
+const ObjectGroup = ({
+  objectGroup,
+  currentMediaPlayerTime,
+  onObjectClicked
+}) => {
+  let handleObjectClicked = (startTime, stopTime) => evt =>
+    onObjectClicked(startTime, stopTime);
   return (
     <span>
       {objectGroup.series &&
@@ -31,9 +37,13 @@ const ObjectGroup = ({ objectGroup, mediaPlayerPosition }) => {
               className={styles.objectPill}
               infoClassName={styles.objectAppearanceTime}
               highlight={
-                mediaPlayerPosition >= objectData.startTimeMs &&
-                mediaPlayerPosition <= objectData.stopTimeMs
+                currentMediaPlayerTime >= objectData.startTimeMs &&
+                currentMediaPlayerTime <= objectData.stopTimeMs
               }
+              onClick={handleObjectClicked(
+                objectData.startTimeMs,
+                objectData.stopTimeMs
+              )}
             />
           );
         })}
@@ -54,7 +64,8 @@ ObjectGroup.propTypes = {
       })
     )
   }),
-  mediaPlayerPosition: number
+  currentMediaPlayerTime: number,
+  onObjectClicked: func
 };
 
 class ObjectDetectionEngineOutput extends Component {
@@ -83,7 +94,7 @@ class ObjectDetectionEngineOutput extends Component {
     ),
     onEngineChange: func,
     className: string,
-    mediaPlayerPosition: number,
+    currentMediaPlayerTime: number,
     onExpandClicked: func
   };
 
@@ -92,20 +103,8 @@ class ObjectDetectionEngineOutput extends Component {
     engines: []
   };
 
-  state = {
-    selectedObject: null
-  };
-
-  handlePillClicked = objectName => evt => {
-    this.setState({ selectedObject: objectName });
-  };
-
-  removeSelectedObject = () => {
-    this.setState({ selectedObject: null });
-  };
-
-  handleOccurenceClick = occurrence => event => {
-    this.props.onObjectOccurrenceClicked(occurrence);
+  handleObjectClicked = (startTime, stopTime) => {
+    this.props.onObjectOccurrenceClicked(startTime, stopTime);
   };
 
   render() {
@@ -115,7 +114,7 @@ class ObjectDetectionEngineOutput extends Component {
       selectedEngineId,
       engines,
       onEngineChange,
-      mediaPlayerPosition,
+      currentMediaPlayerTime,
       onExpandClicked
     } = this.props;
 
@@ -138,7 +137,8 @@ class ObjectDetectionEngineOutput extends Component {
                   objectGroup.taskId
                 }
                 objectGroup={objectGroup}
-                mediaPlayerPosition={mediaPlayerPosition}
+                currentMediaPlayerTime={currentMediaPlayerTime}
+                onObjectClicked={this.handleObjectClicked}
               />
             );
           })}

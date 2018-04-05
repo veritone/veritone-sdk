@@ -1,0 +1,23 @@
+@import 'src/styles/modules/variables';
+
+.transcriptSegment {
+  width: 100%;
+
+  display: flex;
+  flex: row nowrap;
+
+  .time {
+    font-weight: bold;
+    padding: 20px 20px 20px 0;
+  }
+
+  .content {
+    padding: 20px 0;
+  }
+
+  border-bottom: 1px solid $faint-black;
+}
+
+.transcriptSegment:last-child {
+  border-bottom: none;
+}
