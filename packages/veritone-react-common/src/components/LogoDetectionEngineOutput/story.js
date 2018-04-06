@@ -1,18 +1,34 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { number } from '@storybook/addon-knobs/react';
+import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
 import LogoDetectionEngineOutput from './';
 
-storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {
-  let mockData = genMockData(140, 5000000);
 
+let mockData = genMockData(140, 5000000);
+let selectedEngineId = '1';
+let engines = [
+  { id: '1', name: 'Engine-X' },
+  { id: '2', name: 'Engine-Y' },
+  { id: '3', name: 'Engine-Z' }
+];
+
+storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {
   return (
     <div className={styles.outputViewRoot}>
       <LogoDetectionEngineOutput
         data={mockData}
-        mediaPlayerTime={500000}
+        mediaPlayerTimeMs={1000 * number('media player time', 0)}
+        mediaPlayerTimeIntervalMs={500}
         className={styles.outputViewRoot}
+        engines={engines}
+        selectedEngineId={selectedEngineId}
+
+        onEntrySelected={action('on select')}
+        onEngineChange={action('on engine changed')}
+        onExpandClicked={action('on expand clicked')}
       />
     </div>
   );
