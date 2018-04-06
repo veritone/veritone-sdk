@@ -198,13 +198,14 @@ class MediaInfoPanel extends Component {
                 {this.props.tdo.details.veritoneFile.filename}
               </div>
             </div>
-            {this.props.tdo.details.date &&
+            {this.props.tdo.details.date && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Date Created</div>
                 <div className={styles.infoFieldData}>
                   {this.toFormattedDate(this.props.tdo.details.date)}
                 </div>
-              </div>}
+              </div>
+            )}
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Duration</div>
               <div className={styles.infoFieldData}>
@@ -214,31 +215,37 @@ class MediaInfoPanel extends Component {
                 )}
               </div>
             </div>
-            {this.props.engineCategories && this.props.engineCategories.length && (
-              <div className={styles.infoField}>
-                <div className={styles.infoFieldLabel}>Engines</div>
-                <div className={styles.infoFieldData}>
-                  {this.props.engineCategories
-                    .filter(
-                      category => category.engines && category.engines.length
-                    )
-                    .map(category => (
-                      <div key={category.id}>
-                        <b>{category.name}:</b>{' '}
-                        {category.engines.map(engine => engine.name).join(', ')}
-                      </div>
-                    ))}
+            {this.props.engineCategories &&
+              this.props.engineCategories.length && (
+                <div className={styles.infoField}>
+                  <div className={styles.infoFieldLabel}>Engines</div>
+                  <div className={styles.infoFieldData}>
+                    {this.props.engineCategories
+                      .filter(
+                        category => category.engines && category.engines.length
+                      )
+                      .map(category => (
+                        <div key={category.id}>
+                          <b>{category.name}:</b>{' '}
+                          {category.engines
+                            .map(engine => engine.name)
+                            .join(', ')}
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            )}
-            {this.props.tdo.details.tags && this.props.tdo.details.tags.length > 0 && (
-              <div className={styles.infoField}>
-                <div className={styles.infoFieldLabel}>Tags</div>
-                <div className={styles.infoFieldData}>
-                  {this.props.tdo.details.tags.map(tag => tag.value).join(', ')}
+              )}
+            {this.props.tdo.details.tags &&
+              this.props.tdo.details.tags.length > 0 && (
+                <div className={styles.infoField}>
+                  <div className={styles.infoFieldLabel}>Tags</div>
+                  <div className={styles.infoFieldData}>
+                    {this.props.tdo.details.tags
+                      .map(tag => tag.value)
+                      .join(', ')}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             <div className={styles.programImagesSection}>
               <div>
                 Program Live Image
@@ -285,23 +292,23 @@ class MediaInfoPanel extends Component {
         </div>
         {this.props.tdo &&
           this.props.tdo.details &&
-            this.state.isOpenEditMetadata && (
-              <EditMetadataDialog
-                isOpen={this.state.isOpenEditMetadata}
-                metadata={this.props.tdo.details}
-                onClose={this.toggleIsOpenEditMetadata}
-                onSave={this.onSaveMetadata}
-              />
+          this.state.isOpenEditMetadata && (
+            <EditMetadataDialog
+              isOpen={this.state.isOpenEditMetadata}
+              metadata={this.props.tdo.details}
+              onClose={this.toggleIsOpenEditMetadata}
+              onSave={this.onSaveMetadata}
+            />
           )}
         {this.props.tdo &&
           this.props.tdo.details &&
-            this.state.isOpenEditTags && (
-              <EditTagsDialog
-                isOpen={this.state.isOpenEditTags}
-                tags={this.props.tdo.details.tags}
-                onClose={this.toggleIsOpenEditTags}
-                onSave={this.onSaveTags}
-              />
+          this.state.isOpenEditTags && (
+            <EditTagsDialog
+              isOpen={this.state.isOpenEditTags}
+              tags={this.props.tdo.details.tags}
+              onClose={this.toggleIsOpenEditTags}
+              onSave={this.onSaveTags}
+            />
           )}
       </div>
     );

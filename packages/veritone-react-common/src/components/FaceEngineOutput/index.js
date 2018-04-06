@@ -59,7 +59,7 @@ class FaceEngineOutput extends Component {
       })
     ),
     enableEditMode: bool,
-    mediaPlayerPosition: number,
+    currentMediaPlayerTime: number,
     viewMode: oneOf(['summary', 'byFrame', 'byScene']),
     onAddNewEntity: func,
     className: string,
@@ -118,9 +118,12 @@ class FaceEngineOutput extends Component {
     if (!faceData || !faceData.length) {
       return;
     }
+
     let faceSeries = faceData.reduce((accumulator, faceSeries) => {
       if (faceSeries.series && faceSeries.series.length) {
         return [...accumulator, ...faceSeries.series];
+      } else {
+        return accumulator;
       }
     }, []);
 
@@ -278,7 +281,7 @@ class FaceEngineOutput extends Component {
       entitySearchResults,
       className,
       onFaceOccurrenceClicked,
-      mediaPlayerPosition,
+      currentMediaPlayerTime,
       onRemoveFaceDetection,
       onEditFaceDetection,
       onSearchForEntities
@@ -379,7 +382,7 @@ class FaceEngineOutput extends Component {
             {viewMode === 'byFrame' &&
               !this.state.selectedEntity && (
                 <FacesByFrame
-                  mediaPlayerPosition={mediaPlayerPosition}
+                  currentMediaPlayerTime={currentMediaPlayerTime}
                   recognizedEntityObjectMap={
                     this.state.recognizedEntityObjectMap
                   }
@@ -390,7 +393,7 @@ class FaceEngineOutput extends Component {
             {viewMode === 'byScene' &&
               !this.state.selectedEntity && (
                 <FacesByScene
-                  mediaPlayerPosition={mediaPlayerPosition}
+                  currentMediaPlayerTime={currentMediaPlayerTime}
                   recognizedEntityObjects={this.state.recognizedEntityObjects}
                   onSelectEntity={this.handleEntitySelect}
                 />

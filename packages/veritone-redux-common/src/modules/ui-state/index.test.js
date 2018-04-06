@@ -47,11 +47,7 @@ describe('ui-state module', function() {
 
   describe('clearStateForKey', function() {
     xit('clears ui state at the given key', function() {
-      let state = [
-        undefined,
-
-        module.clearStateForKey('key')
-      ].reduce(reducer);
+      let state = [undefined, module.clearStateForKey('key')].reduce(reducer);
 
       state = { [module.namespace]: state };
 
