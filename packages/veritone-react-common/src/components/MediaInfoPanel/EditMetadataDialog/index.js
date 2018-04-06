@@ -116,7 +116,8 @@ class EditMetadataDialog extends Component {
         <DialogTitle
           classes={{
             root: styles.dialogTitle
-          }}>
+          }}
+        >
           <div className={styles.dialogTitleLabel}>Edit Metadata</div>
           <IconButton
             onClick={this.props.onClose}
@@ -125,7 +126,7 @@ class EditMetadataDialog extends Component {
               root: styles.closeButton
             }}
           >
-            <Icon className="icon-close-exit"/>
+            <Icon className="icon-close-exit" />
           </IconButton>
         </DialogTitle>
         <DialogContent>
@@ -135,7 +136,7 @@ class EditMetadataDialog extends Component {
             id="filename"
             label="Filename"
             InputLabelProps={{
-              shrink: true,
+              shrink: true
             }}
             value={this.state.filename}
             onChange={this.onFileNameChange}
@@ -151,7 +152,7 @@ class EditMetadataDialog extends Component {
             label="Source"
             placeholder="Enter name of media owner or creator"
             InputLabelProps={{
-              shrink: true,
+              shrink: true
             }}
             value={this.state.source}
             onChange={this.onSourceChange}

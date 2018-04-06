@@ -12,7 +12,8 @@ import {
   shape,
   arrayOf,
   any,
-  object
+  object,
+  objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
@@ -24,14 +25,18 @@ import {
   FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
-  TranscriptEngineOutput
+  TranscriptEngineOutput,
+  FaceEngineOutput
 } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
 import cx from 'classnames';
 
 import styles from './styles.scss';
 
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
+
+const { libraries: { fetchLibraries, getLibraries } } = modules;
 
 @connect(
   (state, { _widgetId }) => ({
@@ -49,7 +54,8 @@ import widget from '../../shared/widget';
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
-    currentMediaPlayerTime: state.player.currentTime
+    currentMediaPlayerTime: state.player.currentTime,
+    libraries: getLibraries(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -60,7 +66,8 @@ import widget from '../../shared/widget';
     setEngineId: mediaDetailsModule.setEngineId,
     toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
-    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
+    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
+    fetchLibraries: fetchLibraries
   },
   null,
   { withRef: true }
@@ -145,7 +152,23 @@ class MediaDetailsWidget extends React.Component {
     infoPanelIsOpen: bool,
     expandedMode: bool,
     toggleExpandedMode: func,
-    currentMediaPlayerTime: number
+    currentMediaPlayerTime: number,
+    fetchLibraries: func,
+    libraries: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        entities: arrayOf(
+          shape({
+            id: string,
+            name: string,
+            programImageUrl: string,
+            libraryId: string,
+            jsondata: objectOf(string)
+          })
+        )
+      })
+    )
   };
 
   static contextTypes = {
@@ -162,6 +185,7 @@ class MediaDetailsWidget extends React.Component {
   }
 
   componentDidMount() {
+    this.props.fetchLibraries();
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
   }
 
@@ -276,7 +300,8 @@ class MediaDetailsWidget extends React.Component {
       infoPanelIsOpen,
       expandedMode,
       currentMediaPlayerTime,
-      editModeEnabled
+      editModeEnabled,
+      libraries
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -432,7 +457,8 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.onSaveEdit}
                       >
                         SAVE
-                      </Button>}
+                      </Button>
+                    }
                   </div>
                 </div>
               </div>
@@ -463,7 +489,9 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         editMode={editModeEnabled}
-                        mediaPlayerTimeMs={Math.round(currentMediaPlayerTime * 1000)}
+                        mediaPlayerTimeMs={Math.round(
+                          currentMediaPlayerTime * 1000
+                        )}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
@@ -471,11 +499,16 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         onExpandClicked={this.toggleExpandedMode}
                         onClick={this.handleUpdateMediaPlayerTime}
+                        neglectableTimeMs={100}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'face' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <FaceEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        libraries={libraries}
+                        currentMediaPlayerTime={mediaPlayerTimeInMs}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'object' && (
@@ -541,9 +574,7 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
-                      'thirdPartyData' && (
-                      <div>No thirdparty data</div>
-                    )}
+                      'thirdPartyData' && <div>No thirdparty data</div>}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'music' && (
                       <div>No {selectedEngineCategory.categoryType} data</div>

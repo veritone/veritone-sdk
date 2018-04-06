@@ -19,7 +19,7 @@ export const config = {
   ...configModule
 };
 
-import authRootSaga from './auth/oauthSaga'
+import authRootSaga from './auth/oauthSaga';
 import authReducer, * as authModule from './auth';
 import * as authConstants from './auth/constants';
 
@@ -28,4 +28,13 @@ export const auth = {
   ...authModule,
   ...authConstants,
   authRootSaga
+};
+
+import librariesReducer, * as librariesModule from './libraries';
+import * as librariesConstants from './libraries/constants';
+
+export const libraries = {
+  reducer: librariesReducer,
+  ...librariesModule,
+  ...librariesConstants
 };

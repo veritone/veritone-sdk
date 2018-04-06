@@ -85,7 +85,9 @@ export class TranscriptExample extends Component {
         data={this.state.data}
         className={styles.outputViewRoot}
         mediaPlayerTimeMs={1000 * number('media player time', 0)}
-        mediaPlayerTimeIntervalMs={1000 * number('media player time Interval', 1)}
+        mediaPlayerTimeIntervalMs={
+          1000 * number('media player time Interval', 1)
+        }
         requestSizeMs={300000}
         mediaLengthMs={3000000}
         neglectableTimeMs={2000}

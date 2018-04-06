@@ -20,17 +20,17 @@ class TagPill extends Component {
         <span className={styles.tagText}>{this.props.text}</span>
         <IconButton
           onClick={this.onRemoveTag}
-          aria-label='Remove'
+          aria-label="Remove"
           classes={{
             root: styles.removeButton
           }}
         >
           <Icon
-          className='icon-close-exit'
-          classes={{
-            root: styles.removeButtonIcon
-          }}
-        />
+            className="icon-close-exit"
+            classes={{
+              root: styles.removeButtonIcon
+            }}
+          />
         </IconButton>
       </div>
     );
