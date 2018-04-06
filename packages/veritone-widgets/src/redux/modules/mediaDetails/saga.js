@@ -62,11 +62,17 @@ function* loadEngineCategoriesSaga(widgetId, tdoId) {
     }`;
 
   // array of categories that Media Details does not support
-  const unsupportedCategories = [
+  let unsupportedCategories = [
     'conductor',
     'reducer',
     'thumbnail',
-    'transcode'
+    'transcode',
+    // TODO: remove these temporarily disabled categories
+    'fingerprint',
+    'translate',
+    'geolocation',
+    'stationPlayout',
+    'music'
   ];
 
   const config = yield select(configModule.getConfig);
