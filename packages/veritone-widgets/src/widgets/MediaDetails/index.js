@@ -59,7 +59,6 @@ const { libraries: { fetchLibraries, getLibraries } } = modules;
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadEngineCategoriesRequest: mediaDetailsModule.loadEngineCategoriesRequest,
     loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
@@ -80,7 +79,6 @@ class MediaDetailsWidget extends React.Component {
     mediaId: number.isRequired,
     onRunProcess: func,
     onClose: func,
-    loadEngineCategoriesRequest: func,
     loadEngineResultsRequest: func,
     loadTdoRequest: func,
     updateTdoRequest: func,
@@ -188,10 +186,6 @@ class MediaDetailsWidget extends React.Component {
 
   componentDidMount() {
     this.props.fetchLibraries();
-    this.props.loadEngineCategoriesRequest(
-      this.props._widgetId,
-      this.props.mediaId
-    );
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
   }
 
@@ -218,11 +212,14 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getSelectedCategoryMessage = () => {
-    return (
-      'Use the edit screen below to correct ' +
-      this.props.selectedEngineCategory.name.toLowerCase() +
-      's.'
-    );
+    if (this.props.editModeEnabled) {
+      return (
+        'Use the edit screen below to correct ' +
+        this.props.selectedEngineCategory.name.toLowerCase() +
+        's.'
+      );
+    }
+    return '';
   };
 
   getMediaFileName = () => {
@@ -263,7 +260,12 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onCancelEdit = () => {
-    this.toggleEditMode();
+    if (this.props.expandedMode) {
+      this.toggleExpandedMode();
+    }
+    if (this.props.editModeEnabled) {
+      this.toggleEditMode();
+    }
   };
 
   toggleInfoPanel = () => {
@@ -415,9 +417,14 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
-                  <div className={styles.pageHeaderTitleLabelEditMode}>
-                    Edit Mode: {selectedEngineCategory.name}
-                  </div>
+                  {editModeEnabled &&
+                    <div className={styles.pageHeaderTitleLabelEditMode}>
+                      Edit Mode: {selectedEngineCategory.name}
+                    </div>}
+                  {!editModeEnabled &&
+                    <div className={styles.pageHeaderTitleLabelEditMode}>
+                      {selectedEngineCategory.name}
+                    </div>}
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
@@ -434,14 +441,16 @@ class MediaDetailsWidget extends React.Component {
                       />
                       RUN PROCESS
                     </Button>
-                    <div className={styles.actionButtonsSeparatorEditMode} />
-                    <Button
-                      className={styles.actionButtonEditMode}
-                      onClick={this.onCancelEdit}
-                    >
-                      CANCEL
-                    </Button>
-                    {!expandedMode && (
+                    {editModeEnabled &&
+                      <div className={styles.actionButtonsSeparatorEditMode} />}
+                    {editModeEnabled &&
+                      <Button
+                        className={styles.actionButtonEditMode}
+                        onClick={this.onCancelEdit}
+                      >
+                        CANCEL
+                      </Button>}
+                    {editModeEnabled &&
                       <Button
                         className={styles.actionButtonEditMode}
                         disabled={!this.state.hasPendingChanges}
@@ -449,7 +458,7 @@ class MediaDetailsWidget extends React.Component {
                       >
                         SAVE
                       </Button>
-                    )}
+                    }
                   </div>
                 </div>
               </div>
