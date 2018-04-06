@@ -425,7 +425,7 @@ const engineCategoryMapping = {
   'tag-search-id': TagConditionGenerator,
   'time-search-id': TimeConditionGenerator,
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator,
-  '72c3ccbb-8c90-48a9-99ee-1c57315b9690' : StructuredDataGenerator
+  'sdo-search-id' : StructuredDataGenerator
 };
 
 const engineCategoryMetadataMapping = {
@@ -504,7 +504,7 @@ const dedupeArray = arr => {
 const selectMetadataFromCsp = csp => {
   let metadataKeys = [];
   if(csp && csp.engineCategoryId) {
-    const metadataKey = csp.engineCategoryId === '72c3ccbb-8c90-48a9-99ee-1c57315b9690' ? csp.state.select : engineCategoryMetadataMapping[csp.engineCategoryId];
+    const metadataKey = csp.engineCategoryId === 'sdo-search-id' ? csp.state.select : engineCategoryMetadataMapping[csp.engineCategoryId];
     if(metadataKey) {
       metadataKeys.push(metadataKey);
     }
