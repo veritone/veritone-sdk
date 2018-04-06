@@ -87,10 +87,6 @@ function* loadTdoSaga(widgetId, tdoId) {
     return yield* finishLoadTdo(widgetId, null, { error });
   }
 
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.warn(error));
-  }
-
   if (!response || !response.data || !response.data.temporalDataObject) {
     console.warn('TemporalDataObject not found');
     return yield* finishLoadTdo(widgetId, response.data.temporalDataObject, {
