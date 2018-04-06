@@ -8,6 +8,7 @@ import {
 } from 'prop-types';
 
 import { Table, Column } from 'components/DataTable';
+import StatusPill from 'components/StatusPill';
 import { format } from 'date-fns';
 
 export default class SourceTileView extends React.Component {
@@ -30,7 +31,7 @@ export default class SourceTileView extends React.Component {
   }
 
   renderStatus = (isActive) => {
-    return isActive ? 'Active' : 'Inactive';
+    return <StatusPill status={isActive ? 'active' : 'inactive'} />;
   }
 
   render() {

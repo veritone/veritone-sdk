@@ -32,8 +32,6 @@ export SourceManagementOverview from './components/SourceManagement';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 
-export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
-export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';

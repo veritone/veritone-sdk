@@ -1,5 +1,5 @@
 import React from 'react';
-import { has, noop } from 'lodash';
+import { has } from 'lodash';
 
 import {
   any, 

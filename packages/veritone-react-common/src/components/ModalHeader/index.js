@@ -3,13 +3,10 @@ import React from 'react';
 import {
   arrayOf, 
   string,
-  func,
   element,
   node
 } from 'prop-types';
 
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
 import styles from './styles.scss';
 
 //TODO: icons should pass in the icon elements, so the onClick is included already
@@ -17,23 +14,11 @@ export default class ModalHeader extends React.Component {
   static propTypes = {
     children: node,
     title: string,
-    icons: arrayOf(element), // supports help, menu, trash, exit
-    helpCallback: func,
-    menuCallback: func,
-    trashCallback: func,
-    exitCallback: func
-  };
-  static defaultProps = {
-    icons: []
+    icons: arrayOf(element)
   };
 
-  state = {
-    help: false,
-    menu: false,
-    trash: false,
-    separator: false,
-    exit: true,
-    // icons: []
+  static defaultProps = {
+    icons: []
   };
 
   render() {

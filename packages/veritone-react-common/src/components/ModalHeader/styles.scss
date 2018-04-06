@@ -1,9 +1,13 @@
+@import 'src/styles/modules/muiTypography';
+
 .modal-header {
-  background-color: #1F2532;
+  background-color: #1f2532;
+
   span {
-    color: #FAFAFA;
+    color: $grey-1;
   }
 }
+
 .fullScreenTopBar {
   // height: 65px;
   display: flex;
@@ -11,7 +15,7 @@
   justify-content: space-between;
 
   .topBarTitle {
-    color: #FAFAFA;
+    color: $grey-1;
     font-size: 20px;
     line-height: 28px;
     align-self: center;
@@ -33,7 +37,7 @@
 }
 
 .icon {
-  color: #fff;
+  color: $fullWhite;
 }
 
 // .modal-container {

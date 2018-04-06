@@ -3,7 +3,8 @@ import { range, filter, get, includes } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
-import { Table, Column, PaginatedTable, LOADING } from './';
+import { LOADING } from './withBasicBehavior';
+import { Table, Column, PaginatedTable } from './';
 
 
 function assertRowsExist(rows, wrapper, assertion = true) {

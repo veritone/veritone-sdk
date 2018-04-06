@@ -183,7 +183,7 @@ class SplitTableContainer extends React.Component {
       showHeader,
       ...rest
     } = this.props;
-    console.log('focusedRow, this.props.focusedRow:', focusedRow, this.props.focusedRow)
+
     const restProps = omit(rest, ['emptyRenderer', 'showHeader']);
 
     return (
@@ -339,7 +339,6 @@ export const Column = ({
   }
 
   function handleCellClick(e) {
-    console.log('row:', row)
     return onCellClick(row, dataKey, get(data, dataKey));
   }
   

@@ -14,6 +14,7 @@ $avatar-size: 70px;
     font-size: 20px;
     line-height: 24px;
   }
+
   .configurationDescription {
     opacity: 0.6;
     color: rgba(0, 0, 0, 0.87);
@@ -23,6 +24,7 @@ $avatar-size: 70px;
 
   .sourceConfiguration {
     color: blue;
+
     .formStyle {
       width: 80%;
       min-width: 350px;
@@ -40,9 +42,7 @@ $avatar-size: 70px;
           margin-bottom: 30px;
         }
       }
-      
     }
-    
   }
 
   .buttonStyle {
