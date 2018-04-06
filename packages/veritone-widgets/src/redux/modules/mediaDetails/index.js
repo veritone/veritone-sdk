@@ -2,7 +2,6 @@ import { get, findLastIndex, findIndex, groupBy, forEach, map } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
-export const LOAD_ENGINE_CATEGORIES = 'LOAD_ENGINE_CATEGORIES';
 export const LOAD_ENGINE_CATEGORIES_COMPLETE =
   'LOAD_ENGINE_CATEGORIES_COMPLETE';
 export const LOAD_ENGINE_RESULTS = 'LOAD_ENGINE_RESULTS';
@@ -44,18 +43,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...defaultMDPState
-      }
-    };
-  },
-  [LOAD_ENGINE_CATEGORIES](state, { meta: { widgetId } }) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        success: null,
-        error: null,
-        warning: null,
-        engineCategories: null
       }
     };
   },
@@ -195,11 +182,12 @@ export default createReducer(defaultState, {
         success: null,
         error: null,
         warning: null,
-        tdo: null
+        tdo: null,
       }
     };
   },
   [LOAD_TDO_SUCCESS](state, { payload, meta: { warn, error, widgetId } }) {
+    const tdo = payload;
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -208,7 +196,7 @@ export default createReducer(defaultState, {
         success: !(warn || error) || null,
         error: error ? errorMessage : null,
         warning: warn || null,
-        tdo: payload
+        tdo: tdo
       }
     };
   },
@@ -310,12 +298,6 @@ export const expandedModeEnabled = (state, widgetId) =>
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
-  meta: { widgetId }
-});
-
-export const loadEngineCategoriesRequest = (widgetId, tdoId, callback) => ({
-  type: LOAD_ENGINE_CATEGORIES,
-  payload: { tdoId, callback },
   meta: { widgetId }
 });
 

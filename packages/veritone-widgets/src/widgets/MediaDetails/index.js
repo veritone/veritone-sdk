@@ -53,7 +53,6 @@ import widget from '../../shared/widget';
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadEngineCategoriesRequest: mediaDetailsModule.loadEngineCategoriesRequest,
     loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
@@ -73,7 +72,6 @@ class MediaDetailsWidget extends React.Component {
     mediaId: number.isRequired,
     onRunProcess: func,
     onClose: func,
-    loadEngineCategoriesRequest: func,
     loadEngineResultsRequest: func,
     loadTdoRequest: func,
     updateTdoRequest: func,
@@ -164,10 +162,6 @@ class MediaDetailsWidget extends React.Component {
   }
 
   componentDidMount() {
-    this.props.loadEngineCategoriesRequest(
-      this.props._widgetId,
-      this.props.mediaId
-    );
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
   }
 
