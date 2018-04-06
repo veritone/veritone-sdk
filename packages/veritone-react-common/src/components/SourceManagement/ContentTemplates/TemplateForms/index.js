@@ -28,9 +28,9 @@ export default class TemplateForms extends React.Component {
     this.props.onRemoveTemplate(schemaId, true);
   };
 
-  handleFieldChange = (schemaId, fieldId) => (event) => {
+  handleFieldChange = (schemaId, fieldId, type) => (event) => {
     // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
-    let currentValue;
+    let currentValue; // Maintain root object reference
     let fields = fieldId.split('.');
     let rootObject = fields[0];
     let pointer;
@@ -44,14 +44,28 @@ export default class TemplateForms extends React.Component {
           pointer[field] = {};
           pointer = pointer[field];
         } else {
-          pointer[field] = event.target.value;
+          if (event.target.value) {
+            pointer[field] = this.parseType(type, event.target.value);
+          } else {
+            delete pointer[field];
+          }
         }
-        
       });
     } else {
-      currentValue = event.target.value;
+      currentValue = this.parseType(type, event.target.value);
     }
     return this.props.onTemplateDetailsChange(schemaId, rootObject, currentValue);
+  }
+
+  parseType = (type, value) => {
+    if (type.includes('number')){
+      return parseFloat(value);
+    } else if (type.includes('integer')) {
+      return parseInt(value);
+    } else if (type.includes('boolean')) {
+      return value === 'true';
+    }
+    return value;
   }
 
   formBuilder = () => {
@@ -111,10 +125,10 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         fullWidth
         margin='dense'
         label={title}
-        value={value}
+        value={(value || '').toString()}
         error={error}
         key={fieldId}
-        onChange={onChange(schemaId, fieldId)}
+        onChange={onChange(schemaId, fieldId, type)}
         {...additionalProps} />
     );
   } else if (type.includes('number') || type.includes('integer')) {
@@ -125,10 +139,10 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         fullWidth
         margin='dense'
         label={title}
-        value={value}
+        value={(value || '').toString()}
         error={error}
         key={fieldId}
-        onChange={onChange(schemaId, fieldId)}
+        onChange={onChange(schemaId, fieldId, type)}
         {...additionalProps} />
     );
   } else if (type.includes('boolean')) {
@@ -137,7 +151,7 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
         label={title}
         control={
           <Checkbox
-            onChange={onChange(schemaId, fieldId)}
+            onChange={onChange(schemaId, fieldId, type)}
             value={(!value).toString()}
             color="primary" />
         } />
@@ -149,7 +163,7 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
           fieldId={fieldId + '.' + objProp}
           schemaId={schemaId}
           type={objectProperties[objProp].type}
-          value={value[objProp] || ''}
+          value={(value && value[objProp]) || ''}
           title={objectProperties[objProp].title || objProp}
           objectProperties={objectProperties[objProp].properties}
           onChange={onChange}

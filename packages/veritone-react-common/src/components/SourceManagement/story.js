@@ -372,7 +372,7 @@ storiesOf('SourceManagement', module)
         source={sourceConfig}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={noop}
+        onSubmit={data => {console.log(data)}}
         onClose={noop}
       />
     );

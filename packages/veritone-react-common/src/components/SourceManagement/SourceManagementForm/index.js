@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has } from 'lodash';
+import { pick, has, get } from 'lodash';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -74,10 +74,6 @@ export default class SourceManagementForm extends React.Component {
       const fieldValues = {};
       const properties = this.props.sourceTypes.length && this.props.sourceTypes[0].sourceSchema ? this.props.sourceTypes[0].sourceSchema.definition.properties : {};
 
-      Object.keys(properties).forEach((field) => {
-        fieldValues[field] = '';
-      });
-
       newState.sourceConfig = {
         ...this.state.sourceConfig,
         details: {
@@ -129,9 +125,10 @@ export default class SourceManagementForm extends React.Component {
       const data = {};
       Object.keys(templateData[templateSchemaId].definition.properties)
         .reduce((fields, schemaDefProp) => {
-          data[schemaDefProp] = (initialTemplates[templateSchemaId] && initialTemplates[templateSchemaId].data)
-            ? initialTemplates[templateSchemaId].data[schemaDefProp]
-            : '';
+          let value = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp]);
+          if (value) {
+            data[schemaDefProp] = value;
+          }
         }, data)
 
       console.log('data:', data)
@@ -201,7 +198,7 @@ export default class SourceManagementForm extends React.Component {
             <Tab label="Content Templates" />
           </Tabs>
         </ModalHeader>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit} className={styles.scrollable}>
           {activeTab === 0 &&
             <SourceConfiguration
               sourceTypes={this.props.sourceTypes}

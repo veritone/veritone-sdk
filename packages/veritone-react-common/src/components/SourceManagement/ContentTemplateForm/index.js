@@ -1,5 +1,6 @@
 import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
+import { get } from 'lodash';
 import ContentTemplates from '../ContentTemplates'
 
 export default class ContentTemplateForm extends React.Component {
@@ -51,9 +52,10 @@ export default class ContentTemplateForm extends React.Component {
       const data = {};
       Object.keys(templateData[templateSchemaId].definition.properties)
         .reduce((fields, schemaDefProp) => {
-          data[schemaDefProp] = (initialTemplates[templateSchemaId] && initialTemplates[templateSchemaId].data)
-            ? initialTemplates[templateSchemaId].data[schemaDefProp]
-            : '';
+          let value = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp]);
+          if (value) {
+            data[schemaDefProp] = value;
+          }
         }, data)
       newState = {
         contentTemplates: {
@@ -80,11 +82,16 @@ export default class ContentTemplateForm extends React.Component {
           ...contentTemplates[templateSchemaId],
           data: {
             ...contentTemplates[templateSchemaId].data,
-            [fieldId]: value
+            
           }
         }
       }
     };
+    if (value) {
+      newState.contentTemplates[templateSchemaId].data[fieldId] = value;
+    } else {
+      delete newState.contentTemplates[templateSchemaId].data[fieldId];
+    }
     this.setState(newState);
     this.props.handleUpdateContentTemplates(newState.contentTemplates);
   };
