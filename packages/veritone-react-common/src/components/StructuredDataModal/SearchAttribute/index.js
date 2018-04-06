@@ -56,7 +56,7 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
       <div key={`${section.schema}_${section.author}_${section.version}`}>
         <ListItem dense key={`${sectionIndex}_header`}>
           <ListItemText
-            style={{ fontSize: "75%"}}
+            style={{ fontSize: "90%"}}
             primary={ `${section.schema || 'Unknown Schema'} ${versions[`${section.author}|${section.schema}`] > 1 ? (`v${section.version}`) : ''}`}
             secondary={ `by ${section.author || 'Unknown Author'}` }
           />
