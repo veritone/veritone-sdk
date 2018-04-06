@@ -23,7 +23,8 @@ import {
   video,
   FullScreenDialog,
   OCREngineOutputView,
-  SentimentEngineOutput
+  SentimentEngineOutput,
+  TranscriptEngineOutput
 } from 'veritone-react-common';
 import cx from 'classnames';
 
@@ -272,7 +273,8 @@ class MediaDetailsWidget extends React.Component {
       engineResultsByEngineId,
       infoPanelIsOpen,
       expandedMode,
-      currentMediaPlayerTime
+      currentMediaPlayerTime,
+      editModeEnabled
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -449,7 +451,17 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <TranscriptEngineOutput
+                        editMode={editModeEnabled}
+                        mediaPlayerTimeMs={Math.round(currentMediaPlayerTime * 1000)}
+                        mediaPlayerTimeIntervalMs={500}
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        engines={selectedEngineCategory.engines}
+                        onEngineChange={this.handleSelectEngine}
+                        selectedEngineId={selectedEngineId}
+                        onExpandClicked={this.toggleExpandedMode}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'face' && (

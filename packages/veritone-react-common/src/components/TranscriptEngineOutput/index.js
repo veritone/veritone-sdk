@@ -58,16 +58,16 @@ export default class TranscriptEngineOutput extends Component {
     mediaLengthMs: number,
     neglectableTimeMs: number,
 
-    mediaPlayerTime: number,
-    mediaPlayerTimeInterval: number
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
   };
 
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
     numMaxRequest: 2,
-    mediaPlayerTime: 0,
-    mediaPlayerTimeInterval: 1000
+    mediaPlayerTimeMs: 0,
+    mediaPlayerTimeIntervalMs: 1000
   };
 
   constructor(props) {
@@ -137,7 +137,7 @@ export default class TranscriptEngineOutput extends Component {
     return (
       <EngineOutputHeader
         title={title}
-        hideTitle
+        hideTitle={editMode}
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
@@ -162,8 +162,8 @@ export default class TranscriptEngineOutput extends Component {
       mediaLengthMs,
       neglectableTimeMs,
       contentClassName,
-      mediaPlayerTime,
-      mediaPlayerTimeInterval
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     return (
@@ -172,8 +172,8 @@ export default class TranscriptEngineOutput extends Component {
           data={data}
           editMode={editMode}
           overview={this.state.overview}
-          mediaPlayerTime={mediaPlayerTime}
-          mediaPlayerTimeInterval={mediaPlayerTimeInterval}
+          mediaPlayerTimeMs={mediaPlayerTimeMs}
+          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
           numMaxRequest={numMaxRequest}
           requestSizeMs={requestSizeMs}
           mediaLengthMs={mediaLengthMs}
@@ -185,15 +185,7 @@ export default class TranscriptEngineOutput extends Component {
       </div>
     );
   }
-  /*
-  
-  editMode: bool,
-  overview: bool,
-  className: string,
-  onClick: func,
-  onScroll: func,
 
-*/
   render() {
     let { className } = this.props;
 
