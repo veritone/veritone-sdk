@@ -9,6 +9,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import { objectOf, func, bool, any } from 'prop-types';
+import { get } from 'lodash';
 import { withStyles } from 'material-ui/styles';
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
@@ -23,22 +24,10 @@ class EditMetadataDialog extends Component {
   };
 
   state = {
-    filename:
-      (this.props.metadata.veritoneFile &&
-        this.props.metadata.veritoneFile.filename) ||
-      '',
-    source:
-      (this.props.metadata.veritoneCustom &&
-        this.props.metadata.veritoneCustom.source) ||
-      '',
-    programLiveImage:
-      (this.props.metadata.veritoneProgram &&
-        this.props.metadata.veritoneProgram.programLiveImage) ||
-      '',
-    programImage:
-      (this.props.metadata.veritoneProgram &&
-        this.props.metadata.veritoneProgram.programImage) ||
-      ''
+    filename: get(this.props.metadata, 'veritoneFile.filename', ''),
+    source: get(this.props.metadata, 'veritoneCustom.source', ''),
+    programLiveImage: get(this.props.metadata, 'veritoneProgram.programLiveImage', ''),
+    programImage: get(this.props.metadata, 'veritoneProgram.programImage', '')
   };
 
   onFileNameChange = event => {
@@ -87,42 +76,22 @@ class EditMetadataDialog extends Component {
   };
 
   isFileNameChanged = () => {
-    return (
-      this.state.filename &&
-      this.state.filename.length &&
-      this.state.filename !== this.props.metadata.veritoneFile.filename
-    );
+    return this.state.filename &&
+      this.state.filename !== this.props.metadata.veritoneFile.filename;
   };
 
   isSourceChanged = () => {
-    const sourceChanged =
-      this.state.source &&
-      (!this.props.metadata.veritoneCustom ||
-        !this.props.metadata.veritoneCustom.source ||
-        this.state.source !== this.props.metadata.veritoneCustom.source);
-    return !!sourceChanged;
+    return this.state.source !== get(this.props.metadata, 'veritoneCustom.source', '');
   };
 
   isProgramLiveImageChanged = () => {
-    return (
-      this.state.programLiveImage &&
-      this.state.programLiveImage.length &&
-      (!this.props.metadata.veritoneProgram ||
-        !this.props.metadata.veritoneProgram.programLiveImage ||
-        this.state.programLiveImage !==
-          this.props.metadata.veritoneProgram.programLiveImage)
-    );
+    return this.state.programLiveImage &&
+      this.state.programLiveImage !== get(this.props.metadata, 'veritoneProgram.programLiveImage', '');
   };
 
   isProgramImageChanged = () => {
-    return (
-      this.state.programImage &&
-      this.state.programImage.length &&
-      (!this.props.metadata.veritoneProgram ||
-        !this.props.metadata.veritoneProgram.programImage ||
-        this.state.programImage !==
-          this.props.metadata.veritoneProgram.programImage)
-    );
+    return this.state.programImage &&
+      this.state.programImage !== get(this.props.metadata, 'veritoneProgram.programImage', '');
   };
 
   hasPendingChanges = () => {

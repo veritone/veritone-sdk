@@ -38,23 +38,23 @@ class MediaInfoPanel extends Component {
         `veritoneFile: { filename: "${metadataToSave.veritoneFile.filename}" }`
       );
     }
-    if (metadataToSave.veritoneCustom && metadataToSave.veritoneCustom.source) {
+    if (metadataToSave.veritoneCustom && (typeof metadataToSave.veritoneCustom.source === 'string')) {
       detailsParams.push(
         `veritoneCustom: { source: "${metadataToSave.veritoneCustom.source}" }`
       );
     }
     if (
       metadataToSave.veritoneProgram &&
-      (metadataToSave.veritoneProgram.programLiveImage ||
-        metadataToSave.veritoneProgram.programImage)
+      ((typeof metadataToSave.veritoneProgram.programLiveImage === 'string') ||
+        (typeof metadataToSave.veritoneProgram.programImage === 'string'))
     ) {
       let programData = '';
-      if (metadataToSave.veritoneProgram.programLiveImage) {
+      if (typeof metadataToSave.veritoneProgram.programLiveImage === 'string') {
         programData += `programLiveImage: "${
           metadataToSave.veritoneProgram.programLiveImage
         }"`;
       }
-      if (metadataToSave.veritoneProgram.programImage) {
+      if (typeof metadataToSave.veritoneProgram.programImage === 'string') {
         programData += ` programImage: "${
           metadataToSave.veritoneProgram.programImage
         }"`;
