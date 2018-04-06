@@ -26,7 +26,8 @@ import {
   OCREngineOutputView,
   SentimentEngineOutput,
   TranscriptEngineOutput,
-  FaceEngineOutput
+  FaceEngineOutput,
+  LogoDetectionEngineOutput
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 import cx from 'classnames';
@@ -526,7 +527,16 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <LogoDetectionEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        mediaPlayerTimeMs={Math.round(currentMediaPlayerTime * 1000)}
+                        mediaPlayerTimeIntervalMs={500}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        onEntrySelected={this.handleUpdateMediaPlayerTime}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'ocr' && (
