@@ -8,7 +8,6 @@ import Dialog, {
   DialogContentText,
   DialogTitle
 } from 'material-ui/Dialog';
-import TagPill from './tagPill';
 import Input from 'material-ui/Input';
 import { string, arrayOf, bool, func, shape } from 'prop-types';
 import { withStyles } from 'material-ui/styles';
