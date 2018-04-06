@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { arrayOf, number, string, func, shape } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
+
 import PillButton from '../Parts/Buttons/PillButton';
 import { msToReadableString } from '../../helpers/time';
+import EngineOutputHeader from '../EngineOutputHeader';
+
 import styles from './styles.scss';
 
 export default class LogoDetectionEngineOutput extends Component {
@@ -18,22 +21,39 @@ export default class LogoDetectionEngineOutput extends Component {
         })
       })
     ), // series data
-    mediaPlayerTime: number,
+    
+    title: string,
+    engines: arrayOf(
+      shape({
+        id: string,
+        name: string
+      })
+    ),
+    selectedEngineId: string,
+
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number,
+    
     className: string,
-    itemClassName: string,
-    itemLabelClassName: string,
-    itemInfoClassName: string,
-    onItemSelected: func,
-    onScroll: func
+    entryClassName: string,
+    entryLabelClassName: string,
+    entryInfoClassName: string,
+    
+    onScroll: func,
+    onEntrySelected: func,
+    onEngineChange: func,
+    onExpandClicked: func,
   };
 
   static defaultProps = {
     data: [],
-    mediaPlayerTime: 0
+    title: 'Logo Recognition',
+    mediaPlayerTimeMs: 0,
+    mediaPlayerTimeIntervalMs: 1000,
   };
 
-  handleItemSelected = (event, item) => {
-    this.props.onItemSelected && this.props.onItemSelected(item);
+  handleEntrySelected = (event, entry) => {
+    this.props.onEntrySelected && this.props.onEntrySelected(entry.startTimeMs, entry.stopTimeMs);
   };
 
   handleScrolled = event => {
@@ -58,38 +78,44 @@ export default class LogoDetectionEngineOutput extends Component {
     }
   }
 
-  renderItems() {
+  renderEntries() {
     let {
       data,
-      mediaPlayerTime,
-      itemClassName,
-      itemInfoClassName,
-      itemLabelClassName
+      entryClassName,
+      entryInfoClassName,
+      entryLabelClassName,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs,
     } = this.props;
 
     let items = [];
     if (data && data.length > 0) {
       // Sort detected logos by there start time and end time
       data = sortBy(data, 'startTimeMs', 'stopTimeMs');
-
+      
       // Draw detected logos in the series
+      let endMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
       data.map((itemInfo, index) => {
         if (itemInfo.logo) {
           //Look for detected logo
-          let startTime = msToReadableString(itemInfo.startTimeMs);
-          let endTime = msToReadableString(itemInfo.stopTimeMs);
+          let startTime = itemInfo.startTimeMs;
+          let stopTime = itemInfo.stopTimeMs;
+          let startTimeString = msToReadableString(itemInfo.startTimeMs);
+          let stopTimeString = msToReadableString(itemInfo.stopTimeMs);
           let logoItem = (
             <PillButton
               value={index}
               label={itemInfo.logo.label}
-              info={startTime + ' - ' + endTime}
-              className={classNames(styles.item, itemClassName)}
-              labelClassName={classNames(styles.label, itemLabelClassName)}
-              infoClassName={itemInfoClassName}
+              info={startTimeString + ' - ' + stopTimeString}
+              className={classNames(styles.item, entryClassName)}
+              labelClassName={classNames(styles.label, entryLabelClassName)}
+              infoClassName={entryInfoClassName}
               key={'logo-' + itemInfo.logo.label + index}
-              onClick={this.handleItemSelected}
+              onClick={this.handleEntrySelected}
               data={itemInfo}
-              highlight={itemInfo.startTimeMs <= mediaPlayerTime}
+              highlight={!(
+                endMediaPlayHeadMs < startTime || mediaPlayerTimeMs > stopTime
+              )}
             />
           );
           items.push(logoItem);
@@ -100,12 +126,27 @@ export default class LogoDetectionEngineOutput extends Component {
   }
 
   render() {
+    let {
+      title,
+      engines,
+      selectedEngineId,
+      onEngineChange,
+      onExpandClicked
+    } = this.props;
+
     return (
       <div
         className={classNames(styles.logoDetection, this.props.className)}
         onScroll={this.handleScrolled}
       >
-        <div className={styles.scrolableContent}>{this.renderItems()}</div>
+        <EngineOutputHeader 
+          title={title}
+          engines={engines}
+          selectedEngineId={selectedEngineId}
+          onEngineChange={onEngineChange}
+          onExpandClicked={onExpandClicked}
+        />
+        <div className={styles.scrolableContent}>{this.renderEntries()}</div>
       </div>
     );
   }
