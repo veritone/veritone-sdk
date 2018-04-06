@@ -1,0 +1,40 @@
+.nullStateView {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 310px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .titleText {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 24px;
+    margin-bottom: 10px;
+  }
+
+  .greyText {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .linkText {
+    color: #2196F3;
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .buttonStyle {
+    margin-top: 20px;
+    width: fit-content;
+    height: 36px;
+  }
+}

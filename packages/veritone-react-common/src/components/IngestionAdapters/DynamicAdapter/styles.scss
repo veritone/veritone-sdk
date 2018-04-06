@@ -1,0 +1,47 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.adapterHeader {
+  color: rgba(0,0,0,0.87);
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 24px;
+  margin-bottom: 5px;
+}
+
+.adapterDescription {
+    color: rgba(0,0,0,0.54);
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.adapterContainer {
+  padding-bottom: 40px;
+}
+
+.adapterDivider {
+  background-color: #E4E4E4;
+  height: 1px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.adapterIconContainer {
+  margin-right: 15px;
+}
+
+.adapterFieldContainer {
+  margin-bottom: 10px;
+}
+
+.sourceSelector {
+  min-width: 400px;
+}
+
+.sourceScrollContainer {
+  &:focus {
+    outline: none;
+  }
+  max-height: 336px;
+  overflow-y: auto;
+}

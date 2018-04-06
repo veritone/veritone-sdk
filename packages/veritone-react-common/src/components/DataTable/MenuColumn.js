@@ -88,7 +88,7 @@ export default class MenuColumn extends React.Component {
             anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
             transformOrigin={{ horizontal: 'left', vertical: 'top' }}
             open={this.state.open}
-            onRequestClose={this.closeMenu}
+            onClose={this.closeMenu}
           >
             {this.sortActions(allActions).map(
               (s, i) =>

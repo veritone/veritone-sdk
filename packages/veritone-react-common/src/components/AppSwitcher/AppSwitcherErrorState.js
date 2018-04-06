@@ -13,7 +13,7 @@ export default class AppSwitcherErrorState extends React.Component {
     return (
       <div className={styles.appListButtonErrorState}>
         An error occurred loading this content
-        <Button raised onClick={this.props.onRefresh}>
+        <Button variant="raised" onClick={this.props.onRefresh}>
           retry
         </Button>
       </div>

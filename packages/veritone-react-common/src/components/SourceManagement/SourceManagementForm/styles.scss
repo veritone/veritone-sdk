@@ -1,0 +1,24 @@
+.smDialog {
+  span {
+    color: #fff;
+  }
+}
+.separator {
+  align-self: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.54);
+  height: 27px;
+}
+.btnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  bottom: 20px;
+  right: 90px;
+}
+.scrollable {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: calc(100vh - 96px);
+  padding-bottom: 150px;
+}

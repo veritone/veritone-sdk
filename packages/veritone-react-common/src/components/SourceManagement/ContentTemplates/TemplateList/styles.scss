@@ -1,0 +1,52 @@
+.listContainer {
+  width: 389px;
+  height: 100vh;
+  border-right: 6px solid #EEEEEE;
+  // padding-left: 20px;
+
+  .title {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 20px;
+    line-height: 24px;
+    padding-left: 20px;
+    padding-top: 20px;
+  }
+
+  .description {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 14px;
+    line-height: 18px;
+    margin-top: 5px;
+    margin-bottom: 30px;
+    padding-left: 20px;
+    padding-right: 30px;
+  }
+
+  .templateRow {
+    height: 40px;
+    width: 100%;
+    padding-left: 20px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .name {
+      color: #000000;
+      font-size: 14px;
+      line-height: 16px;
+    }
+
+    .trashIcon {
+      height: 18px;
+      margin-right: 20px;
+    }
+
+    &:hover {
+      background-color: #EEEEEE;
+    }
+  }
+
+  
+}

@@ -113,7 +113,7 @@ class FileUploader extends Component {
           ref={this.setInputRef}
         />
         <label htmlFor="file">
-          <Button raised color="primary" component="span">
+          <Button variant="raised" color="primary" component="span">
             Choose File
           </Button>
         </label>

@@ -7,6 +7,7 @@ export AppFooter, {
 } from './components/AppFooter';
 export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
+export Image from './components/Image';
 export Chip from './components/Chip';
 export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
@@ -21,7 +22,13 @@ export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
+export * as video from './components/Video';
 export AppContainer from './components/AppContainer';
+export RefreshButton from './components/RefreshButton';
+export OAuthLoginButton from './components/OAuthLoginButton';
+export { Table, PaginatedTable, Column } from './components/DataTable';
+export MenuColumn from './components/DataTable/MenuColumn';
+
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
 export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
@@ -31,7 +38,17 @@ export OCREngineOutputView from './components/OCREngineOutputView';
 export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
-export * as video from './components/Video';
-export OAuthLoginButton from './components/OAuthLoginButton';
-export { Table, PaginatedTable, Column } from './components/DataTable';
-export MenuColumn from './components/DataTable/MenuColumn';
+
+export IngestionAdapters from './components/IngestionAdapters';
+export Scheduler from './components/Scheduler';
+
+export SourceManagementOverview from './components/SourceManagement';
+export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
+export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
+
+export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
+export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
+export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
+export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
+export StatusPill from './components/StatusPill';
+

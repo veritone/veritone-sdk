@@ -14,9 +14,7 @@ describe('FilePickerFooter', () => {
     const buttons = wrapper.find(Button);
     let buttonTexts = ['Upload', 'Cancel'];
     buttons.forEach(button => {
-      expect(
-        _.includes(buttonTexts, button.find('.MuiButton-label-3').text())
-      ).toEqual(true);
+      expect(_.includes(buttonTexts, button.text())).toEqual(true);
     });
   });
 });
