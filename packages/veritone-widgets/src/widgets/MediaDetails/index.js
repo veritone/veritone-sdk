@@ -416,13 +416,14 @@ class MediaDetailsWidget extends React.Component {
                     >
                       CANCEL
                     </Button>
-                    <Button
-                      className={styles.actionButtonEditMode}
-                      disabled={!this.state.hasPendingChanges}
-                      onClick={this.onSaveEdit}
-                    >
-                      SAVE
-                    </Button>
+                    {!expandedMode &&
+                      <Button
+                        className={styles.actionButtonEditMode}
+                        disabled={!this.state.hasPendingChanges}
+                        onClick={this.onSaveEdit}
+                      >
+                        SAVE
+                      </Button>}
                   </div>
                 </div>
               </div>
@@ -465,7 +466,7 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'face' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'object' && (
@@ -483,7 +484,7 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'ocr' && (
@@ -499,11 +500,11 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
@@ -522,21 +523,21 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
                       'stationPlayout' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
                       'thirdPartyData' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No thirdparty data</div>
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'music' && (
-                      <div>{selectedEngineCategory.categoryType} component</div>
+                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                 </div>
               </div>

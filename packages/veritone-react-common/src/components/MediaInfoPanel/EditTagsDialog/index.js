@@ -128,7 +128,6 @@ class EditTagsDialog extends Component {
               <Icon className="icon-close-exit"/>
             </IconButton>
           </DialogTitle>
-
           <DialogContent>
             <DialogContentText
               classes={{

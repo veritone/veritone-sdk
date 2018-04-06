@@ -3,27 +3,69 @@
 .editMetadataDialogPaper {
   min-width: 640px;
   width: 640px;
-}
+  display: flex;
+  flex-flow: column;
 
-.editMetadataDialog {
-  font-family: Roboto;
-  min-width: 640px;
-
-  .dialogContent {
-    display: flex;
-    flex-direction: column;
-
-    .sourceSection {
-      margin-top: 20px;
-      font-size: 14px;
-      line-height: 16px;
-      color: $dark-black;
+  .dialogTitle {
+    h2 {
+      height: 28px;
+      line-height: 28px;
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .programImagesSection {
+    h2 .dialogTitleLabel {
+      color: $dark-black;
+      font-family: Roboto;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .closeButton {
+      height: 28px;
+      width: 28px;
+    }
+  }
+
+  .textInput {
+    margin-top: 20px;
+    color: $dark-black;
+    line-height: 16px;
+
+    input {
+      font-family: Roboto;
+      font-size: 14px;
+    }
+
+    label {
+      color: $light-black;
+      font-family: Roboto;
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
+  .programImagesSection {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 20px;
+
+    .imageSection {
       display: flex;
-      flex-direction: row;
-      margin-top: 20px;
+      flex-direction: column;
+      align-content: center;
+
+      .programImageLabel {
+        text-align: center;
+        height: 16px;
+        color: $dark-black;
+        font-family: Roboto;
+        font-size: 14px;
+        line-height: 16px;
+      }
 
       .programLiveImage {
         height: 120px;

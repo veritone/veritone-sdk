@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import Icon from 'material-ui/Icon';
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -139,72 +141,90 @@ class EditMetadataDialog extends Component {
         onClose={this.props.onClose}
         aria-labelledby="edit-metadata-dialog"
         classes={{
-          root: styles.editMetadataDialog,
           paper: styles.editMetadataDialogPaper
         }}
       >
-        <DialogTitle>
-          Edit Metadata
-
-
-
+        <DialogTitle
+          classes={{
+            root: styles.dialogTitle
+          }}>
+          <div className={styles.dialogTitleLabel}>Edit Metadata</div>
+          <IconButton
+            onClick={this.props.onClose}
+            aria-label="Close"
+            classes={{
+              root: styles.closeButton
+            }}
+          >
+            <Icon className="icon-close-exit"/>
+          </IconButton>
         </DialogTitle>
         <DialogContent>
-          <div className={styles.dialogContent}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="filename"
-              label="Filename"
-              value={this.state.filename}
-              onChange={this.onFileNameChange}
-              fullWidth
-            />
-            <TextField
-              margin="dense"
-              id="source"
-              className={styles.sourceSection}
-              label="Source"
-              placeholder="Enter name of media owner or creator"
-              value={this.state.source}
-              onChange={this.onSourceChange}
-              fullWidth
-            />
-            <div className={styles.programImagesSection}>
-              <div>
-                Program Live Image
-                {this.state.programLiveImage &&
-                  this.state.programLiveImage.length && (
-                    <img
-                      className={styles.programLiveImage}
-                      src={this.state.programLiveImage}
-                    />
-                  )}
-                {(!this.state.programLiveImage ||
-                  !this.state.programLiveImage.length) && (
+          <TextField
+            autoFocus
+            margin="normal"
+            id="filename"
+            label="Filename"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={this.state.filename}
+            onChange={this.onFileNameChange}
+            fullWidth
+            classes={{
+              root: styles.textInput
+            }}
+          />
+          <TextField
+            margin="normal"
+            id="source"
+            className={styles.sourceSection}
+            label="Source"
+            placeholder="Enter name of media owner or creator"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={this.state.source}
+            onChange={this.onSourceChange}
+            fullWidth
+            classes={{
+              root: styles.textInput
+            }}
+          />
+          <div className={styles.programImagesSection}>
+            <div className={styles.imageSection}>
+              <div className={styles.programImageLabel}>Program Live Image</div>
+              {this.state.programLiveImage &&
+                this.state.programLiveImage.length && (
                   <img
                     className={styles.programLiveImage}
-                    src="//static.veritone.com/veritone-ui/default-nullstate.svg"
+                    src={this.state.programLiveImage}
                   />
                 )}
-              </div>
-              <div>
-                Program Image
-                {this.state.programImage &&
-                  this.state.programImage.length && (
-                    <img
-                      className={styles.programImage}
-                      src={this.state.programImage}
-                    />
-                  )}
-                {(!this.state.programImage ||
-                  !this.state.programImage.length) && (
+              {(!this.state.programLiveImage ||
+                !this.state.programLiveImage.length) && (
+                <img
+                  className={styles.programLiveImage}
+                  src="//static.veritone.com/veritone-ui/default-nullstate.svg"
+                />
+              )}
+            </div>
+            <div className={styles.imageSection}>
+              <div className={styles.programImageLabel}>Program Image</div>
+              {this.state.programImage &&
+                this.state.programImage.length && (
                   <img
                     className={styles.programImage}
-                    src="//static.veritone.com/veritone-ui/program_image_null.svg"
+                    src={this.state.programImage}
                   />
                 )}
-              </div>
+              {(!this.state.programImage ||
+                !this.state.programImage.length) && (
+                <img
+                  className={styles.programImage}
+                  src="//static.veritone.com/veritone-ui/program_image_null.svg"
+                />
+              )}
             </div>
           </div>
         </DialogContent>
