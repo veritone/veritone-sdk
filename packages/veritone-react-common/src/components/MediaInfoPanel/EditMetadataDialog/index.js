@@ -8,8 +8,10 @@ import Dialog, {
 import TextField from 'material-ui/TextField';
 import { objectOf, func, bool, any } from 'prop-types';
 import { withStyles } from 'material-ui/styles';
+import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 class EditMetadataDialog extends Component {
   static propTypes = {
     metadata: objectOf(any),
@@ -141,7 +143,12 @@ class EditMetadataDialog extends Component {
           paper: styles.editMetadataDialogPaper
         }}
       >
-        <DialogTitle id="edit-metadata-dialog">Edit Metadata</DialogTitle>
+        <DialogTitle>
+          Edit Metadata
+
+
+
+        </DialogTitle>
         <DialogContent>
           <div className={styles.dialogContent}>
             <TextField

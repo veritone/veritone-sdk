@@ -13,6 +13,7 @@ import Input from 'material-ui/Input';
 import { string, arrayOf, bool, func, shape } from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
+import TagPill from './tagPill';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -107,7 +108,7 @@ class EditTagsDialog extends Component {
     return (
         <Dialog
           open={this.props.isOpen}
-          onClose={this.props.onCancel}
+          onClose={this.onCancel}
           aria-labelledby="edit-tags-dialog"
           classes={{
             paper: styles.editTagsDialogPaper

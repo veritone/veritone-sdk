@@ -93,7 +93,7 @@ storiesOf('ObjectDetectionEngineOutput', module).add('Base', () => {
       engines={engines}
       onEngineChange={action('Engine Changed')}
       onObjectOccurrenceClicked={action('Object occurence clicked')}
-      mediaPlayerPosition={number('mediaPlayerPosition', 0, {
+      currentMediaPlayerTime={number('mediaPlayerPosition', 0, {
         range: true,
         min: 0,
         max: 13000,
