@@ -1,4 +1,4 @@
-import reducer, * as module from '.';
+import reducer, * as module from './';
 
 describe('ui-state module', function() {
   describe('setStateForKey/getStateForKey', function() {
@@ -51,6 +51,8 @@ describe('ui-state module', function() {
 
       state = { [module.namespace]: state };
 
+      module.setStateForKey('key', { test: 123 }),
+      module.setStateForKey('otherKey', { test: 123 }),
       expect(module.getStateForKey(state, 'key')).toBe(undefined);
 
       expect(module.getStateForKey(state, 'otherKey')).toEqual({ test: 123 });
