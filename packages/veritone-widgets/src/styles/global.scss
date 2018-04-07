@@ -1,4 +1,4 @@
-@import 'src/styles/modules/variables';
+@import '~veritone-react-common/src/styles/modules/_variables';
 
 // roboto font
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500');
@@ -19,7 +19,7 @@ input:-webkit-autofill {
 * {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
