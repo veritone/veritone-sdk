@@ -340,6 +340,10 @@ function handleUpdateContentTemplates(contentTemplates) {
   console.log(contentTemplates)
 }
 
+function logData(data) {
+  console.log(data);
+}
+
 storiesOf('SourceManagement', module)
   .add('Nullstate', () => (
     <Nullstate />
@@ -372,7 +376,7 @@ storiesOf('SourceManagement', module)
         source={sourceConfig}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={data => {console.log(data)}}
+        onSubmit={logData}
         onClose={noop}
       />
     );
