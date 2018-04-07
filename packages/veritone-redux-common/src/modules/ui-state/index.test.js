@@ -47,14 +47,17 @@ describe('ui-state module', function() {
 
   describe('clearStateForKey', function() {
     it('clears ui state at the given key', function() {
-      let state = [undefined, module.clearStateForKey('key')].reduce(reducer);
+      let state = [
+        undefined,
+        
+        module.setStateForKey('key', { test: 123 }),
+        module.setStateForKey('otherKey', { test: 123 }),
+        module.clearStateForKey('key')
+      ].reduce(reducer);
 
       state = { [module.namespace]: state };
 
-      module.setStateForKey('key', { test: 123 }),
-      module.setStateForKey('otherKey', { test: 123 }),
       expect(module.getStateForKey(state, 'key')).toBe(undefined);
-
       expect(module.getStateForKey(state, 'otherKey')).toEqual({ test: 123 });
     });
   });
