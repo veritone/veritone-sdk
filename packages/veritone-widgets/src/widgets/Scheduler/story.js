@@ -3,7 +3,7 @@ import { bool, string } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import VeritoneApp from '../../shared/VeritoneApp';
-import SchedulerWidget from './';
+import SchedulerWidget from '.';
 
 class Story extends React.Component {
   static propTypes = {
@@ -14,7 +14,20 @@ class Story extends React.Component {
 
   componentDidMount() {
     this._scheduler = new SchedulerWidget({
-      elId: 'scheduler-widget'
+      elId: 'scheduler-widget',
+      initialValues: {
+        scheduleType: 'recurring',
+        start: new Date(),
+        end: new Date(),
+        maxSegment: {
+          number: '5',
+          period: 'week'
+        },
+        repeatEvery: {
+          number: '1',
+          period: 'day'
+        }
+      }
     });
   }
 
