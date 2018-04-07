@@ -89,39 +89,44 @@ export default class LogoDetectionEngineOutput extends Component {
     } = this.props;
 
     let items = [];
-    if (data && data.length > 0) {
-      // Sort detected logos by there start time and end time
-      data = sortBy(data, 'startTimeMs', 'stopTimeMs');
-      
-      // Draw detected logos in the series
-      let endMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-      data.map((itemInfo, index) => {
-        if (itemInfo.logo) {
-          //Look for detected logo
-          let startTime = itemInfo.startTimeMs;
-          let stopTime = itemInfo.stopTimeMs;
-          let startTimeString = msToReadableString(itemInfo.startTimeMs);
-          let stopTimeString = msToReadableString(itemInfo.stopTimeMs);
-          let logoItem = (
-            <PillButton
-              value={index}
-              label={itemInfo.logo.label}
-              info={startTimeString + ' - ' + stopTimeString}
-              className={classNames(styles.item, entryClassName)}
-              labelClassName={classNames(styles.label, entryLabelClassName)}
-              infoClassName={entryInfoClassName}
-              key={'logo-' + itemInfo.logo.label + index}
-              onClick={this.handleEntrySelected}
-              data={itemInfo}
-              highlight={!(
-                endMediaPlayHeadMs < startTime || mediaPlayerTimeMs > stopTime
-              )}
-            />
-          );
-          items.push(logoItem);
-        }
-      });
-    }
+    
+    data.map((chunk, index) => {
+      let series = chunk.series;
+      if (series && series.length > 0) {
+        // Sort detected logos by there start time and end time
+        series = sortBy(series, 'startTimeMs', 'stopTimeMs');
+        
+        // Draw detected logos in the series
+        let endMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+        series.map((itemInfo, index) => {
+          if (itemInfo.object) {
+            //Look for detected logo
+            let startTime = itemInfo.startTimeMs;
+            let stopTime = itemInfo.stopTimeMs;
+            let startTimeString = msToReadableString(itemInfo.startTimeMs);
+            let stopTimeString = msToReadableString(itemInfo.stopTimeMs);
+            let logoItem = (
+              <PillButton
+                value={index}
+                label={itemInfo.object.label}
+                info={startTimeString + ' - ' + stopTimeString}
+                className={classNames(styles.item, entryClassName)}
+                labelClassName={classNames(styles.label, entryLabelClassName)}
+                infoClassName={entryInfoClassName}
+                key={'logo-' + itemInfo.object.label + index}
+                onClick={this.handleEntrySelected}
+                data={itemInfo}
+                highlight={!(
+                  endMediaPlayHeadMs < startTime || mediaPlayerTimeMs > stopTime
+                )}
+              />
+            );
+            items.push(logoItem);
+          }
+        });
+      }
+    });
+    
     return items;
   }
 
