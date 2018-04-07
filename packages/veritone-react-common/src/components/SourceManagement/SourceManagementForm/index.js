@@ -72,7 +72,8 @@ export default class SourceManagementForm extends React.Component {
     }
     else {
       const fieldValues = {};
-      const properties = this.props.sourceTypes.length && this.props.sourceTypes[0].sourceSchema ? this.props.sourceTypes[0].sourceSchema.definition.properties : {};
+      // commented out to fix lint error but kept here to reuse it
+      // const properties = this.props.sourceTypes.length && this.props.sourceTypes[0].sourceSchema ? this.props.sourceTypes[0].sourceSchema.definition.properties : {};
 
       newState.sourceConfig = {
         ...this.state.sourceConfig,
@@ -172,7 +173,7 @@ export default class SourceManagementForm extends React.Component {
 
   render() {
     const { activeTab } = this.state;
-    
+
     return (
       <FullScreenDialog open={this.state.openDialog}>
         <ModalHeader
