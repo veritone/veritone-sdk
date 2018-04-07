@@ -49,7 +49,7 @@ describe('ui-state module', function() {
     it('clears ui state at the given key', function() {
       let state = [
         undefined,
-        
+
         module.setStateForKey('key', { test: 123 }),
         module.setStateForKey('otherKey', { test: 123 }),
         module.clearStateForKey('key')
