@@ -29,6 +29,7 @@ class DeploymentModelFilter extends React.Component {
         {Object.keys(deploymentModels).map(deploymentModel => (
           <div className={styles.inlineFilter} key={deploymentModel}>
             <Radio
+              color="primary"
               classes={{ default: styles.radio }}
               checked={this.props.filters.deploymentModel === deploymentModel}
               onChange={this.handleChange}

@@ -19,7 +19,7 @@ function InfoSection({ engine, onAdd, onRemove, isSelected }) {
   };
 
   const { name: orgName } = engine.ownerOrganization;
-  const { name: categoryName, iconClass } = engine.category || {};
+  const { name: categoryName, iconClass, color } = engine.category || {};
 
   return (
     <div className={styles.row}>
@@ -32,8 +32,11 @@ function InfoSection({ engine, onAdd, onRemove, isSelected }) {
           <div className={styles.title}>{engine.name}</div>
           <div className={styles.orgName}>{orgName}</div>
           <div className={styles.info}>
-            {categoryName &&
-              iconClass && <Lozenge type={categoryName} icon={iconClass} />}
+            {categoryName && (
+              <Lozenge iconClassName={iconClass} backgroundColor={color}>
+                {categoryName}
+              </Lozenge>
+            )}
           </div>
           <div className={styles.logos}>
             <div className={styles.logo}>

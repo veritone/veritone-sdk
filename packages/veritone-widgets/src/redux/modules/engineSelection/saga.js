@@ -1,4 +1,4 @@
-import { fork, call, put, all, takeLatest, select } from 'redux-saga/effects';
+import { fork, put, takeLatest, select } from 'redux-saga/effects';
 import * as engineSelectionModule from './';
 
 function* fetchEngines() {
@@ -6,8 +6,7 @@ function* fetchEngines() {
 }
 
 function* getCachedResults() {
-  const cachedResults = yield select(engineSelectionModule.getCurrentResults);
-  return cachedResults;
+  return yield select(engineSelectionModule.getCurrentResults);
 }
 
 function* watchRefetchEngineActions() {
@@ -27,10 +26,6 @@ function* watchRefetchEngineActions() {
   });
 }
 
-function* onMount() {
-  yield call(fetchEngines);
-}
-
 export default function* root() {
-  yield all([fork(onMount), fork(watchRefetchEngineActions)]);
+  yield fork(watchRefetchEngineActions);
 }

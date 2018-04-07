@@ -1,5 +1,5 @@
-@import 'src/styles/modules/muiTypography';
-@import 'src/styles/modules/variables';
+@import '~veritone-react-common/src/styles/modules/_muiTypography';
+@import '~veritone-react-common/src/styles/modules/_variables';
 
 .addRemoveSelectedBar {
   @include mui-text('body1');

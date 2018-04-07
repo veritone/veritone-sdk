@@ -14,7 +14,7 @@ export default class SelectBar extends React.Component {
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
     isChecked: bool.isRequired,
-    isDisabled: bool.isRequired,
+    hideActions: bool.isRequired,
     isSearchOpen: bool.isRequired,
     onToggleSearch: func.isRequired,
     count: number.isRequired
@@ -24,6 +24,7 @@ export default class SelectBar extends React.Component {
     return (
       <div className={styles.selectBar}>
         <Checkbox
+          color="primary"
           checked={!!this.props.isChecked}
           onChange={this.props.onCheckAll}
           disabled={!this.props.count}
@@ -37,7 +38,7 @@ export default class SelectBar extends React.Component {
             onToggleSearch={this.props.onToggleSearch}
             searchQuery={this.props.searchQuery}
             isOpen={this.props.isSearchOpen}
-            isDisabled={this.props.isDisabled}
+            hideActions={this.props.hideActions}
           />
         </div>
       </div>

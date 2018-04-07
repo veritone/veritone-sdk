@@ -15,9 +15,9 @@ export default class ToggleButton extends React.Component {
     isSelected: bool.isRequired
   };
 
-  handleOnAdd = () => this.props.onAdd([this.props.engineId]);
+  handleAdd = () => this.props.onAdd([this.props.engineId]);
 
-  handleOnRemove = () => this.props.onRemove([this.props.engineId]);
+  handleRemove = () => this.props.onRemove([this.props.engineId]);
 
   render() {
     const buttonClasses = cx(styles.default, {
@@ -27,9 +27,9 @@ export default class ToggleButton extends React.Component {
     return (
       <Button
         className={buttonClasses}
-        raised={!this.props.isSelected}
+        variant={this.props.isSelected ? 'flat' : 'raised'}
         color={this.props.isSelected ? 'default' : 'primary'}
-        onClick={this.props.isSelected ? this.handleOnRemove : this.handleOnAdd}
+        onClick={this.props.isSelected ? this.handleRemove : this.handleAdd}
       >
         <ClearIcon style={{ marginRight: '5px' }} />
         {this.props.isSelected ? 'Remove' : 'Add Engine'}

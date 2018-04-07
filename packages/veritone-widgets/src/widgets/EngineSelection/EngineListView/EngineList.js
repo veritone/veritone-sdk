@@ -3,29 +3,18 @@ import { bool, arrayOf, string, func, number, objectOf, any } from 'prop-types';
 import { InfiniteLoader, AutoSizer, List } from 'react-virtualized';
 import EngineSelectionRow from './EngineSelectionRow/';
 
+// see https://github.com/bvaughn/react-virtualized/blob/master/docs/creatingAnInfiniteLoadingList.md
 function EngineList({
-  /** Are there more items to load? (This information comes from the most recent API request.) */
   hasNextPage,
-  /** Are we currently loading a page of items? (This may be an in-flight flag in your Redux store for example.) */
   isNextPageLoading,
-  /** List of items loaded so far */
   list = [],
-  /** Callback function (eg. Redux action-creator) responsible for loading the next page of items */
   loadNextPage,
-  /** View detail page */
   onViewDetail
 }) {
-  // If there are more items to be loaded then add an extra row to hold a loading indicator.
   const rowCount = hasNextPage ? list.length + 1 : list.length;
-
-  // Only load 1 page of items at a time.
-  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
   const loadMoreRows = isNextPageLoading ? () => {} : loadNextPage;
-
-  // Every row is loaded except for our loading indicator row.
   const isRowLoaded = ({ index }) => !hasNextPage || index < list.length;
 
-  // Render a list item or a loading indicator.
   const rowRenderer = ({ index, key, style }) => {
     let content;
 
@@ -49,7 +38,7 @@ function EngineList({
 
   return (
     <InfiniteLoader
-      isRowLoaded={isRowLoaded}
+      isRowLoaded={isRowLoaded} // eslint-disable-line
       loadMoreRows={loadMoreRows}
       rowCount={rowCount}
     >
@@ -58,12 +47,12 @@ function EngineList({
           {({ width, height }) => (
             <List
               ref={registerChild}
-              style={{ outline: 0 }}
+              style={{ outline: 0, padding: '0 20px' }}
               height={height}
               onRowsRendered={onRowsRendered}
               rowCount={rowCount}
               rowHeight={177}
-              rowRenderer={rowRenderer}
+              rowRenderer={rowRenderer} // eslint-disable-line
               width={width}
             />
           )}

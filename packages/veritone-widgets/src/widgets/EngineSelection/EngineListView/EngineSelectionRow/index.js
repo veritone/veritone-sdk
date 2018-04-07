@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bool, object, func, string, shape } from 'prop-types';
 
-import { Lozenge, Ellipsis } from 'veritone-react-common';
+import { Lozenge, Truncate } from 'veritone-react-common';
 
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
@@ -30,8 +30,8 @@ import styles from './styles.scss';
     isChecked: engineSelectionModule.engineIsChecked(state, ownProps.engineId)
   }),
   {
-    addEngines: engineSelectionModule.addEngines,
-    removeEngines: engineSelectionModule.removeEngines,
+    selectEngines: engineSelectionModule.selectEngines,
+    deselectEngines: engineSelectionModule.deselectEngines,
     checkEngine: engineSelectionModule.checkEngine,
     uncheckEngine: engineSelectionModule.uncheckEngine
   }
@@ -46,27 +46,28 @@ export default class EngineSelectionRow extends React.Component {
       iconPath: string,
       ownerOrganization: object
     }).isRequired,
+    engineId: string.isRequired,
     isSelected: bool.isRequired,
     isChecked: bool.isRequired,
     onViewDetail: func.isRequired,
-    addEngines: func.isRequired,
-    removeEngines: func.isRequired,
+    selectEngines: func.isRequired,
+    deselectEngines: func.isRequired,
     checkEngine: func.isRequired,
     uncheckEngine: func.isRequired
   };
 
-  handleOnChange = () => {
+  handleChange = () => {
     this.props.isChecked
       ? this.props.uncheckEngine(this.props.engine.id)
       : this.props.checkEngine(this.props.engine.id);
   };
 
-  handleOnClick = () => {
+  handleClick = () => {
     this.props.onViewDetail(this.props.engine);
   };
 
   render() {
-    const { name, iconClass } = this.props.engine.category || {};
+    const { name, iconClass, color } = this.props.engine.category || {};
 
     const deploymentModelLogo = {
       FullyNetworkIsolated: networkIsolatedLogo,
@@ -84,7 +85,8 @@ export default class EngineSelectionRow extends React.Component {
           {!this.props.engine.iconPath && <i className="icon-engines" />}
           <div className={styles.engineSelect}>
             <Checkbox
-              onChange={this.handleOnChange}
+              color="primary"
+              onChange={this.handleChange}
               checked={this.props.isChecked}
             />
           </div>
@@ -93,7 +95,7 @@ export default class EngineSelectionRow extends React.Component {
           <div className={styles.primary}>
             <div className={styles.main}>
               <div className={styles.headings}>
-                <div className={styles.title} onClick={this.handleOnClick}>
+                <div className={styles.title} onClick={this.handleClick}>
                   {this.props.engine.name}
                 </div>
                 <div className={styles.orgName}>
@@ -102,11 +104,15 @@ export default class EngineSelectionRow extends React.Component {
               </div>
             </div>
             <div className={styles.info}>
-              {name && iconClass && <Lozenge type={name} icon={iconClass} />}
+              {name && (
+                <Lozenge iconClassName={iconClass} backgroundColor={color}>
+                  {name}
+                </Lozenge>
+              )}
             </div>
             <div className={styles.description}>
               {this.props.engine.description && (
-                <Ellipsis text={this.props.engine.description} lines={3} />
+                <Truncate clamp={3}>{this.props.engine.description}</Truncate>
               )}
             </div>
           </div>
@@ -120,8 +126,8 @@ export default class EngineSelectionRow extends React.Component {
             </div>
             <div>
               <ToggleButton
-                onAdd={this.props.addEngines}
-                onRemove={this.props.removeEngines}
+                onAdd={this.props.selectEngines}
+                onRemove={this.props.deselectEngines}
                 engineId={this.props.engine.id}
                 isSelected={this.props.isSelected}
               />

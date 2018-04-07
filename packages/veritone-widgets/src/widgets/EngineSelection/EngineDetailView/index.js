@@ -17,8 +17,8 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
     )
   }),
   {
-    addEngines: engineSelectionModule.addEngines,
-    removeEngines: engineSelectionModule.removeEngines
+    selectEngines: engineSelectionModule.selectEngines,
+    deselectEngines: engineSelectionModule.deselectEngines
   }
 )
 export default class EngineDetailView extends React.Component {
@@ -33,8 +33,8 @@ export default class EngineDetailView extends React.Component {
     }).isRequired,
     isSelected: bool.isRequired,
     onCloseDetailView: func.isRequired,
-    addEngines: func.isRequired,
-    removeEngines: func.isRequired
+    selectEngines: func.isRequired,
+    deselectEngines: func.isRequired
   };
 
   static defaultProps = {
@@ -56,8 +56,8 @@ export default class EngineDetailView extends React.Component {
         <div className={styles.content}>
           <InfoSection
             engine={this.props.engine}
-            onAdd={this.props.addEngines}
-            onRemove={this.props.removeEngines}
+            onAdd={this.props.selectEngines}
+            onRemove={this.props.deselectEngines}
             isSelected={this.props.isSelected}
           />
           <div className={styles.description}>

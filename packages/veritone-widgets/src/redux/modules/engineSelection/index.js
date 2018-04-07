@@ -6,8 +6,8 @@ const { engine: engineModule } = modules;
 export const CHECK_ALL_ENGINES = 'vtn/engineSelection/CHECK_ALL_ENGINES';
 export const UNCHECK_ALL_ENGINES = 'vtn/engineSelection/UNCHECK_ALL_ENGINES';
 
-export const ADD_ENGINES = 'vtn/engineSelection/ADD_ENGINES';
-export const REMOVE_ENGINES = 'vtn/engineSelection/REMOVE_ENGINES';
+export const SELECT_ENGINE = 'vtn/engineSelection/SELECT_ENGINE';
+export const DESELECT_ENGINE = 'vtn/engineSelection/DESELECT_ENGINE';
 
 export const CHECK_ENGINE = 'vtn/engineSelection/CHECK_ENGINE';
 export const UNCHECK_ENGINE = 'vtn/engineSelection/UNCHECK_ENGINE';
@@ -67,7 +67,7 @@ export default createReducer(defaultState, {
       allEnginesChecked: false
     };
   },
-  [ADD_ENGINES](state, action) {
+  [SELECT_ENGINE](state, action) {
     return {
       ...state,
       selectedEngineIds: union(
@@ -78,7 +78,7 @@ export default createReducer(defaultState, {
       allEnginesChecked: false
     };
   },
-  [REMOVE_ENGINES](state, action) {
+  [DESELECT_ENGINE](state, action) {
     return {
       ...state,
       selectedEngineIds: without(
@@ -127,10 +127,7 @@ export default createReducer(defaultState, {
   [CLEAR_ALL_FILTERS](state, action) {
     return {
       ...state,
-      filters: {
-        category: [],
-        rating: []
-      },
+      filters: defaultState.filters,
       checkedEngineIds: [],
       allEnginesChecked: false
     };
@@ -224,18 +221,18 @@ export function uncheckAllEngines() {
   };
 }
 
-export function addEngines(engineIds) {
+export function selectEngines(engineIds) {
   return {
-    type: ADD_ENGINES,
+    type: SELECT_ENGINE,
     payload: {
       engineIds
     }
   };
 }
 
-export function removeEngines(engineIds) {
+export function deselectEngines(engineIds) {
   return {
-    type: REMOVE_ENGINES,
+    type: DESELECT_ENGINE,
     payload: {
       engineIds
     }
@@ -290,7 +287,7 @@ export function toggleSearch() {
   };
 }
 
-export function pathFor(searchQuery, filters, orderBy) {
+export function pathFor(searchQuery, filters) {
   return [searchQuery, JSON.stringify(filters)];
 }
 
@@ -337,5 +334,3 @@ export function getSelectedEngineIds(state) {
 export function getCheckedEngineIds(state) {
   return local(state).checkedEngineIds;
 }
-
-export const widgets = state => local(state).widgets;

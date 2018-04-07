@@ -9,7 +9,7 @@ export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
 export Chip from './components/Chip';
 export Lozenge from './components/Lozenge';
-export Ellipsis from './components/Ellipsis';
+export Truncate from './components/Truncate';
 export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
@@ -27,3 +27,4 @@ export AppContainer from './components/AppContainer';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
+export withMuiThemeProvider from './helpers/withMuiThemeProvider';

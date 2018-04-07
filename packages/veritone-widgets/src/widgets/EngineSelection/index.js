@@ -1,19 +1,30 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { func } from 'prop-types';
 import { noop } from 'lodash';
 
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
 
-import withMuiThemeProvider from '../../shared/withMuiThemeProvider';
+import { withMuiThemeProvider } from 'veritone-react-common';
+import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
+@connect(
+  state => ({}),
+  {
+    fetchEngines: engineSelectionModule.refetchEngines
+  },
+  null,
+  { withRef: true }
+)
 @withMuiThemeProvider
 class EngineSelectionWidget extends React.Component {
   static propTypes = {
     onSave: func.isRequired,
-    onCancel: func.isRequired
+    onCancel: func.isRequired,
+    fetchEngines: func.isRequired
   };
 
   static defaultProps = {
@@ -26,14 +37,22 @@ class EngineSelectionWidget extends React.Component {
     engineDetails: null
   };
 
-  handleOnViewDetail = engine => {
+  componentDidMount() {
+    this.props.fetchEngines();
+  }
+
+  veritoneAppDidAuthenticate = () => {
+    this.props.fetchEngines();
+  };
+
+  handleViewDetail = engine => {
     this.setState({
       showDetailView: true,
       engineDetails: engine
     });
   };
 
-  handleOnHideDetail = engineId => {
+  handleHideDetail = engineId => {
     this.setState({
       showDetailView: false,
       engineDetails: null
@@ -42,14 +61,14 @@ class EngineSelectionWidget extends React.Component {
 
   renderDetailView = () => (
     <EngineDetailView
-      onCloseDetailView={this.handleOnHideDetail}
+      onCloseDetailView={this.handleHideDetail}
       engine={this.state.engineDetails}
     />
   );
 
   renderListView = () => (
     <EngineListView
-      onViewDetail={this.handleOnViewDetail}
+      onViewDetail={this.handleViewDetail}
       onSave={this.props.onSave}
       onCancel={this.props.onCancel}
     />

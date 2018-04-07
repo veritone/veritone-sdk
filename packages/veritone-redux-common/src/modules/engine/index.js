@@ -1,7 +1,7 @@
-import { isEmpty, keyBy, get, without } from 'lodash';
-import { callGraphQLApi, commonHeaders } from 'helpers/api';
-import { createReducer } from 'helpers/redux';
+import { isEmpty, keyBy, get, pickBy } from 'lodash';
 import { getConfig } from 'modules/config';
+import { callGraphQLApi } from 'helpers/api';
+import { createReducer } from 'helpers/redux';
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
 
 export const namespace = 'engine';
@@ -18,16 +18,11 @@ const defaultState = {
 
 export default createReducer(defaultState, {
   [FETCH_ENGINES](state, action) {
-    const requestSuccessState = {
+    return {
       ...state,
       isFetching: true,
       fetchingFailed: false
     };
-
-    return action.error
-      ? // handle requestError ie. offline
-        this[FETCH_ENGINES_FAILURE](state, action)
-      : requestSuccessState;
   },
   [FETCH_ENGINES_SUCCESS](state, action) {
     return {
@@ -58,15 +53,6 @@ export function fetchEngines(searchQuery, filters = {}) {
   return async function action(dispatch, getState) {
     dispatch({ type: FETCH_ENGINES });
 
-    const filterBy = {};
-
-    // exclude empty filters
-    Object.keys(filters).map(filter => {
-      if (filters[filter] && filters[filter].length) {
-        filterBy[filter] = filters[filter];
-      }
-    });
-
     const query = `
       query Engines($name: String = "", $filter: EngineFilter) {
         engines(name: $name, limit: 1000, filter: $filter) {
@@ -85,6 +71,7 @@ export function fetchEngines(searchQuery, filters = {}) {
             category {
               iconClass
               name
+              color
             }
             builds(status: ["deployed"]) {
               records {
@@ -96,12 +83,17 @@ export function fetchEngines(searchQuery, filters = {}) {
         }
       }`;
 
+    const config = getConfig(getState());
+    const { apiRoot, graphQLEndpoint } = config;
+    const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+
     try {
       const response = await callGraphQLApi({
+        endpoint: graphQLUrl,
         query,
         variables: {
           name: searchQuery,
-          filter: filterBy
+          filter: pickBy(filters, (filter = []) => filter && !!filter.length)
         },
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });

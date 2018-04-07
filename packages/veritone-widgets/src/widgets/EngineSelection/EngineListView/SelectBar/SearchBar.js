@@ -17,7 +17,7 @@ export default class SearchBar extends React.Component {
     isOpen: bool.isRequired,
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
-    isDisabled: bool.isRequired
+    hideActions: bool.isRequired
   };
 
   static defaultProps = {
@@ -79,13 +79,14 @@ export default class SearchBar extends React.Component {
 
   renderClosedState = () => (
     <div>
-      <IconButton
-        onClick={this.handleToggleSearch}
-        className={styles.searchBarIcon}
-        disabled={this.props.isDisabled}
-      >
-        <SearchIcon />
-      </IconButton>
+      {!this.props.hideActions && (
+        <IconButton
+          onClick={this.handleToggleSearch}
+          className={styles.searchBarIcon}
+        >
+          <SearchIcon />
+        </IconButton>
+      )}
     </div>
   );
 

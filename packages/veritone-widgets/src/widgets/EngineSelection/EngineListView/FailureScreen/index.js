@@ -17,8 +17,12 @@ const FailureScreen = ({
         style={{ height: 105, width: 105, color: 'rgba(0,0,0,.26)' }}
       />
       <h2 className={styles.headline}>{message}</h2>
-      <Button raised style={{ backgroundColor: 'white' }} onClick={onRetry}>
-        <RefreshIcon color={blue[500]} style={{ marginRight: '10px' }} />
+      <Button
+        variant="raised"
+        style={{ backgroundColor: 'white' }}
+        onClick={onRetry}
+      >
+        <RefreshIcon nativeColor={blue[500]} style={{ marginRight: '10px' }} />
         Retry
       </Button>
     </div>

@@ -1,5 +1,5 @@
-@import 'src/styles/modules/muiTypography';
-@import 'src/styles/modules/variables';
+@import '~veritone-react-common/src/styles/modules/_muiTypography';
+@import '~veritone-react-common/src/styles/modules/_variables';
 
 .sideBar {
   $width: 290px;
@@ -29,7 +29,7 @@
   $dimensions: 24px !important;
   height: $dimensions;
   width: $dimensions;
-  margin-right: 8px;
+  margin-right: 8px !important;
 }
 
 .rc-slider-handle {

@@ -10,7 +10,7 @@ import {
   shape,
   number
 } from 'prop-types';
-import { isEmpty, isArray, isString, without } from 'lodash';
+import { isEmpty, isArray, isString, without, noop } from 'lodash';
 
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Button from 'material-ui/Button';
@@ -44,8 +44,8 @@ import styles from './styles.scss';
     isSearchOpen: engineSelectionModule.isSearchOpen(state)
   }),
   {
-    addEngines: engineSelectionModule.addEngines,
-    removeEngines: engineSelectionModule.removeEngines,
+    selectEngines: engineSelectionModule.selectEngines,
+    deselectEngines: engineSelectionModule.deselectEngines,
     refetchEngines: engineSelectionModule.refetchEngines,
     searchEngines: engineSelectionModule.searchEngines,
     checkAllEngines: engineSelectionModule.checkAllEngines,
@@ -74,8 +74,8 @@ export default class EngineListView extends React.Component {
     searchQuery: string,
     currentTabIndex: number.isRequired,
     isSearchOpen: bool.isRequired,
-    addEngines: func.isRequired,
-    removeEngines: func.isRequired,
+    selectEngines: func.isRequired,
+    deselectEngines: func.isRequired,
     refetchEngines: func.isRequired,
     searchEngines: func.isRequired,
     checkAllEngines: func.isRequired,
@@ -117,7 +117,7 @@ export default class EngineListView extends React.Component {
     <EngineList
       hasNextPage={false}
       isNextPageLoading={false}
-      loadNextPage={() => {}}
+      loadNextPage={noop}
       onViewDetail={this.props.onViewDetail}
       list={selectedEngines || this.props.currentResults}
     />
@@ -133,9 +133,9 @@ export default class EngineListView extends React.Component {
           You have no enabled engines.
         </div>
         <Button
-          raised
+          variant="raised"
           color="primary"
-          onClick={e => this.handleTabChange(e, 1)}
+          onClick={e => this.handleTabChange(e, 1)} // eslint-disable-line
         >
           Explore all engines
         </Button>
@@ -152,7 +152,7 @@ export default class EngineListView extends React.Component {
     </div>
   );
 
-  handleOnClearFilter = id => {
+  handleClearFilter = id => {
     const { filter, value } = JSON.parse(id);
     const { filters } = this.props;
 
@@ -184,9 +184,12 @@ export default class EngineListView extends React.Component {
       textColor="primary"
       fullWidth
     >
-      <Tab classes={{ rootPrimarySelected: styles.tab }} label="Your Engines" />
       <Tab
-        classes={{ rootPrimarySelected: styles.tab }}
+        classes={{ textColorPrimarySelected: styles.tab }}
+        label="Your Engines"
+      />
+      <Tab
+        classes={{ textColorPrimarySelected: styles.tab }}
         label="Explore All Engines"
       />
     </Tabs>
@@ -239,7 +242,7 @@ export default class EngineListView extends React.Component {
           filters={this.props.filters}
           filterBy={this.props.addEngineFilter}
           onClearAllFilters={this.props.clearAllFilters}
-          onClearFilter={this.handleOnClearFilter}
+          onClearFilter={this.handleClearFilter}
         />
         <div className={styles.engineSelectionContent}>
           {!isEmpty(checkedEngineIds) && (
@@ -248,8 +251,8 @@ export default class EngineListView extends React.Component {
               disabledSelectAllMessage={!currentTabIndex}
               currentResultsCount={this.props.currentResults.length}
               onBack={this.props.uncheckAllEngines}
-              onAddSelected={this.props.addEngines}
-              onRemoveSelected={this.props.removeEngines}
+              onAddSelected={this.props.selectEngines}
+              onRemoveSelected={this.props.deselectEngines}
               onSelectAll={this.props.checkAllEngines}
               allEngines={Object.keys(this.props.allEngines)}
             />
@@ -264,7 +267,7 @@ export default class EngineListView extends React.Component {
               onToggleSearch={this.props.toggleSearch}
               isSearchOpen={this.props.isSearchOpen}
               isChecked={this.props.allEnginesChecked}
-              isDisabled={
+              hideActions={
                 this.props.failedToFetchEngines ||
                 this.props.isFetchingEngines ||
                 !currentTabIndex

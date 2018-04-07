@@ -27,7 +27,7 @@ class CategoriesFilter extends React.Component {
     });
   };
 
-  handleOnClick = category => {
+  handleClick = category => {
     if (
       this.props.filters.category &&
       this.props.filters.category.includes(category)
@@ -61,9 +61,10 @@ class CategoriesFilter extends React.Component {
             <div key={category}>
               <div className={styles.inlineFilter}>
                 <Checkbox
+                  color="primary"
                   classes={{ default: styles.checkbox }}
                   checked={this.props.filters.category.includes(category)}
-                  onClick={() => this.handleOnClick(category)}
+                  onClick={() => this.handleClick(category)} // eslint-disable-line
                 />
                 {category}
               </div>

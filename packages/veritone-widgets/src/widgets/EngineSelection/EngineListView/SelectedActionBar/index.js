@@ -16,11 +16,11 @@ function SelectedActionBar({
   onSelectAll,
   disabledSelectAllMessage
 }) {
-  const handleOnAddSelected = () => {
+  const handleAddSelected = () => {
     onAddSelected(selectedEngines);
     onBack();
   };
-  const handleOnRemoveSelected = () => {
+  const handleRemoveSelected = () => {
     onRemoveSelected(selectedEngines);
     onBack();
   };
@@ -49,7 +49,10 @@ function SelectedActionBar({
                 selectedEngines.length
               }`}</span>{' '}
               engines on this page are selected.{' '}
-              <a href="#" onClick={handleSelectAll}>
+              <a
+                href="#"
+                onClick={handleSelectAll} // eslint-disable-line
+              >
                 Select all{' '}
                 <span className={styles.selectedCount}>{`${
                   allEngines.length
@@ -68,12 +71,15 @@ function SelectedActionBar({
       <div className={styles.bulkActions}>
         <Button
           color="primary"
-          onClick={handleOnAddSelected}
+          onClick={handleAddSelected} // eslint-disable-line
           disabled={disabledSelectAllMessage}
         >
           Add Selected
         </Button>
-        <Button color="primary" onClick={handleOnRemoveSelected}>
+        <Button
+          color="primary"
+          onClick={handleRemoveSelected} // eslint-disable-line
+        >
           Remove Selected
         </Button>
       </div>
