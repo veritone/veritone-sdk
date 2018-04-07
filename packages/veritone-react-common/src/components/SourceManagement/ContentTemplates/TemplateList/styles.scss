@@ -1,8 +1,7 @@
 .listContainer {
   width: 389px;
   height: 100vh;
-  border-right: 6px solid #eeeeee;
-  // padding-left: 20px;
+  border-right: 6px solid #eee;
 
   .title {
     color: rgba(0, 0, 0, 0.87);
@@ -33,7 +32,7 @@
     justify-content: space-between;
 
     .name {
-      color: #000000;
+      color: #000;
       font-size: 14px;
       line-height: 16px;
     }
@@ -44,7 +43,7 @@
     }
 
     &:hover {
-      background-color: #eeeeee;
+      background-color: #eee;
     }
   }
 }
