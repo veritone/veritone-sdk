@@ -6,6 +6,7 @@ import Icon from 'material-ui/Icon';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
+import { isString } from 'lodash';
 import { objectOf, func, bool, arrayOf, any } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
@@ -38,23 +39,23 @@ class MediaInfoPanel extends Component {
         `veritoneFile: { filename: "${metadataToSave.veritoneFile.filename}" }`
       );
     }
-    if (metadataToSave.veritoneCustom && (typeof metadataToSave.veritoneCustom.source === 'string')) {
+    if (metadataToSave.veritoneCustom && isString(metadataToSave.veritoneCustom.source)) {
       detailsParams.push(
         `veritoneCustom: { source: "${metadataToSave.veritoneCustom.source}" }`
       );
     }
     if (
       metadataToSave.veritoneProgram &&
-      ((typeof metadataToSave.veritoneProgram.programLiveImage === 'string') ||
-        (typeof metadataToSave.veritoneProgram.programImage === 'string'))
+      (isString(metadataToSave.veritoneProgram.programLiveImage) ||
+        isString(metadataToSave.veritoneProgram.programImage))
     ) {
       let programData = '';
-      if (typeof metadataToSave.veritoneProgram.programLiveImage === 'string') {
+      if (isString(metadataToSave.veritoneProgram.programLiveImage)) {
         programData += `programLiveImage: "${
           metadataToSave.veritoneProgram.programLiveImage
         }"`;
       }
-      if (typeof metadataToSave.veritoneProgram.programImage === 'string') {
+      if (isString(metadataToSave.veritoneProgram.programImage)) {
         programData += ` programImage: "${
           metadataToSave.veritoneProgram.programImage
         }"`;
