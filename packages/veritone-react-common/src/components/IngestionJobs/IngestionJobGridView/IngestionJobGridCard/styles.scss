@@ -2,8 +2,9 @@
   height: 297px;
   width: 311px;
   border-radius: 2px;
-  background-color: #FFFFFF;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.14), 0 3px 4px 0 rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 4px 0 rgba(0, 0, 0, 0.12),
+    0 1px 5px 0 rgba(0, 0, 0, 0.2);
   position: relative;
 
   .thumbnail {
@@ -23,7 +24,7 @@
     padding-left: 20px;
 
     .checkboxBackground {
-      background-color: #FFFFFF;
+      background-color: #ffffff;
       position: absolute;
       top: 10px;
       left: 10px;
@@ -32,7 +33,7 @@
       margin-left: 2px;
       margin-top: 2px;
     }
-      
+
     .checkbox {
       // margin-left: 14px;
       position: absolute;
@@ -43,7 +44,7 @@
     }
 
     .checkboxPrimary {
-      color: #2196F3 !important;
+      color: #2196f3 !important;
     }
 
     .name {
@@ -55,7 +56,6 @@
     }
 
     .gridDetails {
-      
       .gridDetailsRow {
         display: flex;
         flex-direction: row;
@@ -78,7 +78,6 @@
           white-space: nowrap;
         }
       }
-      
     }
     .status {
       bottom: 10px;
@@ -86,5 +85,4 @@
       position: absolute;
     }
   }
-  
 }
