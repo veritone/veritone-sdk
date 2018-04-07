@@ -6,7 +6,6 @@ import { action } from '@storybook/addon-actions';
 import styles from './story.styles.scss';
 import LogoDetectionEngineOutput from './';
 
-
 let mockData = genMockData(140, 5000000);
 let selectedEngineId = '1';
 let engines = [
@@ -25,7 +24,6 @@ storiesOf('LogoDetectionEngineOutput', module).add('Base', () => {
         className={styles.outputViewRoot}
         engines={engines}
         selectedEngineId={selectedEngineId}
-
         onEntrySelected={action('on select')}
         onEngineChange={action('on engine changed')}
         onExpandClicked={action('on expand clicked')}
