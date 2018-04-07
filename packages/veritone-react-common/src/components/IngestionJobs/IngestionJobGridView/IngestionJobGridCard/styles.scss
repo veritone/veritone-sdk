@@ -2,8 +2,9 @@
   height: 297px;
   width: 311px;
   border-radius: 2px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 4px 0 rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 4px 0 rgba(0, 0, 0, 0.12),
+    0 1px 5px 0 rgba(0, 0, 0, 0.2);
   position: relative;
 
   .thumbnail {
@@ -12,7 +13,6 @@
     position: relative;
     overflow: hidden;
     background-color: #e0e0e0; // for testing ui
-
     .imageStyle {
       height: 297px;
       width: 311px;
@@ -24,7 +24,7 @@
     padding-left: 20px;
 
     .checkboxBackground {
-      background-color: #fff;
+      background-color: #ffffff;
       position: absolute;
       top: 10px;
       left: 10px;
@@ -69,7 +69,6 @@
           width: 80px;
           margin-right: 10px;
         }
-
         .detailsText {
           color: rgba(0, 0, 0, 0.87);
           font-size: 12px;
@@ -80,7 +79,6 @@
         }
       }
     }
-
     .status {
       bottom: 10px;
       right: 10px;

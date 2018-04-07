@@ -340,7 +340,7 @@ function handleUpdateContentTemplates(contentTemplates) {
   console.log(contentTemplates)
 }
 
-function handleSubmit(data) {
+function logData(data) {
   console.log(data);
 }
 
@@ -376,13 +376,13 @@ storiesOf('SourceManagement', module)
         source={sourceConfig}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={handleSubmit}
+        onSubmit={logData}
         onClose={noop}
       />
     );
   })
   .add('Row', () => (
-    <SourceRow
+    <SourceRow 
       name={sourceName}
       sourceType={sourceType}
       creationDate={creationDate}
