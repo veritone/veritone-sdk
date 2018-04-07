@@ -21,7 +21,7 @@ export default class LogoDetectionEngineOutput extends Component {
         })
       })
     ), // series data
-    
+
     title: string,
     engines: arrayOf(
       shape({
@@ -33,27 +33,28 @@ export default class LogoDetectionEngineOutput extends Component {
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
-    
+
     className: string,
     entryClassName: string,
     entryLabelClassName: string,
     entryInfoClassName: string,
-    
+
     onScroll: func,
     onEntrySelected: func,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClicked: func
   };
 
   static defaultProps = {
     data: [],
     title: 'Logo Recognition',
     mediaPlayerTimeMs: 0,
-    mediaPlayerTimeIntervalMs: 1000,
+    mediaPlayerTimeIntervalMs: 1000
   };
 
   handleEntrySelected = (event, entry) => {
-    this.props.onEntrySelected && this.props.onEntrySelected(entry.startTimeMs, entry.stopTimeMs);
+    this.props.onEntrySelected &&
+      this.props.onEntrySelected(entry.startTimeMs, entry.stopTimeMs);
   };
 
   handleScrolled = event => {
@@ -85,17 +86,17 @@ export default class LogoDetectionEngineOutput extends Component {
       entryInfoClassName,
       entryLabelClassName,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     let items = [];
-    
+
     data.map((chunk, index) => {
       let series = chunk.series;
       if (series && series.length > 0) {
         // Sort detected logos by there start time and end time
         series = sortBy(series, 'startTimeMs', 'stopTimeMs');
-        
+
         // Draw detected logos in the series
         let endMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
         series.map((itemInfo, index) => {
@@ -116,9 +117,12 @@ export default class LogoDetectionEngineOutput extends Component {
                 key={'logo-' + itemInfo.object.label + index}
                 onClick={this.handleEntrySelected}
                 data={itemInfo}
-                highlight={!(
-                  endMediaPlayHeadMs < startTime || mediaPlayerTimeMs > stopTime
-                )}
+                highlight={
+                  !(
+                    endMediaPlayHeadMs < startTime ||
+                    mediaPlayerTimeMs > stopTime
+                  )
+                }
               />
             );
             items.push(logoItem);
@@ -126,7 +130,7 @@ export default class LogoDetectionEngineOutput extends Component {
         });
       }
     });
-    
+
     return items;
   }
 
@@ -144,7 +148,7 @@ export default class LogoDetectionEngineOutput extends Component {
         className={classNames(styles.logoDetection, this.props.className)}
         onScroll={this.handleScrolled}
       >
-        <EngineOutputHeader 
+        <EngineOutputHeader
           title={title}
           engines={engines}
           selectedEngineId={selectedEngineId}
