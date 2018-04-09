@@ -53,7 +53,7 @@ export default class Scheduler extends React.Component {
     scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
       .isRequired,
     handleSubmit: func.isRequired, // provided by redux-form
-    onSubmit: func // user submit callbaxk
+    onSubmit: func // user submit callback
   };
 
   prepareData = result => {
@@ -89,7 +89,7 @@ export default class Scheduler extends React.Component {
   };
 
   handleSubmit = result => {
-    return this.prepareData(result);
+    this.props.onSubmit(this.prepareData(result));
   };
 
   render() {

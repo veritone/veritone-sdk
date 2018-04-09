@@ -3,7 +3,6 @@ import { storiesOf } from '@storybook/react';
 import { Provider, connect } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
-import { subDays } from 'date-fns';
 
 import { createLogger } from 'redux-logger';
 import { applyMiddleware, compose } from 'redux';
@@ -29,6 +28,7 @@ const store = createStore(
 }))
 class DisplayState extends React.Component {
   /* eslint-disable react/prop-types */
+  /* eslint-disable react/jsx-no-bind */
   render() {
     return <pre>{JSON.stringify(this.props.form.values, null, '\t')}</pre>;
   }
@@ -42,6 +42,7 @@ storiesOf('Scheduler', module).add('Base', () => (
         initialValues={{
           scheduleType: 'continuous'
         }}
+        onSubmit={(result) => console.log(result)}
       />
       <DisplayState />
     </div>
