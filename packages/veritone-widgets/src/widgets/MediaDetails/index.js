@@ -517,6 +517,9 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         onExpandClicked={this.toggleExpandedMode}
+                        onFaceOccurrenceClicked={
+                          this.handleUpdateMediaPlayerTime
+                        }
                       />
                     )}
                   {selectedEngineCategory &&
