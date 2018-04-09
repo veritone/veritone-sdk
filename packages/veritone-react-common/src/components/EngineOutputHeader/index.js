@@ -55,7 +55,7 @@ class EngineOutputHeader extends Component {
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
         <div className={styles.headerActions}>
           {children}
-          {engines.length && (
+          {!!engines.length && (
             <Select
               value={selectedEngineId || engines[0].id}
               className={styles.engineSelect}

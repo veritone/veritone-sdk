@@ -228,11 +228,11 @@ let faceObjects = [
       {
         startTimeMs: 1000,
         stopTimeMs: 4000,
-        entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
-        libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
         object: {
           type: 'face',
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
+          libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
           boundingPoly: [
             {
               x: 0.1,
@@ -245,11 +245,11 @@ let faceObjects = [
       {
         startTimeMs: 1000,
         stopTimeMs: 4000,
-        entityId: '1945a3ba-f0a3-411e-8419-78e31c73150a',
-        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
         object: {
           type: 'face',
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          entityId: '1945a3ba-f0a3-411e-8419-78e31c73150a',
+          libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           boundingPoly: [
             {
               x: 0.1,
@@ -276,11 +276,11 @@ let faceObjects = [
       {
         startTimeMs: 2000,
         stopTimeMs: 3000,
-        entityId: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
-        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
         object: {
           type: 'face',
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          entityId: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
+          libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           boundingPoly: [
             {
               x: 0.1,
@@ -293,11 +293,11 @@ let faceObjects = [
       {
         startTimeMs: 3000,
         stopTimeMs: 4000,
-        entityId: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
-        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
         object: {
           type: 'face',
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          entityId: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
+          libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           boundingPoly: [
             {
               x: 0.1,
@@ -622,11 +622,11 @@ let faceObjects = [
       {
         startTimeMs: 5000,
         stopTimeMs: 6000,
-        entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
-        libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
         object: {
           type: 'face',
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
+          libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
           boundingPoly: [
             {
               x: 0.1,

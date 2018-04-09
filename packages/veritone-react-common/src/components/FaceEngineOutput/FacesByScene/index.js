@@ -33,17 +33,17 @@ class FacesByScene extends Component {
         )
       })
     ),
-    mediaPlayerPosition: number.isRequired,
+    currentMediaPlayerTime: number.isRequired,
     onSelectEntity: func
   };
 
   renderRecognizedEntityObjects = () => {
-    let { mediaPlayerPosition, onSelectEntity } = this.props;
+    let { currentMediaPlayerTime, onSelectEntity } = this.props;
     return this.props.recognizedEntityObjects.map(entityObject => {
       let entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
         return (
-          mediaPlayerPosition >= time.startTimeMs &&
-          mediaPlayerPosition <= time.stopTimeMs
+          currentMediaPlayerTime >= time.startTimeMs &&
+          currentMediaPlayerTime <= time.stopTimeMs
         );
       });
       if (entityCurrentlyInFrame) {

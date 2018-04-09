@@ -3,12 +3,15 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import Select from 'material-ui/Select';
+import { MenuItem } from 'material-ui/Menu';
 import { find, isEqual, pick, isObject, isEmpty } from 'lodash';
-import { shape, number, string, bool, arrayOf, func, oneOf } from 'prop-types';
+import { shape, number, string, bool, arrayOf, func } from 'prop-types';
 import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import noAvatar from 'images/no-avatar.png';
+import EngineOutputHeader from '../EngineOutputHeader';
 import NoFacesFound from './NoFacesFound';
 import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
@@ -40,8 +43,8 @@ class FaceEngineOutput extends Component {
         name: string,
         entities: arrayOf(
           shape({
-            entityId: string,
-            entityName: string,
+            id: string,
+            name: string,
             libraryId: string,
             profileImageUrl: string,
             jsondata: shape({
@@ -51,6 +54,14 @@ class FaceEngineOutput extends Component {
         )
       })
     ).isRequired,
+    engines: arrayOf(
+      shape({
+        id: string,
+        name: string
+      })
+    ),
+    selectedEngineId: string,
+    onEngineChange: func,
     entitySearchResults: arrayOf(
       shape({
         entityName: string,
@@ -60,13 +71,13 @@ class FaceEngineOutput extends Component {
     ),
     enableEditMode: bool,
     currentMediaPlayerTime: number,
-    viewMode: oneOf(['summary', 'byFrame', 'byScene']),
     onAddNewEntity: func,
     className: string,
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
     onEditFaceDetection: func,
-    onSearchForEntities: func
+    onSearchForEntities: func,
+    onExpandClicked: func
   };
 
   state = {
@@ -75,7 +86,8 @@ class FaceEngineOutput extends Component {
     recognizedEntityObjects: [],
     recognizedEntityObjectMap: {},
     framesBySeconds: {},
-    selectedEntity: null
+    selectedEntity: null,
+    viewMode: 'summary'
   };
 
   componentWillMount() {
@@ -83,10 +95,10 @@ class FaceEngineOutput extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.viewMode !== this.props.viewMode) {
-      this.setState({ selectedEntity: null });
-    }
-    if (!isEqual(nextProps.data, this.props.data)) {
+    if (
+      !isEqual(nextProps.data, this.props.data) ||
+      !isEqual(nextProps.libraries, this.props.libraries)
+    ) {
       this.processFaces(nextProps.data);
     }
   }
@@ -134,17 +146,17 @@ class FaceEngineOutput extends Component {
 
     let secondMap = {};
     faceSeries.forEach(faceObj => {
-      faceObj.entity = find(entities, { entityId: faceObj.entityId });
-      if (faceObj.entity && faceObj.entity.entityName) {
+      faceObj.entity = { ...find(entities, { id: faceObj.object.entityId }) };
+      if (faceObj.entity && faceObj.entity.name) {
         faceObj.entity.library = pick(
           find(this.props.libraries, { id: faceObj.entity.libraryId }),
           ['id', 'name']
         );
         let face = {
-          entityId: faceObj.entityId,
+          entityId: faceObj.object.entityId,
           libraryId: faceObj.entity.library.id,
           libraryName: faceObj.entity.library.name,
-          fullName: faceObj.entity.entityName,
+          fullName: faceObj.entity.name,
           entity: faceObj.entity,
           profileImage: faceObj.entity.profileImageUrl,
           count: 1,
@@ -267,6 +279,13 @@ class FaceEngineOutput extends Component {
     }
   };
 
+  handleViewModeChange = evt => {
+    this.setState({
+      viewMode: evt.target.value,
+      selectedEntity: null
+    });
+  };
+
   removeSelectedEntity = () => {
     this.setState({
       selectedEntity: null
@@ -276,7 +295,6 @@ class FaceEngineOutput extends Component {
   render() {
     let {
       enableEditMode,
-      viewMode,
       onAddNewEntity,
       entitySearchResults,
       className,
@@ -284,11 +302,34 @@ class FaceEngineOutput extends Component {
       currentMediaPlayerTime,
       onRemoveFaceDetection,
       onEditFaceDetection,
-      onSearchForEntities
+      onSearchForEntities,
+      engines,
+      selectedEngineId,
+      onEngineChange,
+      onExpandClicked
     } = this.props;
+    let { viewMode } = this.state;
 
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
+        <EngineOutputHeader
+          title="Faces"
+          engines={engines}
+          selectedEngineId={selectedEngineId}
+          onEngineChange={onEngineChange}
+          onExpandClicked={onExpandClicked}
+        >
+          <Select
+            autoWidth
+            value={viewMode}
+            className={styles.viewModeSelect}
+            onChange={this.handleViewModeChange}
+          >
+            <MenuItem value="summary">Summary</MenuItem>
+            <MenuItem value="byFrame">By Frame</MenuItem>
+            <MenuItem value="byScene">By Scene</MenuItem>
+          </Select>
+        </EngineOutputHeader>
         <Tabs
           value={this.state.activeTab}
           onChange={this.handleTabChange}
