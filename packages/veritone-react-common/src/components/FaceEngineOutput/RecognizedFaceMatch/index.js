@@ -24,9 +24,9 @@ class RecognizedFaceMatch extends Component {
           <div className={styles.entityFullName}>{entity.fullName}</div>
         </div>
         <div>
-          <div className={cx(styles.timeSlotConfidence, confidenceColor)}>
-            {Math.round(confidence * 100)}% Match
-          </div>
+          {confidence && <div className={cx(styles.timeSlotConfidence, confidenceColor)}>
+              {Math.round(confidence * 100)}% Match
+            </div>}
           <div
             className={styles.viewDetailsLink}
             onClick={onViewDetailsClick(entity.entityId)}

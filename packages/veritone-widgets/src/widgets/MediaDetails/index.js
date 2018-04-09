@@ -418,14 +418,16 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
-                  {editModeEnabled &&
+                  {editModeEnabled && (
                     <div className={styles.pageHeaderTitleLabelEditMode}>
                       Edit Mode: {selectedEngineCategory.name}
-                    </div>}
-                  {!editModeEnabled &&
+                    </div>
+                  )}
+                  {!editModeEnabled && (
                     <div className={styles.pageHeaderTitleLabelEditMode}>
                       {selectedEngineCategory.name}
-                    </div>}
+                    </div>
+                  )}
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
@@ -442,16 +444,18 @@ class MediaDetailsWidget extends React.Component {
                       />
                       RUN PROCESS
                     </Button>
-                    {editModeEnabled &&
-                      <div className={styles.actionButtonsSeparatorEditMode} />}
-                    {editModeEnabled &&
+                    {editModeEnabled && (
+                      <div className={styles.actionButtonsSeparatorEditMode} />
+                    )}
+                    {editModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
                         onClick={this.onCancelEdit}
                       >
                         CANCEL
-                      </Button>}
-                    {editModeEnabled &&
+                      </Button>
+                    )}
+                    {editModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
                         disabled={!this.state.hasPendingChanges}
@@ -459,7 +463,7 @@ class MediaDetailsWidget extends React.Component {
                       >
                         SAVE
                       </Button>
-                    }
+                    )}
                   </div>
                 </div>
               </div>
@@ -509,6 +513,13 @@ class MediaDetailsWidget extends React.Component {
                         data={engineResultsByEngineId[selectedEngineId]}
                         libraries={libraries}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
+                        engines={selectedEngineCategory.engines}
+                        onEngineChange={this.handleSelectEngine}
+                        selectedEngineId={selectedEngineId}
+                        onExpandClicked={this.toggleExpandedMode}
+                        onFaceOccurrenceClicked={
+                          this.handleUpdateMediaPlayerTime
+                        }
                       />
                     )}
                   {selectedEngineCategory &&
@@ -527,9 +538,11 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
-                      <LogoDetectionEngineOutput 
+                      <LogoDetectionEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        mediaPlayerTimeMs={Math.round(currentMediaPlayerTime * 1000)}
+                        mediaPlayerTimeMs={Math.round(
+                          currentMediaPlayerTime * 1000
+                        )}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}

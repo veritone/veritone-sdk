@@ -35,7 +35,7 @@ class FaceGrid extends Component {
 
   handleFaceClick = face => evt => {
     if (!this.props.enableEditMode) {
-      this.props.onFaceOccurrenceClicked(face, evt);
+      this.props.onFaceOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
     }
   };
 
