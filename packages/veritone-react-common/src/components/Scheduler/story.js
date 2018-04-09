@@ -40,17 +40,7 @@ storiesOf('Scheduler', module).add('Base', () => (
       <Scheduler
         form="scheduler"
         initialValues={{
-          scheduleType: 'recurring',
-          start: subDays(new Date(), 3),
-          end: new Date(),
-          maxSegment: {
-            number: '5',
-            period: 'week'
-          },
-          repeatEvery: {
-            number: '1',
-            period: 'day'
-          }
+          scheduleType: 'continuous'
         }}
       />
       <DisplayState />

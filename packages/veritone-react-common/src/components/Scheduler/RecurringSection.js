@@ -23,10 +23,6 @@ export default class ImmediateSection extends React.Component {
   };
 
   render() {
-    // todo: make sure to reset state of repeat section if repeatEvery.period changes
-
-    // todo: make sure we always get a default time range when days are selected
-    // in week mode, and when day mode is selected
     return (
       <Fragment>
         <div className={styles.formSectionRow}>
@@ -52,6 +48,9 @@ export default class ImmediateSection extends React.Component {
         )}
         <div className={styles.formSectionRow}>
           <DateTimeSelector name="end" label="Ends" />
+        </div>
+        <div className={styles.formSectionRow}>
+          <TimePeriodSelector name="maxSegment" label="Max segment"/>
         </div>
       </Fragment>
     );

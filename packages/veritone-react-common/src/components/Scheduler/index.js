@@ -1,9 +1,11 @@
 import React from 'react';
-import { oneOf } from 'prop-types';
+import { oneOf, func } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
+import { pick, get, pickBy } from 'lodash';
 import { withProps } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
+import { subDays } from 'date-fns';
 
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import RadioGroup from '../formComponents/RadioGroup';
@@ -13,11 +15,24 @@ import RecurringSection from './RecurringSection';
 import OnDemandSection from './OnDemandSection';
 import ContinuousSection from './ContinuousSection';
 
+const initDate = new Date();
+
 @withMuiThemeProvider
 @withProps(props => ({
   initialValues: {
-    // merge initial values configured by user w/ initials needed by the form
-    ...props.initialValues,
+    // This provides defaults to the form. Shallow merged with
+    // props.initialValues to allow overriding.
+    scheduleType: 'recurring',
+    start: subDays(initDate, 3),
+    end: initDate,
+    maxSegment: {
+      number: '5',
+      period: 'week'
+    },
+    repeatEvery: {
+      number: '1',
+      period: 'day'
+    },
     daily: [
       {
         start: '00:00',
@@ -27,7 +42,8 @@ import ContinuousSection from './ContinuousSection';
     weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
       (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
       {}
-    )
+    ),
+    ...props.initialValues
   }
 }))
 @reduxForm()
@@ -35,8 +51,47 @@ import ContinuousSection from './ContinuousSection';
 export default class Scheduler extends React.Component {
   static propTypes = {
     scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
-      .isRequired
+      .isRequired,
+    handleSubmit: func.isRequired, // provided by redux-form
+    onSubmit: func // user submit callbaxk
   };
+
+  prepareData = result => {
+    const recurringPeriod = get(result, 'repeatEvery.period');
+    const selectedDays = Object.keys(
+      pickBy(
+        get(result, 'weekly.selectedDays', {}),
+        (day, included) => !!included
+      )
+    );
+
+    const recurringRepeatSectionFields = {
+      hour: [],
+      day: ['daily'],
+      week: selectedDays.map(day => `weekly.${day}`)
+    }[recurringPeriod];
+
+    const wantedFields = {
+      recurring: [
+        'scheduleType',
+        'start',
+        'end',
+        'maxSegment',
+        'repeatEvery',
+        ...recurringRepeatSectionFields
+      ],
+      continuous: ['scheduleType', 'start', 'end', 'maxSegment'],
+      immediate: ['scheduleType', 'maxSegment'],
+      ondemand: ['scheduleType']
+    }[result.scheduleType];
+
+    return pick(result, wantedFields);
+  };
+
+  handleSubmit = result => {
+    return this.prepareData(result);
+  };
+
   render() {
     const ActiveSectionComponent = {
       recurring: RecurringSection,
@@ -46,7 +101,7 @@ export default class Scheduler extends React.Component {
     }[this.props.scheduleType];
 
     return (
-      <div>
+      <form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
         <div className={styles.header}>Set Ingestion Schedule</div>
         <Field
           component={RadioGroup}
@@ -77,7 +132,8 @@ export default class Scheduler extends React.Component {
         <div className={styles.activeSectionContainer}>
           <ActiveSectionComponent />
         </div>
-      </div>
+        <button type="submit">submit</button>
+      </form>
     );
   }
 }
