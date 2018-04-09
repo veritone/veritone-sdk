@@ -44,8 +44,7 @@ export default class ImmediateSection extends React.Component {
           <Fragment>
             {days.map(d => (
               <Fragment key={d}>
-                <Field component={Checkbox} name={`weekly.selectedDays.${d}`} />
-                {capitalize(d)}
+                <Field component={Checkbox} name={`weekly.selectedDays.${d}`} label={ capitalize(d) } />
                 <FieldArray name={`weekly.${d}`} component={MultiTimeRange} />
               </Fragment>
             ))}
