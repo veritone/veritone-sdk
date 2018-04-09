@@ -157,7 +157,7 @@ export default class DynamicContentScroll extends Component {
   }
 
   renderContent() {
-    let { contents, totalSize, neglectableSize } = this.props;
+    let { contents, totalSize, neglectableSize, onScroll } = this.props;
 
     // Sort Contents
     contents
@@ -171,7 +171,7 @@ export default class DynamicContentScroll extends Component {
       let content = contents[contentIndex];
 
       // Add fillers above content if needed
-      if (content.start - prevStopPoint > neglectableSize) {
+      if (onScroll && content.start - prevStopPoint > neglectableSize) {
         let fillers = this.renderFillers(prevStopPoint, content.start);
         renderItems = renderItems.concat(fillers);
       }
