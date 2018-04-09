@@ -10,16 +10,14 @@ export default class DynamicContentScroll extends Component {
       shape({
         start: number,
         stop: number,
-        value: any
+        content: any
       })
     ),
     className: string,
 
     totalSize: number,
-
-    segmentSize: number,
-
     neglectableSize: number,
+    estimatedDisplaySize: number,
 
     currentValue: number,
     onScroll: func
@@ -116,9 +114,11 @@ export default class DynamicContentScroll extends Component {
   };
 
   renderFillers(start, stop) {
-    let { segmentSize, neglectableSize } = this.props;
+    let { estimatedDisplaySize, neglectableSize } = this.props;
 
-    let segmentHeight = 100 / 5 + '%'; // 5 is num empty segment can be displayed in the scrollabe window
+    let numSegment = 5; // num empty segments that can be displayed in the scrollabe window at one time
+    let segmentHeight = 100 / numSegment + '%';
+    let segmentSize = estimatedDisplaySize / numSegment;
 
     let fillers = [];
     let currentStart = start;
@@ -168,28 +168,32 @@ export default class DynamicContentScroll extends Component {
     let prevStopPoint = 0;
     let numContents = contents.length;
     for (let contentIndex = 0; contentIndex < numContents; contentIndex++) {
-      let content = contents[contentIndex];
+      let entry = contents[contentIndex];
+      let startVal = entry.start;
+      let stopVal = entry.stop;
+      let content = entry.content;
 
       // Add fillers above content if needed
-      if (onScroll && content.start - prevStopPoint > neglectableSize) {
-        let fillers = this.renderFillers(prevStopPoint, content.start);
+      if (onScroll && startVal - prevStopPoint > neglectableSize) {
+        let fillers = this.renderFillers(prevStopPoint, startVal);
         renderItems = renderItems.concat(fillers);
       }
 
       // Add Content
       renderItems.push(
         <span
-          key={'anchor-key-' + content.start + '-' + content.stop}
+          key={'anchor-key-' + startVal + '-' + stopVal + '-' + contentIndex}
           anchor={'time-anchor'}
-          start={content.start}
-          stop={content.stop}
+          start={startVal}
+          stop={stopVal}
         />
       ); // add anchor for scroll to
-      renderItems.push(content.value);
-      prevStopPoint = content.stop;
+      renderItems.push(content);
+      prevStopPoint = stopVal;
 
       // Add fillers after content if needed
       if (
+        onScroll &&
         contentIndex === numContents - 1 &&
         prevStopPoint + neglectableSize < totalSize
       ) {

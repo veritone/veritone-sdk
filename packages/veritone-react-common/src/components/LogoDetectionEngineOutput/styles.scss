@@ -4,6 +4,8 @@
   overflow-y: auto;
 
   .scrolableContent {
+    height: calc(100% - 45px);
+
     .item {
       margin: 0 10px 10px 0;
 

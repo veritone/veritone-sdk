@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { kebabCase } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import PillButton from '../Parts/Buttons/PillButton';
+import PillButton from '../share-components/buttons/PillButton';
 import { msToReadableString } from '../../helpers/time';
 
 import styles from './styles.scss';

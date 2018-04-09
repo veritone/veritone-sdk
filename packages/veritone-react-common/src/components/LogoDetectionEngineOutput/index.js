@@ -3,9 +3,11 @@ import { arrayOf, number, string, func, shape } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
-import PillButton from '../Parts/Buttons/PillButton';
 import { msToReadableString } from '../../helpers/time';
 import EngineOutputHeader from '../EngineOutputHeader';
+
+import PillButton from '../share-components/buttons/PillButton';
+import DynamicContentScroll from '../share-components/scrolls/DynamicContentScroll';
 
 import styles from './styles.scss';
 
@@ -15,10 +17,16 @@ export default class LogoDetectionEngineOutput extends Component {
       shape({
         startTimeMs: number,
         stopTimeMs: number,
-        logo: shape({
-          label: string,
-          confidence: number
-        })
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            object: shape({
+              label: string,
+              confidence: number
+            })
+          })
+        )
       })
     ), // series data
 
@@ -31,9 +39,6 @@ export default class LogoDetectionEngineOutput extends Component {
     ),
     selectedEngineId: string,
 
-    mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number,
-
     className: string,
     entryClassName: string,
     entryLabelClassName: string,
@@ -42,14 +47,21 @@ export default class LogoDetectionEngineOutput extends Component {
     onScroll: func,
     onEntrySelected: func,
     onEngineChange: func,
-    onExpandClicked: func
+    onExpandClicked: func,
+
+    mediaLengthMs: number,
+    neglectableTimeMs: number,
+    estimatedDisplayTimeMS: number,
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
   };
 
   static defaultProps = {
     data: [],
     title: 'Logo Recognition',
+    neglectableTimeMs: 500,
     mediaPlayerTimeMs: 0,
-    mediaPlayerTimeIntervalMs: 1000
+    mediaPlayerTimeIntervalMs: 500
   };
 
   handleEntrySelected = (event, entry) => {
@@ -57,29 +69,7 @@ export default class LogoDetectionEngineOutput extends Component {
       this.props.onEntrySelected(entry.startTimeMs, entry.stopTimeMs);
   };
 
-  handleScrolled = event => {
-    if (this.props.onScroll) {
-      this.scrollCheck && clearTimeout(this.scrollCheck);
-      this.scrollCheck = setTimeout(this.onScrollComplete, 500, event.target);
-    }
-  };
-
-  onScrollComplete(scrollElement) {
-    if (this.props.onScroll) {
-      let scrollInfo = {
-        scrollTop: scrollElement.scrollTop,
-        scrollHeight: scrollElement.scrollHeight,
-        clientHeight: scrollElement.clientHeight,
-        scrollRatio:
-          scrollElement.scrollTop /
-          (scrollElement.scrollHeight - scrollElement.clientHeight)
-      };
-
-      this.props.onScroll(scrollInfo);
-    }
-  }
-
-  renderEntries() {
+  renderContents() {
     let {
       data,
       entryClassName,
@@ -89,9 +79,13 @@ export default class LogoDetectionEngineOutput extends Component {
       mediaPlayerTimeIntervalMs
     } = this.props;
 
-    let items = [];
+    let contents = [];
 
     data.map((chunk, index) => {
+      let groupStartTime = chunk.startTimeMs;
+      let groupStopTime = chunk.stopTimeMs;
+
+      let items = [];
       let series = chunk.series;
       if (series && series.length > 0) {
         // Sort detected logos by there start time and end time
@@ -101,9 +95,23 @@ export default class LogoDetectionEngineOutput extends Component {
         let endMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
         series.map((itemInfo, index) => {
           if (itemInfo.object) {
+            if (
+              groupStartTime === undefined ||
+              itemInfo.startTimeMs < groupStartTime
+            ) {
+              groupStartTime = itemInfo.startTimeMs;
+            }
+
+            if (
+              groupStopTime === undefined ||
+              itemInfo.stopTimeMs > groupStopTime
+            ) {
+              groupStopTime = itemInfo.stopTimeMs;
+            }
+
             //Look for detected logo
-            let startTime = itemInfo.startTimeMs;
-            let stopTime = itemInfo.stopTimeMs;
+            let startTime = Math.floor(itemInfo.startTimeMs / 1000) * 1000;
+            let stopTime = Math.ceil(itemInfo.stopTimeMs / 1000) * 1000;
             let startTimeString = msToReadableString(itemInfo.startTimeMs);
             let stopTimeString = msToReadableString(itemInfo.stopTimeMs);
             let logoItem = (
@@ -129,9 +137,14 @@ export default class LogoDetectionEngineOutput extends Component {
           }
         });
       }
+      contents.push({
+        start: groupStartTime,
+        stop: groupStopTime,
+        content: items
+      });
     });
 
-    return items;
+    return contents;
   }
 
   render() {
@@ -140,14 +153,17 @@ export default class LogoDetectionEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked
+      onExpandClicked,
+      onScroll,
+      mediaLengthMs,
+      neglectableTimeMs,
+      estimatedDisplayTimeMS
     } = this.props;
 
+    let contents = this.renderContents();
+
     return (
-      <div
-        className={classNames(styles.logoDetection, this.props.className)}
-        onScroll={this.handleScrolled}
-      >
+      <div className={classNames(styles.logoDetection, this.props.className)}>
         <EngineOutputHeader
           title={title}
           engines={engines}
@@ -155,7 +171,14 @@ export default class LogoDetectionEngineOutput extends Component {
           onEngineChange={onEngineChange}
           onExpandClicked={onExpandClicked}
         />
-        <div className={styles.scrolableContent}>{this.renderEntries()}</div>
+        <DynamicContentScroll
+          contents={contents}
+          className={styles.scrolableContent}
+          onScroll={onScroll}
+          totalSize={mediaLengthMs}
+          neglectableSize={neglectableTimeMs}
+          estimatedDisplaySize={estimatedDisplayTimeMS}
+        />
       </div>
     );
   }
