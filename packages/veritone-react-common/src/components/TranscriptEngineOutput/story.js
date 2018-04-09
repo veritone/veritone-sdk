@@ -88,9 +88,9 @@ export class TranscriptExample extends Component {
         mediaPlayerTimeIntervalMs={
           1000 * number('media player time Interval', 1)
         }
-        requestSizeMs={300000}
-        mediaLengthMs={3000000}
+        mediaLengthMs={9000000}
         neglectableTimeMs={2000}
+        estimatedDisplayTimeMs={1500000}
         onScroll={this.handleDataRequesting}
         onClick={action('on click')}
         engines={this.engines}

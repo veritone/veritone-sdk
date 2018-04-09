@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import styles from './styles.scss';
-import PillButton from './Buttons/PillButton';
-import DynamicContentScroll from './Scrolls/DynamicContentScroll';
+import PillButton from './buttons/PillButton';
+import DynamicContentScroll from './scrolls/DynamicContentScroll';
 
 storiesOf('Share Components', module)
   .add('Pill Button', () => {
@@ -59,7 +59,7 @@ class DynamicScrollContainer extends Component {
       contents.push({
         start: value,
         stop: value + stepSize,
-        value: (
+        content: (
           <DummyComponent key={'key-dummy' + value + '-' + value + stepSize} />
         )
       });
@@ -74,8 +74,8 @@ class DynamicScrollContainer extends Component {
         <DynamicContentScroll
           contents={this.state.contents}
           totalSize={5000}
-          segmentSize={100}
           neglectableSize={50}
+          estimatedDisplaySize={500}
           currentValue={0}
           onScroll={this.handleScrolling}
         />

@@ -53,10 +53,9 @@ export default class TranscriptEngineOutput extends Component {
     onEngineChange: func,
     onExpandClicked: func,
 
-    numMaxRequest: number,
-    requestSizeMs: number,
     mediaLengthMs: number,
     neglectableTimeMs: number,
+    estimatedDisplayTimeMs: number,
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
@@ -65,7 +64,6 @@ export default class TranscriptEngineOutput extends Component {
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
-    numMaxRequest: 2,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -157,10 +155,9 @@ export default class TranscriptEngineOutput extends Component {
       onClick,
       onScroll,
       editMode,
-      numMaxRequest,
-      requestSizeMs,
       mediaLengthMs,
       neglectableTimeMs,
+      estimatedDisplayTimeMs,
       contentClassName,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
@@ -174,8 +171,7 @@ export default class TranscriptEngineOutput extends Component {
           overview={this.state.overview}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-          numMaxRequest={numMaxRequest}
-          requestSizeMs={requestSizeMs}
+          estimatedDisplayTimeMs={estimatedDisplayTimeMs}
           mediaLengthMs={mediaLengthMs}
           neglectableTimeMs={neglectableTimeMs}
           onClick={onClick}

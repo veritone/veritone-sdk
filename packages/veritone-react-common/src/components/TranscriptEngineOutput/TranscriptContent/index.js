@@ -3,7 +3,7 @@ import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { sortBy } from 'lodash';
 import classNames from 'classnames';
 
-import DynamicContentScroll from '../../Parts/Scrolls/DynamicContentScroll';
+import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
 import NoDataSegment from '../TranscriptSegment/NoDataSegment';
 import SnippetSegment from '../TranscriptSegment/SnippetSegment';
 import OverviewSegment from '../TranscriptSegment/OverviewSegment';
@@ -40,9 +40,10 @@ export default class TranscriptContent extends Component {
     onClick: func,
     onScroll: func,
 
-    requestSizeMs: number,
     mediaLengthMs: number,
     neglectableTimeMs: number,
+    estimatedDisplayTimeMs: number,
+
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
   };
@@ -229,7 +230,7 @@ export default class TranscriptContent extends Component {
 
       switch (segmentData.status) {
         case 'success':
-          segment.value = (
+          segment.content = (
             <SnippetSegment
               key={'transcript-snippet' + segmentData.startTimeMs}
               content={segmentData}
@@ -243,7 +244,7 @@ export default class TranscriptContent extends Component {
           break;
 
         case 'no-transcript':
-          segment.value = (
+          segment.content = (
             <NoDataSegment
               key={'transcript--snippet' + segmentData.startTimeMs}
               startTimeMs={segmentData.startTimeMs}
@@ -288,7 +289,7 @@ export default class TranscriptContent extends Component {
           overviewSegments.push({
             start: overalStartTime,
             stop: overalStopTime,
-            value: (
+            content: (
               <TranscriptBulkEdit
                 key={'transcript-bulk-edit' + overalStopTime}
                 content={overalString}
@@ -297,10 +298,10 @@ export default class TranscriptContent extends Component {
           });
         }
       } else {
-        let segmentValue;
+        let segmentContent;
         switch (segmentData.status) {
           case 'success':
-            segmentValue = (
+            segmentContent = (
               <OverviewSegment
                 key={'transcript-overview' + segmentStartTime}
                 content={segmentData}
@@ -312,7 +313,7 @@ export default class TranscriptContent extends Component {
             );
             break;
           case 'no-transcript':
-            segmentValue = (
+            segmentContent = (
               <NoDataSegment
                 key={'transcript--overview' + segmentStartTime}
                 overview
@@ -326,7 +327,7 @@ export default class TranscriptContent extends Component {
         overviewSegments.push({
           start: segmentStartTime,
           stop: segmentStopTime,
-          value: segmentValue
+          content: segmentContent
         });
       }
     });
@@ -338,9 +339,9 @@ export default class TranscriptContent extends Component {
     let {
       overview,
       className,
-      requestSizeMs,
       mediaLengthMs,
       neglectableTimeMs,
+      estimatedDisplayTimeMs,
       onScroll
     } = this.props;
 
@@ -351,7 +352,7 @@ export default class TranscriptContent extends Component {
           className={classNames(styles.container)}
           onScroll={onScroll}
           totalSize={parsedData.lazyLoading && onScroll ? mediaLengthMs : 0}
-          segmentSize={requestSizeMs}
+          estimatedDisplaySize={estimatedDisplayTimeMs}
           neglectableSize={neglectableTimeMs}
           contents={
             overview
