@@ -28,6 +28,7 @@ const store = createStore(
   form: state.form.scheduler
 }))
 class DisplayState extends React.Component {
+  /* eslint-disable react/prop-types */
   render() {
     return <pre>{JSON.stringify(this.props.form.values, null, '\t')}</pre>;
   }

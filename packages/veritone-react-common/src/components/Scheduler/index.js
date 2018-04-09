@@ -1,6 +1,7 @@
 import React from 'react';
 import { oneOf } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
+import { withProps } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 
@@ -13,6 +14,22 @@ import OnDemandSection from './OnDemandSection';
 import ContinuousSection from './ContinuousSection';
 
 @withMuiThemeProvider
+@withProps(props => ({
+  initialValues: {
+    // merge initial values configured by user w/ initials needed by the form
+    ...props.initialValues,
+    daily: [
+      {
+        start: '00:00',
+        end: '01:00'
+      }
+    ],
+    weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
+      (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
+      {}
+    )
+  }
+}))
 @reduxForm()
 @formValues('scheduleType')
 export default class Scheduler extends React.Component {

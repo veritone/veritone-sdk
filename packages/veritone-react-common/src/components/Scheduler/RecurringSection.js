@@ -77,8 +77,8 @@ const MultiTimeRange = ({ fields }) => {
         type="button"
         onClick={() =>
           fields.push({
-            start: '00:00',
-            end: '01:00'
+            start: '',
+            end: ''
           })
         }
       >
