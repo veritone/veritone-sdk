@@ -100,10 +100,6 @@ export default class Scheduler extends React.Component {
       : result;
   }
 
-  handleSubmit = result => {
-    return this.props.onSubmit(result);
-  };
-
   render() {
     const ActiveSectionComponent = {
       recurring: RecurringSection,
@@ -113,7 +109,7 @@ export default class Scheduler extends React.Component {
     }[this.props.scheduleType];
 
     return (
-      <form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
+      <form onSubmit={this.props.handleSubmit}>
         <div className={styles.header}>Set Ingestion Schedule</div>
         <Field
           component={RadioGroup}

@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { reducer as formReducer } from 'redux-form';
 import { modules } from 'veritone-redux-common';
 
 import filePickerReducer, {
@@ -20,6 +21,7 @@ export default function createReducer(asyncReducers) {
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
+    form: formReducer,
     ...asyncReducers
   });
 }
