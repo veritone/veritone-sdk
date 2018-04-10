@@ -40,7 +40,7 @@ storiesOf('Scheduler', module).add('Base', () => (
       <Scheduler
         form="scheduler"
         initialValues={{
-          scheduleType: 'continuous'
+          scheduleType: 'recurring'
         }}
         onSubmit={(result) => console.log(result)}
       />

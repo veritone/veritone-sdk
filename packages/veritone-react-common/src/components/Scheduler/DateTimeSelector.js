@@ -15,7 +15,6 @@ const DateTimeSelector = ({ name, label }) => (
         component={DateTimePicker}
         className={styles.leftInput}
         showTimezone
-        showIcon
       />
     </FormGroup>
   </LabeledInputGroup>

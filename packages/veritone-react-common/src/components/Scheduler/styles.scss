@@ -1,4 +1,7 @@
 @import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+$label-width: 150px;
 
 .header {
   @include mui-text('headline');
@@ -15,6 +18,28 @@
   .formSectionRow {
     padding-top: 15px;
   }
+
+  .timeRangeContainer {
+    background-color: $grey-2;
+    padding: 0 10px;
+  }
+}
+
+.repeatContainer {
+  display: flex;
+  flex-direction: column;
+  margin-left: $label-width;
+  width: 550px;
+
+  .weekSelectionContainer {
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .checkboxGroup {
+    width: 200px;
+  }
 }
 
 .fieldsetGroup {
@@ -23,7 +48,7 @@
   width: 100% !important;
 
   .label {
-    width: 150px;
+    width: $label-width;
     display: flex;
     align-items: flex-end;
   }
@@ -47,5 +72,16 @@
 
   .leftInput input {
     text-align: right;
+  }
+}
+
+.multiTimeRange {
+  display: inline-flex;
+  flex-direction: column;
+
+  .row {
+    display: flex;
+    //align-items: flex-start;
+    align-items: center;
   }
 }

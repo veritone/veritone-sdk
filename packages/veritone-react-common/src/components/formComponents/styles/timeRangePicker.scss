@@ -1,8 +1,11 @@
+@import 'src/styles/modules/muiTypography';
+
 .container {
   display: flex;
   align-items: flex-end;
 
   .separator {
+    @include mui-text("body1");
     padding: 0 10px;
   }
 }

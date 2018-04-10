@@ -1,7 +1,11 @@
 import React, { Fragment } from 'react';
 import { shape, string, objectOf, bool, any } from 'prop-types';
+import cx from 'classnames';
 import { formValues, Field, FieldArray } from 'redux-form';
 import { capitalize } from 'lodash';
+import IconButton from 'material-ui/IconButton';
+import ClearIcon from 'material-ui-icons/Clear';
+import AddIcon from 'material-ui-icons/Add';
 
 import Checkbox from '../formComponents/Checkbox';
 import TimeRangePicker from '../formComponents/TimeRangePicker';
@@ -13,7 +17,7 @@ const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
 
 @formValues('repeatEvery')
 @formValues({ selectedDays: 'weekly.selectedDays' })
-export default class ImmediateSection extends React.Component {
+export default class RecurringSection extends React.Component {
   static propTypes = {
     repeatEvery: shape({
       number: string.isRequired,
@@ -32,25 +36,38 @@ export default class ImmediateSection extends React.Component {
           <DateTimeSelector name="start" label="Starts" />
         </div>
         {this.props.repeatEvery.period === 'day' && (
-          <Fragment>
-            <FieldArray name="daily" component={MultiTimeRange} />
-          </Fragment>
+          <div className={styles.repeatContainer}>
+            <div className={styles.timeRangeContainer}>
+              <FieldArray name="daily" component={MultiTimeRange} />
+            </div>
+          </div>
         )}
-        {this.props.repeatEvery.period === 'week' && (
-          <Fragment>
-            {days.map(d => (
-              <Fragment key={d}>
-                <Field component={Checkbox} name={`weekly.selectedDays.${d}`} label={ capitalize(d) } />
+        <div className={styles.repeatContainer}>
+          {this.props.repeatEvery.period === 'week' &&
+            days.map(d => (
+              <div
+                key={d}
+                className={cx(
+                  styles.timeRangeContainer,
+                  styles.weekSelectionContainer
+                )}
+              >
+                <div style={{ width: 150 }}>
+                <Field
+                  component={Checkbox}
+                  name={`weekly.selectedDays.${d}`}
+                  label={capitalize(d)}
+                />
+                </div>
                 <FieldArray name={`weekly.${d}`} component={MultiTimeRange} />
-              </Fragment>
+              </div>
             ))}
-          </Fragment>
-        )}
+        </div>
         <div className={styles.formSectionRow}>
           <DateTimeSelector name="end" label="Ends" />
         </div>
         <div className={styles.formSectionRow}>
-          <TimePeriodSelector name="maxSegment" label="Max segment"/>
+          <TimePeriodSelector name="maxSegment" label="Max segment" />
         </div>
       </Fragment>
     );
@@ -60,29 +77,31 @@ export default class ImmediateSection extends React.Component {
 const MultiTimeRange = ({ fields }) => {
   /* eslint-disable react/jsx-no-bind */
   return (
-    <Fragment>
+    <div className={styles.multiTimeRange}>
       {fields.map((field, index) => (
-        <Fragment key={field}>
+        <div key={field} className={styles.row}>
           <Field name={field} component={TimeRangePicker} />
           {(index > 0 || fields.length > 1) && (
-            <button type="button" onClick={() => fields.remove(index)}>
-              X
-            </button>
+            <IconButton onClick={() => fields.remove(index)}>
+              <ClearIcon />
+            </IconButton>
           )}
-        </Fragment>
+          {index === fields.length - 1 && (
+            <IconButton
+              type="button"
+              onClick={() =>
+                fields.push({
+                  start: '',
+                  end: ''
+                })
+              }
+            >
+              <AddIcon />
+            </IconButton>
+          )}
+        </div>
       ))}
-      <button
-        type="button"
-        onClick={() =>
-          fields.push({
-            start: '',
-            end: ''
-          })
-        }
-      >
-        +
-      </button>
-    </Fragment>
+    </div>
   );
 };
 
