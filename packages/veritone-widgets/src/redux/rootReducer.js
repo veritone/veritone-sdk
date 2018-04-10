@@ -15,8 +15,7 @@ import mediaDetailsReducer, {
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
-  auth: { reducer: authReducer, namespace: authNamespace },
-  libraries: { reducer: librariesReducer, namespace: librariesNamespace }
+  auth: { reducer: authReducer, namespace: authNamespace }
 } = modules;
 
 import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
@@ -29,7 +28,6 @@ export default function createReducer(asyncReducers) {
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
-    [librariesNamespace]: librariesReducer,
     player: playerReducer,
     operation: operationReducer,
     ...asyncReducers
