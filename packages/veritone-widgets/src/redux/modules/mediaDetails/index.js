@@ -1,4 +1,4 @@
-import { get, findLastIndex, findIndex, groupBy, forEach, map } from 'lodash';
+import { get, findLastIndex, findIndex, groupBy, forEach, map, values, uniqBy } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -17,6 +17,13 @@ export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
 export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
 export const ADD_ENGINE_RESULTS_REQUEST = 'ADD_ENGINE_RESULTS_REQUEST';
 export const TOGGLE_EXPANDED_MODE = 'TOGGLE_EXPANDED_MODE';
+export const REQUEST_LIBRARIES = 'REQUEST_LIBRARIES';
+export const REQUEST_LIBRARIES_SUCCESS = 'REQUEST_LIBRARIES_SUCCESS';
+export const REQUEST_LIBRARIES_FAILURE = 'REQUEST_LIBRARIES_FAILURE';
+export const REQUEST_ENTITIES = 'REQUEST_ENTITIES';
+export const REQUEST_ENTITIES_SUCCESS = 'REQUEST_ENTITIES_SUCCESS';
+export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
+
 
 export const namespace = 'mediaDetails';
 
@@ -29,7 +36,11 @@ const defaultMDPState = {
   selectedEngineId: null,
   editModeEnabled: false,
   loadingEngineResults: false,
-  expandedMode: false
+  expandedMode: false,
+  libraries: [],
+  fetchingLibraries: false,
+  entities: [],
+  fetchingEntities: false
 };
 
 const defaultState = {
@@ -272,6 +283,58 @@ export default createReducer(defaultState, {
         expandedMode: !state[widgetId].expandedMode
       }
     };
+  },
+  [REQUEST_LIBRARIES](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        fetchingLibraries: true
+      }
+    }
+  },
+  [REQUEST_LIBRARIES_SUCCESS](state, { payload, meta: { widgetId } }) {
+    let allLibraries = uniqBy(values(payload).concat(state[widgetId].libraries), 'id');
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        fetchingLibraries: false,
+        fetchLibrariesError: null,
+        libraries: [...allLibraries]
+      }
+    }
+  },
+  [REQUEST_LIBRARIES_FAILURE](state, { error, meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        fetchLibrariesError: error,
+        fetchingLibraries: false
+      }
+    }
+  },
+  [REQUEST_ENTITIES](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        fetchingLibraries: true
+      }
+    }
+  },
+  [REQUEST_ENTITIES_SUCCESS](state, { payload, meta: { widgetId } }) {
+    let allEntities = uniqBy(values(payload).concat(state[widgetId].entities), 'id');
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        fetchingLibraries: false,
+        fetchLibrariesError: null,
+        entities: [...allEntities]
+      }
+    }
   }
 });
 
@@ -295,6 +358,8 @@ export const infoPanelIsOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'infoPanelIsOpen']);
 export const expandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'expandedMode']);
+export const libraries =(state, widgetId) => get(local(state), [widgetId, 'libraries']);
+export const entities = (state, widgetId) => get(local(state), [widgetId, 'entities']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,

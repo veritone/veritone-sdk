@@ -73,13 +73,13 @@ class EntityInformation extends Component {
           />
           <div className={styles.selectedEntityInfo}>
             <div>
-              <span>{entity.entityName} </span>
+              <span>{entity.name} </span>
               <span>({count})</span>
             </div>
             <div>
               <i className="icon-library-app" />&nbsp;
               <span>
-                Library: <strong>{entity.library.name}</strong>
+                Library: <strong>{entity.libraryName}</strong>
               </span>
             </div>
           </div>

@@ -5,8 +5,8 @@ import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import { find, isEqual, pick, isObject, isEmpty } from 'lodash';
-import { shape, number, string, bool, arrayOf, func } from 'prop-types';
+import { find, isObject, isEmpty } from 'lodash';
+import { shape, number, string, bool, arrayOf, func, objectOf } from 'prop-types';
 import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -54,6 +54,15 @@ class FaceEngineOutput extends Component {
         )
       })
     ).isRequired,
+    entities: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        libraryId: string,
+        profileImageUrl: string,
+        jsondata: objectOf(string)
+      })
+    ),
     engines: arrayOf(
       shape({
         id: string,
@@ -91,15 +100,16 @@ class FaceEngineOutput extends Component {
   };
 
   componentWillMount() {
-    this.processFaces(this.props.data);
+    this.processFaces(this.props.data, this.props.libraries, this.props.entities);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      !isEqual(nextProps.data, this.props.data) ||
-      !isEqual(nextProps.libraries, this.props.libraries)
-    ) {
-      this.processFaces(nextProps.data);
+    if (nextProps.entities || nextProps.libraries || nextProps.data) {
+      this.processFaces(
+        nextProps.data || this.props.data, 
+        nextProps.libraries || this.props.libraries,
+        nextProps.entities || this.props.entities
+      );
     }
   }
 
@@ -123,7 +133,7 @@ class FaceEngineOutput extends Component {
     return secondSpots;
   };
 
-  processFaces = faceData => {
+  processFaces = (faceData, libraries, entities) => {
     let detectedFaceObjects = [];
     let recognizedEntityObjects = [];
     let recognizedEntityObjectMap = {};
@@ -140,25 +150,26 @@ class FaceEngineOutput extends Component {
     }, []);
 
     // Reduce library array to an array of entities to assign to face objects
-    let entities = this.props.libraries.reduce((accumulator, library) => {
-      return accumulator.concat(library.entities);
-    }, []);
+    // let entities = this.props.libraries.reduce((accumulator, library) => {
+    //   return accumulator.concat(library.entities);
+    // }, []);
 
     let secondMap = {};
     faceSeries.forEach(faceObj => {
-      faceObj.entity = { ...find(entities, { id: faceObj.object.entityId }) };
-      if (faceObj.entity && faceObj.entity.name) {
-        faceObj.entity.library = pick(
-          find(this.props.libraries, { id: faceObj.entity.libraryId }),
-          ['id', 'name']
-        );
+      let entity = find(entities, { id: faceObj.object.entityId });
+      if (entity && entity.name) {
+        let library = find(libraries, { id: entity.libraryId });
         let face = {
           entityId: faceObj.object.entityId,
-          libraryId: faceObj.entity.library.id,
-          libraryName: faceObj.entity.library.name,
-          fullName: faceObj.entity.name,
-          entity: faceObj.entity,
-          profileImage: faceObj.entity.profileImageUrl,
+          libraryId: library.id,
+          libraryName: library.name,
+          fullName: entity.name,
+          entity: {
+            ...entity,
+            libraryId: library.id,
+            libraryName: library.name
+          },
+          profileImage: entity.profileImageUrl,
           count: 1,
           timeSlots: [
             {
@@ -235,14 +246,14 @@ class FaceEngineOutput extends Component {
     let entitiesByLibrary = {};
     recognizedEntityObjects &&
       recognizedEntityObjects.forEach(currentFace => {
-        let library = currentFace.entity.library;
-        if (library && library.id && !entitiesByLibrary[library.id]) {
-          entitiesByLibrary[library.id] = {
-            library: library,
+        if (currentFace.libraryId && !entitiesByLibrary[currentFace.libraryId]) {
+          entitiesByLibrary[currentFace.libraryId] = {
+            libraryId: currentFace.libraryId,
+            libraryName: currentFace.libraryName,
             faces: [currentFace]
           };
-        } else if (library && library.id) {
-          entitiesByLibrary[library.id].faces.push(currentFace);
+        } else if (currentFace.libraryId) {
+          entitiesByLibrary[currentFace.libraryId].faces.push(currentFace);
         }
       });
 
@@ -366,8 +377,6 @@ class FaceEngineOutput extends Component {
                     <div>
                       {Object.keys(this.state.entitiesByLibrary).map(
                         (key, index) => {
-                          let library = this.state.entitiesByLibrary[key]
-                            .library;
                           return (
                             <div key={'faces-by-libary-' + key}>
                               <div className={styles.libraryName}>
@@ -378,7 +387,7 @@ class FaceEngineOutput extends Component {
                                   )}
                                 />
                                 <span>
-                                  Library: <strong>{library.name}</strong>
+                                  Library: <strong>{this.state.entitiesByLibrary[key].libraryName}</strong>
                                 </span>
                               </div>
                               <div className={styles.entityCountContainer}>

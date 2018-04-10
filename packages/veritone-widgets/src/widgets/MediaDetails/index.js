@@ -29,15 +29,12 @@ import {
   FaceEngineOutput,
   LogoDetectionEngineOutput
 } from 'veritone-react-common';
-import { modules } from 'veritone-redux-common';
 import cx from 'classnames';
 
 import styles from './styles.scss';
 
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
-
-const { libraries: { fetchLibraries, getLibraries } } = modules;
 
 @connect(
   (state, { _widgetId }) => ({
@@ -55,8 +52,9 @@ const { libraries: { fetchLibraries, getLibraries } } = modules;
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
+    libraries: mediaDetailsModule.libraries(state, _widgetId),
+    entities: mediaDetailsModule.entities(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime,
-    libraries: getLibraries(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -67,8 +65,7 @@ const { libraries: { fetchLibraries, getLibraries } } = modules;
     setEngineId: mediaDetailsModule.setEngineId,
     toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
-    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    fetchLibraries: fetchLibraries
+    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
   },
   null,
   { withRef: true }
@@ -154,23 +151,27 @@ class MediaDetailsWidget extends React.Component {
     expandedMode: bool,
     toggleExpandedMode: func,
     currentMediaPlayerTime: number,
-    fetchLibraries: func,
     libraries: arrayOf(
       shape({
         id: string,
         name: string,
-        entities: arrayOf(
-          shape({
-            id: string,
-            name: string,
-            programImageUrl: string,
-            libraryId: string,
-            jsondata: objectOf(string)
-          })
-        )
+      })
+    ),
+    entities: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        libraryId: string,
+        profileImageUrl: string,
+        jsondata: objectOf(string)
       })
     )
   };
+
+  static defaultProps = {
+    libraries: [],
+    entities: []
+  }
 
   static contextTypes = {
     store: object.isRequired // eslint-disable-line
@@ -186,7 +187,6 @@ class MediaDetailsWidget extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchLibraries();
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
   }
 
@@ -302,7 +302,8 @@ class MediaDetailsWidget extends React.Component {
       expandedMode,
       currentMediaPlayerTime,
       editModeEnabled,
-      libraries
+      libraries, 
+      entities
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -512,6 +513,7 @@ class MediaDetailsWidget extends React.Component {
                       <FaceEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
                         libraries={libraries}
+                        entities={entities}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}

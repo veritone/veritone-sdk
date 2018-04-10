@@ -1,5 +1,5 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { get } from 'lodash';
+import { get, uniq } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
@@ -10,6 +10,12 @@ import {
   UPDATE_TDO,
   SET_SELECTED_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
+  REQUEST_LIBRARIES,
+  REQUEST_LIBRARIES_SUCCESS,
+  REQUEST_LIBRARIES_FAILURE,
+  REQUEST_ENTITIES,
+  REQUEST_ENTITIES_SUCCESS,
+  REQUEST_ENTITIES_FAILURE,
   loadEngineCategoriesComplete,
   loadEngineResultsRequest,
   loadEngineResultsComplete,
@@ -18,7 +24,8 @@ import {
   selectEngineCategory,
   setEngineId,
   tdo,
-  engineResultRequestsByEngineId
+  engineResultRequestsByEngineId,
+  LOAD_ENGINE_RESULTS_COMPLETE
 } from '.';
 
 function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
@@ -359,6 +366,104 @@ function* watchLoadEngineResultsRequest() {
   });
 }
 
+function* fetchLibraries(widgetId, libraryIds) {
+  yield put({type: REQUEST_LIBRARIES, meta: { widgetId }});
+  let libraryQueries = libraryIds.map((id, index) => {
+    return `
+      library${index}: library(id:"${id}") {
+        id
+        name
+        description
+        coverImageUrl
+      }
+    `;
+  });
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: `query{${libraryQueries.join(' ')}}`,
+      token
+    });
+  } catch (error) {
+    yield put({type: REQUEST_LIBRARIES_FAILURE, error: "Error fetching libraries from server."});
+  }
+
+  if (response.errors) {
+    yield put({type: REQUEST_LIBRARIES_FAILURE, error: 'Error thrown by GraphQL while fetching libraries', meta: { widgetId } });
+  } else {
+    yield put({type: REQUEST_LIBRARIES_SUCCESS, payload: response.data, meta: { widgetId } });
+  }
+}
+
+function* fetchEntities(widgetId, entityIds) {
+  yield put({type: REQUEST_ENTITIES, meta: { widgetId }})
+  let entityQueries = entityIds.map((id, index) => {
+    return `
+      entity${index}: entity(id:"${id}") {
+        id
+        name
+        libraryId
+        profileImageUrl
+        jsondata
+      }
+    `;
+  });
+  
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: `query{${entityQueries.join(' ')}}`,
+      token
+    });
+  } catch (error) {
+    yield put({type: REQUEST_ENTITIES_FAILURE, error: "Error fetching entities from server."});
+  }
+
+  if (response.errors) {
+    yield put({type: REQUEST_ENTITIES_FAILURE, error: 'Error thrown by GraphQL while fetching entities', meta: { widgetId } });
+  } else {
+    yield put({type: REQUEST_ENTITIES_SUCCESS, payload: response.data, meta: { widgetId } });
+  }
+}
+
+function* watchLoadEngineResultsComplete() {
+  yield takeEvery(LOAD_ENGINE_RESULTS_COMPLETE, function*(action) {
+    let libraryIds = [], entityIds = [];
+    action.payload.forEach(jsonData => {
+      jsonData.jsondata.series.forEach(s => {
+        let entityId = get(s, 'object.entityId');
+        if (entityId) {
+          entityIds.push(entityId);
+        }
+        let libraryId = get(s, 'object.libraryId');
+        if (libraryId) {
+          libraryIds.push(libraryId);
+        }
+      })
+    });
+
+    if (libraryIds.length && entityIds.length) {
+      yield all([
+        call(fetchLibraries, action.meta.widgetId , uniq(libraryIds)),
+        call(fetchEntities, action.meta.widgetId , uniq(entityIds))
+      ]);
+    }
+  });
+}
+
 function* watchLoadTdoRequest() {
   yield takeEvery(LOAD_TDO, function*(action) {
     const { tdoId } = action.payload;
@@ -450,6 +555,7 @@ function* watchSelectEngineCategory() {
 export default function* root() {
   yield all([
     fork(watchLoadEngineResultsRequest),
+    fork(watchLoadEngineResultsComplete),
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
     fork(watchSetEngineId),

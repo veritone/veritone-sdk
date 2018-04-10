@@ -29,12 +29,3 @@ export const auth = {
   ...authConstants,
   authRootSaga
 };
-
-import librariesReducer, * as librariesModule from './libraries';
-import * as librariesConstants from './libraries/constants';
-
-export const libraries = {
-  reducer: librariesReducer,
-  ...librariesModule,
-  ...librariesConstants
-};
