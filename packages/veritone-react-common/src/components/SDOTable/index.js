@@ -7,6 +7,7 @@ import {
 } from 'components/DataTable';
 import { map, startCase, partial, omit } from 'lodash';
 import DotDotDot from 'react-dotdotdot'
+import { format } from 'date-fns';
 
 export default class SDOTable extends React.Component {
   static propTypes = {
@@ -18,15 +19,28 @@ export default class SDOTable extends React.Component {
   static defaultProps = {
     paginate: false
   }
-  
+
   getRowData = (i) => {
     return this.props.data[i];
   };
 
   renderCell = (data, dataType) => {
+    let formattedData;
+
+    switch (dataType) {
+      case 'dateTime':
+        formattedData = format(data, 'M/D/YYYY h:mm A');
+        break;
+      case 'geoPoint':
+        formattedData = `[${data}]`
+        break;
+      default:
+        formattedData = data;
+    }
+
     return (
       <DotDotDot clamp={2}>
-        {data}
+        {formattedData}
       </DotDotDot>
     )
   }
@@ -45,7 +59,7 @@ export default class SDOTable extends React.Component {
         />
       )
     });
-            
+
     return (
       <TableComp
         {...tableProps}

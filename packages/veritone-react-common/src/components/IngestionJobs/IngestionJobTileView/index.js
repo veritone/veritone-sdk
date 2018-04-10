@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import {
   arrayOf,
@@ -8,8 +8,10 @@ import {
 } from 'prop-types';
 
 import { Table, Column } from 'components/DataTable';
+// import MenuColumn from 'components/DataTable/MenuColumn';
 import StatusPill from 'components/StatusPill';
 import { format } from 'date-fns';
+import { map, find, get } from 'lodash';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
@@ -26,8 +28,32 @@ export default class SourceTileView extends React.Component {
     return this.props.jobs[i];
   }
 
-  renderLastIngestion = (date) => {
-    return format(date, 'M/D/YYYY h:mm A');
+  renderEnginesIcons = (taskTemplates) =>  {
+    const icons = map(taskTemplates.records, 'engine.category.iconClass');
+
+    return (
+      <Fragment>
+        {icons.map(icon => {
+          return icon ? <span key={icon} className={icon} /> : undefined
+        })}
+      </Fragment>
+    )
+  }
+
+  renderAdapter = (taskTemplates) =>  {
+    const ingestionTaskTemplate = getIngestionTaskTemplate(taskTemplates);
+
+    return ingestionTaskTemplate ? ingestionTaskTemplate.engine.name : '-';
+  }
+
+  renderIngestionType = (taskTemplates) => {
+    const ingestionTaskTemplate = getIngestionTaskTemplate(taskTemplates);
+
+    return ingestionTaskTemplate ? ingestionTaskTemplate.engine.category.name : '-';
+  }
+
+  renderLastIngestion = (mostRecentJob) => {
+    return format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A');
   }
 
   renderStatus = (isActive) => {
@@ -51,31 +77,39 @@ export default class SourceTileView extends React.Component {
           cellRenderer={this.renderStatus}
         />
         <Column
-          dataKey='engines'
+          dataKey='jobTemplates.records[0].taskTemplates'
           header='Engines'
-          cellRenderer={this.renderLastIngestion}
+          cellRenderer={this.renderEnginesIcons}
+          align="center"
         />
         <Column
-          dataKey='adapter'
+          dataKey='jobTemplates.records[0].taskTemplates'
           header='Adapter'
-          cellRenderer={this.renderUpdatedDate}
+          cellRenderer={this.renderAdapter}
         />
         <Column
-          dataKey='ingestionType'
+          dataKey='jobTemplates.records[0].taskTemplates'
           header='Ingestion Type'
-          cellRenderer={this.renderUpdatedDate}
+          cellRenderer={this.renderIngestionType}
+          align="center"
         />
         <Column
-          dataKey='modifiedDateTime'
+          dataKey='jobs.records[0]'
           header='Last Ingestion'
           cellRenderer={this.renderLastIngestion}
         />
         {/* <MenuColumn
           id="menu"
-          dataKey=''
+          dataKey='jobTemplates.records[0].taskTemplates'
           onSelectItem={this.props.onSelectMenuItem}
         /> */}
       </Table>
     );
   };
+}
+
+function getIngestionTaskTemplate(taskTemplates) {
+  return find(taskTemplates.records, (templateRecord) => (
+    get(templateRecord, 'engine.category.type.name') === 'Ingestion'
+  ));
 }
