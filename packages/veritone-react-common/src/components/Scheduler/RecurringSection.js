@@ -6,6 +6,7 @@ import { capitalize } from 'lodash';
 import IconButton from 'material-ui/IconButton';
 import ClearIcon from 'material-ui-icons/Clear';
 import AddIcon from 'material-ui-icons/Add';
+import TimeIcon from 'material-ui-icons/AccessTime';
 
 import Checkbox from '../formComponents/Checkbox';
 import TimeRangePicker from '../formComponents/TimeRangePicker';
@@ -32,16 +33,25 @@ export default class RecurringSection extends React.Component {
         <div className={styles.formSectionRow}>
           <TimePeriodSelector name="repeatEvery" label="Repeat every" />
         </div>
+
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="start" label="Starts" />
+          <DateTimeSelector name="start" label="Starts" showIcon />
         </div>
+
         {this.props.repeatEvery.period === 'day' && (
           <div className={styles.repeatContainer}>
-            <div className={styles.timeRangeContainer}>
+            <div
+              className={cx(
+                styles.timeRangeContainer,
+                styles.daySelectionContainer
+              )}
+            >
+              <TimeIcon className={styles.timeIcon}/>
               <FieldArray name="daily" component={MultiTimeRange} />
             </div>
           </div>
         )}
+
         <div className={styles.repeatContainer}>
           {this.props.repeatEvery.period === 'week' &&
             days.map(d => (
@@ -53,19 +63,21 @@ export default class RecurringSection extends React.Component {
                 )}
               >
                 <div style={{ width: 150 }}>
-                <Field
-                  component={Checkbox}
-                  name={`weekly.selectedDays.${d}`}
-                  label={capitalize(d)}
-                />
+                  <Field
+                    component={Checkbox}
+                    name={`weekly.selectedDays.${d}`}
+                    label={capitalize(d)}
+                  />
                 </div>
                 <FieldArray name={`weekly.${d}`} component={MultiTimeRange} />
               </div>
             ))}
         </div>
+
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="end" label="Ends" />
+          <DateTimeSelector name="end" label="Ends" showIcon />
         </div>
+
         <div className={styles.formSectionRow}>
           <TimePeriodSelector name="maxSegment" label="Max segment" />
         </div>
@@ -82,7 +94,10 @@ const MultiTimeRange = ({ fields }) => {
         <div key={field} className={styles.row}>
           <Field name={field} component={TimeRangePicker} />
           {(index > 0 || fields.length > 1) && (
-            <IconButton onClick={() => fields.remove(index)}>
+            <IconButton
+              onClick={() => fields.remove(index)}
+              className={styles.iconButton}
+            >
               <ClearIcon />
             </IconButton>
           )}
@@ -95,6 +110,7 @@ const MultiTimeRange = ({ fields }) => {
                   end: ''
                 })
               }
+              className={styles.iconButton}
             >
               <AddIcon />
             </IconButton>

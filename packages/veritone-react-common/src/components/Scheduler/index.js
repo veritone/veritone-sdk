@@ -132,7 +132,6 @@ export default class Scheduler extends React.Component {
         <div className={styles.activeSectionContainer}>
           <ActiveSectionComponent />
         </div>
-        <button type="submit">submit</button>
       </form>
     );
   }

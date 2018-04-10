@@ -1,7 +1,21 @@
-.dateTimeTZ {
-  width: 40px;
-  input {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
-    padding: 8px 0px;
+@import 'src/styles/modules/variables';
+
+.container {
+  display: flex;
+  align-items: flex-end;
+
+  .dateTimeTZ {
+    width: 40px;
+
+    input {
+      color: $light-black;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+      padding: 8px 0;
+    }
+  }
+
+  .todayIcon {
+    color: $light-black;
+    margin-right: 25px;
   }
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
 import Today from 'material-ui-icons/Today';
 import dateFns from 'date-fns';
 import TextField from 'material-ui/TextField';
@@ -34,12 +33,8 @@ export default class DateTimePicker extends React.Component {
 
   render() {
     return (
-      <div>
-        {this.props.showIcon && (
-          <IconButton color="inherit">
-            <Today />
-          </IconButton>
-        )}
+      <div className={styles.container}>
+        {this.props.showIcon && <Today className={styles.todayIcon}/>}
         <DateSelector
           min={this.props.min}
           max={this.props.max}

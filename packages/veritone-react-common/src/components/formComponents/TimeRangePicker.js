@@ -45,7 +45,16 @@ export default class TimeRangePicker extends React.Component {
           value={this.props.input.value.end}
           onChange={this.handleChangeEnd}
         />
-        <span className={styles.zone}>{this.getTimeZone()}</span>
+
+          <TextField
+            className={styles.dateTimeTZ}
+            value={this.getTimeZone()}
+            InputProps={{
+              disableUnderline: true
+            }}
+            disabled
+          />
+
       </div>
     );
   }

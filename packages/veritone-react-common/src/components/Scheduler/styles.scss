@@ -18,23 +18,38 @@ $label-width: 150px;
   .formSectionRow {
     padding-top: 15px;
   }
-
-  .timeRangeContainer {
-    background-color: $grey-2;
-    padding: 0 10px;
-  }
 }
 
 .repeatContainer {
   display: flex;
   flex-direction: column;
   margin-left: $label-width;
+  margin-top: 30px;
   width: 550px;
 
+  .timeRangeContainer {
+    background-color: $grey-2;
+    padding: 0 10px;
+  }
+
   .weekSelectionContainer {
-    margin-top: 10px;
     display: flex;
     align-items: flex-start;
+
+    &:not(:first-child) {
+      margin-top: 10px;
+    }
+  }
+
+  .daySelectionContainer {
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+
+    .timeIcon {
+      color: $light-black;
+      margin-right: 75px;
+    }
   }
 
   .checkboxGroup {
@@ -51,6 +66,10 @@ $label-width: 150px;
     width: $label-width;
     display: flex;
     align-items: flex-end;
+  }
+
+  .hasIconOffset {
+    width: $label-width - 50px;
   }
 
   .input {
@@ -81,7 +100,10 @@ $label-width: 150px;
 
   .row {
     display: flex;
-    //align-items: flex-start;
     align-items: center;
+  }
+
+  .iconButton {
+    margin-left: -10px;
   }
 }

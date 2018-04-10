@@ -9,10 +9,10 @@ export default class ContinuousSection extends React.Component {
     return (
       <Fragment>
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="start" label="Starts" />
+          <DateTimeSelector name="start" label="Starts" showIcon />
         </div>
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="end" label="Ends" />
+          <DateTimeSelector name="end" label="Ends" showIcon />
         </div>
         <div className={styles.formSectionRow}>
           <TimePeriodSelector name="maxSegment" label="Max segment" />
