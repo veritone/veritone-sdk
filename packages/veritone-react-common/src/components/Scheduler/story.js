@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { Provider, connect } from 'react-redux';
-import { reducer as formReducer } from 'redux-form';
+import { reducer as formReducer, submit } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
 
 import { createLogger } from 'redux-logger';
@@ -23,14 +23,43 @@ const store = createStore(
   )
 );
 
-@connect(state => ({
-  form: state.form.scheduler
-}))
+@connect(
+  state => ({
+    form: state.form.scheduler
+  }),
+  { submit }
+)
 class DisplayState extends React.Component {
   /* eslint-disable react/prop-types */
   /* eslint-disable react/jsx-no-bind */
+  submit = () => {
+    this.props.submit('scheduler');
+  };
+
   render() {
-    return <pre>{JSON.stringify(this.props.form.values, null, '\t')}</pre>;
+    return (
+      <div>
+        <button type="button" onClick={this.submit}>
+          Submit
+        </button>
+        <div style={{ display: 'flex' }}>
+          <div>
+            <h3>Raw form values:</h3>
+            <pre>{JSON.stringify(this.props.form.values, null, '\t')}</pre>
+          </div>
+          <div>
+            <h3>relevant values only (via Scheduler.prepareResultData):</h3>
+            <pre>
+              {JSON.stringify(
+                Scheduler.prepareResultData(this.props.form.values),
+                null,
+                '\t'
+              )}
+            </pre>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
@@ -38,11 +67,10 @@ storiesOf('Scheduler', module).add('Base', () => (
   <Provider store={store}>
     <div>
       <Scheduler
-        form="scheduler"
         initialValues={{
           scheduleType: 'recurring'
         }}
-        onSubmit={(result) => console.log(result)}
+        onSubmit={result => console.log(result)}
       />
       <DisplayState />
     </div>

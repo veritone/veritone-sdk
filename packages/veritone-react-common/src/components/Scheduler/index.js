@@ -1,8 +1,9 @@
 import React from 'react';
+import { compose } from 'redux';
 import { oneOf, func } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
-import { pick, get, pickBy } from 'lodash';
-import { withProps } from 'recompose';
+import { pick, get, pickBy, mapValues } from 'lodash';
+import { withProps, hoistStatics } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 import { subDays } from 'date-fns';
@@ -17,37 +18,45 @@ import ContinuousSection from './ContinuousSection';
 
 const initDate = new Date();
 
-@withMuiThemeProvider
-@withProps(props => ({
-  initialValues: {
-    // This provides defaults to the form. Shallow merged with
-    // props.initialValues to allow overriding.
-    scheduleType: 'recurring',
-    start: subDays(initDate, 3),
-    end: initDate,
-    maxSegment: {
-      number: '5',
-      period: 'week'
-    },
-    repeatEvery: {
-      number: '1',
-      period: 'day'
-    },
-    daily: [
-      {
-        start: '00:00',
-        end: '01:00'
+const withDecorators = compose(
+  ...[
+    withMuiThemeProvider,
+    withProps(props => ({
+      initialValues: {
+        // This provides defaults to the form. Shallow merged with
+        // props.initialValues to allow overriding.
+        scheduleType: 'recurring',
+        start: subDays(initDate, 3),
+        end: initDate,
+        maxSegment: {
+          number: '5',
+          period: 'week'
+        },
+        repeatEvery: {
+          number: '1',
+          period: 'day'
+        },
+        daily: [
+          {
+            start: '00:00',
+            end: '01:00'
+          }
+        ],
+        weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
+          (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
+          {}
+        ),
+        ...props.initialValues
       }
-    ],
-    weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
-      (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
-      {}
-    ),
-    ...props.initialValues
-  }
-}))
-@reduxForm()
-@formValues('scheduleType')
+    })),
+    reduxForm({
+      form: 'scheduler'
+    }),
+    formValues('scheduleType')
+  ].map(hoistStatics)
+);
+
+@withDecorators
 export default class Scheduler extends React.Component {
   static propTypes = {
     scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
@@ -56,12 +65,12 @@ export default class Scheduler extends React.Component {
     onSubmit: func // user submit callback
   };
 
-  prepareData = result => {
-    const recurringPeriod = get(result, 'repeatEvery.period');
+  static prepareResultData(formResult) {
+    const recurringPeriod = get(formResult, 'repeatEvery.period');
     const selectedDays = Object.keys(
       pickBy(
-        get(result, 'weekly.selectedDays', {}),
-        (day, included) => !!included
+        get(formResult, 'weekly.selectedDays', {}),
+        (included) => !!included
       )
     );
 
@@ -83,13 +92,16 @@ export default class Scheduler extends React.Component {
       continuous: ['scheduleType', 'start', 'end', 'maxSegment'],
       immediate: ['scheduleType', 'maxSegment'],
       ondemand: ['scheduleType']
-    }[result.scheduleType];
+    }[formResult.scheduleType];
 
-    return pick(result, wantedFields);
-  };
+    const result = pick(formResult, wantedFields);
+    return result.scheduleType === 'recurring'
+      ? filterRecurringPeriods(result, recurringPeriod)
+      : result;
+  }
 
   handleSubmit = result => {
-    this.props.onSubmit(this.prepareData(result));
+    return this.props.onSubmit(result);
   };
 
   render() {
@@ -135,4 +147,34 @@ export default class Scheduler extends React.Component {
       </form>
     );
   }
+}
+
+function filterRecurringPeriods(result, recurringPeriod) {
+  if (recurringPeriod === 'hour') {
+    return result;
+  }
+
+  if (recurringPeriod === 'day') {
+    // filter out incomplete ranges that don't have both start and end
+    return {
+      ...result,
+      daily: result.daily.filter(day => day.start && day.end)
+    };
+  }
+
+  if (recurringPeriod === 'week') {
+    return {
+      ...result,
+      weekly: pickBy(
+        // filter out incomplete ranges that don't have both start and end
+        mapValues(result.weekly, week =>
+          week.filter(day => day.start && day.end)
+        ),
+        // remove days with no complete ranges
+        schedules => !!schedules.length
+      )
+    };
+  }
+
+  return result;
 }
