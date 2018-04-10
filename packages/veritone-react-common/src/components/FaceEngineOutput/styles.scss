@@ -38,8 +38,7 @@
 
 .faceTabBody {
   padding-top: 20px;
-  max-height: calc(100% - 48px);
-  overflow: scroll;
+  overflow-y: auto;
   border-top: 1px solid $grey-4;
 }
 
