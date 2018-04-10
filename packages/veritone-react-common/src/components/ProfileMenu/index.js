@@ -52,11 +52,11 @@ export default class ProfileMenu extends React.Component {
     return (
       <div>
         <IconButton className={this.props.className} onClick={this.openMenu}>
-          <AccountIcon color="white" />
+          <AccountIcon nativeColor="white" />
         </IconButton>
         <Menu
           open={this.state.open}
-          onRequestClose={this.closeMenu}
+          onClose={this.closeMenu}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorEl={this.state.anchorEl}
