@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { string, func, bool, number, shape, arrayOf } from 'prop-types';
+import { string, func, bool, number, shape, arrayOf, objectOf } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { boolean, number as knobNumber, select } from '@storybook/addon-knobs';
+import { boolean, number as knobNumber } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { isEqual } from 'lodash';
 
@@ -17,7 +17,6 @@ class FaceEngineOutputStory extends Component {
     viewMode: string,
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
-    className: string,
     faceEngineOutput: arrayOf(
       shape({
         series: arrayOf(
@@ -36,25 +35,31 @@ class FaceEngineOutputStory extends Component {
       shape({
         id: string,
         name: string,
-        entities: arrayOf(
-          shape({
-            entityId: string,
-            entityName: string,
-            libraryId: string,
-            profileImageUrl: string,
-            jsondata: shape({
-              description: string
-            })
-          })
-        )
       })
-    ).isRequired
+    ).isRequired,
+    entities: arrayOf(
+      shape({
+        id: string,
+        name: string,
+        libraryId: string,
+        profileImageUrl: string,
+        jsondata: objectOf(string)
+      })
+    ),
+    selectedEngineId: string
   };
 
   state = {
     faceEngineOutput: this.props.faceEngineOutput,
     modifiedFaces: [],
-    entitySearchResults: []
+    entitySearchResults: [],
+    engines: [
+      {
+        id: "f44aa80e-4650-c55c-58e7-49c965019790",
+        name: "Temporal"
+      }
+    ],
+    selectedEngineId: "f44aa80e-4650-c55c-58e7-49c965019790"
   };
 
   handleRemoveFaceDetection = face => {
@@ -119,13 +124,10 @@ class FaceEngineOutputStory extends Component {
 
   searchForEntities = searchQuery => {
     if (searchQuery && searchQuery.length) {
-      let entities = this.props.libraries.reduce((accumulator, library) => {
-        return [...accumulator, ...library.entities];
-      }, []);
       let searchRegex = new RegExp(searchQuery, 'gi');
       this.setState({
-        entitySearchResults: entities.filter(entity => {
-          return entity.entityName.match(searchRegex);
+        entitySearchResults: this.props.entities.filter(entity => {
+          return entity.name.match(searchRegex);
         })
       });
     } else {
@@ -141,22 +143,27 @@ class FaceEngineOutputStory extends Component {
       enableEditMode,
       mediaPlayerPosition,
       onAddNewEntity,
-      viewMode,
       onFaceOccurrenceClicked,
-      className
+      faceEngineOutput
     } = this.props;
 
     return (
       <FaceEngineOutput
-        data={this.state.faceEngineOutput}
+        data={faceEngineOutput}
+        className={styles.outputViewRoot}
         libraries={libraries}
+        entities={entities}
+        currentMediaPlayerTime={mediaPlayerPosition}
+        engines={this.state.engines}
+        onEngineChange={this.handleSelectEngine}
+        selectedEngineId={this.state.selectedEngineId}
+        onExpandClicked={this.toggleExpandedMode}
+        onFaceOccurrenceClicked={
+          onFaceOccurrenceClicked
+        }
         enableEditMode={enableEditMode}
         entitySearchResults={this.state.entitySearchResults}
-        className={className}
-        mediaPlayerPosition={mediaPlayerPosition}
         onAddNewEntity={onAddNewEntity}
-        viewMode={viewMode}
-        onFaceOccurrenceClicked={onFaceOccurrenceClicked}
         onRemoveFaceDetection={this.handleRemoveFaceDetection}
         onEditFaceDetection={this.handleUpdateFace}
         onSearchForEntities={this.searchForEntities}
@@ -171,7 +178,6 @@ storiesOf('FaceEngineOutput', module).add('Base', () => {
       faceEngineOutput={faceObjects}
       libraries={libraries}
       enableEditMode={boolean('enableEditMode', false)}
-      className={styles.outputViewRoot}
       mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
         range: true,
         min: 0,
@@ -179,15 +185,6 @@ storiesOf('FaceEngineOutput', module).add('Base', () => {
         step: 1000
       })}
       onAddNewEntity={action('Pop the add new entity modal')}
-      viewMode={select(
-        'viewMode',
-        {
-          summary: 'Summary',
-          byFrame: 'by Frame',
-          byScene: 'by Scene'
-        },
-        'summary'
-      )}
       onFaceOccurrenceClicked={action('Set the media player position')}
       onRemoveFaceDetection={action('Remove face detection')}
     />
@@ -207,20 +204,6 @@ let faceObjects = [
             {
               x: 0.5,
               y: 0.2
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 1000,
-        stopTimeMs: 3000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.1,
-              y: 0.4
             }
           ]
         }
@@ -252,7 +235,7 @@ let faceObjects = [
           libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           boundingPoly: [
             {
-              x: 0.1,
+              x: 0.4,
               y: 0.2
             }
           ],
@@ -265,26 +248,12 @@ let faceObjects = [
         object: {
           type: 'face',
           uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.2,
-              y: 0.6
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 2000,
-        stopTimeMs: 3000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
           entityId: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
           libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           boundingPoly: [
             {
-              x: 0.1,
-              y: 0.2
+              x: 0.2,
+              y: 0.5
             }
           ],
           confidence: 0.86
@@ -300,8 +269,8 @@ let faceObjects = [
           libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
           boundingPoly: [
             {
-              x: 0.1,
-              y: 0.2
+              x: 0.3,
+              y: 0.4
             }
           ],
           confidence: 0.9
@@ -326,300 +295,6 @@ let faceObjects = [
         }
       },
       {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
-        startTimeMs: 4000,
-        stopTimeMs: 6000,
-        object: {
-          type: 'face',
-          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-          boundingPoly: [
-            {
-              x: 0.4,
-              y: 0.3
-            }
-          ]
-        }
-      },
-      {
         startTimeMs: 5000,
         stopTimeMs: 6000,
         object: {
@@ -629,7 +304,7 @@ let faceObjects = [
           libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
           boundingPoly: [
             {
-              x: 0.1,
+              x: 0.5,
               y: 0.2
             }
           ],
@@ -640,63 +315,62 @@ let faceObjects = [
   }
 ];
 
+let entities = [
+  {
+    id: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
+    name: 'Paul McCartney',
+    libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+    profileImageUrl:
+      'https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg',
+    jsondata: {
+      name: 'Paul McCartney',
+      middleName: 'Bob',
+      age: 75,
+      gender: 'Male',
+      description:
+        'A member of the beatles. I am typing this to test a long string that will be used in a description for this person or not.'
+    }
+  },
+  {
+    id: '1945a3ba-f0a3-411e-8419-78e31c73150a',
+    name: 'Ringo Starr',
+    libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+    profileImageUrl: null,
+    jsondata: {}
+  },
+  {
+    id: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
+    name: 'George Harrison',
+    libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+    profileImageUrl:
+      'https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host',
+    jsondata: {
+      description: ''
+    }
+  },
+  {
+    id: '13595602-3a7f-48d3-bfde-2d029af479f6',
+    name: 'Gomez Addams',
+    libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+    profileImage: null,
+    jsondata: {}
+  },
+  {
+    id: 'c1666e9f-9dc0-40f9-aece-0ec1bfeae29a',
+    name: 'James Williams',
+    libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+    profileImage: null,
+    jsondata: {}
+  }
+];
+
 let libraries = [
   {
     id: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-    name: 'Beatles',
-    entities: [
-      {
-        entityId: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
-        entityName: 'Paul McCartney',
-        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-        profileImageUrl:
-          'https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg',
-        jsondata: {
-          name: 'Paul McCartney',
-          middleName: 'Bob',
-          age: 75,
-          gender: 'Male',
-          description:
-            'A member of the beatles. I am typing this to test a long string that will be used in a description for this person or not.'
-        }
-      },
-      {
-        entityId: '1945a3ba-f0a3-411e-8419-78e31c73150a',
-        entityName: 'Ringo Starr',
-        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-        profileImageUrl: null,
-        jsondata: {}
-      },
-      {
-        entityId: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
-        entityName: 'George Harrison',
-        libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-        profileImageUrl:
-          'https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host',
-        jsondata: {
-          description: ''
-        }
-      }
-    ]
+    name: 'Beatles'
   },
   {
     id: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-    name: 'Addams Family',
-    entities: [
-      {
-        entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
-        entityName: 'Gomez Addams',
-        libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-        profileImage: null,
-        jsondata: {}
-      },
-      {
-        entityId: 'c1666e9f-9dc0-40f9-aece-0ec1bfeae29a',
-        entityName: 'James Williams',
-        libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-        profileImage: null,
-        jsondata: {}
-      }
-    ]
+    name: 'Addams Family'
   }
 ];

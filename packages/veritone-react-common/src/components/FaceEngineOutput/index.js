@@ -106,9 +106,7 @@ class FaceEngineOutput extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.entities || nextProps.libraries || nextProps.data) {
       this.processFaces(
-        nextProps.data || this.props.data, 
-        nextProps.libraries || this.props.libraries,
-        nextProps.entities || this.props.entities
+        nextProps.data || this.props.data
       );
     }
   }
@@ -133,7 +131,7 @@ class FaceEngineOutput extends Component {
     return secondSpots;
   };
 
-  processFaces = (faceData, libraries, entities) => {
+  processFaces = (faceData) => {
     let detectedFaceObjects = [];
     let recognizedEntityObjects = [];
     let recognizedEntityObjectMap = {};
@@ -156,9 +154,9 @@ class FaceEngineOutput extends Component {
 
     let secondMap = {};
     faceSeries.forEach(faceObj => {
-      let entity = find(entities, { id: faceObj.object.entityId });
-      if (entity && entity.name) {
-        let library = find(libraries, { id: entity.libraryId });
+      let entity = find(this.props.entities, { id: faceObj.object.entityId });
+      if (entity && entity.name && this.props.libraries.length) {
+        let library = find(this.props.libraries, { id: entity.libraryId });
         let face = {
           entityId: faceObj.object.entityId,
           libraryId: library.id,
@@ -227,7 +225,7 @@ class FaceEngineOutput extends Component {
 
             let match = {
               confidence: faceObj.object.confidence,
-              entityId: faceObj.entityId
+              entityId: faceObj.object.entityId
             };
 
             secondMap[second][matchNamespace].entities.push(match);

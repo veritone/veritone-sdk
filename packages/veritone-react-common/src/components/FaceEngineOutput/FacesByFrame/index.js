@@ -31,30 +31,30 @@ class FacesByFrame extends Component {
         })
       )
     ),
-    mediaPlayerPosition: number,
+    currentMediaPlayerTime: number,
     onSelectEntity: func
   };
   render() {
     let {
       recognizedEntityObjectMap,
       framesBySeconds,
-      mediaPlayerPosition,
+      currentMediaPlayerTime,
       onSelectEntity
     } = this.props;
 
     return (
       <div>
-        {framesBySeconds[mediaPlayerPosition - mediaPlayerPosition % 1000] ? (
+        {framesBySeconds[currentMediaPlayerTime - currentMediaPlayerTime % 1000] ? (
           <div>
             {Object.keys(
-              framesBySeconds[mediaPlayerPosition - mediaPlayerPosition % 1000]
+              framesBySeconds[currentMediaPlayerTime - currentMediaPlayerTime % 1000]
             ).map((k, i) => {
               return (
                 <FaceFrameContainer
                   key={'frame-container-' + k}
                   faceFrame={
                     framesBySeconds[
-                      mediaPlayerPosition - mediaPlayerPosition % 1000
+                      currentMediaPlayerTime - currentMediaPlayerTime % 1000
                     ][k]
                   }
                   recognizedEntityObjectMap={recognizedEntityObjectMap}
