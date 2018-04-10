@@ -6,9 +6,9 @@ class Scheduler extends React.Component {
   static propTypes = {};
 
   componentDidMount() {}
- 
+
   render() {
-    return <LibScheduler {...this.props} />
+    return <LibScheduler {...this.props} />;
   }
 }
 

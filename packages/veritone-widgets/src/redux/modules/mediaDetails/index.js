@@ -1,4 +1,13 @@
-import { get, findLastIndex, findIndex, groupBy, forEach, map, values, uniqBy } from 'lodash';
+import {
+  get,
+  findLastIndex,
+  findIndex,
+  groupBy,
+  forEach,
+  map,
+  values,
+  uniqBy
+} from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -23,7 +32,6 @@ export const REQUEST_LIBRARIES_FAILURE = 'REQUEST_LIBRARIES_FAILURE';
 export const REQUEST_ENTITIES = 'REQUEST_ENTITIES';
 export const REQUEST_ENTITIES_SUCCESS = 'REQUEST_ENTITIES_SUCCESS';
 export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
-
 
 export const namespace = 'mediaDetails';
 
@@ -193,7 +201,7 @@ export default createReducer(defaultState, {
         success: null,
         error: null,
         warning: null,
-        tdo: null,
+        tdo: null
       }
     };
   },
@@ -291,10 +299,13 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         fetchingLibraries: true
       }
-    }
+    };
   },
   [REQUEST_LIBRARIES_SUCCESS](state, { payload, meta: { widgetId } }) {
-    let allLibraries = uniqBy(values(payload).concat(state[widgetId].libraries), 'id');
+    let allLibraries = uniqBy(
+      values(payload).concat(state[widgetId].libraries),
+      'id'
+    );
     return {
       ...state,
       [widgetId]: {
@@ -303,7 +314,7 @@ export default createReducer(defaultState, {
         fetchLibrariesError: null,
         libraries: [...allLibraries]
       }
-    }
+    };
   },
   [REQUEST_LIBRARIES_FAILURE](state, { error, meta: { widgetId } }) {
     return {
@@ -313,7 +324,7 @@ export default createReducer(defaultState, {
         fetchLibrariesError: error,
         fetchingLibraries: false
       }
-    }
+    };
   },
   [REQUEST_ENTITIES](state, { meta: { widgetId } }) {
     return {
@@ -322,10 +333,13 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         fetchingLibraries: true
       }
-    }
+    };
   },
   [REQUEST_ENTITIES_SUCCESS](state, { payload, meta: { widgetId } }) {
-    let allEntities = uniqBy(values(payload).concat(state[widgetId].entities), 'id');
+    let allEntities = uniqBy(
+      values(payload).concat(state[widgetId].entities),
+      'id'
+    );
     return {
       ...state,
       [widgetId]: {
@@ -334,7 +348,7 @@ export default createReducer(defaultState, {
         fetchLibrariesError: null,
         entities: [...allEntities]
       }
-    }
+    };
   }
 });
 
@@ -358,8 +372,10 @@ export const infoPanelIsOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'infoPanelIsOpen']);
 export const expandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'expandedMode']);
-export const libraries =(state, widgetId) => get(local(state), [widgetId, 'libraries']);
-export const entities = (state, widgetId) => get(local(state), [widgetId, 'entities']);
+export const libraries = (state, widgetId) =>
+  get(local(state), [widgetId, 'libraries']);
+export const entities = (state, widgetId) =>
+  get(local(state), [widgetId, 'entities']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,

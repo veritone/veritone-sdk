@@ -15,7 +15,11 @@ storiesOf('Image', module)
         Width: {width}
         Height: {height}
         <hr />
-        <Image src="http://placekitten.com/g/400/300" width={width} height={height} />
+        <Image
+          src="http://placekitten.com/g/400/300"
+          width={width}
+          height={height}
+        />
         <Image
           src="http://placekitten.com/g/400/300"
           label="Change"
@@ -32,8 +36,8 @@ storiesOf('Image', module)
       <Image
         src="http://placekitten.com/g/400/300"
         label="Change Image"
-          width={300}
-          height={200}
+        width={300}
+        height={200}
       />
     </div>
   ))

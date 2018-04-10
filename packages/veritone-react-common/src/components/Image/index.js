@@ -4,7 +4,15 @@ import { string, number, func, bool } from 'prop-types';
 
 import styles from './styles.scss';
 
-const Image = ({ src, height = 100, width = 100, type = 'cover', border, label, onClick }) => {
+const Image = ({
+  src,
+  height = 100,
+  width = 100,
+  type = 'cover',
+  border,
+  label,
+  onClick
+}) => {
   return (
     <div
       style={{
@@ -14,7 +22,9 @@ const Image = ({ src, height = 100, width = 100, type = 'cover', border, label, 
         cursor: onClick ? 'pointer' : 'initial',
         border: border ? `1px solid #E4E4E4` : `none`
       }}
-      className={ type === 'cover' ? styles.containerCover : styles.containerContain }
+      className={
+        type === 'cover' ? styles.containerCover : styles.containerContain
+      }
       onClick={onClick}
     >
       {label && (

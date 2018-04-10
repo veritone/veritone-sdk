@@ -10,5 +10,6 @@ function updateSchedule(sched) {
 
 let schedule = {};
 
-storiesOf('Scheduler', module)
-  .add('Empty Scheduler', () => <Scheduler schedule={schedule} updateSchedule={updateSchedule}/>);
+storiesOf('Scheduler', module).add('Empty Scheduler', () => (
+  <Scheduler schedule={schedule} updateSchedule={updateSchedule} />
+));

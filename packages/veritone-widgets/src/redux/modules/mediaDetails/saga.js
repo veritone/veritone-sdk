@@ -139,7 +139,8 @@ function* loadTdoSaga(widgetId, tdoId) {
       }
       job.tasks.records
         .filter(
-          task => get(task, 'engine.category.iconClass', false) &&
+          task =>
+            get(task, 'engine.category.iconClass', false) &&
             !unsupportedResultCategories.some(
               categoryType => categoryType === task.engine.category.categoryType
             )
@@ -367,7 +368,7 @@ function* watchLoadEngineResultsRequest() {
 }
 
 function* fetchLibraries(widgetId, libraryIds) {
-  yield put({type: REQUEST_LIBRARIES, meta: { widgetId }});
+  yield put({ type: REQUEST_LIBRARIES, meta: { widgetId } });
   let libraryQueries = libraryIds.map((id, index) => {
     return `
       library${index}: library(id:"${id}") {
@@ -392,18 +393,29 @@ function* fetchLibraries(widgetId, libraryIds) {
       token
     });
   } catch (error) {
-    yield put({type: REQUEST_LIBRARIES_FAILURE, error: "Error fetching libraries from server."});
+    yield put({
+      type: REQUEST_LIBRARIES_FAILURE,
+      error: 'Error fetching libraries from server.'
+    });
   }
 
   if (response.errors) {
-    yield put({type: REQUEST_LIBRARIES_FAILURE, error: 'Error thrown by GraphQL while fetching libraries', meta: { widgetId } });
+    yield put({
+      type: REQUEST_LIBRARIES_FAILURE,
+      error: 'Error thrown by GraphQL while fetching libraries',
+      meta: { widgetId }
+    });
   } else {
-    yield put({type: REQUEST_LIBRARIES_SUCCESS, payload: response.data, meta: { widgetId } });
+    yield put({
+      type: REQUEST_LIBRARIES_SUCCESS,
+      payload: response.data,
+      meta: { widgetId }
+    });
   }
 }
 
 function* fetchEntities(widgetId, entityIds) {
-  yield put({type: REQUEST_ENTITIES, meta: { widgetId }})
+  yield put({ type: REQUEST_ENTITIES, meta: { widgetId } });
   let entityQueries = entityIds.map((id, index) => {
     return `
       entity${index}: entity(id:"${id}") {
@@ -415,7 +427,7 @@ function* fetchEntities(widgetId, entityIds) {
       }
     `;
   });
-  
+
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
@@ -429,19 +441,31 @@ function* fetchEntities(widgetId, entityIds) {
       token
     });
   } catch (error) {
-    yield put({type: REQUEST_ENTITIES_FAILURE, error: "Error fetching entities from server."});
+    yield put({
+      type: REQUEST_ENTITIES_FAILURE,
+      error: 'Error fetching entities from server.'
+    });
   }
 
   if (response.errors) {
-    yield put({type: REQUEST_ENTITIES_FAILURE, error: 'Error thrown by GraphQL while fetching entities', meta: { widgetId } });
+    yield put({
+      type: REQUEST_ENTITIES_FAILURE,
+      error: 'Error thrown by GraphQL while fetching entities',
+      meta: { widgetId }
+    });
   } else {
-    yield put({type: REQUEST_ENTITIES_SUCCESS, payload: response.data, meta: { widgetId } });
+    yield put({
+      type: REQUEST_ENTITIES_SUCCESS,
+      payload: response.data,
+      meta: { widgetId }
+    });
   }
 }
 
 function* watchLoadEngineResultsComplete() {
   yield takeEvery(LOAD_ENGINE_RESULTS_COMPLETE, function*(action) {
-    let libraryIds = [], entityIds = [];
+    let libraryIds = [],
+      entityIds = [];
     action.payload.forEach(jsonData => {
       jsonData.jsondata.series.forEach(s => {
         let entityId = get(s, 'object.entityId');
@@ -452,13 +476,13 @@ function* watchLoadEngineResultsComplete() {
         if (libraryId) {
           libraryIds.push(libraryId);
         }
-      })
+      });
     });
 
     if (libraryIds.length && entityIds.length) {
       yield all([
-        call(fetchLibraries, action.meta.widgetId , uniq(libraryIds)),
-        call(fetchEntities, action.meta.widgetId , uniq(entityIds))
+        call(fetchLibraries, action.meta.widgetId, uniq(libraryIds)),
+        call(fetchEntities, action.meta.widgetId, uniq(entityIds))
       ]);
     }
   });

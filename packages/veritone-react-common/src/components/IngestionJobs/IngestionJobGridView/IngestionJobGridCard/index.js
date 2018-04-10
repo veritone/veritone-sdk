@@ -1,19 +1,11 @@
 import React from 'react';
 
-import {
-  string,
-  bool
-} from 'prop-types';
-import {
-  Checkbox
-} from 'components/formComponents';
+import { string, bool } from 'prop-types';
+import { Checkbox } from 'components/formComponents';
 
 import StatusPill from 'components/StatusPill';
 
 import styles from './styles.scss';
-
-
-
 
 export default class IngestionJobGridCard extends React.Component {
   static propTypes = {
@@ -26,18 +18,16 @@ export default class IngestionJobGridCard extends React.Component {
     thumbnail: string
   };
 
-  static defaultProps = {
-
-  };
+  static defaultProps = {};
 
   state = {
     checked: this.props.checkedAll || false,
-    statusPillStyle: {backgroundColor: '#2196F3', color: '#FFFFFF'}
+    statusPillStyle: { backgroundColor: '#2196F3', color: '#FFFFFF' }
   };
 
   componentWillMount() {
     this.handleStatusPill();
-  };
+  }
 
   handleCheckboxChange = () => {
     this.setState({
@@ -52,23 +42,23 @@ export default class IngestionJobGridCard extends React.Component {
       statusPillStyle = {
         backgroundColor: '#00C853',
         color: '#FFFFFF'
-      }
+      };
     } else if (pill === 'paused') {
       statusPillStyle = {
         backgroundColor: '#FFFFFF',
         border: '1px solid #607D8B',
         color: '#607D8B'
-      }
+      };
     } else if (pill === 'processing') {
       statusPillStyle = {
         backgroundColor: '#2196F3',
         color: '#FFFFFF'
-      }
+      };
     } else if (pill === 'inactive') {
       statusPillStyle = {
         backgroundColor: '#9E9E9E',
         color: '#FFFFFF'
-      }
+      };
     }
     if (statusPillStyle) {
       this.setState({ statusPillStyle });
@@ -76,26 +66,29 @@ export default class IngestionJobGridCard extends React.Component {
   };
 
   render() {
-    
     return (
       <div className={styles.card}>
         <div className={styles.thumbnail}>
-          <img className={styles.imageStyle} src={this.props.thumbnail} alt='https://static.veritone.com/veritone-ui/default-nullstate.svg' />
+          <img
+            className={styles.imageStyle}
+            src={this.props.thumbnail}
+            alt="https://static.veritone.com/veritone-ui/default-nullstate.svg"
+          />
         </div>
         <div className={styles.details}>
-        {/* BELOW IS A HACK FOR GETTING CHECKBOX BACKGROUND TO BE WHITE */}
-        <div className={styles.checkboxBackground} />
-        <Checkbox
+          {/* BELOW IS A HACK FOR GETTING CHECKBOX BACKGROUND TO BE WHITE */}
+          <div className={styles.checkboxBackground} />
+          <Checkbox
             input={{
               onChange: this.handleCheckboxChange,
               value: this.state.checked
             }}
             className={styles.checkbox}
-            color='primary'
+            color="primary"
             classes={{
               checked: styles.checkboxPrimary
             }}
-            label=''
+            label=""
           />
           <div className={styles.name}>{this.props.jobName}</div>
           <div className={styles.gridDetails}>
@@ -105,17 +98,22 @@ export default class IngestionJobGridCard extends React.Component {
             </div>
             <div className={styles.gridDetailsRow}>
               <div className={styles.detailsTitle}>Created:</div>
-              <div className={styles.detailsText}>{this.props.creationDate}</div>
+              <div className={styles.detailsText}>
+                {this.props.creationDate}
+              </div>
             </div>
             <div className={styles.gridDetailsRow}>
               <div className={styles.detailsTitle}>Last Ingestion:</div>
-              <div className={styles.detailsText}>{this.props.lastIngestion}</div>
+              <div className={styles.detailsText}>
+                {this.props.lastIngestion}
+              </div>
             </div>
           </div>
-          <div className={styles.status}><StatusPill status={this.props.status}/></div>
+          <div className={styles.status}>
+            <StatusPill status={this.props.status} />
+          </div>
         </div>
       </div>
     );
-  };
+  }
 }
-

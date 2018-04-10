@@ -1,13 +1,8 @@
 import React from 'react';
 
-import {
-  bool,
-  string
-} from 'prop-types';
+import { bool, string } from 'prop-types';
 
-import {
-  Checkbox,
-} from 'components/formComponents';
+import { Checkbox } from 'components/formComponents';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
@@ -28,12 +23,12 @@ export default class JobRow extends React.Component {
   static defaultProps = {};
 
   state = {
-    checked: this.props.checkAll || false,
+    checked: this.props.checkAll || false
   };
 
   componentWillReceiveProps(nextProps) {
-    this.setState({checked: nextProps.checkAll});
-  };
+    this.setState({ checked: nextProps.checkAll });
+  }
 
   handleCheckboxChange = () => {
     this.setState({
@@ -41,38 +36,35 @@ export default class JobRow extends React.Component {
     });
   };
 
-  handleRowClick = (event) => {
+  handleRowClick = event => {
     console.log('row clicked');
   };
 
   render() {
     return (
-      <div className={styles.tableRow} >
+      <div className={styles.tableRow}>
         <Checkbox
           input={{
             onChange: this.handleCheckboxChange,
             value: this.state.checked
           }}
           className={styles.checkbox}
-          label=''
+          label=""
         />
         <div className={styles.rowTextGroup} onClick={this.handleRowClick}>
           <span className={styles.columnText}>{this.props.name}</span>
-          <span className={styles.status}><StatusPill status={this.props.status} /></span>
+          <span className={styles.status}>
+            <StatusPill status={this.props.status} />
+          </span>
           <span className={styles.columnText}>{this.props.adapter}</span>
           <span className={styles.columnText}>{this.props.ingestionType}</span>
           <span className={styles.columnText}>{this.props.creationDate}</span>
           <span className={styles.columnText}>{this.props.lastIngested}</span>
-          <IconButton className={styles.menuIcon} aria-label='menu'>
+          <IconButton className={styles.menuIcon} aria-label="menu">
             <Icon className={'icon-more_vert'} />
           </IconButton>
         </div>
-        
       </div>
     );
-  };
-};
-
-
-
-
+  }
+}

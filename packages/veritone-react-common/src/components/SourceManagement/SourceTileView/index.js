@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  arrayOf,
-  any,
-  objectOf,
-  func
-} from 'prop-types';
+import { arrayOf, any, objectOf, func } from 'prop-types';
 import SourceRow from 'components/SourceManagement/SourceRow';
 import CircleImage from 'components/CircleImage';
 
@@ -40,7 +35,7 @@ export default class SourceTileView extends React.Component {
       <div>
         <div className={styles.tableTitleRow}>
           <div className={styles.titleTextGroup}>
-            <div className={styles.imageStyle} style={{visibility: 'hidden'}}>
+            <div className={styles.imageStyle} style={{ visibility: 'hidden' }}>
               <CircleImage height={'38px'} />
             </div>
             <span className={styles.mainColumn}>Source name</span>
@@ -48,10 +43,10 @@ export default class SourceTileView extends React.Component {
             <span className={styles.tableTitle}>Created</span>
             <span className={styles.tableTitle}>Updated</span>
           </div>
-          <div style={{width: '55px'}} />
+          <div style={{ width: '55px' }} />
         </div>
         {sourceRows}
       </div>
     );
-  };
+  }
 }

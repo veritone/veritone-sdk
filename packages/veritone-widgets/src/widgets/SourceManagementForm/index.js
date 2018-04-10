@@ -27,7 +27,7 @@ class SourceManagementFormWidget extends React.Component {
         onClose={this.props.onClose}
         open
       />
-    )
+    );
   }
 }
 

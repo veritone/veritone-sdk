@@ -26,7 +26,11 @@ class EditMetadataDialog extends Component {
   state = {
     filename: get(this.props.metadata, 'veritoneFile.filename', ''),
     source: get(this.props.metadata, 'veritoneCustom.source', ''),
-    programLiveImage: get(this.props.metadata, 'veritoneProgram.programLiveImage', ''),
+    programLiveImage: get(
+      this.props.metadata,
+      'veritoneProgram.programLiveImage',
+      ''
+    ),
     programImage: get(this.props.metadata, 'veritoneProgram.programImage', '')
   };
 
@@ -76,22 +80,33 @@ class EditMetadataDialog extends Component {
   };
 
   isFileNameChanged = () => {
-    return this.state.filename &&
-      this.state.filename !== this.props.metadata.veritoneFile.filename;
+    return (
+      this.state.filename &&
+      this.state.filename !== this.props.metadata.veritoneFile.filename
+    );
   };
 
   isSourceChanged = () => {
-    return this.state.source !== get(this.props.metadata, 'veritoneCustom.source', '');
+    return (
+      this.state.source !==
+      get(this.props.metadata, 'veritoneCustom.source', '')
+    );
   };
 
   isProgramLiveImageChanged = () => {
-    return this.state.programLiveImage &&
-      this.state.programLiveImage !== get(this.props.metadata, 'veritoneProgram.programLiveImage', '');
+    return (
+      this.state.programLiveImage &&
+      this.state.programLiveImage !==
+        get(this.props.metadata, 'veritoneProgram.programLiveImage', '')
+    );
   };
 
   isProgramImageChanged = () => {
-    return this.state.programImage &&
-      this.state.programImage !== get(this.props.metadata, 'veritoneProgram.programImage', '');
+    return (
+      this.state.programImage &&
+      this.state.programImage !==
+        get(this.props.metadata, 'veritoneProgram.programImage', '')
+    );
   };
 
   hasPendingChanges = () => {

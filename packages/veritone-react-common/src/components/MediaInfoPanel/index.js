@@ -39,7 +39,10 @@ class MediaInfoPanel extends Component {
         `veritoneFile: { filename: "${metadataToSave.veritoneFile.filename}" }`
       );
     }
-    if (metadataToSave.veritoneCustom && isString(metadataToSave.veritoneCustom.source)) {
+    if (
+      metadataToSave.veritoneCustom &&
+      isString(metadataToSave.veritoneCustom.source)
+    ) {
       detailsParams.push(
         `veritoneCustom: { source: "${metadataToSave.veritoneCustom.source}" }`
       );

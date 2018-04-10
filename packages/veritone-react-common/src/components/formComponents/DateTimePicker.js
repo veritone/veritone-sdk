@@ -3,14 +3,7 @@ import IconButton from 'material-ui/IconButton';
 import Today from 'material-ui-icons/Today';
 import DateFns from 'date-fns';
 import TextField from 'material-ui/TextField';
-import {
-  instanceOf,
-  func,
-  shape,
-  string,
-  oneOfType,
-  bool
-} from 'prop-types';
+import { instanceOf, func, shape, string, oneOfType, bool } from 'prop-types';
 
 import styles from './styles/dateTimePicker.scss';
 
@@ -78,32 +71,37 @@ export default class DateTimePicker extends React.Component {
   render() {
     return (
       <div>
-        { this.state.showIcon ? (
+        {this.state.showIcon ? (
           <IconButton color="inherit">
             <Today />
           </IconButton>
-        ) : undefined }
+        ) : (
+          undefined
+        )}
         <DateSelector
           min={this.state.min}
           max={this.state.max}
           value={this.state.value}
           clearable={this.props.clearable}
-          onChange={this.handleDateChange}/>
+          onChange={this.handleDateChange}
+        />
         <TimeSelector
           min={this.state.min}
           max={this.state.max}
           value={this.state.value}
           clearable={this.props.clearable}
-          onChange={this.handleTimeChange}/>
-        { this.props.showTimezone ? (
+          onChange={this.handleTimeChange}
+        />
+        {this.props.showTimezone ? (
           <TextField
             className={styles.dateTimeTZ}
             value={getTimeZone(this.state.value)}
             InputProps={{
               disableUnderline: true
             }}
-            disabled/>
-          ) : null }
+            disabled
+          />
+        ) : null}
       </div>
     );
   }
@@ -118,7 +116,8 @@ const DateSelector = ({ value, min, max, onChange, clearable }) => {
       min={min}
       max={max}
       defaultValue={date}
-      onChange={onChange}/>
+      onChange={onChange}
+    />
   );
 };
 
@@ -141,11 +140,12 @@ const TimeSelector = ({ value, min, max, onChange, clearable }) => {
       defaultValue={time}
       onChange={onChange}
       InputLabelProps={{
-        shrink: true,
+        shrink: true
       }}
       inputProps={{
-        step: 60, // 1 min
-      }}/>
+        step: 60 // 1 min
+      }}
+    />
   );
 };
 
@@ -154,12 +154,14 @@ TimeSelector.propTypes = {
   max: instanceOf(Date),
   clearable: bool,
   value: oneOfType([instanceOf(Date), string]).isRequired,
-  onChange: func.isRequired  
-}
+  onChange: func.isRequired
+};
 
 function consolidate(dateObject, timeObject) {
   if (DateFns.isDate(dateObject)) {
-    let timeDateObject = DateFns.parse(getDateString(dateObject) + 'T' + timeObject + ':00');
+    let timeDateObject = DateFns.parse(
+      getDateString(dateObject) + 'T' + timeObject + ':00'
+    );
     if (DateFns.isDate(timeDateObject)) {
       let consolidated = new Date(dateObject);
       consolidated.setHours(timeDateObject.getHours());

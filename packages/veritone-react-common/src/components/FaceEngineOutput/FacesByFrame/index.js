@@ -44,10 +44,14 @@ class FacesByFrame extends Component {
 
     return (
       <div>
-        {framesBySeconds[currentMediaPlayerTime - currentMediaPlayerTime % 1000] ? (
+        {framesBySeconds[
+          currentMediaPlayerTime - currentMediaPlayerTime % 1000
+        ] ? (
           <div>
             {Object.keys(
-              framesBySeconds[currentMediaPlayerTime - currentMediaPlayerTime % 1000]
+              framesBySeconds[
+                currentMediaPlayerTime - currentMediaPlayerTime % 1000
+              ]
             ).map((k, i) => {
               return (
                 <FaceFrameContainer

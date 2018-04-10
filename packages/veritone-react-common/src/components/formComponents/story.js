@@ -343,7 +343,7 @@ storiesOf('Form Components', module)
     </Provider>
   ))
   .add('DateTimePicker', () => {
-    let date = { 
+    let date = {
       value: new Date()
     };
     function handleChange(value) {
@@ -354,14 +354,34 @@ storiesOf('Form Components', module)
     return (
       <Provider store={store}>
         <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
-          <Field component={DateTimePicker} name="date-time" input={{ value: date.value, onChange: handleChange}}/>
-          <br/>
-          <Field component={DateTimePicker} name="date-time-icon" showIcon input={{ value: date.value, onChange: handleChange}}/>
-          <br/>
-          <Field component={DateTimePicker} name="date-time-clearable" clearable input={{ value: date.value, onChange: handleChange}}/>
-          <br/>
-          <Field component={DateTimePicker} name="date-time-timzone" clearable showTimezone input={{ value: date.value, onChange: handleChange}}/>
+          <Field
+            component={DateTimePicker}
+            name="date-time"
+            input={{ value: date.value, onChange: handleChange }}
+          />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="date-time-icon"
+            showIcon
+            input={{ value: date.value, onChange: handleChange }}
+          />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="date-time-clearable"
+            clearable
+            input={{ value: date.value, onChange: handleChange }}
+          />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="date-time-timzone"
+            clearable
+            showTimezone
+            input={{ value: date.value, onChange: handleChange }}
+          />
         </StoryForm>
       </Provider>
     );
-  })
+  });

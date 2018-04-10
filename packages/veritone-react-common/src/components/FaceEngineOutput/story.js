@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { string, func, bool, number, shape, arrayOf, objectOf } from 'prop-types';
+import {
+  string,
+  func,
+  bool,
+  number,
+  shape,
+  arrayOf,
+  objectOf
+} from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { boolean, number as knobNumber } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
@@ -34,7 +42,7 @@ class FaceEngineOutputStory extends Component {
     libraries: arrayOf(
       shape({
         id: string,
-        name: string,
+        name: string
       })
     ).isRequired,
     entities: arrayOf(
@@ -55,11 +63,11 @@ class FaceEngineOutputStory extends Component {
     entitySearchResults: [],
     engines: [
       {
-        id: "f44aa80e-4650-c55c-58e7-49c965019790",
-        name: "Temporal"
+        id: 'f44aa80e-4650-c55c-58e7-49c965019790',
+        name: 'Temporal'
       }
     ],
-    selectedEngineId: "f44aa80e-4650-c55c-58e7-49c965019790"
+    selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'
   };
 
   handleRemoveFaceDetection = face => {
@@ -158,9 +166,7 @@ class FaceEngineOutputStory extends Component {
         onEngineChange={this.handleSelectEngine}
         selectedEngineId={this.state.selectedEngineId}
         onExpandClicked={this.toggleExpandedMode}
-        onFaceOccurrenceClicked={
-          onFaceOccurrenceClicked
-        }
+        onFaceOccurrenceClicked={onFaceOccurrenceClicked}
         enableEditMode={enableEditMode}
         entitySearchResults={this.state.entitySearchResults}
         onAddNewEntity={onAddNewEntity}

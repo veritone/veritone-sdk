@@ -51,4 +51,3 @@ export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridVie
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
-

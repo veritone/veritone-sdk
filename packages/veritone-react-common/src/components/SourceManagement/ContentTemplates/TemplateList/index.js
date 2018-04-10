@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  any,
-  objectOf,
-  func
-} from 'prop-types';
+import { any, objectOf, func } from 'prop-types';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 
@@ -16,11 +12,11 @@ export default class TemplateList extends React.Component {
     addOrRemoveTemplate: func.isRequired
   };
 
-  addTemplate = (schemaId) => () => {
+  addTemplate = schemaId => () => {
     this.props.addOrRemoveTemplate(schemaId);
   };
 
-  removeTemplate = (schemaId) => () => {
+  removeTemplate = schemaId => () => {
     this.props.addOrRemoveTemplate(schemaId, true);
   };
 
@@ -30,29 +26,31 @@ export default class TemplateList extends React.Component {
     return Object.keys(templates).map((schemaId, index) => {
       const isAdded = !!selectedTemplates[schemaId];
 
-      return ( 
+      return (
         <div className={styles.templateRow} key={index}>
-          <div className={styles.name} style={isAdded ? { fontWeight: 500 } : undefined}>
-            {templates[schemaId].name} 
+          <div
+            className={styles.name}
+            style={isAdded ? { fontWeight: 500 } : undefined}
+          >
+            {templates[schemaId].name}
           </div>
-          {
-            isAdded 
-            ? <IconButton
-                className={styles.trashIcon}
-                onClick={this.removeTemplate(schemaId)}
-                aria-label='trash'
-              >
-                <Icon className={'icon-trash'} />
-              </IconButton>
-            :
-              <IconButton
-                className={styles.trashIcon}
-                onClick={this.addTemplate(schemaId)}
-                aria-label='add'
-              >
-                <Icon className={'icon-zoom-in'} />
-              </IconButton>
-          }
+          {isAdded ? (
+            <IconButton
+              className={styles.trashIcon}
+              onClick={this.removeTemplate(schemaId)}
+              aria-label="trash"
+            >
+              <Icon className={'icon-trash'} />
+            </IconButton>
+          ) : (
+            <IconButton
+              className={styles.trashIcon}
+              onClick={this.addTemplate(schemaId)}
+              aria-label="add"
+            >
+              <Icon className={'icon-zoom-in'} />
+            </IconButton>
+          )}
         </div>
       );
     });
@@ -61,14 +59,13 @@ export default class TemplateList extends React.Component {
   render() {
     return (
       <div className={styles.listContainer}>
-        <div className={styles.title}>
-          Content Templates
-        </div>
+        <div className={styles.title}>Content Templates</div>
         <div className={styles.description}>
-          These will be applied to all temporal data objects ingested through this source.
+          These will be applied to all temporal data objects ingested through
+          this source.
         </div>
         {this.buildTemplateList()}
       </div>
     );
-  };
+  }
 }

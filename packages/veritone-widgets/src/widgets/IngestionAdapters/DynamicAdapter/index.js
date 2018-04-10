@@ -9,13 +9,13 @@ class DynamicAdapter extends React.Component {
   static propTypes = {};
 
   componentDidMount() {}
- 
+
   render() {
-    return <LibDynamicAdapter {...this.props} />
+    return <LibDynamicAdapter {...this.props} />;
   }
 }
 
 export default {
   widget: widget(DynamicAdapter),
   ...LibDynamicAdapterObj
-}
+};

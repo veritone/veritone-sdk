@@ -6,7 +6,15 @@ import Avatar from 'material-ui/Avatar';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import { find, isObject, isEmpty } from 'lodash';
-import { shape, number, string, bool, arrayOf, func, objectOf } from 'prop-types';
+import {
+  shape,
+  number,
+  string,
+  bool,
+  arrayOf,
+  func,
+  objectOf
+} from 'prop-types';
 import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -100,14 +108,16 @@ class FaceEngineOutput extends Component {
   };
 
   componentWillMount() {
-    this.processFaces(this.props.data, this.props.libraries, this.props.entities);
+    this.processFaces(
+      this.props.data,
+      this.props.libraries,
+      this.props.entities
+    );
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.entities || nextProps.libraries || nextProps.data) {
-      this.processFaces(
-        nextProps.data || this.props.data
-      );
+      this.processFaces(nextProps.data || this.props.data);
     }
   }
 
@@ -131,7 +141,7 @@ class FaceEngineOutput extends Component {
     return secondSpots;
   };
 
-  processFaces = (faceData) => {
+  processFaces = faceData => {
     let detectedFaceObjects = [];
     let recognizedEntityObjects = [];
     let recognizedEntityObjectMap = {};
@@ -244,7 +254,10 @@ class FaceEngineOutput extends Component {
     let entitiesByLibrary = {};
     recognizedEntityObjects &&
       recognizedEntityObjects.forEach(currentFace => {
-        if (currentFace.libraryId && !entitiesByLibrary[currentFace.libraryId]) {
+        if (
+          currentFace.libraryId &&
+          !entitiesByLibrary[currentFace.libraryId]
+        ) {
           entitiesByLibrary[currentFace.libraryId] = {
             libraryId: currentFace.libraryId,
             libraryName: currentFace.libraryName,
@@ -385,7 +398,13 @@ class FaceEngineOutput extends Component {
                                   )}
                                 />
                                 <span>
-                                  Library: <strong>{this.state.entitiesByLibrary[key].libraryName}</strong>
+                                  Library:{' '}
+                                  <strong>
+                                    {
+                                      this.state.entitiesByLibrary[key]
+                                        .libraryName
+                                    }
+                                  </strong>
                                 </span>
                               </div>
                               <div className={styles.entityCountContainer}>

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  any, 
-  arrayOf,
-  func,
-  string
-} from 'prop-types';
+import { any, arrayOf, func, string } from 'prop-types';
 
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -34,18 +29,16 @@ export default class FormCard extends React.Component {
   render() {
     return (
       <div className={styles.formCard}>
-        <div className={styles.name}>
-          {this.props.name}
-        </div>
+        <div className={styles.name}>{this.props.name}</div>
         <IconButton
           className={styles.trashIcon}
           onClick={this.handleClick}
-          aria-label='trash'
+          aria-label="trash"
         >
           <Icon className={'icon-trash'} />
         </IconButton>
         {this.renderFields()}
       </div>
     );
-  };
+  }
 }

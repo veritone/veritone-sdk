@@ -2,18 +2,17 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import DynamicSelect from './';
 
-
 const sourceTypes = {
   data: {
     records: [
       {
-        name: "Audio",
-        id: "audio1",
+        name: 'Audio',
+        id: 'audio1',
         sourceSchema: {
           definition: {
             properties: {
               url: {
-                type: 'string',
+                type: 'string'
               },
               username: {
                 type: 'string',
@@ -23,20 +22,18 @@ const sourceTypes = {
                 type: 'string'
               }
             },
-            required: [
-              'url', 'username', 'password'
-            ]
-          },
+            required: ['url', 'username', 'password']
+          }
         }
       },
       {
-        name: "Audio2",
-        id: "audio_2",
+        name: 'Audio2',
+        id: 'audio_2',
         sourceSchema: {
           definition: {
             properties: {
               url: {
-                type: 'string',
+                type: 'string'
               },
               username: {
                 type: 'string',
@@ -49,9 +46,7 @@ const sourceTypes = {
                 type: 'number'
               }
             },
-            required: [
-              'url', 'days'
-            ]
+            required: ['url', 'days']
           }
         }
       }
@@ -61,16 +56,16 @@ const sourceTypes = {
 
 function formCallback(formResult) {
   console.log(formResult);
-  
-};
+}
 
-let helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
+let helperText =
+  'NOTE: Source types available are dynamic based on your ingestion adapter';
 let selectLabel = 'Select a Source Type';
 
 let initialValues = {
   url: 'twitter.com',
   username: 'trump',
-  password: 'password',
+  password: 'password'
 };
 
 // test passing in an object with fields that are in error state
@@ -88,16 +83,16 @@ storiesOf('SchemaDrivenSelectForm', module)
       fieldValues={initialValues}
       onInputChange={formCallback}
       helperText={helperText}
-      selectLabel={selectLabel} 
+      selectLabel={selectLabel}
     />
   ))
   .add('Error Field', () => (
     <DynamicSelect
       sourceTypes={sourceTypes.data.records}
-      fieldValues={{username:'trump'}}
+      fieldValues={{ username: 'trump' }}
       errorFields={errorFields}
       onInputChange={formCallback}
       helperText={helperText}
       selectLabel={selectLabel}
     />
-  ))
+  ));

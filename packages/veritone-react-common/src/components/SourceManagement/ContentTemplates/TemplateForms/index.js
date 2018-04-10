@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  any,
-  objectOf,
-  func
-} from 'prop-types';
+import { any, objectOf, func } from 'prop-types';
 
 import { isObject } from 'lodash';
 
@@ -12,7 +8,6 @@ import { FormControlLabel } from 'material-ui/Form';
 import Checkbox from 'material-ui/Checkbox';
 import FormCard from '../FormCard';
 import styles from './styles.scss';
-
 
 export default class TemplateForms extends React.Component {
   static propTypes = {
@@ -24,11 +19,11 @@ export default class TemplateForms extends React.Component {
     templates: {}
   };
 
-  handleRemoveTemplate = (schemaId) => {
+  handleRemoveTemplate = schemaId => {
     this.props.onRemoveTemplate(schemaId, true);
   };
 
-  handleFieldChange = (schemaId, fieldId, type) => (event) => {
+  handleFieldChange = (schemaId, fieldId, type) => event => {
     // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
     let currentValue; // Maintain root object reference
     let fields = fieldId.split('.');
@@ -36,7 +31,10 @@ export default class TemplateForms extends React.Component {
     let pointer;
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
-      currentValue = Object.assign({}, this.props.templates[schemaId].data[rootObject]);
+      currentValue = Object.assign(
+        {},
+        this.props.templates[schemaId].data[rootObject]
+      );
       pointer = currentValue;
       objectTraverse.forEach((field, index) => {
         // Initialize any undefined nested objects
@@ -54,11 +52,15 @@ export default class TemplateForms extends React.Component {
     } else {
       currentValue = this.parseType(type, event.target.value);
     }
-    return this.props.onTemplateDetailsChange(schemaId, rootObject, currentValue);
-  }
+    return this.props.onTemplateDetailsChange(
+      schemaId,
+      rootObject,
+      currentValue
+    );
+  };
 
   parseType = (type, value) => {
-    if (type.includes('number')){
+    if (type.includes('number')) {
       return parseFloat(value);
     } else if (type.includes('integer')) {
       return parseInt(value);
@@ -66,7 +68,7 @@ export default class TemplateForms extends React.Component {
       return value === 'true';
     }
     return value;
-  }
+  };
 
   formBuilder = () => {
     const { templates } = this.props;
@@ -75,19 +77,19 @@ export default class TemplateForms extends React.Component {
       const schemaProps = templates[schemaId].definition.properties;
       const formFields = Object.keys(schemaProps).map((schemaProp, index2) => {
         return (
-          <BuildFormElements 
-            fieldId={schemaProp} 
-            schemaId={schemaId} 
-            type={schemaProps[schemaProp].type} 
+          <BuildFormElements
+            fieldId={schemaProp}
+            schemaId={schemaId}
+            type={schemaProps[schemaProp].type}
             value={templates[schemaId].data[schemaProp]}
-            title={schemaProps[schemaProp].title || schemaProp} 
-            objectProperties={schemaProps[schemaProp].properties} 
-            onChange={this.handleFieldChange} 
+            title={schemaProps[schemaProp].title || schemaProp}
+            objectProperties={schemaProps[schemaProp].properties}
+            onChange={this.handleFieldChange}
             key={index2}
           />
         );
       });
-      
+
       return (
         <FormCard
           key={index}
@@ -101,16 +103,22 @@ export default class TemplateForms extends React.Component {
   };
 
   render() {
-    return (
-      <div className={styles.formsContainer}>
-        {this.formBuilder()}
-      </div>
-    );
-  };
+    return <div className={styles.formsContainer}>{this.formBuilder()}</div>;
+  }
 }
 
-
-function BuildFormElements({fieldId, schemaId, type, title, value, required, onChange, error, objectProperties, depth = 0 }) {
+function BuildFormElements({
+  fieldId,
+  schemaId,
+  type,
+  title,
+  value,
+  required,
+  onChange,
+  error,
+  objectProperties,
+  depth = 0
+}) {
   const additionalProps = {};
   if (required) {
     additionalProps.required = true;
@@ -121,29 +129,31 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
     element = (
       <TextField
         className={styles.textFieldExtra}
-        type={fieldId.toLowerCase().includes('password') ? 'password': 'text'}
+        type={fieldId.toLowerCase().includes('password') ? 'password' : 'text'}
         fullWidth
-        margin='dense'
+        margin="dense"
         label={title}
         value={(value || '').toString()}
         error={error}
         key={fieldId}
         onChange={onChange(schemaId, fieldId, type)}
-        {...additionalProps} />
+        {...additionalProps}
+      />
     );
   } else if (type.includes('number') || type.includes('integer')) {
     element = (
       <TextField
         className={styles.textFieldExtra}
-        type='number'
+        type="number"
         fullWidth
-        margin='dense'
+        margin="dense"
         label={title}
         value={(value || '').toString()}
         error={error}
         key={fieldId}
         onChange={onChange(schemaId, fieldId, type)}
-        {...additionalProps} />
+        {...additionalProps}
+      />
     );
   } else if (type.includes('boolean')) {
     element = (
@@ -153,8 +163,10 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
           <Checkbox
             onChange={onChange(schemaId, fieldId, type)}
             value={(!value).toString()}
-            color="primary" />
-        } />
+            color="primary"
+          />
+        }
+      />
     );
   } else if (type.includes('object') && objectProperties) {
     element = Object.keys(objectProperties).map((objProp, indexInner) => {
@@ -168,7 +180,8 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
           objectProperties={objectProperties[objProp].properties}
           onChange={onChange}
           depth={depth + 1}
-          key={indexInner} />
+          key={indexInner}
+        />
       );
     });
     element = (
@@ -179,15 +192,13 @@ function BuildFormElements({fieldId, schemaId, type, title, value, required, onC
     );
   } else {
     return (
-      <div>Unsupported Type: {type} for {fieldId}</div>
+      <div>
+        Unsupported Type: {type} for {fieldId}
+      </div>
     );
   }
   if (depth) {
-    element = (
-      <div style={{ paddingLeft: (depth * 10) }}>
-        {element}
-      </div>
-    );
+    element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>;
   }
 
   return element;

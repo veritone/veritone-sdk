@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  arrayOf, 
-  string,
-  func,
-  element,
-  node
-} from 'prop-types';
+import { arrayOf, string, func, element, node } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -30,7 +24,7 @@ export default class ModalHeader extends React.Component {
     menu: false,
     trash: false,
     separator: false,
-    exit: true,
+    exit: true
     // icons: []
   };
 
@@ -38,17 +32,11 @@ export default class ModalHeader extends React.Component {
     return (
       <div className={styles['modal-header']}>
         <div className={styles.fullScreenTopBar}>
-            <span className={styles.topBarTitle}>
-              {this.props.title}
-            </span>
-            <div className={styles.iconGroup}>
-              {this.props.icons}
-            </div>
+          <span className={styles.topBarTitle}>{this.props.title}</span>
+          <div className={styles.iconGroup}>{this.props.icons}</div>
         </div>
-        <div>
-          {this.props.children}
-        </div>        
+        <div>{this.props.children}</div>
       </div>
     );
-  };
+  }
 }

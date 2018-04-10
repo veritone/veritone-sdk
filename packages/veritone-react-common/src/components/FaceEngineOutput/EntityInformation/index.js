@@ -45,7 +45,8 @@ class EntityInformation extends Component {
   };
 
   handleFaceOccurrenceClicked = face => evt => {
-    this.props.onOccurrenceClicked && this.props.onOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
+    this.props.onOccurrenceClicked &&
+      this.props.onOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
   };
 
   render() {

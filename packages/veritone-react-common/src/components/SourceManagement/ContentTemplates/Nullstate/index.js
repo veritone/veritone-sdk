@@ -8,14 +8,12 @@ export default class ContentTemplatesNullstate extends React.Component {
     return (
       <div className={styles.nullStateView}>
         <img
-          style={{ fontSize: '80px', marginBottom: '30px'}}
+          style={{ fontSize: '80px', marginBottom: '30px' }}
           src={NullstateImage}
-          alt='https://static.veritone.com/veritone-ui/default-nullstate.svg'
+          alt="https://static.veritone.com/veritone-ui/default-nullstate.svg"
         />
-        <div className={styles.titleText}>
-          Select a content template to add
-        </div>
+        <div className={styles.titleText}>Select a content template to add</div>
       </div>
-    )
+    );
   }
 }

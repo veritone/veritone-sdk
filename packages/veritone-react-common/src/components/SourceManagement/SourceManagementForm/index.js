@@ -18,30 +18,34 @@ export default class SourceManagementForm extends React.Component {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
     sources: arrayOf(objectOf(any)),
     source: objectOf(any),
-    templateData: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any)
-    })).isRequired,
-    initialTemplates: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any),
-      data: objectOf(any)
-    })),
+    templateData: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any)
+      })
+    ).isRequired,
+    initialTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
+      })
+    ),
     onSubmit: func.isRequired,
     onClose: func.isRequired,
     open: bool
-  }
+  };
 
   static defaultProps = {
     sourceTypes: [],
     sources: [],
     templateData: {},
     initialTemplates: {}
-  }
+  };
 
   state = {
     selectedSource: null,
@@ -54,7 +58,7 @@ export default class SourceManagementForm extends React.Component {
     contentTemplates: {},
     activeTab: 0,
     openDialog: true
-  }
+  };
 
   componentWillMount() {
     const newState = {
@@ -64,24 +68,24 @@ export default class SourceManagementForm extends React.Component {
     if (has(this.props, 'open')) {
       newState.openDialog = this.props.open;
     }
-    if (this.props.source) { // if editing a source, initialize the defaults
+    if (this.props.source) {
+      // if editing a source, initialize the defaults
       newState.sourceConfig = {
         ...pick(this.props.source, ['name', 'thumbnail', 'details']),
         sourceTypeId: this.props.source.sourceType.id
-      }
-    }
-    else {
+      };
+    } else {
       newState.sourceConfig = {
         ...this.state.sourceConfig,
         details: {}
-      }
+      };
       if (this.props.sourceTypes.length) {
         newState.sourceConfig.sourceTypeId = this.props.sourceTypes[0].id;
       }
     }
 
     return this.setState(newState);
-  };
+  }
 
   // openDialog = () => {
   //   return this.setState({ openDialog: true });
@@ -91,20 +95,20 @@ export default class SourceManagementForm extends React.Component {
     return this.setState({ openDialog: false }, () => {
       this.props.onClose();
     });
-  }
+  };
 
   handleChangeTab = (e, tabIdx) => {
     return this.setState({ activeTab: tabIdx });
-  }
+  };
 
-  saveConfiguration = (config) => {
+  saveConfiguration = config => {
     return this.setState({
       sourceConfig: {
         ...this.state.sourceConfig,
         ...config
       }
     });
-  }
+  };
 
   manageTemplatesList = (templateSchemaId, remove = false) => {
     const { templateData, initialTemplates } = this.props;
@@ -118,15 +122,21 @@ export default class SourceManagementForm extends React.Component {
       }
     } else {
       const data = {};
-      Object.keys(templateData[templateSchemaId].definition.properties)
-        .reduce((fields, schemaDefProp) => {
-          let value = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp]);
+      Object.keys(templateData[templateSchemaId].definition.properties).reduce(
+        (fields, schemaDefProp) => {
+          let value = get(initialTemplates, [
+            templateSchemaId,
+            'data',
+            schemaDefProp
+          ]);
           if (value) {
             data[schemaDefProp] = value;
           }
-        }, data)
+        },
+        data
+      );
 
-      console.log('data:', data)
+      console.log('data:', data);
 
       this.setState({
         contentTemplates: {
@@ -138,7 +148,7 @@ export default class SourceManagementForm extends React.Component {
         }
       });
     }
-  }
+  };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     const { contentTemplates } = this.state;
@@ -157,34 +167,38 @@ export default class SourceManagementForm extends React.Component {
     });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     return this.props.onSubmit({
       sourceConfiguration: this.state.sourceConfig,
       contentTemplates: this.state.contentTemplates
     });
-  }
+  };
 
   render() {
     const { activeTab } = this.state;
-    
+
     return (
       <FullScreenDialog open={this.state.openDialog}>
         <ModalHeader
-          title={this.state.sourceConfig.name ? this.state.sourceConfig.name : "New Source"}
+          title={
+            this.state.sourceConfig.name
+              ? this.state.sourceConfig.name
+              : 'New Source'
+          }
           icons={[
-            <IconButton aria-label='help' key={1}>
-              <Icon className='icon-help2' />
+            <IconButton aria-label="help" key={1}>
+              <Icon className="icon-help2" />
             </IconButton>,
-            <IconButton aria-label='menu' key={2}>
-              <Icon className='icon-more_vert' />
+            <IconButton aria-label="menu" key={2}>
+              <Icon className="icon-more_vert" />
             </IconButton>,
-            <IconButton aria-label='trash' key={3}>
-              <Icon className='icon-trash' />
+            <IconButton aria-label="trash" key={3}>
+              <Icon className="icon-trash" />
             </IconButton>,
             <span className={styles.separator} key={4} />,
-            <IconButton aria-label='exit' key={5}>
-              <Icon className='icon-close-exit' onClick={this.handleOnClose} />
+            <IconButton aria-label="exit" key={5}>
+              <Icon className="icon-close-exit" onClick={this.handleOnClose} />
             </IconButton>
           ]}
         >
@@ -194,27 +208,27 @@ export default class SourceManagementForm extends React.Component {
           </Tabs>
         </ModalHeader>
         <form onSubmit={this.handleSubmit} className={styles.scrollable}>
-          {activeTab === 0 &&
+          {activeTab === 0 && (
             <SourceConfiguration
               sourceTypes={this.props.sourceTypes}
               source={this.state.sourceConfig}
               onInputChange={this.saveConfiguration}
-              onClose={this.handleOnClose} />}
-          {activeTab === 1 &&
+              onClose={this.handleOnClose}
+            />
+          )}
+          {activeTab === 1 && (
             <ContentTemplates
               templateData={this.props.templateData}
               selectedTemplateSchemas={this.state.contentTemplates}
               onListChange={this.manageTemplatesList}
               onInputChange={this.updateTemplateDetails}
             />
-          }
+          )}
           <div className={styles.btnContainer}>
-            <Button onClick={this.handleOnClose}>
-              Cancel
-              </Button>
-            <Button raised color='primary' type="submit">
+            <Button onClick={this.handleOnClose}>Cancel</Button>
+            <Button raised color="primary" type="submit">
               Create
-              </Button>
+            </Button>
           </div>
         </form>
       </FullScreenDialog>

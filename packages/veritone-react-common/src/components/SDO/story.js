@@ -2,8 +2,6 @@
 // import { storiesOf } from '@storybook/react';
 // import { action } from '@storybook/addon-actions';
 
-
-
 // let sdoData = [
 //   {
 //     humidity: 54,
@@ -86,13 +84,6 @@
 //     type: "number"
 //   }
 // };
-
-
-
-
-
-
-
 
 // // storiesOf('SDO', module)
 // //   // .add('FullScreenCard', () => (

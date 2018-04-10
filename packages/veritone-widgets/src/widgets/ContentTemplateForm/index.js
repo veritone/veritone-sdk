@@ -18,7 +18,7 @@ class ContentTemplateFormWidget extends React.Component {
         initialTemplates={this.props.initialTemplates}
         handleUpdateContentTemplates={this.props.handleUpdateContentTemplates}
       />
-    )
+    );
   }
 }
 

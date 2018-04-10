@@ -54,7 +54,7 @@ import widget from '../../shared/widget';
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
     libraries: mediaDetailsModule.libraries(state, _widgetId),
     entities: mediaDetailsModule.entities(state, _widgetId),
-    currentMediaPlayerTime: state.player.currentTime,
+    currentMediaPlayerTime: state.player.currentTime
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -154,7 +154,7 @@ class MediaDetailsWidget extends React.Component {
     libraries: arrayOf(
       shape({
         id: string,
-        name: string,
+        name: string
       })
     ),
     entities: arrayOf(
@@ -171,7 +171,7 @@ class MediaDetailsWidget extends React.Component {
   static defaultProps = {
     libraries: [],
     entities: []
-  }
+  };
 
   static contextTypes = {
     store: object.isRequired // eslint-disable-line
@@ -302,7 +302,7 @@ class MediaDetailsWidget extends React.Component {
       expandedMode,
       currentMediaPlayerTime,
       editModeEnabled,
-      libraries, 
+      libraries,
       entities
     } = this.props;
 

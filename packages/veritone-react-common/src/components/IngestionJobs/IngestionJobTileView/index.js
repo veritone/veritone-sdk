@@ -1,14 +1,8 @@
 import React from 'react';
 
-import {
-  arrayOf,
-  any,
-  objectOf
-} from 'prop-types';
+import { arrayOf, any, objectOf } from 'prop-types';
 
-import {
-  Checkbox,
-} from 'components/formComponents';
+import { Checkbox } from 'components/formComponents';
 
 import JobRow from './JobRow';
 
@@ -22,7 +16,7 @@ export default class IngestionJobTileView extends React.Component {
   static defaultProps = {};
 
   state = {
-    checkedAll: false,
+    checkedAll: false
   };
 
   handleCheckboxChange = () => {
@@ -33,15 +27,18 @@ export default class IngestionJobTileView extends React.Component {
 
   render() {
     const jobRows = this.props.jobInfo.map((row, index) => {
-      return <JobRow 
-          checkAll={this.state.checkedAll} 
-          name={row.name} 
+      return (
+        <JobRow
+          checkAll={this.state.checkedAll}
+          name={row.name}
           status={row.status}
           adapter={row.adapter}
           ingestionType={row.ingestionType}
           creationDate={row.creationDate}
           lastIngested={row.lastIngested}
-          key={index} />
+          key={index}
+        />
+      );
     });
     return (
       <div>
@@ -52,7 +49,7 @@ export default class IngestionJobTileView extends React.Component {
               value: this.state.checkedAll
             }}
             className={styles.checkbox}
-            label=''
+            label=""
           />
           <div className={styles.titleTextGroup}>
             <span className={styles.tableTitle}>Job name</span>
@@ -62,10 +59,10 @@ export default class IngestionJobTileView extends React.Component {
             <span className={styles.tableTitle}>Creation Date</span>
             <span className={styles.tableTitle}>Last Ingestion</span>
           </div>
-          <div style={{width: '55px'}} />
+          <div style={{ width: '55px' }} />
         </div>
         {jobRows}
       </div>
     );
-  };
+  }
 }

@@ -22,7 +22,7 @@ class SourceManagementWidget extends React.Component {
         templateData={this.props.templateData}
         initialTemplates={this.props.initialTemplates}
       />
-    )
+    );
   }
 }
 

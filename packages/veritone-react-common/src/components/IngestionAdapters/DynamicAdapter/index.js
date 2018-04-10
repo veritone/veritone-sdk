@@ -7,20 +7,12 @@ import TextField from 'material-ui/TextField';
 import { InputLabel } from 'material-ui/Input';
 
 import { get, isArray, clone, startCase, toLower, includes } from 'lodash';
-import {
-  objectOf,
-  any,
-  func,
-  arrayOf,
-  string,
-  bool
-} from 'prop-types';
+import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
 
 import styles from './styles.scss';
-
 
 @withMuiThemeProvider
 class DynamicAdapter extends React.Component {
@@ -37,7 +29,7 @@ class DynamicAdapter extends React.Component {
     super(props);
     let fields = get(this.props.adapterConfig, 'fields');
     this.state = {
-      sourceId: 
+      sourceId:
         get(this.props, 'configuration.sourceId') ||
         (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
     };
@@ -46,9 +38,14 @@ class DynamicAdapter extends React.Component {
         if (field.name) {
           let propValue = get(this.props, ['configuration', field.name]);
           if (field.defaultValue) {
-            this.state[field.name] =  propValue || (!includes(field.defaultValue, ',') ? field.defaultValue : field.defaultValue.split(','));
+            this.state[field.name] =
+              propValue ||
+              (!includes(field.defaultValue, ',')
+                ? field.defaultValue
+                : field.defaultValue.split(','));
           } else if (field.defaultValues) {
-            this.state[field.name] = propValue || clone(field.defaultValues) || [];
+            this.state[field.name] =
+              propValue || clone(field.defaultValues) || [];
           }
         }
       });
@@ -72,47 +69,54 @@ class DynamicAdapter extends React.Component {
     stateUpdate[fieldKey] = fieldValue;
     this.setState(stateUpdate, this.sendConfiguration);
   };
- 
+
   render() {
     return (
       <div>
         <div className={styles.adapterContainer}>
-          <div className={styles.adapterHeader}>
-            Select a Source
-          </div>
+          <div className={styles.adapterHeader}>Select a Source</div>
           <div className={styles.adapterDescription}>
             Select from your available ingestion sources or create a new source.
           </div>
         </div>
         <div className={styles.adapterContainer}>
-            <SourceContainer
-              initialValue={this.state.sourceId}
-              sources={this.props.sources}
-              handleSourceChange={this.handleSourceChange}
-              openCreateSource={this.props.openCreateSource}
-              closeCreateSource={this.props.closeCreateSource}
-              selectLabel="Select a Source*"/>
+          <SourceContainer
+            initialValue={this.state.sourceId}
+            sources={this.props.sources}
+            handleSourceChange={this.handleSourceChange}
+            openCreateSource={this.props.openCreateSource}
+            closeCreateSource={this.props.closeCreateSource}
+            selectLabel="Select a Source*"
+          />
         </div>
-        <div className={styles.adapterDivider}/>
+        <div className={styles.adapterDivider} />
         <div>
           <div className={styles.adapterContainer}>
             <div className={styles.adapterHeader}>
               Configure Ingestion Adapter
             </div>
             <div className={styles.adapterDescription}>
-              Complete the required fields below to configure the adapter that will ingest your content.
+              Complete the required fields below to configure the adapter that
+              will ingest your content.
             </div>
           </div>
           <div>
-            <div className={styles.adapterContainer} style={{display: 'flex', flexDirection: 'row'}}>
-              {
-                this.props.adapterConfig.iconPath
-                ? (
-                  <div className={styles.adapterIconContainer}>
-                    <Image src={this.props.adapterConfig.iconPath} width={44} height={44} border />
-                  </div>
-                ) : ''
-              }
+            <div
+              className={styles.adapterContainer}
+              style={{ display: 'flex', flexDirection: 'row' }}
+            >
+              {this.props.adapterConfig.iconPath ? (
+                <div className={styles.adapterIconContainer}>
+                  <Image
+                    src={this.props.adapterConfig.iconPath}
+                    width={44}
+                    height={44}
+                    border
+                  />
+                </div>
+              ) : (
+                ''
+              )}
               <div>
                 <div className={styles.adapterHeader}>
                   {this.props.adapterConfig.name}
@@ -123,13 +127,14 @@ class DynamicAdapter extends React.Component {
               </div>
             </div>
             <div className={styles.adapterContainer}>
-              <TextField
-                label="Cluster"
-                value="Veritone CPU"
-                disabled />
+              <TextField label="Cluster" value="Veritone CPU" disabled />
             </div>
             <div>
-              <DynamicFieldForm fields={this.props.adapterConfig.fields} configuration={this.state} handleFieldChange={this.handleFieldChange} />
+              <DynamicFieldForm
+                fields={this.props.adapterConfig.fields}
+                configuration={this.state}
+                handleFieldChange={this.handleFieldChange}
+              />
             </div>
           </div>
         </div>
@@ -139,66 +144,74 @@ class DynamicAdapter extends React.Component {
 }
 
 function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
-  return fields.map(field => {
-    let inputId = field.name + 'DynamicField';
-    let camelCasedFieldName = startCase(toLower(field.name));
-    let fieldObj = {
-      key: inputId
-    };
-    if (field.type === 'Picklist' || field.type === 'MultiPicklist') {
-      fieldObj.input = (
-        <FormControl>
-          <InputLabel htmlFor={inputId}>{camelCasedFieldName}</InputLabel>
-          <Select
-            value={configuration[field.name]}
-            onChange={handleFieldChange(field.name)}
-            autoWidth
-            multiple={field.type === 'MultiPicklist'}
-            inputProps={{
-              name: field.name,
-              id: inputId,
-            }}
-          >
-            {
-              field.options.map(option => <MenuItem key={option.key} value={option.value}>{option.key}</MenuItem>)
-            }
-          </Select>
-          { field.info ? <FormHelperText>{field.info}</FormHelperText> : '' }
-        </FormControl>
-      );
-    } else if (field.type === 'Text') {
-      fieldObj.input = (
-        <FormControl>
-          <TextField
-            id={inputId}
-            label={camelCasedFieldName}
-            value={configuration[field.name]}
-            onChange={handleFieldChange(field.name)}
-            helperText={field.info}
-          />
-        </FormControl>
-      );
-    } else if (field.type === 'Number') {
-      fieldObj.input = (
-        <FormControl>
-          <TextField
-            id={inputId}
-            label={camelCasedFieldName}
-            value={parseFloat(configuration[field.name])}
-            onChange={handleFieldChange(field.name)}
-            type="number"
-            helperText={field.info}
-            inputProps={{
-              max: parseFloat(field.max),
-              min: parseFloat(field.min),
-              step: parseFloat(field.step)
-            }}
-          />
-        </FormControl>
-      );
-    }
-    return fieldObj;
-  }).map(fieldObj => (<div key={fieldObj.key} className={styles.adapterFieldContainer}>{fieldObj.input}</div>));
+  return fields
+    .map(field => {
+      let inputId = field.name + 'DynamicField';
+      let camelCasedFieldName = startCase(toLower(field.name));
+      let fieldObj = {
+        key: inputId
+      };
+      if (field.type === 'Picklist' || field.type === 'MultiPicklist') {
+        fieldObj.input = (
+          <FormControl>
+            <InputLabel htmlFor={inputId}>{camelCasedFieldName}</InputLabel>
+            <Select
+              value={configuration[field.name]}
+              onChange={handleFieldChange(field.name)}
+              autoWidth
+              multiple={field.type === 'MultiPicklist'}
+              inputProps={{
+                name: field.name,
+                id: inputId
+              }}
+            >
+              {field.options.map(option => (
+                <MenuItem key={option.key} value={option.value}>
+                  {option.key}
+                </MenuItem>
+              ))}
+            </Select>
+            {field.info ? <FormHelperText>{field.info}</FormHelperText> : ''}
+          </FormControl>
+        );
+      } else if (field.type === 'Text') {
+        fieldObj.input = (
+          <FormControl>
+            <TextField
+              id={inputId}
+              label={camelCasedFieldName}
+              value={configuration[field.name]}
+              onChange={handleFieldChange(field.name)}
+              helperText={field.info}
+            />
+          </FormControl>
+        );
+      } else if (field.type === 'Number') {
+        fieldObj.input = (
+          <FormControl>
+            <TextField
+              id={inputId}
+              label={camelCasedFieldName}
+              value={parseFloat(configuration[field.name])}
+              onChange={handleFieldChange(field.name)}
+              type="number"
+              helperText={field.info}
+              inputProps={{
+                max: parseFloat(field.max),
+                min: parseFloat(field.min),
+                step: parseFloat(field.step)
+              }}
+            />
+          </FormControl>
+        );
+      }
+      return fieldObj;
+    })
+    .map(fieldObj => (
+      <div key={fieldObj.key} className={styles.adapterFieldContainer}>
+        {fieldObj.input}
+      </div>
+    ));
 }
 
 @withMuiThemeProvider
@@ -226,7 +239,10 @@ class SourceContainer extends React.Component {
 
   openCreateSource = () => {
     console.log('closing menu and opening source modal');
-    this.setState({ anchorEl: null, isCreateSourceOpen: true }, this.props.openCreateSource);
+    this.setState(
+      { anchorEl: null, isCreateSourceOpen: true },
+      this.props.openCreateSource
+    );
   };
 
   closeCreateSource = () => {
@@ -246,7 +262,8 @@ class SourceContainer extends React.Component {
         anchorEl={this.state.anchorEl}
         isCreateSourceOpen={this.state.isCreateSourceOpen}
         openCreateSource={this.openCreateSource}
-        closeCreateSource={this.closeCreateSource} />
+        closeCreateSource={this.closeCreateSource}
+      />
     );
   }
 }
@@ -264,8 +281,7 @@ const SourceSelector = ({
   closeCreateSource
 }) => {
   let sourceMenuItems = sources.map(source => {
-
-    function handleItemClick () {
+    function handleItemClick() {
       handleSourceChange(source.id);
       handleMenuClose();
     }
@@ -280,28 +296,29 @@ const SourceSelector = ({
         {source.name}
       </MenuItem>
     );
-  }
-  );
+  });
   const menuId = 'long-menu';
   const dummyItem = 'dummy-item';
   let selectedSource = sources.find(source => source.id === initialValue);
   return (
     <FormControl>
       <InputLabel htmlFor="select-source">Select a Source*</InputLabel>
-      <Select 
+      <Select
         className={styles.sourceSelector}
         value={initialValue || dummyItem}
-        onClick={handleMenuClick} 
+        onClick={handleMenuClick}
         aria-label="Select Source"
         aria-owns={anchorEl ? menuId : null}
         aria-haspopup="true"
         readOnly
         inputProps={{
           name: 'source',
-          id: 'select-source',
+          id: 'select-source'
         }}
       >
-        <MenuItem key={dummyItem} value={initialValue || dummyItem}>{selectedSource ? selectedSource.name : '---'}</MenuItem>
+        <MenuItem key={dummyItem} value={initialValue || dummyItem}>
+          {selectedSource ? selectedSource.name : '---'}
+        </MenuItem>
       </Select>
       <Menu
         id={menuId}
@@ -320,7 +337,11 @@ const SourceSelector = ({
           {sourceMenuItems}
         </div>
         <div>
-          <MenuItem key="create-source-menu-item" value={null} onClick={openCreateSource}>
+          <MenuItem
+            key="create-source-menu-item"
+            value={null}
+            onClick={openCreateSource}
+          >
             Create New Source
           </MenuItem>
         </div>
@@ -363,31 +384,47 @@ export default {
       adapterStep.fields.forEach(field => {
         if (field.defaultValue && !configuration[field.name]) {
           errors.push(startCase(toLower(field.name)) + ' is invalid');
-        } else if (field.defaultValues && isArray(configuration[field.name]) && configuration[field.name].length) {
-          errors.push('At least one ' + startCase(toLower(field.name)) + ' must be selected');
+        } else if (
+          field.defaultValues &&
+          isArray(configuration[field.name]) &&
+          configuration[field.name].length
+        ) {
+          errors.push(
+            'At least one ' +
+              startCase(toLower(field.name)) +
+              ' must be selected'
+          );
         }
       });
     }
-    errors.length ?
-      cb('Configuration: ' + errors.join(', ')) :
-      cb(null, configuration);
+    errors.length
+      ? cb('Configuration: ' + errors.join(', '))
+      : cb(null, configuration);
   },
   getHydratedData: adapterStep => hydrateData => {
     let configuration = {};
     let ingestionTask, sourceId;
-    let tasks = get(hydrateData, 'jobTemplates.records[0].taskTemplates.records');
+    let tasks = get(
+      hydrateData,
+      'jobTemplates.records[0].taskTemplates.records'
+    );
     if (tasks) {
-      ingestionTask = tasks.filter(task => (get(task, 'engine.category.type.name') === 'Ingestion'))[0];
+      ingestionTask = tasks.filter(
+        task => get(task, 'engine.category.type.name') === 'Ingestion'
+      )[0];
     }
     if (ingestionTask) {
       sourceId = get(ingestionTask, 'payload.sourceId');
       configuration.sourceId = sourceId;
       let fields = get(adapterStep, 'fields');
       if (fields) {
-          fields.forEach(field => configuration[field.name] = ingestionTask.payload[field.name]);
+        fields.forEach(
+          field =>
+            (configuration[field.name] = ingestionTask.payload[field.name])
+        );
       }
     }
 
     return configuration;
   }
-}
+};

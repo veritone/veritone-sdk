@@ -1,34 +1,38 @@
 import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
 import { get } from 'lodash';
-import ContentTemplates from '../ContentTemplates'
+import ContentTemplates from '../ContentTemplates';
 
 export default class ContentTemplateForm extends React.Component {
   static propTypes = {
-    templateData: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any)
-    })).isRequired,
-    initialTemplates: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any),
-      data: objectOf(any)
-    })),
+    templateData: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any)
+      })
+    ).isRequired,
+    initialTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
+      })
+    ),
     handleUpdateContentTemplates: func.isRequired
-  }
+  };
 
   static defaultProps = {
     templateData: {},
     initialTemplates: {}
-  }
+  };
 
   state = {
     contentTemplates: {}
-  }
+  };
 
   componentWillMount() {
     const newState = {
@@ -50,13 +54,19 @@ export default class ContentTemplateForm extends React.Component {
       }
     } else {
       const data = {};
-      Object.keys(templateData[templateSchemaId].definition.properties)
-        .reduce((fields, schemaDefProp) => {
-          let value = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp]);
+      Object.keys(templateData[templateSchemaId].definition.properties).reduce(
+        (fields, schemaDefProp) => {
+          let value = get(initialTemplates, [
+            templateSchemaId,
+            'data',
+            schemaDefProp
+          ]);
           if (value) {
             data[schemaDefProp] = value;
           }
-        }, data)
+        },
+        data
+      );
       newState = {
         contentTemplates: {
           ...this.state.contentTemplates,
@@ -71,7 +81,7 @@ export default class ContentTemplateForm extends React.Component {
     if (newState) {
       this.props.handleUpdateContentTemplates(newState.contentTemplates);
     }
-  }
+  };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     const { contentTemplates } = this.state;
@@ -81,8 +91,7 @@ export default class ContentTemplateForm extends React.Component {
         [templateSchemaId]: {
           ...contentTemplates[templateSchemaId],
           data: {
-            ...contentTemplates[templateSchemaId].data,
-            
+            ...contentTemplates[templateSchemaId].data
           }
         }
       }

@@ -6,7 +6,6 @@ import VeritoneApp from '../../shared/VeritoneApp';
 import ContentTemplateFormWidget from './';
 import { has } from 'lodash';
 
-
 // CONTENT TEMPLATES SETUP
 const source = {
   data: {
@@ -36,8 +35,8 @@ const result = {
           schemas: {
             records: [
               {
-                id: "schemaGuid1",
-                status: "published",
+                id: 'schemaGuid1',
+                status: 'published',
                 definition: {
                   properties: {
                     url: {
@@ -51,7 +50,7 @@ const result = {
                 }
               },
               {
-                id: "schemaGuid2",
+                id: 'schemaGuid2',
                 status: 'published',
                 // dataRegistry: {
                 //   name: 'Twitter Schema 2'
@@ -71,17 +70,17 @@ const result = {
                 }
               },
               {
-                id: "schemaGuid2",
+                id: 'schemaGuid2',
                 status: 'published',
                 // dataRegistry: {
                 //   name: 'Twitter Schema'
                 // },
                 definition: {
-                  test: "citest"
+                  test: 'citest'
                 }
               },
               {
-                id: "schemaGuid2",
+                id: 'schemaGuid2',
                 status: 'draft',
                 // dataRegistry: {
                 //   name: 'Twitter Schema'
@@ -103,8 +102,7 @@ const result = {
       ]
     }
   }
-}
-
+};
 
 function createTemplateData(dataSchemas) {
   const templateSchemas = {};
@@ -112,7 +110,10 @@ function createTemplateData(dataSchemas) {
   dataSchemas.reduce((schemaStore, registryData) => {
     registryData.schemas.records.forEach(schema => {
       // only take schemas that are 'published' and also define field types
-      if (schema.status === 'published' && has(schema.definition, 'properties')) {
+      if (
+        schema.status === 'published' &&
+        has(schema.definition, 'properties')
+      ) {
         schemaStore[schema.id] = {
           name: registryData.name,
           ...schema
@@ -127,11 +128,15 @@ function createTemplateData(dataSchemas) {
 function createInitialTemplates(templateSources) {
   const selectedTemplateSchemas = {};
 
-  const templateSchemas = createTemplateData(result.data.dataRegistries.records);
+  const templateSchemas = createTemplateData(
+    result.data.dataRegistries.records
+  );
   templateSources.forEach(template => {
     if (has(templateSchemas, template.schemaId)) {
-      selectedTemplateSchemas[template.schemaId] = templateSchemas[template.schemaId];
-      if (template.data) { // if we need to fill out the form with pre-data
+      selectedTemplateSchemas[template.schemaId] =
+        templateSchemas[template.schemaId];
+      if (template.data) {
+        // if we need to fill out the form with pre-data
         selectedTemplateSchemas[template.schemaId].data = template.data;
       }
     }
@@ -141,7 +146,9 @@ function createInitialTemplates(templateSources) {
 }
 
 const templateData = createTemplateData(result.data.dataRegistries.records);
-const initialTemplates = createInitialTemplates(source.data.source.contentTemplates);
+const initialTemplates = createInitialTemplates(
+  source.data.source.contentTemplates
+);
 
 class Story extends React.Component {
   componentDidMount() {
