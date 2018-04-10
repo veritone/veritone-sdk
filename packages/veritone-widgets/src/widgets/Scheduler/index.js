@@ -3,17 +3,15 @@ import { func } from 'prop-types';
 import { noop } from 'lodash';
 import { submit } from 'redux-form';
 import { connect } from 'react-redux';
-import { hoistStatics } from 'recompose';
 import { Scheduler as LibScheduler } from 'veritone-react-common';
 
 import widget from '../../shared/widget';
 
-@hoistStatics(connect(null, { submit }, null, { withRef: true }))
+@connect(null, { submit }, null, { withRef: true })
 class Scheduler extends React.Component {
   static propTypes = {
     submit: func.isRequired
   };
-
 
   state = {
     submitCallback: noop
