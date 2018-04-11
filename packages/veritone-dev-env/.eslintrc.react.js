@@ -49,7 +49,9 @@ module.exports = {
     'react/prefer-es6-class': 'warn',
     'react/style-prop-object': 'warn',
     'react/no-unescaped-entities': 'warn',
-    'react/default-props-match-prop-types': 'warn'
+    'react/default-props-match-prop-types': 'warn',
+
+    'import/named': 'warn'
   },
   env: {
     es6: true,
@@ -66,7 +68,7 @@ module.exports = {
       experimentalObjectRestSpread: true
     }
   },
-  plugins: ['react', 'promise', 'lodash'],
+  plugins: ['react', 'promise', 'lodash', 'import'],
   extends: [
     'eslint:recommended',
     'prettier',
