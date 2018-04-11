@@ -19,39 +19,36 @@ class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
+    supportedSourceTypes: arrayOf(string),
     sources: arrayOf(objectOf(any)).isRequired,
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired
   };
 
-  constructor(props) {
-    super(props);
+  componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
-    this.state = {
-      sourceId:
-        get(this.props, 'configuration.sourceId') ||
-        (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
-    };
+    const newState = {};
+    if (isArray(this.props.supportedSourceTypes) && this.props.supportedSourceTypes.length) {
+      newState.sourceId = get(this.props, 'configuration.sourceId') || (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
+    }
     if (isArray(fields)) {
       fields.forEach(field => {
         if (field.name) {
           let propValue = get(this.props, ['configuration', field.name]);
           if (field.defaultValue) {
-            this.state[field.name] =
+            newState[field.name] =
               propValue ||
               (!includes(field.defaultValue, ',')
                 ? field.defaultValue
                 : field.defaultValue.split(','));
           } else if (field.defaultValues) {
-            this.state[field.name] =
-              propValue || clone(field.defaultValues) || [];
+            newState[field.name] = propValue || clone(field.defaultValues) || [];
           }
         }
       });
-      console.log(this.state);
-      this.sendConfiguration();
     }
+    this.setState(newState, this.sendConfiguration);
   }
 
   sendConfiguration = () => {
@@ -73,23 +70,30 @@ class DynamicAdapter extends React.Component {
   render() {
     return (
       <div>
-        <div className={styles.adapterContainer}>
-          <div className={styles.adapterHeader}>Select a Source</div>
-          <div className={styles.adapterDescription}>
-            Select from your available ingestion sources or create a new source.
-          </div>
-        </div>
-        <div className={styles.adapterContainer}>
-          <SourceContainer
-            initialValue={this.state.sourceId}
-            sources={this.props.sources}
-            handleSourceChange={this.handleSourceChange}
-            openCreateSource={this.props.openCreateSource}
-            closeCreateSource={this.props.closeCreateSource}
-            selectLabel="Select a Source*"
-          />
-        </div>
-        <div className={styles.adapterDivider} />
+        {
+          isArray(this.props.supportedSourceTypes) && this.props.supportedSourceTypes.length ?
+          (
+            <div>
+              <div className={styles.adapterContainer}>
+                <div className={styles.adapterHeader}>Select a Source</div>
+                <div className={styles.adapterDescription}>
+                  Select from your available ingestion sources or create a new source.
+                </div>
+              </div>
+              <div className={styles.adapterContainer}>
+                <SourceContainer
+                  initialValue={this.state.sourceId}
+                  sources={this.props.sources}
+                  handleSourceChange={this.handleSourceChange}
+                  openCreateSource={this.props.openCreateSource}
+                  closeCreateSource={this.props.closeCreateSource}
+                  selectLabel="Select a Source*"
+                />
+              </div>
+              <div className={styles.adapterDivider} />
+            </div>
+          ) : null
+        }
         <div>
           <div className={styles.adapterContainer}>
             <div className={styles.adapterHeader}>
@@ -102,8 +106,7 @@ class DynamicAdapter extends React.Component {
           </div>
           <div>
             <div
-              className={styles.adapterContainer}
-              style={{ display: 'flex', flexDirection: 'row' }}
+              className={styles.adapterContainer + ' ' + styles.flexContainer}
             >
               {this.props.adapterConfig.iconPath ? (
                 <div className={styles.adapterIconContainer}>
