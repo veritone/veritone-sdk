@@ -1,5 +1,5 @@
 import React from 'react';
-import { range, filter, get, includes } from 'lodash';
+import { range, filter, get, includes, map } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
@@ -125,7 +125,6 @@ describe('MenuColumn', function() {
 
     const menuItems = wrapper.find('Menu').prop('children');
     expect(filter(menuItems, (menuItem) => includes(get(menuItem, 'key'), 'divider')).length).toEqual(0);
-    
   });
 
   it('shows no divider when there are only protected actions', function() {
@@ -144,6 +143,25 @@ describe('MenuColumn', function() {
 
     const menuItems = wrapper.find('Menu').prop('children');
     expect(filter(menuItems, (menuItem) => includes(get(menuItem, 'key'), 'divider')).length).toEqual(0);
+  });
+
+  it('excludes specified actions', function() {
+    let data = {
+      actions: ['delete', 'alter', 'manage']
+    };
+    let wrapper = mount(
+      <SupressColumnWarnings>
+        <MenuColumn
+          data={data}
+          dataKey="actions"
+          protectedActions={['delete']}
+          excludeActions={['alter']}
+        />
+      </SupressColumnWarnings>
+    );
+
+    const menuItems = wrapper.find('Menu').prop('children');
+    expect(map(menuItems, 'key')).not.toContain('alter');
   });
 });
 

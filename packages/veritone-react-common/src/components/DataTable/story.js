@@ -308,8 +308,14 @@ storiesOf('Table', module)
   ))
   .add('Menu Column', () => {
     const data = {
-      actions: ['submit', 'delete']
+      title: 'Some title',
+      description: 'Lorem ipsum...',
+      actions: ['submit', 'delete', 'alter']
     };
+
+    function handleSelectItem(action, data) {
+      console.log('action, data:', action, data)
+    }
 
     return (
       <MuiTable>
@@ -320,9 +326,11 @@ storiesOf('Table', module)
               data={data}
               dataKey="actions"
               protectedActions={['delete']}
-            />          
+              excludeActions={['alter']}
+              onSelectItem={handleSelectItem}
+            />
           </TableRow>
-        </TableBody>      
+        </TableBody>
       </MuiTable>
     );
   })
