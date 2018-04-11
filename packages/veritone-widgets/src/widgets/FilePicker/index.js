@@ -41,6 +41,10 @@ class FilePickerWidget extends React.Component {
     statusMessage: string
   };
 
+  static defaultProps = {
+    open: false
+  };
+
   pickCallback = noop;
 
   pick = (callback = noop) => {

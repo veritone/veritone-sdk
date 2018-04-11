@@ -79,7 +79,7 @@ export default class SourceManagementOverview extends React.Component {
           : <SourceTileView
               onSelectSource={this.selectSource}
               sources={this.props.sources}
-              onSelectItem={this.props.onSelectMenuAction}
+              onSelectMenuItem={this.props.onSelectMenuAction}
             />
         }
         {this.state.openFormDialog && this.renderDialog()}
