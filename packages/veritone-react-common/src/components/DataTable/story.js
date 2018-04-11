@@ -110,8 +110,7 @@ class PagedTable extends React.Component {
   };
 
   render() {
-    const tableEmptyMessage =
-      'Nothing to see here!';
+    const tableEmptyMessage = 'Nothing to see here!';
 
     const tableEmptyFailureMessage =
       'Data failed to load; please try again later.';
@@ -163,8 +162,7 @@ class SplitTable extends React.Component {
   };
 
   render() {
-    const tableEmptyMessage =
-      'Nothing to see here!';
+    const tableEmptyMessage = 'Nothing to see here!';
 
     const tableEmptyFailureMessage =
       'Data failed to load; please try again later.';

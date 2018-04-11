@@ -49,14 +49,11 @@ export default class PaginatedTableFooter extends React.Component {
   render() {
     const { rowCount, page, perPage } = this.props;
     const firstItem = page * perPage + 1;
-    const lastItem = Math.min(
-      page * perPage + perPage,
-      rowCount
-    );
+    const lastItem = Math.min(page * perPage + perPage, rowCount);
 
     return (
       <TableCell
-        colSpan={this.props.colSpan}        
+        colSpan={this.props.colSpan}
         style={{
           textAlign: 'right'
         }}
@@ -115,17 +112,16 @@ export default class PaginatedTableFooter extends React.Component {
             <LastPageIcon />
           </IconButton>
 
-          {this.props.onRefreshPageData &&
+          {this.props.onRefreshPageData && (
             <RefreshButton
               onRefresh={this.props.onRefreshPageData}
               className={cx(styles['refresh'], 'refresh')}
-            />}
-        
+            />
+          )}
         </div>
       </TableCell>
-    )
+    );
   }
 }
 
 PaginatedTableFooter.muiName = 'TableFooter';
-

@@ -19,7 +19,7 @@ export const config = {
   ...configModule
 };
 
-import authRootSaga from './auth/oauthSaga'
+import authRootSaga from './auth/oauthSaga';
 import authReducer, * as authModule from './auth';
 import * as authConstants from './auth/constants';
 
