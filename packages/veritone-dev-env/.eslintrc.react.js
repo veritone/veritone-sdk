@@ -37,6 +37,7 @@ module.exports = {
     'react/forbid-prop-types': 'warn',
     'react/no-did-mount-set-state': 'warn',
     'react/no-did-update-set-state': 'warn',
+    'react/no-array-index-key': 'warn',
     'react/self-closing-comp': [
       'warn',
       {
