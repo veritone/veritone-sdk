@@ -74,7 +74,7 @@ export default class SourceManagementOverview extends React.Component {
     return (
       <div>
         {
-          this.props.sources.length
+          !this.props.sources.length
           ? <SourceManagementNullState onClick={this.openDialog} />
           : <SourceTileView
               onSelectSource={this.selectSource}

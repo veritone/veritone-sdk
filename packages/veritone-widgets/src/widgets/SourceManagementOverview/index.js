@@ -1,5 +1,5 @@
 import React from 'react';
-import { arrayOf, object, objectOf, any } from 'prop-types';
+import { arrayOf, object, objectOf, any, func } from 'prop-types';
 import { SourceManagementOverview } from 'veritone-react-common';
 
 import widget from '../../shared/widget';
@@ -10,7 +10,8 @@ class SourceManagementWidget extends React.Component {
     sources: arrayOf(object).isRequired,
     source: objectOf(any),
     templateData: objectOf(any).isRequired,
-    initialTemplates: objectOf(any)
+    initialTemplates: objectOf(any),
+    onSubmit: func.isRequired
   };
 
   render() {
@@ -21,6 +22,7 @@ class SourceManagementWidget extends React.Component {
         source={this.props.source}
         templateData={this.props.templateData}
         initialTemplates={this.props.initialTemplates}
+        onFormSubmit={this.props.onSubmit}
       />
     )
   }
