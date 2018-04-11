@@ -50,7 +50,6 @@ class _Table extends React.Component {
 
   static defaultProps = {
     rowHeight: 75,
-    footerHeight: 56,
     onShowCellRange: noop,
     emptyRenderer: noop,
     showHeader: true
@@ -98,7 +97,7 @@ class _Table extends React.Component {
 
 const NormalTableContainer = ({
   rowCount,
-  footerHeight,
+  footerHeight = 56,
   footerElement,
   children,
   emptyRenderer,

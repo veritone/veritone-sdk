@@ -48,7 +48,8 @@ module.exports = {
     'react/sort-comp': 'warn',
     'react/prefer-es6-class': 'warn',
     'react/style-prop-object': 'warn',
-    'react/no-unescaped-entities': 'warn'
+    'react/no-unescaped-entities': 'warn',
+    'react/default-props-match-prop-types': 'warn'
   },
   env: {
     es6: true,

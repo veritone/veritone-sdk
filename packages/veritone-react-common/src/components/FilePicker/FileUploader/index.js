@@ -67,7 +67,7 @@ class FileUploader extends Component {
 
   static defaultProps = {
     acceptedFileTypes: [],
-    onFileRejected: noop
+    onFilesRejected: noop
   };
 
   handleFileSelection = () => {
