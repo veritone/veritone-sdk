@@ -50,6 +50,8 @@ module.exports = {
     'react/style-prop-object': 'warn',
     'react/no-unescaped-entities': 'warn',
     'react/default-props-match-prop-types': 'warn',
+    'react/forbid-foreign-prop-types': 'warn',
+    'react/no-access-state-in-setstate': 'warn',
 
     'import/named': 'warn'
   },
