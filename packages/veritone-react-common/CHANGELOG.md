@@ -61,3 +61,6 @@
 * Added DataTable component
 * Added OAuthLoginButton component
 * Added RereshButton component
+
+## 4.3.1
+* Updated material-ui dependency to v1.0.0-beta.36

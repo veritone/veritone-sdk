@@ -32,14 +32,15 @@ const withBasicBehavior = WrappedTable => {
         : rowData;
     };
 
-    renderEmptyTable = () =>
+    renderEmptyTable = () => (
       <div>
         {this.props.failedLoadingIndices.length
           ? this.props.emptyFailureMessage
           : this.props.loadingIndices.length
             ? this.props.loadingMessage
             : this.props.emptyMessage}
-      </div>;
+      </div>
+    );
 
     render() {
       const restProps = omit(this.props, [

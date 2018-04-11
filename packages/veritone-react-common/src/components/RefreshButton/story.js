@@ -6,7 +6,5 @@ import RefreshButton from './';
 
 const handler = action('refreshed');
 storiesOf('RefreshButton', module).add('Base', () => {
-  return (
-    <RefreshButton onRefresh={handler}/>
-  );
+  return <RefreshButton onRefresh={handler} />;
 });
