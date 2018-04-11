@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer';
+import { get } from 'lodash';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import Menu, { MenuItem } from 'material-ui/Menu';
@@ -49,13 +50,14 @@ class MediaInfoPanel extends Component {
     }
     if (
       metadataToSave.veritoneProgram &&
-      (isString(metadataToSave.veritoneProgram.programLiveImage) ||
+      (isString(metadataToSave.veritoneProgram.signedProgramLiveImage) ||
         isString(metadataToSave.veritoneProgram.programImage))
     ) {
       let programData = '';
-      if (isString(metadataToSave.veritoneProgram.programLiveImage)) {
+      if (isString(metadataToSave.veritoneProgram.signedProgramLiveImage)) {
+        // intentionally store new uri as unsigned one
         programData += `programLiveImage: "${
-          metadataToSave.veritoneProgram.programLiveImage
+          metadataToSave.veritoneProgram.signedProgramLiveImage
         }"`;
       }
       if (isString(metadataToSave.veritoneProgram.programImage)) {
@@ -199,14 +201,14 @@ class MediaInfoPanel extends Component {
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
-                {this.props.tdo.details.veritoneFile.filename}
+                {get(this.props.tdo, 'details.veritoneFile.filename', '')}
               </div>
             </div>
             {this.props.tdo.details.date && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Date Created</div>
                 <div className={styles.infoFieldData}>
-                  {this.toFormattedDate(this.props.tdo.details.date)}
+                  {this.toFormattedDate(get(this.props.tdo, 'details.date'))}
                 </div>
               </div>
             )}
@@ -239,33 +241,35 @@ class MediaInfoPanel extends Component {
                   </div>
                 </div>
               )}
-            {this.props.tdo.details.tags &&
-              this.props.tdo.details.tags.length > 0 && (
-                <div className={styles.infoField}>
-                  <div className={styles.infoFieldLabel}>Tags</div>
-                  <div className={styles.infoFieldData}>
-                    {this.props.tdo.details.tags
-                      .map(tag => tag.value)
-                      .join(', ')}
-                  </div>
+            {get(this.props.tdo, 'details.tags.length', 0) > 0 && (
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Tags</div>
+                <div className={styles.infoFieldData}>
+                  {this.props.tdo.details.tags.map(tag => tag.value).join(', ')}
                 </div>
-              )}
+              </div>
+            )}
             <div className={styles.programImagesSection}>
               <div>
                 Program Live Image
-                {this.props.tdo.details.veritoneProgram.programLiveImage &&
-                  this.props.tdo.details.veritoneProgram.programLiveImage
-                    .length && (
-                    <img
-                      className={styles.programLiveImage}
-                      src={
-                        this.props.tdo.details.veritoneProgram.programLiveImage
-                      }
-                    />
-                  )}
-                {(!this.props.tdo.details.veritoneProgram.programLiveImage ||
-                  !this.props.tdo.details.veritoneProgram.programLiveImage
-                    .length) && (
+                {get(
+                  this.props.tdo,
+                  'details.veritoneProgram.signedProgramLiveImage.length',
+                  0
+                ) > 0 && (
+                  <img
+                    className={styles.programLiveImage}
+                    src={
+                      this.props.tdo.details.veritoneProgram
+                        .signedProgramLiveImage
+                    }
+                  />
+                )}
+                {get(
+                  this.props.tdo,
+                  'details.veritoneProgram.signedProgramLiveImage.length',
+                  0
+                ) === 0 && (
                   <img
                     className={styles.programLiveImage}
                     src="//static.veritone.com/veritone-ui/default-nullstate.svg"
@@ -274,17 +278,21 @@ class MediaInfoPanel extends Component {
               </div>
               <div>
                 Program Image
-                {this.props.tdo.details.veritoneProgram.programImage &&
-                  this.props.tdo.details.veritoneProgram.programImage
-                    .length && (
-                    <img
-                      className={styles.programImage}
-                      src={this.props.tdo.details.veritoneProgram.programImage}
-                    />
-                  )}
-                {(!this.props.tdo.details.veritoneProgram.programImage ||
-                  !this.props.tdo.details.veritoneProgram.programImage
-                    .length) && (
+                {get(
+                  this.props.tdo,
+                  'details.veritoneProgram.programImage.length',
+                  0
+                ) > 0 && (
+                  <img
+                    className={styles.programImage}
+                    src={this.props.tdo.details.veritoneProgram.programImage}
+                  />
+                )}
+                {get(
+                  this.props.tdo,
+                  'details.veritoneProgram.programImage.length',
+                  0
+                ) === 0 && (
                   <img
                     className={styles.programImage}
                     src="//static.veritone.com/veritone-ui/program_image_null.svg"

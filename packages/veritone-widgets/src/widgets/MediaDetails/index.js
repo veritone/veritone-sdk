@@ -27,7 +27,8 @@ import {
   SentimentEngineOutput,
   TranscriptEngineOutput,
   FaceEngineOutput,
-  LogoDetectionEngineOutput
+  LogoDetectionEngineOutput,
+  ContentTemplateForm
 } from 'veritone-react-common';
 import cx from 'classnames';
 
@@ -49,6 +50,7 @@ import widget from '../../shared/widget';
       _widgetId
     ),
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
+    contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
@@ -65,6 +67,7 @@ import widget from '../../shared/widget';
     setEngineId: mediaDetailsModule.setEngineId,
     toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
+    loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
   },
   null,
@@ -113,7 +116,8 @@ class MediaDetailsWidget extends React.Component {
           programId: string,
           programName: string,
           programImage: string,
-          programLiveImage: string
+          programLiveImage: string,
+          signedProgramLiveImage: string
         }),
         tags: arrayOf(
           shape({
@@ -164,6 +168,15 @@ class MediaDetailsWidget extends React.Component {
         libraryId: string,
         profileImageUrl: string,
         jsondata: objectOf(string)
+      })
+    ),
+    loadContentTemplates: func,
+    contentTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any)
       })
     )
   };
@@ -223,14 +236,6 @@ class MediaDetailsWidget extends React.Component {
     return '';
   };
 
-  getMediaFileName = () => {
-    return get(
-      this.props,
-      'tdo.details.veritoneFile.filename',
-      this.props.mediaId
-    );
-  };
-
   getMediaSource = () => {
     const veritoneProgram = get(this.props, 'tdo.details.veritoneProgram');
     if (!veritoneProgram) {
@@ -278,6 +283,9 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleTabChange = (evt, selectedTabValue) => {
+    if (selectedTabValue === 'contentTemplates') {
+      this.props.loadContentTemplates(this.props._widgetId);
+    }
     this.setState({ selectedTabValue });
   };
 
@@ -292,6 +300,10 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  handleUpdateContentTemplates = () => {
+    // TODO: implement add/remove TDO content tamplates
+  };
+
   render() {
     let {
       engineCategories,
@@ -303,7 +315,8 @@ class MediaDetailsWidget extends React.Component {
       currentMediaPlayerTime,
       editModeEnabled,
       libraries,
-      entities
+      entities,
+      contentTemplates
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -314,7 +327,7 @@ class MediaDetailsWidget extends React.Component {
             <div>
               <div className={styles.pageHeader}>
                 <div className={styles.pageHeaderTitleLabel}>
-                  {this.getMediaFileName()}
+                  {get(this.props, 'tdo.details.veritoneFile.filename', '')}
                 </div>
                 <div className={styles.pageHeaderActionButtons}>
                   <IconButton
@@ -362,7 +375,8 @@ class MediaDetailsWidget extends React.Component {
                   classes={{ root: styles.pageTabLabel }}
                   value="mediaDetails"
                   style={{
-                    fontWeight: this.state.selectedTabValue === 0 ? 500 : 400
+                    fontWeight:
+                      this.state.selectedTabValue === 'mediaDetails' ? 500 : 400
                   }}
                 />
                 <Tab
@@ -370,7 +384,10 @@ class MediaDetailsWidget extends React.Component {
                   classes={{ root: styles.pageTabLabel }}
                   value="contentTemplates"
                   style={{
-                    fontWeight: this.state.selectedTabValue === 1 ? 500 : 400
+                    fontWeight:
+                      this.state.selectedTabValue === 'contentTemplates'
+                        ? 500
+                        : 400
                   }}
                 />
               </Tabs>
@@ -617,9 +634,13 @@ class MediaDetailsWidget extends React.Component {
             />
           )}
 
-          {/* TODO: uncomment when implemented. Commented out for MVP.
-          this.state.selectedTabValue === 1 && <div>Content Template</div>
-          */}
+          {this.state.selectedTabValue === 'contentTemplates' &&
+            contentTemplates && (
+              <ContentTemplateForm
+                templateData={contentTemplates}
+                handleUpdateContentTemplates={this.handleUpdateContentTemplates}
+              />
+            )}
         </Paper>
       </FullScreenDialog>
     );
