@@ -52,6 +52,9 @@ module.exports = {
     'react/default-props-match-prop-types': 'warn',
     'react/forbid-foreign-prop-types': 'warn',
     'react/no-access-state-in-setstate': 'warn',
+    'react/no-children-prop': 'warn',
+    'react/no-typos': 'warn',
+    'react/no-this-in-sfc': 'warn',
 
     'import/named': 'warn'
   },
