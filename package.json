@@ -14,7 +14,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn run lintall && yarn run testall"
+      "pre-commit": "bash ./changed-packages.sh"
     }
   },
   "workspaces": [
