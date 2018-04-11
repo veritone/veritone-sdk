@@ -380,9 +380,6 @@ export default {
   },
   validate: adapterStep => (configuration, cb) => {
     let errors = [];
-    if (!configuration.sourceId) {
-      errors.push('Invalid Source');
-    }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
         if (field.defaultValue && !configuration[field.name]) {
