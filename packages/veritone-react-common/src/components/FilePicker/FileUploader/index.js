@@ -59,6 +59,7 @@ class FileUploader extends Component {
   static propTypes = {
     acceptedFileTypes: arrayOf(string),
     onFilesSelected: func.isRequired,
+    // eslint-disable-next-line react/no-unused-prop-types
     onFilesRejected: func,
     isOver: bool.isRequired,
     connectDropTarget: func.isRequired,
@@ -67,7 +68,7 @@ class FileUploader extends Component {
 
   static defaultProps = {
     acceptedFileTypes: [],
-    onFileRejected: noop
+    onFilesRejected: noop
   };
 
   handleFileSelection = () => {
