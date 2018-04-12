@@ -2,8 +2,8 @@ import React from 'react';
 import { has } from 'lodash';
 
 import {
-  any, 
-  arrayOf, 
+  any,
+  arrayOf,
   objectOf,
   func
 } from 'prop-types';
@@ -144,6 +144,7 @@ export default class SourceConfiguration extends React.Component {
   }
 
   render() {
+    console.log('this.props.source:', this.props.source)
     return (
       <div className={styles.fullPage}>
         <div>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  arrayOf, 
+  arrayOf,
   string,
   element,
   node
@@ -34,7 +34,7 @@ export default class ModalHeader extends React.Component {
         </div>
         <div>
           {this.props.children}
-        </div>        
+        </div>
       </div>
     );
   };

@@ -105,7 +105,7 @@ export default class ContentTemplateForm extends React.Component {
           onInputChange={this.updateTemplateDetails}
         />
         <div className={styles.btnContainer}>
-          <Button raised color='primary' type="submit">
+          <Button variant="raised" color='primary' type="submit">
             Save
           </Button>
         </div>

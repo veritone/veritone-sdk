@@ -21,7 +21,7 @@ export default class IngestionJobNullstate extends React.Component {
         <div className={styles.linkText}>How to Ingest a Data Set</div>
         <Button
           className={styles.buttonStyle}
-          raised
+          variant="raised"
           color='primary'
           component='span'
         >

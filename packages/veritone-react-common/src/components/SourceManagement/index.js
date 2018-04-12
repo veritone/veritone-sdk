@@ -45,13 +45,13 @@ export default class SourceManagementOverview extends React.Component {
       source,
       ['name', 'details', 'thumbnailUrl', 'sourceTypeId', 'sourceType']
     );
-  
+
     this.setState({
       // selectedSource,
       sourceConfig
     })
   }
-  
+
   handleFormSubmit = (payload) => {
     return this.props.onFormSubmit(payload);
   }

@@ -8,7 +8,7 @@
 
 .separator {
   align-self: center;
-  border-right: 1px solid $light-black;
+  border-right: 1px solid $grey-1;
   height: 27px;
 }
 
@@ -16,9 +16,4 @@
   width: 100%;
   display: flex;
   justify-content: flex-end;
-}
-
-.tabIndicator {
-  background-color: $orange600;
-  color: $orange600;
 }

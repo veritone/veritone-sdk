@@ -29,6 +29,8 @@ export { Table, PaginatedTable, Column } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
 
 export SourceManagementOverview from './components/SourceManagement';
+export SourceNullState from './components/SourceManagement';
+export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 

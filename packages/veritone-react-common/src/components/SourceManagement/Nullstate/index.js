@@ -26,7 +26,7 @@ export default class SourceManagementNullState extends React.Component {
         <div className={styles.linkText}>How to Create a Source</div>
         <Button
           className={styles.buttonStyle}
-          raised
+          variant="raised"
           color='primary'
           onClick={this.props.onClick}
         >

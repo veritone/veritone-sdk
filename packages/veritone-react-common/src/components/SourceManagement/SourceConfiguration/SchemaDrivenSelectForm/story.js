@@ -61,20 +61,19 @@ const sourceTypes = {
 
 function formCallback(formResult) {
   console.log(formResult);
-  
 };
 
-let helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
-let selectLabel = 'Select a Source Type';
+const helperText = 'NOTE: Source types available are dynamic based on your ingestion adapter';
+const selectLabel = 'Select a Source Type';
 
-let initialValues = {
+const initialValues = {
   url: 'twitter.com',
   username: 'trump',
   password: 'password',
 };
 
 // test passing in an object with fields that are in error state
-let errorFields = {
+const errorFields = {
   url: true,
   username: false,
   password: true
@@ -94,7 +93,8 @@ storiesOf('SchemaDrivenSelectForm', module)
   .add('Error Field', () => (
     <DynamicSelect
       sourceTypes={sourceTypes.data.records}
-      fieldValues={{username:'trump'}}
+      currentSourceType={0}
+      fieldValues={{ username: 'trump' }}
       errorFields={errorFields}
       onInputChange={formCallback}
       helperText={helperText}

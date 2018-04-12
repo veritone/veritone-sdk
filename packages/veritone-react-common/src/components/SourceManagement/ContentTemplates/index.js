@@ -38,13 +38,14 @@ export default class ContentTemplates extends React.Component {
   };
 
   render() {
+    console.log('this.props:', this.props)
     const { selectedTemplateSchemas } = this.props;
     const showNullstate = !Object.keys(selectedTemplateSchemas).length;
 
     return (
       <div className={styles.templatePage}>
-        <TemplateList 
-          templates={this.props.templateData} 
+        <TemplateList
+          templates={this.props.templateData}
           selectedTemplates={selectedTemplateSchemas}
           addOrRemoveTemplate={this.props.onListChange}
         />

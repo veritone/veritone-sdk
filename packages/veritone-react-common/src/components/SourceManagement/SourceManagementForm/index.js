@@ -16,14 +16,13 @@ import styles from './styles.scss';
 export default class SourceManagementForm extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
-    sources: arrayOf(objectOf(any)),
-    source: objectOf(any),
     templateData: objectOf(shape({
       id: string,
       name: string.isRequired,
       status: string,
       definition: objectOf(any)
     })).isRequired,
+    source: objectOf(any),
     initialTemplates: objectOf(shape({
       id: string,
       name: string.isRequired,
@@ -38,7 +37,6 @@ export default class SourceManagementForm extends React.Component {
 
   static defaultProps = {
     sourceTypes: [],
-    sources: [],
     templateData: {},
     initialTemplates: {}
   }
@@ -173,7 +171,7 @@ export default class SourceManagementForm extends React.Component {
 
   render() {
     const { activeTab } = this.state;
-    
+
     return (
       <FullScreenDialog open={this.state.openDialog}>
         <ModalHeader
@@ -221,7 +219,7 @@ export default class SourceManagementForm extends React.Component {
             <Button onClick={this.handleOnClose}>
               Cancel
               </Button>
-            <Button raised color='primary' type="submit">
+            <Button variant="raised" color='primary' type="submit">
               Create
               </Button>
           </div>

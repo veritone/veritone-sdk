@@ -127,14 +127,15 @@ const NormalTableContainer = ({
             </TableBody>
         }
       </MuiTable>
-      <MuiTable>
-        {footerElement &&
+      {footerElement &&
+        <MuiTable>
           <TableFooter style={{ height: footerHeight }}>
             <TableRow>
               {footerElement}
             </TableRow>
-          </TableFooter>}
-      </MuiTable>
+          </TableFooter>
+        </MuiTable>
+      }
     </Paper>
   );
 }
@@ -259,14 +260,15 @@ class SplitTableContainer extends React.Component {
               {children}
             </TableBody>
           </MuiTable>
-          <MuiTable>
-            {footerElement &&
+          {footerElement &&
+            <MuiTable>
               <TableFooter style={{ height: footerHeight }}>
                 <TableRow>
                   {footerElement}
                 </TableRow>
-              </TableFooter>}
-          </MuiTable>
+              </TableFooter>
+            </MuiTable>
+          }
         </Paper>
       </div>
     );
@@ -341,7 +343,7 @@ export const Column = ({
   function handleCellClick(e) {
     return onCellClick(row, dataKey, get(data, dataKey));
   }
-  
+
   return (
     <TableCell
       {...rest}

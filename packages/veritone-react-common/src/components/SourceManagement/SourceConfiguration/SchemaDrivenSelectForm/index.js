@@ -76,16 +76,14 @@ export default class DynamicSelect extends React.Component {
     });
   };
 
-  handleTooltip = () => {
-    console.log('tooltip clicked');
-  };
-  
   renderFields = () => {
+    console.log('this.props:', this.props);
     const definition = this.props.sourceTypes[this.props.currentSourceType].sourceSchema.definition;
     const properties = definition.properties;
     const requiredFields = has(definition, 'required') ? definition.required : [];
-
+    console.log('properties:', properties);
     return Object.keys(this.props.fieldValues).map((fieldId, index) => {
+      console.log('fieldId:', fieldId);
       return (
         <SourceTypeField 
           id={fieldId} 
@@ -120,8 +118,8 @@ export default class DynamicSelect extends React.Component {
           </InputLabel>
         }
         {
-          !this.state.oneSourceType && 
-          <Select 
+          !this.state.oneSourceType &&
+          <Select
             className={styles.selectField}
             fullWidth
             inputProps={{
@@ -190,5 +188,5 @@ function SourceTypeField({ id, type, required, value, onChange, title, error }) 
     );
   }
 
-  return React.cloneElement(element, { required: required });
+  return required ? React.cloneElement(element, { required }) : element;
 }

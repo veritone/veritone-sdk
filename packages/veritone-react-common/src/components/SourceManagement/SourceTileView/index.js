@@ -4,24 +4,26 @@ import {
   arrayOf,
   any,
   objectOf,
-  func
+  func,
+  bool
 } from 'prop-types';
 
-import { Table, Column } from 'components/DataTable';
+import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
 import Avatar from 'material-ui/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
-import { capitalize } from 'lodash';
+import { capitalize, omit, noop } from 'lodash';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
-    onSelectSource: func.isRequired,
-    onSelectMenuItem: func
+    onSelectMenuItem: func,
+    paginate: bool,
   };
 
   static defaultProps = {
-    sources: []
+    sources: [],
+    onSelectMenuItem: noop
   };
 
   getSourceData = (i) => {
@@ -49,17 +51,21 @@ export default class SourceTileView extends React.Component {
   }
 
   render() {
+    const TableComp = this.props.paginate ? PaginatedTable : Table;
+    const tableProps = omit(this.props, ['sources', 'onSelectMenuItem', 'paginate']);
+
     return (
-      <Table
+      <TableComp
         rowGetter={this.getSourceData}
         rowCount={this.props.sources.length}
         rowHeight={48}
+        {...tableProps}
       >
         <Column
           dataKey='thumbnailUrl'
           header=''
           cellRenderer={this.renderThumbnail}
-          width={30}
+          width={20}
         />
         <Column
           dataKey='name'
@@ -88,7 +94,7 @@ export default class SourceTileView extends React.Component {
           dataKey='sourceType.sourceSchema.validActions'
           onSelectItem={this.props.onSelectMenuItem}
         />
-      </Table>
+      </TableComp>
     );
   };
 }
