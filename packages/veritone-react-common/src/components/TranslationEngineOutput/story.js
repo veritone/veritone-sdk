@@ -54,7 +54,7 @@ export class TranslationExample extends Component {
       return (
         <TranslationEngineOutput
           contents={state.contents}
-          onClick={boolean('Enable Interaction', false) && action('entry clicked')}
+          onClick={action('entry clicked')}
           onRerunProcess={action('on rerun')}
           className={styles.outputViewRoot}
   
@@ -75,7 +75,7 @@ export class TranslationExample extends Component {
       return (
         <TranslationEngineOutput
           contents={state.contents}
-          onClick={boolean('Enable Interaction', false) && action('entry clicked')}
+          onClick={action('entry clicked')}
           onRerunProcess={action('on rerun')}
           className={styles.outputViewRoot}
   

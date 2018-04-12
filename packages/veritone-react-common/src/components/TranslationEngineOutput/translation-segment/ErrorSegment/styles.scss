@@ -1,6 +1,6 @@
 @import 'src/styles/modules/variables';
 
-.errorSegment{
+.errorSegment {
   width: 100%;
   font-weight: 300;
   border: 2px dashed $grey-4;
@@ -15,12 +15,12 @@
     margin-bottom: 20px;
   }
   
-  .time{
+  .time {
     font-size: 16px;
     color: $light-black;
   }
 
-  .message{
+  .message {
     font-size: 20px;
     color: $red500;
   }
