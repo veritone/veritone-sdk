@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import Button from 'material-ui/Button';
 import { msToReadableString } from '../../../../helpers/time';
 
-
 import styles from './styles.scss';
 
 export default class ErrorSegment extends Component {
@@ -15,19 +14,15 @@ export default class ErrorSegment extends Component {
     className: string,
     timeClassName: string,
     messageClassName: string
-  }
+  };
 
   handleOnClick = () => {
-    let {
-      onClick,
-      startTimeMs,
-      stopTimeMs
-    } = this.props;
-    
-    (onClick) && onClick(startTimeMs, stopTimeMs);
-  }
+    let { onClick, startTimeMs, stopTimeMs } = this.props;
 
-  render () {
+    onClick && onClick(startTimeMs, stopTimeMs);
+  };
+
+  render() {
     let {
       startTimeMs,
       stopTimeMs,
@@ -41,10 +36,16 @@ export default class ErrorSegment extends Component {
 
     return (
       <div className={classNames(styles.errorSegment, className)}>
-        <div className={classNames(styles.time, timeClassName)}>{startTimeString + ' - ' + stopTimeString}</div>
-        <div className={classNames(styles.message, messageClassName)}>Error Running Translation Engine</div>
+        <div className={classNames(styles.time, timeClassName)}>
+          {startTimeString + ' - ' + stopTimeString}
+        </div>
+        <div className={classNames(styles.message, messageClassName)}>
+          Error Running Translation Engine
+        </div>
         <div>
-          <Button variant="raised" color="primary" onClick={this.handleOnClick}>RERUN PROCESS</Button>
+          <Button variant="raised" color="primary" onClick={this.handleOnClick}>
+            RERUN PROCESS
+          </Button>
         </div>
       </div>
     );

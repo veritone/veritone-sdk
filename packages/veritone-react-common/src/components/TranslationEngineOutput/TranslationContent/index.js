@@ -11,19 +11,25 @@ import styles from './styles.scss';
 
 export default class TranslationContent extends Component {
   static propTypes = {
-    contents: arrayOf(shape({
-      startTimeMs: number,
-      stopTimeMs: number,
-      series: arrayOf(shape({
+    contents: arrayOf(
+      shape({
         startTimeMs: number,
         stopTimeMs: number,
-        status: string,
-        words: arrayOf(shape({
-          word: string,
-          confidence: number
-        }))
-      }))
-    })),
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            status: string,
+            words: arrayOf(
+              shape({
+                word: string,
+                confidence: number
+              })
+            )
+          })
+        )
+      })
+    ),
 
     className: string,
     dataSegmentClassName: string,
@@ -40,7 +46,7 @@ export default class TranslationContent extends Component {
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
-  }
+  };
 
   static defaultProps = {
     mediaPlayerTimeMs: -1,
@@ -59,9 +65,9 @@ export default class TranslationContent extends Component {
       noDataSegmentClassName,
 
       neglectableTimeMs,
-      
+
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     let segments = [];
@@ -73,21 +79,25 @@ export default class TranslationContent extends Component {
       segmentStatus = undefined;
       segmentStartTime = undefined;
       segmentStopTime = undefined;
-    }
+    };
 
     let createErrorSegment = () => {
       segments.push({
         start: segmentStartTime,
         stop: segmentStopTime,
-        content: (<ErrorSegment 
-          startTimeMs={segmentStartTime} 
-          stopTimeMs={segmentStopTime} 
-          className={classNames(styles.boxSegment, errorSegmentClassName)}
-          onClick={onRerunProcess}
-          key={'translation-error-' + segmentStartTime + '-' + segmentStopTime}
-        />)
+        content: (
+          <ErrorSegment
+            startTimeMs={segmentStartTime}
+            stopTimeMs={segmentStopTime}
+            className={classNames(styles.boxSegment, errorSegmentClassName)}
+            onClick={onRerunProcess}
+            key={
+              'translation-error-' + segmentStartTime + '-' + segmentStopTime
+            }
+          />
+        )
       });
-      
+
       segmentStartTime = segmentStopTime;
       segmentStopTime = undefined;
     };
@@ -96,19 +106,23 @@ export default class TranslationContent extends Component {
       segments.push({
         start: segmentStartTime,
         stop: segmentStopTime,
-        content: (<NoDataSegment 
-            startTimeMs={segmentStartTime} 
+        content: (
+          <NoDataSegment
+            startTimeMs={segmentStartTime}
             stopTimeMs={segmentStopTime}
             className={classNames(styles.boxSegment, noDataSegmentClassName)}
-            key={'translation-nodata-' + segmentStartTime + '-' + segmentStopTime}
-        />)
+            key={
+              'translation-nodata-' + segmentStartTime + '-' + segmentStopTime
+            }
+          />
+        )
       });
 
       segmentStartTime = segmentStopTime;
       segmentStopTime = undefined;
     };
 
-    let createDataSegment = (dataSegments) => {
+    let createDataSegment = dataSegments => {
       segments.push({
         start: segmentStartTime,
         stop: segmentStopTime,
@@ -117,7 +131,7 @@ export default class TranslationContent extends Component {
 
       segmentStartTime = segmentStopTime;
       segmentStopTime = undefined;
-    }
+    };
 
     contents.forEach((dataChunk, chunkIndex) => {
       let chunkStartTime = dataChunk.startTimeMs;
@@ -146,11 +160,14 @@ export default class TranslationContent extends Component {
             createNoDataSegment();
           }
 
-          segmentStatus = entryStatus;    // updata segment status
+          segmentStatus = entryStatus; // updata segment status
         }
 
         // ----Update Segment Time----
-        if (segmentStartTime === undefined || segmentStartTime > entryStartTime) {
+        if (
+          segmentStartTime === undefined ||
+          segmentStartTime > entryStartTime
+        ) {
           segmentStartTime = entryStartTime;
         }
 
@@ -163,19 +180,26 @@ export default class TranslationContent extends Component {
           createErrorSegment();
         } else if (entryStatus === 'success' && entry.words.length > 0) {
           // ----------Draw Translation Text----------
-          let playHeadEnabled = (mediaPlayerTimeMs >= 0);
-          let mediaPlayerStopTimeMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-          let flooredEntryStartTime = Math.floor(entryStartTime/1000) * 1000;
+          let playHeadEnabled = mediaPlayerTimeMs >= 0;
+          let mediaPlayerStopTimeMs =
+            mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+          let flooredEntryStartTime = Math.floor(entryStartTime / 1000) * 1000;
           let ceiledEntryStartTime = Math.ceil(entryStopTime / 1000) * 1000;
 
           let wordOptions = sortBy(entry.words, 'confidence');
           dataSegmentEntries.push(
             <DataSegment
               content={wordOptions[0].word}
-              startTimeMs={entryStartTime} 
+              startTimeMs={entryStartTime}
               stopTimeMs={entryStopTime}
               onClick={onClick}
-              active={playHeadEnabled && !(mediaPlayerTimeMs > ceiledEntryStartTime || mediaPlayerStopTimeMs < flooredEntryStartTime)}
+              active={
+                playHeadEnabled &&
+                !(
+                  mediaPlayerTimeMs > ceiledEntryStartTime ||
+                  mediaPlayerStopTimeMs < flooredEntryStartTime
+                )
+              }
               className={classNames(styles.dataSegment, dataSegmentClassName)}
               key={'translation-data-' + entryStartTime + '-' + entryStopTime}
             />
@@ -189,7 +213,12 @@ export default class TranslationContent extends Component {
         segmentStopTime = chunkStopTime;
       }
 
-      if (segmentStatus === 'nodata' && isNaN(neglectableTimeMs) && neglectableTimeMs > 0 && chunkIndex < contents.length - 1) {
+      if (
+        segmentStatus === 'nodata' &&
+        isNaN(neglectableTimeMs) &&
+        neglectableTimeMs > 0 &&
+        chunkIndex < contents.length - 1
+      ) {
         let nextDataChunk = contents[chunkIndex + 1];
         let nextChunkStartTime = nextDataChunk.startTimeMs;
         if (nextChunkStartTime - neglectableTimeMs <= segmentStopTime) {
@@ -203,16 +232,17 @@ export default class TranslationContent extends Component {
           clearSegmentStatus();
         }
       } else {
-        (segmentStatus === 'nodata') && createNoDataSegment();
-        (segmentStatus === 'success') && createDataSegment(dataSegmentEntries.concat([]));
+        segmentStatus === 'nodata' && createNoDataSegment();
+        segmentStatus === 'success' &&
+          createDataSegment(dataSegmentEntries.concat([]));
         clearSegmentStatus();
       }
     });
 
     return segments;
-  }
+  };
 
-  render () {
+  render() {
     let {
       className,
       onScroll,

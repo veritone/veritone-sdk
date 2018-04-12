@@ -12,19 +12,25 @@ import styles from './styles.scss';
 export default class TranslationEngineOutput extends Component {
   static propTypes = {
     title: string,
-    contents: arrayOf(shape({
-      startTimeMs: number,
-      stopTimeMs: number,
-      series: arrayOf(shape({
+    contents: arrayOf(
+      shape({
         startTimeMs: number,
         stopTimeMs: number,
-        status: string,
-        words: arrayOf(shape({
-          word: string,
-          confidence: number
-        }))
-      }))
-    })),
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            status: string,
+            words: arrayOf(
+              shape({
+                word: string,
+                confidence: number
+              })
+            )
+          })
+        )
+      })
+    ),
 
     engines: arrayOf(
       shape({
@@ -60,7 +66,7 @@ export default class TranslationEngineOutput extends Component {
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
-  }
+  };
 
   static defaultProps = {
     contents: [],
@@ -70,11 +76,12 @@ export default class TranslationEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
-  handleLanguageChanged = (event) => {
-    (this.props.onLanguageChanged) && this.props.onLanguageChanged(event.target.value);
-  } 
+  handleLanguageChanged = event => {
+    this.props.onLanguageChanged &&
+      this.props.onLanguageChanged(event.target.value);
+  };
 
-  renderHeader () {
+  renderHeader() {
     let {
       title,
       engines,
@@ -83,9 +90,9 @@ export default class TranslationEngineOutput extends Component {
       onExpandClicked,
 
       headerClassName,
-      
+
       languages,
-      selectedLanguageId,
+      selectedLanguageId
     } = this.props;
 
     return (
@@ -103,18 +110,19 @@ export default class TranslationEngineOutput extends Component {
           onChange={this.handleLanguageChanged}
           className={classNames(styles.languages)}
         >
-          {
-            languages.map(language => {
-              return <MenuItem value={language.id} key={'language-' + language.id}>{language.name}</MenuItem>
-            })
-          }
+          {languages.map(language => {
+            return (
+              <MenuItem value={language.id} key={'language-' + language.id}>
+                {language.name}
+              </MenuItem>
+            );
+          })}
         </Select>
       </EngineOutputHeader>
     );
   }
 
-
-  renderBody () {
+  renderBody() {
     let {
       contents,
       bodyClassName,
@@ -129,23 +137,20 @@ export default class TranslationEngineOutput extends Component {
       estimatedDisplayTimeMs,
 
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     return (
       <div className={classNames(styles.body, bodyClassName)}>
-        <TranslationContent 
+        <TranslationContent
           contents={contents}
           className={contentClassName}
-
           onClick={onClick}
           onScroll={onScroll}
           onRerunProcess={onRerunProcess}
-          
           mediaLengthMs={mediaLengthMs}
           neglectableTimeMs={neglectableTimeMs}
           estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
         />
@@ -153,10 +158,11 @@ export default class TranslationEngineOutput extends Component {
     );
   }
 
-
-  render () {
+  render() {
     return (
-      <div className={classNames(styles.translationOutput, this.props.className)}>
+      <div
+        className={classNames(styles.translationOutput, this.props.className)}
+      >
         {this.renderHeader()}
         {this.renderBody()}
       </div>

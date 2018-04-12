@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { bool } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { number, boolean } from '@storybook/addon-knobs/react';
+import { number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
 import styles from './story.styles.scss';
@@ -12,10 +12,8 @@ storiesOf('TranslationEngineOutput', module)
     return <TranslationExample />;
   })
   .add('With Lazy Loading', () => {
-    return <TranslationExample lazyLoading/>;
+    return <TranslationExample lazyLoading />;
   });
-
-
 
 export class TranslationExample extends Component {
   static propTypes = {
@@ -40,15 +38,17 @@ export class TranslationExample extends Component {
     contents: renderMockData(0, 50000)
   };
 
-  handleDataRequesting = (scrollStatus) => {
-    let newContents = renderMockData(scrollStatus.start, scrollStatus.stop).concat(this.state.contents);
+  handleDataRequesting = scrollStatus => {
+    let newContents = renderMockData(
+      scrollStatus.start,
+      scrollStatus.stop
+    ).concat(this.state.contents);
     this.setState({
       contents: newContents
-    })
-  }
+    });
+  };
 
-
-  render () {
+  render() {
     let state = this.state;
     if (!this.props.lazyLoading) {
       return (
@@ -57,16 +57,13 @@ export class TranslationExample extends Component {
           onClick={action('entry clicked')}
           onRerunProcess={action('on rerun')}
           className={styles.outputViewRoot}
-  
-          engines={state.engines} 
+          engines={state.engines}
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClicked={action('expand clicked')}
-  
           languages={state.languages}
           selectedLanguageId={state.selectedLanguageId}
           onLanguageChanged={action('language changed')}
-  
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
           mediaPlayerTimeIntervalMs={1000}
         />
@@ -78,21 +75,17 @@ export class TranslationExample extends Component {
           onClick={action('entry clicked')}
           onRerunProcess={action('on rerun')}
           className={styles.outputViewRoot}
-  
-          engines={state.engines} 
+          engines={state.engines}
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClicked={action('expand clicked')}
-  
           languages={state.languages}
           selectedLanguageId={state.selectedLanguageId}
           onLanguageChanged={action('language changed')}
-  
           onScroll={this.handleDataRequesting}
           mediaLengthMs={600000}
           neglectableTimeMs={500}
           estimatedDisplayTimeMs={50000}
-  
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
           mediaPlayerTimeIntervalMs={1000}
         />
@@ -101,9 +94,16 @@ export class TranslationExample extends Component {
   }
 }
 
-
-function renderMockData (startTimeMs, stopTimeMs, noDataRatio = 0.1, errorRatio = 0.1) {
-  let mockData = (startTimeMs < stopTimeMs) ? {startTimeMs: startTimeMs, stopTimeMs: stopTimeMs} : {};
+function renderMockData(
+  startTimeMs,
+  stopTimeMs,
+  noDataRatio = 0.1,
+  errorRatio = 0.1
+) {
+  let mockData =
+    startTimeMs < stopTimeMs
+      ? { startTimeMs: startTimeMs, stopTimeMs: stopTimeMs }
+      : {};
 
   let series = [];
   let numSeries = Math.round(Math.random() * 19) + 1;
@@ -116,15 +116,19 @@ function renderMockData (startTimeMs, stopTimeMs, noDataRatio = 0.1, errorRatio 
     };
 
     let randomStatus = Math.random();
-    if (randomStatus <= errorRatio) {                       //Error
+    if (randomStatus <= errorRatio) {
+      //Error
       entry.status = 'error';
-    } else if (randomStatus <= noDataRatio + errorRatio) {  //No Data
+    } else if (randomStatus <= noDataRatio + errorRatio) {
+      //No Data
       // do nothing
-    } else {                                                //Normal
+    } else {
+      //Normal
       let numOptions = Math.round(Math.random() * 5);
       let wordOptions = [];
       for (let optionIndex = 0; optionIndex < numOptions; optionIndex++) {
-        let option = sentences[Math.round(Math.random() * (sentences.length - 1))];
+        let option =
+          sentences[Math.round(Math.random() * (sentences.length - 1))];
         wordOptions.push({
           word: option,
           confidence: Math.random()
@@ -133,7 +137,7 @@ function renderMockData (startTimeMs, stopTimeMs, noDataRatio = 0.1, errorRatio 
       entry.words = wordOptions;
     }
     series.push(entry);
-  } 
+  }
 
   mockData.series = series;
   return [mockData];

@@ -3,7 +3,6 @@ import { number, string } from 'prop-types';
 import classNames from 'classnames';
 import { msToReadableString } from '../../../../helpers/time';
 
-
 import styles from './styles.scss';
 
 export default class NoDataSegment extends Component {
@@ -13,9 +12,9 @@ export default class NoDataSegment extends Component {
     className: string,
     timeClassName: string,
     messageClassName: string
-  }
+  };
 
-  render () {
+  render() {
     let {
       startTimeMs,
       stopTimeMs,
@@ -29,8 +28,12 @@ export default class NoDataSegment extends Component {
 
     return (
       <div className={classNames(styles.noDataSegment, className)}>
-        <div className={classNames(styles.time, timeClassName)}>{startTimeString + ' - ' + stopTimeString}</div>
-        <div className={classNames(styles.message, messageClassName)}>No Translation Data Available</div>
+        <div className={classNames(styles.time, timeClassName)}>
+          {startTimeString + ' - ' + stopTimeString}
+        </div>
+        <div className={classNames(styles.message, messageClassName)}>
+          No Translation Data Available
+        </div>
       </div>
     );
   }
