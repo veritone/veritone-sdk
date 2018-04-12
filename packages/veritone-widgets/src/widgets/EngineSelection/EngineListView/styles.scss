@@ -1,19 +1,24 @@
-@import '~veritone-react-common/src/styles/modules/_muiTypography';
-@import '~veritone-react-common/src/styles/modules/_variables';
+@import 'node_modules/veritone-react-common/src/styles/modules/_muiTypography';
+@import 'node_modules/veritone-react-common/src/styles/modules/_variables';
 
 .engineSelection {
   display: flex;
+  height: 100%;
+  background-color: white;
 }
 
 .engineSelectionContent {
+  height: 100%;
   flex-grow: 1;
+  background: white;
 }
 
 .engineListContainer {
-  height: calc(100vh - 65px);
-  padding: 0 20px;
+  height: 100%;
   flex-direction: column;
   display: flex;
+  background: white;
+  padding: 0 20px;
 }
 
 .engineList {
@@ -76,13 +81,6 @@
   margin-bottom: 20px;
 }
 
-.footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 30px 0;
-  margin-bottom: auto;
-}
-
 .isFetching {
   display: flex;
   justify-content: center;
@@ -105,4 +103,16 @@
   @include mui-text('subhead');
   font-weight: 500 !important;
   color: $min-black;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 30px 50px;
+  margin-bottom: auto;
+  z-index: 1000;
+}
+
+.footerBtn {
+  font-weight: 500;
 }

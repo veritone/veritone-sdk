@@ -15,7 +15,7 @@ import { isEmpty, isArray, isString, without, noop } from 'lodash';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
-
+import { withMuiThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
@@ -58,6 +58,7 @@ import styles from './styles.scss';
     toggleSearch: engineSelectionModule.toggleSearch
   }
 )
+@withMuiThemeProvider
 export default class EngineListView extends React.Component {
   static propTypes = {
     allEngines: objectOf(object).isRequired,
@@ -87,7 +88,8 @@ export default class EngineListView extends React.Component {
     changeTab: func.isRequired,
     toggleSearch: func.isRequired,
     onSave: func.isRequired,
-    onCancel: func.isRequired
+    onCancel: func.isRequired,
+    hideActions: bool
   };
 
   static defaultProps = {
@@ -228,6 +230,10 @@ export default class EngineListView extends React.Component {
     return this.renderEngineList();
   };
 
+  handleSave = () => {
+    this.props.onSave();
+  };
+
   render() {
     const { checkedEngineIds } = this.props;
     const { currentTabIndex } = this.props;
@@ -279,12 +285,23 @@ export default class EngineListView extends React.Component {
               }
             />
             <div className={styles.engineList}>{tabs[currentTabIndex]}</div>
-            <div className={styles.footer}>
-              <Button onClick={this.props.onCancel}>Cancel</Button>
-              <Button color="primary" onClick={this.props.onSave}>
-                Save
-              </Button>
-            </div>
+            {!this.props.hideActions && (
+              <div className={styles.footer}>
+                <Button
+                  classes={{ label: styles.footerBtn }}
+                  onClick={this.props.onCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  classes={{ label: styles.footerBtn }}
+                  onClick={this.handleSave}
+                >
+                  Save
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

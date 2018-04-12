@@ -30,10 +30,10 @@ function SelectedActionBar({
     onSelectAll(allEngines);
   };
 
-  const displaySelectAllMessage =
-    !disabledSelectAllMessage &&
-    selectedEngines.length === currentResultsCount &&
-    selectedEngines.length < allEngines.length;
+  const displaySelectAllMessage = false; // disabled for now
+  // !disabledSelectAllMessage &&
+  // selectedEngines.length === currentResultsCount &&
+  // selectedEngines.length < allEngines.length;
 
   return (
     <div className={styles.addRemoveSelectedBar}>

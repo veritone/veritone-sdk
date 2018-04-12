@@ -55,7 +55,7 @@ export function fetchEngines(searchQuery, filters = {}) {
 
     const query = `
       query Engines($name: String = "", $filter: EngineFilter) {
-        engines(name: $name, limit: 1000, filter: $filter) {
+        engines(name: $name, limit: 1000, owned: false, filter: $filter) {
           records {
             id
             name

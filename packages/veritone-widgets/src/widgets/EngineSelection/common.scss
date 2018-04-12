@@ -1,5 +1,5 @@
-@import '~veritone-react-common/src/styles/modules/_muiTypography';
-@import '~veritone-react-common/src/styles/modules/_variables';
+@import 'node_modules/veritone-react-common/src/styles/modules/_muiTypography';
+@import 'node_modules/veritone-react-common/src/styles/modules/_variables';
 
 @mixin avatar($dimensions: 137px) {
   position: relative;

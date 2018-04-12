@@ -1,4 +1,13 @@
-import { get, set, omit, without, union, merge, isArray } from 'lodash';
+import {
+  get,
+  set,
+  omit,
+  without,
+  union,
+  merge,
+  isArray,
+  difference
+} from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer } = helpers;
 const { engine: engineModule } = modules;
@@ -22,6 +31,11 @@ export const CLEAR_SEARCH = 'vtn/engineSelection/CLEAR_SEARCH';
 export const CHANGE_TAB = 'vtn/engineSelection/CHANGE_TAB';
 export const TOGGLE_SEARCH = 'vtn/engineSelection/TOGGLE_SEARCH';
 
+export const SET_DESELECTED_ENGINES =
+  'vtn/engineSelection/SET_DESELECTED_ENGINES';
+export const SET_ALL_ENGINES_SELECTED =
+  'vtn/engineSelection/SET_ALL_ENGINES_SELECTED';
+
 export const namespace = 'engineSelection';
 
 const defaultState = {
@@ -36,7 +50,9 @@ const defaultState = {
   checkedEngineIds: [],
   allEnginesChecked: false,
   currentTabIndex: 0,
-  isSearchOpen: false
+  isSearchOpen: false,
+  deselectedEngineIds: [],
+  allEnginesSelected: false
 };
 
 export default createReducer(defaultState, {
@@ -45,8 +61,19 @@ export default createReducer(defaultState, {
     const normalizedResults = action.payload.results.map(engine => engine.id);
     const newResults = set({}, resultsPath, normalizedResults);
 
+    /*
+    * Check if engines in deselectedEngineIds
+    * if so then ignore
+    * otherwise add to selected
+    */
+    const selectedEngineIds = state.allEnginesSelected
+      ? difference(normalizedResults, state.deselectedEngineIds)
+      : [];
+    // console.log('selectedEngineIds', selectedEngineIds);
+
     return {
       ...state,
+      selectedEngineIds: [...state.selectedEngineIds, ...selectedEngineIds],
       searchResults: merge({}, state.searchResults, newResults)
     };
   },
@@ -74,6 +101,10 @@ export default createReducer(defaultState, {
         state.selectedEngineIds,
         action.payload.engineIds
       ),
+      deselectedEngineIds: without(
+        state.deselectedEngineIds,
+        ...action.payload.engineIds
+      ),
       checkedEngineIds: [],
       allEnginesChecked: false
     };
@@ -84,6 +115,10 @@ export default createReducer(defaultState, {
       selectedEngineIds: without(
         state.selectedEngineIds,
         ...action.payload.engineIds
+      ),
+      deselectedEngineIds: union(
+        state.deselectedEngineIds,
+        action.payload.engineIds
       ),
       checkedEngineIds: [],
       allEnginesChecked: false
@@ -160,6 +195,18 @@ export default createReducer(defaultState, {
     return {
       ...state,
       isSearchOpen: !state.isSearchOpen
+    };
+  },
+  [SET_DESELECTED_ENGINES](state, action) {
+    return {
+      ...state,
+      deselectedEngineIds: action.payload.deselectedEngineIds
+    };
+  },
+  [SET_ALL_ENGINES_SELECTED](state, action) {
+    return {
+      ...state,
+      allEnginesSelected: action.payload.allEnginesSelected
     };
   }
 });
@@ -287,6 +334,24 @@ export function toggleSearch() {
   };
 }
 
+export function setDeselectedEngineIds(deselectedEngineIds) {
+  return {
+    type: SET_DESELECTED_ENGINES,
+    payload: {
+      deselectedEngineIds
+    }
+  };
+}
+
+export function setAllEnginesSelected(allEnginesSelected) {
+  return {
+    type: SET_ALL_ENGINES_SELECTED,
+    payload: {
+      allEnginesSelected
+    }
+  };
+}
+
 export function pathFor(searchQuery, filters) {
   return [searchQuery, JSON.stringify(filters)];
 }
@@ -329,6 +394,10 @@ export function allEnginesChecked(state) {
 
 export function getSelectedEngineIds(state) {
   return local(state).selectedEngineIds;
+}
+
+export function getDeselectedEngineIds(state) {
+  return local(state).deselectedEngineIds;
 }
 
 export function getCheckedEngineIds(state) {

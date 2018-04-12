@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { string, shape, object, func, bool } from 'prop-types';
+import { withMuiThemeProvider } from 'veritone-react-common';
 
 import BackIcon from 'material-ui-icons/KeyboardBackspace';
 import InfoSection from './InfoSection';
@@ -21,6 +22,7 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
     deselectEngines: engineSelectionModule.deselectEngines
   }
 )
+@withMuiThemeProvider
 export default class EngineDetailView extends React.Component {
   static propTypes = {
     engine: shape({

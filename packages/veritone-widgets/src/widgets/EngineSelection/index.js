@@ -1,35 +1,47 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func } from 'prop-types';
+import { func, arrayOf, string, bool } from 'prop-types';
 import { noop } from 'lodash';
 
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
 
-import { withMuiThemeProvider } from 'veritone-react-common';
 import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
 @connect(
-  state => ({}),
+  state => ({
+    deselectedEngineIds: engineSelectionModule.getdeselectedEngineIds(state),
+    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state)
+  }),
   {
-    fetchEngines: engineSelectionModule.refetchEngines
+    fetchEngines: engineSelectionModule.refetchEngines,
+    setDeselectedEngineIds: engineSelectionModule.setDeselectedEngineIds,
+    setAllEnginesSelected: engineSelectionModule.setAllEnginesSelected
   },
   null,
   { withRef: true }
 )
-@withMuiThemeProvider
 class EngineSelectionWidget extends React.Component {
   static propTypes = {
     onSave: func.isRequired,
     onCancel: func.isRequired,
-    fetchEngines: func.isRequired
+    fetchEngines: func.isRequired,
+    setAllEnginesSelected: func.isRequired,
+    setDeselectedEngineIds: func.isRequired,
+    allEnginesSelected: bool,
+    selectedEngineIds: arrayOf(string),
+    deselectedEngineIds: arrayOf(string),
+    hideActions: bool
   };
 
   static defaultProps = {
     onSave: noop,
-    onCancel: noop
+    onCancel: noop,
+    deselectedEngineIds: [],
+    allEnginesSelected: false,
+    hideActions: false
   };
 
   state = {
@@ -38,8 +50,18 @@ class EngineSelectionWidget extends React.Component {
   };
 
   componentDidMount() {
+    this.props.setDeselectedEngineIds(this.props.deselectedEngineIds);
+    this.props.setAllEnginesSelected(this.props.allEnginesSelected);
     this.props.fetchEngines();
   }
+
+  save = () => {
+    this.props.onSave(
+      this.props.allEnginesSelected
+        ? this.props.deselectedEngineIds
+        : this.props.selectedEngineIds
+    );
+  };
 
   veritoneAppDidAuthenticate = () => {
     this.props.fetchEngines();
@@ -69,8 +91,10 @@ class EngineSelectionWidget extends React.Component {
   renderListView = () => (
     <EngineListView
       onViewDetail={this.handleViewDetail}
-      onSave={this.props.onSave}
+      onSave={this.save}
       onCancel={this.props.onCancel}
+      allEnginesSelected={this.props.allEnginesSelected}
+      hideActions={this.props.hideActions}
     />
   );
 

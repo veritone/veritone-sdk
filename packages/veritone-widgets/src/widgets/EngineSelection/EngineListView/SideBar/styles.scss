@@ -1,8 +1,8 @@
-@import '~veritone-react-common/src/styles/modules/_muiTypography';
-@import '~veritone-react-common/src/styles/modules/_variables';
+@import 'node_modules/veritone-react-common/src/styles/modules/_muiTypography';
+@import 'node_modules/veritone-react-common/src/styles/modules/_variables';
 
 .sideBar {
-  $width: 290px;
+  $width: 250px;
   min-width: $width;
   max-width: $width;
 }

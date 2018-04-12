@@ -1,5 +1,5 @@
-@import '~veritone-react-common/src/styles/modules/_muiTypography';
-@import '~veritone-react-common/src/styles/modules/_variables';
+@import 'node_modules/veritone-react-common/src/styles/modules/_muiTypography';
+@import 'node_modules/veritone-react-common/src/styles/modules/_variables';
 
 .selectBar {
   $height: 73px;
@@ -16,6 +16,7 @@
   display: inline-flex;
   align-items: center;
   margin-left: auto;
+  padding: 0 20px;
 }
 
 .searchBar {
