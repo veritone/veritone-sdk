@@ -127,7 +127,7 @@ export default class TranslationContent extends Component {
         segmentStartTime = chunkStartTime;
       }
 
-      let series = dataChunk.series;
+      let series = sortBy(dataChunk.series, 'startTimeMs', 'stopTimeMs');
       let dataSegmentEntries = [];
       // ----Start looping through series content----
       series.forEach(entry => {
