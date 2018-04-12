@@ -55,6 +55,7 @@ module.exports = {
     'react/no-children-prop': 'warn',
     'react/no-typos': 'warn',
     'react/no-this-in-sfc': 'warn',
+    'react/no-unused-prop-types': 'warn',
 
     'import/named': 'warn'
   },

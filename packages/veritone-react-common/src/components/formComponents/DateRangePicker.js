@@ -1,5 +1,5 @@
 import React from 'react';
-import { instanceOf, func, shape, number, string, oneOfType } from 'prop-types';
+import { instanceOf, func, shape, string, oneOfType } from 'prop-types';
 import InfiniteCalendar, {
   Calendar,
   withRange,
@@ -23,7 +23,7 @@ export default class DateRangePicker extends React.Component {
     maxViewableDate: instanceOf(Date),
     minDate: instanceOf(Date),
     maxDate: instanceOf(Date),
-    maxSelectionSizeMs: number, // todo
+    // maxSelectionSizeMs: number, // todo
     input: shape({
       value: oneOfType([instanceOf(Interval), string]), // string to handle null "empty-string" value
       onChange: func
