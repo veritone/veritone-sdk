@@ -9,10 +9,11 @@ packageDir=packages/$1
 yarn workspace $1 run build
 mkdir -p $packageDir/publish-dev-dist/dist
 cp $packageDir/dist/* $packageDir/publish-dev-dist/dist
-cp $packageDir/package.json $packageDir/publish-dev-dist/dist/package.json
+cp $packageDir/package.json $packageDir/publish-dev-dist/package.json
 
-cd $packageDir
-tar czf $rootDir/$filename ./publish-dev-dist
+cd $packageDir/publish-dev-dist
+tar czf $rootDir/$filename ./*
+cd ..
 rm -rf ./publish-dev-dist
 cd $rootDir
 
