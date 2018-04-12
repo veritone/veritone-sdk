@@ -41,14 +41,9 @@ export default class EngineCategorySelector extends Component {
                       <Tooltip
                         id={engineCategory.name}
                         title={engineCategory.name}
-                        disableFocusListener
-                        disableTouchListener
-                        disableHoverListener
                         placement="top"
                         enterDelay="1000"
                         leaveDelay="700"
-                        enterTouchDelay="10000"
-                        leaveTouchDelay="10000"
                         classes={{
                           root: styles.categoryTabTooltip
                         }}

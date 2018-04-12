@@ -333,9 +333,6 @@ class MediaDetailsWidget extends React.Component {
                   <Tooltip
                     id='truncated-file-name-tooltip'
                     title={get(this.props, 'tdo.details.veritoneFile.filename')}
-                    disableFocusListener
-                    disableTouchListener
-                    disableHoverListener
                     placement="bottom-start"
                     enterDelay="1000"
                     leaveDelay="700"
