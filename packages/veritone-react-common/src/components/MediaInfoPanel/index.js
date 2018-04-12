@@ -210,14 +210,20 @@ class MediaInfoPanel extends Component {
                     >
                       <Paper>
                         <MenuList role="menu">
-                          <MenuItem onClick={this.onMetadataOpen}>
+                          <MenuItem
+                            classes={{ root: styles.headerMenuItem }}
+                            onClick={this.onMetadataOpen}
+                          >
                             Edit Metadata
                           </MenuItem>
-                          <MenuItem onClick={this.onEditTagsOpen}>
+                          <MenuItem
+                            classes={{ root: styles.headerMenuItem }}
+                            onClick={this.onEditTagsOpen}
+                          >
                             Edit Tags
                           </MenuItem>
                           {/* TODO: uncomment when can download large/chunked files
-                            <MenuItem onClick={this.onMenuClose}>Download</MenuItem>
+                            <MenuItem classes={{ root: styles.headerMenuItem }} onClick={this.onMenuClose}>Download</MenuItem>
                             */}
                         </MenuList>
                       </Paper>
