@@ -1,12 +1,8 @@
 import React from 'react';
 import { arrayOf, object, objectOf, bool } from 'prop-types';
-import {
-  Table,
-  PaginatedTable,
-  Column,
-} from 'components/DataTable';
+import { Table, PaginatedTable, Column } from 'components/DataTable';
 import { map, startCase, partial, omit } from 'lodash';
-import DotDotDot from 'react-dotdotdot'
+import DotDotDot from 'react-dotdotdot';
 import { format } from 'date-fns';
 
 export default class SDOTable extends React.Component {
@@ -18,9 +14,9 @@ export default class SDOTable extends React.Component {
 
   static defaultProps = {
     paginate: false
-  }
+  };
 
-  getRowData = (i) => {
+  getRowData = i => {
     return this.props.data[i];
   };
 
@@ -32,18 +28,14 @@ export default class SDOTable extends React.Component {
         formattedData = format(data, 'M/D/YYYY h:mm A');
         break;
       case 'geoPoint':
-        formattedData = `[${data}]`
+        formattedData = `[${data}]`;
         break;
       default:
         formattedData = data;
     }
 
-    return (
-      <DotDotDot clamp={2}>
-        {formattedData}
-      </DotDotDot>
-    )
-  }
+    return <DotDotDot clamp={2}>{formattedData}</DotDotDot>;
+  };
 
   render() {
     const tableProps = omit(this.props, ['data', 'schema', 'paginate']);
@@ -54,10 +46,14 @@ export default class SDOTable extends React.Component {
         <Column
           dataKey={prop}
           header={propDetails.title || startCase(prop)}
-          cellRenderer={partial(this.renderCell, partial.placeholder, propDetails.type)}
+          cellRenderer={partial(
+            this.renderCell,
+            partial.placeholder,
+            propDetails.type
+          )}
           key={propDetails.$id}
         />
-      )
+      );
     });
 
     return (

@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  string
-} from 'prop-types';
+import { string } from 'prop-types';
 import styles from './styles.scss';
 
 const stateStyles = {
@@ -26,7 +24,7 @@ const stateStyles = {
 
 export default class StatusPill extends React.Component {
   static propTypes = {
-    status: string,
+    status: string
   };
 
   static defaultProps = {
@@ -39,11 +37,8 @@ export default class StatusPill extends React.Component {
         className={styles.statusPill}
         style={stateStyles[this.props.status || 'processing']}
       >
-        <span className={styles.statusPillText}>
-          {this.props.status}
-        </span>
+        <span className={styles.statusPillText}>{this.props.status}</span>
       </div>
-    )
-  };
-
+    );
+  }
 }

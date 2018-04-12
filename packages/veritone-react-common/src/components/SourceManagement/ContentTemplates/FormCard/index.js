@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  any,
-  arrayOf,
-  func,
-  string
-} from 'prop-types';
+import { any, arrayOf, func, string } from 'prop-types';
 
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -27,25 +22,21 @@ export default class FormCard extends React.Component {
 
     return (
       <div className={styles.formCard}>
-        <div className={styles.name}>
-          {name}
-        </div>
+        <div className={styles.name}>{name}</div>
         <IconButton
           className={styles.trashIcon}
           onClick={this.handleClick}
-          aria-label='trash'
+          aria-label="trash"
         >
           <Icon className={'icon-trash'} />
         </IconButton>
-        {
-          fields.map((field, index) => {
-            return React.cloneElement(field, {
-              key: `${name}-field-${index}`,
-              className: styles.formElements
-            });
-          })
-        }
+        {fields.map((field, index) => {
+          return React.cloneElement(field, {
+            key: `${name}-field-${index}`,
+            className: styles.formElements
+          });
+        })}
       </div>
     );
-  };
+  }
 }

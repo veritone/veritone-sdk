@@ -1,36 +1,40 @@
 import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
 import Button from 'material-ui/Button';
-import ContentTemplates from '../ContentTemplates'
+import ContentTemplates from '../ContentTemplates';
 
 import styles from '../styles.scss';
 
 export default class ContentTemplateForm extends React.Component {
   static propTypes = {
-    templateData: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any)
-    })).isRequired,
-    initialTemplates: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any),
-      data: objectOf(any)
-    })),
+    templateData: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any)
+      })
+    ).isRequired,
+    initialTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
+      })
+    ),
     onSubmit: func.isRequired
-  }
+  };
 
   static defaultProps = {
     templateData: {},
     initialTemplates: {}
-  }
+  };
 
   state = {
     contentTemplates: {}
-  }
+  };
 
   componentWillMount() {
     const newState = {
@@ -52,12 +56,16 @@ export default class ContentTemplateForm extends React.Component {
       }
     } else {
       const data = {};
-      Object.keys(templateData[templateSchemaId].definition.properties)
-        .reduce((fields, schemaDefProp) => {
-          data[schemaDefProp] = (initialTemplates[templateSchemaId] && initialTemplates[templateSchemaId].data)
-            ? initialTemplates[templateSchemaId].data[schemaDefProp]
-            : '';
-        }, data)
+      Object.keys(templateData[templateSchemaId].definition.properties).reduce(
+        (fields, schemaDefProp) => {
+          data[schemaDefProp] =
+            initialTemplates[templateSchemaId] &&
+            initialTemplates[templateSchemaId].data
+              ? initialTemplates[templateSchemaId].data[schemaDefProp]
+              : '';
+        },
+        data
+      );
 
       this.setState({
         contentTemplates: {
@@ -69,7 +77,7 @@ export default class ContentTemplateForm extends React.Component {
         }
       });
     }
-  }
+  };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     const { contentTemplates } = this.state;
@@ -88,12 +96,12 @@ export default class ContentTemplateForm extends React.Component {
     });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     return this.props.onSubmit({
       contentTemplates: this.state.contentTemplates
     });
-  }
+  };
 
   render() {
     return (
@@ -105,7 +113,7 @@ export default class ContentTemplateForm extends React.Component {
           onInputChange={this.updateTemplateDetails}
         />
         <div className={styles.btnContainer}>
-          <Button variant="raised" color='primary' type="submit">
+          <Button variant="raised" color="primary" type="submit">
             Save
           </Button>
         </div>

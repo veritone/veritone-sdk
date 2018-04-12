@@ -1,14 +1,7 @@
 import React from 'react';
 import { has, includes } from 'lodash';
 
-import {
-  any, 
-  arrayOf, 
-  objectOf,
-  func,
-  string,
-  number
-} from 'prop-types';
+import { any, arrayOf, objectOf, func, string, number } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
@@ -18,11 +11,10 @@ import { InputLabel } from 'material-ui/Input';
 
 import styles from './styles.scss';
 
-
 export default class DynamicSelect extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
-    currentSourceType: number, // id of initial sourceType if there is a default 
+    currentSourceType: number, // id of initial sourceType if there is a default
     onSelectChange: func.isRequired, //used to provide state to the parent
     onSourceDetailChange: func.isRequired, //used to provide state to the parent
     fieldValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
@@ -35,7 +27,7 @@ export default class DynamicSelect extends React.Component {
   };
 
   state = {
-    oneSourceType: false,
+    oneSourceType: false
   };
 
   componentWillMount() {
@@ -44,24 +36,23 @@ export default class DynamicSelect extends React.Component {
     if (!this.props.sourceTypes.length) {
       console.error('Source types was empty.');
     } else if (this.props.sourceTypes.length === 1) {
-      state.oneSourceType = true
+      state.oneSourceType = true;
     }
 
     this.setState(state);
-  };
+  }
 
-  handleSourceTypeChange = (event) => {
+  handleSourceTypeChange = event => {
     const sourceTypeIndex = event.target.value;
     this.props.onSelectChange(sourceTypeIndex);
 
     // if (sourceTypeIndex !== this.props.currentSourceType) {
     //   const currentFields = {};
     //   const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties;
-    
+
     //   Object.keys(properties).forEach((field) => {
     //     currentFields[field] = '';
     //   });
-
 
     //   this.props.onFieldChange({
     //     sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
@@ -70,7 +61,7 @@ export default class DynamicSelect extends React.Component {
     // }
   };
 
-  handleDetailChange = fieldId => (event) => {
+  handleDetailChange = fieldId => event => {
     this.props.onSourceDetailChange({
       [fieldId]: event.target.value
     });
@@ -78,21 +69,29 @@ export default class DynamicSelect extends React.Component {
 
   renderFields = () => {
     console.log('this.props:', this.props);
-    const definition = this.props.sourceTypes[this.props.currentSourceType].sourceSchema.definition;
+    const definition = this.props.sourceTypes[this.props.currentSourceType]
+      .sourceSchema.definition;
     const properties = definition.properties;
-    const requiredFields = has(definition, 'required') ? definition.required : [];
+    const requiredFields = has(definition, 'required')
+      ? definition.required
+      : [];
     console.log('properties:', properties);
     return Object.keys(this.props.fieldValues).map((fieldId, index) => {
       console.log('fieldId:', fieldId);
       return (
-        <SourceTypeField 
-          id={fieldId} 
-          type={properties[fieldId].type.toLowerCase()} 
-          required={includes(requiredFields, fieldId)} 
-          value={this.props.fieldValues[fieldId]}  
-          onChange={this.handleDetailChange} 
-          title={properties[fieldId].title || ""} 
-          error={(has(this.props.errorFields, fieldId) && this.props.errorFields[fieldId]) ? true : false} 
+        <SourceTypeField
+          id={fieldId}
+          type={properties[fieldId].type.toLowerCase()}
+          required={includes(requiredFields, fieldId)}
+          value={this.props.fieldValues[fieldId]}
+          onChange={this.handleDetailChange}
+          title={properties[fieldId].title || ''}
+          error={
+            has(this.props.errorFields, fieldId) &&
+            this.props.errorFields[fieldId]
+              ? true
+              : false
+          }
           key={fieldId}
         />
       );
@@ -111,47 +110,56 @@ export default class DynamicSelect extends React.Component {
 
     return (
       <FormControl className={styles.dynamicFormStyle}>
-        {
-          (this.props.selectLabel && !this.state.oneSourceType) &&
-          <InputLabel className={styles.inputLabel} htmlFor='select-id'>
-            {this.props.selectLabel}
-          </InputLabel>
-        }
-        {
-          !this.state.oneSourceType &&
+        {this.props.selectLabel &&
+          !this.state.oneSourceType && (
+            <InputLabel className={styles.inputLabel} htmlFor="select-id">
+              {this.props.selectLabel}
+            </InputLabel>
+          )}
+        {!this.state.oneSourceType && (
           <Select
             className={styles.selectField}
             fullWidth
             inputProps={{
               name: sourceTypes[currentSourceType].name,
-              id:'select-id'
+              id: 'select-id'
             }}
             value={currentSourceType}
             onChange={this.handleSourceTypeChange}
           >
             {sourceTypesMenu}
           </Select>
-        }
-        {this.state.oneSourceType && 
-          <div className={styles.sourceTypeNameLabel}>
-            Source Type
-          </div>}
-        {this.state.oneSourceType && 
+        )}
+        {this.state.oneSourceType && (
+          <div className={styles.sourceTypeNameLabel}>Source Type</div>
+        )}
+        {this.state.oneSourceType && (
           <div className={styles.sourceTypeNameContainer}>
             <div className={styles.sourceTypeName}>
               {sourceTypes[currentSourceType].name}
             </div>
-          </div>}
-        {(this.props.helperText && !this.state.oneSourceType) &&
-          <FormHelperText>{this.props.helperText}</FormHelperText>}
+          </div>
+        )}
+        {this.props.helperText &&
+          !this.state.oneSourceType && (
+            <FormHelperText>{this.props.helperText}</FormHelperText>
+          )}
         {this.renderFields()}
       </FormControl>
     );
-  };
+  }
 }
 
 // This functional component will handle field type render logic, TODO: add fields here as needed for different field types
-function SourceTypeField({ id, type, required, value, onChange, title, error }) {
+function SourceTypeField({
+  id,
+  type,
+  required,
+  value,
+  onChange,
+  title,
+  error
+}) {
   //all types will be lowercase
   let element;
   const label = title || id;
@@ -160,9 +168,9 @@ function SourceTypeField({ id, type, required, value, onChange, title, error }) 
     element = (
       <TextField
         className={styles.textFieldExtra}
-        type={id.toLowerCase().includes('password') ? 'password': 'text'}
+        type={id.toLowerCase().includes('password') ? 'password' : 'text'}
         fullWidth
-        margin='dense'
+        margin="dense"
         id={id}
         label={label}
         value={value}
@@ -177,7 +185,7 @@ function SourceTypeField({ id, type, required, value, onChange, title, error }) 
         className={styles.textFieldExtra}
         type={'number'}
         fullWidth
-        margin='dense'
+        margin="dense"
         id={id}
         label={label}
         value={value}

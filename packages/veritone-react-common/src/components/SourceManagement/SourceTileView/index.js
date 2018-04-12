@@ -1,12 +1,6 @@
 import React from 'react';
 
-import {
-  arrayOf,
-  any,
-  objectOf,
-  func,
-  bool
-} from 'prop-types';
+import { arrayOf, any, objectOf, func, bool } from 'prop-types';
 
 import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
@@ -18,7 +12,7 @@ export default class SourceTileView extends React.Component {
   static propTypes = {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
     onSelectMenuItem: func,
-    paginate: bool,
+    paginate: bool
   };
 
   static defaultProps = {
@@ -26,11 +20,11 @@ export default class SourceTileView extends React.Component {
     onSelectMenuItem: noop
   };
 
-  getSourceData = (i) => {
+  getSourceData = i => {
     return this.props.sources[i];
-  }
+  };
 
-  renderThumbnail = (thumbnailUrl) => {
+  renderThumbnail = thumbnailUrl => {
     return (
       <Avatar
         src={thumbnailUrl}
@@ -39,20 +33,24 @@ export default class SourceTileView extends React.Component {
           height: '30px'
         }}
       />
-    )
-  }
+    );
+  };
 
-  renderCreatedDate = (date) => {
+  renderCreatedDate = date => {
     return format(date, 'M/D/YYYY h:mm A');
-  }
+  };
 
-  renderUpdatedDate = (date) => {
+  renderUpdatedDate = date => {
     return capitalize(distanceInWordsToNow(date, { includeSeconds: true }));
-  }
+  };
 
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
-    const tableProps = omit(this.props, ['sources', 'onSelectMenuItem', 'paginate']);
+    const tableProps = omit(this.props, [
+      'sources',
+      'onSelectMenuItem',
+      'paginate'
+    ]);
 
     return (
       <TableComp
@@ -62,27 +60,21 @@ export default class SourceTileView extends React.Component {
         {...tableProps}
       >
         <Column
-          dataKey='thumbnailUrl'
-          header=''
+          dataKey="thumbnailUrl"
+          header=""
           cellRenderer={this.renderThumbnail}
           width={20}
         />
+        <Column dataKey="name" header="Source Name" />
+        <Column dataKey="sourceType.name" header="Source Type" />
         <Column
-          dataKey='name'
-          header='Source Name'
-        />
-        <Column
-          dataKey='sourceType.name'
-          header='Source Type'
-        />
-        <Column
-          dataKey='createdDateTime'
-          header='Created'
+          dataKey="createdDateTime"
+          header="Created"
           cellRenderer={this.renderCreatedDate}
         />
         <Column
-          dataKey='modifiedDateTime'
-          header='Updated'
+          dataKey="modifiedDateTime"
+          header="Updated"
           cellRenderer={this.renderUpdatedDate}
           style={{
             fontStyle: 'italic',
@@ -91,10 +83,10 @@ export default class SourceTileView extends React.Component {
         />
         <MenuColumn
           id="menu"
-          dataKey='sourceType.sourceSchema.validActions'
+          dataKey="sourceType.sourceSchema.validActions"
           onSelectItem={this.props.onSelectMenuItem}
         />
       </TableComp>
     );
-  };
+  }
 }

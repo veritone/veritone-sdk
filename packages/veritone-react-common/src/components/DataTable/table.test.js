@@ -6,7 +6,6 @@ import MenuColumn from './MenuColumn';
 import { LOADING } from './withBasicBehavior';
 import { Table, Column, PaginatedTable } from './';
 
-
 function assertRowsExist(rows, wrapper, assertion = true) {
   rows.forEach(expected => {
     expect(wrapper.find('td').someWhere(n => n.text() === expected)).toEqual(
@@ -22,14 +21,13 @@ function assertRowsMissing(...args) {
 
 const SupressColumnWarnings = (
   { children } // eslint-disable-line
-) =>
+) => (
   <MuiTable>
     <TableBody>
-      <TableRow>
-        {children}
-      </TableRow>
+      <TableRow>{children}</TableRow>
     </TableBody>
-  </MuiTable>;
+  </MuiTable>
+);
 
 describe('Column', function() {
   it('Shows a loading message if data is the LOADING constant', function() {
@@ -111,7 +109,10 @@ describe('MenuColumn', function() {
     );
 
     const menuItems = wrapper.find('Menu').prop('children');
-    expect(filter(menuItems, (menuItem) => includes(get(menuItem, 'key'), 'divider') ).length).toEqual(1);
+    expect(
+      filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
+        .length
+    ).toEqual(1);
   });
 
   it('shows no divider when there are no protected actions', function() {
@@ -125,8 +126,10 @@ describe('MenuColumn', function() {
     );
 
     const menuItems = wrapper.find('Menu').prop('children');
-    expect(filter(menuItems, (menuItem) => includes(get(menuItem, 'key'), 'divider')).length).toEqual(0);
-    
+    expect(
+      filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
+        .length
+    ).toEqual(0);
   });
 
   it('shows no divider when there are only protected actions', function() {
@@ -144,18 +147,21 @@ describe('MenuColumn', function() {
     );
 
     const menuItems = wrapper.find('Menu').prop('children');
-    expect(filter(menuItems, (menuItem) => includes(get(menuItem, 'key'), 'divider')).length).toEqual(0);
+    expect(
+      filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
+        .length
+    ).toEqual(0);
   });
 });
 
-describe('Table', function () {
-  it('Renders rows provided by the rowGetter function when given column children', function () {
+describe('Table', function() {
+  it('Renders rows provided by the rowGetter function when given column children', function() {
     function rowGetter(i) {
       return {
         index: String(i),
         name: `col-${i}`
       };
-    };
+    }
 
     const wrapper = mount(
       <Table rowGetter={rowGetter} rowCount={2}>
@@ -169,7 +175,7 @@ describe('Table', function () {
     assertRowsExist(expectedCellContents, wrapper);
   });
 
-  it('Renders column headers', function () {
+  it('Renders column headers', function() {
     const wrapper = mount(
       <Table
         rowGetter={() => ({})} // eslint-disable-line react/jsx-no-bind
@@ -189,7 +195,7 @@ describe('Table', function () {
     });
   });
 
-  it('renders the correct row count', function () {
+  it('renders the correct row count', function() {
     const wrapper = mount(
       <Table
         rowGetter={i => ({ i })} // eslint-disable-line react/jsx-no-bind
@@ -199,10 +205,15 @@ describe('Table', function () {
       </Table>
     );
 
-    expect(wrapper.find('table').find('tbody').find('tr').length).toEqual(10);
+    expect(
+      wrapper
+        .find('table')
+        .find('tbody')
+        .find('tr').length
+    ).toEqual(10);
   });
 
-  it('renders a MUI TableFooter if provided', function () {
+  it('renders a MUI TableFooter if provided', function() {
     const footer = (
       <TableCell id="my-footer">
         <div>Footer</div>
@@ -222,7 +233,7 @@ describe('Table', function () {
     expect(wrapper.contains(footer)).toEqual(true);
   });
 
-  it('renders new data if data changes', function () {
+  it('renders new data if data changes', function() {
     class Container extends React.Component {
       getRowData = i => {
         return this.props.data[i]; // eslint-disable-line
@@ -245,15 +256,15 @@ describe('Table', function () {
       {
         data: [{ id: 0 }, { id: '1-new' }]
       },
-      function () {
-        expect(
-          wrapper.find('td').someWhere(n => n.text() === '1-new')
-        ).toEqual(true);
+      function() {
+        expect(wrapper.find('td').someWhere(n => n.text() === '1-new')).toEqual(
+          true
+        );
       }
     );
   });
 
-  it('exposes row index and column key when table cell is clicked', function () {
+  it('exposes row index and column key when table cell is clicked', function() {
     const handler = jest.fn();
 
     class Container extends React.Component {
@@ -277,18 +288,21 @@ describe('Table', function () {
     const initialData = [{ id: 0 }, { id: 1 }];
     const wrapper = mount(<Container data={initialData} />);
 
-    wrapper.find('td').last().simulate('click');
+    wrapper
+      .find('td')
+      .last()
+      .simulate('click');
 
     expect(handler.mock.calls[0][0]).toBe(1);
     expect(handler.mock.calls[0][1]).toBe('id');
-  })
+  });
 
-  describe('callback behavior', function () {
-    xit('calls onShowCellRange with the correct data on mount', function () {
+  describe('callback behavior', function() {
+    xit('calls onShowCellRange with the correct data on mount', function() {
       let calledWith = null;
       function handleShowCellRange(range) {
         calledWith = range;
-      };
+      }
 
       mount(
         <Table
@@ -303,45 +317,42 @@ describe('Table', function () {
       expect(calledWith).to.eql({ start: 0, end: 9 });
     });
 
-    xit(
-      'calls onShowCellRange with the correct data when props.watchData changes',
-      function () {
-        let calledWith = null;
-        let calledCount = 0;
-        function handleShowCellRange (range) {
-          calledWith = range;
-          calledCount++;
-        };
-
-        const data = [1];
-        let wrapper = mount(
-          <Table
-            rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
-            rowCount={10}
-            onShowCellRange={handleShowCellRange}
-            watchData={data}
-          >
-            <Column dataKey="id" />
-          </Table>
-        );
-
-        expect(calledWith).to.eql({ start: 0, end: 9 });
-        expect(calledCount).toEqual(1);
-
-        // stuff happens but data doesn't change
-        wrapper.update();
-        wrapper.setProps({ data: data });
-
-        // data changes
-        wrapper.setProps({ watchData: [] });
-        expect(calledWith).to.eql({ start: 0, end: 9 });
-        expect(calledCount).toEqual(2);
+    xit('calls onShowCellRange with the correct data when props.watchData changes', function() {
+      let calledWith = null;
+      let calledCount = 0;
+      function handleShowCellRange(range) {
+        calledWith = range;
+        calledCount++;
       }
-    );
+
+      const data = [1];
+      let wrapper = mount(
+        <Table
+          rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
+          rowCount={10}
+          onShowCellRange={handleShowCellRange}
+          watchData={data}
+        >
+          <Column dataKey="id" />
+        </Table>
+      );
+
+      expect(calledWith).to.eql({ start: 0, end: 9 });
+      expect(calledCount).toEqual(1);
+
+      // stuff happens but data doesn't change
+      wrapper.update();
+      wrapper.setProps({ data: data });
+
+      // data changes
+      wrapper.setProps({ watchData: [] });
+      expect(calledWith).to.eql({ start: 0, end: 9 });
+      expect(calledCount).toEqual(2);
+    });
   });
 
-  describe('loading behavior', function () {
-    it('Renders LOADING cells correctly', function () {
+  describe('loading behavior', function() {
+    it('Renders LOADING cells correctly', function() {
       const wrapper = mount(
         <Table
           rowGetter={i => LOADING} // eslint-disable-line react/jsx-no-bind
@@ -352,10 +363,12 @@ describe('Table', function () {
       );
 
       // expect(wrapper.find('td').everyWhere(n => n.text().match(/loading/i))).to.be.true;
-      expect(wrapper.find('td').everyWhere(n => n.text().match(/loading/i))).toBeTruthy();
+      expect(
+        wrapper.find('td').everyWhere(n => n.text().match(/loading/i))
+      ).toBeTruthy();
     });
 
-    it('Renders a mix of loading and not-loading cells', function () {
+    it('Renders a mix of loading and not-loading cells', function() {
       const wrapper = mount(
         <Table
           rowGetter={i => (i % 2 === 0 ? LOADING : { id: i })} // eslint-disable-line react/jsx-no-bind
@@ -376,8 +389,8 @@ describe('Table', function () {
   });
 });
 
-describe('PaginatedTable', function () {
-  it('renders rows for the first page', function () {
+describe('PaginatedTable', function() {
+  it('renders rows for the first page', function() {
     const wrapper = mount(
       <PaginatedTable
         rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
@@ -395,8 +408,8 @@ describe('PaginatedTable', function () {
 
   it(
     'renders a footer that allows navigation between pages, displays the ' +
-    'correct rows per page',
-    function () {
+      'correct rows per page',
+    function() {
       const perPage = 12;
       const rowCount = 30;
 
@@ -418,41 +431,59 @@ describe('PaginatedTable', function () {
         i => `row-${i}`
       );
 
-      wrapper.find('.pageRight').at(0).simulate('click');
+      wrapper
+        .find('.pageRight')
+        .at(0)
+        .simulate('click');
       assertRowsExist(pageTwoExpectedContents, wrapper);
       assertRowsMissing(pageOneExpectedContents, wrapper);
       assertRowsMissing(pageThreeExpectedContents, wrapper);
 
-      wrapper.find('.pageRight').at(0).simulate('click');
+      wrapper
+        .find('.pageRight')
+        .at(0)
+        .simulate('click');
       assertRowsExist(pageThreeExpectedContents, wrapper);
       assertRowsMissing(pageOneExpectedContents, wrapper);
       assertRowsMissing(pageTwoExpectedContents, wrapper);
 
       // too far, not allowed, noop
-      wrapper.find('.pageRight').at(0).simulate('click');
+      wrapper
+        .find('.pageRight')
+        .at(0)
+        .simulate('click');
       assertRowsExist(pageThreeExpectedContents, wrapper);
       assertRowsMissing(pageOneExpectedContents, wrapper);
       assertRowsMissing(pageTwoExpectedContents, wrapper);
 
-      wrapper.find('.pageLeft').at(0).simulate('click');
+      wrapper
+        .find('.pageLeft')
+        .at(0)
+        .simulate('click');
       assertRowsExist(pageTwoExpectedContents, wrapper);
       assertRowsMissing(pageOneExpectedContents, wrapper);
       assertRowsMissing(pageThreeExpectedContents, wrapper);
 
-      wrapper.find('.pageLeft').at(0).simulate('click');
+      wrapper
+        .find('.pageLeft')
+        .at(0)
+        .simulate('click');
       assertRowsExist(pageOneExpectedContents, wrapper);
       assertRowsMissing(pageTwoExpectedContents, wrapper);
       assertRowsMissing(pageThreeExpectedContents, wrapper);
 
       // too far, not allowed, noop
-      wrapper.find('.pageLeft').at(0).simulate('click');
+      wrapper
+        .find('.pageLeft')
+        .at(0)
+        .simulate('click');
       assertRowsExist(pageOneExpectedContents, wrapper);
       assertRowsMissing(pageTwoExpectedContents, wrapper);
       assertRowsMissing(pageThreeExpectedContents, wrapper);
     }
   );
 
-  it('renders a refresh button into the footer if onRefreshPageData is provided', function () {
+  it('renders a refresh button into the footer if onRefreshPageData is provided', function() {
     let calledWith;
 
     const wrapper = mount(
@@ -466,15 +497,24 @@ describe('PaginatedTable', function () {
       </PaginatedTable>
     );
 
-    wrapper.find('.refresh').at(0).simulate('click');
+    wrapper
+      .find('.refresh')
+      .at(0)
+      .simulate('click');
     expect(calledWith).toEqual({ start: 0, end: 11 });
 
-    wrapper.find('.pageRight').at(0).simulate('click');
-    wrapper.find('.refresh').at(0).simulate('click');
+    wrapper
+      .find('.pageRight')
+      .at(0)
+      .simulate('click');
+    wrapper
+      .find('.refresh')
+      .at(0)
+      .simulate('click');
     expect(calledWith).toEqual({ start: 12, end: 23 });
   });
 
-  it('renders a select element in the footer that changes the number of rows per page', function () {
+  it('renders a select element in the footer that changes the number of rows per page', function() {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -498,7 +538,7 @@ describe('PaginatedTable', function () {
     assertRowsMissing(range(20, 30), wrapper);
   });
 
-  it('moves back to the first page where rows exist when perPage changes', function () {
+  it('moves back to the first page where rows exist when perPage changes', function() {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -510,8 +550,14 @@ describe('PaginatedTable', function () {
     );
 
     // move to page 3
-    wrapper.find('.pageRight').at(0).simulate('click');
-    wrapper.find('.pageRight').at(0).simulate('click');
+    wrapper
+      .find('.pageRight')
+      .at(0)
+      .simulate('click');
+    wrapper
+      .find('.pageRight')
+      .at(0)
+      .simulate('click');
 
     // 30 rows per page means all rows are displayed on page 1;
     // expect pagination to move back to page 1
@@ -527,7 +573,7 @@ describe('PaginatedTable', function () {
     assertRowsExist(expectedRows, wrapper);
   });
 
-  it('moves back to the first page where rows exist when rowCount changes', function () {
+  it('moves back to the first page where rows exist when rowCount changes', function() {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -539,8 +585,14 @@ describe('PaginatedTable', function () {
     );
 
     // move to page 3
-    wrapper.find('.pageRight').at(0).simulate('click');
-    wrapper.find('.pageRight').at(0).simulate('click');
+    wrapper
+      .find('.pageRight')
+      .at(0)
+      .simulate('click');
+    wrapper
+      .find('.pageRight')
+      .at(0)
+      .simulate('click');
 
     expect(wrapper.find('PaginatedTableFooter').prop('page')).toEqual(2);
 
@@ -552,7 +604,7 @@ describe('PaginatedTable', function () {
     expect(wrapper.find('PaginatedTableFooter').prop('page')).toEqual(0);
   });
 
-  it('does not move back to page -1 on perPage changes and rowCount=0', function () {
+  it('does not move back to page -1 on perPage changes and rowCount=0', function() {
     const wrapper = mount(
       <PaginatedTable
         initialItemsPerPage={10}
@@ -570,7 +622,7 @@ describe('PaginatedTable', function () {
     expect(wrapper.find('PaginatedTableFooter').prop('page')).toEqual(0);
   });
 
-  it('renders only up to rowCount if rowCount < perPage', function () {
+  it('renders only up to rowCount if rowCount < perPage', function() {
     const wrapper = mount(
       <PaginatedTable
         rowGetter={i => ({ id: `row-${i}` })} // eslint-disable-line react/jsx-no-bind
@@ -590,12 +642,12 @@ describe('PaginatedTable', function () {
     assertRowsExist(shouldNotExistCellContents, wrapper, false);
   });
 
-  describe('callback behavior', function () {
-    it('calls onShowCellRange with the correct data', function () {
+  describe('callback behavior', function() {
+    it('calls onShowCellRange with the correct data', function() {
       let calledWith = null;
       function handleShowCellRange(range) {
         calledWith = range;
-      };
+      }
 
       const wrapper = mount(
         <PaginatedTable
@@ -608,13 +660,22 @@ describe('PaginatedTable', function () {
         </PaginatedTable>
       );
 
-      wrapper.find('.pageRight').at(0).simulate('click');
+      wrapper
+        .find('.pageRight')
+        .at(0)
+        .simulate('click');
       expect(calledWith).toEqual({ start: 10, end: 19 });
 
-      wrapper.find('.pageRight').at(0).simulate('click');
+      wrapper
+        .find('.pageRight')
+        .at(0)
+        .simulate('click');
       expect(calledWith).toEqual({ start: 20, end: 29 });
 
-      wrapper.find('.pageLeft').at(0).simulate('click');
+      wrapper
+        .find('.pageLeft')
+        .at(0)
+        .simulate('click');
       expect(calledWith).toEqual({ start: 10, end: 19 });
 
       wrapper.setProps({ rowCount: 0 });
@@ -626,14 +687,10 @@ describe('PaginatedTable', function () {
   });
 });
 
-describe('Table with focused row', function () {
-  it('breaks out a row when that row is focused', function () {
+describe('Table with focused row', function() {
+  it('breaks out a row when that row is focused', function() {
     function renderDetails(data) {
-      return (
-        <h3 id="details">
-          {data.id}
-        </h3>
-      );
+      return <h3 id="details">{data.id}</h3>;
     }
 
     const unfocusedWrapper = mount(
@@ -664,13 +721,9 @@ describe('Table with focused row', function () {
     expect(focusedWrapper.find('#details').text()).toEqual('row-2');
   });
 
-  it('works in paginated tables', function () {
+  it('works in paginated tables', function() {
     function renderDetails(data = {}) {
-      return (
-        <h3 id="details">
-          {data.id}
-        </h3>
-      );
+      return <h3 id="details">{data.id}</h3>;
     }
 
     const wrapper = mount(
@@ -687,10 +740,16 @@ describe('Table with focused row', function () {
 
     expect(wrapper.find('#details').text()).toEqual('row-2');
 
-    wrapper.find('.pageRight').at(0).simulate('click');
+    wrapper
+      .find('.pageRight')
+      .at(0)
+      .simulate('click');
     expect(wrapper.find('#details').exists()).toEqual(false);
 
-    wrapper.find('.pageLeft').at(0).simulate('click');
+    wrapper
+      .find('.pageLeft')
+      .at(0)
+      .simulate('click');
     expect(wrapper.find('#details').text()).toEqual('row-2');
   });
 });

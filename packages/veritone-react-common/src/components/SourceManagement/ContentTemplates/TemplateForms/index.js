@@ -75,27 +75,30 @@ export default class TemplateForms extends React.Component {
 
     return (
       <div className={styles.formsContainer}>
-      {
-        Object.keys(templates).map((schemaId, index) => {
+        {Object.keys(templates).map((schemaId, index) => {
           const schemaProps = templates[schemaId].definition.properties;
-          const formFields = Object.keys(schemaProps).map((schemaProp, propIdx) => {
-            console.log('type:', schemaProps[schemaProp].type);
-            const type = schemaProps[schemaProp].type;
+          const formFields = Object.keys(schemaProps).map(
+            (schemaProp, propIdx) => {
+              console.log('type:', schemaProps[schemaProp].type);
+              const type = schemaProps[schemaProp].type;
 
-            return type && (
-              <BuildFormElements
-                fieldId={schemaProp}
-                schemaId={schemaId}
-                // type={schemaProps[schemaProp].type}
-                type={type}
-                value={templates[schemaId].data[schemaProp]}
-                title={schemaProps[schemaProp].title || schemaProp}
-                objectProperties={schemaProps[schemaProp].properties}
-                onChange={this.handleFieldChange}
-                key={`${schemaProp}-${propIdx}`}
-              />
-            );
-          });
+              return (
+                type && (
+                  <BuildFormElements
+                    fieldId={schemaProp}
+                    schemaId={schemaId}
+                    // type={schemaProps[schemaProp].type}
+                    type={type}
+                    value={templates[schemaId].data[schemaProp]}
+                    title={schemaProps[schemaProp].title || schemaProp}
+                    objectProperties={schemaProps[schemaProp].properties}
+                    onChange={this.handleFieldChange}
+                    key={`${schemaProp}-${propIdx}`}
+                  />
+                )
+              );
+            }
+          );
 
           return (
             <FormCard
@@ -106,8 +109,7 @@ export default class TemplateForms extends React.Component {
               remove={this.handleRemoveTemplate}
             />
           );
-          })
-        }
+        })}
       </div>
     );
   }
@@ -131,7 +133,7 @@ function BuildFormElements({
   }
 
   let element;
-  console.log('type:', type)
+  console.log('type:', type);
   if (!type) {
     return undefined;
   }
@@ -202,11 +204,7 @@ function BuildFormElements({
       </div>
     );
   } else {
-    return (
-      <div>
-        {`Unsupported Type: ${type} for ${fieldId}`}
-      </div>
-    );
+    return <div>{`Unsupported Type: ${type} for ${fieldId}`}</div>;
   }
 
   if (depth) {

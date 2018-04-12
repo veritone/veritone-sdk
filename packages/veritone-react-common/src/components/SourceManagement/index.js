@@ -9,52 +9,59 @@ export default class SourceManagementOverview extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
     sources: arrayOf(objectOf(any)),
-    templateData: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any)
-    })).isRequired,
-    initialTemplates: objectOf(shape({
-      id: string,
-      name: string.isRequired,
-      status: string,
-      definition: objectOf(any),
-      data: objectOf(any)
-    })),
+    templateData: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any)
+      })
+    ).isRequired,
+    initialTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
+      })
+    ),
     onFormSubmit: func.isRequired,
     onSelectMenuAction: func
-  }
+  };
 
   state = {
     sourceConfig: null,
     openFormDialog: false
-  }
+  };
 
   openDialog = () => {
-    this.setState({ openFormDialog: true })
-  }
+    this.setState({ openFormDialog: true });
+  };
 
   closeDialog = () => {
     this.setState({ openFormDialog: false });
-  }
+  };
 
-  selectSource = (selectedSource) => {
+  selectSource = selectedSource => {
     const source = this.state.sources[selectedSource];
-    const sourceConfig = pick(
-      source,
-      ['name', 'details', 'thumbnailUrl', 'sourceTypeId', 'sourceType']
-    );
+    const sourceConfig = pick(source, [
+      'name',
+      'details',
+      'thumbnailUrl',
+      'sourceTypeId',
+      'sourceType'
+    ]);
 
     this.setState({
       // selectedSource,
       sourceConfig
-    })
-  }
+    });
+  };
 
-  handleFormSubmit = (payload) => {
+  handleFormSubmit = payload => {
     return this.props.onFormSubmit(payload);
-  }
+  };
 
   renderDialog = () => {
     return (
@@ -68,20 +75,20 @@ export default class SourceManagementOverview extends React.Component {
         onClose={this.closeDialog}
       />
     );
-  }
+  };
 
   render() {
     return (
       <div>
-        {
-          !this.props.sources.length
-          ? <SourceManagementNullState onClick={this.openDialog} />
-          : <SourceTileView
-              onSelectSource={this.selectSource}
-              sources={this.props.sources}
-              onSelectMenuItem={this.props.onSelectMenuAction}
-            />
-        }
+        {!this.props.sources.length ? (
+          <SourceManagementNullState onClick={this.openDialog} />
+        ) : (
+          <SourceTileView
+            onSelectSource={this.selectSource}
+            sources={this.props.sources}
+            onSelectMenuItem={this.props.onSelectMenuAction}
+          />
+        )}
         {this.state.openFormDialog && this.renderDialog()}
       </div>
     );
