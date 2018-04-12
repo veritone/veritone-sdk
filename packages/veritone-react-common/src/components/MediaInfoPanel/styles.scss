@@ -15,6 +15,13 @@
     align-items: center;
 
     .headerMenu {
+      display: flex;
+      flex-flow: row;
+
+      .popperClose {
+        pointer-events: none;
+      }
+
       .closeButton {
         font-size: 24px;
       }
