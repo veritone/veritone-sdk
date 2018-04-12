@@ -51,7 +51,7 @@ export default class LogoDetectionEngineOutput extends Component {
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
-    estimatedDisplayTimeMS: number,
+    estimatedDisplayTimeMs: number,
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
   };
@@ -157,7 +157,7 @@ export default class LogoDetectionEngineOutput extends Component {
       onScroll,
       mediaLengthMs,
       neglectableTimeMs,
-      estimatedDisplayTimeMS
+      estimatedDisplayTimeMs
     } = this.props;
 
     let contents = this.renderContents();
@@ -177,7 +177,7 @@ export default class LogoDetectionEngineOutput extends Component {
           onScroll={onScroll}
           totalSize={mediaLengthMs}
           neglectableSize={neglectableTimeMs}
-          estimatedDisplaySize={estimatedDisplayTimeMS}
+          estimatedDisplaySize={estimatedDisplayTimeMs}
         />
       </div>
     );

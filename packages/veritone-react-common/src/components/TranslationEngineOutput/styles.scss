@@ -1,0 +1,15 @@
+.translationOutput{
+  width: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  .languages{
+    margin-right: 30px;
+  }
+
+  .body{
+    width: 100%;
+    height: calc(100% - 54px);
+    overflow: hidden;
+  }
+}

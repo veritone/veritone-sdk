@@ -1,0 +1,19 @@
+@import 'src/styles/modules/variables';
+
+.dataSegment {
+  font-size: 16px;
+  font-weight: 300;
+  color: $dark-black;
+
+  &.highlight {
+    font-weight: bold;
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &.clickable:hover {
+    border-bottom: 2px solid $blue-1;
+  }
+}
