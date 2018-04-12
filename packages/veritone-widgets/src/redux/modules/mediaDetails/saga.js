@@ -8,6 +8,7 @@ import {
   LOAD_ENGINE_RESULTS,
   LOAD_TDO,
   UPDATE_TDO,
+  LOAD_CONTENT_TEMPLATES,
   SET_SELECTED_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
   REQUEST_LIBRARIES,
@@ -21,6 +22,7 @@ import {
   loadEngineResultsComplete,
   loadTdoSuccess,
   updateTdoComplete,
+  loadContentTemplatesComplete,
   selectEngineCategory,
   setEngineId,
   tdo,
@@ -51,11 +53,29 @@ function* loadTdoSaga(widgetId, tdoId) {
           id
           uri
         }
+        assets(limit:1000, type: "vtn-standard") {
+          records {
+            sourceData {
+              task {
+                engine {
+                  name
+                  id
+                  category {
+                    id
+                    name
+                    iconClass
+                    editable
+                    categoryType
+                  }
+                }
+              }
+            }
+          }
+        }
         jobs {
           records {
             tasks (limit: 1000, status: complete ) {
               records {
-                completedDateTime
                 engine {
                   id 
                   name
@@ -116,6 +136,35 @@ function* loadTdoSaga(widgetId, tdoId) {
     'music'
   ];
 
+  const tdo = response.data.temporalDataObject;
+  const engineCategoryById = new Map();
+
+  // Engine and engineCategory extractor from task data
+  const extractEngineCategoriesFromTaskData = function(task) {
+    let engineCategory = engineCategoryById.get(task.engine.category.id);
+    if (!engineCategory) {
+      engineCategory = Object.assign({}, task.engine.category);
+      engineCategory.iconClass = engineCategory.iconClass.replace(
+        '-engine',
+        ''
+      );
+      engineCategory.engines = [];
+      engineCategoryById.set(engineCategory.id, engineCategory);
+    }
+
+    const engineFromTask = {};
+    engineFromTask.id = task.engine.id;
+    engineFromTask.name = task.engine.name;
+    engineFromTask.completedDateTime = Number(task.completedDateTime);
+
+    const filteredEngineIdx = engineCategory.engines.findIndex(
+      filteredEngine => filteredEngine.id === engineFromTask.id
+    );
+    if (filteredEngineIdx === -1) {
+      engineCategory.engines.push(engineFromTask);
+    }
+  };
+
   // Convert data from tasks to EngineCategories
   // {
   //  name
@@ -129,15 +178,10 @@ function* loadTdoSaga(widgetId, tdoId) {
   //    completedDateTime
   //    }
   //  ]}
-  const tdo = response.data.temporalDataObject;
-  if (get(tdo, 'jobs.records', [])) {
-    const engineCategoryById = new Map();
-    // filter out unique engines per engine category
+  if (get(tdo, 'jobs.records', false)) {
     tdo.jobs.records.forEach(job => {
-      if (!job.tasks || !job.tasks.records) {
-        return;
-      }
-      job.tasks.records
+      const jobTasks = get(job, 'tasks.records', []);
+      jobTasks
         .filter(
           task =>
             get(task, 'engine.category.iconClass', false) &&
@@ -145,48 +189,34 @@ function* loadTdoSaga(widgetId, tdoId) {
               categoryType => categoryType === task.engine.category.categoryType
             )
         )
-        .forEach(task => {
-          let engineCategory = engineCategoryById.get(task.engine.category.id);
-          if (!engineCategory) {
-            engineCategory = Object.assign({}, task.engine.category);
-            engineCategory.iconClass = engineCategory.iconClass.replace(
-              '-engine',
-              ''
-            );
-            engineCategory.engines = [];
-            engineCategoryById.set(engineCategory.id, engineCategory);
-          }
-
-          const engineFromTask = {};
-          engineFromTask.id = task.engine.id;
-          engineFromTask.name = task.engine.name;
-          engineFromTask.completedDateTime = Number(task.completedDateTime);
-
-          const filteredEngineIdx = engineCategory.engines.findIndex(
-            filteredEngine => filteredEngine.id === engineFromTask.id
-          );
-          if (filteredEngineIdx === -1) {
-            engineCategory.engines.push(engineFromTask);
-          } else if (
-            engineFromTask.completedDateTime >
-            engineCategory.engines[filteredEngineIdx].completedDateTime
-          ) {
-            // consider only the latest run engine, disregard previous runs
-            engineCategory.engines[filteredEngineIdx] = engineFromTask;
-          }
-        });
+        .forEach(task => extractEngineCategoriesFromTaskData(task));
     });
-
-    // list all categories
-    const filteredCategories = [];
-    const categoriesIterator = engineCategoryById.values();
-    let nextCategory = categoriesIterator.next();
-    while (!nextCategory.done) {
-      filteredCategories.push(nextCategory.value);
-      nextCategory = categoriesIterator.next();
-    }
-    engineCategories = filteredCategories;
   }
+  if (get(tdo, 'assets.records', false)) {
+    tdo.assets.records
+      .filter(
+        asset =>
+          get(asset, 'sourceData.task.engine.category.iconClass', false) &&
+          !unsupportedResultCategories.some(
+            categoryType =>
+              categoryType ===
+              asset.sourceData.task.engine.category.categoryType
+          )
+      )
+      .forEach(asset =>
+        extractEngineCategoriesFromTaskData(asset.sourceData.task)
+      );
+  }
+
+  // list all categories
+  const filteredCategories = [];
+  const categoriesIterator = engineCategoryById.values();
+  let nextCategory = categoriesIterator.next();
+  while (!nextCategory.done) {
+    filteredCategories.push(nextCategory.value);
+    nextCategory = categoriesIterator.next();
+  }
+  engineCategories = filteredCategories;
 
   // TODO: dynamically add Structured Data Category - depending whether there is such data for TDO
   engineCategories.push({
@@ -234,6 +264,7 @@ function* loadTdoSaga(widgetId, tdoId) {
   });
 
   delete tdo.jobs;
+  delete tdo.assets;
 
   yield* finishLoadTdo(widgetId, tdo, {
     warning: false,
@@ -304,7 +335,7 @@ function* loadEngineResultsSaga(
   startOffsetMs,
   stopOffsetMs
 ) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!], $startOffsetMs: Int, $stopOffsetMs: Int) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
       engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
           tdoId
@@ -347,6 +378,59 @@ function* loadEngineResultsSaga(
       startOffsetMs,
       stopOffsetMs,
       widgetId
+    })
+  );
+}
+
+function* loadContentTemplates(widgetId) {
+  let loadTemplatesQuery = `query {
+    dataRegistries {
+      records {
+        id
+        name
+        description
+        source
+        organizationId
+        schemas {
+          records {
+            id
+            status
+            definition
+            majorVersion
+            minorVersion
+            validActions
+          }
+        }
+      }
+    }
+  }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: loadTemplatesQuery,
+      token
+    });
+  } catch (error) {
+    return yield put(loadContentTemplatesComplete(widgetId, null, { error }));
+  }
+
+  if (response.errors && response.errors.length) {
+    response.errors.forEach(error => console.warn(error));
+  }
+
+  const result = get(response.data, 'dataRegistries.records', []);
+
+  yield put(
+    loadContentTemplatesComplete(widgetId, result, {
+      warning: false,
+      error: false
     })
   );
 }
@@ -504,6 +588,13 @@ function* watchUpdateTdoRequest() {
   });
 }
 
+function* watchLoadContentTemplates() {
+  yield takeEvery(LOAD_CONTENT_TEMPLATES, function*(action) {
+    const { widgetId } = action.meta;
+    yield call(loadContentTemplates, widgetId);
+  });
+}
+
 function* watchSetEngineId() {
   yield takeEvery(SET_SELECTED_ENGINE_ID, function*(action) {
     const selectedEngineId = action.payload;
@@ -583,6 +674,7 @@ export default function* root() {
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
     fork(watchSetEngineId),
-    fork(watchSelectEngineCategory)
+    fork(watchSelectEngineCategory),
+    fork(watchLoadContentTemplates)
   ]);
 }

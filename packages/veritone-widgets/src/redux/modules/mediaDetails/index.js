@@ -1,5 +1,6 @@
 import {
   get,
+  has,
   findLastIndex,
   findIndex,
   groupBy,
@@ -19,6 +20,9 @@ export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const UPDATE_TDO = 'UPDATE_TDO';
 export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
+export const LOAD_CONTENT_TEMPLATES = 'LOAD_CONTENT_TEMPLATES';
+export const LOAD_CONTENT_TEMPLATES_COMPLETE =
+  'LOAD_CONTENT_TEMPLATES_COMPLETE';
 export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
 export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
@@ -48,7 +52,8 @@ const defaultMDPState = {
   libraries: [],
   fetchingLibraries: false,
   entities: [],
-  fetchingEntities: false
+  fetchingEntities: false,
+  contentTemplates: {}
 };
 
 const defaultState = {
@@ -244,6 +249,50 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [LOAD_CONTENT_TEMPLATES](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: null,
+        error: null,
+        warning: null
+      }
+    };
+  },
+  [LOAD_CONTENT_TEMPLATES_COMPLETE](
+    state,
+    { payload, meta: { warn, error, widgetId } }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    const templateSchemas = {};
+    // array of data registries containing an array of schemas
+    payload.reduce((schemaStore, registryData) => {
+      registryData.schemas.records.forEach(schema => {
+        // only take schemas that are 'published' and also define field types
+        if (
+          schema.status === 'published' &&
+          has(schema.definition, 'properties')
+        ) {
+          schemaStore[schema.id] = {
+            name: registryData.name
+          };
+          Object.assign(schemaStore[schema.id], schema);
+        }
+      });
+      return schemaStore;
+    }, templateSchemas);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: !(warn || error) || null,
+        error: error ? errorMessage : null,
+        warning: warn || null,
+        contentTemplates: templateSchemas
+      }
+    };
+  },
   [SELECT_ENGINE_CATEGORY](state, { payload, meta: { widgetId } }) {
     return {
       ...state,
@@ -377,6 +426,9 @@ export const libraries = (state, widgetId) =>
 export const entities = (state, widgetId) =>
   get(local(state), [widgetId, 'entities']);
 
+export const contentTemplates = (state, widgetId) =>
+  get(local(state), [widgetId, 'contentTemplates']);
+
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
   meta: { widgetId }
@@ -442,6 +494,21 @@ export const updateTdoRequest = (
 
 export const updateTdoComplete = (widgetId, result, { warn, error }) => ({
   type: UPDATE_TDO_COMPLETE,
+  payload: result,
+  meta: { warn, error, widgetId }
+});
+
+export const loadContentTemplates = widgetId => ({
+  type: LOAD_CONTENT_TEMPLATES,
+  meta: { widgetId }
+});
+
+export const loadContentTemplatesComplete = (
+  widgetId,
+  result,
+  { warn, error }
+) => ({
+  type: LOAD_CONTENT_TEMPLATES_COMPLETE,
   payload: result,
   meta: { warn, error, widgetId }
 });
