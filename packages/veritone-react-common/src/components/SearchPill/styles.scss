@@ -1,0 +1,11 @@
+@import 'src/styles/modules/variables';
+
+:export {
+  searchPillBackgroundColor: $light-blue50;
+  searchPillHoverColor: $grey-2;
+  highlightedBackgroundColor: $min-black;
+  selectedColor: $darkWhite;
+  selectedBackgroundColor: $min-black;
+  engineCategoryIconColor: $grey-5;
+  excludeBackgroundColor: $light-red50;
+}
