@@ -1,14 +1,18 @@
 @import 'src/styles/modules/variables';
 
-.smDialog {
-  span {
-    color: #fff;
-  }
-}
+// .sm-dialog {
+//   span {
+//     color: #fff;
+//   }
+// }
 
 .sm-form-wrapper {
   margin: 0 auto;
   width: 70%;
+}
+
+.source-config-wrapper {
+  width: 50%;
 }
 
 .separator {
@@ -17,7 +21,7 @@
   height: 27px;
 }
 
-.btnContainer {
+.btn-container {
   width: 100%;
   display: flex;
   justify-content: flex-end;

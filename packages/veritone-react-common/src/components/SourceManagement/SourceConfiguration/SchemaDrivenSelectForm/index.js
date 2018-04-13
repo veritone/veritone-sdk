@@ -45,20 +45,6 @@ export default class DynamicSelect extends React.Component {
   handleSourceTypeChange = event => {
     const sourceTypeIndex = event.target.value;
     this.props.onSelectChange(sourceTypeIndex);
-
-    // if (sourceTypeIndex !== this.props.currentSourceType) {
-    //   const currentFields = {};
-    //   const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties;
-
-    //   Object.keys(properties).forEach((field) => {
-    //     currentFields[field] = '';
-    //   });
-
-    //   this.props.onFieldChange({
-    //     sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
-    //     details: currentFields
-    //   });
-    // }
   };
 
   handleDetailChange = fieldId => event => {
@@ -100,7 +86,7 @@ export default class DynamicSelect extends React.Component {
     const { sourceTypes, currentSourceType } = this.props;
     const sourceTypesMenu = sourceTypes.map((type, index) => {
       return (
-        <MenuItem value={index} id={type.id} key={index}>
+        <MenuItem value={index} id={type.id} key={type.id}>
           {type.name}
         </MenuItem>
       );

@@ -32,7 +32,7 @@ export default class FormCard extends React.Component {
         </IconButton>
         {fields.map((field, index) => {
           return React.cloneElement(field, {
-            key: `${name}-field-${index}`,
+            key: `${name}-field-${index}`, // eslint-disable-line
             className: styles.formElements
           });
         })}

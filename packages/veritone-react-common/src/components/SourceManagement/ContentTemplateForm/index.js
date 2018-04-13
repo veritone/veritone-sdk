@@ -49,10 +49,16 @@ export default class ContentTemplateForm extends React.Component {
 
     if (remove) {
       if (this.state.contentTemplates[templateSchemaId]) {
-        const contentTemplates = { ...this.state.contentTemplates };
-        delete contentTemplates[templateSchemaId];
+        // const contentTemplates = { ...this.state.contentTemplates };
+        // delete contentTemplates[templateSchemaId];
 
-        return this.setState({ contentTemplates });
+        // return this.setState({ contentTemplates });
+        return this.setState(prevState => {
+          const contentTemplates = { ...prevState.contentTemplates };
+          delete contentTemplates[templateSchemaId];
+
+          return { contentTemplates };
+        });
       }
     } else {
       const data = {};
@@ -67,33 +73,33 @@ export default class ContentTemplateForm extends React.Component {
         data
       );
 
-      this.setState({
+      this.setState(prevState => ({
         contentTemplates: {
-          ...this.state.contentTemplates,
+          ...prevState.contentTemplates,
           [templateSchemaId]: {
             ...templateData[templateSchemaId],
             data
           }
         }
-      });
+      }));
     }
   };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
-    const { contentTemplates } = this.state;
+    // const { contentTemplates } = this.state;
 
-    this.setState({
+    this.setState(prevState => ({
       contentTemplates: {
-        ...contentTemplates,
+        ...prevState.contentTemplates,
         [templateSchemaId]: {
-          ...contentTemplates[templateSchemaId],
+          ...prevState.contentTemplates[templateSchemaId],
           data: {
-            ...contentTemplates[templateSchemaId].data,
+            ...prevState.contentTemplates[templateSchemaId].data,
             [fieldId]: value
           }
         }
       }
-    });
+    }));
   };
 
   handleSubmit = e => {

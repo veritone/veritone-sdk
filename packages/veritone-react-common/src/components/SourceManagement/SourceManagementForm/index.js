@@ -5,6 +5,7 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
 
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
@@ -40,8 +41,6 @@ export default class SourceManagementForm extends React.Component {
   };
 
   static defaultProps = {
-    sourceTypes: [],
-    templateData: {},
     initialTemplates: {}
   };
 
@@ -108,12 +107,12 @@ export default class SourceManagementForm extends React.Component {
   };
 
   saveConfiguration = config => {
-    return this.setState({
+    return this.setState(prevState => ({
       sourceConfig: {
-        ...this.state.sourceConfig,
+        ...prevState.sourceConfig,
         ...config
       }
-    });
+    }));
   };
 
   manageTemplatesList = (templateSchemaId, remove = false) => {
@@ -121,10 +120,15 @@ export default class SourceManagementForm extends React.Component {
 
     if (remove) {
       if (this.state.contentTemplates[templateSchemaId]) {
-        const contentTemplates = { ...this.state.contentTemplates };
-        delete contentTemplates[templateSchemaId];
+        // const contentTemplates = { ...this.state.contentTemplates };
+        // delete contentTemplates[templateSchemaId];
 
-        return this.setState({ contentTemplates });
+        return this.setState(prevState => {
+          const contentTemplates = { ...prevState.contentTemplates };
+          delete contentTemplates[templateSchemaId];
+
+          return { contentTemplates };
+        });
       }
     } else {
       const data = {};
@@ -139,15 +143,15 @@ export default class SourceManagementForm extends React.Component {
         data
       );
 
-      this.setState({
+      this.setState(prevState => ({
         contentTemplates: {
-          ...this.state.contentTemplates,
+          ...prevState.contentTemplates,
           [templateSchemaId]: {
             ...templateData[templateSchemaId],
             data
           }
         }
-      });
+      }));
     }
   };
 
@@ -200,7 +204,10 @@ export default class SourceManagementForm extends React.Component {
               </IconButton>,
               <span className={styles.separator} key={4} />,
               <IconButton aria-label="exit" key={5}>
-                <Icon className="icon-close-exit" onClick={this.handleOnClose} />
+                <Icon
+                  className="icon-close-exit"
+                  onClick={this.handleOnClose}
+                />
               </IconButton>
             ]}
           >
@@ -210,28 +217,36 @@ export default class SourceManagementForm extends React.Component {
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit}>
-            {activeTab === 0 && (
-              <SourceConfiguration
-                sourceTypes={this.props.sourceTypes}
-                source={this.state.sourceConfig}
-                onInputChange={this.saveConfiguration}
-                onClose={this.handleOnClose}
-              />
-            )}
-            {activeTab === 1 && (
-              <ContentTemplates
-                templateData={this.props.templateData}
-                selectedTemplateSchemas={this.state.contentTemplates}
-                onListChange={this.manageTemplatesList}
-                onInputChange={this.updateTemplateDetails}
-              />
-            )}
-            <div className={styles.btnContainer}>
-              <Button onClick={this.handleOnClose}>Cancel</Button>
-              <Button variant="raised" color="primary" type="submit">
-                Create
-              </Button>
-            </div>
+            <Grid container direction="column" justify="space-between">
+              {activeTab === 0 && (
+                <Grid item lg={7}>
+                  <SourceConfiguration
+                    sourceTypes={this.props.sourceTypes}
+                    source={this.state.sourceConfig}
+                    onInputChange={this.saveConfiguration}
+                    onClose={this.handleOnClose}
+                  />
+                </Grid>
+              )}
+              {activeTab === 1 && (
+                <Grid item lg={12}>
+                  <ContentTemplates
+                    templateData={this.props.templateData}
+                    selectedTemplateSchemas={this.state.contentTemplates}
+                    onListChange={this.manageTemplatesList}
+                    onInputChange={this.updateTemplateDetails}
+                  />
+                </Grid>
+              )}
+              <Grid item lg={12}>
+                <div className={styles['btn-container']}>
+                  <Button onClick={this.handleOnClose}>Cancel</Button>
+                  <Button variant="raised" color="primary" type="submit">
+                    Create
+                  </Button>
+                </div>
+              </Grid>
+            </Grid>
           </form>
         </div>
       </FullScreenDialog>

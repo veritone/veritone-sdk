@@ -16,7 +16,6 @@ export default class SourceTileView extends React.Component {
   };
 
   static defaultProps = {
-    sources: [],
     onSelectMenuItem: noop
   };
 

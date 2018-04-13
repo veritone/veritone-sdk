@@ -62,7 +62,7 @@ class BasicSplitTable extends React.Component {
 
   getRowData = i => {
     return data[i];
-  }
+  };
 
   renderFocusedRowDetails = row => {
     return (

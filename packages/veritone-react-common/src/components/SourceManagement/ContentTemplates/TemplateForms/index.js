@@ -15,9 +15,7 @@ export default class TemplateForms extends React.Component {
     onTemplateDetailsChange: func.isRequired,
     onRemoveTemplate: func.isRequired
   };
-  static defaultProps = {
-    templates: {}
-  };
+  static defaultProps = {};
 
   handleRemoveTemplate = schemaId => {
     this.props.onRemoveTemplate(schemaId, true);
@@ -93,7 +91,7 @@ export default class TemplateForms extends React.Component {
                     title={schemaProps[schemaProp].title || schemaProp}
                     objectProperties={schemaProps[schemaProp].properties}
                     onChange={this.handleFieldChange}
-                    key={`${schemaProp}-${propIdx}`}
+                    key={schemaProp}
                   />
                 )
               );
@@ -102,7 +100,7 @@ export default class TemplateForms extends React.Component {
 
           return (
             <FormCard
-              key={index}
+              key={schemaId}
               id={schemaId}
               fields={compact(formFields)}
               name={templates[schemaId].name}
@@ -182,7 +180,7 @@ function BuildFormElements({
       />
     );
   } else if (type.includes('object') && objectProperties) {
-    element = Object.keys(objectProperties).map((objProp, indexInner) => {
+    element = Object.keys(objectProperties).map(objProp => {
       return (
         <BuildFormElements
           fieldId={`${fieldId}.${objProp}`}
@@ -193,7 +191,7 @@ function BuildFormElements({
           objectProperties={objectProperties[objProp].properties}
           onChange={onChange}
           depth={depth + 1}
-          key={indexInner}
+          key={objProp}
         />
       );
     });

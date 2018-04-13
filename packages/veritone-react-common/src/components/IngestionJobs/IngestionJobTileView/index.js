@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 
-import { arrayOf, any, objectOf, func } from 'prop-types';
+import { arrayOf, any, objectOf } from 'prop-types';
 
 import { Table, Column } from 'components/DataTable';
 // import MenuColumn from 'components/DataTable/MenuColumn';
@@ -10,9 +10,8 @@ import { map, find, get } from 'lodash';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
-    jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
+    jobs: arrayOf(objectOf(any)).isRequired // an array of source objects
     // onSelectJob: func.isRequired,
-    onSelectMenuItem: func
   };
 
   static defaultProps = {};

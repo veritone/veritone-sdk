@@ -27,7 +27,7 @@ export default class TemplateList extends React.Component {
       const isAdded = !!selectedTemplates[schemaId];
 
       return (
-        <div className={styles.templateRow} key={index}>
+        <div className={styles.templateRow} key={schemaId}>
           <div
             className={styles.name}
             style={isAdded ? { fontWeight: 500 } : undefined}

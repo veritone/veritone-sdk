@@ -74,7 +74,7 @@ $avatar-size: 70px;
     @include mui-text('caption');
     position: absolute;
     top: 5px;
-    width: $avatar-size;
+    width: $avatar-size + 10;
     height: $avatar-size;
     border-radius: 50%;
     background: linear-gradient(
