@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 
 import { arrayOf, oneOfType, string, number, func } from 'prop-types';
 
-import { LOADING } from './';
+import { LOADING } from './shared';
 
 const withBasicBehavior = WrappedTable => {
   class WrappedWithBasicBehavior extends React.Component {
