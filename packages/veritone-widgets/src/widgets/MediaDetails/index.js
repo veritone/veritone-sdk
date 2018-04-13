@@ -331,11 +331,11 @@ class MediaDetailsWidget extends React.Component {
                   0
                 ) > 120 && (
                   <Tooltip
-                    id='truncated-file-name-tooltip'
+                    id="truncated-file-name-tooltip"
                     title={get(this.props, 'tdo.details.veritoneFile.filename')}
                     placement="bottom-start"
-                    enterDelay="1000"
-                    leaveDelay="700"
+                    enterDelay={1000}
+                    leaveDelay={700}
                   >
                     <div className={styles.pageHeaderTitleLabel}>
                       {get(

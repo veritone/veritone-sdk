@@ -42,8 +42,8 @@ export default class EngineCategorySelector extends Component {
                         id={engineCategory.name}
                         title={engineCategory.name}
                         placement="top"
-                        enterDelay="1000"
-                        leaveDelay="700"
+                        enterDelay={1000}
+                        leaveDelay={700}
                         classes={{
                           root: styles.categoryTabTooltip
                         }}
