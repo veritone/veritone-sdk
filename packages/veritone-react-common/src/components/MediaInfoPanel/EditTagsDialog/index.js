@@ -121,6 +121,7 @@ class EditTagsDialog extends Component {
       <Dialog
         open={this.props.isOpen}
         onClose={this.onCancel}
+        disableBackdropClick
         aria-labelledby="edit-tags-dialog"
         classes={{
           paper: styles.editTagsDialogPaper
