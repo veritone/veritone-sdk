@@ -44,7 +44,7 @@ DateIntervalSelect.propTypes = {
   input: shape({
     value: oneOfType([instanceOf(Interval), string])
   }),
-  intervals: objectOf(instanceOf(Interval)).isRequired,
+  intervals: objectOf(instanceOf(Interval)),
   allowCustomInterval: bool,
   customIntervalLabel: string
 };
