@@ -42,7 +42,7 @@ const withDecorators = compose(
             end: '01:00'
           }
         ],
-        weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
+        weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].reduce(
           (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
           {}
         ),

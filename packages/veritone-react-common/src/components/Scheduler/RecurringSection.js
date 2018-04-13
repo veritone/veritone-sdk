@@ -14,7 +14,7 @@ import DateTimeSelector from './DateTimeSelector';
 import TimePeriodSelector from './TimePeriodSelector';
 import styles from './styles.scss';
 
-const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 @formValues('repeatEvery')
 @formValues({ selectedDays: 'weekly.selectedDays' })
