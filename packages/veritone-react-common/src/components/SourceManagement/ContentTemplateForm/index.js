@@ -28,7 +28,7 @@ export default class ContentTemplateForm extends React.Component {
   };
 
   static defaultProps = {
-    templateData: {},
+    // templateData: {},
     initialTemplates: {}
   };
 

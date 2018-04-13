@@ -11,13 +11,11 @@ import { map, find, get } from 'lodash';
 export default class SourceTileView extends React.Component {
   static propTypes = {
     jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
-    onSelectJob: func.isRequired,
+    // onSelectJob: func.isRequired,
     onSelectMenuItem: func
   };
 
-  static defaultProps = {
-    jobs: []
-  };
+  static defaultProps = {};
 
   getIngestionJobData = i => {
     return this.props.jobs[i];

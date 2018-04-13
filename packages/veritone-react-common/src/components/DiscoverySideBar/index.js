@@ -33,7 +33,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
     filtersSections: sectionsShape.isRequired,
-    selectedFilters: arrayOf(object).isRequired, // see AllFiltersList.filters
+    selectedFilters: arrayOf(object), // see AllFiltersList.filters
     onClearAllFilters: func,
     onClearFilter: func,
     clearAllFilters: bool,
@@ -97,7 +97,7 @@ export class DiscoverySideBarContainerPure extends React.Component {
 @withMuiThemeProvider
 export default class DiscoverySideBarContainer extends React.Component {
   static propTypes = {
-    tabs: arrayOf(string).isRequired
+    tabs: arrayOf(string)
   };
 
   static defaultProps = {

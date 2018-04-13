@@ -93,7 +93,7 @@ export default class MenuColumn extends React.Component {
             {this.sortActions(allActions).map(
               (s, i) =>
                 s === '@@divider' ? (
-                  <Divider key={`divider-${i}`} />
+                  <Divider key="divider" />
                 ) : (
                   <MenuItem
                     key={s}

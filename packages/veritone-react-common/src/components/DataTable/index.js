@@ -50,7 +50,6 @@ class _Table extends React.Component {
 
   static defaultProps = {
     rowHeight: 75,
-    footerHeight: 56,
     onShowCellRange: noop,
     emptyRenderer: noop,
     showHeader: true
@@ -98,7 +97,7 @@ class _Table extends React.Component {
 
 const NormalTableContainer = ({
   rowCount,
-  footerHeight,
+  footerHeight = 56,
   footerElement,
   children,
   emptyRenderer,
@@ -107,7 +106,7 @@ const NormalTableContainer = ({
 }) => {
   return (
     <Paper elevation={1} className={styles['table-wrapper']}>
-      <MuiTable>
+      <MuiTable className={cx(styles.table)}>
         {showHeader && <TableHead rowCount={rowCount}>{children}</TableHead>}
         {rowCount === 0 ? (
           <MuiTableBody>
@@ -158,10 +157,6 @@ class SplitTableContainer extends React.Component {
     showHeader: bool,
     children: node
   };
-
-  // translateCellClick = (row, column) => {
-  //   return this.props.onCellClick(this.props.focusedRow + 1 + row, column);
-  // };
 
   render() {
     const {
