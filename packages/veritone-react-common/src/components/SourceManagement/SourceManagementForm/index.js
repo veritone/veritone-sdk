@@ -139,8 +139,6 @@ export default class SourceManagementForm extends React.Component {
         data
       );
 
-      console.log('data:', data);
-
       this.setState({
         contentTemplates: {
           ...this.state.contentTemplates,
@@ -183,57 +181,59 @@ export default class SourceManagementForm extends React.Component {
 
     return (
       <FullScreenDialog open={this.state.openDialog}>
-        <ModalHeader
-          title={
-            this.state.sourceConfig.name
-              ? this.state.sourceConfig.name
-              : 'New Source'
-          }
-          icons={[
-            <IconButton aria-label="help" key={1}>
-              <Icon className="icon-help2" />
-            </IconButton>,
-            <IconButton aria-label="menu" key={2}>
-              <Icon className="icon-more_vert" />
-            </IconButton>,
-            <IconButton aria-label="trash" key={3}>
-              <Icon className="icon-trash" />
-            </IconButton>,
-            <span className={styles.separator} key={4} />,
-            <IconButton aria-label="exit" key={5}>
-              <Icon className="icon-close-exit" onClick={this.handleOnClose} />
-            </IconButton>
-          ]}
-        >
-          <Tabs value={activeTab} onChange={this.handleChangeTab}>
-            <Tab label="Configuration" />
-            <Tab label="Content Templates" />
-          </Tabs>
-        </ModalHeader>
-        <form onSubmit={this.handleSubmit}>
-          {activeTab === 0 && (
-            <SourceConfiguration
-              sourceTypes={this.props.sourceTypes}
-              source={this.state.sourceConfig}
-              onInputChange={this.saveConfiguration}
-              onClose={this.handleOnClose}
-            />
-          )}
-          {activeTab === 1 && (
-            <ContentTemplates
-              templateData={this.props.templateData}
-              selectedTemplateSchemas={this.state.contentTemplates}
-              onListChange={this.manageTemplatesList}
-              onInputChange={this.updateTemplateDetails}
-            />
-          )}
-          <div className={styles.btnContainer}>
-            <Button onClick={this.handleOnClose}>Cancel</Button>
-            <Button variant="raised" color="primary" type="submit">
-              Create
-            </Button>
-          </div>
-        </form>
+        <div className={styles['sm-form-wrapper']}>
+          <ModalHeader
+            title={
+              this.state.sourceConfig.name
+                ? this.state.sourceConfig.name
+                : 'New Source'
+            }
+            icons={[
+              <IconButton aria-label="help" key={1}>
+                <Icon className="icon-help2" />
+              </IconButton>,
+              <IconButton aria-label="menu" key={2}>
+                <Icon className="icon-more_vert" />
+              </IconButton>,
+              <IconButton aria-label="trash" key={3}>
+                <Icon className="icon-trash" />
+              </IconButton>,
+              <span className={styles.separator} key={4} />,
+              <IconButton aria-label="exit" key={5}>
+                <Icon className="icon-close-exit" onClick={this.handleOnClose} />
+              </IconButton>
+            ]}
+          >
+            <Tabs value={activeTab} onChange={this.handleChangeTab}>
+              <Tab label="Configuration" />
+              <Tab label="Content Templates" />
+            </Tabs>
+          </ModalHeader>
+          <form onSubmit={this.handleSubmit}>
+            {activeTab === 0 && (
+              <SourceConfiguration
+                sourceTypes={this.props.sourceTypes}
+                source={this.state.sourceConfig}
+                onInputChange={this.saveConfiguration}
+                onClose={this.handleOnClose}
+              />
+            )}
+            {activeTab === 1 && (
+              <ContentTemplates
+                templateData={this.props.templateData}
+                selectedTemplateSchemas={this.state.contentTemplates}
+                onListChange={this.manageTemplatesList}
+                onInputChange={this.updateTemplateDetails}
+              />
+            )}
+            <div className={styles.btnContainer}>
+              <Button onClick={this.handleOnClose}>Cancel</Button>
+              <Button variant="raised" color="primary" type="submit">
+                Create
+              </Button>
+            </div>
+          </form>
+        </div>
       </FullScreenDialog>
     );
   }
