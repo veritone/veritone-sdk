@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { shape, string, objectOf, bool, any } from 'prop-types';
+import { shape, string, objectOf, any } from 'prop-types';
 import cx from 'classnames';
 import { formValues, Field, FieldArray } from 'redux-form';
 import { capitalize } from 'lodash';
@@ -23,8 +23,7 @@ export default class RecurringSection extends React.Component {
     repeatEvery: shape({
       number: string.isRequired,
       period: string.isRequired
-    }).isRequired,
-    selectedDays: objectOf(bool)
+    }).isRequired
   };
 
   render() {

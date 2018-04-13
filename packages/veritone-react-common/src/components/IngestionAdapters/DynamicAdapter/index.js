@@ -30,12 +30,12 @@ class DynamicAdapter extends React.Component {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {};
     if (isArray(this.props.supportedSourceTypes) && this.props.supportedSourceTypes.length) {
-      newState.sourceId = get(this.props, 'configuration.sourceId') || (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
+      newState.sourceId = get(this.props.configuration, 'sourceId') || (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
     }
     if (isArray(fields)) {
       fields.forEach(field => {
         if (field.name) {
-          let propValue = get(this.props, ['configuration', field.name]);
+          let propValue = get(this.props.configuration, field.name);
           if (field.defaultValue) {
             newState[field.name] =
               propValue ||

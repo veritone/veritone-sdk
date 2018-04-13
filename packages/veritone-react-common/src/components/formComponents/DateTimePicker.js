@@ -8,7 +8,6 @@ import styles from './styles/dateTimePicker.scss';
 
 export default class DateTimePicker extends React.Component {
   static propTypes = {
-    label: string,
     min: instanceOf(Date),
     max: instanceOf(Date),
     showIcon: bool,

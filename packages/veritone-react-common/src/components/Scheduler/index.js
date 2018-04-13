@@ -61,8 +61,7 @@ export default class Scheduler extends React.Component {
   static propTypes = {
     scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
       .isRequired,
-    handleSubmit: func.isRequired, // provided by redux-form
-    onSubmit: func // user submit callback
+    handleSubmit: func.isRequired // provided by redux-form
   };
 
   static prepareResultData(formResult) {
