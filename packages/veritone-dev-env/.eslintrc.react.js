@@ -37,6 +37,7 @@ module.exports = {
     'react/forbid-prop-types': 'warn',
     'react/no-did-mount-set-state': 'warn',
     'react/no-did-update-set-state': 'warn',
+    'react/no-array-index-key': 'warn',
     'react/self-closing-comp': [
       'warn',
       {
@@ -47,7 +48,16 @@ module.exports = {
     'react/sort-comp': 'warn',
     'react/prefer-es6-class': 'warn',
     'react/style-prop-object': 'warn',
-    'react/no-unescaped-entities': 'warn'
+    'react/no-unescaped-entities': 'warn',
+    'react/default-props-match-prop-types': 'warn',
+    'react/forbid-foreign-prop-types': 'warn',
+    'react/no-access-state-in-setstate': 'warn',
+    'react/no-children-prop': 'warn',
+    'react/no-typos': 'warn',
+    'react/no-this-in-sfc': 'warn',
+    'react/no-unused-prop-types': 'warn',
+
+    'import/named': 'warn'
   },
   env: {
     es6: true,
@@ -64,7 +74,7 @@ module.exports = {
       experimentalObjectRestSpread: true
     }
   },
-  plugins: ['react', 'promise', 'lodash'],
+  plugins: ['react', 'promise', 'lodash', 'import'],
   extends: [
     'eslint:recommended',
     'prettier',

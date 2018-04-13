@@ -16,9 +16,6 @@ export default class NavigationSideBarContainer extends React.Component {
     activePath: arrayOf(string).isRequired,
     onNavigate: func.isRequired
   };
-  static defaultProps = {
-    selectedFilters: []
-  };
 
   render() {
     return (

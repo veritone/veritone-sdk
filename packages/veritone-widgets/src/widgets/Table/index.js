@@ -33,10 +33,13 @@ class TableWidget extends React.Component {
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
     const tableProps = omit(this.props, ['data', 'columns', 'paginate']);
-    const tableColumns = this.props.columns.map((column, idx) => {
+    const tableColumns = this.props.columns.map(column => {
       if (column.menu) {
         return (
-          <MenuColumn key={idx} {...omit(column, ['transform', 'menu'])} />
+          <MenuColumn
+            key={column.dataKey}
+            {...omit(column, ['transform', 'menu'])}
+          />
         );
       }
 
@@ -44,7 +47,7 @@ class TableWidget extends React.Component {
         <Column
           {...omit(column, ['menu', 'onSelectItem', 'transform'])}
           cellRenderer={column.transform}
-          key={idx}
+          key={column.dataKey}
         />
       );
     });

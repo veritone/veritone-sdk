@@ -29,8 +29,7 @@ const SupressColumnWarnings = (
 );
 
 describe('Column', function() {
-  //TODO(oiaroshchuk): fix xit-broken test after integration
-  xit('Shows a loading message if data is the LOADING constant', function() {
+  it('Shows a loading message if data is the LOADING constant', function() {
     const wrapper = mount(
       <SupressColumnWarnings>
         <Column data={LOADING} dataKey="id" />
@@ -352,7 +351,7 @@ describe('Table', function() {
   });
 
   describe('loading behavior', function() {
-    xit('Renders LOADING cells correctly', function() {
+    it('Renders LOADING cells correctly', function() {
       const wrapper = mount(
         <Table
           rowGetter={i => LOADING} // eslint-disable-line react/jsx-no-bind
@@ -368,7 +367,7 @@ describe('Table', function() {
       ).toBeTruthy();
     });
 
-    xit('Renders a mix of loading and not-loading cells', function() {
+    it('Renders a mix of loading and not-loading cells', function() {
       const wrapper = mount(
         <Table
           rowGetter={i => (i % 2 === 0 ? LOADING : { id: i })} // eslint-disable-line react/jsx-no-bind
