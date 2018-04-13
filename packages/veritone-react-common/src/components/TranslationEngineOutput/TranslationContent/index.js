@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
-import { sortBy } from 'lodash';
+import { sortBy, isNumber } from 'lodash';
 
 import DataSegment from '../translation-segment/DataSegment';
 import ErrorSegment from '../translation-segment/ErrorSegment';
@@ -28,8 +28,8 @@ export default class TranslationContent extends Component {
             )
           })
         )
-      })
-    ),
+      }).isRequired
+    ).isRequired,
 
     className: string,
     dataSegmentClassName: string,
@@ -38,7 +38,7 @@ export default class TranslationContent extends Component {
 
     onClick: func,
     onScroll: func,
-    onRerunProcess: func,
+    onRerunProcess: func.isRequired,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -54,7 +54,7 @@ export default class TranslationContent extends Component {
   };
 
   renderContents = () => {
-    let {
+    const {
       contents,
 
       onClick,
@@ -70,18 +70,18 @@ export default class TranslationContent extends Component {
       mediaPlayerTimeIntervalMs
     } = this.props;
 
-    let segments = [];
-    let segmentStatus;
-    let segmentStartTime;
-    let segmentStopTime;
+    const segments = [];
+    let segmentStatus = undefined;
+    let segmentStartTime = undefined;
+    let segmentStopTime = undefined;
 
-    let clearSegmentStatus = () => {
+    const clearSegmentStatus = () => {
       segmentStatus = undefined;
       segmentStartTime = undefined;
       segmentStopTime = undefined;
     };
 
-    let createErrorSegment = () => {
+    const createErrorSegment = () => {
       segments.push({
         start: segmentStartTime,
         stop: segmentStopTime,
@@ -98,11 +98,10 @@ export default class TranslationContent extends Component {
         )
       });
 
-      segmentStartTime = segmentStopTime;
-      segmentStopTime = undefined;
+      clearSegmentStatus();
     };
 
-    let createNoDataSegment = () => {
+    const createNoDataSegment = () => {
       segments.push({
         start: segmentStartTime,
         stop: segmentStopTime,
@@ -118,132 +117,168 @@ export default class TranslationContent extends Component {
         )
       });
 
-      segmentStartTime = segmentStopTime;
-      segmentStopTime = undefined;
+      clearSegmentStatus();
     };
 
-    let createDataSegment = dataSegments => {
+    const createDataSegment = segmentComponents => {
       segments.push({
         start: segmentStartTime,
         stop: segmentStopTime,
-        content: dataSegments
+        content: segmentComponents
       });
 
-      segmentStartTime = segmentStopTime;
-      segmentStopTime = undefined;
+      clearSegmentStatus();
     };
 
-    contents.forEach((dataChunk, chunkIndex) => {
-      let chunkStartTime = dataChunk.startTimeMs;
-      let chunkStopTime = dataChunk.stopTimeMs;
+    const sortedDataChunks = sortBy(contents, 'startTimeMs', 'stopTimeMs');
+    sortedDataChunks.forEach((dataChunk, chunkIndex) => {
+      const chunkStatus = dataChunk.status;
+      const chunkStartTime = dataChunk.startTimeMs;
+      const chunkStopTime = dataChunk.stopTimeMs;
+      const sortedSeries =
+        dataChunk.series && dataChunk.series.length > 0
+          ? sortBy(dataChunk.series, 'startTimeMs', 'stopTimeMs')
+          : [];
 
-      if (segmentStartTime === undefined || segmentStartTime < chunkStartTime) {
-        segmentStartTime = chunkStartTime;
+      let nextSegmentTime = undefined;
+      if (isNumber(chunkStartTime)) {
+        nextSegmentTime = chunkStartTime;
+      } else if (sortedSeries.length > 0) {
+        nextSegmentTime = sortedSeries[0].startTimeMs;
       }
 
-      let series = sortBy(dataChunk.series, 'startTimeMs', 'stopTimeMs');
-      let dataSegmentEntries = [];
-      // ----Start looping through series content----
-      series.forEach(entry => {
-        let entryStartTime = entry.startTimeMs;
-        let entryStopTime = entry.stopTimeMs;
-        let entryStatus = entry.status || (entry.words ? 'success' : 'nodata');
+      // wrap up unsaved segments if there is a big time gap between 2 countinuous chunks or data doesnt support gap
+      const hasValidTime = isNumber(nextSegmentTime); // this should be true all the time
+      const hasNeglectableTime = isNumber(neglectableTimeMs);
+      const hasBigTimeGap =
+        hasNeglectableTime &&
+        hasValidTime &&
+        nextSegmentTime - segmentStopTime > neglectableTimeMs;
+      if (
+        segmentStatus &&
+        (!hasNeglectableTime || !hasValidTime || hasBigTimeGap)
+      ) {
+        // there is a valid gap between 2 continuos segments
+        if (segmentStatus === 'error') {
+          createErrorSegment();
+        } else if (segmentStatus === 'nodata') {
+          createNoDataSegment();
+        }
+      }
 
-        if (segmentStatus === undefined) {
-          segmentStatus = entryStatus;
-        } else if (segmentStatus !== entryStatus) {
-          // ----Save Previous Segment----
-          if (segmentStatus === 'success') {
-            createDataSegment(dataSegmentEntries.concat([]));
-            dataSegmentEntries = [];
-          } else if (segmentStatus === 'nodata') {
-            createNoDataSegment();
+      // Handle error segments
+      if (chunkStatus === 'error') {
+        segmentStatus === 'nodata' && createNoDataSegment(); //Save previous no data segment if the time gap above doesn't catch it
+
+        segmentStatus = chunkStatus;
+
+        if (
+          !isNumber(segmentStartTime) ||
+          (hasValidTime && segmentStartTime > nextSegmentTime)
+        ) {
+          segmentStartTime = nextSegmentTime;
+        }
+
+        if (!isNumber(segmentStopTime) || segmentStopTime < chunkStopTime) {
+          segmentStopTime = chunkStopTime;
+        }
+      } else {
+        // update segment start time
+        if (
+          !isNumber(segmentStartTime) ||
+          (hasValidTime && segmentStartTime > nextSegmentTime)
+        ) {
+          segmentStartTime = nextSegmentTime;
+        }
+
+        let dataSegmentComponents = [];
+
+        sortedSeries.forEach(entry => {
+          const entryStartTime = entry.startTimeMs;
+          const entryStopTime = entry.stopTimeMs;
+          const entryStatus = entry.words ? 'success' : 'nodata';
+          segmentStatus = segmentStatus || entryStatus; // set segment status to entry status if it doesn't exist
+
+          if (segmentStatus !== entryStatus) {
+            // status has changed
+            // ----Save Previous Segment----
+            if (segmentStatus === 'success') {
+              createDataSegment(dataSegmentComponents.slice(0));
+              dataSegmentComponents = [];
+            } else if (segmentStatus === 'nodata') {
+              createNoDataSegment();
+            } else if (segmentStatus === 'error') {
+              createErrorSegment();
+            }
+
+            segmentStatus = entryStatus; // updata segment status
           }
 
-          segmentStatus = entryStatus; // updata segment status
-        }
+          // ----Update Segment Time----
+          if (
+            !isNumber(segmentStartTime) ||
+            segmentStartTime > entryStartTime
+          ) {
+            segmentStartTime = entryStartTime;
+          }
 
-        // ----Update Segment Time----
-        if (
-          segmentStartTime === undefined ||
-          segmentStartTime > entryStartTime
-        ) {
-          segmentStartTime = entryStartTime;
-        }
+          if (!isNumber(segmentStopTime) || segmentStopTime < entryStopTime) {
+            segmentStopTime = entryStopTime;
+          }
 
-        if (segmentStopTime === undefined || segmentStopTime < entryStopTime) {
-          segmentStopTime = entryStopTime;
-        }
+          // ----Setup New Segment----
+          if (entryStatus === 'success' && entry.words.length > 0) {
+            // ----------Draw Translation Text----------
+            const isPlayHeadEnabled = mediaPlayerTimeMs >= 0;
+            const mediaPlayerStopTimeMs =
+              mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+            const flooredEntryStartTime =
+              Math.floor(entryStartTime / 1000) * 1000;
+            const ceiledEntryStartTime = Math.ceil(entryStopTime / 1000) * 1000;
 
-        // ----Setup New Segment----
-        if (entryStatus === 'error') {
-          createErrorSegment();
-        } else if (entryStatus === 'success' && entry.words.length > 0) {
-          // ----------Draw Translation Text----------
-          let playHeadEnabled = mediaPlayerTimeMs >= 0;
-          let mediaPlayerStopTimeMs =
-            mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-          let flooredEntryStartTime = Math.floor(entryStartTime / 1000) * 1000;
-          let ceiledEntryStartTime = Math.ceil(entryStopTime / 1000) * 1000;
+            const wordOptions = sortBy(entry.words, 'confidence');
+            dataSegmentComponents.push(
+              <DataSegment
+                content={wordOptions[0].word}
+                startTimeMs={entryStartTime}
+                stopTimeMs={entryStopTime}
+                onClick={onClick}
+                active={
+                  isPlayHeadEnabled &&
+                  !(
+                    mediaPlayerTimeMs > ceiledEntryStartTime ||
+                    mediaPlayerStopTimeMs < flooredEntryStartTime
+                  )
+                }
+                className={classNames(styles.dataSegment, dataSegmentClassName)}
+                key={'translation-data-' + entryStartTime + '-' + entryStopTime}
+              />
+            );
+          }
+        });
 
-          let wordOptions = sortBy(entry.words, 'confidence');
-          dataSegmentEntries.push(
-            <DataSegment
-              content={wordOptions[0].word}
-              startTimeMs={entryStartTime}
-              stopTimeMs={entryStopTime}
-              onClick={onClick}
-              active={
-                playHeadEnabled &&
-                !(
-                  mediaPlayerTimeMs > ceiledEntryStartTime ||
-                  mediaPlayerStopTimeMs < flooredEntryStartTime
-                )
-              }
-              className={classNames(styles.dataSegment, dataSegmentClassName)}
-              key={'translation-data-' + entryStartTime + '-' + entryStopTime}
-            />
-          );
-        }
-      });
-      // ----End looping through series content----
+        // save the last success segment before moving to the next chunk
+        segmentStatus === 'success' &&
+          createDataSegment(dataSegmentComponents.slice(0));
+        // ----End looping through series content----
+      }
 
-      // ----End of Data Chunk----
-      if (segmentStopTime === undefined || chunkStopTime > segmentStopTime) {
+      // Round up segment stop time if needed
+      if (isNumber(segmentStopTime) && segmentStopTime < chunkStopTime) {
         segmentStopTime = chunkStopTime;
       }
 
-      if (
-        segmentStatus === 'nodata' &&
-        isNaN(neglectableTimeMs) &&
-        neglectableTimeMs > 0 &&
-        chunkIndex < contents.length - 1
-      ) {
-        let nextDataChunk = contents[chunkIndex + 1];
-        let nextChunkStartTime = nextDataChunk.startTimeMs;
-        if (nextChunkStartTime - neglectableTimeMs <= segmentStopTime) {
-          // Extends no data segment to the next entry
-          if (segmentStopTime < nextChunkStartTime) {
-            segmentStopTime = nextChunkStartTime;
-          }
-        } else {
-          // Close no data segment since there's a gap between the current chunk & the next
-          createNoDataSegment();
-          clearSegmentStatus();
-        }
-      } else {
+      // Check for the last Data Chunk & wrap up the last segment
+      if (chunkIndex === sortedDataChunks.length - 1) {
+        segmentStatus === 'error' && createErrorSegment();
         segmentStatus === 'nodata' && createNoDataSegment();
-        segmentStatus === 'success' &&
-          createDataSegment(dataSegmentEntries.concat([]));
-        clearSegmentStatus();
       }
     });
-
     return segments;
   };
 
   render() {
-    let {
+    const {
       className,
       onScroll,
       mediaLengthMs,
@@ -259,6 +294,7 @@ export default class TranslationContent extends Component {
         estimatedDisplaySize={estimatedDisplayTimeMs}
         neglectableSize={neglectableTimeMs}
         contents={this.renderContents()}
+        //requestTimeMs={1000}
       />
     );
   }

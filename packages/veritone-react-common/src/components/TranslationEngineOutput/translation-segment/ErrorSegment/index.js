@@ -8,31 +8,39 @@ import styles from './styles.scss';
 
 export default class ErrorSegment extends Component {
   static propTypes = {
-    startTimeMs: number,
-    stopTimeMs: number,
-    onClick: func,
+    startTimeMs: number.isRequired,
+    stopTimeMs: number.isRequired,
+    description: string,
+    buttonLabel: string,
+    onClick: func.isRequired,
     className: string,
     timeClassName: string,
     messageClassName: string
   };
 
-  handleOnClick = () => {
-    let { onClick, startTimeMs, stopTimeMs } = this.props;
+  static defaultProps = {
+    description: 'Error Running Translation Engine',
+    buttonLabel: 'RERUN PROCESS'
+  };
 
+  handleOnClick = () => {
+    const { onClick, startTimeMs, stopTimeMs } = this.props;
     onClick && onClick(startTimeMs, stopTimeMs);
   };
 
   render() {
-    let {
+    const {
       startTimeMs,
       stopTimeMs,
+      description,
+      buttonLabel,
       className,
       timeClassName,
       messageClassName
     } = this.props;
 
-    let startTimeString = msToReadableString(startTimeMs);
-    let stopTimeString = msToReadableString(stopTimeMs);
+    const startTimeString = msToReadableString(startTimeMs);
+    const stopTimeString = msToReadableString(stopTimeMs);
 
     return (
       <div className={classNames(styles.errorSegment, className)}>
@@ -40,11 +48,11 @@ export default class ErrorSegment extends Component {
           {startTimeString + ' - ' + stopTimeString}
         </div>
         <div className={classNames(styles.message, messageClassName)}>
-          Error Running Translation Engine
+          {description}
         </div>
         <div>
           <Button variant="raised" color="primary" onClick={this.handleOnClick}>
-            RERUN PROCESS
+            {buttonLabel}
           </Button>
         </div>
       </div>

@@ -7,24 +7,30 @@ import styles from './styles.scss';
 
 export default class NoDataSegment extends Component {
   static propTypes = {
-    startTimeMs: number,
-    stopTimeMs: number,
+    startTimeMs: number.isRequired,
+    stopTimeMs: number.isRequired,
+    description: string,
     className: string,
     timeClassName: string,
     messageClassName: string
   };
 
+  static defaultProps = {
+    description: 'No Translation Data Available'
+  };
+
   render() {
-    let {
+    const {
       startTimeMs,
       stopTimeMs,
+      description,
       className,
       timeClassName,
       messageClassName
     } = this.props;
 
-    let startTimeString = msToReadableString(startTimeMs);
-    let stopTimeString = msToReadableString(stopTimeMs);
+    const startTimeString = msToReadableString(startTimeMs);
+    const stopTimeString = msToReadableString(stopTimeMs);
 
     return (
       <div className={classNames(styles.noDataSegment, className)}>
@@ -32,7 +38,7 @@ export default class NoDataSegment extends Component {
           {startTimeString + ' - ' + stopTimeString}
         </div>
         <div className={classNames(styles.message, messageClassName)}>
-          No Translation Data Available
+          {description}
         </div>
       </div>
     );

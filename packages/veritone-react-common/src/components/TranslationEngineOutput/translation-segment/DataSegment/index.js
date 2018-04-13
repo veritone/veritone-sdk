@@ -6,7 +6,7 @@ import styles from './styles.scss';
 
 export default class DataSegment extends Component {
   static propTypes = {
-    content: string,
+    content: string.isRequired,
     startTimeMs: number,
     stopTimeMs: number,
     onClick: func,
@@ -15,13 +15,12 @@ export default class DataSegment extends Component {
   };
 
   handleOnClick = () => {
-    let { startTimeMs, stopTimeMs, onClick } = this.props;
-
+    const { startTimeMs, stopTimeMs, onClick } = this.props;
     onClick && onClick(startTimeMs, stopTimeMs);
   };
 
   render() {
-    let { active, content, className, onClick } = this.props;
+    const { active, content, className, onClick } = this.props;
 
     return (
       <span

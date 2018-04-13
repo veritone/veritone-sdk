@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
+import { sortBy } from 'lodash';
 
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
@@ -16,11 +17,13 @@ export default class TranslationEngineOutput extends Component {
       shape({
         startTimeMs: number,
         stopTimeMs: number,
+        status: string,
         series: arrayOf(
           shape({
             startTimeMs: number,
             stopTimeMs: number,
             status: string,
+            language: string.isRequired,
             words: arrayOf(
               shape({
                 word: string,
@@ -29,24 +32,24 @@ export default class TranslationEngineOutput extends Component {
             )
           })
         )
-      })
-    ),
+      }).isRequired
+    ).isRequired,
 
     engines: arrayOf(
       shape({
         id: string,
         name: string
       })
-    ),
-    selectedEngineId: string,
+    ).isRequired,
+    selectedEngineId: string.isRequired,
 
     languages: arrayOf(
       shape({
-        id: string,
+        language: string,
         name: string
       })
     ),
-    selectedLanguageId: string,
+    defaultLanguage: string,
 
     className: string,
     headerClassName: string,
@@ -55,8 +58,8 @@ export default class TranslationEngineOutput extends Component {
 
     onClick: func,
     onScroll: func,
-    onRerunProcess: func,
-    onEngineChange: func,
+    onRerunProcess: func.isRequired,
+    onEngineChange: func.isRequired,
     onExpandClicked: func,
     onLanguageChanged: func,
 
@@ -76,23 +79,77 @@ export default class TranslationEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
+  setLanguageOptions() {
+    const { contents, languages, defaultLanguage } = this.props;
+
+    const translatedLanguages = [];
+    contents.forEach(dataChunk => {
+      const series = dataChunk.series;
+      if (series) {
+        series.forEach(entry => {
+          const entryLanguage = entry.language;
+          !translatedLanguages.includes(entryLanguage) &&
+            translatedLanguages.push(entryLanguage);
+        });
+      }
+    });
+    translatedLanguages.sort();
+
+    const selectedLanguage =
+      (this.state && this.state.selectedLanguage) ||
+      defaultLanguage ||
+      translatedLanguages[0];
+    let translatedLanguagesInfo = languages.filter(langInfo => {
+      return translatedLanguages.includes(langInfo.language) && langInfo;
+    });
+    translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
+
+    this.setState({
+      languages: translatedLanguagesInfo,
+      selectedLanguage: selectedLanguage
+    });
+  }
+
+  getSelectedContent() {
+    const selectedLanguage = this.state.selectedLanguage;
+    const selectedContent = [];
+    this.props.contents.forEach(chunk => {
+      if (!chunk.series) {
+        selectedContent.push(chunk); // Error chunks that doesn't have series
+      } else {
+        const filteredSeries = chunk.series.filter(entry => {
+          return entry.language === selectedLanguage && entry;
+        });
+        selectedContent.push({
+          startTimeMs: chunk.startTimeMs,
+          stopTimeMs: chunk.stopTimeMs,
+          series: filteredSeries
+        });
+      }
+    });
+
+    return selectedContent;
+  }
+
+  UNSAFE_componentWillMount() {
+    this.setLanguageOptions();
+  }
+
   handleLanguageChanged = event => {
-    this.props.onLanguageChanged &&
-      this.props.onLanguageChanged(event.target.value);
+    const selectedVal = event.target.value;
+    this.setState({ selectedLanguage: selectedVal });
+    this.props.onLanguageChanged && this.props.onLanguageChanged(selectedVal);
   };
 
   renderHeader() {
-    let {
+    const {
       title,
       engines,
       selectedEngineId,
       onEngineChange,
       onExpandClicked,
 
-      headerClassName,
-
-      languages,
-      selectedLanguageId
+      headerClassName
     } = this.props;
 
     return (
@@ -106,14 +163,17 @@ export default class TranslationEngineOutput extends Component {
       >
         <Select
           autoWidth
-          value={selectedLanguageId}
+          value={this.state.selectedLanguage}
           onChange={this.handleLanguageChanged}
           className={classNames(styles.languages)}
         >
-          {languages.map(language => {
+          {this.state.languages.map(languageInfo => {
             return (
-              <MenuItem value={language.id} key={'language-' + language.id}>
-                {language.name}
+              <MenuItem
+                value={languageInfo.language}
+                key={'language-' + languageInfo.language}
+              >
+                {languageInfo.name}
               </MenuItem>
             );
           })}
@@ -123,8 +183,7 @@ export default class TranslationEngineOutput extends Component {
   }
 
   renderBody() {
-    let {
-      contents,
+    const {
       bodyClassName,
       contentClassName,
 
@@ -140,10 +199,12 @@ export default class TranslationEngineOutput extends Component {
       mediaPlayerTimeIntervalMs
     } = this.props;
 
+    const selectedContents = this.getSelectedContent();
+
     return (
       <div className={classNames(styles.body, bodyClassName)}>
         <TranslationContent
-          contents={contents}
+          contents={selectedContents}
           className={contentClassName}
           onClick={onClick}
           onScroll={onScroll}
