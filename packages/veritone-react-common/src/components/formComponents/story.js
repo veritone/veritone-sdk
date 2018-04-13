@@ -1,7 +1,8 @@
 import React from 'react';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
+import { createLogger } from 'redux-logger';
 import { storiesOf } from '@storybook/react';
 import { InputLabel, InputAdornment } from 'material-ui/Input';
 import {
@@ -27,12 +28,20 @@ import RadioGroup from './RadioGroup';
 import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
 import DateTimePicker from './DateTimePicker';
+import TimeRangePicker from './TimeRangePicker';
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     form: formReducer
   }),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  composeEnhancers(
+    applyMiddleware(
+      createLogger({
+        collapsed: true
+      })
+    )
+  )
 );
 
 const StoryForm = reduxForm({
@@ -343,44 +352,50 @@ storiesOf('Form Components', module)
     </Provider>
   ))
   .add('DateTimePicker', () => {
-    let date = {
-      value: new Date()
-    };
-    function handleChange(value) {
-      console.log(value);
-      date.value = value;
-    }
-
     return (
       <Provider store={store}>
-        <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
-          <Field
-            component={DateTimePicker}
-            name="date-time"
-            input={{ value: date.value, onChange: handleChange }}
-          />
+        <StoryForm
+          onSubmit={values => alert(JSON.stringify(values))}
+          initialValues={{
+            dateTime: new Date(),
+            dateTimeIcon: new Date(),
+            dateTimeClearable: new Date(),
+            dateTimeTimezone: new Date()
+          }}
+        >
+          <Field component={DateTimePicker} name="dateTime" />
+          <br />
+          <Field component={DateTimePicker} name="dateTimeIcon" showIcon />
           <br />
           <Field
             component={DateTimePicker}
-            name="date-time-icon"
-            showIcon
-            input={{ value: date.value, onChange: handleChange }}
-          />
-          <br />
-          <Field
-            component={DateTimePicker}
-            name="date-time-clearable"
+            name="dateTimeClearable"
             clearable
-            input={{ value: date.value, onChange: handleChange }}
           />
           <br />
           <Field
             component={DateTimePicker}
-            name="date-time-timzone"
+            name="dateTimeTimezone"
             clearable
             showTimezone
-            input={{ value: date.value, onChange: handleChange }}
           />
+        </StoryForm>
+      </Provider>
+    );
+  })
+  .add('TimeRangePicker', () => {
+    return (
+      <Provider store={store}>
+        <StoryForm
+          onSubmit={values => alert(JSON.stringify(values))}
+          initialValues={{
+            timeRange: {
+              start: '12:00',
+              end: '14:00'
+            }
+          }}
+        >
+          <Field component={TimeRangePicker} name="timeRange" />
         </StoryForm>
       </Provider>
     );

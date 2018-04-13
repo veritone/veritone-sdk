@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { reducer as formReducer } from 'redux-form';
 import { video } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 
@@ -28,7 +29,8 @@ export default function createReducer(asyncReducers) {
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
-    player: playerReducer,
+    form: formReducer,
+	player: playerReducer,
     operation: operationReducer,
     ...asyncReducers
   });

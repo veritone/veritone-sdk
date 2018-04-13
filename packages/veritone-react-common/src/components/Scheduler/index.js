@@ -1,284 +1,176 @@
 import React from 'react';
-import { any, objectOf, func } from 'prop-types';
-import Radio, { RadioGroup } from 'material-ui/Radio';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import { FormControl, FormControlLabel } from 'material-ui/Form';
-import { get } from 'lodash';
+import { compose } from 'redux';
+import { oneOf, func } from 'prop-types';
+import { reduxForm, Field, formValues } from 'redux-form';
+import { pick, get, pickBy, mapValues } from 'lodash';
+import { withProps, hoistStatics } from 'recompose';
+import { FormControlLabel } from 'material-ui/Form';
+import Radio from 'material-ui/Radio';
+import { subDays } from 'date-fns';
 
-import DateTimePicker from '../formComponents/DateTimePicker';
+import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
+import RadioGroup from '../formComponents/RadioGroup';
+import styles from './styles.scss';
+import ImmediateSection from './ImmediateSection';
+import RecurringSection from './RecurringSection';
+import OnDemandSection from './OnDemandSection';
+import ContinuousSection from './ContinuousSection';
 
-const RECURRING_SELECTION = {
-  label: 'Recurring',
-  value: 'recurring'
-};
-const CONTINUOUS_SELECTION = {
-  label: 'Continuous',
-  value: 'continuous'
-};
-const ONE_TIME_SELECTION = {
-  label: 'Immediate',
-  value: 'immediate'
-};
-const NONE_SELECTION = {
-  label: 'On Demand',
-  value: 'on-demand'
-};
-const HOUR_SELECTION = {
-  label: 'hour',
-  value: 'hour'
-};
-const DAY_SELECTION = {
-  label: 'day',
-  value: 'day'
-};
-const WEEK_SELECTION = {
-  label: 'week',
-  value: 'week'
-};
-const REPEAT_HOUR_VALUES = [
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  19,
-  20,
-  21,
-  22,
-  23
-];
-const REPEAT_DAY_VALUES = [1, 2, 3, 4, 5, 6];
-const REPEAT_WEEK_VALUES = [1, 2, 3];
+const initDate = new Date();
 
-const OCCURENCE_TYPE_SELECTIONS = [
-  RECURRING_SELECTION,
-  CONTINUOUS_SELECTION,
-  ONE_TIME_SELECTION,
-  NONE_SELECTION
-].map(selection => (
-  <FormControlLabel
-    key={selection.label}
-    value={selection.value}
-    control={<Radio />}
-    label={selection.label}
-  />
-));
-const REPEAT_TYPE_SELECTIONS = [
-  HOUR_SELECTION,
-  DAY_SELECTION,
-  WEEK_SELECTION
-].map(selection => (
-  <MenuItem key={selection.value} value={selection.value}>
-    {selection.label}
-  </MenuItem>
-));
-const REPEAT_HOUR_SELECTIONS = REPEAT_HOUR_VALUES.map(selection => (
-  <MenuItem key={selection} value={selection}>
-    {selection}
-  </MenuItem>
-));
-const REPEAT_DAY_SELECTIONS = REPEAT_DAY_VALUES.map(selection => (
-  <MenuItem key={selection} value={selection}>
-    {selection}
-  </MenuItem>
-));
-const REPEAT_WEEK_SELECTIONS = REPEAT_WEEK_VALUES.map(selection => (
-  <MenuItem key={selection} value={selection}>
-    {selection}
-  </MenuItem>
-));
+const withDecorators = compose(
+  ...[
+    withMuiThemeProvider,
+    withProps(props => ({
+      initialValues: {
+        // This provides defaults to the form. Shallow merged with
+        // props.initialValues to allow overriding.
+        scheduleType: 'recurring',
+        start: subDays(initDate, 3),
+        end: initDate,
+        maxSegment: {
+          number: '5',
+          period: 'week'
+        },
+        repeatEvery: {
+          number: '1',
+          period: 'day'
+        },
+        daily: [
+          {
+            start: '00:00',
+            end: '01:00'
+          }
+        ],
+        weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].reduce(
+          (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
+          {}
+        ),
+        ...props.initialValues
+      }
+    })),
+    reduxForm({
+      form: 'scheduler'
+    }),
+    formValues('scheduleType')
+  ].map(hoistStatics)
+);
 
+@withDecorators
 export default class Scheduler extends React.Component {
   static propTypes = {
-    updateSchedule: func.isRequired,
-    schedule: objectOf(any)
+    scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
+      .isRequired,
+    handleSubmit: func.isRequired, // provided by redux-form
+    onSubmit: func // user submit callback
   };
 
-  constructor(props) {
-    super(props);
-    let today = new Date();
-    let tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    this.state = {
-      occurrenceType:
-        get(this.props, 'schedule.occurrenceType') || NONE_SELECTION.value,
-      repeatIntervalUnit:
-        get(this.props, 'schedule.repeatIntervalUnit') || HOUR_SELECTION.value,
-      repeatValue:
-        get(this.props, 'schedule.repeatValue') || REPEAT_HOUR_VALUES[0],
-      startDateTime: get(this.props, 'schedule.startDateTime') || today,
-      stopDateTime: get(this.props, 'schedule.stopDateTime') || tomorrow
+  static prepareResultData(formResult) {
+    const recurringPeriod = get(formResult, 'repeatEvery.period');
+    const selectedDays = Object.keys(
+      pickBy(
+        get(formResult, 'weekly.selectedDays', {}),
+        (included) => !!included
+      )
+    );
+
+    const recurringRepeatSectionFields = {
+      hour: [],
+      day: ['daily'],
+      week: selectedDays.map(day => `weekly.${day}`)
+    }[recurringPeriod];
+
+    const wantedFields = {
+      recurring: [
+        'scheduleType',
+        'start',
+        'end',
+        'maxSegment',
+        'repeatEvery',
+        ...recurringRepeatSectionFields
+      ],
+      continuous: ['scheduleType', 'start', 'end', 'maxSegment'],
+      immediate: ['scheduleType', 'maxSegment'],
+      ondemand: ['scheduleType']
+    }[formResult.scheduleType];
+
+    const result = pick(formResult, wantedFields);
+    return result.scheduleType === 'recurring'
+      ? filterRecurringPeriods(result, recurringPeriod)
+      : result;
+  }
+
+  render() {
+    const ActiveSectionComponent = {
+      recurring: RecurringSection,
+      continuous: ContinuousSection,
+      immediate: ImmediateSection,
+      ondemand: OnDemandSection
+    }[this.props.scheduleType];
+
+    return (
+      <form onSubmit={this.props.handleSubmit}>
+        <div className={styles.header}>Set Ingestion Schedule</div>
+        <Field
+          component={RadioGroup}
+          name="scheduleType"
+          className={styles.scheduleTypeContainer}
+        >
+          <FormControlLabel
+            value="recurring"
+            control={<Radio />}
+            label="Recurring"
+          />
+          <FormControlLabel
+            value="continuous"
+            control={<Radio />}
+            label="Continuous"
+          />
+          <FormControlLabel
+            value="immediate"
+            control={<Radio />}
+            label="Immediate"
+          />
+          <FormControlLabel
+            value="ondemand"
+            control={<Radio />}
+            label="On Demand"
+          />
+        </Field>
+        <div className={styles.activeSectionContainer}>
+          <ActiveSectionComponent />
+        </div>
+      </form>
+    );
+  }
+}
+
+function filterRecurringPeriods(result, recurringPeriod) {
+  if (recurringPeriod === 'hour') {
+    return result;
+  }
+
+  if (recurringPeriod === 'day') {
+    // filter out incomplete ranges that don't have both start and end
+    return {
+      ...result,
+      daily: result.daily.filter(day => day.start && day.end)
     };
   }
 
-  // Component specific functions here
-  getRepeatValueSelector = () => {
-    let childrenSelection = [];
-    switch (this.state.repeatIntervalUnit) {
-      case HOUR_SELECTION.value:
-        childrenSelection = REPEAT_HOUR_SELECTIONS;
-        break;
-      case DAY_SELECTION.value:
-        childrenSelection = REPEAT_DAY_SELECTIONS;
-        break;
-      case WEEK_SELECTION.value:
-        childrenSelection = REPEAT_WEEK_SELECTIONS;
-        break;
-    }
-    return (
-      <Select
-        value={this.state.repeatValue}
-        onChange={this.handleRepeatValueChange}
-      >
-        {childrenSelection}
-      </Select>
-    );
-  };
-
-  sendSchedule = () => {
-    this.props.updateSchedule(this.state);
-  };
-
-  handleOccurenceTypeChange = (event, value) => {
-    this.setState(
-      Object.assign({}, this.state, { occurrenceType: value }),
-      this.sendSchedule
-    );
-  };
-
-  handleStartChange = value => {
-    this.setState(
-      Object.assign({}, this.state, { startDateTime: value }),
-      this.sendSchedule
-    );
-  };
-
-  handleEndChange = value => {
-    this.setState(
-      Object.assign({}, this.state, { stopDateTime: value }),
-      this.sendSchedule
-    );
-  };
-
-  handleRepeatIntervalUnitChange = event => {
-    this.setState(
-      Object.assign({}, this.state, { repeatIntervalUnit: event.target.value }),
-      this.sendSchedule
-    );
-  };
-
-  handleRepeatValueChange = event => {
-    this.setState(
-      Object.assign({}, this.state, { repeatValue: event.target.value }),
-      this.sendSchedule
-    );
-  };
-
-  render() {
-    let repeatIntervalUnit = this.state.repeatIntervalUnit;
-    let occurrenceType = this.state.occurrenceType;
-    let dynamicSection = [];
-    if (occurrenceType === RECURRING_SELECTION.value) {
-      dynamicSection.push(
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <div>Repeat every</div>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div>{this.getRepeatValueSelector()}</div>
-            <div>
-              <Select
-                value={repeatIntervalUnit}
-                onChange={this.handleRepeatIntervalUnitChange}
-              >
-                {REPEAT_TYPE_SELECTIONS}
-              </Select>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    if (
-      occurrenceType === RECURRING_SELECTION.value ||
-      occurrenceType === CONTINUOUS_SELECTION.value
-    ) {
-      dynamicSection.push(
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <div>Starts</div>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <DateTimePicker
-              min={new Date()}
-              max={this.state.stopDateTime}
-              showTimezone
-              input={{
-                value: this.state.startDateTime,
-                onChange: this.handleStartChange
-              }}
-            />
-          </div>
-        </div>
-      );
-      if (repeatIntervalUnit === DAY_SELECTION.value) {
-        dynamicSection.push(
-          <div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div>Day Section</div>
-              <div>Day Interval DateTime Pickers</div>
-            </div>
-          </div>
-        );
-      }
-      if (repeatIntervalUnit === WEEK_SELECTION.value) {
-        dynamicSection.push(
-          <div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <div>REPEATORS FOR {WEEK_SELECTION.value}</div>
-            </div>
-          </div>
-        );
-      }
-      dynamicSection.push(
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <div>Ends</div>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <DateTimePicker
-              min={this.state.startDateTime}
-              showTimezone
-              input={{
-                value: this.state.stopDateTime,
-                onChange: this.handleEndChange
-              }}
-            />
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div>
-        <FormControl component="fieldset" required>
-          <RadioGroup
-            name="occurrenceType"
-            value={occurrenceType}
-            onChange={this.handleOccurenceTypeChange}
-            style={{ display: 'flex', flexDirection: 'row' }}
-          >
-            {OCCURENCE_TYPE_SELECTIONS}
-          </RadioGroup>
-          {dynamicSection}
-        </FormControl>
-      </div>
-    );
+  if (recurringPeriod === 'week') {
+    return {
+      ...result,
+      weekly: pickBy(
+        // filter out incomplete ranges that don't have both start and end
+        mapValues(result.weekly, week =>
+          week.filter(day => day.start && day.end)
+        ),
+        // remove days with no complete ranges
+        schedules => !!schedules.length
+      )
+    };
   }
+
+  return result;
 }
