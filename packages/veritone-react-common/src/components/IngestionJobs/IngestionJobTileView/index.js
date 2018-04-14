@@ -1,17 +1,18 @@
 import React, { Fragment } from 'react';
 
-import { arrayOf, any, objectOf } from 'prop-types';
+import { arrayOf, any, objectOf, bool } from 'prop-types';
 
-import { Table, Column } from 'components/DataTable';
+import { Table, PaginatedTable, Column } from 'components/DataTable';
 // import MenuColumn from 'components/DataTable/MenuColumn';
 import StatusPill from 'components/StatusPill';
 import { format } from 'date-fns';
-import { map, find, get } from 'lodash';
+import { map, find, get, uniq, omit } from 'lodash';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
-    jobs: arrayOf(objectOf(any)).isRequired // an array of source objects
+    jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
     // onSelectJob: func.isRequired,
+    paginate: bool
   };
 
   static defaultProps = {};
@@ -21,13 +22,17 @@ export default class SourceTileView extends React.Component {
   };
 
   renderEnginesIcons = taskTemplates => {
-    const icons = map(taskTemplates.records, 'engine.category.iconClass');
+    const icons = uniq(map(taskTemplates.records, 'engine.category.iconClass'));
 
     return (
       <Fragment>
-        {icons.map(icon => {
-          return icon ? <span key={icon} className={icon} /> : undefined;
-        })}
+        {icons.length ? (
+          icons.map(
+            icon => (icon ? <span key={icon} className={icon} /> : undefined)
+          )
+        ) : (
+          <span>{'-'}</span>
+        )}
       </Fragment>
     );
   };
@@ -47,7 +52,9 @@ export default class SourceTileView extends React.Component {
   };
 
   renderLastIngestion = mostRecentJob => {
-    return format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A');
+    return mostRecentJob
+      ? format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A')
+      : '-';
   };
 
   renderStatus = isActive => {
@@ -55,11 +62,16 @@ export default class SourceTileView extends React.Component {
   };
 
   render() {
+    const TableComp = this.props.paginate ? PaginatedTable : Table;
+    const dataKey = 'jobTemplates.records[0].taskTemplates';
+    const tableProps = omit(this.props, ['jobs', 'paginate']);
+
     return (
-      <Table
+      <TableComp
         rowGetter={this.getIngestionJobData}
         rowCount={this.props.jobs.length}
         rowHeight={48}
+        {...tableProps}
       >
         <Column dataKey="name" header="Job Name" />
         <Column
@@ -68,18 +80,18 @@ export default class SourceTileView extends React.Component {
           cellRenderer={this.renderStatus}
         />
         <Column
-          dataKey="jobTemplates.records[0].taskTemplates"
+          dataKey={dataKey}
           header="Engines"
           cellRenderer={this.renderEnginesIcons}
           align="center"
         />
         <Column
-          dataKey="jobTemplates.records[0].taskTemplates"
+          dataKey={dataKey}
           header="Adapter"
           cellRenderer={this.renderAdapter}
         />
         <Column
-          dataKey="jobTemplates.records[0].taskTemplates"
+          dataKey={dataKey}
           header="Ingestion Type"
           cellRenderer={this.renderIngestionType}
           align="center"
@@ -94,7 +106,7 @@ export default class SourceTileView extends React.Component {
           dataKey='jobTemplates.records[0].taskTemplates'
           onSelectItem={this.props.onSelectMenuItem}
         /> */}
-      </Table>
+      </TableComp>
     );
   }
 }

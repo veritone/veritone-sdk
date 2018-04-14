@@ -92,10 +92,6 @@ export default class SourceManagementForm extends React.Component {
     return this.setState(newState);
   }
 
-  // openDialog = () => {
-  //   return this.setState({ openDialog: true });
-  // };
-
   handleOnClose = () => {
     return this.setState({ openDialog: false }, () => {
       this.props.onClose();
@@ -193,17 +189,11 @@ export default class SourceManagementForm extends React.Component {
                 : 'New Source'
             }
             icons={[
-              <IconButton aria-label="help" key={1}>
+              <IconButton aria-label="help" key="icon-1">
                 <Icon className="icon-help2" />
               </IconButton>,
-              <IconButton aria-label="menu" key={2}>
-                <Icon className="icon-more_vert" />
-              </IconButton>,
-              <IconButton aria-label="trash" key={3}>
-                <Icon className="icon-trash" />
-              </IconButton>,
-              <span className={styles.separator} key={4} />,
-              <IconButton aria-label="exit" key={5}>
+              <span className={styles.separator} key="icon-2" />,
+              <IconButton aria-label="exit" key="icon-3">
                 <Icon
                   className="icon-close-exit"
                   onClick={this.handleOnClose}

@@ -1,11 +1,5 @@
 @import 'src/styles/modules/variables';
 
-// .sm-dialog {
-//   span {
-//     color: #fff;
-//   }
-// }
-
 .sm-form-wrapper {
   margin: 0 auto;
   width: 70%;
@@ -16,6 +10,7 @@
 }
 
 .separator {
+  margin: 0 15px;
   align-self: center;
   border-right: 1px solid $grey-1;
   height: 27px;
