@@ -15,7 +15,12 @@ export default function withMuiThemeProvider(Component) {
                 light: blue[300],
                 main: blue[500],
                 dark: blue[700]
-              }
+              },
+              secondary: {
+                light: blue[300],
+                main: blue[500],
+                dark: blue[700]
+              },
             },
             typography: {
               button: {

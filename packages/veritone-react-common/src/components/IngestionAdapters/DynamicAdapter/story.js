@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import SDOAdapterObj from './';
-const SDOAdapter = SDOAdapterObj.adapter;
+import DynamicAdapterObj from './';
+const DynamicAdapter = DynamicAdapterObj.adapter;
 
 const ADAPTER_CONFIG = {
   adapterId: 'react-adapter',
@@ -361,8 +361,8 @@ let configuration = {
   sourceId: SOURCES[0].id
 };
 
-storiesOf('SDOAdapter', module).add('SDOAdapter', () => (
-  <SDOAdapter
+storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
+  <DynamicAdapter
     sources={SOURCES}
     configuration={configuration}
     adapterConfig={ADAPTER_CONFIG}

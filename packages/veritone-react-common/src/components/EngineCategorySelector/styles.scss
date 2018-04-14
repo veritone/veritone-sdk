@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .engineCategoryTabsContainer {
   width: 100%;
   display: flex;
@@ -11,9 +13,21 @@
   .engineCategoryTab {
     min-width: 58px;
     width: 58px;
+    color: $light-black;
+    overflow: visible;
+
+    .categoryTabTooltip {
+      text-transform: capitalize;
+      width: 54px;
+    }
 
     .categoryIcon {
       font-size: 20px;
+      width: 54px;
     }
+  }
+
+  .engineCategoryTabSelectedColor {
+    color: $full-black;
   }
 }

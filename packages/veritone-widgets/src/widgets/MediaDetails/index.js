@@ -30,10 +30,9 @@ import {
   LogoDetectionEngineOutput,
   ContentTemplateForm
 } from 'veritone-react-common';
+import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
-
 import styles from './styles.scss';
-
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
@@ -326,9 +325,36 @@ class MediaDetailsWidget extends React.Component {
           {!expandedMode && (
             <div>
               <div className={styles.pageHeader}>
-                <div className={styles.pageHeaderTitleLabel}>
-                  {get(this.props, 'tdo.details.veritoneFile.filename', '')}
-                </div>
+                {get(
+                  this.props,
+                  'tdo.details.veritoneFile.filename.length',
+                  0
+                ) > 120 && (
+                  <Tooltip
+                    id="truncated-file-name-tooltip"
+                    title={get(this.props, 'tdo.details.veritoneFile.filename')}
+                    placement="bottom-start"
+                    enterDelay={1000}
+                    leaveDelay={700}
+                  >
+                    <div className={styles.pageHeaderTitleLabel}>
+                      {get(
+                        this.props,
+                        'tdo.details.veritoneFile.filename',
+                        ''
+                      ).substring(0, 119) + '...'}
+                    </div>
+                  </Tooltip>
+                )}
+                {get(
+                  this.props,
+                  'tdo.details.veritoneFile.filename.length',
+                  0
+                ) <= 120 && (
+                  <div className={styles.pageHeaderTitleLabel}>
+                    {get(this.props, 'tdo.details.veritoneFile.filename', '')}
+                  </div>
+                )}
                 <div className={styles.pageHeaderActionButtons}>
                   <IconButton
                     className={styles.pageHeaderActionButton}
@@ -366,6 +392,7 @@ class MediaDetailsWidget extends React.Component {
               <Tabs
                 value={this.state.selectedTabValue}
                 onChange={this.handleTabChange}
+                indicatorColor="#f9a02c"
                 classes={{
                   flexContainer: styles.mediaDetailsPageTabSelector
                 }}

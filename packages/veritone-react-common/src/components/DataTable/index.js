@@ -26,7 +26,7 @@ import {
 } from 'prop-types';
 
 import withPagination from './withPagination';
-import withBasicBehavior, { LOADING } from './withBasicBehavior';
+import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index.scss';
 
 /*
@@ -50,7 +50,6 @@ class _Table extends React.Component {
 
   static defaultProps = {
     rowHeight: 75,
-    footerHeight: 56,
     onShowCellRange: noop,
     emptyRenderer: noop,
     showHeader: true
@@ -98,7 +97,7 @@ class _Table extends React.Component {
 
 const NormalTableContainer = ({
   rowCount,
-  footerHeight,
+  footerHeight = 56,
   footerElement,
   children,
   emptyRenderer,
@@ -157,12 +156,9 @@ class SplitTableContainer extends React.Component {
     children: node
   };
 
-  translateCellClick = (row, column) => {
-    return this.props.onCellClick(this.props.focusedRow + 1 + row, column);
-  };
-
   render() {
     const {
+      onCellClick,
       focusedRow,
       renderFocusedRowDetails,
       rowCount,
@@ -196,6 +192,7 @@ class SplitTableContainer extends React.Component {
                 {...restProps}
                 rowRangeEnd={focusedRow}
                 rowGetter={rowGetter}
+                onCellClick={onCellClick}
               >
                 {children}
               </TableBody>
@@ -222,7 +219,7 @@ class SplitTableContainer extends React.Component {
                 {injectInto(children, {
                   data: rowGetter(focusedRow),
                   row: focusedRow,
-                  onCellClick: this.translateFocusedRowCellClick
+                  onCellClick
                 })}
               </TableRow>
               <TableRow>
@@ -244,7 +241,7 @@ class SplitTableContainer extends React.Component {
               rowRangeStart={this.props.focusedRow + 1}
               rowRangeEnd={rowCount}
               rowGetter={rowGetter}
-              onCellClick={this.translateCellClick}
+              onCellClick={onCellClick}
             >
               {children}
             </TableBody>
@@ -382,6 +379,9 @@ TableHead.propTypes = {
   rowCount: number.isRequired,
   children: node
 };
+
+// symbol that will cause a column to render its loading state if passed in from rowGetter
+export const LOADING = '@@LOADING';
 
 /*
  * Table with pagination functions

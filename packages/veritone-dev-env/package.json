@@ -8,7 +8,9 @@
     "type": "git",
     "url": "git+ssh://git@github.com/veritone/veritone-sdk.git"
   },
-  "keywords": ["veritone"],
+  "keywords": [
+    "veritone"
+  ],
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
@@ -18,10 +20,12 @@
   "peerDependencies": {
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.4.0",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0"
-  }
+  },
+  "devDependencies": {}
 }

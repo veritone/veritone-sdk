@@ -19,6 +19,11 @@
   padding-bottom: 40px;
 }
 
+.flexContainer {
+  display: flex;
+  flex-direction: row;
+}
+
 .adapterDivider {
   background-color: #e4e4e4;
   height: 1px;

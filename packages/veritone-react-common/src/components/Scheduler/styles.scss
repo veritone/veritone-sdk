@@ -1,0 +1,109 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+$label-width: 150px;
+
+.header {
+  @include mui-text('headline');
+}
+
+.scheduleTypeContainer {
+  flex-direction: row !important;
+}
+
+.activeSectionContainer {
+  display: flex;
+  flex-direction: column;
+
+  .formSectionRow {
+    padding-top: 15px;
+  }
+}
+
+.repeatContainer {
+  display: flex;
+  flex-direction: column;
+  margin-left: $label-width;
+  margin-top: 30px;
+  width: 550px;
+
+  .timeRangeContainer {
+    background-color: $grey-2;
+    padding: 0 10px;
+  }
+
+  .weekSelectionContainer {
+    display: flex;
+    align-items: flex-start;
+
+    &:not(:first-child) {
+      margin-top: 10px;
+    }
+  }
+
+  .daySelectionContainer {
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+
+    .timeIcon {
+      color: $light-black;
+      margin-right: 75px;
+    }
+  }
+
+  .checkboxGroup {
+    width: 200px;
+  }
+}
+
+.fieldsetGroup {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100% !important;
+
+  .label {
+    width: $label-width;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .hasIconOffset {
+    width: $label-width - 50px;
+  }
+
+  .input {
+    flex-grow: 1;
+  }
+}
+
+.inputsGroup {
+  flex-direction: row !important;
+
+  .leftInput,
+  .rightInput {
+    width: 100px;
+  }
+
+  .leftInput {
+    padding-right: 15px;
+  }
+
+  .leftInput input {
+    text-align: right;
+  }
+}
+
+.multiTimeRange {
+  display: inline-flex;
+  flex-direction: column;
+
+  .row {
+    display: flex;
+    align-items: center;
+  }
+
+  .iconButton {
+    margin-left: -10px;
+  }
+}
