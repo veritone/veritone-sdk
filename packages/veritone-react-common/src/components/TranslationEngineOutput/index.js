@@ -32,8 +32,8 @@ export default class TranslationEngineOutput extends Component {
             )
           })
         )
-      }).isRequired
-    ).isRequired,
+      })
+    ),
 
     engines: arrayOf(
       shape({
@@ -95,18 +95,18 @@ export default class TranslationEngineOutput extends Component {
     });
     translatedLanguages.sort();
 
-    const selectedLanguage =
-      (this.state && this.state.selectedLanguage) ||
-      defaultLanguage ||
-      translatedLanguages[0];
-    let translatedLanguagesInfo = languages.filter(langInfo => {
-      return translatedLanguages.includes(langInfo.language) && langInfo;
-    });
-    translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
+    this.setState(prevState => {
+      const selectedLanguage =
+        prevState.selectedLanguage || defaultLanguage || translatedLanguages[0];
+      let translatedLanguagesInfo = languages.filter(langInfo => {
+        return translatedLanguages.includes(langInfo.language) && langInfo;
+      });
+      translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
-    this.setState({
-      languages: translatedLanguagesInfo,
-      selectedLanguage: selectedLanguage
+      return {
+        languages: translatedLanguagesInfo,
+        selectedLanguage: selectedLanguage
+      };
     });
   }
 

@@ -28,8 +28,8 @@ export default class TranslationContent extends Component {
             )
           })
         )
-      }).isRequired
-    ).isRequired,
+      })
+    ),
 
     className: string,
     dataSegmentClassName: string,
