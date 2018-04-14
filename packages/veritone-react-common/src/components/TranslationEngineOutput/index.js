@@ -148,7 +148,6 @@ export default class TranslationEngineOutput extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClicked,
-
       headerClassName
     } = this.props;
 
@@ -166,11 +165,22 @@ export default class TranslationEngineOutput extends Component {
           value={this.state.selectedLanguage}
           onChange={this.handleLanguageChanged}
           className={classNames(styles.languages)}
+          MenuProps={{
+            anchorOrigin: {
+              horizontal: 'center',
+              vertical: 'bottom'
+            },
+            transformOrigin: {
+              horizontal: 'center'
+            },
+            getContentAnchorEl: null
+          }}
         >
           {this.state.languages.map(languageInfo => {
             return (
               <MenuItem
                 value={languageInfo.language}
+                className={classNames(styles.language)}
                 key={'language-' + languageInfo.language}
               >
                 {languageInfo.name}

@@ -114,9 +114,23 @@ export default class TranscriptEngineOutput extends Component {
         value={this.state.overview ? 'overview' : 'time'}
         className={styles.viewDropdown}
         onChange={this.handleViewChange}
+        MenuProps={{
+          anchorOrigin: {
+            horizontal: 'center',
+            vertical: 'bottom'
+          },
+          transformOrigin: {
+            horizontal: 'center'
+          },
+          getContentAnchorEl: null
+        }}
       >
-        <MenuItem value="time">Time</MenuItem>
-        <MenuItem value="overview">Overview</MenuItem>
+        <MenuItem value="time" className={classNames(styles.view)}>
+          Time
+        </MenuItem>
+        <MenuItem value="overview" className={classNames(styles.view)}>
+          Overview
+        </MenuItem>
       </Select>
     );
   }

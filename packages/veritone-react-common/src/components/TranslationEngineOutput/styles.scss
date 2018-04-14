@@ -3,7 +3,7 @@
   overflow: hidden;
 
   .languages {
-    margin-right: 30px;
+    font-size: 14px;
   }
 
   .body {
@@ -11,4 +11,8 @@
     height: calc(100% - 54px);
     overflow: hidden;
   }
+}
+
+.language {
+  font-size: 14px !important;
 }

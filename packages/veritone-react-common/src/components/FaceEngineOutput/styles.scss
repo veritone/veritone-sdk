@@ -3,10 +3,10 @@
 .faceEngineOutput {
   display: flex;
   flex-direction: column;
-}
 
-.viewModeSelect {
-  margin-right: 20px;
+  .displayOptions {
+    font-size: 14px;
+  }
 }
 
 .libraryName {
@@ -82,4 +82,8 @@
 .faceAvatar {
   height: 40px !important;
   width: 40px !important;
+}
+
+.view {
+  font-size: 14px !important;
 }
