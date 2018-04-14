@@ -122,7 +122,7 @@ export default class LogoDetectionEngineOutput extends Component {
                 className={classNames(styles.item, entryClassName)}
                 labelClassName={classNames(styles.label, entryLabelClassName)}
                 infoClassName={entryInfoClassName}
-                key={'logo-' + itemInfo.object.label + index}
+                key={'logo-' + startTime + '-' + stopTime + '-' + itemInfo.object.label}
                 onClick={this.handleEntrySelected}
                 data={itemInfo}
                 highlight={

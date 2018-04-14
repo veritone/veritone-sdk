@@ -59,7 +59,6 @@ import widget from '../../shared/widget';
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
@@ -79,13 +78,8 @@ class MediaDetailsWidget extends React.Component {
     mediaId: number.isRequired,
     onRunProcess: func,
     onClose: func,
-    loadEngineResultsRequest: func,
     loadTdoRequest: func,
     updateTdoRequest: func,
-    success: bool,
-    error: bool,
-    warning: bool,
-    statusMessage: string,
     engineCategories: arrayOf(
       shape({
         name: string,

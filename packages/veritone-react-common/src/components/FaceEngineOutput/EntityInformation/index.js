@@ -98,18 +98,20 @@ class EntityInformation extends Component {
             <div className={styles.tabContainer}>
               {timeSlots.length && (
                 <div className={styles.faceOccurrenceList}>
-                  {timeSlots.map((timeSlot, index) => {
+                  {timeSlots.map(timeSlot => {
                     return (
                       <div
                         onClick={this.handleFaceOccurrenceClicked(timeSlot)}
                         className={styles.faceOccurrence}
                         key={
-                          'face-timestamp-' +
+                          'face-match-' +
+                          entity.entityId +
+                          '-' +
                           timeSlot.startTimeMs +
                           '-' +
                           timeSlot.stopTimeMs +
                           '-' +
-                          index
+                          timeSlot.originalImage
                         }
                       >
                         <span className={styles.faceOccurrenceTimestamp}>

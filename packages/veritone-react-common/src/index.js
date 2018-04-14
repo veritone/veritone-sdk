@@ -24,6 +24,7 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export * as video from './components/Video';
 export AppContainer from './components/AppContainer';
+
 export RefreshButton from './components/RefreshButton';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column } from './components/DataTable';
@@ -43,11 +44,13 @@ export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
 
 export SourceManagementOverview from './components/SourceManagement';
+export SourceNullState from './components/SourceManagement';
+export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 
-export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
-export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
+
+export SDOTable from './components/SDOTable';

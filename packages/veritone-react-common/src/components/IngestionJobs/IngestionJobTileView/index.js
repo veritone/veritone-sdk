@@ -1,68 +1,108 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { arrayOf, any, objectOf } from 'prop-types';
 
-import { Checkbox } from 'components/formComponents';
+import { Table, Column } from 'components/DataTable';
+// import MenuColumn from 'components/DataTable/MenuColumn';
+import StatusPill from 'components/StatusPill';
+import { format } from 'date-fns';
+import { map, find, get } from 'lodash';
 
-import JobRow from './JobRow';
-
-import styles from './styles.scss';
-
-export default class IngestionJobTileView extends React.Component {
+export default class SourceTileView extends React.Component {
   static propTypes = {
-    jobInfo: arrayOf(objectOf(any)).isRequired
+    jobs: arrayOf(objectOf(any)).isRequired // an array of source objects
+    // onSelectJob: func.isRequired,
   };
 
   static defaultProps = {};
 
-  state = {
-    checkedAll: false
+  getIngestionJobData = i => {
+    return this.props.jobs[i];
   };
 
-  handleCheckboxChange = () => {
-    this.setState({
-      checkedAll: !this.state.checkedAll
-    });
+  renderEnginesIcons = taskTemplates => {
+    const icons = map(taskTemplates.records, 'engine.category.iconClass');
+
+    return (
+      <Fragment>
+        {icons.map(icon => {
+          return icon ? <span key={icon} className={icon} /> : undefined;
+        })}
+      </Fragment>
+    );
+  };
+
+  renderAdapter = taskTemplates => {
+    const ingestionTaskTemplate = getIngestionTaskTemplate(taskTemplates);
+
+    return ingestionTaskTemplate ? ingestionTaskTemplate.engine.name : '-';
+  };
+
+  renderIngestionType = taskTemplates => {
+    const ingestionTaskTemplate = getIngestionTaskTemplate(taskTemplates);
+
+    return ingestionTaskTemplate
+      ? ingestionTaskTemplate.engine.category.name
+      : '-';
+  };
+
+  renderLastIngestion = mostRecentJob => {
+    return format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A');
+  };
+
+  renderStatus = isActive => {
+    return <StatusPill status={isActive ? 'active' : 'inactive'} />;
   };
 
   render() {
-    const jobRows = this.props.jobInfo.map((row, index) => {
-      return (
-        <JobRow
-          checkAll={this.state.checkedAll}
-          name={row.name}
-          status={row.status}
-          adapter={row.adapter}
-          ingestionType={row.ingestionType}
-          creationDate={row.creationDate}
-          lastIngested={row.lastIngested}
-          key={index}
-        />
-      );
-    });
     return (
-      <div>
-        <div className={styles.tableTitleRow}>
-          <Checkbox
-            input={{
-              onChange: this.handleCheckboxChange,
-              value: this.state.checkedAll
-            }}
-            className={styles.checkbox}
-            label=""
-          />
-          <div className={styles.titleTextGroup}>
-            <span className={styles.tableTitle}>Job name</span>
-            <span className={styles.tableTitle}>Status</span>
-            <span className={styles.tableTitle}>Adapter</span>
-            <span className={styles.tableTitle}>Ingestion Type</span>
-            <span className={styles.tableTitle}>Creation Date</span>
-            <span className={styles.tableTitle}>Last Ingestion</span>
-          </div>
-          <div style={{ width: '55px' }} />
-        </div>
-        {jobRows}
-      </div>
+      <Table
+        rowGetter={this.getIngestionJobData}
+        rowCount={this.props.jobs.length}
+        rowHeight={48}
+      >
+        <Column dataKey="name" header="Job Name" />
+        <Column
+          dataKey="isActive"
+          header="Status"
+          cellRenderer={this.renderStatus}
+        />
+        <Column
+          dataKey="jobTemplates.records[0].taskTemplates"
+          header="Engines"
+          cellRenderer={this.renderEnginesIcons}
+          align="center"
+        />
+        <Column
+          dataKey="jobTemplates.records[0].taskTemplates"
+          header="Adapter"
+          cellRenderer={this.renderAdapter}
+        />
+        <Column
+          dataKey="jobTemplates.records[0].taskTemplates"
+          header="Ingestion Type"
+          cellRenderer={this.renderIngestionType}
+          align="center"
+        />
+        <Column
+          dataKey="jobs.records[0]"
+          header="Last Ingestion"
+          cellRenderer={this.renderLastIngestion}
+        />
+        {/* <MenuColumn
+          id="menu"
+          dataKey='jobTemplates.records[0].taskTemplates'
+          onSelectItem={this.props.onSelectMenuItem}
+        /> */}
+      </Table>
     );
   }
+}
+
+function getIngestionTaskTemplate(taskTemplates) {
+  return find(
+    taskTemplates.records,
+    templateRecord =>
+      get(templateRecord, 'engine.category.type.name') === 'Ingestion'
+  );
 }

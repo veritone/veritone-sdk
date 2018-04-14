@@ -1,10 +1,14 @@
+@import 'src/styles/modules/variables';
+
 .listContainer {
-  width: 389px;
-  height: 100vh;
-  border-right: 6px solid #eee;
+  // width: 389px;
+  width: 25%;
+  height: 85vh;
+  border-right: 6px solid $grey-2;
+  // padding-left: 20px;
 
   .title {
-    color: rgba(0, 0, 0, 0.87);
+    color: $dark-black;
     font-size: 20px;
     line-height: 24px;
     padding-left: 20px;
@@ -12,7 +16,7 @@
   }
 
   .description {
-    color: rgba(0, 0, 0, 0.54);
+    color: $light-black;
     font-size: 14px;
     line-height: 18px;
     margin-top: 5px;
@@ -32,7 +36,7 @@
     justify-content: space-between;
 
     .name {
-      color: #000;
+      color: $dark-black;
       font-size: 14px;
       line-height: 16px;
     }
@@ -43,7 +47,7 @@
     }
 
     &:hover {
-      background-color: #eee;
+      background-color: $grey-2;
     }
   }
 }

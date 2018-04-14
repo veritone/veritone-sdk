@@ -154,6 +154,7 @@ class SplitTable extends React.Component {
   };
 
   setFocusedRow = (row, columnKey) => {
+    console.log('row:', row);
     this.setState({ focusedTableRow: row });
   };
 

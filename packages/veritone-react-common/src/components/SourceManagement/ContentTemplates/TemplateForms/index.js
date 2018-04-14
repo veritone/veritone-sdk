@@ -1,7 +1,7 @@
 import React from 'react';
 import { any, objectOf, func } from 'prop-types';
 
-import { isObject } from 'lodash';
+import { isObject, compact } from 'lodash';
 
 import TextField from 'material-ui/TextField';
 import { FormControlLabel } from 'material-ui/Form';
@@ -15,9 +15,7 @@ export default class TemplateForms extends React.Component {
     onTemplateDetailsChange: func.isRequired,
     onRemoveTemplate: func.isRequired
   };
-  static defaultProps = {
-    templates: {}
-  };
+  static defaultProps = {};
 
   handleRemoveTemplate = schemaId => {
     this.props.onRemoveTemplate(schemaId, true);
@@ -70,40 +68,48 @@ export default class TemplateForms extends React.Component {
     return value;
   };
 
-  formBuilder = () => {
+  render() {
     const { templates } = this.props;
 
-    return Object.keys(templates).map((schemaId, index) => {
-      const schemaProps = templates[schemaId].definition.properties;
-      const formFields = Object.keys(schemaProps).map((schemaProp, index2) => {
-        return (
-          <BuildFormElements
-            fieldId={schemaProp}
-            schemaId={schemaId}
-            type={schemaProps[schemaProp].type}
-            value={templates[schemaId].data[schemaProp]}
-            title={schemaProps[schemaProp].title || schemaProp}
-            objectProperties={schemaProps[schemaProp].properties}
-            onChange={this.handleFieldChange}
-            key={index2}
-          />
-        );
-      });
+    return (
+      <div className={styles.formsContainer}>
+        {Object.keys(templates).map((schemaId, index) => {
+          const schemaProps = templates[schemaId].definition.properties;
+          const formFields = Object.keys(schemaProps).map(
+            (schemaProp, propIdx) => {
+              console.log('type:', schemaProps[schemaProp].type);
+              const type = schemaProps[schemaProp].type;
 
-      return (
-        <FormCard
-          key={index}
-          id={schemaId}
-          fields={formFields}
-          name={templates[schemaId].name}
-          remove={this.handleRemoveTemplate}
-        />
-      );
-    });
-  };
+              return (
+                type && (
+                  <BuildFormElements
+                    fieldId={schemaProp}
+                    schemaId={schemaId}
+                    // type={schemaProps[schemaProp].type}
+                    type={type}
+                    value={templates[schemaId].data[schemaProp]}
+                    title={schemaProps[schemaProp].title || schemaProp}
+                    objectProperties={schemaProps[schemaProp].properties}
+                    onChange={this.handleFieldChange}
+                    key={schemaProp}
+                  />
+                )
+              );
+            }
+          );
 
-  render() {
-    return <div className={styles.formsContainer}>{this.formBuilder()}</div>;
+          return (
+            <FormCard
+              key={schemaId}
+              id={schemaId}
+              fields={compact(formFields)}
+              name={templates[schemaId].name}
+              remove={this.handleRemoveTemplate}
+            />
+          );
+        })}
+      </div>
+    );
   }
 }
 
@@ -125,6 +131,11 @@ function BuildFormElements({
   }
 
   let element;
+  console.log('type:', type);
+  if (!type) {
+    return undefined;
+  }
+
   if (type.includes('string')) {
     element = (
       <TextField
@@ -148,7 +159,7 @@ function BuildFormElements({
         fullWidth
         margin="dense"
         label={title}
-        value={(value || '').toString()}
+        value={`${value}` || ''}
         error={error}
         key={fieldId}
         onChange={onChange(schemaId, fieldId, type)}
@@ -169,10 +180,10 @@ function BuildFormElements({
       />
     );
   } else if (type.includes('object') && objectProperties) {
-    element = Object.keys(objectProperties).map((objProp, indexInner) => {
+    element = Object.keys(objectProperties).map(objProp => {
       return (
         <BuildFormElements
-          fieldId={fieldId + '.' + objProp}
+          fieldId={`${fieldId}.${objProp}`}
           schemaId={schemaId}
           type={objectProperties[objProp].type}
           value={(value && value[objProp]) || ''}
@@ -180,7 +191,7 @@ function BuildFormElements({
           objectProperties={objectProperties[objProp].properties}
           onChange={onChange}
           depth={depth + 1}
-          key={indexInner}
+          key={objProp}
         />
       );
     });
@@ -191,12 +202,9 @@ function BuildFormElements({
       </div>
     );
   } else {
-    return (
-      <div>
-        Unsupported Type: {type} for {fieldId}
-      </div>
-    );
+    return <div>{`Unsupported Type: ${type} for ${fieldId}`}</div>;
   }
+
   if (depth) {
     element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>;
   }

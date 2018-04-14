@@ -1,16 +1,10 @@
 import React from 'react';
-import { bool, string } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import SchedulerWidget from '.';
 
 class Story extends React.Component {
-  static propTypes = {
-    userIsAuthenticated: bool,
-    fetchUserFailed: bool,
-    sessionToken: string
-  };
 
   componentDidMount() {
     this._scheduler = new SchedulerWidget({

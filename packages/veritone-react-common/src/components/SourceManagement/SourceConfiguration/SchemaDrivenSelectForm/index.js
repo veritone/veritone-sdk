@@ -45,20 +45,6 @@ export default class DynamicSelect extends React.Component {
   handleSourceTypeChange = event => {
     const sourceTypeIndex = event.target.value;
     this.props.onSelectChange(sourceTypeIndex);
-
-    // if (sourceTypeIndex !== this.props.currentSourceType) {
-    //   const currentFields = {};
-    //   const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties;
-
-    //   Object.keys(properties).forEach((field) => {
-    //     currentFields[field] = '';
-    //   });
-
-    //   this.props.onFieldChange({
-    //     sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
-    //     details: currentFields
-    //   });
-    // }
   };
 
   handleDetailChange = fieldId => event => {
@@ -67,17 +53,9 @@ export default class DynamicSelect extends React.Component {
     });
   };
 
-  handleTooltip = () => {
-    console.log('tooltip clicked');
-  };
-
   renderFields = () => {
-    const definition =
-      this.props.sourceTypes[this.props.currentSourceType] &&
-      this.props.sourceTypes[this.props.currentSourceType].sourceSchema
-        ? this.props.sourceTypes[this.props.currentSourceType].sourceSchema
-            .definition
-        : {};
+    const definition = this.props.sourceTypes[this.props.currentSourceType]
+      .sourceSchema.definition;
     const properties = definition.properties;
     const requiredFields = has(definition, 'required')
       ? definition.required
@@ -108,7 +86,7 @@ export default class DynamicSelect extends React.Component {
     const { sourceTypes, currentSourceType } = this.props;
     const sourceTypesMenu = sourceTypes.map((type, index) => {
       return (
-        <MenuItem value={index} id={type.id} key={index}>
+        <MenuItem value={index} id={type.id} key={type.id}>
           {type.name}
         </MenuItem>
       );
@@ -122,32 +100,30 @@ export default class DynamicSelect extends React.Component {
               {this.props.selectLabel}
             </InputLabel>
           )}
-        {!this.state.oneSourceType &&
-          sourceTypes[currentSourceType] && (
-            <Select
-              className={styles.selectField}
-              fullWidth
-              inputProps={{
-                name: sourceTypes[currentSourceType].name,
-                id: 'select-id'
-              }}
-              value={currentSourceType}
-              onChange={this.handleSourceTypeChange}
-            >
-              {sourceTypesMenu}
-            </Select>
-          )}
+        {!this.state.oneSourceType && (
+          <Select
+            className={styles.selectField}
+            fullWidth
+            inputProps={{
+              name: sourceTypes[currentSourceType].name,
+              id: 'select-id'
+            }}
+            value={currentSourceType}
+            onChange={this.handleSourceTypeChange}
+          >
+            {sourceTypesMenu}
+          </Select>
+        )}
         {this.state.oneSourceType && (
           <div className={styles.sourceTypeNameLabel}>Source Type</div>
         )}
-        {this.state.oneSourceType &&
-          sourceTypes[currentSourceType] && (
-            <div className={styles.sourceTypeNameContainer}>
-              <div className={styles.sourceTypeName}>
-                {sourceTypes[currentSourceType].name}
-              </div>
+        {this.state.oneSourceType && (
+          <div className={styles.sourceTypeNameContainer}>
+            <div className={styles.sourceTypeName}>
+              {sourceTypes[currentSourceType].name}
             </div>
-          )}
+          </div>
+        )}
         {this.props.helperText &&
           !this.state.oneSourceType && (
             <FormHelperText>{this.props.helperText}</FormHelperText>
@@ -204,5 +180,5 @@ function SourceTypeField({
     );
   }
 
-  return React.cloneElement(element, { required: required });
+  return required ? React.cloneElement(element, { required }) : element;
 }

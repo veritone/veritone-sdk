@@ -1,5 +1,4 @@
 import React from 'react';
-import { bool, string } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import VeritoneApp from '../../../shared/VeritoneApp';
@@ -7,11 +6,6 @@ import DynamicAdapterObj from './';
 const DynamicAdapter = DynamicAdapterObj.widget;
 
 class Story extends React.Component {
-  static propTypes = {
-    userIsAuthenticated: bool,
-    fetchUserFailed: bool,
-    sessionToken: string
-  };
 
   componentDidMount() {
     this._adapter = new DynamicAdapter({

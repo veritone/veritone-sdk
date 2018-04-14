@@ -71,9 +71,11 @@ export class TranscriptExample extends Component {
         'VLF',
         0.2
       );
-      let newMockData = this.state.data.concat(additionalData);
-      this.setState({
-        data: newMockData
+      this.setState(prevState => {
+        let newMockData = {...prevState}.data.concat(additionalData);
+        return {
+          data: newMockData
+        };
       });
     }
   };

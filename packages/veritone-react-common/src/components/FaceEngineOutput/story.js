@@ -22,7 +22,6 @@ class FaceEngineOutputStory extends Component {
     enableEditMode: bool,
     mediaPlayerPosition: number,
     onAddNewEntity: func,
-    viewMode: string,
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
     faceEngineOutput: arrayOf(
@@ -53,8 +52,7 @@ class FaceEngineOutputStory extends Component {
         profileImageUrl: string,
         jsondata: objectOf(string)
       })
-    ),
-    selectedEngineId: string
+    )
   };
 
   state = {
@@ -71,62 +69,66 @@ class FaceEngineOutputStory extends Component {
   };
 
   handleRemoveFaceDetection = face => {
-    this.setState({
-      faceEngineOutput: this.state.faceEngineOutput.map(output => {
-        if (
-          face.startTimeMs >= output.series[0].startTimeMs &&
-          face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
-        ) {
+    this.setState(prevState => {
+      return {
+        faceEngineOutput: {...prevState.faceEngineOutput}.map(output => {
+          if (
+            face.startTimeMs >= output.series[0].startTimeMs &&
+            face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
+          ) {
+            return {
+              ...output,
+              series: output.series.filter(faceObj => !isEqual(face, faceObj))
+            };
+          }
           return {
-            ...output,
-            series: output.series.filter(faceObj => !isEqual(face, faceObj))
+            ...output
           };
-        }
-        return {
-          ...output
-        };
-      }),
-      modifiedFaces: [
-        ...this.state.modifiedFaces,
-        { ...face, modification: 'delete' }
-      ]
+        }),
+        modifiedFaces: [
+          ...prevState.modifiedFaces,
+          { ...face, modification: 'delete' }
+        ]
+      };
     });
     this.props.onRemoveFaceDetection(face);
   };
 
   handleUpdateFace = (face, entity) => {
-    this.setState({
-      faceEngineOutput: this.state.faceEngineOutput.map(output => {
-        if (
-          face.startTimeMs >= output.series[0].startTimeMs &&
-          face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
-        ) {
+    this.setState(prevState => {
+      return {
+        faceEngineOutput: {...prevState.faceEngineOutput}.map(output => {
+          if (
+            face.startTimeMs >= output.series[0].startTimeMs &&
+            face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
+          ) {
+            return {
+              ...output,
+              series: output.series.map(faceObj => {
+                if (
+                  face.startTimeMs === faceObj.startTimeMs &&
+                  face.stopTimeMs === faceObj.stopTimeMs &&
+                  isEqual(face.object.boundingPoly, faceObj.object.boundingPoly)
+                ) {
+                  return {
+                    ...face,
+                    entityId: entity.entityId,
+                    libraryId: entity.libraryId
+                  };
+                }
+                return { ...faceObj };
+              })
+            };
+          }
           return {
-            ...output,
-            series: output.series.map(faceObj => {
-              if (
-                face.startTimeMs === faceObj.startTimeMs &&
-                face.stopTimeMs === faceObj.stopTimeMs &&
-                isEqual(face.object.boundingPoly, faceObj.object.boundingPoly)
-              ) {
-                return {
-                  ...face,
-                  entityId: entity.entityId,
-                  libraryId: entity.libraryId
-                };
-              }
-              return { ...faceObj };
-            })
+            ...output
           };
-        }
-        return {
-          ...output
-        };
-      }),
-      modifiedFaces: [
-        ...this.state.modifiedFaces,
-        { ...face, modification: 'update' }
-      ]
+        }),
+        modifiedFaces: [
+          ...prevState.modifiedFaces,
+          { ...face, modification: 'update' }
+        ]
+      };
     });
   };
 

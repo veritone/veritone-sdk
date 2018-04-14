@@ -36,9 +36,11 @@ export class LogoDetectionExample extends Component {
   }
 
   handleLazyLoading = loadInfo => {
-    let newContent = genMockData(60, loadInfo.start, loadInfo.stop);
-    this.setState({
-      mockData: this.state.mockData.concat(newContent)
+    this.setState(prevState => {
+      let newContent = genMockData(60, loadInfo.start, loadInfo.stop);
+      return {
+        mockData: {...prevState}.mockData.concat(newContent)
+      };
     });
   };
 

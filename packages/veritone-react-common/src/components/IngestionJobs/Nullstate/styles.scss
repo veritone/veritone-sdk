@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .nullStateView {
   position: absolute;
   top: 0;
@@ -27,7 +29,7 @@
   }
 
   .linkText {
-    color: #2196f3;
+    color: $blue-1;
     font-size: 14px;
     line-height: 18px;
   }

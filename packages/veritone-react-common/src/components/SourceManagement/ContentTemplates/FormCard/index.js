@@ -17,19 +17,12 @@ export default class FormCard extends React.Component {
     this.props.remove(this.props.id);
   };
 
-  renderFields = () => {
-    return this.props.fields.map((field, index) => {
-      return React.cloneElement(field, {
-        key: index,
-        className: styles.formElements
-      });
-    });
-  };
-
   render() {
+    const { name, fields } = this.props;
+
     return (
       <div className={styles.formCard}>
-        <div className={styles.name}>{this.props.name}</div>
+        <div className={styles.name}>{name}</div>
         <IconButton
           className={styles.trashIcon}
           onClick={this.handleClick}
@@ -37,7 +30,12 @@ export default class FormCard extends React.Component {
         >
           <Icon className={'icon-trash'} />
         </IconButton>
-        {this.renderFields()}
+        {fields.map((field, index) => {
+          return React.cloneElement(field, {
+            key: `${name}-field-${index}`, // eslint-disable-line
+            className: styles.formElements
+          });
+        })}
       </div>
     );
   }

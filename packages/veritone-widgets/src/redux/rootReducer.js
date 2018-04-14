@@ -30,7 +30,7 @@ export default function createReducer(asyncReducers) {
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     form: formReducer,
-	player: playerReducer,
+    player: playerReducer,
     operation: operationReducer,
     ...asyncReducers
   });

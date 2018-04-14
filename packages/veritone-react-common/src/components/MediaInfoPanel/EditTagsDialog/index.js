@@ -47,12 +47,14 @@ class EditTagsDialog extends Component {
       });
       return;
     }
-    const newTags = this.state.tags.slice();
-    this.addTagAsUnique(newTagValue, newTags);
-    this.setState({
-      tags: newTags,
-      newTagTextAreaVisible: false,
-      newTagValue: ''
+    this.setState(prevState => {
+      const newTags = prevState.tags.slice();
+      this.addTagAsUnique(newTagValue, newTags);
+      return {
+        tags: newTags,
+        newTagTextAreaVisible: false,
+        newTagValue: ''
+      };
     });
   };
 
@@ -64,10 +66,12 @@ class EditTagsDialog extends Component {
   };
 
   onRemoveTag = tagValue => {
-    const newTags = this.state.tags.slice();
-    this.removeTag(tagValue, newTags);
-    this.setState({
-      tags: newTags
+    this.setState( prevState => {
+      const newTags = prevState.tags.slice();
+      this.removeTag(tagValue, newTags);
+      return {
+        tags: newTags
+      };
     });
   };
 

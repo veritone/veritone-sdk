@@ -1,8 +1,10 @@
+@import 'src/styles/modules/variables';
+
 .modal-header {
   background-color: #1f2532;
 
   span {
-    color: #fafafa;
+    color: $grey-1;
   }
 }
 
@@ -13,7 +15,7 @@
   justify-content: space-between;
 
   .topBarTitle {
-    color: #fafafa;
+    color: $grey-1;
     font-size: 20px;
     line-height: 28px;
     align-self: center;
@@ -24,21 +26,10 @@
     display: flex;
     justify-content: space-between;
     align-self: center;
-    padding-right: 25px;
-
-    // .separator {
-    //   align-self: center;
-    //   border-right: 1px solid rgba(255, 255, 255, 0.54);
-    //   height: 27px;
-    // }
+    // padding-right: 25px;
   }
 }
 
 .icon {
-  color: #fff;
+  color: $fullWhite;
 }
-
-// .modal-container {
-//   display: flex;
-//   flex-direction: column;
-// }

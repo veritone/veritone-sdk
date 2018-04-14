@@ -1,3 +1,8 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+$avatar-size: 70px;
+
 .fullPage {
   height: 100%;
   width: 100%;
@@ -45,5 +50,48 @@
     position: absolute;
     right: 20px;
     bottom: 20px;
+  }
+
+  .avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+  }
+
+  .avatar-img-container {
+    width: $avatar-size;
+    height: $avatar-size;
+  }
+
+  .avatar-img {
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .avatar-img-cta {
+    @include mui-text('caption');
+    position: absolute;
+    top: 5px;
+    width: $avatar-size + 10;
+    height: $avatar-size;
+    border-radius: 50%;
+    background: linear-gradient(
+      to top,
+      $light-black 30%,
+      transparent 30%,
+      transparent 100%
+    );
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: $grey-1;
+    text-transform: uppercase;
+    padding-bottom: 5px;
+
+    span {
+      cursor: pointer;
+    }
   }
 }

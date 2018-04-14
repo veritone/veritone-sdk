@@ -1,27 +1,28 @@
-.smDialog {
-  span {
-    color: #fff;
-  }
+@import 'src/styles/modules/variables';
+
+// .sm-dialog {
+//   span {
+//     color: #fff;
+//   }
+// }
+
+.sm-form-wrapper {
+  margin: 0 auto;
+  width: 70%;
+}
+
+.source-config-wrapper {
+  width: 50%;
 }
 
 .separator {
   align-self: center;
-  border-right: 1px solid rgba(255, 255, 255, 0.54);
+  border-right: 1px solid $grey-1;
   height: 27px;
 }
 
-.btnContainer {
+.btn-container {
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  position: fixed;
-  bottom: 20px;
-  right: 90px;
-}
-
-.scrollable {
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: calc(100vh - 96px);
-  padding-bottom: 150px;
 }

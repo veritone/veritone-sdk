@@ -11,7 +11,7 @@ import { MenuItem, MenuList } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
 import { isString } from 'lodash';
-import { objectOf, func, bool, arrayOf, any } from 'prop-types';
+import { objectOf, func, arrayOf, any } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
@@ -21,8 +21,7 @@ class MediaInfoPanel extends Component {
     tdo: objectOf(any),
     engineCategories: arrayOf(any),
     onClose: func,
-    onSaveMetadata: func,
-    isInfoPanelOpen: bool
+    onSaveMetadata: func
   };
 
   state = {
@@ -80,8 +79,10 @@ class MediaInfoPanel extends Component {
   };
 
   toggleIsEditMetadataOpen = () => {
-    this.setState({
-      isEditMetadataOpen: !this.state.isEditMetadataOpen
+    this.setState(prevState => {
+      return {
+        isEditMetadataOpen: !{...prevState}.isEditMetadataOpen
+      };
     });
   };
 
@@ -97,14 +98,18 @@ class MediaInfoPanel extends Component {
   };
 
   toggleIsEditTagsOpen = () => {
-    this.setState({
-      isEditTagsOpen: !this.state.isEditTagsOpen
+    this.setState(prevState => {
+      return {
+        isEditTagsOpen: !{...prevState}.isEditTagsOpen
+      };
     });
   };
 
   toggleIsOpen = () => {
-    this.setState({
-      isOpen: !this.state.isOpen
+    this.setState(prevState => {
+      return {
+        isOpen: !{...prevState}.isOpen
+      };
     });
     this.props.onClose();
   };
@@ -146,7 +151,11 @@ class MediaInfoPanel extends Component {
   };
 
   toggleIsMenuOpen = () => {
-    this.setState({ isMenuOpen: !this.state.isMenuOpen });
+    this.setState(prevState => {
+      return {
+        isMenuOpen: !{...prevState}.isMenuOpen
+      };
+    });
   };
 
   onMenuClose = event => {

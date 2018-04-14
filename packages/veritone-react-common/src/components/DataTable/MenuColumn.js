@@ -49,7 +49,7 @@ export default class MenuColumn extends React.Component {
     });
   };
 
-  handleOnClick = ([action, ...rest]) => {
+  handleOnClick = (action, ...rest) => {
     this.setState({ open: false }, () => {
       this.props.onSelectItem(action, ...rest);
     });

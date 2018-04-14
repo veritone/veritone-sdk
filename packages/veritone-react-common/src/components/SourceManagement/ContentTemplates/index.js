@@ -31,11 +31,11 @@ export default class ContentTemplates extends React.Component {
     onInputChange: func.isRequired
   };
   static defaultProps = {
-    templateData: {},
     selectedTemplateSchemas: {}
   };
 
   render() {
+    console.log('this.props:', this.props);
     const { selectedTemplateSchemas } = this.props;
     const showNullstate = !Object.keys(selectedTemplateSchemas).length;
 
