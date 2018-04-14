@@ -32,12 +32,15 @@ export class TranslationExample extends Component {
   };
 
   handleDataRequesting = scrollStatus => {
-    const newContents = renderMockData(
-      scrollStatus.start,
-      scrollStatus.stop
-    ).concat(this.state.contents);
-    this.setState({
-      contents: newContents
+    this.setState(prevState => {
+      const newContents = renderMockData(
+        scrollStatus.start,
+        scrollStatus.stop
+      ).concat(prevState.contents);
+
+      return {
+        contents: newContents
+      };
     });
   };
 

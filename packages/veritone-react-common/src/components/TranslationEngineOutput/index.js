@@ -97,7 +97,9 @@ export default class TranslationEngineOutput extends Component {
 
     this.setState(prevState => {
       const selectedLanguage =
-        prevState.selectedLanguage || defaultLanguage || translatedLanguages[0];
+        (prevState && prevState.selectedLanguage) ||
+        defaultLanguage ||
+        translatedLanguages[0];
       let translatedLanguagesInfo = languages.filter(langInfo => {
         return translatedLanguages.includes(langInfo.language) && langInfo;
       });
