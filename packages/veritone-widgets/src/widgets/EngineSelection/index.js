@@ -12,7 +12,7 @@ import widget from '../../shared/widget';
 
 @connect(
   state => ({
-    deselectedEngineIds: engineSelectionModule.getdeselectedEngineIds(state),
+    deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(state),
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state)
   }),
   {

@@ -73,7 +73,9 @@ export default createReducer(defaultState, {
 
     return {
       ...state,
-      selectedEngineIds: [...state.selectedEngineIds, ...selectedEngineIds],
+      selectedEngineIds: [
+        ...new Set([...state.selectedEngineIds, ...selectedEngineIds])
+      ],
       searchResults: merge({}, state.searchResults, newResults)
     };
   },
