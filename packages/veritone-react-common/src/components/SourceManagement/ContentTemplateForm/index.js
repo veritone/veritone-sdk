@@ -50,7 +50,7 @@ export default class ContentTemplateForm extends React.Component {
         const contentTemplates = { ...this.state.contentTemplates };
         delete contentTemplates[templateSchemaId];
         newState = { contentTemplates };
-        return this.setState(newState);
+        this.setState(newState);
       }
     } else {
       const data = {};
