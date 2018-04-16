@@ -25,6 +25,7 @@ import {
   arrayOf
 } from 'prop-types';
 
+import { LOADING } from './shared';
 import withPagination from './withPagination';
 import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index.scss';
@@ -380,9 +381,7 @@ TableHead.propTypes = {
   children: node
 };
 
-// symbol that will cause a column to render its loading state if passed in from rowGetter
-export const LOADING = '@@LOADING';
-
+export { LOADING };
 /*
  * Table with pagination functions
  */
