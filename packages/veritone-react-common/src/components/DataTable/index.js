@@ -381,6 +381,7 @@ TableHead.propTypes = {
   children: node
 };
 
+export { LOADING };
 /*
  * Table with pagination functions
  */
