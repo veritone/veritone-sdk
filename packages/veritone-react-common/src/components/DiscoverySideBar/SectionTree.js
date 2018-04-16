@@ -78,7 +78,7 @@ class SectionTree extends React.Component {
                   <SectionTreeTab
                     label={label}
                     rightIcon={<ChevronRightIcon />}
-                    key={`${label}-${i}`}
+                    key={label}
                     id={i}
                     onClick={this.handleNavigateForward}
                   />

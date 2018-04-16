@@ -1,311 +1,196 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-
+import faker from 'faker';
+import { flow, map, range, startCase, truncate, upperFirst } from 'lodash';
 import { arrayOf, object } from 'prop-types';
-import DotDotDot from 'react-dotdotdot'
 import MuiTable, { TableBody, TableRow } from 'material-ui/Table';
+
 import MenuColumn from './MenuColumn';
 import { Table, Column, PaginatedTable } from './';
 
-const data = [
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  },
-  {
-    created_at: 'Sat Dec 14 04:35:55 +0000 2013',
-    name: 'TwitterDev',
-    time_zone: 'Pacific Time (US & Canada)',
-    text: 'Your official source for Twitter posts Your official source for Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts Twitter posts Your official source for Twitter posts',
-    profile_image: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-    Attribute: 'really long attribute name', 
-    Attribute2: 'description', 
-    Attribute3: 'description 2',
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  }
-];
+const row = () => ({
+  date: faker.date.future(),
+  name: faker.internet.userName(),
+  text: faker.lorem.paragraph(),
+  ip: faker.internet.ip()
+});
+const data = range(50).map(row);
 
-function renderCell(data) {
-  return (
-    <DotDotDot clamp={2}>
-      {data}
-    </DotDotDot>
-  )
+const columns = map(data[0], (val, key) => {
+  return {
+    dataKey: key,
+    header: startCase(key),
+    cellRenderer: flow([upperFirst, truncate]),
+    align: 'center',
+    width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
+  };
+});
+
+class BasicTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
+
+  getRowData = i => this.props.data[i];
+
+  handleCellClick(row, columnKey) {
+    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
+  }
+
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader
+        onCellClick={this.handleCellClick}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+      </Table>
+    );
+  }
 }
 
+class BasicSplitTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
 
-function BasicTable({ data }) {
-  function getRowData(i) {
+  state = {
+    focusedTableRow: null
+  };
+
+  getRowData = i => {
     return data[i];
   };
 
-  function handleOnCellClick(row, columnKey) {
-    return console.log(`row: ${row}`, `columnKey: ${columnKey}`)
-  }
-  
-
-  const columns = Object.keys(data[0]).map((column, index) => {
-    return <Column 
-      dataKey={column}
-      header={column}
-      key={index}
-      cellRenderer={renderCell}
-    />
-  });
-
-  return (
-      <Table
-        rowGetter={getRowData}
-        rowCount={data.length}
-        showHeader
-        onCellClick={handleOnCellClick}
-      >
-        {columns}
-      </Table>
-  );
-}
-
-BasicTable.propTypes = {
-  data: arrayOf(object)
-}
-
-class PagedTable extends React.Component {
-  getRowData = (i) => {
-    return this.props.data[i];
-  };
-  
-  handleOnRefreshPageData = () => {
-    return console.log('Refresh Me');
-  }
-
-  handleOnCellClick = (row, columnKey) => {
-    return console.log(`row: ${row}`, `columnKey: ${columnKey}`)
-  }
-
-  render() {
-    const tableEmptyMessage =
-      'Nothing to see here! This table will show your engines when some exist.';
-  
-    const tableEmptyFailureMessage =
-      'Engines failed to load; please try again later.';
-  
-    const columns = Object.keys(this.props.data[0]).map((column, index) => {
-      return <Column
-        dataKey={column}
-        header={column}
-        key={index}
-        cellRenderer={renderCell}
-      />
-    });
-  
+  renderFocusedRowDetails = row => {
     return (
-      <PaginatedTable
-        rowGetter={this.getRowData}
-        rowCount={this.props.data.length}
-        initialItemsPerPage={5}
-        showHeader
-        onRefreshPageData={this.handleOnRefreshPageData}
-        onCellClick={this.handleOnCellClick}
-        emptyMessage={tableEmptyMessage}
-        emptyFailureMessage={tableEmptyFailureMessage}
-      >
-        {columns}
-      </PaginatedTable>
-    )
-  }
-}
-
-PagedTable.propTypes = {
-  data: arrayOf(object)
-}
-
-class SplitTable extends React.Component {
-  state = {
-    focusedTableRow: null
-  }
-
-  getRowData = (i) => {
-    return this.props.data[i];
+      <div style={{ textAlign: 'center' }}>
+        {row.name} - {this.state.focusedTableRow + 1}
+      </div>
+    );
   };
-
-  renderFocusedRowDetails = (row) => {
-    return <div style={{textAlign: 'center'}}>{row.name}</div>
-  }
 
   setFocusedRow = (row, columnKey) => {
     this.setState({ focusedTableRow: row });
-  }
-
-  handleOnRefreshPageData = () => {
-    return console.log('Refresh Me');
-  }
+  };
 
   render() {
-    const tableEmptyMessage =
-      'Nothing to see here! This table will show your engines when some exist.';
-  
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader
+        onCellClick={this.setFocusedRow}
+        focusedRow={this.state.focusedTableRow}
+        renderFocusedRowDetails={this.renderFocusedRowDetails}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+      </Table>
+    );
+  }
+}
+
+class PagedTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
+
+  getRowData = i => {
+    return this.props.data[i];
+  };
+
+  handleRefreshPageData = () => {
+    console.log('Refresh Me');
+  };
+
+  handleCellClick = (row, columnKey) => {
+    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
+  };
+
+  render() {
+    const tableEmptyMessage = 'Nothing to see here!';
+
     const tableEmptyFailureMessage =
-      'Engines failed to load; please try again later.';
-  
-    const columns = Object.keys(this.props.data[0]).map((column, index) => {
-      return <Column
-        dataKey={column}
-        header={column}
-        key={index}
-        cellRenderer={renderCell}
-        align="center"
-        width={Math.min((index + 1) * 10, 100)}
-      />
-    });
-  
+      'Data failed to load; please try again later.';
+
     return (
       <PaginatedTable
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
         initialItemsPerPage={5}
         showHeader
-        onRefreshPageData={this.handleOnRefreshPageData}
+        onRefreshPageData={this.handleRefreshPageData}
+        onCellClick={this.handleCellClick}
+        emptyMessage={tableEmptyMessage}
+        emptyFailureMessage={tableEmptyFailureMessage}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+      </PaginatedTable>
+    );
+  }
+}
+
+class SplitTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
+
+  state = {
+    focusedTableRow: null
+  };
+
+  getRowData = i => {
+    return this.props.data[i];
+  };
+
+  renderFocusedRowDetails = row => {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        {row.name} - {this.state.focusedTableRow + 1}
+      </div>
+    );
+  };
+
+  setFocusedRow = (row, columnKey) => {
+    this.setState({ focusedTableRow: row });
+  };
+
+  handleRefreshPageData = () => {
+    return console.log('Refresh Me');
+  };
+
+  render() {
+    const tableEmptyMessage = 'Nothing to see here!';
+
+    const tableEmptyFailureMessage =
+      'Data failed to load; please try again later.';
+
+    return (
+      <PaginatedTable
+        rowGetter={this.getRowData}
+        rowCount={this.props.data.length}
+        initialItemsPerPage={5}
+        showHeader
+        onRefreshPageData={this.handleRefreshPageData}
         onCellClick={this.setFocusedRow}
         focusedRow={this.state.focusedTableRow}
         renderFocusedRowDetails={this.renderFocusedRowDetails}
         emptyMessage={tableEmptyMessage}
         emptyFailureMessage={tableEmptyFailureMessage}
       >
-        {columns}
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
       </PaginatedTable>
-    )
+    );
   }
 }
 
-SplitTable.propTypes = {
-  data: arrayOf(object)
-}
-
 storiesOf('Table', module)
-  .add('Basic Table', () => (
-    <BasicTable data={data}/>
-  ))
-  .add('Paginated Table', () => (
-    <PagedTable data={data} />
-  ))
-  .add('Split Table', () => (
-    <SplitTable data={data} />
-  ))
+  .add('Basic Table', () => <BasicTable data={data} />)
+  .add('Basic Split Table', () => <BasicSplitTable data={data} />)
+  .add('Paginated Table', () => <PagedTable data={data} />)
+  .add('Paginated Split Table', () => <SplitTable data={data} />)
   .add('Menu Column', () => {
     const data = {
       title: 'Some title',
@@ -333,4 +218,4 @@ storiesOf('Table', module)
         </TableBody>
       </MuiTable>
     );
-  })
+  });

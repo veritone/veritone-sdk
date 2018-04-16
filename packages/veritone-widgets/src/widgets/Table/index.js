@@ -12,29 +12,34 @@ import widget from '../../shared/widget';
 class TableWidget extends React.Component {
   static propTypes = {
     data: arrayOf(object).isRequired,
-    columns: arrayOf(shape({
-      transform: func,
-      menu: bool,
-      onSelectItem: func
-    })),
+    columns: arrayOf(
+      shape({
+        transform: func,
+        menu: bool,
+        onSelectItem: func
+      })
+    ),
     paginate: bool
   };
 
   static defaultProps = {
     paginate: false
-  }
-  
-  getRowData = (i) => {
+  };
+
+  getRowData = i => {
     return this.props.data[i];
   };
 
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
     const tableProps = omit(this.props, ['data', 'columns', 'paginate']);
-    const tableColumns = this.props.columns.map((column, idx) => {
+    const tableColumns = this.props.columns.map(column => {
       if (column.menu) {
         return (
-          <MenuColumn key={idx} {...omit(column, ['transform', 'menu'])} />
+          <MenuColumn
+            key={column.dataKey}
+            {...omit(column, ['transform', 'menu'])}
+          />
         );
       }
 
@@ -42,7 +47,7 @@ class TableWidget extends React.Component {
         <Column
           {...omit(column, ['menu', 'onSelectItem', 'transform'])}
           cellRenderer={column.transform}
-          key={idx}
+          key={column.dataKey}
         />
       );
     });

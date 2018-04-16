@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import AttachMoneyIcon from 'material-ui-icons/Apps';
 import { storiesOf } from '@storybook/react';
 
@@ -23,7 +23,7 @@ const exampleSideBarMenu = {
     },
     billing: {
       label: 'Billing Dashboard',
-      icon: <AttachMoneyIcon/>
+      icon: <AttachMoneyIcon />
     },
     engines: {
       label: 'Engines',

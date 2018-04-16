@@ -40,12 +40,9 @@ class FilePicker extends Component {
   };
 
   handleRemoveFile = index => {
-    this.setState({
-      files: [
-        ...this.state.files.slice(0, index),
-        ...this.state.files.slice(index + 1)
-      ]
-    });
+    this.setState(state => ({
+      files: [...state.files.slice(0, index), ...state.files.slice(index + 1)]
+    }));
 
     this.clearErrorMessage();
   };
@@ -54,9 +51,9 @@ class FilePicker extends Component {
     const files = isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
     if (this.props.multiple) {
-      this.setState({
-        files: [...this.state.files, ...files]
-      });
+      this.setState(state => ({
+        files: [...state.files, ...files]
+      }));
 
       return this.clearErrorMessage();
     } else {

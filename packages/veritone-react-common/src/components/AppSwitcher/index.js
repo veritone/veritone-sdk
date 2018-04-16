@@ -13,7 +13,6 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 export default class AppSwitcher extends React.Component {
   static propTypes = {
-    className: string,
     currentAppName: string,
     enabledApps: arrayOf(
       shape({
@@ -23,7 +22,6 @@ export default class AppSwitcher extends React.Component {
         applicationIconUrl: string
       })
     ),
-    isFetchingApps: bool,
     enabledAppsFailedLoading: bool,
     handleRefresh: func,
     onSwitchApp: func
