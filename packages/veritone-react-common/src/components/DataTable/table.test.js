@@ -153,10 +153,10 @@ describe('MenuColumn', function() {
   });
 
   it('excludes specified actions', function() {
-    let data = {
+    const data = {
       actions: ['delete', 'alter', 'manage']
     };
-    let wrapper = mount(
+    const wrapper = mount(
       <SupressColumnWarnings>
         <MenuColumn
           data={data}
@@ -169,6 +169,7 @@ describe('MenuColumn', function() {
 
     const menuItems = wrapper.find('Menu').prop('children');
     expect(map(menuItems, 'key')).not.toContain('alter');
+    expect(map(menuItems, 'key')).toEqual(expect.arrayContaining(['delete', 'manage']));
   });
 });
 
