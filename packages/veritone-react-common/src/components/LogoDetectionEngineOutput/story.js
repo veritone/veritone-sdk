@@ -61,7 +61,7 @@ export class LogoDetectionExample extends Component {
           onExpandClicked={action('on expand clicked')}
           mediaLengthMs={this.props.lazyLoading && 1800000}
           neglectableTimeMs={this.props.lazyLoading && 1000}
-          estimatedDisplayTimeMS={this.props.lazyLoading && 240000}
+          estimatedDisplayTimeMs={this.props.lazyLoading && 240000}
         />
       </div>
     );

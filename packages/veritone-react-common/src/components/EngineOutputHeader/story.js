@@ -47,7 +47,7 @@ storiesOf('EngineOutputHeader', module)
         onExpandClicked={action('onExpandClicked')}
         onEngineChange={action('onEngineChange')}
       >
-        <Select value="test1" style={{ marginRight: '20px' }}>
+        <Select value="test1">
           <MenuItem value="test1">Test 1</MenuItem>
           <MenuItem value="test2">Test 2</MenuItem>
         </Select>

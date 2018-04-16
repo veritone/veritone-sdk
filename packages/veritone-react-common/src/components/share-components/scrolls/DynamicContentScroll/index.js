@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, string, number, shape, any, func } from 'prop-types';
-import { sortBy } from 'lodash';
+import { sortBy, isNumber } from 'lodash';
 import classNames from 'classnames';
 import styles from './style.scss';
 
@@ -20,7 +20,8 @@ export default class DynamicContentScroll extends Component {
     estimatedDisplaySize: number,
 
     currentValue: number,
-    onScroll: func
+    onScroll: func,
+    requestTimeMs: number
   };
 
   static defaultProps = {
@@ -34,17 +35,28 @@ export default class DynamicContentScroll extends Component {
     }
   }
 
+  componentDidUpdate() {
+    let requestTimeMs = this.props.requestTimeMs;
+
+    // request more data to fill empty gaps in the display viewport
+    if (!isNumber(requestTimeMs) || requestTimeMs <= 0) {
+      setTimeout(this.requestMoreContents);
+    } else {
+      setTimeout(this.requestMoreContents, requestTimeMs);
+    }
+  }
+
   scrollTo = value => {
     if (value >= 0) {
-      let anchors = this.container.querySelectorAll('[anchor=time-anchor]');
+      const anchors = this.container.querySelectorAll('[anchor=time-anchor]');
       for (
         let anchorIndex = 0, numAnchors = anchors.length;
         anchorIndex < numAnchors;
         anchorIndex++
       ) {
-        let anchor = anchors[anchorIndex];
-        let startVal = anchor.getAttribute('start');
-        let stopVal = anchor.getAttribute('stop');
+        const anchor = anchors[anchorIndex];
+        const startVal = anchor.getAttribute('start');
+        const stopVal = anchor.getAttribute('stop');
 
         if (startVal <= value) {
           if (stopVal > value) {
@@ -68,27 +80,27 @@ export default class DynamicContentScroll extends Component {
     if (this.props.onScroll) {
       this.scrollCheck = null;
 
-      let fillers = this.container.querySelectorAll('[name=filler]');
+      const fillers = this.container.querySelectorAll('[name=filler]');
 
       let finalStart = undefined;
       let finalStop = undefined;
 
-      let containerBox = this.container.getBoundingClientRect();
+      const containerBox = this.container.getBoundingClientRect();
       for (
         let fillerIndex = 0, numFillers = fillers.length;
         fillerIndex < numFillers;
         fillerIndex++
       ) {
-        let filler = fillers[fillerIndex];
-        let fillerBox = filler.getBoundingClientRect();
+        const filler = fillers[fillerIndex];
+        const fillerBox = filler.getBoundingClientRect();
 
         if (fillerBox.top < containerBox.bottom) {
           if (
             fillerBox.top > containerBox.top ||
             fillerBox.bottom > containerBox.top
           ) {
-            let itemStart = parseInt(filler.getAttribute('start'));
-            let itemStop = parseInt(filler.getAttribute('stop'));
+            const itemStart = parseInt(filler.getAttribute('start'));
+            const itemStop = parseInt(filler.getAttribute('stop'));
 
             if (finalStart === undefined || finalStart > itemStart) {
               finalStart = itemStart;
@@ -114,17 +126,17 @@ export default class DynamicContentScroll extends Component {
   };
 
   renderFillers(start, stop) {
-    let { estimatedDisplaySize, neglectableSize } = this.props;
+    const { estimatedDisplaySize, neglectableSize } = this.props;
 
-    let numSegment = 5; // num empty segments that can be displayed in the scrollabe window at one time
-    let segmentHeight = 100 / numSegment + '%';
-    let segmentSize = estimatedDisplaySize / numSegment;
+    const numSegment = 5; // num empty segments that can be displayed in the scrollabe window at one time
+    const segmentHeight = 100 / numSegment + '%';
+    const segmentSize = estimatedDisplaySize / numSegment;
 
-    let fillers = [];
+    const fillers = [];
     let currentStart = start;
     while (currentStart + neglectableSize < stop) {
       if (currentStart + segmentSize < stop) {
-        let nextStart = currentStart + segmentSize;
+        const nextStart = currentStart + segmentSize;
         fillers.push(
           <div
             key={'key-' + currentStart + '-' + nextStart}
@@ -157,25 +169,25 @@ export default class DynamicContentScroll extends Component {
   }
 
   renderContent() {
-    let { contents, totalSize, neglectableSize, onScroll } = this.props;
+    const { contents, totalSize, neglectableSize, onScroll } = this.props;
 
     // Sort Contents
-    contents
-      ? (contents = sortBy(this.props.contents, 'start', 'stop'))
-      : (contents = []);
+    const sortedContent = contents
+      ? sortBy(this.props.contents, 'start', 'stop')
+      : [];
+    const numContents = sortedContent.length;
 
     let renderItems = [];
     let prevStopPoint = 0;
-    let numContents = contents.length;
     for (let contentIndex = 0; contentIndex < numContents; contentIndex++) {
-      let entry = contents[contentIndex];
-      let startVal = entry.start;
-      let stopVal = entry.stop;
-      let content = entry.content;
+      const entry = sortedContent[contentIndex];
+      const startVal = entry.start;
+      const stopVal = entry.stop;
+      const content = entry.content;
 
       // Add fillers above content if needed
       if (onScroll && startVal - prevStopPoint > neglectableSize) {
-        let fillers = this.renderFillers(prevStopPoint, startVal);
+        const fillers = this.renderFillers(prevStopPoint, startVal);
         renderItems = renderItems.concat(fillers);
       }
 
@@ -197,7 +209,7 @@ export default class DynamicContentScroll extends Component {
         contentIndex === numContents - 1 &&
         prevStopPoint + neglectableSize < totalSize
       ) {
-        let fillers = this.renderFillers(prevStopPoint, totalSize);
+        const fillers = this.renderFillers(prevStopPoint, totalSize);
         renderItems = renderItems.concat(fillers);
       }
     }
@@ -206,8 +218,6 @@ export default class DynamicContentScroll extends Component {
   }
 
   render() {
-    setTimeout(this.requestMoreContents);
-
     return (
       <div
         ref={this.setContainerRef}
