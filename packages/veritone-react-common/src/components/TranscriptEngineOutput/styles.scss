@@ -9,15 +9,15 @@
 
   .controllers {
     width: 100%;
+    font-size: 14px;
 
     .radioButton {
       float: left;
-      font-size: 14px;
     }
 
     .viewDropdown {
       float: right;
-      margin-right: 20px;
+      font-size: 14px; // reset to 14px to override default MUI theme s
     }
   }
 
@@ -26,4 +26,8 @@
     width: 100%;
     height: calc(100% - 45px);
   }
+}
+
+.view {
+  font-size: 14px !important;
 }

@@ -1,0 +1,26 @@
+@import 'src/styles/modules/variables';
+
+.noDataSegment {
+  width: 100%;
+  font-weight: 300;
+  color: $light-black;
+  border: 2px dashed $grey-4;
+  clear: both;
+
+  & > div {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  & > div:last-child {
+    margin-bottom: 20px;
+  }
+
+  .time {
+    font-size: 16px;
+  }
+
+  .message {
+    font-size: 20px;
+  }
+}

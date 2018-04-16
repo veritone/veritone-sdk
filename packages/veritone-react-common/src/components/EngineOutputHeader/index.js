@@ -60,10 +60,24 @@ class EngineOutputHeader extends Component {
               value={selectedEngineId || engines[0].id}
               className={styles.engineSelect}
               onChange={this.handleEngineChange}
+              MenuProps={{
+                anchorOrigin: {
+                  horizontal: 'center',
+                  vertical: 'bottom'
+                },
+                transformOrigin: {
+                  horizontal: 'center'
+                },
+                getContentAnchorEl: null
+              }}
             >
               {engines.map((e, i) => {
                 return (
-                  <MenuItem key={'engine-menu-item-' + e.id} value={e.id}>
+                  <MenuItem
+                    key={'engine-menu-item-' + e.id}
+                    value={e.id}
+                    className={styles.engine}
+                  >
                     {e.name}
                   </MenuItem>
                 );

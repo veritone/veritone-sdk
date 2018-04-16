@@ -1,0 +1,18 @@
+.translationOutput {
+  width: 100%;
+  overflow: hidden;
+
+  .languages {
+    font-size: 14px;
+  }
+
+  .body {
+    width: 100%;
+    height: calc(100% - 54px);
+    overflow: hidden;
+  }
+}
+
+.language {
+  font-size: 14px !important;
+}

@@ -344,10 +344,22 @@ class FaceEngineOutput extends Component {
           <Select
             autoWidth
             value={viewMode}
-            className={styles.viewModeSelect}
             onChange={this.handleViewModeChange}
+            className={cx(styles.displayOptions)}
+            MenuProps={{
+              anchorOrigin: {
+                horizontal: 'center',
+                vertical: 'bottom'
+              },
+              transformOrigin: {
+                horizontal: 'center'
+              },
+              getContentAnchorEl: null
+            }}
           >
-            <MenuItem value="summary">Summary</MenuItem>
+            <MenuItem value="summary" className={cx(styles.view)}>
+              Summary
+            </MenuItem>
             <MenuItem value="byFrame">By Frame</MenuItem>
             <MenuItem value="byScene">By Scene</MenuItem>
           </Select>
