@@ -5,7 +5,6 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
 
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
@@ -59,6 +58,7 @@ export default class SourceManagementForm extends React.Component {
   };
 
   componentWillMount() {
+    const { sourceTypes } = this.props;
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
     };
@@ -74,8 +74,13 @@ export default class SourceManagementForm extends React.Component {
       };
     } else {
       const fieldValues = {};
-      const properties = this.props.sourceTypes[0].sourceSchema.definition
-        .properties;
+      const sourceTypeIdx = sourceTypes.findIndex(
+        sourceType => sourceType.sourceSchema
+      );
+      console.log('sourceTypeIdx:', sourceTypeIdx);
+      console.log('sourceTypes[sourceTypeIdx]:', sourceTypes[sourceTypeIdx]);
+      const properties =
+        sourceTypes[sourceTypeIdx].sourceSchema.definition.properties;
 
       Object.keys(properties).forEach(field => {
         fieldValues[field] = '';
@@ -83,6 +88,7 @@ export default class SourceManagementForm extends React.Component {
 
       newState.sourceConfig = {
         ...this.state.sourceConfig,
+        sourceTypeId: sourceTypes[sourceTypeIdx].id,
         details: {
           ...fieldValues
         }
@@ -207,36 +213,30 @@ export default class SourceManagementForm extends React.Component {
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit}>
-            <Grid container direction="column" justify="space-between">
+            <div>
               {activeTab === 0 && (
-                <Grid item lg={7}>
-                  <SourceConfiguration
-                    sourceTypes={this.props.sourceTypes}
-                    source={this.state.sourceConfig}
-                    onInputChange={this.saveConfiguration}
-                    onClose={this.handleOnClose}
-                  />
-                </Grid>
+                <SourceConfiguration
+                  sourceTypes={this.props.sourceTypes}
+                  source={this.state.sourceConfig}
+                  onInputChange={this.saveConfiguration}
+                  onClose={this.handleOnClose}
+                />
               )}
               {activeTab === 1 && (
-                <Grid item lg={12}>
-                  <ContentTemplates
-                    templateData={this.props.templateData}
-                    selectedTemplateSchemas={this.state.contentTemplates}
-                    onListChange={this.manageTemplatesList}
-                    onInputChange={this.updateTemplateDetails}
-                  />
-                </Grid>
+                <ContentTemplates
+                  templateData={this.props.templateData}
+                  selectedTemplateSchemas={this.state.contentTemplates}
+                  onListChange={this.manageTemplatesList}
+                  onInputChange={this.updateTemplateDetails}
+                />
               )}
-              <Grid item lg={12}>
-                <div className={styles['btn-container']}>
-                  <Button onClick={this.handleOnClose}>Cancel</Button>
-                  <Button variant="raised" color="primary" type="submit">
-                    Create
-                  </Button>
-                </div>
-              </Grid>
-            </Grid>
+              <div className={styles['btn-container']}>
+                <Button onClick={this.handleOnClose}>Cancel</Button>
+                <Button variant="raised" color="primary" type="submit">
+                  Create
+                </Button>
+              </div>
+            </div>
           </form>
         </div>
       </FullScreenDialog>

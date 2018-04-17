@@ -15,10 +15,10 @@ export default class DynamicSelect extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
     currentSourceType: number, // id of initial sourceType if there is a default
-    onSelectChange: func.isRequired, //used to provide state to the parent
-    onSourceDetailChange: func.isRequired, //used to provide state to the parent
-    fieldValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
-    errorFields: objectOf(any), // since the parent handles the submit button, the parent can pass down which fields are in an error state
+    onSelectChange: func.isRequired,
+    onSourceDetailChange: func.isRequired,
+    fieldValues: objectOf(any),
+    errorFields: objectOf(any),
     helperText: string,
     selectLabel: string
   };

@@ -62,7 +62,7 @@ export default class SourceTileView extends React.Component {
           dataKey="thumbnailUrl"
           header=""
           cellRenderer={this.renderThumbnail}
-          width={20}
+          width={30}
         />
         <Column dataKey="name" header="Source Name" />
         <Column dataKey="sourceType.name" header="Source Type" />
