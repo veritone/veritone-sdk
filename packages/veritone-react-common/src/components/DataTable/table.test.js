@@ -1,9 +1,10 @@
 import React from 'react';
-import { range, filter, get, includes } from 'lodash';
+import { range, filter, get, includes, map } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
-import { Table, Column, PaginatedTable, LOADING } from './';
+import { LOADING } from './shared';
+import { Table, Column, PaginatedTable } from './';
 
 function assertRowsExist(rows, wrapper, assertion = true) {
   rows.forEach(expected => {
@@ -150,6 +151,26 @@ describe('MenuColumn', function() {
       filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
         .length
     ).toEqual(0);
+  });
+
+  it('excludes specified actions', function() {
+    const data = {
+      actions: ['delete', 'alter', 'manage']
+    };
+    const wrapper = mount(
+      <SupressColumnWarnings>
+        <MenuColumn
+          data={data}
+          dataKey="actions"
+          protectedActions={['delete']}
+          excludeActions={['alter']}
+        />
+      </SupressColumnWarnings>
+    );
+
+    const menuItems = wrapper.find('Menu').prop('children');
+    expect(map(menuItems, 'key')).not.toContain('alter');
+    expect(map(menuItems, 'key')).toEqual(expect.arrayContaining(['delete', 'manage']));
   });
 });
 
