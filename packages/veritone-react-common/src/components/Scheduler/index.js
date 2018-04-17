@@ -2,7 +2,7 @@ import React from 'react';
 import { compose } from 'redux';
 import { oneOf, func } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
-import { pick, get, pickBy, mapValues, omit } from 'lodash';
+import { pick, get, pickBy, mapValues, omit, difference, keys, constant } from 'lodash';
 import { withProps, hoistStatics } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
@@ -46,16 +46,30 @@ const withDecorators = compose(
             end: '01:00'
           }
         ],
-        weekly: [
-          'monday',
-          'tuesday',
-          'wednesday',
-          'thursday',
-          'friday',
-          'saturday',
-          'sunday'
-        ].reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
-        ...omit(props.initialValues, ['start', 'end'])
+        weekly: {
+          // make sure we set a default start/end for any days which aren't given
+          // explicit default values in props.initialValues.weekly
+          ...difference(
+            // for days not given explicit initial values in props,..
+            [
+              'monday',
+              'tuesday',
+              'wednesday',
+              'thursday',
+              'friday',
+              'saturday',
+              'sunday'
+            ],
+            keys(props.initialValues.weekly)
+            // ... provide them with default start/end ranges
+          ).reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
+          // and assume any days given explicit initial values should be selected
+          selectedDays: mapValues(props.initialValues.weekly, constant(true)),
+          // then merge back with the days given explicit initial values in props
+          ...props.initialValues.weekly,
+        },
+        // shallow-merge the properties we didn't have special merge logic for
+        ...omit(props.initialValues, ['start', 'end', 'weekly'])
       }
     })),
     reduxForm({
@@ -76,10 +90,7 @@ export default class Scheduler extends React.Component {
   static prepareResultData(formResult) {
     const recurringPeriod = get(formResult, 'repeatEvery.period');
     const selectedDays = Object.keys(
-      pickBy(
-        get(formResult, 'weekly.selectedDays', {}),
-        (included) => !!included
-      )
+      pickBy(get(formResult, 'weekly.selectedDays', {}), included => !!included)
     );
 
     const recurringRepeatSectionFields = {
