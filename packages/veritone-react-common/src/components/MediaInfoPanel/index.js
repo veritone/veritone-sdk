@@ -11,7 +11,7 @@ import { MenuItem, MenuList } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
 import { isString } from 'lodash';
-import { objectOf, func, arrayOf, any } from 'prop-types';
+import { objectOf, func, arrayOf, any, shape, string } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
@@ -20,6 +20,10 @@ class MediaInfoPanel extends Component {
   static propTypes = {
     tdo: objectOf(any),
     engineCategories: arrayOf(any),
+    kvp: shape({
+      features: objectOf(any),
+      applicationIds: arrayOf(string)
+    }),
     onClose: func,
     onSaveMetadata: func
   };
@@ -76,6 +80,42 @@ class MediaInfoPanel extends Component {
     }
     const detailsToSave = `details: { ${detailsParams.join(' ')} }`;
     this.props.onSaveMetadata(detailsToSave);
+  };
+
+  isDownloadMediaEnabled = () => {
+    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+  };
+
+  isDownloadAllowed = () => {
+    if (!this.isMediaPublic(this.props.tdo)) {
+      return true;
+    }
+    const publicMediaDownloadEnabled = get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
+    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
+      return true;
+    }
+    return false;
+  };
+
+  isMediaPublic = () => {
+    if (!get(this.props.tdo, 'security.global', false)) {
+      return false;
+    }
+    if (this.props.tdo.isPublic === false) {
+      return false;
+    }
+    return true;
+  };
+
+  isOwnMedia() {
+    if (this.props.tdo.isOwn === true) {
+      return true;
+    }
+    const applicationIds = get(this.props.kvp, 'applicationIds', []);
+    if (this.props.tdo.applicationId && applicationIds.includes(this.props.tdo.applicationId)) {
+      return true;
+    }
+    return false;
   };
 
   toggleIsEditMetadataOpen = () => {
@@ -231,9 +271,15 @@ class MediaInfoPanel extends Component {
                           >
                             Edit Tags
                           </MenuItem>
-                          {/* TODO: uncomment when can download large/chunked files
-                            <MenuItem classes={{ root: styles.headerMenuItem }} onClick={this.onMenuClose}>Download</MenuItem>
-                            */}
+                          {this.isDownloadMediaEnabled() &&
+                            <MenuItem
+                              classes={{root: styles.headerMenuItem}}
+                              onClick={this.onMenuClose}
+                              disabled={!this.isDownloadAllowed()}
+                            >
+                              Download
+                            </MenuItem>
+                          }
                         </MenuList>
                       </Paper>
                     </Grow>

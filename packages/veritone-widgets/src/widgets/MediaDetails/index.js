@@ -76,6 +76,10 @@ class MediaDetailsWidget extends React.Component {
     _widgetId: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
+    kvp: shape({
+      features: objectOf(any),
+      applicationIds: arrayOf(string)
+    }),
     onRunProcess: func,
     onClose: func,
     loadTdoRequest: func,
@@ -119,7 +123,11 @@ class MediaDetailsWidget extends React.Component {
         )
       }),
       startDateTime: string,
-      stopDateTime: string
+      stopDateTime: string,
+      security: shape({
+        global: bool
+      }),
+      applicationId: string
     }),
     engineResultsByEngineId: shape({
       engineId: arrayOf(any)
@@ -650,6 +658,7 @@ class MediaDetailsWidget extends React.Component {
             <MediaInfoPanel
               tdo={this.props.tdo}
               engineCategories={engineCategories}
+              kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
             />

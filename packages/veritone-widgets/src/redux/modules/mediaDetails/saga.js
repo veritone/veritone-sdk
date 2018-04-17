@@ -49,6 +49,10 @@ function* loadTdoSaga(widgetId, tdoId) {
         details
         startDateTime
         stopDateTime
+        applicationId
+        security {
+          global
+        }
         primaryAsset(assetType: "media") {
           id
           uri
@@ -291,6 +295,10 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
         details
         startDateTime
         stopDateTime
+        applicationId
+        security {
+          global
+        }
         primaryAsset(assetType: "media") {
           id
           uri
