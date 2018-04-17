@@ -1,5 +1,4 @@
 import React from 'react';
-import { compose } from 'redux';
 import { oneOf, func } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
 import {
@@ -13,7 +12,7 @@ import {
   keys,
   constant
 } from 'lodash';
-import { withProps, hoistStatics } from 'recompose';
+import { withProps } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 import { subDays } from 'date-fns';
@@ -34,10 +33,12 @@ const initDate = new Date();
     // This provides defaults to the form. Shallow merged with
     // props.initialValues to allow overriding.
     scheduleType: 'recurring',
-    start: props.initialValues.start
+    start: get(props, 'initialValues.start')
       ? new Date(props.initialValues.start)
       : subDays(initDate, 3),
-    end: props.initialValues.end ? new Date(props.initialValues.end) : initDate,
+    end: get(props, 'initialValues.end')
+      ? new Date(props.initialValues.end)
+      : initDate,
     maxSegment: {
       number: '5',
       period: 'week'
@@ -66,13 +67,16 @@ const initDate = new Date();
           'saturday',
           'sunday'
         ],
-        keys(props.initialValues.weekly)
+        keys(get(props, 'initialValues.weekly'))
         // ... provide them with default start/end ranges
       ).reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
       // and assume any days given explicit initial values should be selected
-      selectedDays: mapValues(props.initialValues.weekly, constant(true)),
+      selectedDays: mapValues(
+        get(props, 'initialValues.weekly'),
+        constant(true)
+      ),
       // then merge back with the days given explicit initial values in props
-      ...props.initialValues.weekly
+      ...get(props, 'initialValues.weekly')
     },
     // shallow-merge the properties we didn't have special merge logic for
     ...omit(props.initialValues, ['start', 'end', 'weekly'])
