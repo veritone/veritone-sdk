@@ -25,17 +25,13 @@ const withDecorators = compose(
       initialValues: {
         // This provides defaults to the form. Shallow merged with
         // props.initialValues to allow overriding.
-        scheduleType: 'recurring',
+        scheduleType: 'Recurring',
         start: props.initialValues.start
           ? new Date(props.initialValues.start)
           : subDays(initDate, 3),
         end: props.initialValues.end
           ? new Date(props.initialValues.end)
           : initDate,
-        maxSegment: {
-          number: '5',
-          period: 'week'
-        },
         repeatEvery: {
           number: '1',
           period: 'day'
@@ -52,13 +48,13 @@ const withDecorators = compose(
           ...difference(
             // for days not given explicit initial values in props,..
             [
-              'monday',
-              'tuesday',
-              'wednesday',
-              'thursday',
-              'friday',
-              'saturday',
-              'sunday'
+              'Monday',
+              'Tuesday',
+              'Wednesday',
+              'Thursday',
+              'Friday',
+              'Saturday',
+              'Sunday'
             ],
             keys(props.initialValues.weekly)
             // ... provide them with default start/end ranges
@@ -82,7 +78,7 @@ const withDecorators = compose(
 @withDecorators
 export default class Scheduler extends React.Component {
   static propTypes = {
-    scheduleType: oneOf(['recurring', 'continuous', 'immediate', 'ondemand'])
+    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once'])
       .isRequired,
     handleSubmit: func.isRequired // provided by redux-form
   };
@@ -100,31 +96,30 @@ export default class Scheduler extends React.Component {
     }[recurringPeriod];
 
     const wantedFields = {
-      recurring: [
+      Recurring: [
         'scheduleType',
         'start',
         'end',
-        'maxSegment',
         'repeatEvery',
         ...recurringRepeatSectionFields
       ],
-      continuous: ['scheduleType', 'start', 'end', 'maxSegment'],
-      immediate: ['scheduleType', 'maxSegment'],
-      ondemand: ['scheduleType']
+      Continuous: ['scheduleType', 'start', 'end'],
+      Now: ['scheduleType'],
+      Once: ['scheduleType']
     }[formResult.scheduleType];
 
     const result = pick(formResult, wantedFields);
-    return result.scheduleType === 'recurring'
+    return result.scheduleType === 'Recurring'
       ? filterRecurringPeriods(result, recurringPeriod)
       : result;
   }
 
   render() {
     const ActiveSectionComponent = {
-      recurring: RecurringSection,
-      continuous: ContinuousSection,
-      immediate: ImmediateSection,
-      ondemand: OnDemandSection
+      Recurring: RecurringSection,
+      Continuous: ContinuousSection,
+      Now: ImmediateSection,
+      Once: OnDemandSection
     }[this.props.scheduleType];
 
     return (
@@ -136,22 +131,22 @@ export default class Scheduler extends React.Component {
           className={styles.scheduleTypeContainer}
         >
           <FormControlLabel
-            value="recurring"
+            value="Recurring"
             control={<Radio />}
             label="Recurring"
           />
           <FormControlLabel
-            value="continuous"
+            value="Continuous"
             control={<Radio />}
             label="Continuous"
           />
           <FormControlLabel
-            value="immediate"
+            value="Now"
             control={<Radio />}
             label="Immediate"
           />
           <FormControlLabel
-            value="ondemand"
+            value="Once"
             control={<Radio />}
             label="On Demand"
           />

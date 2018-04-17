@@ -14,9 +14,6 @@ export default class ContinuousSection extends React.Component {
         <div className={styles.formSectionRow}>
           <DateTimeSelector name="end" label="Ends" showIcon />
         </div>
-        <div className={styles.formSectionRow}>
-          <TimePeriodSelector name="maxSegment" label="Max segment" />
-        </div>
       </Fragment>
     );
   }

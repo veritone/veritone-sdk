@@ -68,7 +68,7 @@ storiesOf('Scheduler', module).add('Base', () => (
     <div>
       <Scheduler
         initialValues={{
-          scheduleType: 'recurring'
+          scheduleType: 'Recurring'
         }}
         onSubmit={result => console.log(result)}
       />

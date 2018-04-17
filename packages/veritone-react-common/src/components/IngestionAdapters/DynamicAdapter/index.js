@@ -331,6 +331,7 @@ const SourceSelector = ({
         PaperProps={{
           style: {
             maxHeight: 400,
+            minWidth: 400,
             overflow: 'hidden',
             width: 'auto'
           }
@@ -341,6 +342,7 @@ const SourceSelector = ({
         </div>
         <div>
           <MenuItem
+            className={styles.createSourceItem}
             key="create-source-menu-item"
             value={null}
             onClick={openCreateSource}
