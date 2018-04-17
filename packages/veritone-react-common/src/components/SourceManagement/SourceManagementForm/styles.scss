@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .sm-form-wrapper {
   margin: 0 auto;
@@ -9,6 +10,10 @@
   width: 50%;
 }
 
+.form-tab {
+  @include mui-text('body1');
+}
+
 .separator {
   margin: 0 15px;
   align-self: center;
@@ -17,7 +22,10 @@
 }
 
 .btn-container {
-  width: 100%;
+  position: absolute;
+  bottom: 0;
+  width: 70%;
   display: flex;
   justify-content: flex-end;
+  margin: 10px;
 }

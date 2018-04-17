@@ -200,7 +200,7 @@ storiesOf('Table', module)
     };
 
     function handleSelectItem(action, data) {
-      console.log('action, data:', action, data)
+      console.log('action, data:', action, data);
     }
 
     return (

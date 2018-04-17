@@ -77,8 +77,6 @@ export default class SourceManagementForm extends React.Component {
       const sourceTypeIdx = sourceTypes.findIndex(
         sourceType => sourceType.sourceSchema
       );
-      console.log('sourceTypeIdx:', sourceTypeIdx);
-      console.log('sourceTypes[sourceTypeIdx]:', sourceTypes[sourceTypeIdx]);
       const properties =
         sourceTypes[sourceTypeIdx].sourceSchema.definition.properties;
 
@@ -122,9 +120,6 @@ export default class SourceManagementForm extends React.Component {
 
     if (remove) {
       if (this.state.contentTemplates[templateSchemaId]) {
-        // const contentTemplates = { ...this.state.contentTemplates };
-        // delete contentTemplates[templateSchemaId];
-
         return this.setState(prevState => {
           const contentTemplates = { ...prevState.contentTemplates };
           delete contentTemplates[templateSchemaId];
@@ -195,10 +190,6 @@ export default class SourceManagementForm extends React.Component {
                 : 'New Source'
             }
             icons={[
-              <IconButton aria-label="help" key="icon-1">
-                <Icon className="icon-help2" />
-              </IconButton>,
-              <span className={styles.separator} key="icon-2" />,
               <IconButton aria-label="exit" key="icon-3">
                 <Icon
                   className="icon-close-exit"
@@ -208,34 +199,38 @@ export default class SourceManagementForm extends React.Component {
             ]}
           >
             <Tabs value={activeTab} onChange={this.handleChangeTab}>
-              <Tab label="Configuration" />
-              <Tab label="Content Templates" />
+              <Tab
+                label="Configuration"
+                classes={{ label: styles['form-tab'] }}
+              />
+              <Tab
+                label="Content Templates"
+                classes={{ label: styles['form-tab'] }}
+              />
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit}>
-            <div>
-              {activeTab === 0 && (
-                <SourceConfiguration
-                  sourceTypes={this.props.sourceTypes}
-                  source={this.state.sourceConfig}
-                  onInputChange={this.saveConfiguration}
-                  onClose={this.handleOnClose}
-                />
-              )}
-              {activeTab === 1 && (
-                <ContentTemplates
-                  templateData={this.props.templateData}
-                  selectedTemplateSchemas={this.state.contentTemplates}
-                  onListChange={this.manageTemplatesList}
-                  onInputChange={this.updateTemplateDetails}
-                />
-              )}
-              <div className={styles['btn-container']}>
-                <Button onClick={this.handleOnClose}>Cancel</Button>
-                <Button variant="raised" color="primary" type="submit">
-                  Create
-                </Button>
-              </div>
+            {activeTab === 0 && (
+              <SourceConfiguration
+                sourceTypes={this.props.sourceTypes}
+                source={this.state.sourceConfig}
+                onInputChange={this.saveConfiguration}
+                onClose={this.handleOnClose}
+              />
+            )}
+            {activeTab === 1 && (
+              <ContentTemplates
+                templateData={this.props.templateData}
+                selectedTemplateSchemas={this.state.contentTemplates}
+                onListChange={this.manageTemplatesList}
+                onInputChange={this.updateTemplateDetails}
+              />
+            )}
+            <div className={styles['btn-container']}>
+              <Button onClick={this.handleOnClose}>Cancel</Button>
+              <Button variant="raised" color="primary" type="submit">
+                Create
+              </Button>
             </div>
           </form>
         </div>

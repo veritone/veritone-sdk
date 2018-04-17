@@ -170,7 +170,9 @@ describe('MenuColumn', function() {
 
     const menuItems = wrapper.find('Menu').prop('children');
     expect(map(menuItems, 'key')).not.toContain('alter');
-    expect(map(menuItems, 'key')).toEqual(expect.arrayContaining(['delete', 'manage']));
+    expect(map(menuItems, 'key')).toEqual(
+      expect.arrayContaining(['delete', 'manage'])
+    );
   });
 });
 

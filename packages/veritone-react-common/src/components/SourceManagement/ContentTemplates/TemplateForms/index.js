@@ -1,11 +1,8 @@
 import React from 'react';
 import { any, objectOf, func } from 'prop-types';
-
 import { isObject, compact } from 'lodash';
 
-import TextField from 'material-ui/TextField';
-import { FormControlLabel } from 'material-ui/Form';
-import Checkbox from 'material-ui/Checkbox';
+import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
 import FormCard from '../FormCard';
 import styles from './styles.scss';
 
@@ -24,8 +21,8 @@ export default class TemplateForms extends React.Component {
   handleFieldChange = (schemaId, fieldId, type) => event => {
     // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
     let currentValue; // Maintain root object reference
-    let fields = fieldId.split('.');
-    let rootObject = fields[0];
+    const fields = fieldId.split('.');
+    const rootObject = fields[0];
     let pointer;
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
@@ -77,20 +74,22 @@ export default class TemplateForms extends React.Component {
           const schemaProps = templates[schemaId].definition.properties;
           const formFields = Object.keys(schemaProps).map(
             (schemaProp, propIdx) => {
-              console.log('type:', schemaProps[schemaProp].type);
               const type = schemaProps[schemaProp].type;
 
               return (
                 type && (
                   <BuildFormElements
-                    fieldId={schemaProp}
+                    fieldId={`${schemaProp}-${schemaId}`}
                     schemaId={schemaId}
-                    // type={schemaProps[schemaProp].type}
                     type={type}
                     value={templates[schemaId].data[schemaProp]}
                     title={schemaProps[schemaProp].title || schemaProp}
                     objectProperties={schemaProps[schemaProp].properties}
-                    onChange={this.handleFieldChange}
+                    onChange={this.handleFieldChange(
+                      schemaId,
+                      schemaProp,
+                      type
+                    )}
                     key={schemaProp}
                   />
                 )
@@ -119,77 +118,39 @@ function BuildFormElements({
   type,
   title,
   value,
-  required,
-  onChange,
-  error,
   objectProperties,
-  depth = 0
+  depth = 0,
+  ...rest
 }) {
-  const additionalProps = {};
-  if (required) {
-    additionalProps.required = true;
-  }
-
-  let element;
-  console.log('type:', type);
   if (!type) {
     return undefined;
   }
 
-  if (type.includes('string')) {
+  let element;
+
+  if (!type.includes('object')) {
     element = (
-      <TextField
-        className={styles.textFieldExtra}
-        type={fieldId.toLowerCase().includes('password') ? 'password' : 'text'}
-        fullWidth
-        margin="dense"
-        label={title}
-        value={(value || '').toString()}
-        error={error}
-        key={fieldId}
-        onChange={onChange(schemaId, fieldId, type)}
-        {...additionalProps}
-      />
-    );
-  } else if (type.includes('number') || type.includes('integer')) {
-    element = (
-      <TextField
-        className={styles.textFieldExtra}
-        type="number"
-        fullWidth
-        margin="dense"
-        label={title}
+      <SourceTypeField
+        id={fieldId}
+        type={type}
+        title={title}
         value={`${value}` || ''}
-        error={error}
-        key={fieldId}
-        onChange={onChange(schemaId, fieldId, type)}
-        {...additionalProps}
+        {...rest}
       />
     );
-  } else if (type.includes('boolean')) {
-    element = (
-      <FormControlLabel
-        label={title}
-        control={
-          <Checkbox
-            onChange={onChange(schemaId, fieldId, type)}
-            value={(!value).toString()}
-            color="primary"
-          />
-        }
-      />
-    );
-  } else if (type.includes('object') && objectProperties) {
+  }
+
+  if (type.includes('object') && objectProperties) {
     element = Object.keys(objectProperties).map(objProp => {
       return (
         <BuildFormElements
+          {...rest}
           fieldId={`${fieldId}.${objProp}`}
           schemaId={schemaId}
           type={objectProperties[objProp].type}
           value={(value && value[objProp]) || ''}
           title={objectProperties[objProp].title || objProp}
           objectProperties={objectProperties[objProp].properties}
-          onChange={onChange}
           depth={depth + 1}
           key={objProp}
         />
@@ -201,8 +162,6 @@ function BuildFormElements({
         {element}
       </div>
     );
-  } else {
-    return <div>{`Unsupported Type: ${type} for ${fieldId}`}</div>;
   }
 
   if (depth) {

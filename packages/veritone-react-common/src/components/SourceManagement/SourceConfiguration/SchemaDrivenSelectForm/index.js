@@ -1,13 +1,18 @@
 import React from 'react';
-import { has, includes } from 'lodash';
+import { has, includes, pick } from 'lodash';
 
-import { any, arrayOf, objectOf, func, string, number } from 'prop-types';
+import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
-import { FormHelperText, FormControl } from 'material-ui/Form';
+import {
+  FormHelperText,
+  FormControl,
+  FormControlLabel
+} from 'material-ui/Form';
 import { InputLabel } from 'material-ui/Input';
+import Checkbox from 'material-ui/Checkbox';
 
 import styles from './styles.scss';
 
@@ -31,15 +36,9 @@ export default class DynamicSelect extends React.Component {
   };
 
   componentWillMount() {
-    const state = {};
-
-    if (!this.props.sourceTypes.length) {
-      console.error('Source types was empty.');
-    } else if (this.props.sourceTypes.length === 1) {
-      state.oneSourceType = true;
+    if (this.props.sourceTypes.length === 1) {
+      this.setState({ oneSourceType: true });
     }
-
-    this.setState(state);
   }
 
   handleSourceTypeChange = event => {
@@ -68,7 +67,7 @@ export default class DynamicSelect extends React.Component {
           type={properties[fieldId].type.toLowerCase()}
           required={includes(requiredFields, fieldId)}
           value={this.props.fieldValues[fieldId]}
-          onChange={this.handleDetailChange}
+          onChange={this.handleDetailChange(fieldId)}
           title={properties[fieldId].title || ''}
           error={
             has(this.props.errorFields, fieldId) &&
@@ -134,51 +133,59 @@ export default class DynamicSelect extends React.Component {
   }
 }
 
-// This functional component will handle field type render logic, TODO: add fields here as needed for different field types
-function SourceTypeField({
-  id,
-  type,
-  required,
-  value,
-  onChange,
-  title,
-  error
-}) {
-  //all types will be lowercase
-  let element;
-  const label = title || id;
+// This functional component will handle field type render logic
+// TODO: add fields here as needed for different field types
+export function SourceTypeField({ id, type, required, title, ...rest }) {
+  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean'];
 
-  if (type.includes('string')) {
-    element = (
-      <TextField
-        className={styles.textFieldExtra}
-        type={id.toLowerCase().includes('password') ? 'password' : 'text'}
-        fullWidth
-        margin="dense"
-        id={id}
-        label={label}
-        value={value}
-        error={error}
-        key={id}
-        onChange={onChange(id)}
-      />
-    );
-  } else if (type.includes('number') || type.includes('integer')) {
-    element = (
-      <TextField
-        className={styles.textFieldExtra}
-        type={'number'}
-        fullWidth
-        margin="dense"
-        id={id}
-        label={label}
-        value={value}
-        error={error}
-        key={id}
-        onChange={onChange(id)}
+  if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
+    return <div>{`Unsupported Type: ${type} for ${title}`}</div>;
+  }
+
+  if (type.includes('boolean')) {
+    return (
+      <FormControlLabel
+        label={title}
+        control={
+          <Checkbox {...pick(rest, ['value', 'onChange'])} color="primary" />
+        }
       />
     );
   }
 
-  return required ? React.cloneElement(element, { required }) : element;
+  const inputProps = {
+    label: title || id,
+    fullWidth: true,
+    margin: 'normal'
+  };
+
+  if (required) {
+    inputProps.required = true;
+  }
+
+  if (type.includes('string')) {
+    inputProps.type = id.toLowerCase().includes('password')
+      ? 'password'
+      : 'text';
+  } else if (type.includes('number') || type.includes('integer')) {
+    inputProps.type = 'number';
+  }
+
+  return (
+    <TextField
+      id={id}
+      key={id}
+      className={styles.textFieldExtra}
+      {...inputProps}
+      {...rest}
+    />
+  );
 }
+
+SourceTypeField.propTypes = {
+  id: string,
+  type: string,
+  required: bool,
+  onChange: func,
+  title: string
+};
