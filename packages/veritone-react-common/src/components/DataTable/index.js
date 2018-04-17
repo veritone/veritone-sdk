@@ -107,7 +107,7 @@ const NormalTableContainer = ({
 }) => {
   return (
     <Paper elevation={1} className={styles['table-wrapper']}>
-      <MuiTable className={cx(styles.table)}>
+      <MuiTable>
         {showHeader && <TableHead rowCount={rowCount}>{children}</TableHead>}
         {rowCount === 0 ? (
           <MuiTableBody>
