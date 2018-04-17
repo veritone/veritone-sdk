@@ -45,7 +45,12 @@ class BasicTable extends React.Component {
         showHeader
         onCellClick={this.handleCellClick}
       >
-        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+        {columns.map((c, idx) => {
+          if (idx === columns.length - 1) {
+            c.width = 300;
+          }
+          return <Column key={c.dataKey} {...c} />;
+        })}
       </Table>
     );
   }
@@ -186,11 +191,37 @@ class SplitTable extends React.Component {
   }
 }
 
+class HeadlessTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
+
+  getRowData = i => this.props.data[i];
+
+  handleCellClick(row, columnKey) {
+    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
+  }
+
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader={false}
+        onCellClick={this.handleCellClick}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+      </Table>
+    );
+  }
+}
+
 storiesOf('Table', module)
   .add('Basic Table', () => <BasicTable data={data} />)
   .add('Basic Split Table', () => <BasicSplitTable data={data} />)
   .add('Paginated Table', () => <PagedTable data={data} />)
   .add('Paginated Split Table', () => <SplitTable data={data} />)
+  .add('Table w/o Heading', () => <HeadlessTable data={data} />)
   .add('Menu Column', () => {
     const data = {
       title: 'Some title',
@@ -199,7 +230,7 @@ storiesOf('Table', module)
     };
 
     function handleSelectItem(action, data) {
-      console.log('action, data:', action, data)
+      console.log('action, data:', action, data);
     }
 
     return (

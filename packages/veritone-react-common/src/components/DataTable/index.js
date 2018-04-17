@@ -85,8 +85,8 @@ class _Table extends React.Component {
             key="split"
           />
         ) : (
-            <NormalTableContainer {...restProps} key="normal" />
-          )}
+          <NormalTableContainer {...restProps} key="normal" />
+        )}
       </CSSTransitionGroup>
     );
   }
@@ -116,10 +116,10 @@ const NormalTableContainer = ({
             </TableRow>
           </MuiTableBody>
         ) : (
-            <TableBody {...rest} rowRangeEnd={rowCount}>
-              {children}
-            </TableBody>
-          )}
+          <TableBody {...rest} rowRangeEnd={rowCount}>
+            {children}
+          </TableBody>
+        )}
       </MuiTable>
       {footerElement && (
         <MuiTable>
@@ -191,15 +191,15 @@ class SplitTableContainer extends React.Component {
                 </TableRow>
               </MuiTableBody>
             ) : (
-                <TableBody
-                  {...restProps}
-                  rowRangeEnd={focusedRow}
-                  rowGetter={rowGetter}
-                  onCellClick={onCellClick}
-                >
-                  {children}
-                </TableBody>
-              )}
+              <TableBody
+                {...restProps}
+                rowRangeEnd={focusedRow}
+                rowGetter={rowGetter}
+                onCellClick={onCellClick}
+              >
+                {children}
+              </TableBody>
+            )}
           </MuiTable>
         </Paper>
 
@@ -314,6 +314,7 @@ export const Column = ({
   style,
   row,
   onCellClick,
+  width,
   ...rest
 }) => {
   function renderData() {
@@ -337,6 +338,7 @@ export const Column = ({
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',
         textAlign: align,
+        width,
         ...style
       }}
       onClick={onCellClick && handleCellClick}
