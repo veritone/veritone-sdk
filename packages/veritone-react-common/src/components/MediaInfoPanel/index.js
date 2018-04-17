@@ -82,6 +82,42 @@ class MediaInfoPanel extends Component {
     this.props.onSaveMetadata(detailsToSave);
   };
 
+  toggleIsEditMetadataOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditMetadataOpen: !{...prevState}.isEditMetadataOpen
+      };
+    });
+  };
+
+  onSaveTags = tagsToSave => {
+    this.toggleIsEditTagsOpen();
+    if (!tagsToSave || !tagsToSave.length) {
+      return;
+    }
+    const tagsObjects = [];
+    tagsToSave.forEach(tag => tagsObjects.push(`{ value: "${tag.value}" }`));
+    const detailsToSave = `details: { tags: [ ${tagsObjects.join(', ')} ] }`;
+    this.props.onSaveMetadata(detailsToSave);
+  };
+
+  toggleIsEditTagsOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditTagsOpen: !{...prevState}.isEditTagsOpen
+      };
+    });
+  };
+
+  toggleIsOpen = () => {
+    this.setState(prevState => {
+      return {
+        isOpen: !{...prevState}.isOpen
+      };
+    });
+    this.props.onClose();
+  };
+
   isDownloadMediaEnabled = () => {
     return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
   };
@@ -118,40 +154,12 @@ class MediaInfoPanel extends Component {
     return false;
   };
 
-  toggleIsEditMetadataOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditMetadataOpen: !{...prevState}.isEditMetadataOpen
-      };
-    });
-  };
-
-  onSaveTags = tagsToSave => {
-    this.toggleIsEditTagsOpen();
-    if (!tagsToSave || !tagsToSave.length) {
-      return;
-    }
-    const tagsObjects = [];
-    tagsToSave.forEach(tag => tagsObjects.push(`{ value: "${tag.value}" }`));
-    const detailsToSave = `details: { tags: [ ${tagsObjects.join(', ')} ] }`;
-    this.props.onSaveMetadata(detailsToSave);
-  };
-
-  toggleIsEditTagsOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditTagsOpen: !{...prevState}.isEditTagsOpen
-      };
-    });
-  };
-
-  toggleIsOpen = () => {
-    this.setState(prevState => {
-      return {
-        isOpen: !{...prevState}.isOpen
-      };
-    });
-    this.props.onClose();
+  downloadFile = () => {
+    const element = document.createElement('a');
+    element.href = get(this.props.tdo, 'primaryAsset.uri', '');
+    element.download = get(this.props, 'tdo.details.veritoneFile.filename');
+    element.target = '_blank';
+    element.click();
   };
 
   toFormattedDate = dateString => {
@@ -274,8 +282,8 @@ class MediaInfoPanel extends Component {
                           {this.isDownloadMediaEnabled() &&
                             <MenuItem
                               classes={{root: styles.headerMenuItem}}
-                              onClick={this.onMenuClose}
                               disabled={!this.isDownloadAllowed()}
+                              onClick={this.downloadFile}
                             >
                               Download
                             </MenuItem>
