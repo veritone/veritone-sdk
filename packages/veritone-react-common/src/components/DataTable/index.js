@@ -25,8 +25,9 @@ import {
   arrayOf
 } from 'prop-types';
 
+import { LOADING } from './shared';
 import withPagination from './withPagination';
-import withBasicBehavior, { LOADING } from './withBasicBehavior';
+import withBasicBehavior from './withBasicBehavior';
 import styles from './styles/index.scss';
 
 /*
@@ -383,6 +384,7 @@ TableHead.propTypes = {
   children: node
 };
 
+export { LOADING };
 /*
  * Table with pagination functions
  */
