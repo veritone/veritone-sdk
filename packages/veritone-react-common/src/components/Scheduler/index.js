@@ -2,7 +2,7 @@ import React from 'react';
 import { compose } from 'redux';
 import { oneOf, func } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
-import { pick, get, pickBy, mapValues } from 'lodash';
+import { pick, get, pickBy, mapValues, omit } from 'lodash';
 import { withProps, hoistStatics } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
@@ -26,8 +26,12 @@ const withDecorators = compose(
         // This provides defaults to the form. Shallow merged with
         // props.initialValues to allow overriding.
         scheduleType: 'recurring',
-        start: subDays(initDate, 3),
-        end: initDate,
+        start: props.initialValues.start
+          ? new Date(props.initialValues.start)
+          : subDays(initDate, 3),
+        end: props.initialValues.end
+          ? new Date(props.initialValues.end)
+          : initDate,
         maxSegment: {
           number: '5',
           period: 'week'
@@ -42,11 +46,16 @@ const withDecorators = compose(
             end: '01:00'
           }
         ],
-        weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].reduce(
-          (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
-          {}
-        ),
-        ...props.initialValues
+        weekly: [
+          'monday',
+          'tuesday',
+          'wednesday',
+          'thursday',
+          'friday',
+          'saturday',
+          'sunday'
+        ].reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
+        ...omit(props.initialValues, ['start', 'end'])
       }
     })),
     reduxForm({
