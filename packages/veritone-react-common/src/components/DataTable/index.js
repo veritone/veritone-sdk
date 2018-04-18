@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import { CSSTransitionGroup } from 'react-transition-group';
-import { omit, noop, range, isFunction, isNumber } from 'lodash';
+import { omit, noop, range, isFunction, isNumber, get } from 'lodash';
 import MuiTable, {
   TableBody as MuiTableBody,
   TableFooter,
@@ -319,12 +319,12 @@ export const Column = ({
     }
 
     return isFunction(cellRenderer)
-      ? cellRenderer(data[dataKey], data)
-      : String(data[dataKey] || '');
+      ? cellRenderer(get(data, dataKey), data)
+      : String(get(data, dataKey) || '');
   }
 
   function handleCellClick(e) {
-    return onCellClick(row, dataKey, data[dataKey]);
+    return onCellClick(row, dataKey, get(data, dataKey));
   }
 
   return (

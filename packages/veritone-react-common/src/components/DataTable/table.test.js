@@ -1,5 +1,5 @@
 import React from 'react';
-import { range, filter, get, includes, map } from 'lodash';
+import { range, filter, get, includes, map, uppercase } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
@@ -61,6 +61,33 @@ describe('Column', function() {
     );
     expect(nameWrapper.text()).toEqual('mitch');
     expect(nameWrapper.text()).not.toEqual('1');
+  });
+
+  it('Renders nested \'dataKey\' value', function() {
+    const data = {
+      id: 1,
+      profile: {
+        name: 'mitch',
+        employer: {
+          name: 'Veritone',
+          team: 'Apps'
+        }
+      }
+    };
+
+    const idWrapper = mount(
+      <SupressColumnWarnings>
+        <Column data={data} dataKey="profile.employer.name" />
+      </SupressColumnWarnings>
+    );
+    expect(idWrapper.text()).toEqual('Veritone');
+
+    const nameWrapper = mount(
+      <SupressColumnWarnings>
+        <Column data={data} dataKey="profile.employer.team" cellRenderer={uppercase} />
+      </SupressColumnWarnings>
+    );
+    expect(nameWrapper.text()).toEqual(uppercase(data.profile.employer.team));
   });
 
   it('Renders nothing if data is undefined', function() {
