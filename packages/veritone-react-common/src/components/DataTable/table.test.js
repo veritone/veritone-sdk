@@ -75,19 +75,27 @@ describe('Column', function() {
       }
     };
 
-    const idWrapper = mount(
-      <SupressColumnWarnings>
-        <Column data={data} dataKey="profile.employer.name" />
-      </SupressColumnWarnings>
-    );
-    expect(idWrapper.text()).toEqual('Veritone');
-
     const nameWrapper = mount(
       <SupressColumnWarnings>
-        <Column data={data} dataKey="profile.employer.team" cellRenderer={uppercase} />
+        <Column data={data} dataKey="profile.name" />
       </SupressColumnWarnings>
     );
-    expect(nameWrapper.text()).toEqual(uppercase(data.profile.employer.team));
+    expect(nameWrapper.text()).toEqual(data.profile.name);
+
+    const teamWrapper = mount(
+      <SupressColumnWarnings>
+        <Column data={data} dataKey={['profile', 'employer', 'team']} />
+      </SupressColumnWarnings>
+    );
+
+    expect(teamWrapper.text()).toEqual(data.profile.employer.team);
+
+    const employerWrapper = mount(
+      <SupressColumnWarnings>
+        <Column data={data} dataKey={['profile', 'employer', 'name']} cellRenderer={uppercase} />
+      </SupressColumnWarnings>
+    );
+    expect(employerWrapper.text()).toEqual(uppercase(data.profile.employer.name));
   });
 
   it('Renders nothing if data is undefined', function() {

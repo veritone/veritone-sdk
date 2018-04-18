@@ -345,7 +345,7 @@ export const Column = ({
 
 Column.propTypes = {
   data: oneOfType([objectOf(any), string]),
-  dataKey: string.isRequired,
+  dataKey: oneOfType([string, arrayOf(string)]).isRequired,
   header: string,
   cellRenderer: func,
   cursorPointer: bool,
