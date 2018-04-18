@@ -14,7 +14,15 @@ import DateTimeSelector from './DateTimeSelector';
 import TimePeriodSelector from './TimePeriodSelector';
 import styles from './styles.scss';
 
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const days = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday'
+];
 
 @formValues('repeatEvery')
 @formValues({ selectedDays: 'weekly.selectedDays' })
@@ -45,7 +53,7 @@ export default class RecurringSection extends React.Component {
                 styles.daySelectionContainer
               )}
             >
-              <TimeIcon className={styles.timeIcon}/>
+              <TimeIcon className={styles.timeIcon} />
               <FieldArray name="daily" component={MultiTimeRange} />
             </div>
           </div>

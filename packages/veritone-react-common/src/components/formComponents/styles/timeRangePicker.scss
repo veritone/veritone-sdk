@@ -6,7 +6,7 @@
   align-items: flex-end;
 
   .separator {
-    @include mui-text("body1");
+    @include mui-text('body1');
     color: $light-black;
     padding: 0 10px;
   }
