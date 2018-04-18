@@ -1,0 +1,34 @@
+@import 'src/styles/modules/variables';
+
+.fingerprintLibrary {
+  width: 100%;
+  height: 100%;
+  color: $dark-black;
+
+  .header {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    line-height: 40px;
+    padding: 0 15px;
+    box-shadow: 0 1px 0 0 #E0E0E0;
+    background-color: rgba($blue-1, 0.06);
+    
+    .headerText {
+      font-size: 14px;
+    }
+
+    .bold {
+      font-weight: 500;
+    }
+  }
+
+  .body {
+    margin-top: 20px;
+    
+    .entity {
+      margin: 0 14px 14px 0;
+    }
+  }
+}
