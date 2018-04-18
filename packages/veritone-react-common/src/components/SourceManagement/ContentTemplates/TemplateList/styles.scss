@@ -3,6 +3,7 @@
 
 .template-list {
   height: 100vh;
+  overflow: auto;
   border-right: 6px solid $grey-2;
 
   .title {
