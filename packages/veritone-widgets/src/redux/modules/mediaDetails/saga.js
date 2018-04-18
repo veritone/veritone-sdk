@@ -1,13 +1,23 @@
-import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { get, uniq } from 'lodash';
+import {
+  fork,
+  all,
+  call,
+  put,
+  takeEvery,
+  select,
+  take
+} from 'redux-saga/effects';
+import { get, uniq, isObject } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
+import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   LOAD_ENGINE_RESULTS,
   LOAD_TDO,
   UPDATE_TDO,
+  UPDATE_TDO_ERROR,
   LOAD_CONTENT_TEMPLATES,
   SET_SELECTED_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
@@ -26,6 +36,7 @@ import {
   selectEngineCategory,
   setEngineId,
   tdo,
+  tdoMetadata,
   engineResultRequestsByEngineId,
   LOAD_ENGINE_RESULTS_COMPLETE
 } from '.';
@@ -588,11 +599,173 @@ function* watchLoadTdoRequest() {
   });
 }
 
+function* uploadImage(fileToUpload, widgetId) {
+  const getUrlQuery = `query urls($name: String!){
+    getSignedWritableUrl(key: $name) {
+      url
+      key
+      bucket
+      expiresInSeconds
+      getUrl
+      unsignedUrl
+    }
+  }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let signedWritableUrlResponse;
+  try {
+    signedWritableUrlResponse = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: getUrlQuery,
+      variables: { name },
+      token
+    });
+  } catch (error) {
+    return yield* put({
+      type: UPDATE_TDO_ERROR,
+      payload: error,
+      meta: { widgetId }
+    });
+  }
+
+  if (
+    signedWritableUrlResponse.errors &&
+    signedWritableUrlResponse.errors.length
+  ) {
+    throw new Error(
+      `Call to getSignedWritableUrl returned error: ${
+        signedWritableUrlResponse.errors[0].message
+      }`
+    );
+  }
+
+  let resultChan;
+  try {
+    resultChan = yield call(
+      uploadFilesChannel,
+      [signedWritableUrlResponse.data.getSignedWritableUrl],
+      [fileToUpload]
+    );
+  } catch (error) {
+    return yield* put({
+      type: UPDATE_TDO_ERROR,
+      payload: error,
+      meta: { widgetId }
+    });
+  }
+
+  let uploadingImageToS3 = true;
+  while (uploadingImageToS3) {
+    const { error, success, file, descriptor: { unsignedUrl } } = yield take(
+      resultChan
+    );
+
+    if (success || error) {
+      uploadingImageToS3 = false;
+
+      if (error) {
+        throw new Error(`Error while uploading ${file.filename}`);
+      }
+      return yield unsignedUrl;
+    }
+    continue;
+  }
+}
+
 function* watchUpdateTdoRequest() {
   yield takeEvery(UPDATE_TDO, function*(action) {
     const { tdoId, tdoDataToUpdate } = action.payload;
     const { widgetId } = action.meta;
-    yield call(updateTdoSaga, widgetId, tdoId, tdoDataToUpdate);
+
+    // Check to see if programImage and programLiveImages are file objects and if so upload.
+    try {
+      const programLiveImage = get(
+        tdoDataToUpdate,
+        'veritoneProgram.programLiveImage'
+      );
+      if (isObject(programLiveImage)) {
+        tdoDataToUpdate.veritoneProgram.programLiveImage = yield call(
+          uploadImage,
+          tdoDataToUpdate.veritoneProgram.programLiveImage
+        );
+      }
+      const programImage = get(tdoDataToUpdate, 'veritoneProgram.programImage');
+      if (isObject(programImage)) {
+        tdoDataToUpdate.veritoneProgram.programImage = yield call(
+          uploadImage,
+          tdoDataToUpdate.veritoneProgram.programImage
+        );
+      }
+    } catch (error) {
+      return yield put({
+        type: UPDATE_TDO_ERROR,
+        payload: error,
+        meta: { widgetId }
+      });
+    }
+
+    const metaData = yield select(tdoMetadata, widgetId);
+    // Take the new updated metadata and construct the query for graphql
+    const detailsParams = [];
+    if (get(tdoDataToUpdate, 'veritoneFile.filename')) {
+      detailsParams.push(
+        `veritoneFile: { filename: "${get(
+          tdoDataToUpdate,
+          'veritoneFile.filename'
+        )}" }`
+      );
+    }
+    if (get(tdoDataToUpdate, 'veritoneCustom.source')) {
+      detailsParams.push(
+        `veritoneCustom: { source: "${get(
+          tdoDataToUpdate,
+          'veritoneCustom.source'
+        )}" }`
+      );
+    }
+    if (
+      get(tdoDataToUpdate, 'veritoneProgram.programLiveImage') ||
+      get(tdoDataToUpdate, 'veritoneProgram.programImage')
+    ) {
+      let programData = '';
+      if (get(tdoDataToUpdate, 'veritoneProgram.programLiveImage')) {
+        programData += `programLiveImage: "${get(
+          tdoDataToUpdate,
+          'veritoneProgram.programLiveImage'
+        )}"`;
+      } else if (get(metaData, 'veritoneProgram.programLiveImage')) {
+        programData += `programLiveImage: "${get(
+          metaData,
+          'veritoneProgram.programLiveImage'
+        )}"`;
+      }
+      if (get(tdoDataToUpdate, 'veritoneProgram.programImage')) {
+        programData += ` programImage: "${get(
+          tdoDataToUpdate,
+          'veritoneProgram.programImage'
+        )}"`;
+      } else if (get(metaData, 'veritoneProgram.programImage')) {
+        programData += ` programImage: "${get(
+          metaData,
+          'veritoneProgram.programImage'
+        )}"`;
+      }
+      if (programData.length) {
+        detailsParams.push(`veritoneProgram: { ${programData} }`);
+      }
+    }
+    if (get(tdoDataToUpdate, 'tags.length')) {
+      const tagQueryStrings = get(tdoDataToUpdate, 'tags').map(tag => {
+        return `{ value: "${tag.value}" }`;
+      });
+      detailsParams.push(`tags: [ ${tagQueryStrings.join(', ')} ]`);
+    }
+    const detailsToSave = `details: { ${detailsParams.join(' ')} }`;
+    yield call(updateTdoSaga, widgetId, tdoId, detailsToSave);
   });
 }
 

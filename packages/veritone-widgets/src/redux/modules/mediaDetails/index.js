@@ -20,6 +20,7 @@ export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const UPDATE_TDO = 'UPDATE_TDO';
 export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
+export const UPDATE_TDO_ERROR = 'UPDATE_TDO_ERROR';
 export const LOAD_CONTENT_TEMPLATES = 'LOAD_CONTENT_TEMPLATES';
 export const LOAD_CONTENT_TEMPLATES_COMPLETE =
   'LOAD_CONTENT_TEMPLATES_COMPLETE';
@@ -242,10 +243,18 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
-        error: error ? errorMessage : null,
-        warning: warn || null,
+        updateTdoError: error ? errorMessage : null,
         tdo: payload
+      }
+    };
+  },
+  [UPDATE_TDO_ERROR](state, { payload, meta: { widgetId } }) {
+    const errorMessage = get(payload, 'message', payload);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        updateTdoError: errorMessage ? errorMessage : null
       }
     };
   },
@@ -411,6 +420,8 @@ export const engineResultRequestsByEngineId = (state, widgetId, engineId) =>
   get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
   [];
 export const tdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
+export const tdoMetadata = (state, widgetId) =>
+  get(local(state), [widgetId, 'tdo', 'details']);
 export const selectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
 export const selectedEngineId = (state, widgetId) =>
@@ -481,14 +492,9 @@ export const loadTdoSuccess = (widgetId, result, { warn, error }) => ({
   meta: { warn, error, widgetId }
 });
 
-export const updateTdoRequest = (
-  widgetId,
-  tdoId,
-  tdoDataToUpdate,
-  callback
-) => ({
+export const updateTdoRequest = (widgetId, tdoId, tdoDataToUpdate) => ({
   type: UPDATE_TDO,
-  payload: { tdoId, tdoDataToUpdate, callback },
+  payload: { tdoId, tdoDataToUpdate },
   meta: { widgetId }
 });
 
