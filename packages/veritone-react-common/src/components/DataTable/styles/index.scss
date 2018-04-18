@@ -1,14 +1,19 @@
 @import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
 
+.table-wrapper {
+  display: block;
+  overflow: auto;
+}
+
+.split-table-wrapper {
+  display: block;
+  overflow: hidden;
+}
+
 .table {
   table-layout: fixed;
   width: 100%;
-}
-
-.table-wrapper {
-  display: block;
-  overflow: hidden;
 }
 
 .table-cell {
