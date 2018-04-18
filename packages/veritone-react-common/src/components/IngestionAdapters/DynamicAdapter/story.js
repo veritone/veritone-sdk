@@ -4,8 +4,7 @@ import { storiesOf } from '@storybook/react';
 import DynamicAdapterObj from './';
 const DynamicAdapter = DynamicAdapterObj.adapter;
 
-
-const SUPPORTED_SOURCE_TYPES = ["3"];
+const SUPPORTED_SOURCE_TYPES = ['3'];
 const ADAPTER_CONFIG = {
   adapterId: 'react-adapter',
   name: 'Open Weather Adapter',

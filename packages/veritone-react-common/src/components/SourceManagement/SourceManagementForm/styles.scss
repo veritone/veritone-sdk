@@ -1,11 +1,6 @@
 @import 'src/styles/modules/variables';
 @import 'src/styles/modules/muiTypography';
 
-.sm-form-wrapper {
-  margin: 0 auto;
-  width: 70%;
-}
-
 .source-config-wrapper {
   width: 50%;
 }
@@ -24,8 +19,9 @@
 .btn-container {
   position: absolute;
   bottom: 0;
-  width: 70%;
+  width: 90%;
   display: flex;
   justify-content: flex-end;
   margin: 10px;
+  padding: 25px;
 }

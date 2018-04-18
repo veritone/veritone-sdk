@@ -5,6 +5,6 @@ import styles from './styles.scss';
 
 export default class ImmediateSection extends React.Component {
   render() {
-    return (<div/>);
+    return <div />;
   }
 }

@@ -29,8 +29,13 @@ class DynamicAdapter extends React.Component {
   componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {};
-    if (isArray(this.props.supportedSourceTypes) && this.props.supportedSourceTypes.length) {
-      newState.sourceId = get(this.props.configuration, 'sourceId') || (get(this.props, 'sources.length') ? this.props.sources[0].id : '')
+    if (
+      isArray(this.props.supportedSourceTypes) &&
+      this.props.supportedSourceTypes.length
+    ) {
+      newState.sourceId =
+        get(this.props.configuration, 'sourceId') ||
+        (get(this.props, 'sources.length') ? this.props.sources[0].id : '');
     }
     if (isArray(fields)) {
       fields.forEach(field => {
@@ -43,7 +48,8 @@ class DynamicAdapter extends React.Component {
                 ? field.defaultValue
                 : field.defaultValue.split(','));
           } else if (field.defaultValues) {
-            newState[field.name] = propValue || clone(field.defaultValues) || [];
+            newState[field.name] =
+              propValue || clone(field.defaultValues) || [];
           }
         }
       });
@@ -70,30 +76,29 @@ class DynamicAdapter extends React.Component {
   render() {
     return (
       <div>
-        {
-          isArray(this.props.supportedSourceTypes) && this.props.supportedSourceTypes.length ?
-          (
-            <div>
-              <div className={styles.adapterContainer}>
-                <div className={styles.adapterHeader}>Select a Source</div>
-                <div className={styles.adapterDescription}>
-                  Select from your available ingestion sources or create a new source.
-                </div>
+        {isArray(this.props.supportedSourceTypes) &&
+        this.props.supportedSourceTypes.length ? (
+          <div>
+            <div className={styles.adapterContainer}>
+              <div className={styles.adapterHeader}>Select a Source</div>
+              <div className={styles.adapterDescription}>
+                Select from your available ingestion sources or create a new
+                source.
               </div>
-              <div className={styles.adapterContainer}>
-                <SourceContainer
-                  initialValue={this.state.sourceId}
-                  sources={this.props.sources}
-                  handleSourceChange={this.handleSourceChange}
-                  openCreateSource={this.props.openCreateSource}
-                  closeCreateSource={this.props.closeCreateSource}
-                  selectLabel="Select a Source*"
-                />
-              </div>
-              <div className={styles.adapterDivider} />
             </div>
-          ) : null
-        }
+            <div className={styles.adapterContainer}>
+              <SourceContainer
+                initialValue={this.state.sourceId}
+                sources={this.props.sources}
+                handleSourceChange={this.handleSourceChange}
+                openCreateSource={this.props.openCreateSource}
+                closeCreateSource={this.props.closeCreateSource}
+                selectLabel="Select a Source*"
+              />
+            </div>
+            <div className={styles.adapterDivider} />
+          </div>
+        ) : null}
         <div>
           <div className={styles.adapterContainer}>
             <div className={styles.adapterHeader}>

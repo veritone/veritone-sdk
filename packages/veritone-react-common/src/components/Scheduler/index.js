@@ -2,7 +2,16 @@ import React from 'react';
 import { compose } from 'redux';
 import { oneOf, func } from 'prop-types';
 import { reduxForm, Field, formValues } from 'redux-form';
-import { pick, get, pickBy, mapValues, omit, difference, keys, constant } from 'lodash';
+import {
+  pick,
+  get,
+  pickBy,
+  mapValues,
+  omit,
+  difference,
+  keys,
+  constant
+} from 'lodash';
 import { withProps, hoistStatics } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
@@ -62,7 +71,7 @@ const withDecorators = compose(
           // and assume any days given explicit initial values should be selected
           selectedDays: mapValues(props.initialValues.weekly, constant(true)),
           // then merge back with the days given explicit initial values in props
-          ...props.initialValues.weekly,
+          ...props.initialValues.weekly
         },
         // shallow-merge the properties we didn't have special merge logic for
         ...omit(props.initialValues, ['start', 'end', 'weekly'])
@@ -78,8 +87,7 @@ const withDecorators = compose(
 @withDecorators
 export default class Scheduler extends React.Component {
   static propTypes = {
-    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once'])
-      .isRequired,
+    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once']).isRequired,
     handleSubmit: func.isRequired // provided by redux-form
   };
 
@@ -140,11 +148,7 @@ export default class Scheduler extends React.Component {
             control={<Radio />}
             label="Continuous"
           />
-          <FormControlLabel
-            value="Now"
-            control={<Radio />}
-            label="Immediate"
-          />
+          <FormControlLabel value="Now" control={<Radio />} label="Immediate" />
           <FormControlLabel
             value="Once"
             control={<Radio />}
