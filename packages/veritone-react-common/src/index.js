@@ -42,13 +42,14 @@ export MediaInfoPanel from './components/MediaInfoPanel';
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
 
-export SourceManagementOverview from './components/SourceManagement';
+export SourceNullState from './components/SourceManagement/Nullstate';
+export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 export ContentTemplate from './components/SourceManagement/ContentTemplates';
 
-export IngestionJobGridView from './components/IngestionJobs/IngestionJobGridView';
-export IngestionJobGridCard from './components/IngestionJobs/IngestionJobGridView/IngestionJobGridCard';
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
+
+export SDOTable from './components/SDOTable';

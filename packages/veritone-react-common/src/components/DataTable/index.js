@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import { CSSTransitionGroup } from 'react-transition-group';
-import { omit, noop, range, isFunction, isNumber } from 'lodash';
+import { omit, noop, range, isFunction, isNumber, get } from 'lodash';
 import MuiTable, {
   TableBody as MuiTableBody,
   TableFooter,
@@ -120,12 +120,14 @@ const NormalTableContainer = ({
             {children}
           </TableBody>
         )}
-        {footerElement && (
+      </MuiTable>
+      {footerElement && (
+        <MuiTable>
           <TableFooter style={{ height: footerHeight }}>
             <TableRow>{footerElement}</TableRow>
           </TableFooter>
-        )}
-      </MuiTable>
+        </MuiTable>
+      )}
     </Paper>
   );
 };
@@ -175,7 +177,7 @@ class SplitTableContainer extends React.Component {
 
     return (
       <div>
-        <Paper elevation={1} className={styles['table-wrapper']}>
+        <Paper elevation={1} className={styles['split-table-wrapper']}>
           <MuiTable className={cx(styles.table)}>
             {showHeader && (
               <TableHead rowCount={rowCount}>{children}</TableHead>
@@ -210,7 +212,7 @@ class SplitTableContainer extends React.Component {
           className={cx(
             styles['focusTable'],
             styles['focused-row'],
-            styles['table-wrapper']
+            styles['split-table-wrapper']
           )}
           key={focusedRow}
         >
@@ -235,7 +237,7 @@ class SplitTableContainer extends React.Component {
           </MuiTable>
         </Paper>
 
-        <Paper elevation={1} className={styles['table-wrapper']}>
+        <Paper elevation={1} className={styles['split-table-wrapper']}>
           <MuiTable className={cx(styles.table)}>
             <TableBody
               {...restProps}
@@ -246,13 +248,14 @@ class SplitTableContainer extends React.Component {
             >
               {children}
             </TableBody>
-
-            {footerElement && (
+          </MuiTable>
+          {footerElement && (
+            <MuiTable>
               <TableFooter style={{ height: footerHeight }}>
                 <TableRow>{footerElement}</TableRow>
               </TableFooter>
-            )}
-          </MuiTable>
+            </MuiTable>
+          )}
         </Paper>
       </div>
     );
@@ -319,12 +322,12 @@ export const Column = ({
     }
 
     return isFunction(cellRenderer)
-      ? cellRenderer(data[dataKey], data)
-      : String(data[dataKey] || '');
+      ? cellRenderer(get(data, dataKey), data)
+      : String(get(data, dataKey) || '');
   }
 
   function handleCellClick(e) {
-    return onCellClick(row, dataKey, data[dataKey]);
+    return onCellClick(row, dataKey, get(data, dataKey));
   }
 
   return (

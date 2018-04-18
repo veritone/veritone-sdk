@@ -1,12 +1,13 @@
 import React from 'react';
-import { has } from 'lodash';
-
 import { any, arrayOf, objectOf, func } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
 import Avatar from 'material-ui/Avatar';
+import Dialog from 'material-ui/Dialog';
+import FilePicker from 'components/FilePicker';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+import defaultThumbnail from 'images/cms-sources-null.svg';
 import DynamicSelect from './SchemaDrivenSelectForm';
 import styles from './styles.scss';
 
@@ -21,30 +22,25 @@ export default class SourceConfiguration extends React.Component {
 
   state = {
     sourceTypeIndex: 0,
-    requiredFields: {}
+    requiredFields: {},
+    openFilePicker: false,
+    thumbnailUrl: ''
   };
 
   componentWillMount = () => {
-    const { source } = this.props;
+    const { sourceTypes, source } = this.props;
     const newState = {};
 
+    // if editing a source, initialize the defaults
     if (source && source.sourceTypeId) {
-      // if editing a source, initialize the defaults
+      const sourceTypeIndex = sourceTypes.findIndex(
+        sourceType => sourceType.id === source.sourceTypeId
+      );
+
       newState.sourceTypeIndex = Math.max(
-        this.props.sourceTypes.findIndex(
-          sourceType => sourceType.id === source.sourceTypeId
-        ),
+        sourceTypeIndex,
         this.state.sourceTypeIndex
       );
-    }
-
-    if (source && source.sourceType) {
-      newState.requiredFields = has(
-        source.sourceType.sourceSchema.definition,
-        'required'
-      )
-        ? source.sourceType.sourceSchema.definition
-        : {};
     }
 
     this.setState(newState);
@@ -69,15 +65,11 @@ export default class SourceConfiguration extends React.Component {
     });
   };
 
-  handleSelectChange = sourceTypeIndex => {
+  handleSourceChange = sourceTypeIndex => {
     if (sourceTypeIndex !== this.state.sourceTypeIndex) {
       const currentFields = {};
-      const properties =
-        this.props.sourceTypes[sourceTypeIndex] &&
-        this.props.sourceTypes[sourceTypeIndex].sourceSchema
-          ? this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition
-              .properties
-          : {};
+      const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema
+        .definition.properties;
 
       Object.keys(properties).forEach(field => {
         currentFields[field] = '';
@@ -99,13 +91,60 @@ export default class SourceConfiguration extends React.Component {
     });
   };
 
-  imageClicked = () => {
-    console.log('clicked');
+  handleThumbnailSelection = fileList => {
+    const file = fileList[0];
+    const fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      this.setState(
+        {
+          thumbnailUrl: fileReader.result,
+          openFilePicker: false
+        },
+        () => {
+          this.props.onInputChange({
+            thumbnailFile: file
+          });
+        }
+      );
+    };
+
+    if (/^image\//i.test(file.type)) {
+      fileReader.readAsDataURL(file);
+    } else {
+      this.setState({
+        thumbnailUrl: '',
+        openFilePicker: false
+      });
+    }
+  };
+
+  openFilePicker = () => {
+    this.setState({ openFilePicker: true });
+  };
+
+  closeFilePicker = () => {
+    this.setState({ openFilePicker: false });
+  };
+
+  renderFilePicker = () => {
+    return (
+      <Dialog open={this.state.openFilePicker}>
+        <FilePicker
+          accept={['image/svg+xml', '.png', '.jpg']}
+          height={500}
+          width={500}
+          onPickFiles={this.handleThumbnailSelection}
+          onRequestClose={this.closeFilePicker}
+        />
+      </Dialog>
+    );
   };
 
   render() {
+    const { source } = this.props;
     return (
-      <div className={styles.fullPage}>
+      <div className={styles['configuration-container']}>
         <div>
           <div className={styles.configurationTitle}>Configuration</div>
           <div className={styles.configurationDescription}>
@@ -115,11 +154,23 @@ export default class SourceConfiguration extends React.Component {
           <div className={styles.sourceConfiguration}>
             <FormControl className={styles.formStyle}>
               <div className={styles.container}>
-                <Avatar
-                  alt={this.props.source.name}
-                  src={this.props.source.thumbnail}
-                  className={styles.avatar}
-                />
+                <div className={styles['avatar-container']}>
+                  <Avatar
+                    alt={source.name}
+                    src={
+                      source.thumbnailUrl ||
+                      this.state.thumbnailUrl ||
+                      defaultThumbnail
+                    }
+                    classes={{
+                      root: styles['avatar-img-container'],
+                      img: styles['avatar-img']
+                    }}
+                  />
+                  <div className={styles['avatar-img-cta']}>
+                    <span onClick={this.openFilePicker}>Edit</span>
+                  </div>
+                </div>
                 <TextField
                   className={styles.sourceName}
                   required
@@ -127,16 +178,16 @@ export default class SourceConfiguration extends React.Component {
                   margin="dense"
                   id="sourceName"
                   label="Source Name"
-                  // value={this.state.sourceName}
-                  value={this.props.source.name}
+                  value={source.name}
                   onChange={this.handleNameChange}
                 />
+                {this.state.openFilePicker && this.renderFilePicker()}
               </div>
               <DynamicSelect
                 sourceTypes={this.props.sourceTypes}
                 currentSourceType={this.state.sourceTypeIndex}
-                fieldValues={this.props.source.details}
-                onSelectChange={this.handleSelectChange}
+                fieldValues={source.details}
+                onSelectChange={this.handleSourceChange}
                 onSourceDetailChange={this.handleSourceDetailChange}
                 errorFields={this.state.requiredFields}
                 selectLabel="Select a Source Type"

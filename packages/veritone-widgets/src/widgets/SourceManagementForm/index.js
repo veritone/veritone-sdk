@@ -1,33 +1,25 @@
 import React from 'react';
-import { arrayOf, objectOf, any, func } from 'prop-types';
+import { arrayOf, object, objectOf, any, func } from 'prop-types';
 import { SourceManagementForm } from 'veritone-react-common';
 
 import widget from '../../shared/widget';
 
 class SourceManagementFormWidget extends React.Component {
   static propTypes = {
-    sourceTypes: arrayOf(objectOf(any)).isRequired,
-    sources: arrayOf(objectOf(any)).isRequired,
-    source: objectOf(any),
+    sourceTypes: arrayOf(object).isRequired,
     templateData: objectOf(any).isRequired,
+    source: objectOf(any),
     initialTemplates: objectOf(any),
     onSubmit: func.isRequired,
-    onClose: func.isRequired
+    onClose: func
   };
 
   render() {
     return (
       <SourceManagementForm
-        sourceTypes={this.props.sourceTypes}
-        sources={this.props.sources}
-        source={this.props.source}
-        templateData={this.props.templateData}
-        initialTemplates={this.props.initialTemplates}
-        onSubmit={this.props.onSubmit}
-        onClose={this.props.onClose}
-        open
+        {...this.props}
       />
-    );
+    )
   }
 }
 

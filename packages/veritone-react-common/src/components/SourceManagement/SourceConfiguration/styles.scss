@@ -1,8 +1,12 @@
-.fullPage {
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+$avatar-size: 70px;
+
+.configuration-container {
   height: 100%;
-  width: 100%;
-  margin-top: 30px;
-  margin-left: 30px;
+  width: 70%;
+  padding: 30px;
 
   .configurationTitle {
     color: rgba(0, 0, 0, 0.87);
@@ -18,8 +22,6 @@
   }
 
   .sourceConfiguration {
-    color: blue;
-
     .formStyle {
       width: 80%;
       min-width: 350px;
@@ -40,10 +42,46 @@
     }
   }
 
-  .buttonStyle {
-    width: fit-content;
+  .avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+  }
+
+  .avatar-img-container {
+    width: $avatar-size;
+    height: $avatar-size;
+  }
+
+  .avatar-img {
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .avatar-img-cta {
+    @include mui-text('caption');
     position: absolute;
-    right: 20px;
-    bottom: 20px;
+    top: 5px;
+    width: $avatar-size + 10;
+    height: $avatar-size;
+    border-radius: 50%;
+    background: linear-gradient(
+      to top,
+      $light-black 30%,
+      transparent 30%,
+      transparent 100%
+    );
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: $grey-1;
+    text-transform: uppercase;
+    padding-bottom: 5px;
+
+    span {
+      cursor: pointer;
+    }
   }
 }

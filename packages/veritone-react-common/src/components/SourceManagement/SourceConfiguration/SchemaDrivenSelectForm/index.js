@@ -1,13 +1,18 @@
 import React from 'react';
-import { has, includes } from 'lodash';
+import { has, includes, pick } from 'lodash';
 
-import { any, arrayOf, objectOf, func, string, number } from 'prop-types';
+import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
 import { MenuItem } from 'material-ui/Menu';
 import Select from 'material-ui/Select';
-import { FormHelperText, FormControl } from 'material-ui/Form';
+import {
+  FormHelperText,
+  FormControl,
+  FormControlLabel
+} from 'material-ui/Form';
 import { InputLabel } from 'material-ui/Input';
+import Checkbox from 'material-ui/Checkbox';
 
 import styles from './styles.scss';
 
@@ -15,10 +20,10 @@ export default class DynamicSelect extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired, //pass in the array of source types and their schemas
     currentSourceType: number, // id of initial sourceType if there is a default
-    onSelectChange: func.isRequired, //used to provide state to the parent
-    onSourceDetailChange: func.isRequired, //used to provide state to the parent
-    fieldValues: objectOf(any), // if the sourceType is for editing, pass in an object mapping the fields to a value, currently under "details" from a graphql source query
-    errorFields: objectOf(any), // since the parent handles the submit button, the parent can pass down which fields are in an error state
+    onSelectChange: func.isRequired,
+    onSourceDetailChange: func.isRequired,
+    fieldValues: objectOf(any),
+    errorFields: objectOf(any),
     helperText: string,
     selectLabel: string
   };
@@ -31,34 +36,14 @@ export default class DynamicSelect extends React.Component {
   };
 
   componentWillMount() {
-    const state = {};
-
-    if (!this.props.sourceTypes.length) {
-      console.error('Source types was empty.');
-    } else if (this.props.sourceTypes.length === 1) {
-      state.oneSourceType = true;
+    if (this.props.sourceTypes.length === 1) {
+      this.setState({ oneSourceType: true });
     }
-
-    this.setState(state);
   }
 
   handleSourceTypeChange = event => {
     const sourceTypeIndex = event.target.value;
     this.props.onSelectChange(sourceTypeIndex);
-
-    // if (sourceTypeIndex !== this.props.currentSourceType) {
-    //   const currentFields = {};
-    //   const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema.definition.properties;
-
-    //   Object.keys(properties).forEach((field) => {
-    //     currentFields[field] = '';
-    //   });
-
-    //   this.props.onFieldChange({
-    //     sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
-    //     details: currentFields
-    //   });
-    // }
   };
 
   handleDetailChange = fieldId => event => {
@@ -67,17 +52,9 @@ export default class DynamicSelect extends React.Component {
     });
   };
 
-  handleTooltip = () => {
-    console.log('tooltip clicked');
-  };
-
   renderFields = () => {
-    const definition =
-      this.props.sourceTypes[this.props.currentSourceType] &&
-      this.props.sourceTypes[this.props.currentSourceType].sourceSchema
-        ? this.props.sourceTypes[this.props.currentSourceType].sourceSchema
-            .definition
-        : {};
+    const definition = this.props.sourceTypes[this.props.currentSourceType]
+      .sourceSchema.definition;
     const properties = definition.properties;
     const requiredFields = has(definition, 'required')
       ? definition.required
@@ -90,7 +67,7 @@ export default class DynamicSelect extends React.Component {
           type={properties[fieldId].type.toLowerCase()}
           required={includes(requiredFields, fieldId)}
           value={this.props.fieldValues[fieldId]}
-          onChange={this.handleDetailChange}
+          onChange={this.handleDetailChange(fieldId)}
           title={properties[fieldId].title || ''}
           error={
             has(this.props.errorFields, fieldId) &&
@@ -108,7 +85,7 @@ export default class DynamicSelect extends React.Component {
     const { sourceTypes, currentSourceType } = this.props;
     const sourceTypesMenu = sourceTypes.map((type, index) => {
       return (
-        <MenuItem value={index} id={type.id} key={index}>
+        <MenuItem value={index} id={type.id} key={type.id}>
           {type.name}
         </MenuItem>
       );
@@ -122,32 +99,30 @@ export default class DynamicSelect extends React.Component {
               {this.props.selectLabel}
             </InputLabel>
           )}
-        {!this.state.oneSourceType &&
-          sourceTypes[currentSourceType] && (
-            <Select
-              className={styles.selectField}
-              fullWidth
-              inputProps={{
-                name: sourceTypes[currentSourceType].name,
-                id: 'select-id'
-              }}
-              value={currentSourceType}
-              onChange={this.handleSourceTypeChange}
-            >
-              {sourceTypesMenu}
-            </Select>
-          )}
+        {!this.state.oneSourceType && (
+          <Select
+            className={styles.selectField}
+            fullWidth
+            inputProps={{
+              name: sourceTypes[currentSourceType].name,
+              id: 'select-id'
+            }}
+            value={currentSourceType}
+            onChange={this.handleSourceTypeChange}
+          >
+            {sourceTypesMenu}
+          </Select>
+        )}
         {this.state.oneSourceType && (
           <div className={styles.sourceTypeNameLabel}>Source Type</div>
         )}
-        {this.state.oneSourceType &&
-          sourceTypes[currentSourceType] && (
-            <div className={styles.sourceTypeNameContainer}>
-              <div className={styles.sourceTypeName}>
-                {sourceTypes[currentSourceType].name}
-              </div>
+        {this.state.oneSourceType && (
+          <div className={styles.sourceTypeNameContainer}>
+            <div className={styles.sourceTypeName}>
+              {sourceTypes[currentSourceType].name}
             </div>
-          )}
+          </div>
+        )}
         {this.props.helperText &&
           !this.state.oneSourceType && (
             <FormHelperText>{this.props.helperText}</FormHelperText>
@@ -158,51 +133,59 @@ export default class DynamicSelect extends React.Component {
   }
 }
 
-// This functional component will handle field type render logic, TODO: add fields here as needed for different field types
-function SourceTypeField({
-  id,
-  type,
-  required,
-  value,
-  onChange,
-  title,
-  error
-}) {
-  //all types will be lowercase
-  let element;
-  const label = title || id;
+// This functional component will handle field type render logic
+// TODO: add fields here as needed for different field types
+export function SourceTypeField({ id, type, required, title, ...rest }) {
+  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean'];
 
-  if (type.includes('string')) {
-    element = (
-      <TextField
-        className={styles.textFieldExtra}
-        type={id.toLowerCase().includes('password') ? 'password' : 'text'}
-        fullWidth
-        margin="dense"
-        id={id}
-        label={label}
-        value={value}
-        error={error}
-        key={id}
-        onChange={onChange(id)}
-      />
-    );
-  } else if (type.includes('number') || type.includes('integer')) {
-    element = (
-      <TextField
-        className={styles.textFieldExtra}
-        type={'number'}
-        fullWidth
-        margin="dense"
-        id={id}
-        label={label}
-        value={value}
-        error={error}
-        key={id}
-        onChange={onChange(id)}
+  if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
+    return <div>{`Unsupported Type: ${type} for ${title}`}</div>;
+  }
+
+  if (type.includes('boolean')) {
+    return (
+      <FormControlLabel
+        label={title}
+        control={
+          <Checkbox {...pick(rest, ['value', 'onChange'])} color="primary" />
+        }
       />
     );
   }
 
-  return React.cloneElement(element, { required: required });
+  const inputProps = {
+    label: title || id,
+    fullWidth: true,
+    margin: 'normal'
+  };
+
+  if (required) {
+    inputProps.required = true;
+  }
+
+  if (type.includes('string')) {
+    inputProps.type = id.toLowerCase().includes('password')
+      ? 'password'
+      : 'text';
+  } else if (type.includes('number') || type.includes('integer')) {
+    inputProps.type = 'number';
+  }
+
+  return (
+    <TextField
+      id={id}
+      key={id}
+      className={styles.textFieldExtra}
+      {...inputProps}
+      {...rest}
+    />
+  );
 }
+
+SourceTypeField.propTypes = {
+  id: string,
+  type: string,
+  required: bool,
+  onChange: func,
+  title: string
+};

@@ -1,52 +1,91 @@
 import React from 'react';
 
-import { arrayOf, any, objectOf, func } from 'prop-types';
-import SourceRow from 'components/SourceManagement/SourceRow';
-import CircleImage from 'components/CircleImage';
+import { arrayOf, any, objectOf, func, bool } from 'prop-types';
 
-import styles from './styles.scss';
+import { Table, PaginatedTable, Column } from 'components/DataTable';
+import MenuColumn from 'components/DataTable/MenuColumn';
+import Avatar from 'material-ui/Avatar';
+import { format, distanceInWordsToNow } from 'date-fns';
+import { capitalize, omit, noop } from 'lodash';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
-    onSelectSource: func.isRequired
+    onSelectMenuItem: func,
+    paginate: bool
   };
 
   static defaultProps = {
-    sources: []
+    onSelectMenuItem: noop
+  };
+
+  getSourceData = i => {
+    return this.props.sources[i];
+  };
+
+  renderThumbnail = thumbnailUrl => {
+    return (
+      <Avatar
+        src={thumbnailUrl}
+        style={{
+          width: '30px',
+          height: '30px'
+        }}
+      />
+    );
+  };
+
+  renderCreatedDate = date => {
+    return format(date, 'M/D/YYYY h:mm A');
+  };
+
+  renderUpdatedDate = date => {
+    return capitalize(distanceInWordsToNow(date, { includeSeconds: true }));
   };
 
   render() {
-    const sourceRows = this.props.sources.map((source, index) => {
-      const dataSource = source.data.source;
-      return (
-        <SourceRow
-          name={dataSource.name}
-          sourceType={dataSource.sourceType.name}
-          creationDate={dataSource.createdDateTime}
-          lastUpdated={dataSource.modifiedDateTime}
-          thumbnail={dataSource.thumbnail}
-          key={index}
-        />
-      );
-    });
+    const TableComp = this.props.paginate ? PaginatedTable : Table;
+    const tableProps = omit(this.props, [
+      'sources',
+      'onSelectMenuItem',
+      'paginate'
+    ]);
 
     return (
-      <div>
-        <div className={styles.tableTitleRow}>
-          <div className={styles.titleTextGroup}>
-            <div className={styles.imageStyle} style={{ visibility: 'hidden' }}>
-              <CircleImage height={'38px'} />
-            </div>
-            <span className={styles.mainColumn}>Source name</span>
-            <span className={styles.tableTitle}>Source Type</span>
-            <span className={styles.tableTitle}>Created</span>
-            <span className={styles.tableTitle}>Updated</span>
-          </div>
-          <div style={{ width: '55px' }} />
-        </div>
-        {sourceRows}
-      </div>
+      <TableComp
+        rowGetter={this.getSourceData}
+        rowCount={this.props.sources.length}
+        rowHeight={48}
+        {...tableProps}
+      >
+        <Column
+          dataKey="thumbnailUrl"
+          header=""
+          cellRenderer={this.renderThumbnail}
+          width={30}
+        />
+        <Column dataKey="name" header="Source Name" />
+        <Column dataKey="sourceType.name" header="Source Type" />
+        <Column
+          dataKey="createdDateTime"
+          header="Created"
+          cellRenderer={this.renderCreatedDate}
+        />
+        <Column
+          dataKey="modifiedDateTime"
+          header="Updated"
+          cellRenderer={this.renderUpdatedDate}
+          style={{
+            fontStyle: 'italic',
+            opacity: 0.54
+          }}
+        />
+        <MenuColumn
+          id="menu"
+          dataKey="sourceType.sourceSchema.validActions"
+          onSelectItem={this.props.onSelectMenuItem}
+        />
+      </TableComp>
     );
   }
 }

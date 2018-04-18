@@ -1,27 +1,31 @@
-.smDialog {
-  span {
-    color: #fff;
-  }
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.sm-form-wrapper {
+  margin: 0 auto;
+  width: 70%;
+}
+
+.source-config-wrapper {
+  width: 50%;
+}
+
+.form-tab {
+  @include mui-text('body1');
 }
 
 .separator {
+  margin: 0 15px;
   align-self: center;
-  border-right: 1px solid rgba(255, 255, 255, 0.54);
+  border-right: 1px solid $grey-1;
   height: 27px;
 }
 
-.btnContainer {
-  width: 100%;
+.btn-container {
+  position: absolute;
+  bottom: 0;
+  width: 70%;
   display: flex;
   justify-content: flex-end;
-  position: fixed;
-  bottom: 20px;
-  right: 90px;
-}
-
-.scrollable {
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: calc(100vh - 96px);
-  padding-bottom: 150px;
+  margin: 10px;
 }

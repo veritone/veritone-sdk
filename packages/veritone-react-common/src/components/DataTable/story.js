@@ -154,6 +154,7 @@ class SplitTable extends React.Component {
   };
 
   setFocusedRow = (row, columnKey) => {
+    console.log('row:', row);
     this.setState({ focusedTableRow: row });
   };
 
@@ -199,7 +200,7 @@ storiesOf('Table', module)
     };
 
     function handleSelectItem(action, data) {
-      console.log('action, data:', action, data)
+      console.log('action, data:', action, data);
     }
 
     return (

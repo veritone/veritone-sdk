@@ -27,7 +27,7 @@ export default class TemplateList extends React.Component {
       const isAdded = !!selectedTemplates[schemaId];
 
       return (
-        <div className={styles.templateRow} key={index}>
+        <div className={styles.templateRow} key={schemaId}>
           <div
             className={styles.name}
             style={isAdded ? { fontWeight: 500 } : undefined}
@@ -58,7 +58,7 @@ export default class TemplateList extends React.Component {
 
   render() {
     return (
-      <div className={styles.listContainer}>
+      <div className={styles['template-list']}>
         <div className={styles.title}>Content Templates</div>
         <div className={styles.description}>
           These will be applied to all temporal data objects ingested through
