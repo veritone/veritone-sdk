@@ -10,7 +10,6 @@ import Icon from 'material-ui/Icon';
 import { MenuItem, MenuList } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
-import { isString } from 'lodash';
 import { objectOf, func, arrayOf, any, shape, string } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
@@ -18,12 +17,12 @@ import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
   static propTypes = {
-    tdo: objectOf(any),
-    engineCategories: arrayOf(any),
+    tdo: objectOf(any).isRequired,
+    engineCategories: arrayOf(any).isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
-    }),
+    }).isRequired,
     onClose: func,
     onSaveMetadata: func
   };
@@ -40,52 +39,13 @@ class MediaInfoPanel extends Component {
     if (!metadataToSave) {
       return;
     }
-    const detailsParams = [];
-    if (metadataToSave.veritoneFile && metadataToSave.veritoneFile.filename) {
-      detailsParams.push(
-        `veritoneFile: { filename: "${metadataToSave.veritoneFile.filename}" }`
-      );
-    }
-    if (
-      metadataToSave.veritoneCustom &&
-      isString(metadataToSave.veritoneCustom.source)
-    ) {
-      detailsParams.push(
-        `veritoneCustom: { source: "${metadataToSave.veritoneCustom.source}" }`
-      );
-    }
-    if (
-      metadataToSave.veritoneProgram &&
-      (isString(metadataToSave.veritoneProgram.signedProgramLiveImage) ||
-        isString(metadataToSave.veritoneProgram.programImage))
-    ) {
-      let programData = '';
-      if (isString(metadataToSave.veritoneProgram.signedProgramLiveImage)) {
-        // intentionally store new uri as unsigned one
-        programData += `programLiveImage: "${
-          metadataToSave.veritoneProgram.signedProgramLiveImage
-        }"`;
-      }
-      if (isString(metadataToSave.veritoneProgram.programImage)) {
-        programData += ` programImage: "${
-          metadataToSave.veritoneProgram.programImage
-        }"`;
-      }
-      if (programData.length) {
-        detailsParams.push(`veritoneProgram: { ${programData} }`);
-      }
-    }
-    if (!detailsParams.length) {
-      return;
-    }
-    const detailsToSave = `details: { ${detailsParams.join(' ')} }`;
-    this.props.onSaveMetadata(detailsToSave);
+    this.props.onSaveMetadata(metadataToSave);
   };
 
   toggleIsEditMetadataOpen = () => {
     this.setState(prevState => {
       return {
-        isEditMetadataOpen: !{...prevState}.isEditMetadataOpen
+        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
       };
     });
   };
@@ -95,16 +55,13 @@ class MediaInfoPanel extends Component {
     if (!tagsToSave || !tagsToSave.length) {
       return;
     }
-    const tagsObjects = [];
-    tagsToSave.forEach(tag => tagsObjects.push(`{ value: "${tag.value}" }`));
-    const detailsToSave = `details: { tags: [ ${tagsObjects.join(', ')} ] }`;
-    this.props.onSaveMetadata(detailsToSave);
+    this.props.onSaveMetadata({ tags: tagsToSave });
   };
 
   toggleIsEditTagsOpen = () => {
     this.setState(prevState => {
       return {
-        isEditTagsOpen: !{...prevState}.isEditTagsOpen
+        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
       };
     });
   };
@@ -112,7 +69,7 @@ class MediaInfoPanel extends Component {
   toggleIsOpen = () => {
     this.setState(prevState => {
       return {
-        isOpen: !{...prevState}.isOpen
+        isOpen: !{ ...prevState }.isOpen
       };
     });
     this.props.onClose();
@@ -126,7 +83,8 @@ class MediaInfoPanel extends Component {
     if (!this.isMediaPublic(this.props.tdo)) {
       return true;
     }
-    const publicMediaDownloadEnabled = get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
+    const publicMediaDownloadEnabled =
+      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
     if (this.isOwnMedia() || publicMediaDownloadEnabled) {
       return true;
     }
@@ -148,11 +106,14 @@ class MediaInfoPanel extends Component {
       return true;
     }
     const applicationIds = get(this.props.kvp, 'applicationIds', []);
-    if (this.props.tdo.applicationId && applicationIds.includes(this.props.tdo.applicationId)) {
+    if (
+      this.props.tdo.applicationId &&
+      applicationIds.includes(this.props.tdo.applicationId)
+    ) {
       return true;
     }
     return false;
-  };
+  }
 
   downloadFile = () => {
     const element = document.createElement('a');
@@ -201,7 +162,7 @@ class MediaInfoPanel extends Component {
   toggleIsMenuOpen = () => {
     this.setState(prevState => {
       return {
-        isMenuOpen: !{...prevState}.isMenuOpen
+        isMenuOpen: !{ ...prevState }.isMenuOpen
       };
     });
   };
@@ -279,15 +240,15 @@ class MediaInfoPanel extends Component {
                           >
                             Edit Tags
                           </MenuItem>
-                          {this.isDownloadMediaEnabled() &&
+                          {this.isDownloadMediaEnabled() && (
                             <MenuItem
-                              classes={{root: styles.headerMenuItem}}
+                              classes={{ root: styles.headerMenuItem }}
                               disabled={!this.isDownloadAllowed()}
                               onClick={this.downloadFile}
                             >
                               Download
                             </MenuItem>
-                          }
+                          )}
                         </MenuList>
                       </Paper>
                     </Grow>
@@ -360,20 +321,19 @@ class MediaInfoPanel extends Component {
                 Program Live Image
                 {get(
                   this.props.tdo,
-                  'details.veritoneProgram.signedProgramLiveImage.length',
+                  'details.veritoneProgram.programLiveImage.length',
                   0
                 ) > 0 && (
                   <img
                     className={styles.programLiveImage}
                     src={
-                      this.props.tdo.details.veritoneProgram
-                        .signedProgramLiveImage
+                      this.props.tdo.details.veritoneProgram.programLiveImage
                     }
                   />
                 )}
                 {get(
                   this.props.tdo,
-                  'details.veritoneProgram.signedProgramLiveImage.length',
+                  'details.veritoneProgram.programLiveImage.length',
                   0
                 ) === 0 && (
                   <img
