@@ -17,8 +17,6 @@ class Scheduler extends React.Component {
     submitCallback: noop
   };
 
-  prepareResultData = LibScheduler.prepareResultData;
-
   submit = (submitCallback = noop) => {
     this.setState(
       {
