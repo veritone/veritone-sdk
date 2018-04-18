@@ -22,7 +22,7 @@ const columns = map(data[0], (val, key) => {
     header: startCase(key),
     cellRenderer: flow([upperFirst, truncate]),
     align: 'center',
-    width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
+    width: key === 'ip' ? 300 : undefined
   };
 });
 
@@ -45,12 +45,7 @@ class BasicTable extends React.Component {
         showHeader
         onCellClick={this.handleCellClick}
       >
-        {columns.map((c, idx) => {
-          if (idx === columns.length - 1) {
-            c.width = 300;
-          }
-          return <Column key={c.dataKey} {...c} />;
-        })}
+        {columns.map((c) => <Column key={c.dataKey} {...c} />)}
       </Table>
     );
   }
