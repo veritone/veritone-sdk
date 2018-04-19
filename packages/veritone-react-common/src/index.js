@@ -22,7 +22,7 @@ export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
-export * as video from './components/Video';
+export video from './components/Video';
 export AppContainer from './components/AppContainer';
 export RefreshButton from './components/RefreshButton';
 export OAuthLoginButton from './components/OAuthLoginButton';
