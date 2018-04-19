@@ -107,7 +107,7 @@ const NormalTableContainer = ({
 }) => {
   return (
     <Paper elevation={1} className={styles['table-wrapper']}>
-      <MuiTable className={cx(styles.table)}>
+      <MuiTable>
         {showHeader && <TableHead rowCount={rowCount}>{children}</TableHead>}
         {rowCount === 0 ? (
           <MuiTableBody>
@@ -314,6 +314,7 @@ export const Column = ({
   style,
   row,
   onCellClick,
+  width,
   ...rest
 }) => {
   function renderData() {
@@ -337,6 +338,7 @@ export const Column = ({
       style={{
         cursor: cursorPointer ? 'pointer' : 'initial',
         textAlign: align,
+        width,
         ...style
       }}
       onClick={onCellClick && handleCellClick}
@@ -348,14 +350,15 @@ export const Column = ({
 
 Column.propTypes = {
   data: oneOfType([objectOf(any), string]),
-  dataKey: string.isRequired,
+  dataKey: oneOfType([string, arrayOf(string)]).isRequired,
   header: string,
   cellRenderer: func,
   cursorPointer: bool,
   align: oneOf(['left', 'right', 'center']),
   style: objectOf(oneOfType([string, number])),
   row: number,
-  onCellClick: func
+  onCellClick: func,
+  width: oneOfType([string, number])
 };
 
 const TableHead = ({ children, rowCount }) => {
@@ -366,9 +369,9 @@ const TableHead = ({ children, rowCount }) => {
           <TableCell
             className={styles['table-cell']}
             key={c.props.header}
-            width={c.props.width}
             style={{
-              textAlign: c.props.align || 'left'
+              textAlign: c.props.align || 'left',
+              width: c.props.width
             }}
           >
             {c.props.header}
