@@ -1,118 +1,74 @@
 import React from 'react';
-import { func, objectOf, any, bool, string } from 'prop-types';
+import { func, bool, string } from 'prop-types';
 
-import Chip from 'material-ui/Chip';
-import Icon from 'material-ui/Icon';
 import Typography from 'material-ui/Typography';
+import Avatar from 'material-ui/Avatar';
+import { Cancel } from 'material-ui-icons';
 
-import { withTheme } from 'material-ui/styles';
-import { withStyles } from 'material-ui/styles';
-import { emphasize, fade } from 'material-ui/styles/colorManipulator';
-
+import cx from 'classnames';
 import styles from './styles.scss';
 
-const SearchPill = ({
-  engineCategoryIcon,
-  onClick,
-  onDelete,
-  label,
-  highlighted,
-  selected,
-  exclude,
-  theme
-}) => {
-  let engineCategoryIconColor = styles['engineCategoryIconColor'];
-  let textColor = selected
-    ? styles['selectedColor']
-    : theme.palette.text.primary;
+class SearchPill extends React.PureComponent {
+  static propTypes = {
+    engineCategoryIcon: string.isRequired,
+    onClick: func,
+    onDelete: func,
+    label: string.isRequired,
+    highlighted: bool,
+    selected: bool,
+    exclude: bool
+  };
 
-  let dynamicStyles = theme => {
-    let chipColor = theme.palette.background.default;
-    let hoverColor = styles['searchPillHoverColor'];
+  onDeleteHandler = e => {
+    e.stopPropagation();
+    this.props.onDelete(e);
+  };
 
-    if (selected && styles['selectedBackgroundColor']) {
-      chipColor = styles['selectedBackgroundColor'];
-      hoverColor = styles['selectedBackgroundColor'];
-      engineCategoryIconColor = styles['selectedColor'];
-    } else if (highlighted && styles['highlightedBackgroundColor']) {
-      chipColor = styles['highlightedBackgroundColor'];
-      hoverColor = fade(styles['highlightedBackgroundColor'], 0.5);
-    } else if (exclude && styles['excludeBackgroundColor']) {
-      chipColor = styles['excludeBackgroundColor'];
-    } else {
-      chipColor = styles['searchPillBackgroundColor'];
+  render() {
+    let backgroundColor = styles['searchPillBackgroundColor'];
+    if (this.props.selected) {
+      backgroundColor = styles['searchPillSelectedBackgroundColor'];
+    } else if (this.props.highlighted) {
+      backgroundColor = styles['searchPillHighlightedBackgroundColor'];
+    } else if (this.props.exclude) {
+      backgroundColor = styles['searchPillExcludeBackgroundColor'];
     }
 
-    return {
-      root: {
-        color: theme.palette.getContrastText(chipColor),
-        backgroundColor: chipColor
-      },
-      avatar: {
-        color:
-          engineCategoryIconColor || theme.palette.getContrastText(chipColor),
-        marginLeft: theme.spacing.unit * 0.5
-      },
-      clickable: {
-        cursor: 'pointer',
-        '&:hover, &:focus': {
-          backgroundColor: hoverColor || emphasize(chipColor, 0.08)
-        },
-        '&:active': {
-          backgroundColor: hoverColor || emphasize(chipColor, 0.12)
-        }
-      },
-      deletable: {
-        '&:focus': {
-          backgroundColor: emphasize(chipColor, 0.08)
-        }
-      },
-      deleteIcon: {
-        paddingLeft: theme.spacing.unit * 0.5,
-        visibility: highlighted && !selected ? 'hidden' : 'visible',
-        '&:hover': {
-          color: selected ? fade(theme.palette.text.primary, 0.26) : undefined
-        }
-      }
-    };
-  };
-
-  const ChipFactory = ({ classes, ...props }) => (
-    <Chip classes={classes} {...props} />
-  );
-  ChipFactory.propTypes = {
-    classes: objectOf(any)
-  };
-
-  let StyledChip = withStyles(dynamicStyles)(ChipFactory);
-
-  return (
-    <StyledChip
-      avatar={
-        <Icon>
-          <div className={engineCategoryIcon} />
-        </Icon>
-      }
-      label={
-        <Typography style={{ color: textColor }} variant="subheading">
-          {label}
+    return (
+      <div
+        className={cx([styles['searchPill'], backgroundColor])}
+        onClick={this.props.onClick}
+      >
+        <Avatar
+          className={cx(this.props.engineCategoryIcon)}
+          classes={{
+            root: cx([
+              styles['engineCategoryIcon'],
+              { [styles['searchPillSelectedColor']]: this.props.selected }
+            ])
+          }}
+        />
+        <Typography
+          variant="subheading"
+          className={cx({
+            [styles['searchPillSelectedColor']]: this.props.selected
+          })}
+        >
+          {this.props.label}
         </Typography>
-      }
-      onClick={onClick}
-      onDelete={onDelete}
-    />
-  );
-};
+        <div data-attribute='deletePill' onClick={this.onDeleteHandler}>
+          <Cancel
+            style={{
+              visibility:
+                this.props.highlighted && !this.props.selected ? 'hidden' : null
+            }}
+            disabled={this.props.selected}
+            className={styles['deleteIcon']}
+          />
+        </div>
+      </div>
+    );
+  }
+}
 
-SearchPill.propTypes = {
-  engineCategoryIcon: string.isRequired,
-  onClick: func,
-  onDelete: func,
-  label: string.isRequired,
-  highlighted: bool,
-  selected: bool,
-  exclude: bool,
-  theme: objectOf(any)
-};
-
-export default withTheme()(SearchPill);
+export default SearchPill;
