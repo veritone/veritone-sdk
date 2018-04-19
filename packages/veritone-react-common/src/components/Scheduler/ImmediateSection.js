@@ -1,7 +1,4 @@
-import React, { Fragment } from 'react';
-
-import TimePeriodSelector from './TimePeriodSelector';
-import styles from './styles.scss';
+import React from 'react';
 
 export default class ImmediateSection extends React.Component {
   render() {

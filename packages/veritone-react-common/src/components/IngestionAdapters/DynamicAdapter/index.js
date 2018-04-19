@@ -2,12 +2,12 @@ import React from 'react';
 
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import Select from 'material-ui/Select';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import { MenuItem } from 'material-ui/Menu';
 import TextField from 'material-ui/TextField';
 import { InputLabel } from 'material-ui/Input';
 
 import { get, isArray, clone, startCase, toLower, includes } from 'lodash';
-import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
+import { objectOf, any, func, arrayOf, string } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
