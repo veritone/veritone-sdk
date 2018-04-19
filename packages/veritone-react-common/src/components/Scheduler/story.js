@@ -29,50 +29,56 @@ const store = createStore(
   }),
   { submit }
 )
-class DisplayState extends React.Component {
+class Story extends React.Component {
   /* eslint-disable react/prop-types */
-  /* eslint-disable react/jsx-no-bind */
+  state = { lastResult: {} };
   submit = () => {
     this.props.submit('scheduler');
+  };
+
+  handleSubmit = vals => {
+    this.setState({
+      lastResult: vals
+    });
   };
 
   render() {
     return (
       <div>
-        <button type="button" onClick={this.submit}>
-          Submit
-        </button>
-        <div style={{ display: 'flex' }}>
+        <Provider store={store}>
           <div>
-            <h3>Raw form values:</h3>
-            <pre>{JSON.stringify(this.props.form.values, null, '\t')}</pre>
+            <Scheduler
+              initialValues={{
+                scheduleType: 'Recurring',
+                start: '2018-04-14T19:48:25.147Z',
+                end: '2018-04-17T19:48:25.147Z',
+                repeatEvery: {
+                  number: '1',
+                  period: 'week'
+                },
+                weekly: {
+                  Thursday: [
+                    {
+                      start: '12:33',
+                      end: '03:21'
+                    }
+                  ]
+                }
+              }}
+              onSubmit={this.handleSubmit}
+            />
+            <button type="button" onClick={this.submit}>
+              Submit
+            </button>
+            <div>
+              Last result:
+              <pre>{JSON.stringify(this.state.lastResult, null, '\t')}</pre>
+            </div>
           </div>
-          <div>
-            <h3>relevant values only (via Scheduler.prepareResultData):</h3>
-            <pre>
-              {JSON.stringify(
-                Scheduler.prepareResultData(this.props.form.values),
-                null,
-                '\t'
-              )}
-            </pre>
-          </div>
-        </div>
+        </Provider>
       </div>
     );
   }
 }
 
-storiesOf('Scheduler', module).add('Base', () => (
-  <Provider store={store}>
-    <div>
-      <Scheduler
-        initialValues={{
-          scheduleType: 'Recurring'
-        }}
-        onSubmit={result => console.log(result)}
-      />
-      <DisplayState />
-    </div>
-  </Provider>
-));
+storiesOf('Scheduler', module).add('Base', () => <Story store={store} />);

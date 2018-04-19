@@ -1,33 +1,26 @@
 import React from 'react';
-import { bool, string } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import SchedulerWidget from '.';
 
 class Story extends React.Component {
-  static propTypes = {
-    userIsAuthenticated: bool,
-    fetchUserFailed: bool,
-    sessionToken: string
-  };
+  state = { lastResult: {} };
 
   componentDidMount() {
     this._scheduler = new SchedulerWidget({
-      elId: 'scheduler-widget'
-      // initialValues: {
-      //   scheduleType: 'recurring',
-      //   start: new Date(),
-      //   end: new Date(),
-      //   maxSegment: {
-      //     number: '5',
-      //     period: 'week'
-      //   },
-      //   repeatEvery: {
-      //     number: '1',
-      //     period: 'day'
-      //   }
-      // }
+      elId: 'scheduler-widget',
+      initialValues: {
+        scheduleType: 'recurring',
+        maxSegment: {
+          number: '5',
+          period: 'week'
+        },
+        repeatEvery: {
+          number: '2',
+          period: 'day'
+        }
+      }
     });
   }
 
@@ -35,14 +28,16 @@ class Story extends React.Component {
     this._scheduler.destroy();
   }
 
+  handleSubmit = vals => {
+    this.setState({
+      lastResult: vals
+    });
+  };
+
   submitForm = () => {
     this._scheduler.submit(vals => {
-      console.log('Form Submitted:');
-      console.log('Raw form values:', vals);
-      console.log(
-        'Prepared form values:',
-        this._scheduler.prepareResultData(vals)
-      );
+      this.handleSubmit(vals);
+      console.log('Form Submitted:', vals);
     });
   };
 
@@ -53,6 +48,10 @@ class Story extends React.Component {
         <button type="button" onClick={this.submitForm}>
           Submit
         </button>
+        <div>
+          Last result:
+          <pre>{JSON.stringify(this.state.lastResult, null, '\t')}</pre>
+        </div>
       </div>
     );
   }
