@@ -45,7 +45,7 @@ class BasicTable extends React.Component {
         showHeader
         onCellClick={this.handleCellClick}
       >
-        {columns.map((c) => <Column key={c.dataKey} {...c} />)}
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
       </Table>
     );
   }

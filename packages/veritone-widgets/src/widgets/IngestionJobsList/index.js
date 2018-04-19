@@ -10,6 +10,7 @@ class IngestionJobListWidget extends React.Component {
     jobs: arrayOf(object).isRequired,
     onCreateJob: func.isRequired,
     onSelectJob: func,
+    onSelectMenuItem: func,
     paginate: bool
   };
 
