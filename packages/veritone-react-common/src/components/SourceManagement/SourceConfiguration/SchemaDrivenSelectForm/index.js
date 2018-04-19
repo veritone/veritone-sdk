@@ -1,5 +1,5 @@
 import React from 'react';
-import { has, includes, pick } from 'lodash';
+import { has, includes, pick, get } from 'lodash';
 
 import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
@@ -53,9 +53,8 @@ export default class DynamicSelect extends React.Component {
   };
 
   renderFields = () => {
-    const definition = this.props.sourceTypes[this.props.currentSourceType]
-      .sourceSchema.definition;
-    const properties = definition.properties;
+    const definition = get(this.props.sourceTypes[this.props.currentSourceType], 'sourceSchema.definition');
+    const properties = definition && definition.properties;
     const requiredFields = has(definition, 'required')
       ? definition.required
       : [];

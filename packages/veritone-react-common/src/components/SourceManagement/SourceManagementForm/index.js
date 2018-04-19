@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has } from 'lodash';
+import { pick, has, get } from 'lodash';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
@@ -73,16 +73,16 @@ export default class SourceManagementForm extends React.Component {
         sourceTypeId: this.props.source.sourceType.id
       };
     } else {
+      // If there is no source, then just pick the first available sourceType
       const fieldValues = {};
-      const sourceTypeIdx = sourceTypes.findIndex(
-        sourceType => sourceType.sourceSchema
-      );
-      const properties =
-        sourceTypes[sourceTypeIdx].sourceSchema.definition.properties;
+      const sourceTypeIdx = 0;
+      const properties = get (sourceTypes, [sourceTypeIdx, 'sourceSchema', 'definition', 'properties'])
 
-      Object.keys(properties).forEach(field => {
-        fieldValues[field] = '';
-      });
+      if (properties) {
+        Object.keys(properties).forEach(field => {
+          fieldValues[field] = '';
+        });
+      }
 
       newState.sourceConfig = {
         ...this.state.sourceConfig,
