@@ -148,12 +148,22 @@ const ingestionJobs = {
   }
 }
 
+function handleCreateJob() {
+  console.log('Create Job Button clicked')
+}
+
+function handleSelectJob(rowIdx, dataKey, dataKeyValue) {
+  console.log(`Row ${rowIdx} clicked`);
+}
+
 class Story extends React.Component {
   componentDidMount() {
     this._ijWidget = new IngestionJobsListWidget({
       elId: 'ij-widget',
       title: 'Ingestion Jobs List Widget',
-      jobs: ingestionJobs
+      jobs: ingestionJobs,
+      onCreateJob: handleCreateJob,
+      onSelectJob: handleSelectJob
     });
   }
 

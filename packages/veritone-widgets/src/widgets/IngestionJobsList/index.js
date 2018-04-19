@@ -9,6 +9,7 @@ class IngestionJobListWidget extends React.Component {
   static propTypes = {
     jobs: arrayOf(object).isRequired,
     onCreateJob: func.isRequired,
+    onSelectJob: func,
     paginate: bool
   };
 

@@ -1,21 +1,25 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
-import { arrayOf, any, objectOf, bool } from 'prop-types';
+import { arrayOf, any, objectOf, bool, func } from 'prop-types';
 
 import { Table, PaginatedTable, Column } from 'components/DataTable';
 // import MenuColumn from 'components/DataTable/MenuColumn';
 import StatusPill from 'components/StatusPill';
 import { format } from 'date-fns';
-import { map, find, get, uniq, omit } from 'lodash';
+import { map, find, get, uniq, omit, noop } from 'lodash';
+
+import styles from './styles.scss';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
     jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
-    // onSelectJob: func.isRequired,
+    onSelectJob: func,
     paginate: bool
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    onSelectJob: noop
+  };
 
   getIngestionJobData = i => {
     return this.props.jobs[i];
@@ -25,7 +29,7 @@ export default class SourceTileView extends React.Component {
     const icons = uniq(map(taskTemplates.records, 'engine.category.iconClass'));
 
     return (
-      <Fragment>
+      <span className={styles['engine-icons']}>
         {icons.length ? (
           icons.map(
             icon => (icon ? <span key={icon} className={icon} /> : undefined)
@@ -33,7 +37,7 @@ export default class SourceTileView extends React.Component {
         ) : (
           <span>{'-'}</span>
         )}
-      </Fragment>
+      </span>
     );
   };
 
@@ -70,6 +74,7 @@ export default class SourceTileView extends React.Component {
       <TableComp
         rowGetter={this.getIngestionJobData}
         rowCount={this.props.jobs.length}
+        onCellClick={this.props.onSelectJob}
         rowHeight={48}
         {...tableProps}
       >

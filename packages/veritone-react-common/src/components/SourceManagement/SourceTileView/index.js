@@ -84,6 +84,7 @@ export default class SourceTileView extends React.Component {
           id="menu"
           dataKey="sourceType.sourceSchema.validActions"
           onSelectItem={this.props.onSelectMenuItem}
+          excludeActions={['view', 'publish', 'deactivate']}
         />
       </TableComp>
     );
