@@ -140,8 +140,15 @@ const jobInfo = {
   }
 };
 
+function handleSelectJob(row, dataKey, dataKeyValue) {
+  console.log('row, dataKey, dataKeyValue:', row, dataKey, dataKeyValue)
+}
+
 storiesOf('IngestionJobs', module)
   .add('Tile View', () => (
-    <IngestionJobTileView jobs={jobInfo.data.scheduledJobs.records} />
+    <IngestionJobTileView
+      jobs={jobInfo.data.scheduledJobs.records}
+      onSelectJob={handleSelectJob}
+    />
   ))
   .add('NullState', () => <IngestionJobNullstate />);
