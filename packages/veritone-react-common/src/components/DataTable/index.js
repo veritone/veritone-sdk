@@ -328,7 +328,7 @@ export const Column = ({
   }
 
   function handleCellClick(e) {
-    return onCellClick(row, dataKey, get(data, dataKey));
+    return onCellClick(row, dataKey, e);
   }
 
   return (
