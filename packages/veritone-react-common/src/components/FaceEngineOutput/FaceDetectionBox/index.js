@@ -22,7 +22,7 @@ const renderEntitySearchMenu = ({
   return results.map((result, index) => {
     return (
       <MenuItem
-        key={'menu_entity_' + result.libraryName + '_' + result.entityName}
+        key={'menu-entity-' + result.id}
         component="div"
         {...getItemProps({
           item: result,
@@ -34,7 +34,7 @@ const renderEntitySearchMenu = ({
           src={result.profileImageUrl ? result.profileImageUrl : noAvatar}
         />
         <div className={styles.entityInfo}>
-          <div className={styles.menuEntityName}>{result.entityName}</div>
+          <div className={styles.menuEntityName}>{result.name}</div>
           <div className={styles.menuLibraryName}>{result.libraryName}</div>
         </div>
       </MenuItem>
