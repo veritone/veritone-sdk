@@ -23,6 +23,9 @@ export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
 export const LOAD_CONTENT_TEMPLATES = 'LOAD_CONTENT_TEMPLATES';
 export const LOAD_CONTENT_TEMPLATES_COMPLETE =
   'LOAD_CONTENT_TEMPLATES_COMPLETE';
+export const LOAD_TDO_CONTENT_TEMPLATES_COMPLETE =
+  'LOAD_TDO_CONTENT_TEMPLATES_COMPLETE';
+export const UPDATE_TDO_CONTENT_TEMPLATES = 'UPDATE_TDO_CONTENT_TEMPLATES';
 export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
 export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
@@ -53,13 +56,11 @@ const defaultMDPState = {
   fetchingLibraries: false,
   entities: [],
   fetchingEntities: false,
-  contentTemplates: {}
+  contentTemplates: {},
+  tdoContentTemplates: {}
 };
 
-const defaultState = {
-  // populated like:
-  // [widgetId]: { ...defaultMDPState }
-};
+const defaultState = {};
 
 export default createReducer(defaultState, {
   [INITIALIZE_WIDGET](state, { meta: { widgetId } }) {
@@ -224,7 +225,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-
   [UPDATE_TDO](state, { meta: { widgetId } }) {
     return {
       ...state,
@@ -246,6 +246,62 @@ export default createReducer(defaultState, {
         error: error ? errorMessage : null,
         warning: warn || null,
         tdo: payload
+      }
+    };
+  },
+  [LOAD_TDO_CONTENT_TEMPLATES_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
+    const errorMessage = get(error, 'message', error);
+    const tdoContentTemplates = {};
+    if (payload && payload.records) {
+      payload.records.forEach(asset => {
+        if (!asset.sourceData || !asset.sourceData.schema) {
+          return;
+        }
+        const contentTemplate = Object.assign({}, asset.sourceData.schema);
+        if (asset.transform) {
+          contentTemplate.data = JSON.parse(asset.transform);
+        }
+        if (contentTemplate.dataRegistry && contentTemplate.dataRegistry.name) {
+          contentTemplate.name = contentTemplate.dataRegistry.name;
+          delete contentTemplate.dataRegistry;
+        }
+        // keep asset id on the content template for asset CRUD
+        contentTemplate.assetId = asset.id;
+        tdoContentTemplates[contentTemplate.id] = contentTemplate;
+      });
+    }
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: !(warn || error) || null,
+        error: error ? errorMessage : null,
+        warning: warn || null,
+        tdoContentTemplates: tdoContentTemplates
+      }
+    };
+  },
+
+
+  [UPDATE_TDO](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: null,
+        error: null,
+        warning: null
+      }
+    };
+  },
+  [UPDATE_TDO_CONTENT_TEMPLATES](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: null,
+        error: null,
+        warning: null
       }
     };
   },
@@ -428,6 +484,8 @@ export const entities = (state, widgetId) =>
 
 export const contentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
+export const tdoContentTemplates = (state, widgetId) =>
+  get(local(state), [widgetId, 'tdoContentTemplates']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -496,6 +554,22 @@ export const updateTdoComplete = (widgetId, result, { warn, error }) => ({
   type: UPDATE_TDO_COMPLETE,
   payload: result,
   meta: { warn, error, widgetId }
+});
+
+export const loadTdoContentTemplatesComplete = (
+  widgetId,
+  result,
+  { warn, error }
+) => ({
+  type: LOAD_TDO_CONTENT_TEMPLATES_COMPLETE,
+  payload: result,
+  meta: { warn, error, widgetId }
+});
+
+export const updateTdoContentTemplates = (widgetId, contentTemplatesToDelete, contentTemplatesToCreate) => ({
+  type: UPDATE_TDO_CONTENT_TEMPLATES,
+  payload: { contentTemplatesToDelete, contentTemplatesToCreate },
+  meta: { widgetId }
 });
 
 export const loadContentTemplates = widgetId => ({
