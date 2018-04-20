@@ -13,7 +13,8 @@ import {
   bool,
   arrayOf,
   func,
-  objectOf
+  objectOf,
+  oneOfType
 } from 'prop-types';
 import cx from 'classnames';
 
@@ -35,8 +36,8 @@ class FaceEngineOutput extends Component {
       shape({
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            endTimeMs: number,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
             object: shape({
               label: string,
               uri: string
@@ -48,41 +49,30 @@ class FaceEngineOutput extends Component {
     libraries: arrayOf(
       shape({
         id: string,
-        name: string,
-        entities: arrayOf(
-          shape({
-            id: string,
-            name: string,
-            libraryId: string,
-            profileImageUrl: string,
-            jsondata: shape({
-              description: string
-            })
-          })
-        )
+        name: string
       })
     ).isRequired,
     entities: arrayOf(
       shape({
-        id: string,
-        name: string,
-        libraryId: string,
+        id: string.isRequired,
+        name: string.isRequired,
+        libraryId: string.isRequired,
         profileImageUrl: string,
-        jsondata: objectOf(string)
+        jsondata: objectOf(oneOfType([string, number]))
       })
     ),
     engines: arrayOf(
       shape({
-        id: string,
-        name: string
+        id: string.isRequired,
+        name: string.isRequired
       })
     ),
     selectedEngineId: string,
     onEngineChange: func,
     entitySearchResults: arrayOf(
       shape({
-        entityName: string,
-        libraryName: string,
+        name: string.isRequired,
+        libraryName: string.isRequired,
         profileImageUrl: string
       })
     ),
@@ -109,9 +99,7 @@ class FaceEngineOutput extends Component {
 
   componentWillMount() {
     this.processFaces(
-      this.props.data,
-      this.props.libraries,
-      this.props.entities
+      this.props.data
     );
   }
 
@@ -142,25 +130,20 @@ class FaceEngineOutput extends Component {
   };
 
   processFaces = faceData => {
-    let detectedFaceObjects = [];
-    let recognizedEntityObjects = [];
-    let recognizedEntityObjectMap = {};
-    if (!faceData || !faceData.length) {
+    const detectedFaceObjects = [];
+    const recognizedEntityObjects = [];
+    const recognizedEntityObjectMap = {};
+    if (isEmpty(faceData)) {
       return;
     }
 
-    let faceSeries = faceData.reduce((accumulator, faceSeries) => {
-      if (faceSeries.series && faceSeries.series.length) {
+    const faceSeries = faceData.reduce((accumulator, faceSeries) => {
+      if (!isEmpty(faceSeries.series)) {
         return [...accumulator, ...faceSeries.series];
-      } else {
-        return accumulator;
       }
-    }, []);
 
-    // Reduce library array to an array of entities to assign to face objects
-    // let entities = this.props.libraries.reduce((accumulator, library) => {
-    //   return accumulator.concat(library.entities);
-    // }, []);
+      return accumulator;
+    }, []);
 
     let secondMap = {};
     faceSeries.forEach(faceObj => {
@@ -278,7 +261,7 @@ class FaceEngineOutput extends Component {
   };
 
   handleTabChange = (event, activeTab) => {
-    if (activeTab !== this.state.activetab) {
+    if (activeTab !== this.state.activeTab) {
       this.setState({ activeTab });
     }
   };
