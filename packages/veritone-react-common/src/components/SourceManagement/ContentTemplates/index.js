@@ -31,7 +31,6 @@ export default class ContentTemplates extends React.Component {
     onInputChange: func.isRequired
   };
   static defaultProps = {
-    templateData: {},
     selectedTemplateSchemas: {}
   };
 
