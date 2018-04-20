@@ -49,6 +49,7 @@ export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 export ContentTemplate from './components/SourceManagement/ContentTemplates';
+export SourceManagementOverview from './components/SourceManagement/';
 
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
