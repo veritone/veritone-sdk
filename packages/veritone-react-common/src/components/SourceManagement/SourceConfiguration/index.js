@@ -101,22 +101,11 @@ export default class SourceConfiguration extends React.Component {
           thumbnailUrl: fileReader.result,
           openFilePicker: false
         },
-        () => {
-          this.props.onInputChange({
-            thumbnailFile: file
-          });
-        }
+        () => this.props.onInputChange({ thumbnailFile: file })
       );
     };
 
-    if (/^image\//i.test(file.type)) {
-      fileReader.readAsDataURL(file);
-    } else {
-      this.setState({
-        thumbnailUrl: '',
-        openFilePicker: false
-      });
-    }
+    fileReader.readAsDataURL(file);
   };
 
   openFilePicker = () => {
