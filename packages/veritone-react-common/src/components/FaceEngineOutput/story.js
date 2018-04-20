@@ -77,14 +77,15 @@ class FaceEngineOutputStory extends Component {
         faceEngineOutput: prevState.faceEngineOutput.map(output => {
           if (
             face.startTimeMs >= output.series[0].startTimeMs &&
-            face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
+            face.stopTimeMs <=
+              output.series[output.series.length - 1].stopTimeMs
           ) {
-            console.log("found in this output");
+            console.log('found in this output');
             return {
               ...output,
               series: output.series.filter(faceObj => {
                 console.log(faceObj, face, !isEqual(face, faceObj));
-                return !isEqual(face, faceObj)
+                return !isEqual(face, faceObj);
               })
             };
           }
@@ -107,7 +108,8 @@ class FaceEngineOutputStory extends Component {
         faceEngineOutput: prevState.faceEngineOutput.map(output => {
           if (
             face.startTimeMs >= output.series[0].startTimeMs &&
-            face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
+            face.stopTimeMs <=
+              output.series[output.series.length - 1].stopTimeMs
           ) {
             return {
               ...output,

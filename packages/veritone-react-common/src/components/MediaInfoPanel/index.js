@@ -85,7 +85,7 @@ class MediaInfoPanel extends Component {
   toggleIsEditMetadataOpen = () => {
     this.setState(prevState => {
       return {
-        isEditMetadataOpen: !{...prevState}.isEditMetadataOpen
+        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
       };
     });
   };
@@ -104,7 +104,7 @@ class MediaInfoPanel extends Component {
   toggleIsEditTagsOpen = () => {
     this.setState(prevState => {
       return {
-        isEditTagsOpen: !{...prevState}.isEditTagsOpen
+        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
       };
     });
   };
@@ -112,7 +112,7 @@ class MediaInfoPanel extends Component {
   toggleIsOpen = () => {
     this.setState(prevState => {
       return {
-        isOpen: !{...prevState}.isOpen
+        isOpen: !{ ...prevState }.isOpen
       };
     });
     this.props.onClose();
@@ -126,7 +126,8 @@ class MediaInfoPanel extends Component {
     if (!this.isMediaPublic(this.props.tdo)) {
       return true;
     }
-    const publicMediaDownloadEnabled = get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
+    const publicMediaDownloadEnabled =
+      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
     if (this.isOwnMedia() || publicMediaDownloadEnabled) {
       return true;
     }
@@ -148,11 +149,14 @@ class MediaInfoPanel extends Component {
       return true;
     }
     const applicationIds = get(this.props.kvp, 'applicationIds', []);
-    if (this.props.tdo.applicationId && applicationIds.includes(this.props.tdo.applicationId)) {
+    if (
+      this.props.tdo.applicationId &&
+      applicationIds.includes(this.props.tdo.applicationId)
+    ) {
       return true;
     }
     return false;
-  };
+  }
 
   downloadFile = () => {
     const element = document.createElement('a');
@@ -201,7 +205,7 @@ class MediaInfoPanel extends Component {
   toggleIsMenuOpen = () => {
     this.setState(prevState => {
       return {
-        isMenuOpen: !{...prevState}.isMenuOpen
+        isMenuOpen: !{ ...prevState }.isMenuOpen
       };
     });
   };
@@ -279,15 +283,15 @@ class MediaInfoPanel extends Component {
                           >
                             Edit Tags
                           </MenuItem>
-                          {this.isDownloadMediaEnabled() &&
+                          {this.isDownloadMediaEnabled() && (
                             <MenuItem
-                              classes={{root: styles.headerMenuItem}}
+                              classes={{ root: styles.headerMenuItem }}
                               disabled={!this.isDownloadAllowed()}
                               onClick={this.downloadFile}
                             >
                               Download
                             </MenuItem>
-                          }
+                          )}
                         </MenuList>
                       </Paper>
                     </Grow>

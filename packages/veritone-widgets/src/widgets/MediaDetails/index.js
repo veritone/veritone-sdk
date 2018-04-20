@@ -50,6 +50,10 @@ import widget from '../../shared/widget';
     ),
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
     contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
+    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(
+      state,
+      _widgetId
+    ),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
@@ -66,6 +70,7 @@ import widget from '../../shared/widget';
     toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
+    updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
   },
   null,
@@ -172,12 +177,22 @@ class MediaDetailsWidget extends React.Component {
       })
     ),
     loadContentTemplates: func,
+    updateTdoContentTemplates: func,
     contentTemplates: objectOf(
       shape({
         id: string,
         name: string.isRequired,
         status: string,
         definition: objectOf(any)
+      })
+    ),
+    tdoContentTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
       })
     )
   };
@@ -301,8 +316,40 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
-  handleUpdateContentTemplates = () => {
-    // TODO: implement add/remove TDO content tamplates
+  updateContentTemplates = data => {
+    const contentTemplates = data.contentTemplates;
+    const contentTemplatesToCreate = [];
+    const contentTemplatesToDelete = [];
+    // find content templates that were added or modified
+    Object.keys(contentTemplates).forEach(schemaId => {
+      if (
+        !contentTemplates[schemaId].assetId ||
+        !this.props.tdoContentTemplates[schemaId]
+      ) {
+        contentTemplatesToCreate.push(contentTemplates[schemaId]);
+      } else {
+        const originalTemplate = this.props.tdoContentTemplates[schemaId];
+        const newTemplate = contentTemplates[schemaId];
+        if (
+          JSON.stringify(originalTemplate.data) !==
+          JSON.stringify(newTemplate.data)
+        ) {
+          contentTemplatesToDelete.push(originalTemplate);
+          contentTemplatesToCreate.push(newTemplate);
+        }
+      }
+    });
+    // find content templates that were removed
+    Object.keys(this.props.tdoContentTemplates).forEach(schemaId => {
+      if (!contentTemplates[schemaId]) {
+        contentTemplatesToDelete.push(this.props.tdoContentTemplates[schemaId]);
+      }
+    });
+    this.props.updateTdoContentTemplates(
+      this.props._widgetId,
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    );
   };
 
   render() {
@@ -317,7 +364,8 @@ class MediaDetailsWidget extends React.Component {
       editModeEnabled,
       libraries,
       entities,
-      contentTemplates
+      contentTemplates,
+      tdoContentTemplates
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -666,10 +714,13 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'contentTemplates' &&
             contentTemplates && (
-              <ContentTemplateForm
-                templateData={contentTemplates}
-                handleUpdateContentTemplates={this.handleUpdateContentTemplates}
-              />
+              <div className={styles.contentTemplatesContent}>
+                <ContentTemplateForm
+                  templateData={contentTemplates}
+                  initialTemplates={tdoContentTemplates}
+                  onSubmit={this.updateContentTemplates}
+                />
+              </div>
             )}
         </Paper>
       </FullScreenDialog>

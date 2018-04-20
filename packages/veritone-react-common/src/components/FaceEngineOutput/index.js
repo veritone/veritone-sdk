@@ -273,9 +273,11 @@ class FaceEngineOutput extends Component {
   handleEntitySelect = entityId => evt => {
     if (this.state.recognizedEntityObjectMap[entityId]) {
       this.setState(prevState => {
-       return { selectedEntity: {
-          ...prevState.recognizedEntityObjectMap[entityId]
-        }}
+        return {
+          selectedEntity: {
+            ...prevState.recognizedEntityObjectMap[entityId]
+          }
+        };
       });
     }
   };
