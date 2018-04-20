@@ -6,7 +6,6 @@ import DynamicAdapterObj from './';
 const DynamicAdapter = DynamicAdapterObj.widget;
 
 class Story extends React.Component {
-
   componentDidMount() {
     this._adapter = new DynamicAdapter({
       elId: 'dynamic-adapter-widget'

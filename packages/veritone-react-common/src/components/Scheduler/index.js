@@ -42,10 +42,15 @@ const withDecorators = compose(
             end: '01:00'
           }
         ],
-        weekly: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].reduce(
-          (r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }),
-          {}
-        ),
+        weekly: [
+          'monday',
+          'tuesday',
+          'wednesday',
+          'thursday',
+          'friday',
+          'saturday',
+          'sunday'
+        ].reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
         ...props.initialValues
       }
     })),
@@ -67,10 +72,7 @@ export default class Scheduler extends React.Component {
   static prepareResultData(formResult) {
     const recurringPeriod = get(formResult, 'repeatEvery.period');
     const selectedDays = Object.keys(
-      pickBy(
-        get(formResult, 'weekly.selectedDays', {}),
-        (included) => !!included
-      )
+      pickBy(get(formResult, 'weekly.selectedDays', {}), included => !!included)
     );
 
     const recurringRepeatSectionFields = {

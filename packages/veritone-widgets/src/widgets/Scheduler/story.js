@@ -5,7 +5,6 @@ import VeritoneApp from '../../shared/VeritoneApp';
 import SchedulerWidget from '.';
 
 class Story extends React.Component {
-
   componentDidMount() {
     this._scheduler = new SchedulerWidget({
       elId: 'scheduler-widget'

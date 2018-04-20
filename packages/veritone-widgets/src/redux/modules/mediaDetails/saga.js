@@ -33,8 +33,7 @@ import {
   engineResultRequestsByEngineId
 } from '.';
 
-const tdoInfoQueryClause =
-   `id
+const tdoInfoQueryClause = `id
     details
     startDateTime
     stopDateTime
@@ -471,7 +470,9 @@ function* loadTdoContentTemplatesSaga(widgetId) {
       variables
     });
   } catch (error) {
-    return yield put(loadTdoContentTemplatesComplete(widgetId, null, { error }));
+    return yield put(
+      loadTdoContentTemplatesComplete(widgetId, null, { error })
+    );
   }
 
   if (response.errors && response.errors.length) {
@@ -488,7 +489,11 @@ function* loadTdoContentTemplatesSaga(widgetId) {
   );
 }
 
-function* updateTdoContentTemplatesSaga(widgetId, contentTemplatesToDelete, contentTemplatesToCreate) {
+function* updateTdoContentTemplatesSaga(
+  widgetId,
+  contentTemplatesToDelete,
+  contentTemplatesToCreate
+) {
   const assetIdsToDelete = contentTemplatesToDelete
     .filter(contentTemplate => !!contentTemplate.assetId)
     .map(contentTemplate => contentTemplate.assetId);
@@ -500,11 +505,13 @@ function* updateTdoContentTemplatesSaga(widgetId, contentTemplatesToDelete, cont
       call(createTdoContentTemplatesSaga, widgetId, contentTemplatesToCreate)
     ]);
   } catch (error) {
-    response = { errors: [error] }
+    response = { errors: [error] };
   }
 
   if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.error('Failed to update content template: ' + error));
+    response.errors.forEach(error =>
+      console.error('Failed to update content template: ' + error)
+    );
     yield put({
       type: UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
       error: 'Error updating content templates.'
@@ -525,12 +532,15 @@ function* deleteAssetsSaga(assetIds) {
 
   assetIds.forEach((assetId, i) => {
     headerParams.push(`$assetId${i}: ID!`);
-    deleteAssetClauses.push(`da${i}: deleteAsset (id: $assetId${i}) { id message }`);
+    deleteAssetClauses.push(
+      `da${i}: deleteAsset (id: $assetId${i}) { id message }`
+    );
     variables[`assetId${i}`] = assetId;
   });
 
-  const deleteAssetsQuery =
-    `mutation deleteAsset(${headerParams.join(', ')}){ ${deleteAssetClauses.join(' ')} }`;
+  const deleteAssetsQuery = `mutation deleteAsset(${headerParams.join(
+    ', '
+  )}){ ${deleteAssetClauses.join(' ')} }`;
 
   console.log('delete assets query');
   console.log(deleteAssetsQuery);
@@ -552,8 +562,7 @@ function* deleteAssetsSaga(assetIds) {
   } catch (error) {
     errors.push(error);
   }
-
-  if (response && response.errors && response.errors.length) {
+  if (get(response, 'errors.length', 0)) {
     response.errors.forEach(error => errors.push(error));
   }
 
@@ -578,12 +587,12 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
 
   const errors = [];
   const applyContentTemplatesQuery = `mutation updateTDO($tdoId: ID!, $schemaId: ID!, $data: JSONData){
-	    updateTDO( input: {
-	      id: $tdoId
-	      contentTemplates: [{schemaId: $schemaId, data: $data}]
-	    })
-	    { id }
-	  }`;
+      updateTDO( input: {
+        id: $tdoId
+        contentTemplates: [{schemaId: $schemaId, data: $data}]
+      })
+      { id }
+    }`;
   for (let i = 0; i < contentTemplates.length; i++) {
     const variables = {
       tdoId: requestTdo.id,
@@ -601,7 +610,7 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
     } catch (error) {
       errors.push(error);
     }
-    if (response && response.errors && response.errors.length) {
+    if (get(response, 'errors.length', 0)) {
       response.errors.forEach(error => errors.push(error));
     }
   }
@@ -615,13 +624,21 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
 
 function* watchUpdateTdoContentTemplates() {
   yield takeEvery(UPDATE_TDO_CONTENT_TEMPLATES, function*(action) {
-    const { contentTemplatesToDelete, contentTemplatesToCreate } = action.payload;
+    const {
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    } = action.payload;
     const { widgetId } = action.meta;
     console.log('Content templates to delete');
     console.log(contentTemplatesToDelete);
     console.log('Content templates to create');
     console.log(contentTemplatesToCreate);
-    yield call(updateTdoContentTemplatesSaga, widgetId, contentTemplatesToDelete, contentTemplatesToCreate);
+    yield call(
+      updateTdoContentTemplatesSaga,
+      widgetId,
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    );
   });
 }
 

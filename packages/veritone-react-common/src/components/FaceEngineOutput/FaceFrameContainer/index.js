@@ -72,7 +72,10 @@ class FaceFrameContainer extends Component {
               return (
                 <RecognizedFaceMatch
                   key={
-                    'frame-view-recognized-entity-' + entity.entityId + '-' + entity.confidence
+                    'frame-view-recognized-entity-' +
+                    entity.entityId +
+                    '-' +
+                    entity.confidence
                   }
                   entity={recognizedEntityObjectMap[entity.entityId]}
                   confidence={entity.confidence}

@@ -98,9 +98,7 @@ class FaceEngineOutput extends Component {
   };
 
   componentWillMount() {
-    this.processFaces(
-      this.props.data
-    );
+    this.processFaces(this.props.data);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -277,9 +275,11 @@ class FaceEngineOutput extends Component {
   handleEntitySelect = entityId => evt => {
     if (this.state.recognizedEntityObjectMap[entityId]) {
       this.setState(prevState => {
-       return { selectedEntity: {
-          ...prevState.recognizedEntityObjectMap[entityId]
-        }}
+        return {
+          selectedEntity: {
+            ...prevState.recognizedEntityObjectMap[entityId]
+          }
+        };
       });
     }
   };

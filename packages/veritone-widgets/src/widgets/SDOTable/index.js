@@ -12,14 +12,10 @@ class SDOTableWidget extends React.Component {
 
   static defaultProps = {
     paginate: false
-  }
+  };
 
   render() {
-    return (
-      <SDOTable
-        {...this.props}
-      />
-    );
+    return <SDOTable {...this.props} />;
   }
 }
 

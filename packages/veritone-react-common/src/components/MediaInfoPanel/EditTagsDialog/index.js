@@ -66,7 +66,7 @@ class EditTagsDialog extends Component {
   };
 
   onRemoveTag = tagValue => {
-    this.setState( prevState => {
+    this.setState(prevState => {
       const newTags = prevState.tags.slice();
       this.removeTag(tagValue, newTags);
       return {

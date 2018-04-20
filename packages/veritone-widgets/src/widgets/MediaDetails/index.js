@@ -50,7 +50,10 @@ import widget from '../../shared/widget';
     ),
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
     contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
-    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(state, _widgetId),
+    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(
+      state,
+      _widgetId
+    ),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
@@ -313,18 +316,24 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
-  updateContentTemplates = (data) => {
+  updateContentTemplates = data => {
     const contentTemplates = data.contentTemplates;
     const contentTemplatesToCreate = [];
     const contentTemplatesToDelete = [];
     // find content templates that were added or modified
     Object.keys(contentTemplates).forEach(schemaId => {
-      if (!contentTemplates[schemaId].assetId || !this.props.tdoContentTemplates[schemaId]) {
+      if (
+        !contentTemplates[schemaId].assetId ||
+        !this.props.tdoContentTemplates[schemaId]
+      ) {
         contentTemplatesToCreate.push(contentTemplates[schemaId]);
       } else {
         const originalTemplate = this.props.tdoContentTemplates[schemaId];
         const newTemplate = contentTemplates[schemaId];
-        if (JSON.stringify(originalTemplate.data) !== JSON.stringify(newTemplate.data)) {
+        if (
+          JSON.stringify(originalTemplate.data) !==
+          JSON.stringify(newTemplate.data)
+        ) {
           contentTemplatesToDelete.push(originalTemplate);
           contentTemplatesToCreate.push(newTemplate);
         }
@@ -336,7 +345,11 @@ class MediaDetailsWidget extends React.Component {
         contentTemplatesToDelete.push(this.props.tdoContentTemplates[schemaId]);
       }
     });
-    this.props.updateTdoContentTemplates(this.props._widgetId, contentTemplatesToDelete, contentTemplatesToCreate);
+    this.props.updateTdoContentTemplates(
+      this.props._widgetId,
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    );
   };
 
   render() {
@@ -701,13 +714,13 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'contentTemplates' &&
             contentTemplates && (
-            <div className={styles.contentTemplatesContent}>
-              <ContentTemplateForm
-                templateData={contentTemplates}
-                initialTemplates={tdoContentTemplates}
-                onSubmit={this.updateContentTemplates}
-              />
-            </div>
+              <div className={styles.contentTemplatesContent}>
+                <ContentTemplateForm
+                  templateData={contentTemplates}
+                  initialTemplates={tdoContentTemplates}
+                  onSubmit={this.updateContentTemplates}
+                />
+              </div>
             )}
         </Paper>
       </FullScreenDialog>
