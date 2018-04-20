@@ -63,7 +63,7 @@ describe('Column', function() {
     expect(nameWrapper.text()).not.toEqual('1');
   });
 
-  it('Renders nested \'dataKey\' value', function() {
+  it("Renders nested 'dataKey' value", function() {
     const data = {
       id: 1,
       profile: {
@@ -92,10 +92,16 @@ describe('Column', function() {
 
     const employerWrapper = mount(
       <SupressColumnWarnings>
-        <Column data={data} dataKey={['profile', 'employer', 'name']} cellRenderer={uppercase} />
+        <Column
+          data={data}
+          dataKey={['profile', 'employer', 'name']}
+          cellRenderer={uppercase}
+        />
       </SupressColumnWarnings>
     );
-    expect(employerWrapper.text()).toEqual(uppercase(data.profile.employer.name));
+    expect(employerWrapper.text()).toEqual(
+      uppercase(data.profile.employer.name)
+    );
   });
 
   it('Renders nothing if data is undefined', function() {

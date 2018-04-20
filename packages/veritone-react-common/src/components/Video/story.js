@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { Player } from './';
+import video from './';
 
 storiesOf('video', module).add('Base', () => (
-  <Player src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4" />
+  <video.Player src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4" />
 ));

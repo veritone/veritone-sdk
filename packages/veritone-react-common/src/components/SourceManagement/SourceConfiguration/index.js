@@ -1,6 +1,4 @@
 import React from 'react';
-import { has } from 'lodash';
-
 import { any, arrayOf, objectOf, func } from 'prop-types';
 
 import TextField from 'material-ui/TextField';
@@ -30,26 +28,19 @@ export default class SourceConfiguration extends React.Component {
   };
 
   componentWillMount = () => {
-    const { source } = this.props;
+    const { sourceTypes, source } = this.props;
     const newState = {};
 
+    // if editing a source, initialize the defaults
     if (source && source.sourceTypeId) {
-      // if editing a source, initialize the defaults
+      const sourceTypeIndex = sourceTypes.findIndex(
+        sourceType => sourceType.id === source.sourceTypeId
+      );
+
       newState.sourceTypeIndex = Math.max(
-        this.props.sourceTypes.findIndex(
-          sourceType => sourceType.id === source.sourceTypeId
-        ),
+        sourceTypeIndex,
         this.state.sourceTypeIndex
       );
-    }
-
-    if (source && source.sourceType) {
-      newState.requiredFields = has(
-        source.sourceType.sourceSchema.definition,
-        'required'
-      )
-        ? source.sourceType.sourceSchema.definition
-        : {};
     }
 
     this.setState(newState);
@@ -110,22 +101,11 @@ export default class SourceConfiguration extends React.Component {
           thumbnailUrl: fileReader.result,
           openFilePicker: false
         },
-        () => {
-          this.props.onInputChange({
-            thumbnailFile: file
-          });
-        }
+        () => this.props.onInputChange({ thumbnailFile: file })
       );
     };
 
-    if (/^image\//i.test(file.type)) {
-      fileReader.readAsDataURL(file);
-    } else {
-      this.setState({
-        thumbnailUrl: '',
-        openFilePicker: false
-      });
-    }
+    fileReader.readAsDataURL(file);
   };
 
   openFilePicker = () => {
@@ -151,8 +131,9 @@ export default class SourceConfiguration extends React.Component {
   };
 
   render() {
+    const { source } = this.props;
     return (
-      <div className={styles.fullPage}>
+      <div className={styles['configuration-container']}>
         <div>
           <div className={styles.configurationTitle}>Configuration</div>
           <div className={styles.configurationDescription}>
@@ -164,10 +145,10 @@ export default class SourceConfiguration extends React.Component {
               <div className={styles.container}>
                 <div className={styles['avatar-container']}>
                   <Avatar
-                    alt={this.props.source.name}
+                    alt={source.name}
                     src={
-                      this.props.source.thumbnailUrl ||
                       this.state.thumbnailUrl ||
+                      source.thumbnailUrl ||
                       defaultThumbnail
                     }
                     classes={{
@@ -186,7 +167,7 @@ export default class SourceConfiguration extends React.Component {
                   margin="dense"
                   id="sourceName"
                   label="Source Name"
-                  value={this.props.source.name}
+                  value={source.name}
                   onChange={this.handleNameChange}
                 />
                 {this.state.openFilePicker && this.renderFilePicker()}
@@ -194,7 +175,7 @@ export default class SourceConfiguration extends React.Component {
               <DynamicSelect
                 sourceTypes={this.props.sourceTypes}
                 currentSourceType={this.state.sourceTypeIndex}
-                fieldValues={this.props.source.details}
+                fieldValues={source.details}
                 onSelectChange={this.handleSourceChange}
                 onSourceDetailChange={this.handleSourceDetailChange}
                 errorFields={this.state.requiredFields}

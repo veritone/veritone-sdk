@@ -22,7 +22,7 @@ export TopBar, { topBarHeight } from './components/TopBar';
 export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
-export * as video from './components/Video';
+export video from './components/Video';
 export AppContainer from './components/AppContainer';
 
 export RefreshButton from './components/RefreshButton';
@@ -42,12 +42,13 @@ export MediaInfoPanel from './components/MediaInfoPanel';
 
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
+export SourceDropdownMenu from './components/SourceManagement/SourceDropdownMenu';
 
-export SourceManagementOverview from './components/SourceManagement';
-export SourceNullState from './components/SourceManagement';
+export SourceNullState from './components/SourceManagement/Nullstate';
 export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
+export ContentTemplate from './components/SourceManagement/ContentTemplates';
 
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';

@@ -15,13 +15,13 @@ import TimePeriodSelector from './TimePeriodSelector';
 import styles from './styles.scss';
 
 const days = [
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-  'sunday'
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday'
 ];
 
 @formValues('repeatEvery')
@@ -83,10 +83,6 @@ export default class RecurringSection extends React.Component {
 
         <div className={styles.formSectionRow}>
           <DateTimeSelector name="end" label="Ends" showIcon />
-        </div>
-
-        <div className={styles.formSectionRow}>
-          <TimePeriodSelector name="maxSegment" label="Max segment" />
         </div>
       </Fragment>
     );

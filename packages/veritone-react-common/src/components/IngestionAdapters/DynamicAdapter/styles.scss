@@ -38,15 +38,3 @@
 .adapterFieldContainer {
   margin-bottom: 10px;
 }
-
-.sourceSelector {
-  min-width: 400px;
-}
-
-.sourceScrollContainer {
-  &:focus {
-    outline: none;
-  }
-  max-height: 336px;
-  overflow-y: auto;
-}

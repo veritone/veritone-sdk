@@ -4,7 +4,6 @@ import { arrayOf, string, element, node } from 'prop-types';
 
 import styles from './styles.scss';
 
-//TODO: icons should pass in the icon elements, so the onClick is included already
 export default class ModalHeader extends React.Component {
   static propTypes = {
     children: node,
