@@ -336,13 +336,6 @@ class MediaDetailsWidget extends React.Component {
         contentTemplatesToDelete.push(this.props.tdoContentTemplates[schemaId]);
       }
     });
-
-    console.log('Content templates to delete');
-    console.log(contentTemplatesToDelete);
-
-    console.log('Content templates to create');
-    console.log(contentTemplatesToCreate);
-
     this.props.updateTdoContentTemplates(this.props._widgetId, contentTemplatesToDelete, contentTemplatesToCreate);
   };
 

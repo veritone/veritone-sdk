@@ -26,6 +26,7 @@ export const LOAD_CONTENT_TEMPLATES_COMPLETE =
 export const LOAD_TDO_CONTENT_TEMPLATES_COMPLETE =
   'LOAD_TDO_CONTENT_TEMPLATES_COMPLETE';
 export const UPDATE_TDO_CONTENT_TEMPLATES = 'UPDATE_TDO_CONTENT_TEMPLATES';
+export const UPDATE_TDO_CONTENT_TEMPLATES_FAILURE = 'UPDATE_TDO_CONTENT_TEMPLATES_FAILURE';
 export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
 export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
@@ -252,6 +253,8 @@ export default createReducer(defaultState, {
   [LOAD_TDO_CONTENT_TEMPLATES_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
     const errorMessage = get(error, 'message', error);
     const tdoContentTemplates = {};
+    console.log('tdo assets');
+    console.log(payload);
     if (payload && payload.records) {
       payload.records.forEach(asset => {
         if (!asset.sourceData || !asset.sourceData.schema) {
@@ -281,8 +284,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-
-
   [UPDATE_TDO](state, { meta: { widgetId } }) {
     return {
       ...state,
@@ -302,6 +303,15 @@ export default createReducer(defaultState, {
         success: null,
         error: null,
         warning: null
+      }
+    };
+  },
+  [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](state, { error, meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        updateTdoContentTemplatesError: error
       }
     };
   },
