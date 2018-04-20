@@ -30,7 +30,7 @@ describe('SearchPill', function() {
     expect(wrapper.find('.searchPillBackgroundColor')).toHaveLength(1);
   });
 
-  it('pills with exclude are rendered with a different color', function() {
+  it('renders excluded pills with a different color', function() {
     const wrapper = mount(
       <SearchPill
         engineCategoryIcon={'icon-transcription'}
