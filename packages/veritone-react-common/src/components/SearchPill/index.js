@@ -19,51 +19,54 @@ class SearchPill extends React.PureComponent {
     exclude: bool
   };
 
-  onDeleteHandler = e => {
+  handleDelete = e => {
     e.stopPropagation();
     this.props.onDelete(e);
   };
 
-  render() {
-    let backgroundColor = styles['searchPillBackgroundColor'];
+  getBackgroundColor() {
+    let backgroundColor = styles.searchPillBackgroundColor;
     if (this.props.selected) {
-      backgroundColor = styles['searchPillSelectedBackgroundColor'];
+      backgroundColor = styles.searchPillSelectedBackgroundColor;
     } else if (this.props.highlighted) {
-      backgroundColor = styles['searchPillHighlightedBackgroundColor'];
+      backgroundColor = styles.searchPillHighlightedBackgroundColor;
     } else if (this.props.exclude) {
-      backgroundColor = styles['searchPillExcludeBackgroundColor'];
+      backgroundColor = styles.searchPillExcludeBackgroundColor;
     }
+    return backgroundColor;
+  }
 
+  render() {
     return (
       <div
-        className={cx([styles['searchPill'], backgroundColor])}
+        className={cx([styles.searchPill, this.getBackgroundColor()])}
         onClick={this.props.onClick}
       >
         <Avatar
           className={cx(this.props.engineCategoryIcon)}
           classes={{
             root: cx([
-              styles['engineCategoryIcon'],
-              { [styles['searchPillSelectedColor']]: this.props.selected }
+              styles.engineCategoryIcon,
+              { [styles.searchPillSelectedColor]: this.props.selected }
             ])
           }}
         />
         <Typography
           variant="subheading"
           className={cx({
-            [styles['searchPillSelectedColor']]: this.props.selected
+            [styles.searchPillSelectedColor]: this.props.selected
           })}
         >
           {this.props.label}
         </Typography>
-        <div data-attribute='deletePill' onClick={this.onDeleteHandler}>
+        <div data-attribute="deletePill" onClick={this.handleDelete}>
           <Cancel
             style={{
               visibility:
                 this.props.highlighted && !this.props.selected ? 'hidden' : null
             }}
             disabled={this.props.selected}
-            className={styles['deleteIcon']}
+            className={styles.deleteIcon}
           />
         </div>
       </div>
