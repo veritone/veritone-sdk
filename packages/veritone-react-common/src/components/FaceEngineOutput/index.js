@@ -5,7 +5,7 @@ import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import { find, isObject, isEmpty } from 'lodash';
+import { find, isObject, isEmpty, get } from 'lodash';
 import {
   shape,
   number,
@@ -60,13 +60,13 @@ class FaceEngineOutput extends Component {
         profileImageUrl: string,
         jsondata: objectOf(oneOfType([string, number]))
       })
-    ),
+    ).isRequired,
     engines: arrayOf(
       shape({
         id: string.isRequired,
         name: string.isRequired
       })
-    ),
+    ).isRequired,
     selectedEngineId: string,
     onEngineChange: func,
     entitySearchResults: arrayOf(
@@ -99,13 +99,15 @@ class FaceEngineOutput extends Component {
 
   componentWillMount() {
     this.processFaces(
-      this.props.data
+      this.props.data,
+      this.props.libraries,
+      this.props.entities
     );
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.entities || nextProps.libraries || nextProps.data) {
-      this.processFaces(nextProps.data || this.props.data);
+      this.processFaces(nextProps.data, nextProps.libraries, nextProps.entities);
     }
   }
 
@@ -129,9 +131,28 @@ class FaceEngineOutput extends Component {
     return secondSpots;
   };
 
-  processFaces = faceData => {
+  setRecognizedEntityObj = (recognizedEntityObj, faceObj) => {
+    return {
+      ...recognizedEntityObj,
+      count: recognizedEntityObj.count + 1,
+      timeSlots: [
+        ...recognizedEntityObj.timeSlots,
+        {
+          stopTimeMs: faceObj.stopTimeMs,
+          startTimeMs: faceObj.startTimeMs,
+          originalImage: faceObj.object.uri,
+          confidence: faceObj.object.confidence
+        }
+      ],
+      stopTimeMs:
+        recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
+          ? faceObj.stopTimeMs
+          : recognizedEntityObj.stopTimeMs
+    };
+  };
+
+  processFaces = (faceData, libraries, entities) => {
     const detectedFaceObjects = [];
-    const recognizedEntityObjects = [];
     const recognizedEntityObjectMap = {};
     if (isEmpty(faceData)) {
       return;
@@ -145,13 +166,14 @@ class FaceEngineOutput extends Component {
       return accumulator;
     }, []);
 
-    let secondMap = {};
+    const secondMap = {};
+    const entitiesByLibrary = {};
     faceSeries.forEach(faceObj => {
-      let entity = find(this.props.entities, { id: faceObj.object.entityId });
-      if (entity && entity.name && this.props.libraries.length) {
-        let library = find(this.props.libraries, { id: entity.libraryId });
-        let face = {
-          entityId: faceObj.object.entityId,
+      const entity = find(entities, { id: faceObj.object.entityId });
+      if (entity && entity.name && libraries.length) {
+        const library = find(libraries, { id: entity.libraryId });
+        let recognizedEntityObj = {
+          entityId: entity.id,
           libraryId: library.id,
           libraryName: library.name,
           fullName: entity.name,
@@ -172,36 +194,29 @@ class FaceEngineOutput extends Component {
           ],
           stopTimeMs: faceObj.stopTimeMs
         };
-        let flag = true;
-        recognizedEntityObjects.forEach(function checkDuplicate(
-          elem,
-          index,
-          array
-        ) {
-          if (elem.entityId === face.entityId) {
-            elem.count++;
-            let timeStamp = {
-              stopTimeMs: faceObj.stopTimeMs,
-              startTimeMs: faceObj.startTimeMs,
-              originalImage: faceObj.object.uri,
-              confidence: faceObj.object.confidence
-            };
-            elem.timeSlots.push(timeStamp);
-            elem.stopTimeMs =
-              elem.stopTimeMs <= faceObj.stopTimeMs
-                ? faceObj.stopTimeMs
-                : elem.stopTimeMs;
-            flag = false;
+        if (recognizedEntityObjectMap[recognizedEntityObj.entityId]) {
+          recognizedEntityObjectMap[
+            entity.id
+          ] = this.setRecognizedEntityObj(
+            recognizedEntityObjectMap[recognizedEntityObj.entityId],
+            faceObj
+          );
+        } else {
+          recognizedEntityObjectMap[recognizedEntityObj.entityId] = recognizedEntityObj;
+          entitiesByLibrary[recognizedEntityObj.libraryId] = {
+            libraryId: recognizedEntityObj.libraryId,
+            libraryName: recognizedEntityObj.libraryName,
+            faces: [
+                ...get(entitiesByLibrary[recognizedEntityObj.libraryId], 'faces', []),
+                recognizedEntityObj
+            ]
           }
-        });
-        if (flag) {
-          recognizedEntityObjectMap[face.entityId] = face;
-          recognizedEntityObjects.push(face);
         }
 
-        let matchNamespace = this.getFrameNamespaceForMatch(faceObj);
+        // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
+        const matchNamespace = this.getFrameNamespaceForMatch(faceObj);
         if (matchNamespace) {
-          let secondSpots = this.getArrayOfSecondSpots(faceObj);
+          const secondSpots = this.getArrayOfSecondSpots(faceObj);
           secondSpots.forEach(second => {
             if (!secondMap[second]) {
               secondMap[second] = {};
@@ -216,7 +231,7 @@ class FaceEngineOutput extends Component {
               };
             }
 
-            let match = {
+            const match = {
               confidence: faceObj.object.confidence,
               entityId: faceObj.object.entityId
             };
@@ -233,27 +248,8 @@ class FaceEngineOutput extends Component {
       }
     });
 
-    // Loop through faces and namespace by library
-    let entitiesByLibrary = {};
-    recognizedEntityObjects &&
-      recognizedEntityObjects.forEach(currentFace => {
-        if (
-          currentFace.libraryId &&
-          !entitiesByLibrary[currentFace.libraryId]
-        ) {
-          entitiesByLibrary[currentFace.libraryId] = {
-            libraryId: currentFace.libraryId,
-            libraryName: currentFace.libraryName,
-            faces: [currentFace]
-          };
-        } else if (currentFace.libraryId) {
-          entitiesByLibrary[currentFace.libraryId].faces.push(currentFace);
-        }
-      });
-
     this.setState({
       detectedFaces: detectedFaceObjects,
-      recognizedEntityObjects: recognizedEntityObjects,
       recognizedEntityObjectMap: recognizedEntityObjectMap,
       entitiesByLibrary: entitiesByLibrary,
       framesBySeconds: secondMap
@@ -270,7 +266,7 @@ class FaceEngineOutput extends Component {
     return this.props.libraries.find(library => library.id == id);
   };
 
-  getEntity = (library, entityId) => {
+  getEntityById = (library, entityId) => {
     return library.entities.find(e => e.entityId === entityId);
   };
 
@@ -456,7 +452,7 @@ class FaceEngineOutput extends Component {
               !this.state.selectedEntity && (
                 <FacesByScene
                   currentMediaPlayerTime={currentMediaPlayerTime}
-                  recognizedEntityObjects={this.state.recognizedEntityObjects}
+                  recognizedEntityObjects={Object.values(this.state.recognizedEntityObjectMap)}
                   onSelectEntity={this.handleEntitySelect}
                 />
               )}
