@@ -6,7 +6,8 @@ import {
   omit,
   partial,
   without,
-  intersection
+  intersection,
+  difference
 } from 'lodash';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
@@ -20,6 +21,7 @@ export default class MenuColumn extends React.Component {
     onSelectItem: func,
     protectedActions: arrayOf(string),
     additionalActions: arrayOf(string),
+    excludeActions: arrayOf(string),
     transformLabel: func,
     style: objectOf(any)
   };
@@ -28,7 +30,8 @@ export default class MenuColumn extends React.Component {
     onSelectItem: noop,
     protectedActions: ['delete'],
     transformLabel: l => l,
-    additionalActions: []
+    additionalActions: [],
+    excludeActions: []
   };
 
   state = {
@@ -49,7 +52,7 @@ export default class MenuColumn extends React.Component {
     });
   };
 
-  handleOnClick = (action, ...rest) => {
+  handleClick = (action, ...rest) => {
     this.setState({ open: false }, () => {
       this.props.onSelectItem(action, ...rest);
     });
@@ -69,7 +72,10 @@ export default class MenuColumn extends React.Component {
   }
 
   renderMenuCell = (actions = [], ...rest) => {
-    const allActions = [...actions, ...this.props.additionalActions];
+    const allActions = difference(
+      [...actions, ...this.props.additionalActions],
+      this.props.excludeActions
+    );
 
     return (
       allActions.length > 0 && (
@@ -97,7 +103,7 @@ export default class MenuColumn extends React.Component {
                 ) : (
                   <MenuItem
                     key={s}
-                    onClick={partial(this.handleOnClick, s, ...rest)}
+                    onClick={partial(this.handleClick, s, ...rest)}
                   >
                     {startCase(camelCase(this.props.transformLabel(s)))}
                   </MenuItem>
@@ -121,6 +127,7 @@ export default class MenuColumn extends React.Component {
           'onSelectItem',
           'protectedActions',
           'additionalActions',
+          'excludeActions',
           'transformLabel'
         )}
         style={{ paddingRight: 0, ...this.props.style }}

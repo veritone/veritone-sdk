@@ -22,7 +22,7 @@ const columns = map(data[0], (val, key) => {
     header: startCase(key),
     cellRenderer: flow([upperFirst, truncate]),
     align: 'center',
-    width: Math.min((Math.min(key.length, 4) + 1) * 10, 100)
+    width: key === 'ip' ? 300 : undefined
   };
 });
 
@@ -45,7 +45,7 @@ class BasicTable extends React.Component {
         showHeader
         onCellClick={this.handleCellClick}
       >
-        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+        {columns.map((c) => <Column key={c.dataKey} {...c} />)}
       </Table>
     );
   }
@@ -187,15 +187,47 @@ class SplitTable extends React.Component {
   }
 }
 
+class HeadlessTable extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
+
+  getRowData = i => this.props.data[i];
+
+  handleCellClick(row, columnKey) {
+    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
+  }
+
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader={false}
+        onCellClick={this.handleCellClick}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+      </Table>
+    );
+  }
+}
+
 storiesOf('Table', module)
   .add('Basic Table', () => <BasicTable data={data} />)
   .add('Basic Split Table', () => <BasicSplitTable data={data} />)
   .add('Paginated Table', () => <PagedTable data={data} />)
   .add('Paginated Split Table', () => <SplitTable data={data} />)
+  .add('Table w/o Heading', () => <HeadlessTable data={data} />)
   .add('Menu Column', () => {
     const data = {
-      actions: ['submit', 'delete']
+      title: 'Some title',
+      description: 'Lorem ipsum...',
+      actions: ['submit', 'delete', 'alter']
     };
+
+    function handleSelectItem(action, data) {
+      console.log('action, data:', action, data);
+    }
 
     return (
       <MuiTable>
@@ -206,6 +238,8 @@ storiesOf('Table', module)
               data={data}
               dataKey="actions"
               protectedActions={['delete']}
+              excludeActions={['alter']}
+              onSelectItem={handleSelectItem}
             />
           </TableRow>
         </TableBody>
