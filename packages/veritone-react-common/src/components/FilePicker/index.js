@@ -101,9 +101,12 @@ class FilePicker extends Component {
     const files = this.state.files;
 
     this.clearErrorMessage();
-    this.setState({
-      files: [],
-    }, () => this.props.onPickFiles(files));
+    this.setState(
+      {
+        files: []
+      },
+      () => this.props.onPickFiles(files)
+    );
   };
 
   clearErrorMessage() {

@@ -194,8 +194,11 @@ const jobInfo = {
   }
 };
 
-function handleSelectJob(row, dataKey, dataKeyValue) {
-  console.log('row, dataKey, dataKeyValue:', row, dataKey, dataKeyValue);
+function handleSelectJob(row, dataKey, event) {
+  if (event && event.currentTarget.id === 'menu') {
+    return;
+  }
+  console.log('row, dataKey:', row, dataKey);
 }
 
 function handleSelectMenuItem(menuAction, dataKeyValue, event) {

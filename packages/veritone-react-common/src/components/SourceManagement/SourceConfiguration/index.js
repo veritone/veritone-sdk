@@ -147,8 +147,8 @@ export default class SourceConfiguration extends React.Component {
                   <Avatar
                     alt={source.name}
                     src={
-                      source.thumbnailUrl ||
                       this.state.thumbnailUrl ||
+                      source.thumbnailUrl ||
                       defaultThumbnail
                     }
                     classes={{
