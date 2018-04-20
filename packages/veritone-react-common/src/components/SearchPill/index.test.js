@@ -42,7 +42,7 @@ describe('SearchPill', function() {
     expect(wrapper.find('.searchPillExcludeBackgroundColor')).toHaveLength(1);
   });
 
-  it('selected color takes precedence over exclude color', function() {
+  it('renders pills with the selected color over the excluded color', function() {
     const wrapper = mount(
       <SearchPill
         engineCategoryIcon={'icon-transcription'}
