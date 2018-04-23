@@ -714,13 +714,11 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'contentTemplates' &&
             contentTemplates && (
-              <div className={styles.contentTemplatesContent}>
-                <ContentTemplateForm
-                  templateData={contentTemplates}
-                  initialTemplates={tdoContentTemplates}
-                  onSubmit={this.updateContentTemplates}
-                />
-              </div>
+              <ContentTemplateForm
+                templateData={contentTemplates}
+                initialTemplates={tdoContentTemplates}
+                onSubmit={this.updateContentTemplates}
+              />
             )}
         </Paper>
       </FullScreenDialog>
