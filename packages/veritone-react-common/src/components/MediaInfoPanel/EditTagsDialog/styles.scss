@@ -50,29 +50,23 @@
     flex-flow: row wrap;
 
     .addNewTagButton {
-      font-weight: 100;
-      text-transform: capitalize;
+      font-size: 14px;
+      font-family: Roboto;
+      color: $blue-1;
+      line-height: 42px;
+      height: 42px;
     }
 
-    .tagInputArea {
-      display: flex;
-      flex-flow: row;
-      align-items: center;
+    .tagTextInput {
+      color: $dark-black;
+      line-height: 16px;
+      width: 200px;
+      height: 32px;
+      margin: 5px 0;
 
-      .tagTextInput {
-        color: $dark-black;
-        line-height: 16px;
-        width: 100px;
-
-        input {
-          font-family: Roboto;
-          font-size: 14px;
-        }
-      }
-
-      .addNewTagConfirm {
-        width: 100px;
-        height: 38px;
+      input {
+        font-family: Roboto;
+        font-size: 14px;
       }
     }
   }

@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
+import { Manager, Target, Popper } from 'react-popper';
+import ClickAwayListener from 'material-ui/utils/ClickAwayListener';
 import Drawer from 'material-ui/Drawer';
 import { get } from 'lodash';
+import Grow from 'material-ui/transitions/Grow';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import { MenuItem, MenuList } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
 import { isString } from 'lodash';
-import { objectOf, func, bool, arrayOf, any } from 'prop-types';
+import { objectOf, func, arrayOf, any, shape, string } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
@@ -17,20 +20,23 @@ class MediaInfoPanel extends Component {
   static propTypes = {
     tdo: objectOf(any),
     engineCategories: arrayOf(any),
+    kvp: shape({
+      features: objectOf(any),
+      applicationIds: arrayOf(string)
+    }),
     onClose: func,
-    onSaveMetadata: func,
-    isInfoPanelOpen: bool
+    onSaveMetadata: func
   };
 
   state = {
     isOpen: true,
-    menuAnchorEl: null,
-    isOpenEditMetadata: false,
-    isOpenEditTags: false
+    isMenuOpen: false,
+    isEditMetadataOpen: false,
+    isEditTagsOpen: false
   };
 
   onSaveMetadata = metadataToSave => {
-    this.toggleIsOpenEditMetadata();
+    this.toggleIsEditMetadataOpen();
     if (!metadataToSave) {
       return;
     }
@@ -76,14 +82,16 @@ class MediaInfoPanel extends Component {
     this.props.onSaveMetadata(detailsToSave);
   };
 
-  toggleIsOpenEditMetadata = () => {
-    this.setState({
-      isOpenEditMetadata: !this.state.isOpenEditMetadata
+  toggleIsEditMetadataOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
+      };
     });
   };
 
   onSaveTags = tagsToSave => {
-    this.toggleIsOpenEditTags();
+    this.toggleIsEditTagsOpen();
     if (!tagsToSave || !tagsToSave.length) {
       return;
     }
@@ -93,17 +101,69 @@ class MediaInfoPanel extends Component {
     this.props.onSaveMetadata(detailsToSave);
   };
 
-  toggleIsOpenEditTags = () => {
-    this.setState({
-      isOpenEditTags: !this.state.isOpenEditTags
+  toggleIsEditTagsOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
+      };
     });
   };
 
   toggleIsOpen = () => {
-    this.setState({
-      isOpen: !this.state.isOpen
+    this.setState(prevState => {
+      return {
+        isOpen: !{ ...prevState }.isOpen
+      };
     });
     this.props.onClose();
+  };
+
+  isDownloadMediaEnabled = () => {
+    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+  };
+
+  isDownloadAllowed = () => {
+    if (!this.isMediaPublic(this.props.tdo)) {
+      return true;
+    }
+    const publicMediaDownloadEnabled =
+      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
+    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
+      return true;
+    }
+    return false;
+  };
+
+  isMediaPublic = () => {
+    if (!get(this.props.tdo, 'security.global', false)) {
+      return false;
+    }
+    if (this.props.tdo.isPublic === false) {
+      return false;
+    }
+    return true;
+  };
+
+  isOwnMedia() {
+    if (this.props.tdo.isOwn === true) {
+      return true;
+    }
+    const applicationIds = get(this.props.kvp, 'applicationIds', []);
+    if (
+      this.props.tdo.applicationId &&
+      applicationIds.includes(this.props.tdo.applicationId)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  downloadFile = () => {
+    const element = document.createElement('a');
+    element.href = get(this.props.tdo, 'primaryAsset.uri', '');
+    element.download = get(this.props, 'tdo.details.veritoneFile.filename');
+    element.target = '_blank';
+    element.click();
   };
 
   toFormattedDate = dateString => {
@@ -142,26 +202,42 @@ class MediaInfoPanel extends Component {
     }`;
   };
 
-  onMenuClick = event => {
-    this.setState({ menuAnchorEl: event.currentTarget });
+  toggleIsMenuOpen = () => {
+    this.setState(prevState => {
+      return {
+        isMenuOpen: !{ ...prevState }.isMenuOpen
+      };
+    });
   };
 
-  onMenuClose = () => {
-    this.setState({ menuAnchorEl: null });
+  onMenuClose = event => {
+    if (event && this.target1.contains(event.target)) {
+      return;
+    }
+    this.setState({ isMenuOpen: false });
   };
 
   onMetadataOpen = () => {
     this.onMenuClose();
-    this.toggleIsOpenEditMetadata();
+    this.toggleIsEditMetadataOpen();
   };
 
   onEditTagsOpen = () => {
     this.onMenuClose();
-    this.toggleIsOpenEditTags();
+    this.toggleIsEditTagsOpen();
+  };
+
+  setMenuTarget = node => {
+    this.target1 = node;
   };
 
   render() {
-    const { menuAnchorEl } = this.state;
+    const {
+      isOpen,
+      isMenuOpen,
+      isEditMetadataOpen,
+      isEditTagsOpen
+    } = this.state;
 
     const contentElement = (
       <div className={styles.mediaInfoPanel}>
@@ -169,25 +245,59 @@ class MediaInfoPanel extends Component {
           <div className={styles.infoPanelHeader}>
             <span>Metadata</span>
             <div className={styles.headerMenu}>
-              <IconButton
-                aria-label="More"
-                aria-owns={menuAnchorEl ? 'metadata-menu' : null}
-                onClick={this.onMenuClick}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="metadata-menu"
-                anchorEl={this.state.menuAnchorEl}
-                open={Boolean(menuAnchorEl)}
-                onClose={this.onMenuClose}
-              >
-                <MenuItem onClick={this.onMetadataOpen}>Edit Metadata</MenuItem>
-                <MenuItem onClick={this.onEditTagsOpen}>Edit Tags</MenuItem>
-                {/* TODO: uncomment when can download large/chunked files
-                  <MenuItem onClick={this.onMenuClose}>Download</MenuItem>
-                */}
-              </Menu>
+              <Manager>
+                <Target>
+                  <div ref={this.setMenuTarget}>
+                    <IconButton
+                      aria-label="More"
+                      aria-haspopup="true"
+                      aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                      onClick={this.toggleIsMenuOpen}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  </div>
+                </Target>
+                <Popper
+                  placement="bottom-start"
+                  eventsEnabled={isMenuOpen}
+                  className={{ [styles.popperClose]: !isMenuOpen }}
+                >
+                  <ClickAwayListener onClickAway={this.onMenuClose}>
+                    <Grow
+                      in={isMenuOpen}
+                      id="menu-list-grow"
+                      style={{ transformOrigin: '0 0 0' }}
+                    >
+                      <Paper>
+                        <MenuList role="menu">
+                          <MenuItem
+                            classes={{ root: styles.headerMenuItem }}
+                            onClick={this.onMetadataOpen}
+                          >
+                            Edit Metadata
+                          </MenuItem>
+                          <MenuItem
+                            classes={{ root: styles.headerMenuItem }}
+                            onClick={this.onEditTagsOpen}
+                          >
+                            Edit Tags
+                          </MenuItem>
+                          {this.isDownloadMediaEnabled() && (
+                            <MenuItem
+                              classes={{ root: styles.headerMenuItem }}
+                              disabled={!this.isDownloadAllowed()}
+                              onClick={this.downloadFile}
+                            >
+                              Download
+                            </MenuItem>
+                          )}
+                        </MenuList>
+                      </Paper>
+                    </Grow>
+                  </ClickAwayListener>
+                </Popper>
+              </Manager>
               <IconButton
                 className={styles.closeButton}
                 onClick={this.toggleIsOpen}
@@ -304,21 +414,21 @@ class MediaInfoPanel extends Component {
         </div>
         {this.props.tdo &&
           this.props.tdo.details &&
-          this.state.isOpenEditMetadata && (
+          isEditMetadataOpen && (
             <EditMetadataDialog
-              isOpen={this.state.isOpenEditMetadata}
+              isOpen={isEditMetadataOpen}
               metadata={this.props.tdo.details}
-              onClose={this.toggleIsOpenEditMetadata}
+              onClose={this.toggleIsEditMetadataOpen}
               onSave={this.onSaveMetadata}
             />
           )}
         {this.props.tdo &&
           this.props.tdo.details &&
-          this.state.isOpenEditTags && (
+          isEditTagsOpen && (
             <EditTagsDialog
-              isOpen={this.state.isOpenEditTags}
+              isOpen={isEditTagsOpen}
               tags={this.props.tdo.details.tags}
-              onClose={this.toggleIsOpenEditTags}
+              onClose={this.toggleIsEditTagsOpen}
               onSave={this.onSaveTags}
             />
           )}
@@ -326,11 +436,7 @@ class MediaInfoPanel extends Component {
     );
 
     return (
-      <Drawer
-        anchor="right"
-        open={this.state.isOpen}
-        onClose={this.toggleIsOpen}
-      >
+      <Drawer anchor="right" open={isOpen} onClose={this.toggleIsOpen}>
         {contentElement}
       </Drawer>
     );

@@ -47,12 +47,14 @@ class EditTagsDialog extends Component {
       });
       return;
     }
-    const newTags = this.state.tags.slice();
-    this.addTagAsUnique(newTagValue, newTags);
-    this.setState({
-      tags: newTags,
-      newTagTextAreaVisible: false,
-      newTagValue: ''
+    this.setState(prevState => {
+      const newTags = prevState.tags.slice();
+      this.addTagAsUnique(newTagValue, newTags);
+      return {
+        tags: newTags,
+        newTagTextAreaVisible: false,
+        newTagValue: ''
+      };
     });
   };
 
@@ -64,10 +66,12 @@ class EditTagsDialog extends Component {
   };
 
   onRemoveTag = tagValue => {
-    const newTags = this.state.tags.slice();
-    this.removeTag(tagValue, newTags);
-    this.setState({
-      tags: newTags
+    this.setState(prevState => {
+      const newTags = prevState.tags.slice();
+      this.removeTag(tagValue, newTags);
+      return {
+        tags: newTags
+      };
     });
   };
 
@@ -81,6 +85,7 @@ class EditTagsDialog extends Component {
   onSave = () => {
     const tagToSave = this.state.tags.slice();
     this.addTagAsUnique(this.state.newTagValue, tagToSave);
+    console.log(tagToSave);
     this.props.onSave(tagToSave);
   };
 
@@ -109,11 +114,18 @@ class EditTagsDialog extends Component {
     });
   };
 
+  onNewTagKeyDown = event => {
+    if (event.key === 'Enter') {
+      this.onAddTag();
+    }
+  };
+
   render() {
     return (
       <Dialog
         open={this.props.isOpen}
         onClose={this.onCancel}
+        disableBackdropClick
         aria-labelledby="edit-tags-dialog"
         classes={{
           paper: styles.editTagsDialogPaper
@@ -156,29 +168,25 @@ class EditTagsDialog extends Component {
                 />
               ))}
             {!this.state.newTagTextAreaVisible && (
-              <Button
+              <span
                 onClick={this.enableNewTagTextArea}
-                color="primary"
                 className={styles.addNewTagButton}
               >
                 Add New
-              </Button>
+              </span>
             )}
             {this.state.newTagTextAreaVisible && (
-              <div className={styles.tagInputArea}>
-                <Input
-                  autoFocus
-                  value={this.state.newTagValue}
-                  onChange={this.onNewTagValueChange}
-                  classes={{
-                    root: styles.tagTextInput
-                  }}
-                />
-                <div
-                  className={styles.addNewTagConfirm}
-                  onClick={this.onAddTag}
-                />
-              </div>
+              <Input
+                autoFocus
+                value={this.state.newTagValue}
+                onChange={this.onNewTagValueChange}
+                classes={{
+                  root: styles.tagTextInput
+                }}
+                inputProps={{
+                  onKeyDown: this.onNewTagKeyDown
+                }}
+              />
             )}
           </div>
         </DialogContent>

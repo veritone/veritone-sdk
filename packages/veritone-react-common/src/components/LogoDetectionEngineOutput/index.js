@@ -51,7 +51,7 @@ export default class LogoDetectionEngineOutput extends Component {
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
-    estimatedDisplayTimeMS: number,
+    estimatedDisplayTimeMs: number,
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
   };
@@ -122,7 +122,14 @@ export default class LogoDetectionEngineOutput extends Component {
                 className={classNames(styles.item, entryClassName)}
                 labelClassName={classNames(styles.label, entryLabelClassName)}
                 infoClassName={entryInfoClassName}
-                key={'logo-' + itemInfo.object.label + index}
+                key={
+                  'logo-' +
+                  startTime +
+                  '-' +
+                  stopTime +
+                  '-' +
+                  itemInfo.object.label
+                }
                 onClick={this.handleEntrySelected}
                 data={itemInfo}
                 highlight={
@@ -157,7 +164,7 @@ export default class LogoDetectionEngineOutput extends Component {
       onScroll,
       mediaLengthMs,
       neglectableTimeMs,
-      estimatedDisplayTimeMS
+      estimatedDisplayTimeMs
     } = this.props;
 
     let contents = this.renderContents();
@@ -177,7 +184,7 @@ export default class LogoDetectionEngineOutput extends Component {
           onScroll={onScroll}
           totalSize={mediaLengthMs}
           neglectableSize={neglectableTimeMs}
-          estimatedDisplaySize={estimatedDisplayTimeMS}
+          estimatedDisplaySize={estimatedDisplayTimeMs}
         />
       </div>
     );

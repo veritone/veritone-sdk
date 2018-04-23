@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .engineOutputHeader {
   height: 45px;
   width: 100%;
@@ -6,6 +8,9 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: $dark-black;
 
   .headerTitle {
     display: flex;
@@ -23,19 +28,25 @@
     align-items: center;
     justify-content: flex-end;
   }
+
+  .engineSelect {
+    max-width: 150px;
+    margin-left: 20px;
+    font-size: 14px;
+  }
+
+  .actionIconDivider {
+    margin: 0 4px 0 20px;
+    background-color: #e0e0e0;
+    height: 24px;
+    width: 1px;
+  }
+
+  .expandedViewButton {
+    border-left: 1px solid #e0e0e0;
+  }
 }
 
-.engineSelect {
-  max-width: 150px;
-}
-
-.actionIconDivider {
-  margin-left: 20px;
-  background-color: #e0e0e0;
-  height: 24px;
-  width: 1px;
-}
-
-.expandedViewButton {
-  border-left: 1px solid #e0e0e0;
+.engine {
+  font-size: 14px !important;
 }

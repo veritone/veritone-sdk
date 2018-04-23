@@ -30,10 +30,9 @@ import {
   LogoDetectionEngineOutput,
   ContentTemplateForm
 } from 'veritone-react-common';
+import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
-
 import styles from './styles.scss';
-
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
@@ -51,6 +50,10 @@ import widget from '../../shared/widget';
     ),
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
     contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
+    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(
+      state,
+      _widgetId
+    ),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
@@ -60,7 +63,6 @@ import widget from '../../shared/widget';
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadEngineResultsRequest: mediaDetailsModule.loadEngineResultsRequest,
     loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
@@ -68,6 +70,7 @@ import widget from '../../shared/widget';
     toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
+    updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
   },
   null,
@@ -78,15 +81,14 @@ class MediaDetailsWidget extends React.Component {
     _widgetId: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
+    kvp: shape({
+      features: objectOf(any),
+      applicationIds: arrayOf(string)
+    }),
     onRunProcess: func,
     onClose: func,
-    loadEngineResultsRequest: func,
     loadTdoRequest: func,
     updateTdoRequest: func,
-    success: bool,
-    error: bool,
-    warning: bool,
-    statusMessage: string,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -126,7 +128,11 @@ class MediaDetailsWidget extends React.Component {
         )
       }),
       startDateTime: string,
-      stopDateTime: string
+      stopDateTime: string,
+      security: shape({
+        global: bool
+      }),
+      applicationId: string
     }),
     engineResultsByEngineId: shape({
       engineId: arrayOf(any)
@@ -171,12 +177,22 @@ class MediaDetailsWidget extends React.Component {
       })
     ),
     loadContentTemplates: func,
+    updateTdoContentTemplates: func,
     contentTemplates: objectOf(
       shape({
         id: string,
         name: string.isRequired,
         status: string,
         definition: objectOf(any)
+      })
+    ),
+    tdoContentTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
       })
     )
   };
@@ -300,8 +316,40 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
-  handleUpdateContentTemplates = () => {
-    // TODO: implement add/remove TDO content tamplates
+  updateContentTemplates = data => {
+    const contentTemplates = data.contentTemplates;
+    const contentTemplatesToCreate = [];
+    const contentTemplatesToDelete = [];
+    // find content templates that were added or modified
+    Object.keys(contentTemplates).forEach(schemaId => {
+      if (
+        !contentTemplates[schemaId].assetId ||
+        !this.props.tdoContentTemplates[schemaId]
+      ) {
+        contentTemplatesToCreate.push(contentTemplates[schemaId]);
+      } else {
+        const originalTemplate = this.props.tdoContentTemplates[schemaId];
+        const newTemplate = contentTemplates[schemaId];
+        if (
+          JSON.stringify(originalTemplate.data) !==
+          JSON.stringify(newTemplate.data)
+        ) {
+          contentTemplatesToDelete.push(originalTemplate);
+          contentTemplatesToCreate.push(newTemplate);
+        }
+      }
+    });
+    // find content templates that were removed
+    Object.keys(this.props.tdoContentTemplates).forEach(schemaId => {
+      if (!contentTemplates[schemaId]) {
+        contentTemplatesToDelete.push(this.props.tdoContentTemplates[schemaId]);
+      }
+    });
+    this.props.updateTdoContentTemplates(
+      this.props._widgetId,
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    );
   };
 
   render() {
@@ -316,7 +364,8 @@ class MediaDetailsWidget extends React.Component {
       editModeEnabled,
       libraries,
       entities,
-      contentTemplates
+      contentTemplates,
+      tdoContentTemplates
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -326,9 +375,36 @@ class MediaDetailsWidget extends React.Component {
           {!expandedMode && (
             <div>
               <div className={styles.pageHeader}>
-                <div className={styles.pageHeaderTitleLabel}>
-                  {get(this.props, 'tdo.details.veritoneFile.filename', '')}
-                </div>
+                {get(
+                  this.props,
+                  'tdo.details.veritoneFile.filename.length',
+                  0
+                ) > 120 && (
+                  <Tooltip
+                    id="truncated-file-name-tooltip"
+                    title={get(this.props, 'tdo.details.veritoneFile.filename')}
+                    placement="bottom-start"
+                    enterDelay={1000}
+                    leaveDelay={700}
+                  >
+                    <div className={styles.pageHeaderTitleLabel}>
+                      {get(
+                        this.props,
+                        'tdo.details.veritoneFile.filename',
+                        ''
+                      ).substring(0, 119) + '...'}
+                    </div>
+                  </Tooltip>
+                )}
+                {get(
+                  this.props,
+                  'tdo.details.veritoneFile.filename.length',
+                  0
+                ) <= 120 && (
+                  <div className={styles.pageHeaderTitleLabel}>
+                    {get(this.props, 'tdo.details.veritoneFile.filename', '')}
+                  </div>
+                )}
                 <div className={styles.pageHeaderActionButtons}>
                   <IconButton
                     className={styles.pageHeaderActionButton}
@@ -366,6 +442,7 @@ class MediaDetailsWidget extends React.Component {
               <Tabs
                 value={this.state.selectedTabValue}
                 onChange={this.handleTabChange}
+                indicatorColor="#f9a02c"
                 classes={{
                   flexContainer: styles.mediaDetailsPageTabSelector
                 }}
@@ -629,6 +706,7 @@ class MediaDetailsWidget extends React.Component {
             <MediaInfoPanel
               tdo={this.props.tdo}
               engineCategories={engineCategories}
+              kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
             />
@@ -638,7 +716,8 @@ class MediaDetailsWidget extends React.Component {
             contentTemplates && (
               <ContentTemplateForm
                 templateData={contentTemplates}
-                handleUpdateContentTemplates={this.handleUpdateContentTemplates}
+                initialTemplates={tdoContentTemplates}
+                onSubmit={this.updateContentTemplates}
               />
             )}
         </Paper>

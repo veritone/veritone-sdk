@@ -85,7 +85,7 @@ class OCREngineOutputView extends Component {
                 )}
                 {dataObject.series && (
                   <span>
-                    {dataObject.series.map((ocrObject, i) => {
+                    {dataObject.series.map(ocrObject => {
                       {
                         /* TDO: key may not be unique enough */
                       }
@@ -95,7 +95,7 @@ class OCREngineOutputView extends Component {
                             'ocr-object-' +
                             ocrObject.startTimeMs +
                             ocrObject.stopTimeMs +
-                            i
+                            ocrObject.object.text
                           }
                           text={ocrObject.object.text}
                           startTime={ocrObject.startTimeMs}

@@ -2,7 +2,7 @@ import React from 'react';
 import { arrayOf, objectOf, any, func, shape, string } from 'prop-types';
 import { pick } from 'lodash';
 import SourceManagementNullState from './Nullstate';
-import SourceTileView from './SourceRow';
+import SourceTileView from './SourceTileView';
 import SourceManagementForm from './SourceManagementForm';
 
 export default class SourceManagementOverview extends React.Component {

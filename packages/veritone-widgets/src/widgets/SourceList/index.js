@@ -16,12 +16,10 @@ class SourceListWidget extends React.Component {
   render() {
     const viewProps = omit(this.props, ['onCreateSource']);
 
-    return (
-      !this.props.sources.length
-        ? <SourceNullState onClick={this.props.onCreateSource} />
-        : <SourceTileView
-            {...viewProps}
-          />
+    return !this.props.sources.length ? (
+      <SourceNullState onClick={this.props.onCreateSource} />
+    ) : (
+      <SourceTileView {...viewProps} />
     );
   }
 }

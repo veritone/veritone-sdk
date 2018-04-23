@@ -68,11 +68,14 @@ class FaceFrameContainer extends Component {
             </div>
           )}
           <div className={styles.recognizedMatches}>
-            {faceFrameEntities.map((entity, i) => {
+            {faceFrameEntities.map(entity => {
               return (
                 <RecognizedFaceMatch
                   key={
-                    'frame-view-recognized-entity-' + entity.entityId + '-' + i
+                    'frame-view-recognized-entity-' +
+                    entity.entityId +
+                    '-' +
+                    entity.confidence
                   }
                   entity={recognizedEntityObjectMap[entity.entityId]}
                   confidence={entity.confidence}

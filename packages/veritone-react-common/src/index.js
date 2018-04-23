@@ -24,6 +24,7 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export video from './components/Video';
 export AppContainer from './components/AppContainer';
+
 export RefreshButton from './components/RefreshButton';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
@@ -48,6 +49,7 @@ export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
 export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
 export ContentTemplate from './components/SourceManagement/ContentTemplates';
+export SourceManagementOverview from './components/SourceManagement/';
 
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';

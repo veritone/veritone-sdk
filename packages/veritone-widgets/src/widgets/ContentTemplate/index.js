@@ -13,14 +13,13 @@ class ContentTemplateWidget extends React.Component {
   };
 
   static defaultProps = {
-    templateData: {},
     initialTemplates: {}
   };
 
   state = {
     contentTemplates: {}
   };
-  
+
   componentWillMount() {
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }

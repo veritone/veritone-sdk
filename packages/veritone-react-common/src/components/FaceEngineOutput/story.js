@@ -6,7 +6,8 @@ import {
   number,
   shape,
   arrayOf,
-  objectOf
+  objectOf,
+  oneOfType
 } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { boolean, number as knobNumber } from '@storybook/addon-knobs';
@@ -22,7 +23,6 @@ class FaceEngineOutputStory extends Component {
     enableEditMode: bool,
     mediaPlayerPosition: number,
     onAddNewEntity: func,
-    viewMode: string,
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
     faceEngineOutput: arrayOf(
@@ -51,16 +51,17 @@ class FaceEngineOutputStory extends Component {
         name: string,
         libraryId: string,
         profileImageUrl: string,
-        jsondata: objectOf(string)
+        jsondata: objectOf(oneOfType([string, number]))
       })
-    ),
-    selectedEngineId: string
+    )
   };
 
   state = {
     faceEngineOutput: this.props.faceEngineOutput,
     modifiedFaces: [],
     entitySearchResults: [],
+    entities: this.props.entities,
+    libraries: this.props.libraries,
     engines: [
       {
         id: 'f44aa80e-4650-c55c-58e7-49c965019790',
@@ -71,62 +72,71 @@ class FaceEngineOutputStory extends Component {
   };
 
   handleRemoveFaceDetection = face => {
-    this.setState({
-      faceEngineOutput: this.state.faceEngineOutput.map(output => {
-        if (
-          face.startTimeMs >= output.series[0].startTimeMs &&
-          face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
-        ) {
+    this.setState(prevState => {
+      return {
+        faceEngineOutput: prevState.faceEngineOutput.map(output => {
+          if (
+            face.startTimeMs >= output.series[0].startTimeMs &&
+            face.stopTimeMs <=
+              output.series[output.series.length - 1].stopTimeMs
+          ) {
+            console.log('found in this output');
+            return {
+              ...output,
+              series: output.series.filter(faceObj => {
+                console.log(faceObj, face, !isEqual(face, faceObj));
+                return !isEqual(face, faceObj);
+              })
+            };
+          }
           return {
-            ...output,
-            series: output.series.filter(faceObj => !isEqual(face, faceObj))
+            ...output
           };
-        }
-        return {
-          ...output
-        };
-      }),
-      modifiedFaces: [
-        ...this.state.modifiedFaces,
-        { ...face, modification: 'delete' }
-      ]
+        }),
+        modifiedFaces: [
+          ...prevState.modifiedFaces,
+          { ...face, modification: 'delete' }
+        ]
+      };
     });
     this.props.onRemoveFaceDetection(face);
   };
 
   handleUpdateFace = (face, entity) => {
-    this.setState({
-      faceEngineOutput: this.state.faceEngineOutput.map(output => {
-        if (
-          face.startTimeMs >= output.series[0].startTimeMs &&
-          face.stopTimeMs <= output.series[output.series.length - 1].stopTimeMs
-        ) {
+    this.setState(prevState => {
+      return {
+        faceEngineOutput: prevState.faceEngineOutput.map(output => {
+          if (
+            face.startTimeMs >= output.series[0].startTimeMs &&
+            face.stopTimeMs <=
+              output.series[output.series.length - 1].stopTimeMs
+          ) {
+            return {
+              ...output,
+              series: output.series.map(faceObj => {
+                if (isEqual(face, faceObj)) {
+                  return {
+                    ...face,
+                    object: {
+                      ...face.object,
+                      entityId: entity.id,
+                      libraryId: entity.libraryId
+                    }
+                  };
+                }
+                return { ...faceObj };
+              })
+            };
+          }
           return {
-            ...output,
-            series: output.series.map(faceObj => {
-              if (
-                face.startTimeMs === faceObj.startTimeMs &&
-                face.stopTimeMs === faceObj.stopTimeMs &&
-                isEqual(face.object.boundingPoly, faceObj.object.boundingPoly)
-              ) {
-                return {
-                  ...face,
-                  entityId: entity.entityId,
-                  libraryId: entity.libraryId
-                };
-              }
-              return { ...faceObj };
-            })
+            ...output
           };
-        }
-        return {
-          ...output
-        };
-      }),
-      modifiedFaces: [
-        ...this.state.modifiedFaces,
-        { ...face, modification: 'update' }
-      ]
+        }),
+        modifiedFaces: [
+          ...prevState.modifiedFaces,
+          { ...face, modification: 'update' }
+        ]
+      };
     });
   };
 
@@ -147,20 +157,18 @@ class FaceEngineOutputStory extends Component {
 
   render() {
     let {
-      libraries,
       enableEditMode,
       mediaPlayerPosition,
       onAddNewEntity,
-      onFaceOccurrenceClicked,
-      faceEngineOutput
+      onFaceOccurrenceClicked
     } = this.props;
 
     return (
       <FaceEngineOutput
-        data={faceEngineOutput}
+        data={this.state.faceEngineOutput}
         className={styles.outputViewRoot}
-        libraries={libraries}
-        entities={entities}
+        libraries={this.state.libraries}
+        entities={this.state.entities}
         currentMediaPlayerTime={mediaPlayerPosition}
         engines={this.state.engines}
         onEngineChange={this.handleSelectEngine}
@@ -183,6 +191,7 @@ storiesOf('FaceEngineOutput', module).add('Base', () => {
     <FaceEngineOutputStory
       faceEngineOutput={faceObjects}
       libraries={libraries}
+      entities={entities}
       enableEditMode={boolean('enableEditMode', false)}
       mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
         range: true,
@@ -326,6 +335,7 @@ let entities = [
     id: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
     name: 'Paul McCartney',
     libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+    libraryName: 'Beatles',
     profileImageUrl:
       'https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg',
     jsondata: {
@@ -341,6 +351,7 @@ let entities = [
     id: '1945a3ba-f0a3-411e-8419-78e31c73150a',
     name: 'Ringo Starr',
     libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+    libraryName: 'Beatles',
     profileImageUrl: null,
     jsondata: {}
   },
@@ -348,6 +359,7 @@ let entities = [
     id: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
     name: 'George Harrison',
     libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+    libraryName: 'Beatles',
     profileImageUrl:
       'https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host',
     jsondata: {
@@ -358,6 +370,7 @@ let entities = [
     id: '13595602-3a7f-48d3-bfde-2d029af479f6',
     name: 'Gomez Addams',
     libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+    libraryName: 'Addams Family',
     profileImage: null,
     jsondata: {}
   },
@@ -365,6 +378,7 @@ let entities = [
     id: 'c1666e9f-9dc0-40f9-aece-0ec1bfeae29a',
     name: 'James Williams',
     libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+    libraryName: 'Addams Family',
     profileImage: null,
     jsondata: {}
   }

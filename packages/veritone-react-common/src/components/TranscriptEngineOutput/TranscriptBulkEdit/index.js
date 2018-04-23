@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { string, func } from 'prop-types';
+import { string } from 'prop-types';
 import classNames from 'classnames';
 
 import styles from './styles.scss';
@@ -7,8 +7,7 @@ import styles from './styles.scss';
 export default class TranscriptBulkEdit extends Component {
   static propTypes = {
     content: string,
-    className: string,
-    onChange: func
+    className: string
   };
 
   scaleToFit = () => {
