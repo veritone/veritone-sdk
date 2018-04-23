@@ -57,7 +57,8 @@ module.exports = {
     'react/no-this-in-sfc': 'warn',
     'react/no-unused-prop-types': 'warn',
 
-    'import/named': 'warn'
+    'import/named': 'warn',
+    'import/no-cycle': 'warn',
   },
   env: {
     es6: true,

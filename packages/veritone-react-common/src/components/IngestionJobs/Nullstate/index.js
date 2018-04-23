@@ -2,12 +2,16 @@ import React from 'react';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from 'material-ui/Button';
+import { func } from 'prop-types'
 
 import NullstateImage from 'images/cms-ingestion-jobs-null.svg';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
 export default class IngestionJobNullstate extends React.Component {
+  static propTypes = {
+    onClick: func.isRequired
+  }
   render() {
     return (
       <div className={styles.nullStateView}>
@@ -26,6 +30,7 @@ export default class IngestionJobNullstate extends React.Component {
           variant="raised"
           color="primary"
           component="span"
+          onClick={this.props.onClick}
         >
           New Ingestion Job
         </Button>

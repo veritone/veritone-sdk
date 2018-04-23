@@ -15,7 +15,11 @@ class SourceManagementFormWidget extends React.Component {
   };
 
   render() {
-    return <SourceManagementForm {...this.props} />;
+    return (
+      <SourceManagementForm
+        {...this.props}
+      />
+    )
   }
 }
 

@@ -1,53 +1,60 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
-import { arrayOf, any, objectOf } from 'prop-types';
+import { arrayOf, any, objectOf, bool, func } from 'prop-types';
 
-import { Table, Column } from 'components/DataTable';
-// import MenuColumn from 'components/DataTable/MenuColumn';
+import { Table, PaginatedTable, Column } from 'components/DataTable';
+import MenuColumn from 'components/DataTable/MenuColumn';
 import StatusPill from 'components/StatusPill';
 import { format } from 'date-fns';
-import { map, find, get } from 'lodash';
+import { map, uniq, omit, noop } from 'lodash';
+
+import styles from './styles.scss';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
-    jobs: arrayOf(objectOf(any)).isRequired // an array of source objects
-    // onSelectJob: func.isRequired,
+    jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
+    onSelectJob: func,
+    onSelectMenuItem: func,
+    paginate: bool
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    onSelectJob: noop,
+    onSelectMenuItem: noop
+  };
 
   getIngestionJobData = i => {
     return this.props.jobs[i];
   };
 
   renderEnginesIcons = taskTemplates => {
-    const icons = map(taskTemplates.records, 'engine.category.iconClass');
+    const icons = uniq(map(taskTemplates.records, 'engine.category.iconClass'));
 
     return (
-      <Fragment>
-        {icons.map(icon => {
-          return icon ? <span key={icon} className={icon} /> : undefined;
-        })}
-      </Fragment>
+      <span className={styles['engine-icons']}>
+        {icons.length ? (
+          icons.map(
+            icon => (icon ? <span key={icon} className={icon} /> : undefined)
+          )
+        ) : (
+          <span>{'-'}</span>
+        )}
+      </span>
     );
   };
 
-  renderAdapter = taskTemplates => {
-    const ingestionTaskTemplate = getIngestionTaskTemplate(taskTemplates);
-
-    return ingestionTaskTemplate ? ingestionTaskTemplate.engine.name : '-';
+  renderAdapter = ingestionJobEngine => {
+    return ingestionJobEngine ? ingestionJobEngine.name : '-';
   };
 
-  renderIngestionType = taskTemplates => {
-    const ingestionTaskTemplate = getIngestionTaskTemplate(taskTemplates);
-
-    return ingestionTaskTemplate
-      ? ingestionTaskTemplate.engine.category.name
-      : '-';
+  renderIngestionType = ingestionJobEngine => {
+    return ingestionJobEngine ? ingestionJobEngine.category.name : '-';
   };
 
   renderLastIngestion = mostRecentJob => {
-    return format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A');
+    return mostRecentJob
+      ? format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A')
+      : '-';
   };
 
   renderStatus = isActive => {
@@ -55,11 +62,19 @@ export default class SourceTileView extends React.Component {
   };
 
   render() {
+    const TableComp = this.props.paginate ? PaginatedTable : Table;
+    const tableProps = omit(this.props, ['jobs', 'paginate']);
+    const ingestionJobKey =
+      'ingestionJob.records[0].taskTemplates.records[0].engine';
+    const menuActionsKey = `${ingestionJobKey}.validStateActions`;
+
     return (
-      <Table
+      <TableComp
         rowGetter={this.getIngestionJobData}
         rowCount={this.props.jobs.length}
+        onCellClick={this.props.onSelectJob}
         rowHeight={48}
+        {...tableProps}
       >
         <Column dataKey="name" header="Job Name" />
         <Column
@@ -74,12 +89,12 @@ export default class SourceTileView extends React.Component {
           align="center"
         />
         <Column
-          dataKey="jobTemplates.records[0].taskTemplates"
+          dataKey={ingestionJobKey}
           header="Adapter"
           cellRenderer={this.renderAdapter}
         />
         <Column
-          dataKey="jobTemplates.records[0].taskTemplates"
+          dataKey={ingestionJobKey}
           header="Ingestion Type"
           cellRenderer={this.renderIngestionType}
           align="center"
@@ -89,20 +104,12 @@ export default class SourceTileView extends React.Component {
           header="Last Ingestion"
           cellRenderer={this.renderLastIngestion}
         />
-        {/* <MenuColumn
+        <MenuColumn
           id="menu"
-          dataKey='jobTemplates.records[0].taskTemplates'
+          dataKey={menuActionsKey}
           onSelectItem={this.props.onSelectMenuItem}
-        /> */}
-      </Table>
+        />
+      </TableComp>
     );
   }
-}
-
-function getIngestionTaskTemplate(taskTemplates) {
-  return find(
-    taskTemplates.records,
-    templateRecord =>
-      get(templateRecord, 'engine.category.type.name') === 'Ingestion'
-  );
 }
