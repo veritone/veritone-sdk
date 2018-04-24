@@ -19,28 +19,40 @@ export default class EntityStreamData extends Component {
     })).isRequired,
     className: string,
     onClick: func,
-    mediaPlayerTimeMs: number
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
+  }
+
+  handleOnClick = (event, value) => {
+    this.props.onClick && this.props.onClick(value.startTimeMs, value.stopTimeMs);
   }
 
   render () {
     const {
       data,
       className,
-      onClick
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
+    const playerTimeEnabled = mediaPlayerTimeMs >= 0;
+    const mediaPlayerStopTimeMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
     return (
       <div className={classNames(styles.fingerprintEntityMatches, className)}>
         {
           data.map(entry => {
-            const label = msToReadableString(entry.startTimeMs) + ' - ' + msToReadableString(entry.stopTimeMs);
+            const entryStartTime = entry.startTimeMs;
+            const entryStopTime = entry.stopTimeMs;
+            const active = playerTimeEnabled && !(mediaPlayerTimeMs > entryStopTime || mediaPlayerStopTimeMs < entryStartTime);
+            const label = msToReadableString(entryStartTime) + ' - ' + msToReadableString(entryStopTime);
             return (
               <TextButton
                 label={label}
                 data={entry}
-                onClick={onClick}
-                key={'entity-match-' + entry.startTimeMs + entry.stopTimeMs}
+                onClick={this.handleOnClick}
+                key={'entity-match-' + entryStartTime + entryStopTime}
                 className={classNames(styles.textButton)}
+                highlight={active}
               />
             );
           })

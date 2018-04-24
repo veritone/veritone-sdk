@@ -1,21 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { number } from '@storybook/addon-knobs/react';
 
 import FingerprintEngineOutput from './';
+
 
 storiesOf('FingerprintEngineOutput', module)
   .add('Base', () => {
     const libraries = genLibraries(5);
     const entities = genEntities(10, libraries);
     const mockData = genMockData(0, 600000, 1000, entities);
-    console.log(libraries, entities);
 
     return (
       <FingerprintEngineOutput 
         data={mockData}
         entities={entities}
         libraries={libraries}
+        onClick={action('on click')}
+        mediaPlayerTimeMs={1000 * number('player time', 0)}
+        mediaPlayerTimeIntervalMs={1000}
         selectedEngineId={selectedEngineId}
         engines={engines}
         onEngineChange={action('engine select')}
@@ -94,7 +98,7 @@ function genEntities (numEntities, libraries) {
       description: 'description...',
       entityId: 'entity-' + index,
       libraryId: libraries[randomLibIndex].libraryId,
-      metadata: {
+      jsondata: {
         advertiser: 'bla bla bla',
         spotType: 'voice',
         duration: '10:00',

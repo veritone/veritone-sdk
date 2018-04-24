@@ -32,12 +32,14 @@ export default class FingerPrintLibraries extends Component {
       })
     ),
     onClick:func,
-    mediaPlayerTimeMs: number
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
   };
 
   static defaultProps = {
     libraries: [],
-    mediaPlayerTimeMs: -1
+    mediaPlayerTimeMs: -1,
+    mediaPlayerTimeIntervalMs: 0
   };
 
   render () {
@@ -45,7 +47,8 @@ export default class FingerPrintLibraries extends Component {
       libraries,
       className,
       onClick,
-      mediaPlayerTimeMs
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     return (
@@ -59,6 +62,7 @@ export default class FingerPrintLibraries extends Component {
                   onClick={onClick}
                   key={'fingerprint-lib-'+libraryData.libraryId}
                   mediaPlayerTimeMs={mediaPlayerTimeMs}
+                  mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
                 />
               );
             }

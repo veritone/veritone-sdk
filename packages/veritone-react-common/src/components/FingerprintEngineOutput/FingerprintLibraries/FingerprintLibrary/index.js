@@ -26,22 +26,40 @@ export default class FingerprintLibrary extends Component {
       }))
     }),
     onClick: func,
-    mediaPlayerTimeMs: number
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
   };
 
   static defaultProps = {
-    mediaPlayerTimeMs: -1
+    mediaPlayerTimeMs: -1,
+    mediaPlayerTimeIntervalMs: 0
   };
 
   renderEntities () {
     const {
       onClick,
       libraryData,
-      mediaPlayerTimeMs
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
     
+    const playerTimeEnabled = mediaPlayerTimeMs >= 0;
+    const mediaPlayerStopTimeMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+
     if (libraryData && libraryData.entities) {
       return libraryData.entities.map((entityData => {
+        let active = false;
+        if (entityData && entityData.matches) {
+          for (const entry of entityData.matches) {
+            const entryStartTime = entry.startTimeMs;
+            const entryStopTime = entry.stopTimeMs;
+            if (playerTimeEnabled && !(mediaPlayerTimeMs > entryStopTime || mediaPlayerStopTimeMs < entryStartTime)) {
+              active = true;
+              break;
+            }
+          }
+        }
+
         return (
           <PillButton
             className={classNames(styles.entity)}
@@ -49,6 +67,7 @@ export default class FingerprintLibrary extends Component {
             info={'(' + entityData.matches.length + ')'}
             data={entityData}
             onClick={onClick}
+            highlight={active}
             key={'finger-print-entity' + entityData.entityId + entityData.entityName}
           />
         );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, func, shape, object } from 'prop-types';
+import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 import { keyBy, sortBy, toArray } from 'lodash';
 
@@ -35,7 +35,7 @@ export default class FingerprintEngineOutput extends Component {
         libraryId: string,
         description: string,
         profileImageUrl: string,
-        metadata: object
+        jsondata: shape({})
       })
     ),
 
@@ -63,7 +63,8 @@ export default class FingerprintEngineOutput extends Component {
     contentClassName: string,
     libraryClassName: string,
     entityClassName: string,
-    mediaPlayerTimeMs: number
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
   };
 
   static defaultProps = {
@@ -71,7 +72,8 @@ export default class FingerprintEngineOutput extends Component {
     entities: [],
     libraries: [],
     title: 'A/V Fingerprinting',
-    mediaPlayerTimeMs: -1
+    mediaPlayerTimeMs: -1,
+    mediaPlayerTimeIntervalMs: 0
   };
 
   formatPropsData () {
@@ -148,6 +150,7 @@ export default class FingerprintEngineOutput extends Component {
       entityClassName,
       libraryClassName,
       mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     const libraryContents = this.formatPropsData();
@@ -159,13 +162,13 @@ export default class FingerprintEngineOutput extends Component {
         entityClassName={entityClassName}
         libraryClassName={libraryClassName}
         mediaPlayerTimeMs={mediaPlayerTimeMs}
+        mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
         onClick={onClick}
       />
     );
   }
 
   render () {
-    console.log(this.props.data, this.props.entities, this.props.libraries);
     return (
       <div className={classNames(styles.fingerprintOutput, this.props.className)}>
         {this.renderHeader()}

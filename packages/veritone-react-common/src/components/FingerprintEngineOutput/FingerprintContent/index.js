@@ -40,11 +40,13 @@ export default class FingerprintContent extends Component {
     libraryClassName: string,
     entityClassName: string,
     mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number,
     onClick: func
   }
 
   static defaultProps = {
-    mediaPlayerTimeMs: -1
+    mediaPlayerTimeMs: -1,
+    mediaPlayerTimeIntervalMs: 0
   }
 
   state = {
@@ -94,24 +96,27 @@ export default class FingerprintContent extends Component {
       entityClassName,
       libraryClassName,
       mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     if (this.state.showLibrary || !this.state.selectedEntity) {
       return (
         <FingerprintLibraries 
           libraries={libraries}
+          onClick={this.handleEntityClick}
           className={classNames(libraryClassName)}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
-          onClick={this.handleEntityClick}
+          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
         />
       );
     } else {
       return (
         <FingerprintEntity
           entity={this.state.selectedEntity}
+          onClick={onClick}
           className={classNames(entityClassName)}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
-          onClick={onClick}
+          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
         />
       );
     }

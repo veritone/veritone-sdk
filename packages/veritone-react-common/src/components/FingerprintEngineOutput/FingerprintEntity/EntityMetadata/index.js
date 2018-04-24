@@ -6,21 +6,21 @@ import styles from './styles.scss';
 
 export default class EntityMetadata extends Component {
   static propTypes = {
-    metadata: shape({}),
+    jsondata: shape({}),
     className: string
   }
 
   render () {
     const {
-      metadata,
+      jsondata,
       className
     } = this.props;
 
     return (
       <div className={classNames(styles.fingerprintEntityMetadata, className)}>
         {
-          Object.keys(metadata).map(propName => {
-            const propVal = metadata[propName];
+          Object.keys(jsondata).map(propName => {
+            const propVal = jsondata[propName];
             return (
               <div 
                 className={classNames(styles.entry)}

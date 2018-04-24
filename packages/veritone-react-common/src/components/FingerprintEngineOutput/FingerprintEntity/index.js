@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, func, shape, object } from 'prop-types';
+import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 
 import Icon from 'material-ui/Icon';
@@ -10,7 +10,7 @@ import EntityMetadata from './EntityMetadata';
 import EntityStreamData from './EntityStreamData';
 import styles from './styles.scss';
 
-//@withMuiThemeProvider
+@withMuiThemeProvider
 export default class FingerprintEntity extends Component {
   static propTypes = {
     className: string,
@@ -20,7 +20,7 @@ export default class FingerprintEntity extends Component {
       profileImageUrl: string,
       libraryId: string,
       libraryName: string,
-      metadata: object,
+      jsondata: shape({}),
       matches: arrayOf(shape({
         startTimeMs: number,
         stopTimeMs: number,
@@ -31,7 +31,8 @@ export default class FingerprintEntity extends Component {
       }))
     }),
     onClick: func,
-    mediaPlayerTimeMs: number
+    mediaPlayerTimeMs: number,
+    mediaPlayerTimeIntervalMs: number
   };
 
   state = {
@@ -70,7 +71,8 @@ export default class FingerprintEntity extends Component {
     const {
       entity,
       onClick,
-      mediaPlayerTimeMs
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
     } = this.props;
 
     return (
@@ -78,6 +80,7 @@ export default class FingerprintEntity extends Component {
         data={entity.matches}
         onClick={onClick}
         mediaPlayerTimeMs={mediaPlayerTimeMs}
+        mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
       />
     );
   }
@@ -85,7 +88,7 @@ export default class FingerprintEntity extends Component {
   renderMetadata () {
     return (
       <EntityMetadata
-        metadata={this.props.entity.metadata}
+        jsondata={this.props.entity.jsondata}
       />
     );
   }
