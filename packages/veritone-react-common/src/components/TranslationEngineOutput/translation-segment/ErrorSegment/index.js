@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { number, string, func } from 'prop-types';
 import classNames from 'classnames';
+import Icon from 'material-ui/Icon';
 import Button from 'material-ui/Button';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 export default class ErrorSegment extends Component {
   static propTypes = {
     startTimeMs: number.isRequired,
@@ -51,7 +54,8 @@ export default class ErrorSegment extends Component {
           {description}
         </div>
         <div>
-          <Button variant="raised" color="primary" onClick={this.handleOnClick}>
+          <Button variant='raised' color='primary' onClick={this.handleOnClick}>
+            <Icon className={'icon-run-process'} />&nbsp;
             {buttonLabel}
           </Button>
         </div>
