@@ -54,7 +54,7 @@ export default class ErrorSegment extends Component {
           {description}
         </div>
         <div>
-          <Button variant='raised' color='primary' onClick={this.handleOnClick}>
+          <Button variant="raised" color="primary" onClick={this.handleOnClick}>
             <Icon className={'icon-run-process'} />&nbsp;
             {buttonLabel}
           </Button>
