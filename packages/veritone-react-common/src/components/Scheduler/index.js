@@ -1,5 +1,6 @@
 import React from 'react';
-import { oneOf, func } from 'prop-types';
+import { withTheme, createMuiTheme, MuiThemeProvider } from 'material-ui/styles';
+import { oneOf, func, number } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
 import {
   noop,
@@ -82,16 +83,18 @@ const initDate = new Date();
   form: 'scheduler'
 })
 @formValues('scheduleType')
-export default class Scheduler extends React.Component {
+class Scheduler extends React.Component {
   static propTypes = {
     scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once'])
       .isRequired,
     onSubmit: func, // user-provided callback for result values
-    handleSubmit: func.isRequired // provided by redux-form
+    handleSubmit: func.isRequired, // provided by redux-form
+    relativeSize: number  // optional - used to scale text sizes from hosting app
   };
 
   static defaultProps = {
-    onSubmit: noop
+    onSubmit: noop,
+    relativeSize: 14
   };
 
   prepareResultData(formResult) {
@@ -129,6 +132,18 @@ export default class Scheduler extends React.Component {
     this.props.onSubmit(this.prepareResultData(vals));
   };
 
+  getTheme = ( { relativeSize } ) => {
+    const theme = createMuiTheme({
+      typography: {
+        htmlFontSize: relativeSize || 13,
+        subheading: {
+          fontSize: '1em'
+        }
+      }
+    });
+    return theme;
+  }
+
   render() {
     const ActiveSectionComponent = {
       Recurring: RecurringSection,
@@ -138,37 +153,39 @@ export default class Scheduler extends React.Component {
     }[this.props.scheduleType];
 
     return (
-      <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
-        <Field
-          component={RadioGroup}
-          name="scheduleType"
-          className={styles.scheduleTypeContainer}
-        >
-          <FormControlLabel
-            value="Recurring"
-            control={<Radio />}
-            label="Recurring"
-          />
-          <FormControlLabel
-            value="Continuous"
-            control={<Radio />}
-            label="Continuous"
-          />
-          <FormControlLabel
-            value="Now"
-            control={<Radio />}
-            label="Immediate"
-          />
-          <FormControlLabel
-            value="Once"
-            control={<Radio />}
-            label="On Demand"
-          />
-        </Field>
-        <div className={styles.activeSectionContainer}>
-          <ActiveSectionComponent />
-        </div>
-      </Form>
+      <MuiThemeProvider theme={ this.getTheme( { relativeSize: this.props.relativeSize } ) }>
+        <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
+          <Field
+            component={RadioGroup}
+            name="scheduleType"
+            className={styles.scheduleTypeContainer}
+          >
+            <FormControlLabel
+              value="Recurring"
+              control={<Radio />}
+              label="Recurring"
+            />
+            <FormControlLabel
+              value="Continuous"
+              control={<Radio />}
+              label="Continuous"
+            />
+            <FormControlLabel
+              value="Now"
+              control={<Radio />}
+              label="Immediate"
+            />
+            <FormControlLabel
+              value="Once"
+              control={<Radio />}
+              label="On Demand"
+            />
+          </Field>
+          <div className={styles.activeSectionContainer}>
+            <ActiveSectionComponent />
+          </div>
+        </Form>
+      </MuiThemeProvider>
     );
   }
 }
@@ -202,3 +219,5 @@ function filterRecurringPeriods(result, recurringPeriod) {
 
   return result;
 }
+
+export default withTheme()(Scheduler);

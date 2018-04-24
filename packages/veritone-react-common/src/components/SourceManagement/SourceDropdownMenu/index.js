@@ -4,6 +4,7 @@ import { FormControl } from 'material-ui/Form';
 import Select from 'material-ui/Select';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import { InputLabel } from 'material-ui/Input';
+import CheckIcon from 'material-ui-icons/Done';
 
 import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
 
@@ -114,7 +115,7 @@ const SourceSelector = ({
       handleSourceChange(source.id);
       handleMenuClose();
     }
-
+    let version = source.sourceType && source.sourceType.sourceSchema ? source.sourceType.sourceSchema.majorVersion + '.' + source.sourceType.sourceSchema.majorVersion : undefined;
     return (
       <MenuItem
         key={source.id}
@@ -122,7 +123,19 @@ const SourceSelector = ({
         selected={source.id === initialValue}
         onClick={handleItemClick}
       >
-        {source.name}
+        {
+          source.id === initialValue ?
+            <span className={styles.menuIconSpacer}>
+              <CheckIcon />
+            </span> :
+            <span className={styles.menuIconSpacer} />
+        }
+        <span className={styles.sourceMenuItemName}>{source.name}</span>
+        {
+          version ?
+            <span className={styles.sourceMenuItemVersion}>Version {version}</span> :
+            null
+        }
       </MenuItem>
     );
   });
@@ -131,7 +144,12 @@ const SourceSelector = ({
   let selectedSource = sources.find(source => source.id === initialValue);
   return (
     <FormControl>
-      <InputLabel htmlFor="select-source">Select a Source*</InputLabel>
+      <InputLabel
+        htmlFor="select-source"
+        className={styles.sourceLabel}
+      >
+        Select a Source*
+      </InputLabel>
       <Select
         className={styles.sourceSelector}
         value={initialValue || dummyItem}
