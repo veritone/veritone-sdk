@@ -27,8 +27,10 @@ import {
   SentimentEngineOutput,
   TranscriptEngineOutput,
   FaceEngineOutput,
+  FingerprintEngineOutput,
   LogoDetectionEngineOutput,
-  ContentTemplateForm
+  ContentTemplateForm,
+  GeoEngineOutput,
 } from 'veritone-react-common';
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
@@ -320,6 +322,7 @@ class MediaDetailsWidget extends React.Component {
       contentTemplates
     } = this.props;
 
+    console.log(this.tdo);
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open>
@@ -613,7 +616,16 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <FingerprintEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        entities={entities}
+                        libraries={libraries}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
@@ -636,7 +648,12 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <GeoEngineOutput 
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===

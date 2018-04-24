@@ -133,9 +133,9 @@ function* loadTdoSaga(widgetId, tdoId) {
     'thumbnail',
     'transcode',
     // TODO: remove these temporarily disabled categories
-    'fingerprint',
+    //'fingerprint',
     'translate',
-    'geolocation',
+    //'geolocation',
     'stationPlayout',
     'music'
   ];
