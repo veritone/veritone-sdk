@@ -16,7 +16,7 @@ class ContentTemplateFormWidget extends React.Component {
       <ContentTemplateForm
         templateData={this.props.templateData}
         initialTemplates={this.props.initialTemplates}
-        handleUpdateContentTemplates={this.props.handleUpdateContentTemplates}
+        onSubmit={this.props.handleUpdateContentTemplates}
       />
     );
   }

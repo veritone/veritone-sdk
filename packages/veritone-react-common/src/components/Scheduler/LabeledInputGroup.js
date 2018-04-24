@@ -7,9 +7,11 @@ import styles from './styles.scss';
 const LabeledInputGroup = ({ label, hasIconOffset, children }) => (
   <FormControl component="fieldset">
     <div className={styles.fieldsetGroup}>
-      <div className={cx(styles.label, {
-        [styles.hasIconOffset]: hasIconOffset
-      })}>
+      <div
+        className={cx(styles.label, {
+          [styles.hasIconOffset]: hasIconOffset
+        })}
+      >
         <FormLabel focused={false}>{label}</FormLabel>
       </div>
       <div className={styles.input}>{children}</div>

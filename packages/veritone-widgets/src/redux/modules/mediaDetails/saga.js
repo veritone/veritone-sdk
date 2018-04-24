@@ -6,9 +6,12 @@ const { auth: authModule, config: configModule } = modules;
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import {
   LOAD_ENGINE_RESULTS,
+  LOAD_ENGINE_RESULTS_COMPLETE,
   LOAD_TDO,
   UPDATE_TDO,
   LOAD_CONTENT_TEMPLATES,
+  UPDATE_TDO_CONTENT_TEMPLATES,
+  UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
   SET_SELECTED_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
   REQUEST_LIBRARIES,
@@ -23,12 +26,25 @@ import {
   loadTdoSuccess,
   updateTdoComplete,
   loadContentTemplatesComplete,
+  loadTdoContentTemplatesComplete,
   selectEngineCategory,
   setEngineId,
   tdo,
-  engineResultRequestsByEngineId,
-  LOAD_ENGINE_RESULTS_COMPLETE
+  engineResultRequestsByEngineId
 } from '.';
+
+const tdoInfoQueryClause = `id
+    details
+    startDateTime
+    stopDateTime
+    applicationId
+    security {
+      global
+    }
+    primaryAsset(assetType: "media") {
+      id
+      uri
+    }`;
 
 function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
   yield put(loadEngineCategoriesComplete(widgetId, result, { warning, error }));
@@ -45,19 +61,9 @@ function* finishUpdateTdo(widgetId, result, { warning, error }) {
 function* loadTdoSaga(widgetId, tdoId) {
   const getTdoQuery = `query temporalDataObject($tdoId: ID!){
       temporalDataObject(id: $tdoId) {
-        id
-        details
-        startDateTime
-        stopDateTime
-        applicationId
-        security {
-          global
-        }
-        primaryAsset(assetType: "media") {
-          id
-          uri
-        }
-        assets(limit:1000, type: "vtn-standard") {
+        ${tdoInfoQueryClause}
+        # Run engines and categories query clauses
+        vtnStandardAssets: assets(limit:1000, type: "vtn-standard") {
           records {
             sourceData {
               task {
@@ -133,9 +139,8 @@ function* loadTdoSaga(widgetId, tdoId) {
     'thumbnail',
     'transcode',
     // TODO: remove these temporarily disabled categories
-    //'fingerprint',
-    'translate',
-    //'geolocation',
+    'fingerprint',
+    'geolocation',
     'stationPlayout',
     'music'
   ];
@@ -196,8 +201,8 @@ function* loadTdoSaga(widgetId, tdoId) {
         .forEach(task => extractEngineCategoriesFromTaskData(task));
     });
   }
-  if (get(tdo, 'assets.records', false)) {
-    tdo.assets.records
+  if (get(tdo, 'vtnStandardAssets.records', false)) {
+    tdo.vtnStandardAssets.records
       .filter(
         asset =>
           get(asset, 'sourceData.task.engine.category.iconClass', false) &&
@@ -222,16 +227,6 @@ function* loadTdoSaga(widgetId, tdoId) {
   }
   engineCategories = filteredCategories;
 
-  // TODO: dynamically add Structured Data Category - depending whether there is such data for TDO
-  engineCategories.push({
-    name: 'Structured Data',
-    id: 'thirdPartyData',
-    categoryType: 'thirdPartyData',
-    editable: false,
-    iconClass: 'icon-third-party-data',
-    engines: []
-  });
-
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
     if (category1.categoryType < category2.categoryType) {
@@ -253,7 +248,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     'sentiment',
     'geolocation',
     'stationPlayout',
-    'thirdPartyData',
+    'sdo',
     'music'
   ];
   orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
@@ -282,6 +277,8 @@ function* loadTdoSaga(widgetId, tdoId) {
   if (engineCategories.length) {
     yield put(selectEngineCategory(widgetId, engineCategories[0]));
   }
+  // initiate loading content templates for this tdo
+  yield call(loadTdoContentTemplatesSaga, widgetId);
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
@@ -291,18 +288,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
         ${tdoDataToUpdate}
       })
       {
-        id
-        details
-        startDateTime
-        stopDateTime
-        applicationId
-        security {
-          global
-        }
-        primaryAsset(assetType: "media") {
-          id
-          uri
-        }
+        ${tdoInfoQueryClause}
       }
     }`;
 
@@ -443,6 +429,219 @@ function* loadContentTemplates(widgetId) {
   );
 }
 
+function* loadTdoContentTemplatesSaga(widgetId) {
+  const getTdoContentTemplates = `query temporalDataObject($tdoId: ID!){
+      temporalDataObject(id: $tdoId) {
+        assets(type: "content-template") {
+          records {
+            id
+            transform(transformFunction: JSON)
+            sourceData {
+              schema {
+                id
+                status
+                definition
+                majorVersion
+                minorVersion
+                validActions
+                dataRegistry {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+  const requestTdo = yield select(tdo, widgetId);
+  const variables = { tdoId: requestTdo.id };
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: getTdoContentTemplates,
+      token,
+      variables
+    });
+  } catch (error) {
+    return yield put(
+      loadTdoContentTemplatesComplete(widgetId, null, { error })
+    );
+  }
+
+  if (response.errors && response.errors.length) {
+    response.errors.forEach(error => console.warn(error));
+  }
+
+  const result = get(response.data, 'temporalDataObject.assets', {});
+
+  yield put(
+    loadTdoContentTemplatesComplete(widgetId, result, {
+      warning: false,
+      error: false
+    })
+  );
+}
+
+function* updateTdoContentTemplatesSaga(
+  widgetId,
+  contentTemplatesToDelete,
+  contentTemplatesToCreate
+) {
+  const assetIdsToDelete = contentTemplatesToDelete
+    .filter(contentTemplate => !!contentTemplate.assetId)
+    .map(contentTemplate => contentTemplate.assetId);
+
+  let response;
+  try {
+    response = yield all([
+      call(deleteAssetsSaga, uniq(assetIdsToDelete)),
+      call(createTdoContentTemplatesSaga, widgetId, contentTemplatesToCreate)
+    ]);
+  } catch (error) {
+    response = { errors: [error] };
+  }
+
+  if (response.errors && response.errors.length) {
+    response.errors.forEach(error =>
+      console.error('Failed to update content template: ' + error)
+    );
+    yield put({
+      type: UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
+      error: 'Error updating content templates.'
+    });
+  }
+
+  yield call(loadTdoContentTemplatesSaga, widgetId);
+}
+
+function* deleteAssetsSaga(assetIds) {
+  if (!assetIds || !assetIds.length) {
+    return {};
+  }
+
+  const headerParams = [];
+  const deleteAssetClauses = [];
+  const variables = {};
+
+  assetIds.forEach((assetId, i) => {
+    headerParams.push(`$assetId${i}: ID!`);
+    deleteAssetClauses.push(
+      `da${i}: deleteAsset (id: $assetId${i}) { id message }`
+    );
+    variables[`assetId${i}`] = assetId;
+  });
+
+  const deleteAssetsQuery = `mutation deleteAsset(${headerParams.join(
+    ', '
+  )}){ ${deleteAssetClauses.join(' ')} }`;
+
+  console.log('delete assets query');
+  console.log(deleteAssetsQuery);
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let response;
+  const errors = [];
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: deleteAssetsQuery,
+      token,
+      variables
+    });
+  } catch (error) {
+    errors.push(error);
+  }
+  if (get(response, 'errors.length', 0)) {
+    response.errors.forEach(error => errors.push(error));
+  }
+
+  if (errors.length) {
+    return { errors };
+  }
+
+  return {};
+}
+
+function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
+  if (!contentTemplates || !contentTemplates.length) {
+    return {};
+  }
+
+  const requestTdo = yield select(tdo, widgetId);
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  const errors = [];
+  const applyContentTemplatesQuery = `mutation updateTDO($tdoId: ID!, $schemaId: ID!, $data: JSONData){
+      updateTDO( input: {
+        id: $tdoId
+        contentTemplates: [{schemaId: $schemaId, data: $data}]
+      })
+      { id }
+    }`;
+  for (let i = 0; i < contentTemplates.length; i++) {
+    const variables = {
+      tdoId: requestTdo.id,
+      schemaId: contentTemplates[i].id,
+      data: contentTemplates[i].data
+    };
+    let response;
+    try {
+      response = yield call(callGraphQLApi, {
+        endpoint: graphQLUrl,
+        query: applyContentTemplatesQuery,
+        token,
+        variables
+      });
+    } catch (error) {
+      errors.push(error);
+    }
+    if (get(response, 'errors.length', 0)) {
+      response.errors.forEach(error => errors.push(error));
+    }
+  }
+
+  if (errors.length) {
+    return { errors };
+  }
+
+  return {};
+}
+
+function* watchUpdateTdoContentTemplates() {
+  yield takeEvery(UPDATE_TDO_CONTENT_TEMPLATES, function*(action) {
+    const {
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    } = action.payload;
+    const { widgetId } = action.meta;
+    console.log('Content templates to delete');
+    console.log(contentTemplatesToDelete);
+    console.log('Content templates to create');
+    console.log(contentTemplatesToCreate);
+    yield call(
+      updateTdoContentTemplatesSaga,
+      widgetId,
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    );
+  });
+}
+
 function* watchLoadEngineResultsRequest() {
   yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
     const { engineId } = action.payload;
@@ -542,7 +741,7 @@ function* fetchEntities(widgetId, entityIds) {
   if (response.errors) {
     yield put({
       type: REQUEST_ENTITIES_FAILURE,
-      error: 'Error thrown by GraphQL while fetching entities',
+      error: 'Error thrown while fetching entities',
       meta: { widgetId }
     });
   } else {
@@ -683,6 +882,7 @@ export default function* root() {
     fork(watchUpdateTdoRequest),
     fork(watchSetEngineId),
     fork(watchSelectEngineCategory),
-    fork(watchLoadContentTemplates)
+    fork(watchLoadContentTemplates),
+    fork(watchUpdateTdoContentTemplates)
   ]);
 }

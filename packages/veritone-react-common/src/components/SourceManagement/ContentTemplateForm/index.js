@@ -3,7 +3,7 @@ import { string, shape, objectOf, any, func } from 'prop-types';
 import Button from 'material-ui/Button';
 import ContentTemplates from '../ContentTemplates';
 
-import styles from '../styles.scss';
+import styles from './styles.scss';
 
 export default class ContentTemplateForm extends React.Component {
   static propTypes = {
@@ -28,7 +28,6 @@ export default class ContentTemplateForm extends React.Component {
   };
 
   static defaultProps = {
-    // templateData: {},
     initialTemplates: {}
   };
 
@@ -49,10 +48,6 @@ export default class ContentTemplateForm extends React.Component {
 
     if (remove) {
       if (this.state.contentTemplates[templateSchemaId]) {
-        // const contentTemplates = { ...this.state.contentTemplates };
-        // delete contentTemplates[templateSchemaId];
-
-        // return this.setState({ contentTemplates });
         return this.setState(prevState => {
           const contentTemplates = { ...prevState.contentTemplates };
           delete contentTemplates[templateSchemaId];
@@ -86,8 +81,6 @@ export default class ContentTemplateForm extends React.Component {
   };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
-    // const { contentTemplates } = this.state;
-
     this.setState(prevState => ({
       contentTemplates: {
         ...prevState.contentTemplates,
@@ -118,7 +111,7 @@ export default class ContentTemplateForm extends React.Component {
           onListChange={this.manageTemplatesList}
           onInputChange={this.updateTemplateDetails}
         />
-        <div className={styles.btnContainer}>
+        <div className={styles['btn-container']}>
           <Button variant="raised" color="primary" type="submit">
             Save
           </Button>

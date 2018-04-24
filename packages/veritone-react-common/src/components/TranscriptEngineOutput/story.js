@@ -72,7 +72,7 @@ export class TranscriptExample extends Component {
         0.2
       );
       this.setState(prevState => {
-        let newMockData = {...prevState}.data.concat(additionalData);
+        let newMockData = { ...prevState }.data.concat(additionalData);
         return {
           data: newMockData
         };

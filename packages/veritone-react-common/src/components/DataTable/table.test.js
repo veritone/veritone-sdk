@@ -1,9 +1,9 @@
 import React from 'react';
-import { range, filter, get, includes } from 'lodash';
+import { range, filter, get, includes, map, uppercase } from 'lodash';
 import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
-import { LOADING } from './withBasicBehavior';
+import { LOADING } from './shared';
 import { Table, Column, PaginatedTable } from './';
 
 function assertRowsExist(rows, wrapper, assertion = true) {
@@ -61,6 +61,47 @@ describe('Column', function() {
     );
     expect(nameWrapper.text()).toEqual('mitch');
     expect(nameWrapper.text()).not.toEqual('1');
+  });
+
+  it("Renders nested 'dataKey' value", function() {
+    const data = {
+      id: 1,
+      profile: {
+        name: 'mitch',
+        employer: {
+          name: 'Veritone',
+          team: 'Apps'
+        }
+      }
+    };
+
+    const nameWrapper = mount(
+      <SupressColumnWarnings>
+        <Column data={data} dataKey="profile.name" />
+      </SupressColumnWarnings>
+    );
+    expect(nameWrapper.text()).toEqual(data.profile.name);
+
+    const teamWrapper = mount(
+      <SupressColumnWarnings>
+        <Column data={data} dataKey={['profile', 'employer', 'team']} />
+      </SupressColumnWarnings>
+    );
+
+    expect(teamWrapper.text()).toEqual(data.profile.employer.team);
+
+    const employerWrapper = mount(
+      <SupressColumnWarnings>
+        <Column
+          data={data}
+          dataKey={['profile', 'employer', 'name']}
+          cellRenderer={uppercase}
+        />
+      </SupressColumnWarnings>
+    );
+    expect(employerWrapper.text()).toEqual(
+      uppercase(data.profile.employer.name)
+    );
   });
 
   it('Renders nothing if data is undefined', function() {
@@ -151,6 +192,28 @@ describe('MenuColumn', function() {
       filter(menuItems, menuItem => includes(get(menuItem, 'key'), 'divider'))
         .length
     ).toEqual(0);
+  });
+
+  it('excludes specified actions', function() {
+    const data = {
+      actions: ['delete', 'alter', 'manage']
+    };
+    const wrapper = mount(
+      <SupressColumnWarnings>
+        <MenuColumn
+          data={data}
+          dataKey="actions"
+          protectedActions={['delete']}
+          excludeActions={['alter']}
+        />
+      </SupressColumnWarnings>
+    );
+
+    const menuItems = wrapper.find('Menu').prop('children');
+    expect(map(menuItems, 'key')).not.toContain('alter');
+    expect(map(menuItems, 'key')).toEqual(
+      expect.arrayContaining(['delete', 'manage'])
+    );
   });
 });
 

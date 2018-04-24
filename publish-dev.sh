@@ -17,6 +17,6 @@ cd ..
 rm -rf ./publish-dev-dist
 cd $rootDir
 
-aws s3api put-object --bucket $bucketname --key $filename --body $filename
+aws s3api put-object --bucket $bucketname --key $filename --body $filename --profile veritone
 rm $filename
 echo "Artifact stored at https://${bucketname}.s3.amazonaws.com/${filename}"

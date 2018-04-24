@@ -64,3 +64,13 @@
 
 ## 4.3.1
 * Updated material-ui dependency to v1.0.0-beta.36
+
+## 4.4.0
+* DataTable
+* * Added props.excludeActions for MenuColumn
+* * Fixed LOADING export in DataTable
+* * Fixed split table issue where focused table row was wrong value
+* * Fixed Column width prop to use css rather than the (deprecated) html property.
+* * props.dataKey to dataTables can now be any value accepted by lodash _.get. This means nested keys are now supported.
+
+* Updated veritone icons file

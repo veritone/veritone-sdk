@@ -3,107 +3,11 @@ import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
-import SourceManagementWidget from './';
+import ContentTemplateFormWidget from './';
 import { has } from 'lodash';
 
-let sourceTypes = {
-  sourceTypes: {
-    records: [
-      {
-        name: 'Audio',
-        id: 'audio_1',
-        sourceSchema: {
-          definition: {
-            properties: {
-              url: {
-                type: 'string'
-              },
-              username: {
-                type: 'string',
-                title: 'User Name'
-              },
-              password: {
-                type: 'string'
-              }
-            },
-            required: ['url', 'username', 'password']
-          }
-        }
-      },
-      {
-        name: 'Audio2',
-        id: 'audio_2',
-        sourceSchema: {
-          definition: {
-            properties: {
-              url: {
-                type: 'string'
-              },
-              username: {
-                type: 'string',
-                title: 'User Name 2'
-              },
-              password: {
-                type: 'string'
-              },
-              days: {
-                type: 'number'
-              }
-            }
-          }
-        }
-      }
-    ]
-  }
-};
-
-// a mock return result on a source from graphql
-let sourceResult = {
-  data: {
-    source: {
-      id: '666',
-      name: 'KWOL--FM',
-      createdDateTime: '2014-12-01T18:17:20.675Z',
-      modifiedDateTime: '2015-12-01T18:17:20.675Z',
-      thumbnail: 'https://image.flaticon.com/icons/svg/25/25305.svg',
-      details: {
-        url: 'twitter.com',
-        username: 'therealtrump',
-        password: 'password'
-      },
-      sourceType: {
-        id: '1',
-        name: 'Audio',
-        sourceSchema: {
-          id: 'schemaId1',
-          definition: {
-            properties: {
-              url: {
-                type: 'string'
-              },
-              username: {
-                type: 'string',
-                title: 'User Name'
-              },
-              password: {
-                type: 'string',
-                title: 'Password'
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-};
-
-let sources = [];
-for (let i = 0; i < 4; i++) {
-  sources.push(sourceResult.data.source);
-}
-
 // CONTENT TEMPLATES SETUP
-let source = {
+const source = {
   data: {
     source: {
       id: '666',
@@ -122,7 +26,7 @@ let source = {
 };
 
 //// FORM CARDS LIST SETUP
-let result = {
+const result = {
   data: {
     dataRegistries: {
       records: [
@@ -248,24 +152,25 @@ const initialTemplates = createInitialTemplates(
 
 class Story extends React.Component {
   componentDidMount() {
-    this._smWidget = new SourceManagementWidget({
-      elId: 'sm-widget',
-      title: 'Source Management Widget',
-      sourceTypes: sourceTypes.sourceTypes.records,
-      sources,
+    this._ctFormWidget = new ContentTemplateFormWidget({
+      elId: 'ct-form-widget',
+      title: 'Content Template Form Widget',
       templateData,
-      initialTemplates
+      initialTemplates,
+      onSubmit: function(data) {
+        console.log('data:', data);
+      }
     });
   }
 
   componentWillUnmount() {
-    this._smWidget.destroy();
+    this._ctFormWidget.destroy();
   }
 
   render() {
     return (
       <div>
-        <span id="sm-widget" />
+        <span id="ct-form-widget" />
       </div>
     );
   }
@@ -273,7 +178,7 @@ class Story extends React.Component {
 
 const app = VeritoneApp();
 
-storiesOf('Source Management Overview', module).add('Base', () => {
+storiesOf('Content Template Form', module).add('Base', () => {
   const sessionToken = text('Api Session Token', '');
 
   return <Story sessionToken={sessionToken} store={app._store} />;
