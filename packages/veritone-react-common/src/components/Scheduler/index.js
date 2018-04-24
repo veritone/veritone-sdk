@@ -1,7 +1,8 @@
 import React from 'react';
 import { withTheme, createMuiTheme, MuiThemeProvider } from 'material-ui/styles';
-import { oneOf, func, number } from 'prop-types';
+import { oneOf, func, number, string } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
+import blue from 'material-ui/colors/blue';
 import {
   noop,
   pick,
@@ -18,7 +19,6 @@ import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 import { subDays } from 'date-fns';
 
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import RadioGroup from '../formComponents/RadioGroup';
 import styles from './styles.scss';
 import ImmediateSection from './ImmediateSection';
@@ -28,7 +28,6 @@ import ContinuousSection from './ContinuousSection';
 
 const initDate = new Date();
 
-@withMuiThemeProvider
 @withProps(props => ({
   initialValues: {
     // This provides defaults to the form. Shallow merged with
@@ -89,12 +88,14 @@ class Scheduler extends React.Component {
       .isRequired,
     onSubmit: func, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
-    relativeSize: number  // optional - used to scale text sizes from hosting app
+    relativeSize: number,  // optional - used to scale text sizes from hosting app
+    color: string
   };
 
   static defaultProps = {
     onSubmit: noop,
-    relativeSize: 14
+    relativeSize: 14,
+    color: '#2196F3'
   };
 
   prepareResultData(formResult) {
@@ -132,14 +133,26 @@ class Scheduler extends React.Component {
     this.props.onSubmit(this.prepareResultData(vals));
   };
 
-  getTheme = ( { relativeSize } ) => {
+  getTheme = ( { color, relativeSize } ) => {
     const theme = createMuiTheme({
       typography: {
         htmlFontSize: relativeSize || 13,
         subheading: {
           fontSize: '1em'
         }
-      }
+      },
+      palette: {
+        primary: {
+          light: blue[300],
+          main: blue[500],
+          dark: blue[700]
+        },
+        secondary: {
+          light: blue[300],
+          main: blue[500],
+          dark: blue[700]
+        }
+      },
     });
     return theme;
   }
@@ -153,7 +166,7 @@ class Scheduler extends React.Component {
     }[this.props.scheduleType];
 
     return (
-      <MuiThemeProvider theme={ this.getTheme( { relativeSize: this.props.relativeSize } ) }>
+      <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <Field
             component={RadioGroup}
