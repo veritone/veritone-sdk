@@ -3,8 +3,6 @@ import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 
 import FingerprintLibrary from './FingerprintLibrary';
-import styles from './styles.scss';
-
 
 export default class FingerPrintLibraries extends Component {
   static propTypes = {
