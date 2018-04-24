@@ -42,41 +42,45 @@ export default class FingerprintContent extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
     onClick: func
-  }
+  };
 
   static defaultProps = {
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 0
-  }
+  };
 
   state = {
-    showLibrary: true,
-  }
+    showLibrary: true
+  };
 
   handleBackButtonClick = () => {
     this.setState({
       showLibrary: true
-    })
-  }
+    });
+  };
 
   handleEntityClick = (event, value) => {
     this.setState({
       showLibrary: false,
       selectedEntity: value
-    })
-  }
+    });
+  };
 
-  renderContentHeader () {
+  renderContentHeader() {
     const disclaimer = (
       <div className={classNames(styles.disclaimer)}>
-        Disclaimer: Ads and songs captured are based on data provided and may not be visually displayed in the correct manner.
+        Disclaimer: Ads and songs captured are based on data provided and may
+        not be visually displayed in the correct manner.
       </div>
     );
 
     const controlers = (
       <div className={classNames(styles.controllers)}>
-        <Button className={classNames(styles.btnBack)} onClick={this.handleBackButtonClick} >
-          <Icon className={classNames(styles.leftIcon, 'icon-arrow-back')}/>
+        <Button
+          className={classNames(styles.btnBack)}
+          onClick={this.handleBackButtonClick}
+        >
+          <Icon className={classNames(styles.leftIcon, 'icon-arrow-back')} />
           Back
         </Button>
       </div>
@@ -84,12 +88,12 @@ export default class FingerprintContent extends Component {
 
     return (
       <div className={classNames(styles.contentHeader)}>
-        { this.state.showLibrary ? disclaimer : controlers }
+        {this.state.showLibrary ? disclaimer : controlers}
       </div>
-    )
+    );
   }
 
-  renderContentBody () {
+  renderContentBody() {
     const {
       onClick,
       libraries,
@@ -101,7 +105,7 @@ export default class FingerprintContent extends Component {
 
     if (this.state.showLibrary || !this.state.selectedEntity) {
       return (
-        <FingerprintLibraries 
+        <FingerprintLibraries
           libraries={libraries}
           onClick={this.handleEntityClick}
           className={classNames(libraryClassName)}
@@ -122,11 +126,13 @@ export default class FingerprintContent extends Component {
     }
   }
 
-  render () {
+  render() {
     return (
-      <div className={classNames(styles.fingerprintContent, this.props.className)}>
-        { this.renderContentHeader() }
-        { this.renderContentBody() }
+      <div
+        className={classNames(styles.fingerprintContent, this.props.className)}
+      >
+        {this.renderContentHeader()}
+        {this.renderContentBody()}
       </div>
     );
   }

@@ -76,12 +76,8 @@ export default class FingerprintEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: 0
   };
 
-  formatPropsData () {
-    const {
-      data,
-      entities,
-      libraries,
-    } = this.props;
+  formatPropsData() {
+    const { data, entities, libraries } = this.props;
 
     const entitiesMap = keyBy(entities, 'entityId');
     const librariesMap = keyBy(libraries, 'libraryId');
@@ -90,21 +86,25 @@ export default class FingerprintEngineOutput extends Component {
     data.forEach(dataChunk => {
       const series = dataChunk.series;
       if (series) {
-
         sortBy(series, 'startTimeMs', 'endTimeMs');
         series.forEach(entry => {
           if (entry.object && entry.object.entityId) {
             const entityId = entry.object.entityId;
             const entity = entitiesMap[entityId];
-            if (entity) {       
+            if (entity) {
               // entry match with a valid entity
               const libraryId = entity.libraryId;
               const library = librariesMap[libraryId];
               if (library) {
-                (entity.matches) ? entity.matches.push(entry) : entity.matches = [entry];           // Add entry to matching entity
+                entity.matches
+                  ? entity.matches.push(entry)
+                  : (entity.matches = [entry]); // Add entry to matching entity
 
-                if (!entity.libraryName) {                                                            // Entity hasn't been registered to any library object
-                  (library.entities) ? library.entities.push(entity) : library.entities = [entity]; // Add entity to matching library
+                if (!entity.libraryName) {
+                  // Entity hasn't been registered to any library object
+                  library.entities
+                    ? library.entities.push(entity)
+                    : (library.entities = [entity]); // Add entity to matching library
                   entity.libraryName = library.name;
                 }
               } else {
@@ -114,14 +114,14 @@ export default class FingerprintEngineOutput extends Component {
               // Ignore Unknow Entity (for now)
             }
           }
-        })
+        });
       }
     });
 
     return toArray(librariesMap);
   }
 
-  renderHeader () {
+  renderHeader() {
     const {
       title,
       engines,
@@ -143,7 +143,7 @@ export default class FingerprintEngineOutput extends Component {
     );
   }
 
-  renderBody () {
+  renderBody() {
     const {
       onClick,
       contentClassName,
@@ -156,7 +156,7 @@ export default class FingerprintEngineOutput extends Component {
     const libraryContents = this.formatPropsData();
 
     return (
-      <FingerprintContent 
+      <FingerprintContent
         libraries={libraryContents}
         className={contentClassName}
         entityClassName={entityClassName}
@@ -168,12 +168,14 @@ export default class FingerprintEngineOutput extends Component {
     );
   }
 
-  render () {
+  render() {
     return (
-      <div className={classNames(styles.fingerprintOutput, this.props.className)}>
+      <div
+        className={classNames(styles.fingerprintOutput, this.props.className)}
+      >
         {this.renderHeader()}
         {this.renderBody()}
       </div>
-    )
+    );
   }
 }

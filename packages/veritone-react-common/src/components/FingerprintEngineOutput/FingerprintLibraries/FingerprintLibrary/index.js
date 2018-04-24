@@ -12,18 +12,22 @@ export default class FingerprintLibrary extends Component {
     libraryData: shape({
       name: string,
       libraryId: string,
-      entities: arrayOf(shape({
-        name: string,
-        entityId: string,
-        matches: arrayOf(shape({
-          startTimeMs: number,
-          stopTimeMs: number,
-          object: shape({
-            entityId: string,
-            confidence: number
-          })
-        }))
-      }))
+      entities: arrayOf(
+        shape({
+          name: string,
+          entityId: string,
+          matches: arrayOf(
+            shape({
+              startTimeMs: number,
+              stopTimeMs: number,
+              object: shape({
+                entityId: string,
+                confidence: number
+              })
+            })
+          )
+        })
+      )
     }),
     onClick: func,
     mediaPlayerTimeMs: number,
@@ -35,25 +39,31 @@ export default class FingerprintLibrary extends Component {
     mediaPlayerTimeIntervalMs: 0
   };
 
-  renderEntities () {
+  renderEntities() {
     const {
       onClick,
       libraryData,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
-    
+
     const playerTimeEnabled = mediaPlayerTimeMs >= 0;
     const mediaPlayerStopTimeMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
     if (libraryData && libraryData.entities) {
-      return libraryData.entities.map((entityData => {
+      return libraryData.entities.map(entityData => {
         let active = false;
         if (entityData && entityData.matches) {
           for (const entry of entityData.matches) {
             const entryStartTime = entry.startTimeMs;
             const entryStopTime = entry.stopTimeMs;
-            if (playerTimeEnabled && !(mediaPlayerTimeMs > entryStopTime || mediaPlayerStopTimeMs < entryStartTime)) {
+            if (
+              playerTimeEnabled &&
+              !(
+                mediaPlayerTimeMs > entryStopTime ||
+                mediaPlayerStopTimeMs < entryStartTime
+              )
+            ) {
               active = true;
               break;
             }
@@ -68,23 +78,24 @@ export default class FingerprintLibrary extends Component {
             data={entityData}
             onClick={onClick}
             highlight={active}
-            key={'finger-print-entity' + entityData.entityId + entityData.entityName}
+            key={
+              'finger-print-entity' +
+              entityData.entityId +
+              entityData.entityName
+            }
           />
         );
-      }));
+      });
     }
   }
 
-  render () {
-    const {
-      className,
-      libraryData,
-    } = this.props;
+  render() {
+    const { className, libraryData } = this.props;
 
     return (
       <div className={classNames(styles.fingerprintLibrary, className)}>
         <div className={classNames(styles.header)}>
-          <Icon className={classNames('icon-library-app', styles.headerText)}/>
+          <Icon className={classNames('icon-library-app', styles.headerText)} />
           <span className={classNames(styles.headerText)}> Library: </span>
           <span className={classNames(styles.headerText, styles.bold)}>
             {libraryData.name || libraryData.libraryId}

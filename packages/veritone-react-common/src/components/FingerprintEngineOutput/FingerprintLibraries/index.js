@@ -29,7 +29,7 @@ export default class FingerPrintLibraries extends Component {
         )
       })
     ),
-    onClick:func,
+    onClick: func,
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
   };
@@ -40,7 +40,7 @@ export default class FingerPrintLibraries extends Component {
     mediaPlayerTimeIntervalMs: 0
   };
 
-  render () {
+  render() {
     const {
       libraries,
       className,
@@ -51,22 +51,20 @@ export default class FingerPrintLibraries extends Component {
 
     return (
       <div className={classNames(className)}>
-        {
-          libraries.map((libraryData) => {
-            if (libraryData.entities) {
-              return (
-                <FingerprintLibrary
-                  libraryData={libraryData}
-                  onClick={onClick}
-                  key={'fingerprint-lib-'+libraryData.libraryId}
-                  mediaPlayerTimeMs={mediaPlayerTimeMs}
-                  mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-                />
-              );
-            }
-          })
-        }
+        {libraries.map(libraryData => {
+          if (libraryData.entities) {
+            return (
+              <FingerprintLibrary
+                libraryData={libraryData}
+                onClick={onClick}
+                key={'fingerprint-lib-' + libraryData.libraryId}
+                mediaPlayerTimeMs={mediaPlayerTimeMs}
+                mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+              />
+            );
+          }
+        })}
       </div>
-    )
+    );
   }
 }

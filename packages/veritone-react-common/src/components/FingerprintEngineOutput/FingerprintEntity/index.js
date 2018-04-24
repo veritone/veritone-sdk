@@ -21,14 +21,16 @@ export default class FingerprintEntity extends Component {
       libraryId: string,
       libraryName: string,
       jsondata: shape({}),
-      matches: arrayOf(shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        object: shape({
-          entityId: string,
-          confidenced: number
+      matches: arrayOf(
+        shape({
+          startTimeMs: number,
+          stopTimeMs: number,
+          object: shape({
+            entityId: string,
+            confidenced: number
+          })
         })
-      }))
+      )
     }),
     onClick: func,
     mediaPlayerTimeMs: number,
@@ -41,11 +43,11 @@ export default class FingerprintEntity extends Component {
 
   handleChangeTab = (event, value) => {
     this.setState({
-        tabIndex: value
+      tabIndex: value
     });
-  }
+  };
 
-  renderEntityInfo () {
+  renderEntityInfo() {
     const entity = this.props.entity;
     const entityInfoString = entity.name + ' (' + entity.matches.length + ')';
     return (
@@ -54,9 +56,11 @@ export default class FingerprintEntity extends Component {
           <img src={entity.profileImageUrl} />
         </div>
         <div>
-          <div className={classNames(styles.entityName)}>{ entityInfoString }</div>
+          <div className={classNames(styles.entityName)}>
+            {entityInfoString}
+          </div>
           <div className={classNames(styles.libraryName)}>
-            <Icon className={classNames('icon-library-app', styles.icon)}/>
+            <Icon className={classNames('icon-library-app', styles.icon)} />
             <span className={classNames(styles.libraryText)}> Library: </span>
             <span className={classNames(styles.libraryText, styles.bold)}>
               {entity.libraryName || entity.libraryId}
@@ -67,7 +71,7 @@ export default class FingerprintEntity extends Component {
     );
   }
 
-  renderMatchesTime () {
+  renderMatchesTime() {
     const {
       entity,
       onClick,
@@ -76,7 +80,7 @@ export default class FingerprintEntity extends Component {
     } = this.props;
 
     return (
-      <EntityStreamData 
+      <EntityStreamData
         data={entity.matches}
         onClick={onClick}
         mediaPlayerTimeMs={mediaPlayerTimeMs}
@@ -85,41 +89,38 @@ export default class FingerprintEntity extends Component {
     );
   }
 
-  renderMetadata () {
-    return (
-      <EntityMetadata
-        jsondata={this.props.entity.jsondata}
-      />
-    );
+  renderMetadata() {
+    return <EntityMetadata jsondata={this.props.entity.jsondata} />;
   }
 
-  renderDetails () {
+  renderDetails() {
     return (
       <div>
         <Tabs
           value={this.state.tabIndex}
           onChange={this.handleChangeTab}
-          indicatorColor='primary'
+          indicatorColor="primary"
         >
           <Tab
-            label='Matched in this Video'
+            label="Matched in this Video"
             className={classNames(styles.tab)}
           />
-          <Tab
-            label='Metadata'
-            className={classNames(styles.tab)}
-          />
+          <Tab label="Metadata" className={classNames(styles.tab)} />
         </Tabs>
         <div className={classNames(styles.detailBody)}>
-          {(this.state.tabIndex === 0) ? this.renderMatchesTime() : this.renderMetadata()}
+          {this.state.tabIndex === 0
+            ? this.renderMatchesTime()
+            : this.renderMetadata()}
         </div>
       </div>
     );
   }
 
-  render () {
+  render() {
     return (
-      <div className={classNames(styles.fingerprintEntity, this.props.className)}>
+      <div
+        className={classNames(styles.fingerprintEntity, this.props.className)}
+      >
         {this.renderEntityInfo()}
         {this.renderDetails()}
       </div>

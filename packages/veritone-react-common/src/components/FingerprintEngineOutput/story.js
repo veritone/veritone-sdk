@@ -5,29 +5,26 @@ import { number } from '@storybook/addon-knobs/react';
 
 import FingerprintEngineOutput from './';
 
+storiesOf('FingerprintEngineOutput', module).add('Base', () => {
+  const libraries = genLibraries(5);
+  const entities = genEntities(10, libraries);
+  const mockData = genMockData(0, 600000, 1000, entities);
 
-storiesOf('FingerprintEngineOutput', module)
-  .add('Base', () => {
-    const libraries = genLibraries(5);
-    const entities = genEntities(10, libraries);
-    const mockData = genMockData(0, 600000, 1000, entities);
-
-    return (
-      <FingerprintEngineOutput 
-        data={mockData}
-        entities={entities}
-        libraries={libraries}
-        onClick={action('on click')}
-        mediaPlayerTimeMs={1000 * number('player time', 0)}
-        mediaPlayerTimeIntervalMs={1000}
-        selectedEngineId={selectedEngineId}
-        engines={engines}
-        onEngineChange={action('engine select')}
-        onExpandClicked={action('expand view clicked')}
-      />
-    )
-  }
-);
+  return (
+    <FingerprintEngineOutput
+      data={mockData}
+      entities={entities}
+      libraries={libraries}
+      onClick={action('on click')}
+      mediaPlayerTimeMs={1000 * number('player time', 0)}
+      mediaPlayerTimeIntervalMs={1000}
+      selectedEngineId={selectedEngineId}
+      engines={engines}
+      onEngineChange={action('engine select')}
+      onExpandClicked={action('expand view clicked')}
+    />
+  );
+});
 
 const selectedEngineId = '1';
 const engines = [
@@ -36,9 +33,8 @@ const engines = [
   { id: '3', name: 'Engine-Z' }
 ];
 
-
 // Mock Data Generator
-function genMockData (startTime, stopTime, timeInterval, entities) {
+function genMockData(startTime, stopTime, timeInterval, entities) {
   const series = [];
   const numEntries = Math.ceil((stopTime - startTime) / timeInterval);
   for (let entryIndex = 0; entryIndex < numEntries; entryIndex++) {
@@ -52,18 +48,20 @@ function genMockData (startTime, stopTime, timeInterval, entities) {
         entityId: entities[randomEntityIndex].entityId,
         confidence: Math.round(Math.random() * 100) / 100
       }
-    })
+    });
   }
 
-  return [{
-    startTimeMs: startTime,
-    stopTimeMs: stopTime,
-    status: 'success',
-    series: series
-  }];
+  return [
+    {
+      startTimeMs: startTime,
+      stopTimeMs: stopTime,
+      status: 'success',
+      series: series
+    }
+  ];
 }
 
-function genEntities (numEntities, libraries) {
+function genEntities(numEntities, libraries) {
   const entityNames = [
     'veritone',
     'beat',
@@ -84,7 +82,7 @@ function genEntities (numEntities, libraries) {
     'https://image.freepik.com/free-vector/abstract-logo-with-colorful-leaves_1025-695.jpg',
     'https://cdn.designcrowd.com/blog/2016/January/top-company-logos-black/2_Disney_400.png',
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7aBqO81rIJBweMSi2x8bFAaipQjum6mxrphPY9eXmJuIPxbDXUg'
-  ]
+  ];
 
   const entities = [];
   for (let index = 0; index < numEntities; index++) {
@@ -104,13 +102,13 @@ function genEntities (numEntities, libraries) {
         duration: '10:00',
         iSCI: '234'
       }
-    })
+    });
   }
 
   return entities;
 }
 
-function genLibraries (numLibs) {
+function genLibraries(numLibs) {
   const libNames = [
     'Dracaena barbus',
     'Rhincodon pygmaeus',
@@ -131,14 +129,14 @@ function genLibraries (numLibs) {
         name: randomName,
         libraryId: 'lib-' + index,
         description: 'Lib Description Goes Here'
-      })
+      });
     }
   }
 
   return libs;
 }
 
-function getRandomIndex (source) {
+function getRandomIndex(source) {
   if (source && source.length > 0) {
     return Math.round(Math.random() * (source.length - 1));
   } else {
