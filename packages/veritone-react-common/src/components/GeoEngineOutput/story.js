@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { number } from '@storybook/addon-knobs/react';
@@ -7,12 +7,9 @@ import classNames from 'classnames';
 import styles from './story.styles.scss';
 
 import GeoEngineOutput from './';
-storiesOf('GeoEngineOutput', module)
-  .add('Base', () => {
-    return (
-      <GeoExample />
-    );
-  });
+storiesOf('GeoEngineOutput', module).add('Base', () => {
+  return <GeoExample />;
+});
 
 export class GeoExample extends Component {
   state = {
@@ -25,12 +22,12 @@ export class GeoExample extends Component {
     mockData: genMockData(0, 600000)
   };
 
-  render () {
+  render() {
     return (
       <div className={classNames(styles.geoExampleRootView)}>
         <GeoEngineOutput
           data={this.state.mockData}
-          startTimeStamp='2018-01-31T20:03:45.000Z'
+          startTimeStamp="2018-01-31T20:03:45.000Z"
           apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'}
           onClick={action('onClick')}
           engines={this.state.engines}
@@ -44,7 +41,13 @@ export class GeoExample extends Component {
   }
 }
 
-function genMockData (startTime, stopTime, startLat = 33.690068, startLong = -117.878009, seriesSize = 10){
+function genMockData(
+  startTime,
+  stopTime,
+  startLat = 33.690068,
+  startLong = -117.878009,
+  seriesSize = 10
+) {
   const dataChunk = {
     startTimeMs: startTime,
     stopTimeMs: stopTime,
@@ -62,13 +65,18 @@ function genMockData (startTime, stopTime, startLat = 33.690068, startLong = -11
     dataChunk.series.push({
       startTimeMs: entryStartTime,
       stopTimeMs: entryStartTime + entryInterval,
-      gps:[{
-        latitude: Math.round(1000000 * (startLat + entryIndex * entryLatSize))/1000000,
-        longtitude: Math.round(1000000 * (startLong + entryIndex * entryLongSize))/1000000
-      }]
+      gps: [
+        {
+          latitude:
+            Math.round(1000000 * (startLat + entryIndex * entryLatSize)) /
+            1000000,
+          longtitude:
+            Math.round(1000000 * (startLong + entryIndex * entryLongSize)) /
+            1000000
+        }
+      ]
     });
   }
 
   return [dataChunk];
 }
-

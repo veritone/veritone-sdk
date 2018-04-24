@@ -14,23 +14,20 @@ export default class TextButton extends Component {
     data: objectOf(any)
   };
 
-  handleOnClick = (event) => {
+  handleOnClick = event => {
     const { onClick, data } = this.props;
     onClick && onClick(event, data);
-  }
+  };
 
-  render () {
-    const {
-      label,
-      style,
-      className,
-      highlight
-    } = this.props;
+  render() {
+    const { label, style, className, highlight } = this.props;
 
     return (
-      <span 
+      <span
         style={style}
-        className={classNames(styles.linkButton, className, {[styles.highlight]: highlight})}
+        className={classNames(styles.linkButton, className, {
+          [styles.highlight]: highlight
+        })}
         onClick={this.handleOnClick}
       >
         {label}

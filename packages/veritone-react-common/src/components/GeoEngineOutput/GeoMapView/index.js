@@ -34,21 +34,18 @@ export default class GeoMapView extends Component {
     onClick: func,
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
-  }
+  };
 
   static defaultProps = {
-    data:[],
+    data: [],
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 0,
-    travelMode: GoogleMapHelpers.travelModes.FLYING,
-  }
+    travelMode: GoogleMapHelpers.travelModes.FLYING
+  };
 
   handleRouteClick = value => {
-    const {
-      data,
-      onClick
-    } = this.props;
-    
+    const { data, onClick } = this.props;
+
     if (onClick) {
       let minDistance = -1;
       let closestEntry = undefined;
@@ -58,7 +55,12 @@ export default class GeoMapView extends Component {
         const entryPos = entry.gps[0];
         const entryLat = entryPos.latitude;
         const entryLng = entryPos.longtitude;
-        const distance = GoogleMapHelpers.findDistanceRatio(selectedLat, selectedLng, entryLat, entryLng);
+        const distance = GoogleMapHelpers.findDistanceRatio(
+          selectedLat,
+          selectedLng,
+          entryLat,
+          entryLng
+        );
         if (minDistance < 0 || minDistance > distance) {
           minDistance = distance;
           closestEntry = entry;
@@ -67,14 +69,10 @@ export default class GeoMapView extends Component {
 
       onClick(closestEntry.startTimeMs, closestEntry.stopTimeMs);
     }
-  }
+  };
 
   handlePlayerTimeChange = () => {
-    const {
-      data,
-      mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
-    } = this.props;
+    const { data, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
 
     if (mediaPlayerTimeMs < 0) {
       return;
@@ -109,9 +107,9 @@ export default class GeoMapView extends Component {
         }
       }
     }
-  }
+  };
 
-  estimatePosition (timeMs) {
+  estimatePosition(timeMs) {
     const data = this.props.data;
 
     if (timeMs < 0) {
@@ -134,7 +132,7 @@ export default class GeoMapView extends Component {
           prevEntryPos = {
             lat: entry.gps[0].latitude,
             lng: entry.gps[0].longtitude
-          }
+          };
         }
       } else {
         const nextTimeDiff = entryMidPoint - timeMs;
@@ -143,7 +141,7 @@ export default class GeoMapView extends Component {
           nextEntryPos = {
             lat: entry.gps[0].latitude,
             lng: entry.gps[0].longtitude
-          }
+          };
         }
       }
     }
@@ -154,17 +152,21 @@ export default class GeoMapView extends Component {
       return prevEntryPos;
     } else {
       const totalTimeDiff = prevMinDiff + nextMinDiff;
-      const estimateLat = (prevMinDiff * nextEntryPos.lat + nextMinDiff * prevEntryPos.lat) / totalTimeDiff;
-      const estimateLng = (prevMinDiff * nextEntryPos.lng + nextMinDiff * prevEntryPos.lng) / totalTimeDiff;
+      const estimateLat =
+        (prevMinDiff * nextEntryPos.lat + nextMinDiff * prevEntryPos.lat) /
+        totalTimeDiff;
+      const estimateLng =
+        (prevMinDiff * nextEntryPos.lng + nextMinDiff * prevEntryPos.lng) /
+        totalTimeDiff;
 
       return {
         lat: estimateLat,
         lng: estimateLng
-      }
+      };
     }
   }
 
-  render () {
+  render() {
     const {
       data,
       className,
@@ -172,7 +174,7 @@ export default class GeoMapView extends Component {
       travelMode,
       mediaPlayerTimeMs
     } = this.props;
-    
+
     const estimatedPos = this.estimatePosition(mediaPlayerTimeMs);
 
     return (

@@ -5,12 +5,14 @@ const fnReject = Symbol('reject');
 const callbackName = 'veritone_googleMapCallback';
 
 export default class GoogleMapLoader {
-  constructor (apiKey) {
+  constructor(apiKey) {
     const key = apiKey;
-    this[apiLink] = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=${callbackName}`;
+    this[
+      apiLink
+    ] = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=${callbackName}`;
   }
 
-  load () {
+  load() {
     if (!this[loader]) {
       this[loader] = new Promise((resolve, reject) => {
         this[fnResolve] = resolve;
@@ -37,7 +39,7 @@ export default class GoogleMapLoader {
       });
     }
 
-    return this[loader];      
+    return this[loader];
   }
 
   handleAPILoaded = () => {
@@ -47,14 +49,14 @@ export default class GoogleMapLoader {
 
     // Trigger success callback
     this[fnResolve] && this[fnResolve](window.google);
-  }
+  };
 
-  handleAuthError = (error) => {
+  handleAuthError = error => {
     // Remove global callbacks
     //delete window.gm_authFailure;
     //delete window.veritoneGoogleMapAPI;
 
     // Trigger error callback
     this[fnResolve] && this[fnResolve](error);
-  }
-} 
+  };
+}

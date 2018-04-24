@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { number, string, func, shape, arrayOf } from 'prop-types';
 
 import classNames from 'classnames';
@@ -29,12 +29,12 @@ export default class GeoEngineOutput extends Component {
             stopTimeMs: number,
             gps: arrayOf(
               shape({
-                latitude: number,   // in meters
+                latitude: number, // in meters
                 longtitude: number, // in meters
-                precision: number,  // in meters
-                direction: number,  // 0-360
-                velocity: number,   // in meters
-                altitude: number    // in meters
+                precision: number, // in meters
+                direction: number, // 0-360
+                velocity: number, // in meters
+                altitude: number // in meters
               })
             )
           })
@@ -72,20 +72,20 @@ export default class GeoEngineOutput extends Component {
     title: 'Geolocation',
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 0,
-    travelMode: GoogleMapHelpers.FLYING,
+    travelMode: GoogleMapHelpers.FLYING
   };
 
   state = {
     currentView: 'mapView'
-  }
+  };
 
-  handleViewChanged = (event, value) =>{
+  handleViewChanged = (event, value) => {
     this.setState({
       currentView: event.target.value
     });
-  }
+  };
 
-  renderHeader () {
+  renderHeader() {
     const {
       title,
       engines,
@@ -120,16 +120,10 @@ export default class GeoEngineOutput extends Component {
             getContentAnchorEl: null
           }}
         >
-          <MenuItem 
-            value='mapView'
-            className={classNames(styles.view)}
-          >
+          <MenuItem value="mapView" className={classNames(styles.view)}>
             Map View
           </MenuItem>
-          <MenuItem 
-            value='timeView'
-            className={classNames(styles.view)}
-          >
+          <MenuItem value="timeView" className={classNames(styles.view)}>
             Time Correllation
           </MenuItem>
         </Select>
@@ -137,7 +131,7 @@ export default class GeoEngineOutput extends Component {
     );
   }
 
-  parsePropsData () {
+  parsePropsData() {
     const {
       data,
       startTimeStamp,
@@ -148,26 +142,36 @@ export default class GeoEngineOutput extends Component {
     const startMediaPlayHeadMs = mediaPlayerTimeMs;
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    const timeStampMS = (new Date(startTimeStamp)).getTime();
+    const timeStampMS = new Date(startTimeStamp).getTime();
     const extractedData = [];
     data.forEach(dataChunk => {
       const series = dataChunk.series;
-      series && series.forEach(entry => {
+      series &&
+        series.forEach(entry => {
           const entryStartTime = entry.startTimeMs;
           const entryStopTime = entry.stopTimeMs;
           const parsedEntry = Object.assign(entry, entry.gps[0]);
           parsedEntry.lat = entry.gps[0].latitude;
           parsedEntry.lng = entry.gps[0].longtitude;
-          parsedEntry.startTimeStamp = format(timeStampMS + entryStartTime, 'hh:mm:ss A');
-          parsedEntry.stopTimeStamp = format(timeStampMS + entryStopTime, 'hh:mm:ss A');
-          parsedEntry.active = !(stopMediaPlayHeadMs < entryStartTime || startMediaPlayHeadMs > entryStopTime);
+          parsedEntry.startTimeStamp = format(
+            timeStampMS + entryStartTime,
+            'hh:mm:ss A'
+          );
+          parsedEntry.stopTimeStamp = format(
+            timeStampMS + entryStopTime,
+            'hh:mm:ss A'
+          );
+          parsedEntry.active = !(
+            stopMediaPlayHeadMs < entryStartTime ||
+            startMediaPlayHeadMs > entryStopTime
+          );
           extractedData.push(parsedEntry);
-      });
+        });
     });
     return extractedData;
   }
 
-  renderBody () {
+  renderBody() {
     const {
       onClick,
       apiKey,
@@ -201,11 +205,8 @@ export default class GeoEngineOutput extends Component {
     }
   }
 
-  render () {
-    const {
-      className,
-      bodyClassName
-    } = this.props;
+  render() {
+    const { className, bodyClassName } = this.props;
 
     return (
       <div className={classNames(styles.geoEngineOutput, className)}>

@@ -25,28 +25,29 @@ export default class GeoTimeView extends Component {
     ),
     className: string,
     onClick: func
-  }
+  };
 
-  render () {
-    const {
-      data,
-      onClick,
-      className
-    } = this.props
+  render() {
+    const { data, onClick, className } = this.props;
 
     return (
       <div className={classNames(styles.geoTimeView, className)}>
-        {
-          data && data.map(entry => {
+        {data &&
+          data.map(entry => {
             return (
-              <GeoTimeEntry 
-                data={entry} 
-                onClick={onClick} 
-                key={'geo-entry-' + entry.startTimeMs + entry.stopTimeMs + entry.latitude + entry.longtitude}
+              <GeoTimeEntry
+                data={entry}
+                onClick={onClick}
+                key={
+                  'geo-entry-' +
+                  entry.startTimeMs +
+                  entry.stopTimeMs +
+                  entry.latitude +
+                  entry.longtitude
+                }
               />
             );
-          })
-        }
+          })}
       </div>
     );
   }

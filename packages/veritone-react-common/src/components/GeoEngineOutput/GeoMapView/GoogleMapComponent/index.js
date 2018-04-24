@@ -22,25 +22,28 @@ export default class GoogleMapComponent extends Component {
     travelMode: string,
     className: string,
     onClick: func,
-    apiKey: string,
-  }
+    apiKey: string
+  };
 
   static defaultProps = {
     travelMode: GoogleMapHelpers.travelModes.FLYING
-  }
+  };
 
-  componentDidMount () {
+  componentDidMount() {
     const loader = new GoogleMapLoader(this.props.apiKey);
-    this.map = loader.load().then(() => {
-      const maps = window.google.maps;
-      const mapInstance = new maps.Map(this.mapContainer.current, {});
+    this.map = loader
+      .load()
+      .then(() => {
+        const maps = window.google.maps;
+        const mapInstance = new maps.Map(this.mapContainer.current, {});
 
-      this.drawContent(mapInstance);
+        this.drawContent(mapInstance);
 
-      return mapInstance;
-    }).catch((error) => {
-      // Handle API Loading Error Here If Needed
-    });
+        return mapInstance;
+      })
+      .catch(error => {
+        // Handle API Loading Error Here If Needed
+      });
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -50,13 +53,9 @@ export default class GoogleMapComponent extends Component {
     }
   }
 
-  drawContent (map) {
-    const {
-      path,
-      currentPos,
-      travelMode 
-    }= this.props;
-    
+  drawContent(map) {
+    const { path, currentPos, travelMode } = this.props;
+
     const startPoint = path[0];
     const endPoint = path[path.length - 1];
     const currentPoint = currentPos || startPoint;
@@ -67,7 +66,13 @@ export default class GoogleMapComponent extends Component {
     this.body = GoogleMapHelpers.genOriginMarker(currentPoint, 1, map);
 
     // Draw Route
-    this.route = GoogleMapHelpers.drawDirection(startPoint, endPoint, map, path, travelMode).then((route) => {
+    this.route = GoogleMapHelpers.drawDirection(
+      startPoint,
+      endPoint,
+      map,
+      path,
+      travelMode
+    ).then(route => {
       const bounds = GoogleMapHelpers.genLatLngBounds(path);
       map.fitBounds(bounds);
 
@@ -80,16 +85,16 @@ export default class GoogleMapComponent extends Component {
     });
   }
 
-  handleClicked = (event) => {
+  handleClicked = event => {
     const onClick = this.props.onClick;
     onClick && onClick(event.latLng);
-  }
+  };
 
   mapContainer = React.createRef();
-  render () {
+  render() {
     return (
-      <div 
-        ref={this.mapContainer} 
+      <div
+        ref={this.mapContainer}
         className={classNames(styles.googleMapComponent, this.props.className)}
       />
     );
