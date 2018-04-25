@@ -480,7 +480,7 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
-    const allSchemas = state[widgetId].schemaById;
+    const allSchemas = Object.assign({}, state[widgetId].schemaById);
     values(payload).forEach(schema => {
       allSchemas[schema.id] = schema;
     });
@@ -488,7 +488,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        schemaById: [...allSchemas]
+        schemaById: allSchemas
       }
     };
   }

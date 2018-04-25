@@ -157,6 +157,9 @@ function* loadTdoSaga(widgetId, tdoId) {
         '-engine',
         ''
       );
+      if (engineCategory.categoryType === 'correlation') {
+        engineCategory.iconClass = 'icon-third-party-data';
+      }
       engineCategory.engines = [];
       engineCategoryById.set(engineCategory.id, engineCategory);
     }
@@ -226,25 +229,6 @@ function* loadTdoSaga(widgetId, tdoId) {
     nextCategory = categoriesIterator.next();
   }
   engineCategories = filteredCategories;
-
-  // TODO: remove this test code
-  engineCategories.push({
-    name: 'Structured Data',
-    id: 'a70df3f6-84a7-4570-b8f4-daa122127e37',
-    categoryType: 'correlation',
-    editable: false,
-    iconClass: 'icon-third-party-data',
-    engines: [
-      {
-        id: 'my-fake-correlation-engine-id1',
-        name: 'Fake Structured Data Engine 1'
-      },
-      {
-        id: 'my-fake-correlation-engine-id2',
-        name: 'Fake Structured Data Engine 2'
-      }
-    ]
-  });
 
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {

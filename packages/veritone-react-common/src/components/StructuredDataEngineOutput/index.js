@@ -74,9 +74,7 @@ class StructuredDataEngineOutput extends Component {
   processStructuredData = data => {
     const flattenStructuredData = {};
     data
-      .filter(
-        jsonData => jsonData.sourceEngineId === this.props.selectedEngineId
-      )
+      .filter(jsonData => get(jsonData, 'series.length', 0))
       .forEach(jsonData => {
         jsonData.series.forEach(seriesItem => {
           const structuredData = get(seriesItem, 'object.structuredData');
@@ -155,41 +153,38 @@ class StructuredDataEngineOutput extends Component {
           onEngineChange={this.handleEngineChange}
           onExpandClicked={onExpandClicked}
         >
-          {selectedSchemaId &&
-            schemaById[selectedSchemaId] && (
-              <Select
-                value={selectedSchemaId}
-                className={styles.schemaMenu}
-                onChange={this.onSchemaChange}
-                MenuProps={{
-                  anchorOrigin: {
-                    horizontal: 'center',
-                    vertical: 'bottom'
-                  },
-                  transformOrigin: {
-                    horizontal: 'center'
-                  },
-                  getContentAnchorEl: null
-                }}
-              >
-                {engineSchemaIds.map(schemaId => {
-                  return (
-                    <MenuItem
-                      key={'structured-data-schema-menu-item-' + schemaId}
-                      value={schemaId}
-                      className={styles.schemaMenuItem}
-                    >
-                      {this.getSchemaName(schemaId)}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            )}
+          {schemaById[selectedSchemaId] && (
+            <Select
+              value={selectedSchemaId}
+              className={styles.schemaMenu}
+              onChange={this.onSchemaChange}
+              MenuProps={{
+                anchorOrigin: {
+                  horizontal: 'center',
+                  vertical: 'bottom'
+                },
+                transformOrigin: {
+                  horizontal: 'center'
+                },
+                getContentAnchorEl: null
+              }}
+            >
+              {engineSchemaIds.map(schemaId => {
+                return (
+                  <MenuItem
+                    key={'structured-data-schema-menu-item-' + schemaId}
+                    value={schemaId}
+                    className={styles.schemaMenuItem}
+                  >
+                    {this.getSchemaName(schemaId)}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          )}
         </EngineOutputHeader>
-        {selectedEngineId &&
-          selectedSchemaId &&
-          flattenStructuredData[selectedSchemaId] &&
-          schemaById[selectedSchemaId] && (
+        {schemaById[selectedSchemaId] &&
+          flattenStructuredData[selectedSchemaId] && (
             <SDOTable
               data={flattenStructuredData[selectedSchemaId]}
               schema={schemaById[selectedSchemaId].definition.properties}

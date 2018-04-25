@@ -50,6 +50,12 @@ function getMockData() {
                 datetimeStart: '2018-02-21T21:30:00.000Z',
                 datetimeEnd: '2018-02-21T22:30:00.000Z',
                 locationName: 'Los Angeles'
+              },
+              'c46e4675-73a0-44ce-adca-b6ebab897c21': {
+                id: 1234567,
+                about: 'about fb feed',
+                website: 'veritone.com',
+                fan_count: 987654321
               }
             }
           }
@@ -127,6 +133,40 @@ function getMockSchemaById() {
       majorVersion: 1,
       minorVersion: 0,
       validActions: ['view', 'edit', 'deactivate', 'delete']
+    },
+    'c46e4675-73a0-44ce-adca-b6ebab897c21': {
+      id: 'c46e4675-73a0-44ce-adca-b6ebab897c21',
+      status: 'published',
+      dataRegistry: {
+        name: 'Facebook Feed'
+      },
+      definition: {
+        $id: 'http://example.com/example.json',
+        type: 'object',
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        properties: {
+          about: {
+            $id: '/properties/about',
+            type: 'string'
+          },
+          fan_count: {
+            $id: '/properties/fan_count',
+            type: 'integer'
+          },
+          id: {
+            $id: '/properties/id',
+            type: 'string'
+          },
+          website: {
+            $id: '/properties/website',
+            type: 'string'
+          },
+          type: 'object'
+        },
+        definitions: {}
+      },
+      majorVersion: 1,
+      minorVersion: 1
     }
   };
 }
