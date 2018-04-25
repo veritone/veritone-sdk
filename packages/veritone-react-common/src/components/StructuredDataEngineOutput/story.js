@@ -1,7 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { action, configureActions } from '@storybook/addon-actions';
 import styles from './story.styles.scss';
 import StructuredDataEngineOutput from './';
+
+action('on-engine-selected');
 
 storiesOf('StructuredDataEngineOutput', module).add('Base', () => {
   let engines = [
@@ -20,7 +23,7 @@ storiesOf('StructuredDataEngineOutput', module).add('Base', () => {
       schemaById={mockSchemaById}
       engines={engines}
       selectedEngineId={'engineOfInterest'}
-      onEngineChange={onEngineSelected}
+      onEngineChange={ action('on-engine-selected') }
     />
   );
 });

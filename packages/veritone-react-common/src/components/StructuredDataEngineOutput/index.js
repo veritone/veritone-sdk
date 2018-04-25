@@ -130,7 +130,7 @@ class StructuredDataEngineOutput extends Component {
   };
 
   render() {
-    let {
+    const {
       className,
       engines,
       schemaById,
@@ -138,7 +138,7 @@ class StructuredDataEngineOutput extends Component {
       onExpandClicked
     } = this.props;
 
-    let {
+    const {
       selectedSchemaId,
       flattenStructuredData,
       engineSchemaIds
