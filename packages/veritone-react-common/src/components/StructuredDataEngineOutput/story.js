@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { action, configureActions } from '@storybook/addon-actions';
+import { action } from '@storybook/addon-actions';
 import styles from './story.styles.scss';
 import StructuredDataEngineOutput from './';
 
@@ -172,8 +172,4 @@ function getMockSchemaById() {
       minorVersion: 1
     }
   };
-}
-
-function onEngineSelected(event) {
-  console.log(event);
 }
