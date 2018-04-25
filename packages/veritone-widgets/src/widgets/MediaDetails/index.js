@@ -31,6 +31,7 @@ import {
   LogoDetectionEngineOutput,
   ContentTemplateForm,
   GeoEngineOutput,
+  TranslationEngineOutput
 } from 'veritone-react-common';
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
@@ -367,10 +368,10 @@ class MediaDetailsWidget extends React.Component {
       libraries,
       entities,
       contentTemplates,
+      tdo,
       tdoContentTemplates
     } = this.props;
 
-    console.log(this.tdo);
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open>
@@ -592,9 +593,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         editMode={editModeEnabled}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
@@ -639,9 +638,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
@@ -677,7 +674,21 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <TranslationEngineOutput
+                        contents={engineResultsByEngineId[selectedEngineId]}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        //onRerunProcess={handle rerun process callback}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        //languages={language options}
+                        //defaultLanguage={'en-US'}
+                        //onLanguageChanged={handle on language change callback}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        mediaPlayerTimeIntervalMs={500}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
@@ -690,17 +701,23 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onTimeClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        onClick={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
                       <GeoEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
                         onExpandClicked={this.toggleExpandedMode}
+                        className={styles.engineOuputContainer}
+                        apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'} //TODO: remove this when Google Map Loading is handled by the container 
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                       />
                     )}
                   {selectedEngineCategory &&

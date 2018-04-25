@@ -27,19 +27,19 @@ export default class SentimentEngineOutput extends Component {
     onEngineChange: func,
     onExpandClicked: func,
     className: string,
-    currentMediaPlayerTime: number,
+    mediaPlayerTimeMs: number,
     timeWindowSizeMs: number,
     timeWindowStartMs: number,
     timeTickIntervalMs: number,
     sentimentTicks: arrayOf(number),
     sentimentDomain: arrayOf(number),
-    onTimeClick: func,
+    onClick: func,
     onTimeScroll: func
   };
 
   static defaultProps = {
     data: [],
-    currentMediaPlayerTime: 0,
+    mediaPlayerTimeMs: 0,
     timeWindowSizeMs: 400000,
     timeWindowStartMs: 0,
     timeTickIntervalMs: 50000,
@@ -64,19 +64,19 @@ export default class SentimentEngineOutput extends Component {
     this.scrollTimeOut = null;
 
     if (this.props.onTimeScroll) {
-      let seriesData = this.flattenEngineResultsToSeries(this.props.data);
-      let totalTime = seriesData[seriesData.length - 1].stopTimeMs;
+      const seriesData = this.flattenEngineResultsToSeries(this.props.data);
+      const totalTime = seriesData[seriesData.length - 1].stopTimeMs;
 
-      let chartWidth = event.target.scrollWidth;
-      let chartPosition = event.target.scrollLeft;
+      const chartWidth = event.target.scrollWidth;
+      const chartPosition = event.target.scrollLeft;
 
-      let time = totalTime * chartPosition / chartWidth;
+      const time = totalTime * chartPosition / chartWidth;
       this.props.onTimeScroll(time);
     }
   };
 
   handleTimeClick = event => {
-    this.props.onTimeClick && this.props.onTimeClick(event.activeLabel);
+    this.props.onClick && this.props.onClick(event.activeLabel, event.activeLabel);
   };
 
   flattenEngineResultsToSeries = data => {
@@ -121,23 +121,23 @@ export default class SentimentEngineOutput extends Component {
   };
 
   extractPropsData = () => {
-    let {
+    const {
       data,
       sentimentTicks,
       sentimentDomain,
-      currentMediaPlayerTime,
+      mediaPlayerTimeMs,
       timeWindowSizeMs,
       timeWindowStartMs,
       timeTickIntervalMs
     } = this.props;
 
-    let chartData = [{ sartTimeMs: 0, stopTimeMs: 0, sentiment: 0 }];
+    const chartData = [{ sartTimeMs: 0, stopTimeMs: 0, sentiment: 0 }];
     let numValidValue = 0;
     let totalSentiment = 0;
     const seriesData = this.flattenEngineResultsToSeries(data);
     seriesData.map((entry, index) => {
       let sentimentValue = 0;
-      let sentiment = entry.sentiment;
+      const sentiment = entry.sentiment;
       const positiveConfidence =
         (sentiment && sentiment.positiveConfidence) || 0;
       const negativeConfidence =
@@ -149,7 +149,7 @@ export default class SentimentEngineOutput extends Component {
       }
       numValidValue++;
       totalSentiment = totalSentiment + sentimentValue;
-      let chartFriendlyData = {
+      const chartFriendlyData = {
         startTimeMs: entry.startTimeMs,
         stopTimeMs: entry.stopTimeMs,
         sentiment: sentimentValue
@@ -157,11 +157,11 @@ export default class SentimentEngineOutput extends Component {
       chartData.push(chartFriendlyData);
     });
 
-    let totalTime = seriesData.length
+    const totalTime = seriesData.length
       ? seriesData[seriesData.length - 1].stopTimeMs
       : 0;
-    let xDomain = [0, totalTime];
-    let xTicks = [];
+    const xDomain = [0, totalTime];
+    const xTicks = [];
     for (
       let xTickValue = 0;
       xTickValue <= totalTime;
@@ -177,7 +177,7 @@ export default class SentimentEngineOutput extends Component {
       xDomain: xDomain,
       yTicks: sentimentTicks,
       yDomain: sentimentDomain,
-      referenceValue: currentMediaPlayerTime,
+      referenceValue: mediaPlayerTimeMs,
       totalTime: totalTime,
       scrollToTime: timeWindowStartMs,
       scaleX: totalTime > timeWindowSizeMs ? totalTime / timeWindowSizeMs : 1
@@ -189,9 +189,9 @@ export default class SentimentEngineOutput extends Component {
   };
 
   scrollTo = timeMs => {
-    let data = this.props.data;
-    let scrollTarget = this.scrollContent;
-    let scrollRatio = timeMs / data[data.length - 1].stopTimeMs;
+    const data = this.props.data;
+    const scrollTarget = this.scrollContent;
+    const scrollRatio = timeMs / data[data.length - 1].stopTimeMs;
 
     scrollTarget.scrollLeft = scrollRatio * scrollTarget.scrollWidth;
   };
@@ -218,7 +218,7 @@ export default class SentimentEngineOutput extends Component {
   }
 
   renderChart(extractedData) {
-    let {
+    const {
       chartData,
       xTicks,
       xDomain,
@@ -227,9 +227,10 @@ export default class SentimentEngineOutput extends Component {
       scaleX,
       referenceValue
     } = extractedData;
+
     // Compute color offset
-    let maxSentiment = Math.max(...chartData.map(entry => entry.sentiment));
-    let minSentiment = Math.min(...chartData.map(entry => entry.sentiment));
+    const maxSentiment = Math.max(...chartData.map(entry => entry.sentiment));
+    const minSentiment = Math.min(...chartData.map(entry => entry.sentiment));
 
     let offset = 0; // Everything is red;
     if (maxSentiment > 0 && minSentiment > 0) {
@@ -316,19 +317,27 @@ export default class SentimentEngineOutput extends Component {
   }
 
   render() {
-    let extractedData = this.extractPropsData();
+    const {
+      className,
+      engines,
+      selectedEngineId,
+      onEngineChange,
+      onExpandClicked
+    } = this.props;
+
+    const extractedData = this.extractPropsData();
 
     return (
-      <div className={classNames(styles.sentimentOutput, this.props.className)}>
-        {this.props.engines &&
-          this.props.engines.length &&
-          this.props.selectedEngineId && (
+      <div className={classNames(styles.sentimentOutput, className)}>
+        {engines &&
+          engines.length &&
+          selectedEngineId && (
             <EngineOutputHeader
               title="Sentiment"
-              engines={this.props.engines}
-              selectedEngineId={this.props.selectedEngineId}
-              onEngineChange={this.props.onEngineChange}
-              onExpandClicked={this.props.onExpandClicked}
+              engines={engines}
+              selectedEngineId={selectedEngineId}
+              onEngineChange={onEngineChange}
+              onExpandClicked={onExpandClicked}
             />
           )}
         {this.renderSummary(extractedData.average)}
