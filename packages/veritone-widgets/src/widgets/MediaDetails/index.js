@@ -28,6 +28,7 @@ import {
   TranscriptEngineOutput,
   FaceEngineOutput,
   LogoDetectionEngineOutput,
+  StructuredDataEngineOutput,
   ContentTemplateForm
 } from 'veritone-react-common';
 import Tooltip from 'material-ui/Tooltip';
@@ -59,6 +60,7 @@ import widget from '../../shared/widget';
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
     libraries: mediaDetailsModule.libraries(state, _widgetId),
     entities: mediaDetailsModule.entities(state, _widgetId),
+    schemaById: mediaDetailsModule.schemaById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -194,12 +196,14 @@ class MediaDetailsWidget extends React.Component {
         definition: objectOf(any),
         data: objectOf(any)
       })
-    )
+    ),
+    schemaById: objectOf(any)
   };
 
   static defaultProps = {
     libraries: [],
-    entities: []
+    entities: [],
+    schemaById: {}
   };
 
   static contextTypes = {
@@ -365,7 +369,8 @@ class MediaDetailsWidget extends React.Component {
       libraries,
       entities,
       contentTemplates,
-      tdoContentTemplates
+      tdoContentTemplates,
+      schemaById
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -692,8 +697,15 @@ class MediaDetailsWidget extends React.Component {
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType ===
-                      'thirdPartyData' && <div>No thirdparty data</div>}
+                    selectedEngineCategory.categoryType === 'correlation' && (
+                      <StructuredDataEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        schemaById={schemaById}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                      />
+                    )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'music' && (
                       <div>No {selectedEngineCategory.categoryType} data</div>

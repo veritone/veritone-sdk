@@ -15,20 +15,20 @@ class SourceDropdownMenuWidget extends React.Component {
 
   state = {
     sourceId: this.props.sourceId
-  }
+  };
 
-  handleSourceChange = (sourceId) => {
+  handleSourceChange = sourceId => {
     let newState = { sourceId };
     this.setState(newState, this.sendSourceIdToParent);
-  }
+  };
 
   sendSourceIdToParent = () => {
     this.props.handleSourceChange(this.state.sourceId);
-  }
+  };
 
   openCreateSource = () => {
     this.props.openCreateSource(this.handleSourceChange);
-  }
+  };
 
   render() {
     return (

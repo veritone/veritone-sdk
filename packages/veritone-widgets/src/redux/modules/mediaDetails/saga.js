@@ -20,6 +20,9 @@ import {
   REQUEST_ENTITIES,
   REQUEST_ENTITIES_SUCCESS,
   REQUEST_ENTITIES_FAILURE,
+  REQUEST_SCHEMAS,
+  REQUEST_SCHEMAS_SUCCESS,
+  REQUEST_SCHEMAS_FAILURE,
   loadEngineCategoriesComplete,
   loadEngineResultsRequest,
   loadEngineResultsComplete,
@@ -138,9 +141,6 @@ function* loadTdoSaga(widgetId, tdoId) {
     'reducer',
     'thumbnail',
     'transcode',
-    // TODO: remove these temporarily disabled categories
-    'fingerprint',
-    'geolocation',
     'stationPlayout',
     'music'
   ];
@@ -227,6 +227,25 @@ function* loadTdoSaga(widgetId, tdoId) {
   }
   engineCategories = filteredCategories;
 
+  // TODO: remove this test code
+  engineCategories.push({
+    name: 'Structured Data',
+    id: 'a70df3f6-84a7-4570-b8f4-daa122127e37',
+    categoryType: 'correlation',
+    editable: false,
+    iconClass: 'icon-third-party-data',
+    engines: [
+      {
+        id: 'my-fake-correlation-engine-id1',
+        name: 'Fake Structured Data Engine 1'
+      },
+      {
+        id: 'my-fake-correlation-engine-id2',
+        name: 'Fake Structured Data Engine 2'
+      }
+    ]
+  });
+
   // order categories first must go most frequently used (ask PMs), the rest - alphabetically
   engineCategories.sort((category1, category2) => {
     if (category1.categoryType < category2.categoryType) {
@@ -248,7 +267,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     'sentiment',
     'geolocation',
     'stationPlayout',
-    'sdo',
+    'correlation',
     'music'
   ];
   orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
@@ -542,9 +561,6 @@ function* deleteAssetsSaga(assetIds) {
     ', '
   )}){ ${deleteAssetClauses.join(' ')} }`;
 
-  console.log('delete assets query');
-  console.log(deleteAssetsQuery);
-
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
@@ -629,10 +645,6 @@ function* watchUpdateTdoContentTemplates() {
       contentTemplatesToCreate
     } = action.payload;
     const { widgetId } = action.meta;
-    console.log('Content templates to delete');
-    console.log(contentTemplatesToDelete);
-    console.log('Content templates to create');
-    console.log(contentTemplatesToCreate);
     yield call(
       updateTdoContentTemplatesSaga,
       widgetId,
@@ -753,10 +765,63 @@ function* fetchEntities(widgetId, entityIds) {
   }
 }
 
+function* fetchSchemas(widgetId, schemaIds) {
+  yield put({ type: REQUEST_SCHEMAS, meta: { widgetId } });
+  let schemaQueries = schemaIds.map((id, index) => {
+    return `
+      schema${index}: schema(id:"${id}") {
+        id
+        status
+        definition
+        majorVersion
+        minorVersion
+        validActions
+        dataRegistry {
+          name
+        }
+      }
+    `;
+  });
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: `query{${schemaQueries.join(' ')}}`,
+      token
+    });
+  } catch (error) {
+    yield put({
+      type: REQUEST_SCHEMAS_FAILURE,
+      error: 'Error fetching schemas from server.'
+    });
+  }
+
+  if (response.errors) {
+    yield put({
+      type: REQUEST_SCHEMAS_FAILURE,
+      error: 'Error thrown while fetching schemas',
+      meta: { widgetId }
+    });
+  } else {
+    yield put({
+      type: REQUEST_SCHEMAS_SUCCESS,
+      payload: response.data,
+      meta: { widgetId }
+    });
+  }
+}
+
 function* watchLoadEngineResultsComplete() {
   yield takeEvery(LOAD_ENGINE_RESULTS_COMPLETE, function*(action) {
     let libraryIds = [],
-      entityIds = [];
+      entityIds = [],
+      schemaIds = [];
     action.payload.forEach(jsonData => {
       jsonData.jsondata.series.forEach(s => {
         let entityId = get(s, 'object.entityId');
@@ -767,6 +832,12 @@ function* watchLoadEngineResultsComplete() {
         if (libraryId) {
           libraryIds.push(libraryId);
         }
+        let structuredData = get(s, 'object.structuredData');
+        if (structuredData) {
+          Object.keys(structuredData).forEach(schemaId =>
+            schemaIds.push(schemaId)
+          );
+        }
       });
     });
 
@@ -775,6 +846,9 @@ function* watchLoadEngineResultsComplete() {
         call(fetchLibraries, action.meta.widgetId, uniq(libraryIds)),
         call(fetchEntities, action.meta.widgetId, uniq(entityIds))
       ]);
+    }
+    if (schemaIds.length) {
+      yield call(fetchSchemas, action.meta.widgetId, uniq(schemaIds));
     }
   });
 }
