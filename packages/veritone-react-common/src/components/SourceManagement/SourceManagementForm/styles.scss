@@ -4,6 +4,10 @@
 .source-config-wrapper {
   width: 50%;
 }
+.formScroll {
+  height: calc(100vh - 106px);
+  overflow-y: auto;
+}
 
 .form-tab {
   @include mui-text('body1');

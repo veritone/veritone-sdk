@@ -10,9 +10,10 @@ import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
 import SourceConfiguration from '../SourceConfiguration';
 import ContentTemplates from '../ContentTemplates';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
-
+@withMuiThemeProvider
 export default class SourceManagementForm extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
@@ -209,7 +210,7 @@ export default class SourceManagementForm extends React.Component {
               />
             </Tabs>
           </ModalHeader>
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.handleSubmit} className={styles.formScroll}>
             {activeTab === 0 && (
               <SourceConfiguration
                 sourceTypes={this.props.sourceTypes}
