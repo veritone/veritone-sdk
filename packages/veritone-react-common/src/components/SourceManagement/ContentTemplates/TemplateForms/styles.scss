@@ -3,6 +3,14 @@
   padding-left: 30px;
 }
 
+.insetSection {
+  padding-top: 20px;
+  
+  & > span {
+    font-size: 15px;
+  }
+}
+
 .arrayRow {
   display: flex;
   flex-direction: row;

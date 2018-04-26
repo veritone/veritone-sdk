@@ -27,7 +27,10 @@
   right: 0;
   display: flex;
   justify-content: flex-end;
-  margin: 10px;
   margin-right: 80px;
-  padding: 25px;
+  padding: 20px;
+  
+  & > *:not(:last-child) {
+    margin-right: 20px;
+  }
 }

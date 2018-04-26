@@ -167,6 +167,14 @@ const dataSchemas = {
                     number: {
                       type: 'number',
                       title: 'Number'
+                    },
+                    geoLocation: {
+                      type: 'geoPoint',
+                      title: 'geoLocation'
+                    },
+                    trueOrFalse: {
+                      type: 'boolean',
+                      title: 'Boolean'
                     }
                   }
                 }

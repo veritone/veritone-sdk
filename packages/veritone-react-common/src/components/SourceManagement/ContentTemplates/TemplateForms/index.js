@@ -1,6 +1,9 @@
 import React from 'react';
 import { any, objectOf, func } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray } from 'lodash';
+import AddIcon from 'material-ui-icons/Add';
+import ClearIcon from 'material-ui-icons/Clear';
+import IconButton from 'material-ui/IconButton';
 
 import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
 import FormCard from '../FormCard';
@@ -193,9 +196,9 @@ function BuildFormElements({
             {
               isArray(value) && value.length > 1 ?
                 <div className={styles.arrayRemove}>
-                  <span onClick={handleArrayElementRemove(schemaId, schemaProp, index)}>
-                    Remove
-                  </span>
+                  <IconButton onClick={handleArrayElementRemove(schemaId, schemaProp, index)}>
+                    <ClearIcon />
+                  </IconButton>
                 </div> :
                 null
             }
@@ -204,13 +207,13 @@ function BuildFormElements({
       })
     );
     element = (
-      <div>
+      <div className={styles.insetSection}>
         <span>{title}</span>
         {element}
         <div className={styles.arrayAdd}>
-          <span onClick={handleArrayElementAdd(schemaId, schemaProp)}>
-            Add
-          </span>
+          <IconButton onClick={handleArrayElementAdd(schemaId, schemaProp)}>
+            <AddIcon />
+          </IconButton>
         </div>
       </div>
     );
@@ -234,7 +237,7 @@ function BuildFormElements({
       );
     });
     element = (
-      <div>
+      <div className={styles.insetSection}>
         <span>{title}</span>
         {element}
       </div>
