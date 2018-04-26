@@ -1,0 +1,12 @@
+.fingerprintEntityMatches {
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+
+  .textButton {
+    flex: 1 1 auto;
+    max-width: 125px;
+    margin-right: 25px;
+    margin-bottom: 20px;
+  }
+}

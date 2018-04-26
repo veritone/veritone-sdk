@@ -27,9 +27,12 @@ import {
   SentimentEngineOutput,
   TranscriptEngineOutput,
   FaceEngineOutput,
+  FingerprintEngineOutput,
   LogoDetectionEngineOutput,
+  ContentTemplateForm,
+  GeoEngineOutput,
+  TranslationEngineOutput,
   StructuredDataEngineOutput,
-  ContentTemplateForm
 } from 'veritone-react-common';
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
@@ -197,7 +200,8 @@ class MediaDetailsWidget extends React.Component {
         data: objectOf(any)
       })
     ),
-    schemaById: objectOf(any)
+    schemaById: objectOf(any),
+    googleMapsApiKey: string
   };
 
   static defaultProps = {
@@ -369,8 +373,10 @@ class MediaDetailsWidget extends React.Component {
       libraries,
       entities,
       contentTemplates,
+      tdo,
       tdoContentTemplates,
-      schemaById
+      schemaById,
+      googleMapsApiKey
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -594,9 +600,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         editMode={editModeEnabled}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
@@ -641,9 +645,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
@@ -666,11 +668,34 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <FingerprintEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        entities={entities}
+                        libraries={libraries}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <TranslationEngineOutput
+                        contents={engineResultsByEngineId[selectedEngineId]}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        //onRerunProcess={handle rerun process callback}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        //languages={language options}
+                        //defaultLanguage={'en-US'}
+                        //onLanguageChanged={handle on language change callback}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        mediaPlayerTimeIntervalMs={500}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
@@ -683,13 +708,24 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onTimeClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        onClick={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <GeoEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        className={styles.engineOuputContainer}
+                        apiKey={googleMapsApiKey}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
