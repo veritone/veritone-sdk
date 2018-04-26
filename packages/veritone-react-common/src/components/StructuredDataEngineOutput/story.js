@@ -23,7 +23,7 @@ storiesOf('StructuredDataEngineOutput', module).add('Base', () => {
       schemaById={mockSchemaById}
       engines={engines}
       selectedEngineId={'engineOfInterest'}
-      onEngineChange={ action('on-engine-selected') }
+      onEngineChange={action('on-engine-selected')}
     />
   );
 });
@@ -39,26 +39,30 @@ function getMockData() {
           startTimeMs: 0,
           stopTimeMs: 300000,
           structuredData: {
-            '8a8bbd66-d160-480e-b3fb-7a935ac4e8dd': {
-              geoLocation: '34.05, -118.24',
-              temperature: 69.71,
-              pressure: 1015,
-              humidity: 56,
-              temperatureMin: 62.6,
-              temperatureMax: 77,
-              visibility: 16093,
-              windSpeed: 3.36,
-              windDegree: 0,
-              datetimeStart: '2018-02-21T21:30:00.000Z',
-              datetimeEnd: '2018-02-21T22:30:00.000Z',
-              locationName: 'Los Angeles'
-            },
-            'c46e4675-73a0-44ce-adca-b6ebab897c21': {
-              id: 1234567,
-              about: 'about fb feed',
-              website: 'veritone.com',
-              fan_count: 987654321
-            }
+            '8a8bbd66-d160-480e-b3fb-7a935ac4e8dd': [
+              {
+                geoLocation: '34.05, -118.24',
+                temperature: 69.71,
+                pressure: 1015,
+                humidity: 56,
+                temperatureMin: 62.6,
+                temperatureMax: 77,
+                visibility: 16093,
+                windSpeed: 3.36,
+                windDegree: 0,
+                datetimeStart: '2018-02-21T21:30:00.000Z',
+                datetimeEnd: '2018-02-21T22:30:00.000Z',
+                locationName: 'Los Angeles'
+              }
+            ],
+            'c46e4675-73a0-44ce-adca-b6ebab897c21': [
+              {
+                id: 1234567,
+                about: 'about fb feed',
+                website: 'veritone.com',
+                fan_count: 987654321
+              }
+            ]
           }
         }
       ]

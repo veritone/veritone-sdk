@@ -816,7 +816,7 @@ function* watchLoadEngineResultsComplete() {
         if (libraryId) {
           libraryIds.push(libraryId);
         }
-        let structuredData = get(s, 'object.structuredData');
+        let structuredData = get(s, 'structuredData');
         if (structuredData) {
           Object.keys(structuredData).forEach(schemaId =>
             schemaIds.push(schemaId)

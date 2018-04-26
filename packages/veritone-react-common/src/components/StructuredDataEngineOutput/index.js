@@ -82,7 +82,13 @@ class StructuredDataEngineOutput extends Component {
               if (!flattenStructuredData[schemaId]) {
                 flattenStructuredData[schemaId] = [];
               }
-              flattenStructuredData[schemaId].push(structuredData[schemaId]);
+              if (Array.isArray(structuredData[schemaId])) {
+                structuredData[schemaId].forEach(structuredDataItem =>
+                  flattenStructuredData[schemaId].push(structuredDataItem)
+                );
+              } else {
+                flattenStructuredData[schemaId].push(structuredData[schemaId]);
+              }
             });
           }
         });
