@@ -31,9 +31,7 @@ class StructuredDataEngineOutput extends Component {
           shape({
             startTimeMs: number,
             stopTimeMs: number,
-            object: shape({
-              structuredData: objectOf(any)
-            })
+            structuredData: objectOf(any)
           })
         )
       })
@@ -77,7 +75,7 @@ class StructuredDataEngineOutput extends Component {
       .filter(jsonData => get(jsonData, 'series.length', 0))
       .forEach(jsonData => {
         jsonData.series.forEach(seriesItem => {
-          const structuredData = get(seriesItem, 'object.structuredData');
+          const structuredData = get(seriesItem, 'structuredData');
           if (structuredData) {
             const schemaIds = Object.keys(structuredData);
             schemaIds.forEach(schemaId => {
