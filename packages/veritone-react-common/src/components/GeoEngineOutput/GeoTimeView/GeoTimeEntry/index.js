@@ -15,7 +15,7 @@ export default class GeoTimeEntry extends Component {
       stopTimeStamp: string.isRequired,
       active: bool,
       latitude: number,
-      longtitude: number,
+      longitude: number,
       precision: number,
       direction: number,
       velocity: number,
@@ -50,7 +50,7 @@ export default class GeoTimeEntry extends Component {
           </span>
           <span>
             <span className={classNames(styles.label)}>Long:&nbsp;</span>
-            <span>{data.longtitude}</span>
+            <span>{data.longitude}</span>
           </span>
         </div>
       </div>

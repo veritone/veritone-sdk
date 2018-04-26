@@ -16,7 +16,7 @@ export default class GeoTimeView extends Component {
         stopTimeStamp: string.isRequired,
         active: bool,
         latitude: number,
-        longtitude: number,
+        longitude: number,
         precision: number,
         direction: number,
         velocity: number,
@@ -43,7 +43,7 @@ export default class GeoTimeView extends Component {
                   entry.startTimeMs +
                   entry.stopTimeMs +
                   entry.latitude +
-                  entry.longtitude
+                  entry.longitude
                 }
               />
             );

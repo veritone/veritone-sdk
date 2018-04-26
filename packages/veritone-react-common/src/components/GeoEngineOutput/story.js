@@ -70,7 +70,7 @@ function genMockData(
           latitude:
             Math.round(1000000 * (startLat + entryIndex * entryLatSize)) /
             1000000,
-          longtitude:
+          longitude:
             Math.round(1000000 * (startLong + entryIndex * entryLongSize)) /
             1000000
         }

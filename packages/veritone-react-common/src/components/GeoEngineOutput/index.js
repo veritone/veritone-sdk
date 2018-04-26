@@ -30,7 +30,7 @@ export default class GeoEngineOutput extends Component {
             gps: arrayOf(
               shape({
                 latitude: number, // in meters
-                longtitude: number, // in meters
+                longitude: number, // in meters
                 precision: number, // in meters
                 direction: number, // 0-360
                 velocity: number, // in meters
@@ -152,7 +152,7 @@ export default class GeoEngineOutput extends Component {
           const entryStopTime = entry.stopTimeMs;
           const parsedEntry = Object.assign(entry, entry.gps[0]);
           parsedEntry.lat = entry.gps[0].latitude;
-          parsedEntry.lng = entry.gps[0].longtitude;
+          parsedEntry.lng = entry.gps[0].longitude;
           parsedEntry.startTimeStamp = format(
             timeStampMS + entryStartTime,
             'hh:mm:ss A'

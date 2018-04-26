@@ -19,7 +19,7 @@ export default class GeoMapView extends Component {
         gps: arrayOf(
           shape({
             latitude: number,
-            longtitude: number,
+            longitude: number,
             precision: number,
             direction: number,
             velocity: number,
@@ -54,7 +54,7 @@ export default class GeoMapView extends Component {
       data.forEach(entry => {
         const entryPos = entry.gps[0];
         const entryLat = entryPos.latitude;
-        const entryLng = entryPos.longtitude;
+        const entryLng = entryPos.longitude;
         const distance = GoogleMapHelpers.findDistanceRatio(
           selectedLat,
           selectedLng,
@@ -91,7 +91,7 @@ export default class GeoMapView extends Component {
         this.setState({
           currentPos: {
             latitude: nearestEntry.gps[0].latitude,
-            longtitude: nearestEntry.gps[0].longtitude
+            longitude: nearestEntry.gps[0].longitude
           }
         });
       }
@@ -131,7 +131,7 @@ export default class GeoMapView extends Component {
           prevMinDiff = prevTimeDiff;
           prevEntryPos = {
             lat: entry.gps[0].latitude,
-            lng: entry.gps[0].longtitude
+            lng: entry.gps[0].longitude
           };
         }
       } else {
@@ -140,7 +140,7 @@ export default class GeoMapView extends Component {
           nextMinDiff = nextTimeDiff;
           nextEntryPos = {
             lat: entry.gps[0].latitude,
-            lng: entry.gps[0].longtitude
+            lng: entry.gps[0].longitude
           };
         }
       }
@@ -179,13 +179,15 @@ export default class GeoMapView extends Component {
 
     return (
       <div className={classNames(styles.googleMapView, className)}>
-        <GoogleMapComponent
-          path={data}
-          apiKey={apiKey}
-          travelMode={travelMode}
-          onClick={this.handleRouteClick}
-          currentPos={estimatedPos}
-        />
+        { data && data.length &&
+          <GoogleMapComponent
+            path={data}
+            apiKey={apiKey}
+            travelMode={travelMode}
+            onClick={this.handleRouteClick}
+            currentPos={estimatedPos}
+          />
+        }
       </div>
     );
   }

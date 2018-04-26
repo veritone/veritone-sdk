@@ -155,7 +155,7 @@ export function drawDirection(
 
           let waypointLocation = point.location;
           const waypointLat = point.lat || point.latitude;
-          const waypointLng = point.lng || point.longtitude;
+          const waypointLng = point.lng || point.longitude;
           if (
             !waypointLocation &&
             !(waypointLat == null) &&
