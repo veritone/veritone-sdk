@@ -1,6 +1,6 @@
 import React from 'react';
 import { any, objectOf, func } from 'prop-types';
-import { isObject, compact } from 'lodash';
+import { isObject, compact, cloneDeep, isArray } from 'lodash';
 
 import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
 import FormCard from '../FormCard';
@@ -26,10 +26,14 @@ export default class TemplateForms extends React.Component {
     let pointer;
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
-      currentValue = Object.assign(
-        {},
-        this.props.templates[schemaId].data[rootObject]
-      );
+      if (!!parseInt(objectTraverse[0]) || objectTraverse[0] === '0') {
+        currentValue = cloneDeep(this.props.templates[schemaId].data[rootObject] || ['']);
+      } else {
+        currentValue = Object.assign(
+          {},
+          this.props.templates[schemaId].data[rootObject]
+        );
+      }
       pointer = currentValue;
       objectTraverse.forEach((field, index) => {
         // Initialize any undefined nested objects
@@ -54,15 +58,40 @@ export default class TemplateForms extends React.Component {
     );
   };
 
-  parseType = (type, value) => {
-    if (type.includes('number')) {
-      return parseFloat(value);
-    } else if (type.includes('integer')) {
-      return parseInt(value);
-    } else if (type.includes('boolean')) {
-      return value === 'true';
+  handleArrayElementAdd = (schemaId, fieldId) => ($event) => {
+    let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
+    if (isArray(curArray)) {
+      curArray.push('');
+      this.props.onTemplateDetailsChange(
+        schemaId,
+        fieldId,
+        curArray
+      );
     }
-    return value;
+  }
+
+  handleArrayElementRemove = (schemaId, fieldId, index) => ($event) => {
+    let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
+    if (isArray(curArray)) {
+      curArray.splice(index, 1);
+      this.props.onTemplateDetailsChange(
+        schemaId,
+        fieldId,
+        curArray
+      );
+    }
+  }
+
+  parseType = (type, value) => {
+    let returnValue = value;
+    if (type.includes('number')) {
+      returnValue = parseFloat(value);
+    } else if (type.includes('integer')) {
+      returnValue =  parseInt(value);
+    } else if (type.includes('boolean')) {
+      returnValue =  value === 'true';
+    }
+    return returnValue || '';
   };
 
   render() {
@@ -74,24 +103,23 @@ export default class TemplateForms extends React.Component {
           const schemaProps = templates[schemaId].definition.properties;
           const formFields = Object.keys(schemaProps).map(
             (schemaProp, propIdx) => {
-              const type = schemaProps[schemaProp].type;
+              const { type, items } = schemaProps[schemaProp];
 
               return (
                 type && (
                   <BuildFormElements
                     fieldId={`${schemaProp}-${schemaId}`}
                     schemaId={schemaId}
+                    schemaProp={schemaProp}
                     type={type}
+                    items={items}
                     value={templates[schemaId].data[schemaProp]}
                     title={schemaProps[schemaProp].title || schemaProp}
                     objectProperties={schemaProps[schemaProp].properties}
-                    onChange={this.handleFieldChange(
-                      schemaId,
-                      schemaProp,
-                      type
-                    )}
-                    key={schemaProp}
-                  />
+                    onChange={this.handleFieldChange}
+                    handleArrayElementAdd={this.handleArrayElementAdd}
+                    handleArrayElementRemove={this.handleArrayElementRemove}
+                    key={schemaProp} />
                 )
               );
             }
@@ -103,8 +131,7 @@ export default class TemplateForms extends React.Component {
               id={schemaId}
               fields={compact(formFields)}
               name={templates[schemaId].name}
-              remove={this.handleRemoveTemplate}
-            />
+              remove={this.handleRemoveTemplate} />
           );
         })}
       </div>
@@ -115,11 +142,16 @@ export default class TemplateForms extends React.Component {
 function BuildFormElements({
   fieldId,
   schemaId,
+  schemaProp,
   type,
+  items,
   title,
   value,
   objectProperties,
+  onChange,
   depth = 0,
+  handleArrayElementAdd,
+  handleArrayElementRemove,
   ...rest
 }) {
   if (!type) {
@@ -128,15 +160,59 @@ function BuildFormElements({
 
   let element;
 
-  if (!type.includes('object')) {
+  if (!type.includes('object') && !type.includes('array')) {
     element = (
       <SourceTypeField
         id={fieldId}
         type={type}
         title={title}
         value={`${value}` || ''}
-        {...rest}
-      />
+        onChange={onChange(schemaId, schemaProp, type)}
+        {...rest} />
+    );
+  }
+
+  if (type.includes('array')) {
+    element = (
+      (value || ['']).map((elem, index) => {
+
+        return (
+          <div className={styles.arrayRow}>
+            <BuildFormElements
+              {...rest}
+              fieldId={`${fieldId}.${index}`}
+              schemaId={schemaId}
+              schemaProp={`${schemaProp}.${index}`}
+              type={items.type}
+              value={elem}
+              title={`${items.title} ${index + 1}`}
+              objectProperties={items.properties}
+              depth={depth + 1}
+              onChange={onChange}
+              key={`${schemaProp}.${index}`} />
+            {
+              isArray(value) && value.length > 1 ?
+                <div className={styles.arrayRemove}>
+                  <span onClick={handleArrayElementRemove(schemaId, schemaProp, index)}>
+                    Remove
+                  </span>
+                </div> :
+                null
+            }
+          </div>
+        );
+      })
+    );
+    element = (
+      <div>
+        <span>{title}</span>
+        {element}
+        <div className={styles.arrayAdd}>
+          <span onClick={handleArrayElementAdd(schemaId, schemaProp)}>
+            Add
+          </span>
+        </div>
+      </div>
     );
   }
 
@@ -147,13 +223,14 @@ function BuildFormElements({
           {...rest}
           fieldId={`${fieldId}.${objProp}`}
           schemaId={schemaId}
+          schemaProp={`${schemaProp}.${objProp}`}
           type={objectProperties[objProp].type}
           value={(value && value[objProp]) || ''}
           title={objectProperties[objProp].title || objProp}
           objectProperties={objectProperties[objProp].properties}
           depth={depth + 1}
-          key={objProp}
-        />
+          onChange={onChange}
+          key={objProp} />
       );
     });
     element = (

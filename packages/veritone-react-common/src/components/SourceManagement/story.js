@@ -141,6 +141,32 @@ const dataSchemas = {
                     },
                     username: {
                       type: 'string'
+                    },
+                    testArray: {
+                      type: 'array',
+                      title: 'Array Test',
+                      items: {
+                        type: 'number',
+                        title: 'item title'
+                      }
+                    },
+                    testObject: {
+                      type: 'object',
+                      title: 'Object Test',
+                      properties: {
+                        objectString: {
+                          type: 'string',
+                          title: 'Object String'
+                        },
+                        objectNumber: {
+                          type: 'number',
+                          title: 'Object Number'
+                        }
+                      }
+                    },
+                    number: {
+                      type: 'number',
+                      title: 'Number'
                     }
                   }
                 }
@@ -248,6 +274,10 @@ const initialTemplates = createInitialTemplates(
   templateSource.data.source.contentTemplates
 );
 
+function displayForm(form) {
+  console.log(form);
+}
+
 storiesOf('SourceManagement', module)
   .add('Nullstate', () => <Nullstate />)
   .add('TileView', () => <SourceTileView sources={sourceResults} />)
@@ -257,7 +287,7 @@ storiesOf('SourceManagement', module)
         sourceTypes={sourceTypes.sourceTypes.records}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={noop}
+        onSubmit={displayForm}
         onClose={noop}
       />
     );
@@ -279,7 +309,7 @@ storiesOf('SourceManagement', module)
         source={sourceConfig}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={noop}
+        onSubmit={displayForm}
         onClose={noop}
       />
     );
@@ -288,6 +318,6 @@ storiesOf('SourceManagement', module)
     <ContentTemplateForm
       templateData={templateData}
       initialTemplates={initialTemplates}
-      onSubmit={noop}
+      onSubmit={displayForm}
     />
   ));
