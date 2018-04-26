@@ -127,7 +127,7 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
   if (!_appSingleton) {
     if (_isWidget) {
       console.warn(
-        `A widget was registered to an app which hasn't yet been authenticated. import VeritoneApp first and call login().`
+        `A widget was registered to an app which hasn't yet been initialized. Import and call VeritoneApp before constructing any widgets.`
       );
       return;
     }
