@@ -84,8 +84,7 @@ const initDate = new Date();
 @formValues('scheduleType')
 export default class Scheduler extends React.Component {
   static propTypes = {
-    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once'])
-      .isRequired,
+    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once']).isRequired,
     onSubmit: func, // user-provided callback for result values
     handleSubmit: func.isRequired // provided by redux-form
   };
@@ -154,11 +153,7 @@ export default class Scheduler extends React.Component {
             control={<Radio />}
             label="Continuous"
           />
-          <FormControlLabel
-            value="Now"
-            control={<Radio />}
-            label="Immediate"
-          />
+          <FormControlLabel value="Now" control={<Radio />} label="Immediate" />
           <FormControlLabel
             value="Once"
             control={<Radio />}

@@ -61,7 +61,8 @@ export default class TemplateList extends React.Component {
       <div className={styles['template-list']}>
         <div className={styles.title}>Content Templates</div>
         <div className={styles.description}>
-          Add more information to the files you ingest to help organize, search and filter quickly.
+          Add more information to the files you ingest to help organize, search
+          and filter quickly.
         </div>
         {this.buildTemplateList()}
       </div>

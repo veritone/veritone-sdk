@@ -107,7 +107,11 @@ class FaceEngineOutput extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.entities || nextProps.libraries || nextProps.data) {
-      this.processFaces(nextProps.data, nextProps.libraries, nextProps.entities);
+      this.processFaces(
+        nextProps.data,
+        nextProps.libraries,
+        nextProps.entities
+      );
     }
   }
 
@@ -195,22 +199,26 @@ class FaceEngineOutput extends Component {
           stopTimeMs: faceObj.stopTimeMs
         };
         if (recognizedEntityObjectMap[recognizedEntityObj.entityId]) {
-          recognizedEntityObjectMap[
-            entity.id
-          ] = this.setRecognizedEntityObj(
+          recognizedEntityObjectMap[entity.id] = this.setRecognizedEntityObj(
             recognizedEntityObjectMap[recognizedEntityObj.entityId],
             faceObj
           );
         } else {
-          recognizedEntityObjectMap[recognizedEntityObj.entityId] = recognizedEntityObj;
+          recognizedEntityObjectMap[
+            recognizedEntityObj.entityId
+          ] = recognizedEntityObj;
           entitiesByLibrary[recognizedEntityObj.libraryId] = {
             libraryId: recognizedEntityObj.libraryId,
             libraryName: recognizedEntityObj.libraryName,
             faces: [
-                ...get(entitiesByLibrary[recognizedEntityObj.libraryId], 'faces', []),
-                recognizedEntityObj
+              ...get(
+                entitiesByLibrary[recognizedEntityObj.libraryId],
+                'faces',
+                []
+              ),
+              recognizedEntityObj
             ]
-          }
+          };
         }
 
         // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
@@ -454,7 +462,9 @@ class FaceEngineOutput extends Component {
               !this.state.selectedEntity && (
                 <FacesByScene
                   currentMediaPlayerTime={currentMediaPlayerTime}
-                  recognizedEntityObjects={Object.values(this.state.recognizedEntityObjectMap)}
+                  recognizedEntityObjects={Object.values(
+                    this.state.recognizedEntityObjectMap
+                  )}
                   onSelectEntity={this.handleEntitySelect}
                 />
               )}

@@ -49,7 +49,8 @@ class DynamicAdapter extends React.Component {
                 ? field.defaultValue
                 : field.defaultValue.split(','));
           } else if (field.defaultValues) {
-            newState[field.name] = propValue || clone(field.defaultValues) || [];
+            newState[field.name] =
+              propValue || clone(field.defaultValues) || [];
           }
         }
       });
@@ -76,21 +77,19 @@ class DynamicAdapter extends React.Component {
   render() {
     return (
       <div>
-        {
-          isArray(this.props.supportedSourceTypes) && this.props.supportedSourceTypes.length ?
-          (
-            <div>
-              <SourceDropdownMenu
-                sourceId={this.state.sourceId}
-                sources={this.props.sources}
-                handleSourceChange={this.handleSourceChange}
-                openCreateSource={this.props.openCreateSource}
-                closeCreateSource={this.props.closeCreateSource}
-              />
-              <div className={styles.adapterDivider} />
-            </div>
-          ) : null
-        }
+        {isArray(this.props.supportedSourceTypes) &&
+        this.props.supportedSourceTypes.length ? (
+          <div>
+            <SourceDropdownMenu
+              sourceId={this.state.sourceId}
+              sources={this.props.sources}
+              handleSourceChange={this.handleSourceChange}
+              openCreateSource={this.props.openCreateSource}
+              closeCreateSource={this.props.closeCreateSource}
+            />
+            <div className={styles.adapterDivider} />
+          </div>
+        ) : null}
         <div>
           <div className={styles.adapterContainer}>
             <div className={styles.adapterHeader}>
@@ -102,7 +101,9 @@ class DynamicAdapter extends React.Component {
             </div>
           </div>
           <div>
-            <div className={styles.adapterContainer + ' ' + styles.flexContainer}>
+            <div
+              className={styles.adapterContainer + ' ' + styles.flexContainer}
+            >
               {this.props.adapterConfig.iconPath ? (
                 <div className={styles.adapterIconContainer}>
                   <Image
