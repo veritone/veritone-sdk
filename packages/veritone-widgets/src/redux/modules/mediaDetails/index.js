@@ -41,6 +41,9 @@ export const REQUEST_LIBRARIES_FAILURE = 'REQUEST_LIBRARIES_FAILURE';
 export const REQUEST_ENTITIES = 'REQUEST_ENTITIES';
 export const REQUEST_ENTITIES_SUCCESS = 'REQUEST_ENTITIES_SUCCESS';
 export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
+export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
+export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
+export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -59,7 +62,8 @@ const defaultMDPState = {
   entities: [],
   fetchingEntities: false,
   contentTemplates: {},
-  tdoContentTemplates: {}
+  tdoContentTemplates: {},
+  schemaById: {}
 };
 
 const defaultState = {};
@@ -257,8 +261,6 @@ export default createReducer(defaultState, {
   ) {
     const errorMessage = get(error, 'message', error);
     const tdoContentTemplates = {};
-    console.log('tdo assets');
-    console.log(payload);
     if (payload && payload.records) {
       payload.records.forEach(asset => {
         if (!asset.sourceData || !asset.sourceData.schema) {
@@ -468,6 +470,27 @@ export default createReducer(defaultState, {
         entities: [...allEntities]
       }
     };
+  },
+  [REQUEST_SCHEMAS](state, { meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId]
+      }
+    };
+  },
+  [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
+    const allSchemas = Object.assign({}, state[widgetId].schemaById);
+    values(payload).forEach(schema => {
+      allSchemas[schema.id] = schema;
+    });
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        schemaById: allSchemas
+      }
+    };
   }
 });
 
@@ -495,11 +518,12 @@ export const libraries = (state, widgetId) =>
   get(local(state), [widgetId, 'libraries']);
 export const entities = (state, widgetId) =>
   get(local(state), [widgetId, 'entities']);
-
 export const contentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
 export const tdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
+export const schemaById = (state, widgetId) =>
+  get(local(state), [widgetId, 'schemaById']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,

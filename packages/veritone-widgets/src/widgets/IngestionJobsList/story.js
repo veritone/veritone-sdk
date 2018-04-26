@@ -71,28 +71,26 @@ const ingestionJobs = {
               }
             ]
           },
-          "ingestionJob": {
-            "records": [
+          ingestionJob: {
+            records: [
               {
-                "id": "592e2225-d97c-4dca-8b96-26b81adcd3a6",
-                "taskTemplates": {
-                  "records": [
+                id: '592e2225-d97c-4dca-8b96-26b81adcd3a6',
+                taskTemplates: {
+                  records: [
                     {
-                      "id": "ae7e7bd0-95a4-4cda-a42d-9e0c068ad4f6",
-                      "engine": {
-                        "id": "b79d94cc-5b95-4bbd-ac01-f54b147f406f",
-                        "name": "Google Drive Adapter",
-                        "category": {
-                          "name": "Pull",
-                          "id": "4b150c85-82d0-4a18-b7fb-63e4a58dfcce",
-                          "type": {
-                            "name": "Ingestion"
+                      id: 'ae7e7bd0-95a4-4cda-a42d-9e0c068ad4f6',
+                      engine: {
+                        id: 'b79d94cc-5b95-4bbd-ac01-f54b147f406f',
+                        name: 'Google Drive Adapter',
+                        category: {
+                          name: 'Pull',
+                          id: '4b150c85-82d0-4a18-b7fb-63e4a58dfcce',
+                          type: {
+                            name: 'Ingestion'
                           },
-                          "iconClass": null
+                          iconClass: null
                         },
-                        "validStateActions": [
-                          "disable"
-                        ]
+                        validStateActions: ['disable']
                       }
                     }
                   ]
@@ -163,28 +161,26 @@ const ingestionJobs = {
               }
             ]
           },
-          "ingestionJob": {
-            "records": [
+          ingestionJob: {
+            records: [
               {
-                "id": "739a10d1-fb04-402a-aa0e-2db79088436a",
-                "taskTemplates": {
-                  "records": [
+                id: '739a10d1-fb04-402a-aa0e-2db79088436a',
+                taskTemplates: {
+                  records: [
                     {
-                      "id": "6f0b3833-b7c1-415a-b3f1-ded7ffad86a1",
-                      "engine": {
-                        "id": "d1bc57fe-675d-435d-9f4d-2f074485ec55",
-                        "name": "Push Adapter",
-                        "category": {
-                          "name": "Push",
-                          "id": "0b10da6b-3485-496c-a2cb-aabf59a6352d",
-                          "type": {
-                            "name": "Ingestion"
+                      id: '6f0b3833-b7c1-415a-b3f1-ded7ffad86a1',
+                      engine: {
+                        id: 'd1bc57fe-675d-435d-9f4d-2f074485ec55',
+                        name: 'Push Adapter',
+                        category: {
+                          name: 'Push',
+                          id: '0b10da6b-3485-496c-a2cb-aabf59a6352d',
+                          type: {
+                            name: 'Ingestion'
                           },
-                          "iconClass": null
+                          iconClass: null
                         },
-                        "validStateActions": [
-                          "disable"
-                        ]
+                        validStateActions: ['disable']
                       }
                     }
                   ]
@@ -199,7 +195,7 @@ const ingestionJobs = {
 };
 
 function handleCreateJob() {
-  console.log('Create Job Button clicked')
+  console.log('Create Job Button clicked');
 }
 
 function handleSelectJob(rowIdx, dataKey, dataKeyValue) {
@@ -207,7 +203,12 @@ function handleSelectJob(rowIdx, dataKey, dataKeyValue) {
 }
 
 function handleSelectMenuItem(menuAction, dataKeyValue, event) {
-  console.log('menuAction, dataKeyValue, event:', menuAction, dataKeyValue, event);
+  console.log(
+    'menuAction, dataKeyValue, event:',
+    menuAction,
+    dataKeyValue,
+    event
+  );
 }
 
 class Story extends React.Component {
@@ -237,8 +238,7 @@ class Story extends React.Component {
 
 const app = VeritoneApp();
 
-storiesOf('Ingestion Jobs List', module)
-.add('Base', () => {
+storiesOf('Ingestion Jobs List', module).add('Base', () => {
   const sessionToken = text('Api Session Token', '');
 
   return <Story sessionToken={sessionToken} store={app._store} />;
