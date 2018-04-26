@@ -32,6 +32,7 @@ export default class GeoMapView extends Component {
     apiKey: string,
     travelMode: string,
     onClick: func,
+    onGoogleMapError: func,
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
   };
@@ -172,7 +173,8 @@ export default class GeoMapView extends Component {
       className,
       apiKey,
       travelMode,
-      mediaPlayerTimeMs
+      mediaPlayerTimeMs,
+      onGoogleMapError
     } = this.props;
 
     const estimatedPos = this.estimatePosition(mediaPlayerTimeMs);
@@ -185,6 +187,7 @@ export default class GeoMapView extends Component {
             apiKey={apiKey}
             travelMode={travelMode}
             onClick={this.handleRouteClick}
+            onGoogleMapError={onGoogleMapError}
             currentPos={estimatedPos}
           />
         }

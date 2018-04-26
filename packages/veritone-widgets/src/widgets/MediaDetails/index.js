@@ -200,7 +200,8 @@ class MediaDetailsWidget extends React.Component {
         data: objectOf(any)
       })
     ),
-    schemaById: objectOf(any)
+    schemaById: objectOf(any),
+    googleMapsApiKey: string
   };
 
   static defaultProps = {
@@ -374,7 +375,8 @@ class MediaDetailsWidget extends React.Component {
       contentTemplates,
       tdo,
       tdoContentTemplates,
-      schemaById
+      schemaById,
+      googleMapsApiKey
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -720,7 +722,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         onExpandClicked={this.toggleExpandedMode}
                         className={styles.engineOuputContainer}
-                        apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'} //TODO: remove this when Google Map Loading is handled by the container 
+                        apiKey={googleMapsApiKey}
                         onClick={this.handleUpdateMediaPlayerTime}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                       />

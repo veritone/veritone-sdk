@@ -2,16 +2,23 @@ import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { number } from '@storybook/addon-knobs/react';
+import { string } from 'prop-types';
 
 import classNames from 'classnames';
 import styles from './story.styles.scss';
 
 import GeoEngineOutput from './';
-storiesOf('GeoEngineOutput', module).add('Base', () => {
+storiesOf('GeoEngineOutput', module).add('No Api Key', () => {
   return <GeoExample />;
+}).add('Has Api Key', () => {
+  return <GeoExample apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'}/>;
 });
 
 export class GeoExample extends Component {
+  static propTypes = {
+    apiKey: string
+  }
+
   state = {
     selectedEngineId: '1',
     engines: [
@@ -28,7 +35,7 @@ export class GeoExample extends Component {
         <GeoEngineOutput
           data={this.state.mockData}
           startTimeStamp="2018-01-31T20:03:45.000Z"
-          apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'}
+          apiKey={this.props.apiKey}
           onClick={action('onClick')}
           engines={this.state.engines}
           selectedEngineId={this.state.selectedEngineId}

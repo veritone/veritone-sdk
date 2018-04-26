@@ -6,10 +6,11 @@ const callbackName = 'veritone_googleMapCallback';
 
 export default class GoogleMapLoader {
   constructor(apiKey) {
-    const key = apiKey;
-    this[
-      apiLink
-    ] = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=${callbackName}`;
+    if (apiKey) {
+      this[
+        apiLink
+      ] = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${callbackName}`;
+    }
   }
 
   load() {
@@ -20,15 +21,18 @@ export default class GoogleMapLoader {
 
         try {
           if (!window.google) {
-            // Setup global callbacks
-            //window.gm_authFailure = this.handleAuthError;
-            window[callbackName] = this.handleAPILoaded;
+            if (this[apiLink]) {
+              // Setup global callbacks
+              window[callbackName] = this.handleAPILoaded;
 
-            // Load Google Map API
-            const script = document.createElement('script');
-            script.src = this[apiLink];
-            script.async = true;
-            document.body.append(script);
+              // Load Google Map API
+              const script = document.createElement('script');
+              script.src = this[apiLink];
+              script.async = true;
+              document.body.append(script);
+            } else {
+              throw 'missing google map api key';
+            }
           } else {
             // Google API has already loaded
             this[fnResolve](window.google);
@@ -44,19 +48,9 @@ export default class GoogleMapLoader {
 
   handleAPILoaded = () => {
     // Remove global callbacks
-    //delete window.gm_authFailure;
     delete window[callbackName];
 
     // Trigger success callback
     this[fnResolve] && this[fnResolve](window.google);
-  };
-
-  handleAuthError = error => {
-    // Remove global callbacks
-    //delete window.gm_authFailure;
-    //delete window.veritoneGoogleMapAPI;
-
-    // Trigger error callback
-    this[fnResolve] && this[fnResolve](error);
   };
 }

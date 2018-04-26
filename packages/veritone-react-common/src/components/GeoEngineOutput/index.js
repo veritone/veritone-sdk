@@ -85,6 +85,12 @@ export default class GeoEngineOutput extends Component {
     });
   };
 
+  handleMapLoadingError = (error) => {
+    this.setState({
+      currentView: 'timeView'
+    });
+  }
+
   renderHeader() {
     const {
       title,
@@ -192,6 +198,7 @@ export default class GeoEngineOutput extends Component {
           travelMode={travelMode}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           className={classNames(mapViewClassName)}
+          onGoogleMapError={this.handleMapLoadingError}
         />
       );
     } else {

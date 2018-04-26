@@ -219,21 +219,6 @@ export function drawDirection(
               const line = drawPolyline(path, map);
               resolve(line);
             }
-
-            /*
-            const pathRenderOptions = {
-              suppressMarkers: true,
-              polylineOptions: {
-                strokeOpacity: 1,
-                strokeWeight: 10,
-                strokeColor: '#2196F3'
-              }
-            };
-            const directionsDisplay = new window.google.maps.DirectionsRenderer(pathRenderOptions);
-            directionsDisplay.setMap(map);
-            directionsDisplay.setDirections(result);
-            resolve('')
-            */
           }
         });
         origin = destination;

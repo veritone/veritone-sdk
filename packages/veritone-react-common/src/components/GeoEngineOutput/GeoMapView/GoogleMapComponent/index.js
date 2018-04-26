@@ -23,7 +23,8 @@ export default class GoogleMapComponent extends Component {
     travelMode: string,
     className: string,
     onClick: func,
-    apiKey: string
+    apiKey: string,
+    onGoogleMapError: func
   };
 
   static defaultProps = {
@@ -31,7 +32,8 @@ export default class GoogleMapComponent extends Component {
   };
 
   componentDidMount() {
-    const loader = new GoogleMapLoader(this.props.apiKey);
+    const { apiKey, onGoogleMapError } = this.props;
+    const loader = new GoogleMapLoader(apiKey);
     loader.load().then(() => {
         const maps = window.google.maps;
         const mapInstance = this.map = new maps.Map(this.mapContainer.current, {});
@@ -40,7 +42,8 @@ export default class GoogleMapComponent extends Component {
         return mapInstance;
       })
       .catch(error => {
-        // Handle API Loading Error Here If Needed
+        onGoogleMapError && onGoogleMapError(error);
+        console.error('Can\'t load Google Map', {error: error});
       });
   }
 
