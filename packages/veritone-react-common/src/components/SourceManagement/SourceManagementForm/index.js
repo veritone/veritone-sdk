@@ -6,11 +6,11 @@ import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import Button from 'material-ui/Button';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
 import SourceConfiguration from '../SourceConfiguration';
 import ContentTemplates from '../ContentTemplates';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 @withMuiThemeProvider

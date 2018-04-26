@@ -177,7 +177,7 @@ function BuildFormElements({
       (value || ['']).map((elem, index) => {
 
         return (
-          <div className={styles.arrayRow}>
+          <div key={`${schemaProp}.${'containter' + index}`} className={styles.arrayRow}>
             <BuildFormElements
               {...rest}
               fieldId={`${fieldId}.${index}`}
@@ -189,7 +189,7 @@ function BuildFormElements({
               objectProperties={items.properties}
               depth={depth + 1}
               onChange={onChange}
-              key={`${schemaProp}.${index}`} />
+              key={`${schemaProp}.${'buildform' + index}`} />
             {
               isArray(value) && value.length > 1 ?
                 <div className={styles.arrayRemove}>

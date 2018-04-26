@@ -6,6 +6,7 @@
 .arrayRow {
   display: flex;
   flex-direction: row;
+
   & > div:first-child {
     width: 100%;
   }
@@ -21,7 +22,8 @@
   padding-left: 10px;
 }
 
-.arrayAdd, .arrayRemove {
+.arrayAdd,
+.arrayRemove {
   span {
     cursor: pointer;
   }
