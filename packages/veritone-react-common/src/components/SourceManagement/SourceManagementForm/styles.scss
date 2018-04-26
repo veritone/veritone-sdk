@@ -6,7 +6,7 @@
 }
 .formScroll {
   height: calc(100vh - 106px);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .form-tab {

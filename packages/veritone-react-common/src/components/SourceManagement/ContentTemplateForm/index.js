@@ -2,9 +2,11 @@ import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
 import Button from 'material-ui/Button';
 import ContentTemplates from '../ContentTemplates';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 export default class ContentTemplateForm extends React.Component {
   static propTypes = {
     templateData: objectOf(
