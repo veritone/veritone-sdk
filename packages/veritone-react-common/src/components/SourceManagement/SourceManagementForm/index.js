@@ -230,7 +230,11 @@ export default class SourceManagementForm extends React.Component {
             <div className={styles['btn-container']}>
               <Button onClick={this.handleOnClose}>Cancel</Button>
               <Button variant="raised" color="primary" type="submit">
-                Create
+                {
+                  get(this.props, 'source.id') ?
+                  'Save' :
+                  'Create'
+                }
               </Button>
             </div>
           </form>

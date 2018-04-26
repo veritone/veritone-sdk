@@ -301,20 +301,10 @@ storiesOf('SourceManagement', module)
     );
   })
   .add('Edit Source', () => {
-    const sourceConfig = {
-      ...pick(sourceResult.data.source, [
-        'name',
-        'thumbnailUrl',
-        'details',
-        'sourceTypeId',
-        'sourceType'
-      ])
-    };
-
     return (
       <SourceManagementForm
         sourceTypes={sourceTypes.sourceTypes.records}
-        source={sourceConfig}
+        source={sourceResult.data.source}
         templateData={templateData}
         initialTemplates={initialTemplates}
         onSubmit={displayForm}
