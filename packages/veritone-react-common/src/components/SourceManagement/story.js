@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { pick, has, noop } from 'lodash';
+import { has, noop } from 'lodash';
 import Nullstate from './Nullstate';
 import SourceManagementForm from './SourceManagementForm';
 import SourceTileView from './SourceTileView';
