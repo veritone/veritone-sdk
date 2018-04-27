@@ -313,7 +313,7 @@ export class SampleSearchBar extends React.Component {
         },
         body: JSON.stringify({query:
           `query {
-            libraries {
+            libraries(limit: 50) {
               records {
                 id
                 name
