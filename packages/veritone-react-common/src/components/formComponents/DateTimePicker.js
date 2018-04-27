@@ -33,7 +33,7 @@ export default class DateTimePicker extends React.Component {
   render() {
     return (
       <div className={styles.container}>
-        {this.props.showIcon && <Today className={styles.todayIcon}/>}
+        {this.props.showIcon && <Today className={styles.todayIcon} />}
         <DateSelector
           min={this.props.min}
           max={this.props.max}

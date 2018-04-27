@@ -27,8 +27,12 @@ import {
   SentimentEngineOutput,
   TranscriptEngineOutput,
   FaceEngineOutput,
+  FingerprintEngineOutput,
   LogoDetectionEngineOutput,
-  ContentTemplateForm
+  ContentTemplateForm,
+  GeoEngineOutput,
+  TranslationEngineOutput,
+  StructuredDataEngineOutput,
 } from 'veritone-react-common';
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
@@ -50,11 +54,16 @@ import widget from '../../shared/widget';
     ),
     selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
     contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
+    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(
+      state,
+      _widgetId
+    ),
     editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
     infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
     libraries: mediaDetailsModule.libraries(state, _widgetId),
     entities: mediaDetailsModule.entities(state, _widgetId),
+    schemaById: mediaDetailsModule.schemaById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -66,6 +75,7 @@ import widget from '../../shared/widget';
     toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
+    updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
   },
   null,
@@ -172,6 +182,7 @@ class MediaDetailsWidget extends React.Component {
       })
     ),
     loadContentTemplates: func,
+    updateTdoContentTemplates: func,
     contentTemplates: objectOf(
       shape({
         id: string,
@@ -179,12 +190,24 @@ class MediaDetailsWidget extends React.Component {
         status: string,
         definition: objectOf(any)
       })
-    )
+    ),
+    tdoContentTemplates: objectOf(
+      shape({
+        id: string,
+        name: string.isRequired,
+        status: string,
+        definition: objectOf(any),
+        data: objectOf(any)
+      })
+    ),
+    schemaById: objectOf(any),
+    googleMapsApiKey: string
   };
 
   static defaultProps = {
     libraries: [],
-    entities: []
+    entities: [],
+    schemaById: {}
   };
 
   static contextTypes = {
@@ -301,8 +324,40 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
-  handleUpdateContentTemplates = () => {
-    // TODO: implement add/remove TDO content tamplates
+  updateContentTemplates = data => {
+    const contentTemplates = data.contentTemplates;
+    const contentTemplatesToCreate = [];
+    const contentTemplatesToDelete = [];
+    // find content templates that were added or modified
+    Object.keys(contentTemplates).forEach(schemaId => {
+      if (
+        !contentTemplates[schemaId].assetId ||
+        !this.props.tdoContentTemplates[schemaId]
+      ) {
+        contentTemplatesToCreate.push(contentTemplates[schemaId]);
+      } else {
+        const originalTemplate = this.props.tdoContentTemplates[schemaId];
+        const newTemplate = contentTemplates[schemaId];
+        if (
+          JSON.stringify(originalTemplate.data) !==
+          JSON.stringify(newTemplate.data)
+        ) {
+          contentTemplatesToDelete.push(originalTemplate);
+          contentTemplatesToCreate.push(newTemplate);
+        }
+      }
+    });
+    // find content templates that were removed
+    Object.keys(this.props.tdoContentTemplates).forEach(schemaId => {
+      if (!contentTemplates[schemaId]) {
+        contentTemplatesToDelete.push(this.props.tdoContentTemplates[schemaId]);
+      }
+    });
+    this.props.updateTdoContentTemplates(
+      this.props._widgetId,
+      contentTemplatesToDelete,
+      contentTemplatesToCreate
+    );
   };
 
   render() {
@@ -317,7 +372,11 @@ class MediaDetailsWidget extends React.Component {
       editModeEnabled,
       libraries,
       entities,
-      contentTemplates
+      contentTemplates,
+      tdo,
+      tdoContentTemplates,
+      schemaById,
+      googleMapsApiKey
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -541,9 +600,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         editMode={editModeEnabled}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
@@ -588,9 +645,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
@@ -613,11 +668,34 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <FingerprintEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        entities={entities}
+                        libraries={libraries}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <TranslationEngineOutput
+                        contents={engineResultsByEngineId[selectedEngineId]}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        //onRerunProcess={handle rerun process callback}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        //languages={language options}
+                        //defaultLanguage={'en-US'}
+                        //onLanguageChanged={handle on language change callback}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        mediaPlayerTimeIntervalMs={500}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
@@ -630,13 +708,24 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onTimeClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        onClick={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <GeoEngineOutput 
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        className={styles.engineOuputContainer}
+                        apiKey={googleMapsApiKey}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
@@ -644,8 +733,15 @@ class MediaDetailsWidget extends React.Component {
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType ===
-                      'thirdPartyData' && <div>No thirdparty data</div>}
+                    selectedEngineCategory.categoryType === 'correlation' && (
+                      <StructuredDataEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        schemaById={schemaById}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                      />
+                    )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'music' && (
                       <div>No {selectedEngineCategory.categoryType} data</div>
@@ -668,7 +764,8 @@ class MediaDetailsWidget extends React.Component {
             contentTemplates && (
               <ContentTemplateForm
                 templateData={contentTemplates}
-                handleUpdateContentTemplates={this.handleUpdateContentTemplates}
+                initialTemplates={tdoContentTemplates}
+                onSubmit={this.updateContentTemplates}
               />
             )}
         </Paper>

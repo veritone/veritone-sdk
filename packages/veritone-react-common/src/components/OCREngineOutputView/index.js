@@ -13,7 +13,7 @@ class OCREngineOutputView extends Component {
     data: arrayOf(
       shape({
         startTimeMs: number,
-        endTimeMs: number,
+        stopTimeMs: number,
         sourceEngineId: string,
         sourceEngineName: string,
         taskId: string,

@@ -1,0 +1,16 @@
+@import 'src/styles/modules/variables';
+
+.linkButton {
+  color: $blue-1;
+  font-weight: normal;
+  display: inline-block;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  &.highlight {
+    font-weight: 500;
+  }
+}

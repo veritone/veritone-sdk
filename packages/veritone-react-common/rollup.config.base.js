@@ -39,7 +39,8 @@ export default {
     'redux',
     'redux-form',
     'rechart',
-    'recharts-scale'
+    'recharts-scale',
+    'video-react'
   ],
   plugins: [
     replace({

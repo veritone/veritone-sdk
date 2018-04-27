@@ -58,11 +58,11 @@ export default class TemplateList extends React.Component {
 
   render() {
     return (
-      <div className={styles.listContainer}>
+      <div className={styles['template-list']}>
         <div className={styles.title}>Content Templates</div>
         <div className={styles.description}>
-          These will be applied to all temporal data objects ingested through
-          this source.
+          Add more information to the files you ingest to help organize, search
+          and filter quickly.
         </div>
         {this.buildTemplateList()}
       </div>

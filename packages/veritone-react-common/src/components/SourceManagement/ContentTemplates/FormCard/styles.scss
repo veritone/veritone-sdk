@@ -1,18 +1,17 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
 .formCard {
-  height: fit-content;
-  // width: fit-content;
-  width: 680px;
-  background-color: #fff;
+  width: 60%;
+  background-color: $fullWhite;
   padding: 24px 24px 50px;
   position: relative;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 2px 0 $faint-black, 0 2px 2px 0 $faint-black;
   margin-bottom: 30px;
 
   .name {
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 19px;
+    @include mui-text('subhead');
+    color: $dark-black;
   }
 
   .trashIcon {

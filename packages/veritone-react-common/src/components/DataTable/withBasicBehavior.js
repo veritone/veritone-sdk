@@ -3,8 +3,7 @@ import { omit } from 'lodash';
 
 import { arrayOf, oneOfType, string, number, func } from 'prop-types';
 
-// symbol that will cause a column to render its loading state if passed in from rowGetter
-export const LOADING = '@@LOADING';
+import { LOADING } from './shared';
 
 const withBasicBehavior = WrappedTable => {
   class WrappedWithBasicBehavior extends React.Component {

@@ -1,11 +1,10 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has } from 'lodash';
+import { pick, has, get } from 'lodash';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
 
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
@@ -59,6 +58,7 @@ export default class SourceManagementForm extends React.Component {
   };
 
   componentWillMount() {
+    const { sourceTypes } = this.props;
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
     };
@@ -73,16 +73,25 @@ export default class SourceManagementForm extends React.Component {
         sourceTypeId: this.props.source.sourceType.id
       };
     } else {
+      // If there is no source, then just pick the first available sourceType
       const fieldValues = {};
-      const properties = this.props.sourceTypes[0].sourceSchema.definition
-        .properties;
+      const sourceTypeIdx = 0;
+      const properties = get(sourceTypes, [
+        sourceTypeIdx,
+        'sourceSchema',
+        'definition',
+        'properties'
+      ]);
 
-      Object.keys(properties).forEach(field => {
-        fieldValues[field] = '';
-      });
+      if (properties) {
+        Object.keys(properties).forEach(field => {
+          fieldValues[field] = '';
+        });
+      }
 
       newState.sourceConfig = {
         ...this.state.sourceConfig,
+        sourceTypeId: sourceTypes[sourceTypeIdx].id,
         details: {
           ...fieldValues
         }
@@ -91,10 +100,6 @@ export default class SourceManagementForm extends React.Component {
 
     return this.setState(newState);
   }
-
-  // openDialog = () => {
-  //   return this.setState({ openDialog: true });
-  // };
 
   handleOnClose = () => {
     return this.setState({ openDialog: false }, () => {
@@ -120,9 +125,6 @@ export default class SourceManagementForm extends React.Component {
 
     if (remove) {
       if (this.state.contentTemplates[templateSchemaId]) {
-        // const contentTemplates = { ...this.state.contentTemplates };
-        // delete contentTemplates[templateSchemaId];
-
         return this.setState(prevState => {
           const contentTemplates = { ...prevState.contentTemplates };
           delete contentTemplates[templateSchemaId];
@@ -193,17 +195,7 @@ export default class SourceManagementForm extends React.Component {
                 : 'New Source'
             }
             icons={[
-              <IconButton aria-label="help" key={1}>
-                <Icon className="icon-help2" />
-              </IconButton>,
-              <IconButton aria-label="menu" key={2}>
-                <Icon className="icon-more_vert" />
-              </IconButton>,
-              <IconButton aria-label="trash" key={3}>
-                <Icon className="icon-trash" />
-              </IconButton>,
-              <span className={styles.separator} key={4} />,
-              <IconButton aria-label="exit" key={5}>
+              <IconButton aria-label="exit" key="icon-3">
                 <Icon
                   className="icon-close-exit"
                   onClick={this.handleOnClose}
@@ -212,41 +204,39 @@ export default class SourceManagementForm extends React.Component {
             ]}
           >
             <Tabs value={activeTab} onChange={this.handleChangeTab}>
-              <Tab label="Configuration" />
-              <Tab label="Content Templates" />
+              <Tab
+                label="Configuration"
+                classes={{ label: styles['form-tab'] }}
+              />
+              <Tab
+                label="Content Templates"
+                classes={{ label: styles['form-tab'] }}
+              />
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit}>
-            <Grid container direction="column" justify="space-between">
-              {activeTab === 0 && (
-                <Grid item lg={7}>
-                  <SourceConfiguration
-                    sourceTypes={this.props.sourceTypes}
-                    source={this.state.sourceConfig}
-                    onInputChange={this.saveConfiguration}
-                    onClose={this.handleOnClose}
-                  />
-                </Grid>
-              )}
-              {activeTab === 1 && (
-                <Grid item lg={12}>
-                  <ContentTemplates
-                    templateData={this.props.templateData}
-                    selectedTemplateSchemas={this.state.contentTemplates}
-                    onListChange={this.manageTemplatesList}
-                    onInputChange={this.updateTemplateDetails}
-                  />
-                </Grid>
-              )}
-              <Grid item lg={12}>
-                <div className={styles['btn-container']}>
-                  <Button onClick={this.handleOnClose}>Cancel</Button>
-                  <Button variant="raised" color="primary" type="submit">
-                    Create
-                  </Button>
-                </div>
-              </Grid>
-            </Grid>
+            {activeTab === 0 && (
+              <SourceConfiguration
+                sourceTypes={this.props.sourceTypes}
+                source={this.state.sourceConfig}
+                onInputChange={this.saveConfiguration}
+                onClose={this.handleOnClose}
+              />
+            )}
+            {activeTab === 1 && (
+              <ContentTemplates
+                templateData={this.props.templateData}
+                selectedTemplateSchemas={this.state.contentTemplates}
+                onListChange={this.manageTemplatesList}
+                onInputChange={this.updateTemplateDetails}
+              />
+            )}
+            <div className={styles['btn-container']}>
+              <Button onClick={this.handleOnClose}>Cancel</Button>
+              <Button variant="raised" color="primary" type="submit">
+                Create
+              </Button>
+            </div>
           </form>
         </div>
       </FullScreenDialog>

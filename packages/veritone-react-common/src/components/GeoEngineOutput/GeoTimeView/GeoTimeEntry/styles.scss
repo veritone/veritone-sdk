@@ -1,0 +1,19 @@
+.geoTimeEntry {
+  font-size: 14px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  flex: 1 1 auto;
+
+  .gps {
+    margin-top: 5px;
+    min-width: 221px;
+
+    & > span:first-child {
+      margin-right: 10px;
+    }
+
+    .label {
+      font-weight: 500;
+    }
+  }
+}
