@@ -100,11 +100,11 @@ class MediaDetailsWidget extends React.Component {
         id: string,
         editable: bool,
         iconClass: string,
+        categoryType: string,
         engines: arrayOf(
           shape({
             id: string,
-            name: string,
-            completedDateTime: number
+            name: string
           })
         )
       })
@@ -668,7 +668,7 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <FingerprintEngineOutput 
+                      <FingerprintEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
                         entities={entities}
                         libraries={libraries}
@@ -714,7 +714,7 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <GeoEngineOutput 
+                      <GeoEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
                         startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
                         engines={selectedEngineCategory.engines}
