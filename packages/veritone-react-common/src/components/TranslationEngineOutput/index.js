@@ -8,6 +8,8 @@ import { MenuItem } from 'material-ui/Menu';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranslationContent from './TranslationContent';
+import { extractIetfCode } from './VeritoneLanguages';
+
 import styles from './styles.scss';
 
 export default class TranslationEngineOutput extends Component {
@@ -43,12 +45,6 @@ export default class TranslationEngineOutput extends Component {
     ).isRequired,
     selectedEngineId: string.isRequired,
 
-    languages: arrayOf(
-      shape({
-        language: string,
-        name: string
-      })
-    ),
     defaultLanguage: string,
 
     className: string,
@@ -80,7 +76,7 @@ export default class TranslationEngineOutput extends Component {
   };
 
   setLanguageOptions() {
-    const { contents, languages, defaultLanguage } = this.props;
+    const { contents, defaultLanguage } = this.props;
 
     const translatedLanguages = [];
     contents.forEach(dataChunk => {
@@ -94,17 +90,24 @@ export default class TranslationEngineOutput extends Component {
       }
     });
     translatedLanguages.sort();
+    
+    let translatedLanguagesInfo = [];
+    translatedLanguages.forEach(languageCode => {
+      const languageData = extractIetfCode(languageCode);
+      const languageName = (languageData) ? languageData.suggestedName : languageCode;
+      translatedLanguagesInfo.push({
+        language: languageCode,
+        name: languageName
+      });
+    });
+    translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
     this.setState(prevState => {
       const selectedLanguage =
         (prevState && prevState.selectedLanguage) ||
         defaultLanguage ||
         translatedLanguages[0];
-      let translatedLanguagesInfo = languages.filter(langInfo => {
-        return translatedLanguages.includes(langInfo.language) && langInfo;
-      });
-      translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
-
+      
       return {
         languages: translatedLanguagesInfo,
         selectedLanguage: selectedLanguage
@@ -185,7 +188,7 @@ export default class TranslationEngineOutput extends Component {
                 className={classNames(styles.language)}
                 key={'language-' + languageInfo.language}
               >
-                {languageInfo.name}
+                {languageInfo.name || languageInfo.language}
               </MenuItem>
             );
           })}
