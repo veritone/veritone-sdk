@@ -26,6 +26,7 @@ export default class TemplateForms extends React.Component {
     let currentValue; // Maintain root object reference
     const fields = fieldId.split('.');
     const rootObject = fields[0];
+    const eventValue = type === 'boolean' ? event.target.checked : event.target.value;
     let pointer;
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
@@ -45,14 +46,14 @@ export default class TemplateForms extends React.Component {
           pointer = pointer[field];
         } else {
           if (event.target.value) {
-            pointer[field] = this.parseType(type, event.target.value);
+            pointer[field] = this.parseType(type, eventValue);
           } else {
             delete pointer[field];
           }
         }
       });
     } else {
-      currentValue = this.parseType(type, event.target.value);
+      currentValue = this.parseType(type, eventValue);
     }
     return this.props.onTemplateDetailsChange(
       schemaId,
@@ -92,7 +93,7 @@ export default class TemplateForms extends React.Component {
     } else if (type.includes('integer')) {
       returnValue =  parseInt(value);
     } else if (type.includes('boolean')) {
-      returnValue =  value === 'true';
+      return value;
     }
     return returnValue || '';
   };
@@ -169,7 +170,7 @@ function BuildFormElements({
         id={fieldId}
         type={type}
         title={title}
-        value={`${value}` || ''}
+        value={value || ''}
         onChange={onChange(schemaId, schemaProp, type)}
         {...rest} />
     );

@@ -146,7 +146,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
       <FormControlLabel
         label={title}
         control={
-          <Checkbox {...pick(rest, ['value', 'onChange'])} color="primary" />
+          <Checkbox {...pick(rest, ['onChange'])} checked={rest.value} color="primary" />
         }
       />
     );
