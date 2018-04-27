@@ -98,7 +98,7 @@ class Scheduler extends React.Component {
     onSubmit: noop,
     relativeSize: 14,
     color: '#2196F3',
-    supportedScheduleTypes: ['any']
+    supportedScheduleTypes: ['Any']
   };
 
   prepareResultData(formResult) {
@@ -205,14 +205,14 @@ class Scheduler extends React.Component {
     );
 
     const ScheduleTypeSelection = {
-      recurring: RecurringSelection,
-      continuous: ContinuousSelection,
-      immediate: ImmediateSelection,
-      'on demand': OnDemandSelection
+      Recurring: RecurringSelection,
+      Continuous: ContinuousSelection,
+      Now: ImmediateSelection,
+      Once: OnDemandSelection
     };
 
     let ScheduleSelections;
-    if (includes(this.props.supportedScheduleTypes, 'any')) {
+    if (includes(this.props.supportedScheduleTypes, 'Any')) {
       ScheduleSelections = [RecurringSelection, ContinuousSelection, ImmediateSelection, OnDemandSelection];
     } else {
       ScheduleSelections = [];
