@@ -87,7 +87,7 @@ function* loadTdoSaga(widgetId, tdoId) {
             tasks (limit: 1000, status: complete ) {
               records {
                 engine {
-                  id 
+                  id
                   name
                   category {
                     id

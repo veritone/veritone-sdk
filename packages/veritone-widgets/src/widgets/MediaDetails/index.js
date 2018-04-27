@@ -30,6 +30,8 @@ import {
   LogoDetectionEngineOutput,
   ContentTemplateForm
 } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
+const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
@@ -59,7 +61,8 @@ import widget from '../../shared/widget';
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
     libraries: mediaDetailsModule.libraries(state, _widgetId),
     entities: mediaDetailsModule.entities(state, _widgetId),
-    currentMediaPlayerTime: state.player.currentTime
+    currentMediaPlayerTime: state.player.currentTime,
+    contextMenuExtensions: applicationModule.getContextMenuExtensions(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -71,7 +74,8 @@ import widget from '../../shared/widget';
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
-    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
+    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
+    fetchApplications: applicationModule.fetchApplications
   },
   null,
   { withRef: true }
@@ -81,6 +85,7 @@ class MediaDetailsWidget extends React.Component {
     _widgetId: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
+    fetchApplications: func.isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
@@ -194,7 +199,23 @@ class MediaDetailsWidget extends React.Component {
         definition: objectOf(any),
         data: objectOf(any)
       })
-    )
+    ),
+    contextMenuExtensions: shape({
+      mentions: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      ),
+      tdos: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      )
+    })
   };
 
   static defaultProps = {
@@ -217,6 +238,7 @@ class MediaDetailsWidget extends React.Component {
 
   componentDidMount() {
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
+    this.props.fetchApplications();
   }
 
   mediaPlayerRef = ref => {
@@ -706,6 +728,7 @@ class MediaDetailsWidget extends React.Component {
             <MediaInfoPanel
               tdo={this.props.tdo}
               engineCategories={engineCategories}
+              contextMenuExtensions={this.props.contextMenuExtensions}
               kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
