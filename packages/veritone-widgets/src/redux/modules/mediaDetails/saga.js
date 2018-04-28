@@ -66,42 +66,20 @@ function* loadTdoSaga(widgetId, tdoId) {
       temporalDataObject(id: $tdoId) {
         ${tdoInfoQueryClause}
         # Run engines and categories query clauses
-        vtnStandardAssets: assets(limit:1000, type: "vtn-standard") {
+        engineRuns {
           records {
-            sourceData {
-              task {
-                engine {
-                  name
-                  id
-                  category {
-                    id
-                    name
-                    iconClass
-                    editable
-                    categoryType
-                  }
-                }
+            engine {
+              id
+              name
+              category {
+                id
+                name
+                categoryType
+                iconClass
+                editable
               }
             }
-          }
-        }
-        jobs {
-          records {
-            tasks (limit: 1000, status: complete ) {
-              records {
-                engine {
-                  id 
-                  name
-                  category {
-                    id
-                    name
-                    iconClass
-                    editable
-                    categoryType
-                  }
-                }
-              }
-            }
+            status
           }
         }
       }
@@ -134,113 +112,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     });
   }
 
-  let engineCategories = [];
-  // array of categories that Media Details does not support
-  let unsupportedResultCategories = [
-    'conductor',
-    'reducer',
-    'thumbnail',
-    'transcode',
-    'stationPlayout',
-    'music'
-  ];
-
-  const tdo = response.data.temporalDataObject;
-  const engineCategoryById = new Map();
-
-  // Engine and engineCategory extractor from task data
-  const extractEngineCategoriesFromTaskData = function(task) {
-    let engineCategory = engineCategoryById.get(task.engine.category.id);
-    if (!engineCategory) {
-      engineCategory = Object.assign({}, task.engine.category);
-      engineCategory.iconClass = engineCategory.iconClass.replace(
-        '-engine',
-        ''
-      );
-      if (engineCategory.categoryType === 'correlation') {
-        engineCategory.iconClass = 'icon-third-party-data';
-      }
-      engineCategory.engines = [];
-      engineCategoryById.set(engineCategory.id, engineCategory);
-    }
-
-    const engineFromTask = {};
-    engineFromTask.id = task.engine.id;
-    engineFromTask.name = task.engine.name;
-    engineFromTask.completedDateTime = Number(task.completedDateTime);
-
-    const filteredEngineIdx = engineCategory.engines.findIndex(
-      filteredEngine => filteredEngine.id === engineFromTask.id
-    );
-    if (filteredEngineIdx === -1) {
-      engineCategory.engines.push(engineFromTask);
-    }
-  };
-
-  // Convert data from tasks to EngineCategories
-  // {
-  //  name
-  //  id
-  //  editable
-  //  iconClass
-  //  categoryType
-  //  engines [{
-  //    id
-  //    name
-  //    completedDateTime
-  //    }
-  //  ]}
-  if (get(tdo, 'jobs.records', false)) {
-    tdo.jobs.records.forEach(job => {
-      const jobTasks = get(job, 'tasks.records', []);
-      jobTasks
-        .filter(
-          task =>
-            get(task, 'engine.category.iconClass', false) &&
-            !unsupportedResultCategories.some(
-              categoryType => categoryType === task.engine.category.categoryType
-            )
-        )
-        .forEach(task => extractEngineCategoriesFromTaskData(task));
-    });
-  }
-  if (get(tdo, 'vtnStandardAssets.records', false)) {
-    tdo.vtnStandardAssets.records
-      .filter(
-        asset =>
-          get(asset, 'sourceData.task.engine.category.iconClass', false) &&
-          !unsupportedResultCategories.some(
-            categoryType =>
-              categoryType ===
-              asset.sourceData.task.engine.category.categoryType
-          )
-      )
-      .forEach(asset =>
-        extractEngineCategoriesFromTaskData(asset.sourceData.task)
-      );
-  }
-
-  // list all categories
-  const filteredCategories = [];
-  const categoriesIterator = engineCategoryById.values();
-  let nextCategory = categoriesIterator.next();
-  while (!nextCategory.done) {
-    filteredCategories.push(nextCategory.value);
-    nextCategory = categoriesIterator.next();
-  }
-  engineCategories = filteredCategories;
-
-  // order categories first must go most frequently used (ask PMs), the rest - alphabetically
-  engineCategories.sort((category1, category2) => {
-    if (category1.categoryType < category2.categoryType) {
-      return -1;
-    }
-    if (category1.categoryType > category2.categoryType) {
-      return 1;
-    }
-    return 0;
-  });
-  const orderedCategoryTypes = [
+  const orderedSupportedCategoryTypes = [
     'transcript',
     'face',
     'object',
@@ -250,11 +122,50 @@ function* loadTdoSaga(widgetId, tdoId) {
     'translate',
     'sentiment',
     'geolocation',
-    'stationPlayout',
-    'correlation',
-    'music'
+    'correlation'
   ];
-  orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
+
+  const tdo = response.data.temporalDataObject;
+  let engineCategories = [];
+
+  // Extract EngineCategories data from EngineRuns
+  if (get(tdo, 'engineRuns.records', false)) {
+    tdo.engineRuns.records
+      // filter those that have category, category icon, and are supported categories
+      .filter(engineRun =>
+          get(engineRun, 'engine.category.iconClass.length') &&
+          orderedSupportedCategoryTypes.includes(get(engineRun, 'engine.category.categoryType')))
+      .forEach(engineRun => {
+        let engineCategory = engineCategories.find(category => category.id === engineRun.engine.category.id);
+        if (!engineCategory) {
+          engineCategory = Object.assign({}, engineRun.engine.category);
+          engineCategory.iconClass = engineCategory.iconClass.replace(
+            '-engine',
+            ''
+          );
+          if (engineCategory.categoryType === 'correlation') {
+            engineCategory.iconClass = 'icon-third-party-data';
+          }
+          engineCategory.engines = [];
+          engineCategories.push(engineCategory);
+        }
+        engineCategory.engines.push(engineRun.engine);
+    });
+  }
+
+  // order categories: first the most frequently used as defined by product, then the rest - alphabetically
+  engineCategories.sort((category1, category2) => {
+    // sort all alphabetically
+    if (category1.categoryType < category2.categoryType) {
+      return -1;
+    }
+    if (category1.categoryType > category2.categoryType) {
+      return 1;
+    }
+    return 0;
+  });
+  orderedSupportedCategoryTypes.reverse().forEach(orderedCategoryType => {
+    // reverse ordered and add to the result at the front
     const index = engineCategories.findIndex(
       category => category.categoryType === orderedCategoryType
     );
