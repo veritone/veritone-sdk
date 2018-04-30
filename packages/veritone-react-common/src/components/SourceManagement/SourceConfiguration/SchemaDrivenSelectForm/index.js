@@ -13,6 +13,7 @@ import {
 } from 'material-ui/Form';
 import { InputLabel } from 'material-ui/Input';
 import Checkbox from 'material-ui/Checkbox';
+import { DateTimePicker } from '../../../formComponents';
 
 import styles from './styles.scss';
 
@@ -135,10 +136,25 @@ export default class DynamicSelect extends React.Component {
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
 export function SourceTypeField({ id, type, required, title, ...rest }) {
-  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean', 'array'];
+  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean', 'array', 'dateTime'];
 
   if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
     return <div className={styles.unsupportedMsg}>{`Unsupported Type: ${type} for ${title}`}</div>;
+  }
+
+  if (type.includes('dateTime')) {
+    return (
+      <DateTimePicker
+        label={title}
+        showIcon
+        showTimezone
+        input={{
+          value: rest.value ? new Date(rest.value) : new Date(),
+          onChange: rest.onChange
+        }}
+        {...rest}
+      />
+    );
   }
 
   if (type.includes('boolean')) {

@@ -26,8 +26,17 @@ export default class TemplateForms extends React.Component {
     let currentValue; // Maintain root object reference
     const fields = fieldId.split('.');
     const rootObject = fields[0];
-    const eventValue = type === 'boolean' ? event.target.checked : event.target.value;
+    let eventValue;
     let pointer;
+
+    if (type === 'boolean') {
+      eventValue = event.target.checked;
+    } else if (type === 'dateTime') {
+      eventValue = event;
+    } else {
+      eventValue = event.target.value;
+    }
+
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
       if (!!parseInt(objectTraverse[0]) || objectTraverse[0] === '0') {
@@ -94,6 +103,8 @@ export default class TemplateForms extends React.Component {
       returnValue =  parseInt(value);
     } else if (type.includes('boolean')) {
       return value;
+    } else if (type.includes('dateTime')) {
+      returnValue = value.toISOString();
     }
     return returnValue || '';
   };

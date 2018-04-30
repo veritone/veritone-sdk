@@ -1,6 +1,7 @@
 import React from 'react';
 import Today from 'material-ui-icons/Today';
 import dateFns from 'date-fns';
+import { isString } from 'lodash';
 import TextField from 'material-ui/TextField';
 import { instanceOf, func, shape, string, bool } from 'prop-types';
 
@@ -115,6 +116,9 @@ function getTimeString(date) {
 }
 
 function getTimeZone(date) {
+  if (isString(date)) {
+    date = new Date();
+  }
   if (dateFns.isDate(date)) {
     let dateString = date.toTimeString();
     return dateString.slice(-4, -1);

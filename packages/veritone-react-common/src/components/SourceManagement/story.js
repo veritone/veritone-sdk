@@ -175,6 +175,10 @@ const dataSchemas = {
                     trueOrFalse: {
                       type: 'boolean',
                       title: 'Boolean'
+                    },
+                    datetimeEnd: {
+                      type: 'dateTime',
+                      title: 'datetimeEnd'
                     }
                   }
                 }
