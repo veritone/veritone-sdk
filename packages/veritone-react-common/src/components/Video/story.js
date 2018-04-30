@@ -3,8 +3,20 @@ import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
 import VideoSource from './VideoSource';
+import MediaPlayer from './MediaPlayer';
 import video from './';
 
+const multipleStreams = [
+  {
+    protocol: 'dash',
+    uri:
+      'http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-manifest.mpd'
+  },
+  {
+    protocol: 'hls',
+    uri: 'http://local.veritone.com:9000/stream/400004518/master.m3u8'
+  }
+];
 const hlsStream = [
   {
     protocol: 'hls',
@@ -24,6 +36,10 @@ const alternateDemoMp4 =
 
 storiesOf('Video', module).add('Base', () => (
   <video.Player autoPlay src={demoMp4} />
+));
+
+storiesOf('Video', module).add('Styled Media Player', () => (
+  <MediaPlayer streams={multipleStreams} width={500} fluid={false} autoPlay />
 ));
 
 storiesOf('Video', module).add('DASH', () => (
