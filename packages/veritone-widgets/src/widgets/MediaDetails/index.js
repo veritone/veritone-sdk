@@ -21,7 +21,7 @@ import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
   MediaInfoPanel,
-  video,
+  MediaPlayer,
   FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
@@ -32,7 +32,7 @@ import {
   ContentTemplateForm,
   GeoEngineOutput,
   TranslationEngineOutput,
-  StructuredDataEngineOutput,
+  StructuredDataEngineOutput
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
@@ -599,24 +599,19 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' &&
             selectedEngineId && (
               <div className={styles.mediaScreen}>
-                {!expandedMode &&
+                {!expandedMode && (
                   <div className={styles.mediaView}>
-                    <video.Player
-                      src={this.getPrimaryAssetUri()}
-                      className={styles.videoPlayer}
+                    <MediaPlayer
                       store={this.context.store}
-                      ref={this.mediaPlayerRef}
-                    >
-                      <video.BigPlayButton
-                        className={styles.mediaPlayButton}
-                        position="center"
-                      />
-                    </video.Player>
+                      playerRef={this.mediaPlayerRef}
+                      src={this.getPrimaryAssetUri()}
+                      streams={get(this.props, 'tdo.streams')}
+                    />
                     <div className={styles.sourceLabel}>
                       Source: {this.getMediaSource()}
                     </div>
-                  </div>}
-
+                  </div>
+                )}
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
@@ -734,7 +729,9 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'geolocation' && (
                       <GeoEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
+                        startTimeStamp={
+                          tdo && tdo.startDateTime ? tdo.startDateTime : null
+                        }
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
