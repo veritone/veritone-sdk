@@ -25,12 +25,13 @@
     "react-lines-ellipsis": "^0.10.2",
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
-    "recharts": "^1.0.0-beta.10",
     "react-transition-group": "1.x",
     "recompose": "^0.26.0",
+    "recharts": "^1.0.0-beta.10",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
-    "video-react": "^0.10.4"
+    "shaka-player": "^2.3.5",
+    "video-react": "https://github.com/JordanBelford/video-react#build"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
@@ -40,7 +41,7 @@
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
     "build": "yarn run build:es && yarn run build:cjs",
-    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js --watch",
     "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
     "build:storybook": "rimraf docs-static && NODE_ENV=production BABEL_ENV=test build-storybook -c .storybook -o docs-static",
