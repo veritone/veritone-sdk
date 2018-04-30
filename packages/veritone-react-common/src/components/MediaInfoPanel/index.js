@@ -196,6 +196,17 @@ class MediaInfoPanel extends Component {
       isEditTagsOpen
     } = this.state;
 
+    const { tdo } = this.props;
+
+    const metadata = {
+      ...tdo.details,
+      veritoneProgram: {
+        ...tdo.details.veritoneProgram,
+        programImage: tdo.sourceImageUrl || tdo.details.veritoneProgram.programImage,
+        programLiveImage: tdo.thumbnailUrl || tdo.details.veritoneProgram.programLiveImage
+      }
+    };
+
     const contentElement = (
       <div className={styles.mediaInfoPanel}>
         <div>
@@ -268,14 +279,14 @@ class MediaInfoPanel extends Component {
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
-                {get(this.props.tdo, 'details.veritoneFile.filename', '')}
+                {get(tdo, 'details.veritoneFile.filename', '')}
               </div>
             </div>
-            {this.props.tdo.details.date && (
+            {tdo.details.date && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Date Created</div>
                 <div className={styles.infoFieldData}>
-                  {this.toFormattedDate(get(this.props.tdo, 'details.date'))}
+                  {this.toFormattedDate(get(tdo, 'details.date'))}
                 </div>
               </div>
             )}
@@ -283,8 +294,8 @@ class MediaInfoPanel extends Component {
               <div className={styles.infoFieldLabel}>Duration</div>
               <div className={styles.infoFieldData}>
                 {this.differenceToHhMmSs(
-                  this.props.tdo.startDateTime,
-                  this.props.tdo.stopDateTime
+                  tdo.startDateTime,
+                  tdo.stopDateTime
                 )}
               </div>
             </div>
@@ -308,11 +319,11 @@ class MediaInfoPanel extends Component {
                   </div>
                 </div>
               )}
-            {get(this.props.tdo, 'details.tags.length', 0) > 0 && (
+            {get(tdo, 'details.tags.length', 0) > 0 && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Tags</div>
                 <div className={styles.infoFieldData}>
-                  {this.props.tdo.details.tags.map(tag => tag.value).join(', ')}
+                  {tdo.details.tags.map(tag => tag.value).join(', ')}
                 </div>
               </div>
             )}
@@ -320,20 +331,20 @@ class MediaInfoPanel extends Component {
               <div>
                 Program Live Image
                 {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.programLiveImage.length',
+                  tdo,
+                  'thumbnailUrl.length',
                   0
                 ) > 0 && (
                   <img
                     className={styles.programLiveImage}
                     src={
-                      this.props.tdo.details.veritoneProgram.programLiveImage
+                      tdo.thumbnailUrl
                     }
                   />
                 )}
                 {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.programLiveImage.length',
+                  tdo,
+                  'thumbnailUrl.length',
                   0
                 ) === 0 && (
                   <img
@@ -345,18 +356,18 @@ class MediaInfoPanel extends Component {
               <div>
                 Program Image
                 {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.programImage.length',
+                  tdo,
+                  'sourceImageUrl.length',
                   0
                 ) > 0 && (
                   <img
                     className={styles.programImage}
-                    src={this.props.tdo.details.veritoneProgram.programImage}
+                    src={tdo.sourceImageUrl}
                   />
                 )}
                 {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.programImage.length',
+                  tdo,
+                  'sourceImageUrl.length',
                   0
                 ) === 0 && (
                   <img
@@ -368,22 +379,22 @@ class MediaInfoPanel extends Component {
             </div>
           </Paper>
         </div>
-        {this.props.tdo &&
-          this.props.tdo.details &&
+        {tdo &&
+          tdo.details &&
           isEditMetadataOpen && (
             <EditMetadataDialog
               isOpen={isEditMetadataOpen}
-              metadata={this.props.tdo.details}
+              metadata={metadata}
               onClose={this.toggleIsEditMetadataOpen}
               onSave={this.onSaveMetadata}
             />
           )}
-        {this.props.tdo &&
-          this.props.tdo.details &&
+        {tdo &&
+          tdo.details &&
           isEditTagsOpen && (
             <EditTagsDialog
               isOpen={isEditTagsOpen}
-              tags={this.props.tdo.details.tags}
+              tags={tdo.details.tags}
               onClose={this.toggleIsEditTagsOpen}
               onSave={this.onSaveTags}
             />

@@ -55,6 +55,8 @@ const tdoInfoQueryClause = `id
     security {
       global
     }
+    thumbnailUrl
+    sourceImageUrl
     primaryAsset(assetType: "media") {
       id
       uri
