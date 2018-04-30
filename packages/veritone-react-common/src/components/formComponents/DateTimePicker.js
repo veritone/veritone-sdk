@@ -116,11 +116,12 @@ function getTimeString(date) {
 }
 
 function getTimeZone(date) {
-  if (isString(date)) {
-    date = new Date();
+  let tzDate = date;
+  if (isString(tzDate)) {
+    tzDate = new Date();
   }
-  if (dateFns.isDate(date)) {
-    let dateString = date.toTimeString();
+  if (dateFns.isDate(tzDate)) {
+    let dateString = tzDate.toTimeString();
     return dateString.slice(-4, -1);
   }
 }
