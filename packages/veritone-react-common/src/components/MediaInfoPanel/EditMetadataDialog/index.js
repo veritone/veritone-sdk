@@ -123,11 +123,9 @@ class EditMetadataDialog extends Component {
   };
 
   handleStartPickFiles = fileType => event => {
-    this.setState((prevState, props) => {
-      return {
-        selectingFile: true,
-        selectFileType: fileType
-      };
+    this.setState({
+      selectingFile: true,
+      selectFileType: fileType
     });
   };
 
@@ -149,11 +147,9 @@ class EditMetadataDialog extends Component {
   };
 
   handleCloseFilePicker = () => {
-    this.setState((prevState, props) => {
-      return {
-        selectingFile: false,
-        selectFileType: null
-      };
+    this.setState({
+      selectingFile: false,
+      selectFileType: null
     });
   };
 
