@@ -11,8 +11,8 @@ import TextField from 'material-ui/TextField';
 import { objectOf, func, bool, any } from 'prop-types';
 import { get } from 'lodash';
 import { withStyles } from 'material-ui/styles';
-import FilePicker from '../../FilePicker';
-import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
+import FilePicker from 'components/FilePicker';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
