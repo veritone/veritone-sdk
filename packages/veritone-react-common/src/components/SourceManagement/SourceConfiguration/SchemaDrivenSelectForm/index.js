@@ -144,16 +144,19 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
 
   if (type.includes('dateTime')) {
     return (
-      <DateTimePicker
-        label={title}
-        showIcon
-        showTimezone
-        input={{
-          value: rest.value ? new Date(rest.value) : new Date(),
-          onChange: rest.onChange
-        }}
-        {...rest}
-      />
+      <FormControl className={styles.dateTimeContainer}>
+        <InputLabel className={styles.textFieldLabel + ' ' + styles.dateTimeLabel} htmlFor={id}>{title}</InputLabel>
+        <DateTimePicker
+          id={id}
+          showIcon
+          showTimezone
+          input={{
+            value: rest.value ? new Date(rest.value) : new Date(),
+            onChange: rest.onChange
+          }}
+          {...rest}
+        />
+      </FormControl>
     );
   }
 

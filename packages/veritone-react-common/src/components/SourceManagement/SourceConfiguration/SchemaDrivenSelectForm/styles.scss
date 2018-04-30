@@ -50,6 +50,15 @@
   font-weight: normal !important;
 }
 
+.dateTimeContainer {
+  padding-top: 14px !important;
+}
+
+.dateTimeLabel {
+  transform: translate(0, 1.5px) scale(0.75) !important;
+  transform-origin: top left !important;
+}
+
 .unsupportedMsg {
   padding-top: 20px;
   color: rgba(0, 0, 0, 0.54);
