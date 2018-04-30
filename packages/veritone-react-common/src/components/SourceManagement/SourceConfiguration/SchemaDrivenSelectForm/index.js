@@ -138,10 +138,10 @@ export default class DynamicSelect extends React.Component {
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
 export function SourceTypeField({ id, type, required, title, ...rest }) {
-  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean'];
+  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean', 'array'];
 
   if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
-    return <div>{`Unsupported Type: ${type} for ${title}`}</div>;
+    return <div className={styles.unsupportedMsg}>{`Unsupported Type: ${type} for ${title}`}</div>;
   }
 
   if (type.includes('boolean')) {
@@ -149,7 +149,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
       <FormControlLabel
         label={title}
         control={
-          <Checkbox {...pick(rest, ['value', 'onChange'])} color="primary" />
+          <Checkbox {...pick(rest, ['onChange'])} checked={rest.value} color="primary" />
         }
       />
     );
@@ -177,7 +177,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
     <TextField
       id={id}
       key={id}
-      className={styles.textFieldExtra}
+      InputLabelProps={{ className: styles.textFieldLabel }}
       {...inputProps}
       {...rest}
     />

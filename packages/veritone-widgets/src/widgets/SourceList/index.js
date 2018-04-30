@@ -10,6 +10,7 @@ class SourceListWidget extends React.Component {
     sources: arrayOf(object).isRequired,
     onSelectMenuItem: func.isRequired,
     onCreateSource: func.isRequired,
+    onSelectSource: func.isRequired,
     paginate: bool
   };
 

@@ -19,8 +19,19 @@
   padding-bottom: 40px;
 }
 
+.sourceLabel {
+  font-weight: normal;
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.54);
+}
+
 .sourceSelector {
   min-width: 400px;
+
+  & > div > div {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.87);
+  }
 }
 
 .sourceScrollContainer {
@@ -37,9 +48,29 @@
 }
 
 .createSourceItem {
+  border-top: 1px solid rgba(224, 224, 224, 0.38) !important;
   display: block !important;
   text-align: center !important;
   color: #2196f3 !important;
   font-size: 14px !important;
   font-weight: 500 !important;
+}
+
+.sourceMenuItemName {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 15px;
+}
+
+.sourceMenuItemVersion {
+  margin-left: 20px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+}
+
+.menuIconSpacer {
+  width: 30px;
+
+  svg {
+    font-size: 20px !important;
+  }
 }

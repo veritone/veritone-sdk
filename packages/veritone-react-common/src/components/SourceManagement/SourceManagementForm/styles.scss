@@ -5,6 +5,11 @@
   width: 50%;
 }
 
+.formScroll {
+  height: calc(100vh - 106px);
+  overflow: hidden;
+}
+
 .form-tab {
   @include mui-text('body1');
 }
@@ -19,9 +24,13 @@
 .btn-container {
   position: absolute;
   bottom: 0;
-  width: 90%;
+  right: 0;
   display: flex;
   justify-content: flex-end;
-  margin: 10px;
-  padding: 25px;
+  margin-right: 80px;
+  padding: 20px;
+  
+  & > *:not(:last-child) {
+    margin-right: 20px;
+  }
 }

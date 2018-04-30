@@ -12,6 +12,7 @@
   .name {
     @include mui-text('subhead');
     color: $dark-black;
+    font-weight: 500 !important;
   }
 
   .trashIcon {

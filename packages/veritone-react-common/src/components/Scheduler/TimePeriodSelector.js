@@ -20,7 +20,7 @@ const TimePeriodSelector = ({ name, label, number }) => (
           component={TextField}
           className={styles.leftInput}
         />
-        <Field component={Select} name="period" className={styles.rightInput}>
+        <Field component={Select} name="period" className={styles.rightInput + ' ' + styles.periodSelect}>
           <MenuItem value="hour">{pluralize('Hours', Number(number))}</MenuItem>
           <MenuItem value="day">{pluralize('Days', Number(number))}</MenuItem>
           <MenuItem value="week">{pluralize('Weeks', Number(number))}</MenuItem>
