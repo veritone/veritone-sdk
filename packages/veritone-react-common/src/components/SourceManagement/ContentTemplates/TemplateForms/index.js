@@ -22,19 +22,26 @@ export default class TemplateForms extends React.Component {
   };
 
   handleFieldChange = (schemaId, fieldId, type) => event => {
-    // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
+    const GEO_REGEX = /^[0-9]+\.[0-9]+\, [0-9]+\.[0-9]+$/;
+    // fieldId can be object/array prop accessors. eg. 'wind.windSpeed' or 'tags.0'
     let currentValue; // Maintain root object reference
     const fields = fieldId.split('.');
     const rootObject = fields[0];
     let eventValue;
     let pointer;
 
-    if (type === 'boolean') {
+    if (type.includes('boolean')) {
       eventValue = event.target.checked;
-    } else if (type === 'dateTime') {
+    } else if (type.includes('dateTime')) {
       eventValue = event;
     } else {
       eventValue = event.target.value;
+    }
+
+    if (type.includes('geoPoint')) {
+      if (!GEO_REGEX.test(eventValue)) {
+        eventValue = '0.0, 0.0';
+      }
     }
 
     if (fields.length > 1) {
