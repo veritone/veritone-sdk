@@ -90,7 +90,16 @@ export class TranslationExample extends Component {
 function renderMockData(
   startTimeMs,
   stopTimeMs,
-  languages = ['en ', 'en-US', 'fr-FR', 'ja-JP', 'ar-EG', 'es-MX', 'es-ES', 'xx-DD'],
+  languages = [
+    'en ',
+    'en-US',
+    'fr-FR',
+    'ja-JP',
+    'ar-EG',
+    'es-MX',
+    'es-ES',
+    'xx-DD'
+  ],
   errorRatio = 0.1,
   noDataRatio = 0.1
 ) {

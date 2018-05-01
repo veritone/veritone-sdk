@@ -90,11 +90,13 @@ export default class TranslationEngineOutput extends Component {
       }
     });
     translatedLanguages.sort();
-    
+
     let translatedLanguagesInfo = [];
     translatedLanguages.forEach(languageCode => {
       const languageData = parseIetfTags(languageCode);
-      const languageName = (languageData) ? languageData.suggestedName : languageCode;
+      const languageName = languageData
+        ? languageData.suggestedName
+        : languageCode;
       translatedLanguagesInfo.push({
         language: languageCode,
         name: languageName
@@ -107,7 +109,7 @@ export default class TranslationEngineOutput extends Component {
         (prevState && prevState.selectedLanguage) ||
         defaultLanguage ||
         translatedLanguages[0];
-      
+
       return {
         languages: translatedLanguagesInfo,
         selectedLanguage: selectedLanguage
