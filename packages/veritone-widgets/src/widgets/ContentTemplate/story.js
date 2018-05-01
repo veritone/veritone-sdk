@@ -178,7 +178,7 @@ class Story extends React.Component {
 
 const app = VeritoneApp();
 
-storiesOf('Content Template Form', module).add('Base', () => {
+storiesOf('Content Template', module).add('Base', () => {
   const sessionToken = text('Api Session Token', '');
 
   return <Story sessionToken={sessionToken} store={app._store} />;
