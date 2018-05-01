@@ -22,7 +22,7 @@ export default class TemplateForms extends React.Component {
   };
 
   handleFieldChange = (schemaId, fieldId, type) => event => {
-    const GEO_REGEX = /^[0-9]+\.[0-9]+, [0-9]+\.[0-9]+$/;
+    const GEO_REGEX = /^-{0,1}[0-9]+\.[0-9]+, -{0,1}[0-9]+\.[0-9]+$/;
     // fieldId can be object/array prop accessors. eg. 'wind.windSpeed' or 'tags.0'
     let currentValue; // Maintain root object reference
     const fields = fieldId.split('.');
