@@ -38,6 +38,10 @@ class _VeritoneApp {
     if (OAuthToken) {
       this._store.dispatch(authModule.setOAuthToken(OAuthToken));
     }
+
+    if (!OAuthToken && !sessionToken) {
+      this._store.dispatch(authModule.checkAuthNoToken());
+    }
   }
 
   destroy() {
