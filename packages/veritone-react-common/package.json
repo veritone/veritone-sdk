@@ -30,6 +30,7 @@
     "recompose": "^0.26.0",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
+    "veritone-languages": "github:veritone/veritone-languages#develop",
     "video-react": "^0.10.4"
   },
   "scripts": {

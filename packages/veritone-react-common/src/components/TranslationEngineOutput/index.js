@@ -5,10 +5,10 @@ import { sortBy } from 'lodash';
 
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
+import { parseIetfTags } from 'veritone-languages';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranslationContent from './TranslationContent';
-import { extractIetfCode } from './VeritoneLanguages';
 
 import styles from './styles.scss';
 
@@ -93,7 +93,7 @@ export default class TranslationEngineOutput extends Component {
     
     let translatedLanguagesInfo = [];
     translatedLanguages.forEach(languageCode => {
-      const languageData = extractIetfCode(languageCode);
+      const languageData = parseIetfTags(languageCode);
       const languageName = (languageData) ? languageData.suggestedName : languageCode;
       translatedLanguagesInfo.push({
         language: languageCode,
