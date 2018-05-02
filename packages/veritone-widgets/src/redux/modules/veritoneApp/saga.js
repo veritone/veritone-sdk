@@ -6,17 +6,7 @@ const { user: userModule, auth: authModule } = modules;
 import * as appModule from '.';
 
 function* fetchAppStartupDependencies() {
-  // Can use err here to give feedback to user if auth fails
-  // const err = yield put.resolve(userModule.fetchUser());
-  yield put.resolve(userModule.fetchUser());
-  // get each widget to call its onauth dependencies
-  // put widgets into store and select them?
-  const widgets = yield select(appModule.widgets);
-  for (let widget of widgets) {
-    if (isFunction(widget.veritoneAppDidAuthenticate)) {
-      yield call(widget.veritoneAppDidAuthenticate);
-    }
-  }
+  return yield put.resolve(userModule.fetchUser());
 }
 
 function* watchAppAuth() {
@@ -30,7 +20,19 @@ function* watchAppAuth() {
       // try to fetch StartupDependencies with no token
       authModule.CHECK_AUTH_NO_TOKEN,
     ],
-    fetchAppStartupDependencies
+    function* () {
+      const { error } = yield call(fetchAppStartupDependencies);
+      // get each widget to call its onauth dependencies
+      // put widgets into store and select them?
+      if (!error) {
+        const widgets = yield select(appModule.widgets);
+        for (let widget of widgets) {
+          if (isFunction(widget.veritoneAppDidAuthenticate)) {
+            yield call(widget.veritoneAppDidAuthenticate);
+          }
+        }
+      }
+    }
   );
 }
 
