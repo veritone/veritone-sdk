@@ -66,7 +66,6 @@ export default class SourceTileView extends React.Component {
     const tableProps = omit(this.props, ['jobs', 'paginate']);
     const ingestionJobKey =
       'ingestionJob.records[0].taskTemplates.records[0].engine';
-    const menuActionsKey = `${ingestionJobKey}.validStateActions`;
 
     return (
       <TableComp
