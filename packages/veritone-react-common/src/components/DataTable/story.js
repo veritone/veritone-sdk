@@ -6,7 +6,6 @@ import { arrayOf, object } from 'prop-types';
 import MuiTable, { TableBody, TableRow } from 'material-ui/Table';
 
 import MenuColumn from './MenuColumn';
-import StaticMenuColumn from './StaticMenuColumn';
 import { Table, Column, PaginatedTable } from './';
 
 const row = () => ({
@@ -236,7 +235,7 @@ class TableWithStaticMenuColumn extends React.Component {
         onCellClick={this.handleCellClick}
       >
         {columns.map(c => <Column key={c.dataKey} {...c} />)}
-        <StaticMenuColumn
+        <MenuColumn
           actions={['View', 'Edit', 'Delete']}
           onSelectItem={this.handleSelectItem}
         />
@@ -272,34 +271,6 @@ storiesOf('Table', module)
               dataKey="actions"
               protectedActions={['delete']}
               excludeActions={['alter']}
-              onSelectItem={handleSelectItem}
-            />
-          </TableRow>
-        </TableBody>
-      </MuiTable>
-    );
-  })
-  .add('Static Menu Column', () => {
-    const actions = ['submit', 'delete', 'alter']
-    const data = {
-      id: 1,
-      title: 'Some title',
-      description: 'Lorem ipsum...',
-    };
-    function handleSelectItem(action, event) {
-      console.log('action, data:', action, event);
-    }
-
-    return (
-      <MuiTable>
-        <TableBody>
-          <TableRow>
-            <StaticMenuColumn
-              align="left"
-              data={data}
-              dataKey="id"
-              actions={actions}
-              protectedActions={['delete']}
               onSelectItem={handleSelectItem}
             />
           </TableRow>

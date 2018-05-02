@@ -18,12 +18,14 @@ import { Column } from './';
 
 export default class MenuColumn extends React.Component {
   static propTypes = {
+    actions: arrayOf(string),
     onSelectItem: func,
     protectedActions: arrayOf(string),
     additionalActions: arrayOf(string),
     excludeActions: arrayOf(string),
     transformLabel: func,
-    style: objectOf(any)
+    style: objectOf(any),
+    dataKey: string
   };
 
   static defaultProps = {
@@ -31,7 +33,8 @@ export default class MenuColumn extends React.Component {
     protectedActions: ['delete'],
     transformLabel: l => l,
     additionalActions: [],
-    excludeActions: []
+    excludeActions: [],
+    dataKey: ''
   };
 
   state = {
@@ -72,7 +75,7 @@ export default class MenuColumn extends React.Component {
   }
 
   renderMenuCell = (actions = [], ...rest) => {
-    const allActions = difference(
+    const allActions = this.props.actions || difference(
       [...actions, ...this.props.additionalActions],
       this.props.excludeActions
     );
@@ -124,6 +127,7 @@ export default class MenuColumn extends React.Component {
         cellRenderer={this.renderMenuCell}
         {...omit(
           this.props,
+          'actions',
           'onSelectItem',
           'protectedActions',
           'additionalActions',
