@@ -6,6 +6,7 @@ import { arrayOf, object } from 'prop-types';
 import MuiTable, { TableBody, TableRow } from 'material-ui/Table';
 
 import MenuColumn from './MenuColumn';
+import StaticMenuColumn from './StaticMenuColumn';
 import { Table, Column, PaginatedTable } from './';
 
 const row = () => ({
@@ -211,6 +212,39 @@ class HeadlessTable extends React.Component {
   }
 }
 
+class TableWithStaticMenuColumn extends React.Component {
+  static propTypes = {
+    data: arrayOf(object)
+  };
+
+  getRowData = i => this.props.data[i];
+
+  handleCellClick(row, columnKey, e) {
+    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
+  }
+
+  handleSelectItem(action, event) {
+  console.log('action, data:', action, event);
+}
+
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader={false}
+        onCellClick={this.handleCellClick}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+        <StaticMenuColumn
+          actions={['View', 'Edit', 'Delete']}
+          onSelectItem={this.handleSelectItem}
+        />
+      </Table>
+    );
+  }
+}
+
 storiesOf('Table', module)
   .add('Basic Table', () => <BasicTable data={data} />)
   .add('Basic Split Table', () => <BasicSplitTable data={data} />)
@@ -244,4 +278,33 @@ storiesOf('Table', module)
         </TableBody>
       </MuiTable>
     );
-  });
+  })
+  .add('Static Menu Column', () => {
+    const actions = ['submit', 'delete', 'alter']
+    const data = {
+      id: 1,
+      title: 'Some title',
+      description: 'Lorem ipsum...',
+    };
+    function handleSelectItem(action, event) {
+      console.log('action, data:', action, event);
+    }
+
+    return (
+      <MuiTable>
+        <TableBody>
+          <TableRow>
+            <StaticMenuColumn
+              align="left"
+              data={data}
+              dataKey="id"
+              actions={actions}
+              protectedActions={['delete']}
+              onSelectItem={handleSelectItem}
+            />
+          </TableRow>
+        </TableBody>
+      </MuiTable>
+    );
+  })
+  .add('Table With Static Menu Column', () => <TableWithStaticMenuColumn data={data} />)
