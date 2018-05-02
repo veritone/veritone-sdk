@@ -142,12 +142,12 @@ class FaceEngineOutputStory extends Component {
 
   searchForEntities = searchQuery => {
     if (searchQuery && searchQuery.length) {
-      let searchRegex = new RegExp(searchQuery, 'gi');
-      this.setState({
+      const searchRegex = new RegExp(searchQuery, 'gi');
+      this.setState(currentState => ({
         entitySearchResults: this.props.entities.filter(entity => {
           return entity.name.match(searchRegex);
         })
-      });
+      }));
     } else {
       this.setState({
         entitySearchResults: []
@@ -156,7 +156,7 @@ class FaceEngineOutputStory extends Component {
   };
 
   render() {
-    let {
+    const {
       enableEditMode,
       mediaPlayerPosition,
       onAddNewEntity,

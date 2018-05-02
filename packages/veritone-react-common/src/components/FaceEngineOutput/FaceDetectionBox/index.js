@@ -18,11 +18,11 @@ const renderEntitySearchMenu = ({
   results,
   getItemProps,
   highlightedIndex
-}) => {
-  return results.map((result, index) => {
+}) => (
+  results.map((result, index) => {
     return (
       <MenuItem
-        key={'menu-entity-' + result.id}
+        key={`menu-entity-${result.id}`}
         component="div"
         {...getItemProps({
           item: result,
@@ -31,7 +31,7 @@ const renderEntitySearchMenu = ({
         })}
       >
         <Avatar
-          src={result.profileImageUrl ? result.profileImageUrl : noAvatar}
+          src={result.profileImageUrl || noAvatar}
         />
         <div className={styles.entityInfo}>
           <div className={styles.menuEntityName}>{result.name}</div>
@@ -39,8 +39,7 @@ const renderEntitySearchMenu = ({
         </div>
       </MenuItem>
     );
-  });
-};
+  }));
 
 @withMuiThemeProvider
 class FaceDetectionBox extends Component {
@@ -63,6 +62,7 @@ class FaceDetectionBox extends Component {
     enableEdit: bool,
     onUpdateEntity: func,
     addNewEntity: func,
+    onAddNewEntity: func,
     onRemoveFaceDetection: func,
     onEditFaceDetection: func,
     onClick: func,
@@ -93,7 +93,10 @@ class FaceDetectionBox extends Component {
   };
 
   handleAddNewEntity = entity => evt => {
+    console.log('entity:', entity);
+    console.log('this.props.face:', this.props.face);
     this.props.addNewEntity(this.props.face, entity);
+    // this.props.addNewEntity(this.props.face, entity);
   };
 
   handleEntitySelect = entity => {
@@ -114,7 +117,7 @@ class FaceDetectionBox extends Component {
   itemToString = item => (item ? item.entityName : '');
 
   render() {
-    let {
+    const {
       face,
       searchResults,
       enableEdit,
@@ -155,8 +158,7 @@ class FaceDetectionBox extends Component {
           </div>
           <div className={styles.faceInformation}>
             <span className={styles.faceTimeOccurrence}>
-              {msToReadableString(face.startTimeMs)} -{' '}
-              {msToReadableString(face.stopTimeMs)}
+              {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(face.stopTimeMs)}`}
             </span>
             {this.state.editFaceEntity ? (
               <Downshift
@@ -190,21 +192,22 @@ class FaceDetectionBox extends Component {
                         <div ref={this.dropdownRef}>
                           <Paper className={styles.autoCompleteDropdown} square>
                             <div className={styles.searchResultsList}>
-                              {searchResults && searchResults.length ? (
+                              {searchResults && searchResults.length
+                              ?
                                 renderEntitySearchMenu({
                                   results: searchResults,
                                   getItemProps,
                                   highlightedIndex
                                 })
-                              ) : (
-                                <div>Results Not Found</div>
-                              )}
+                              :  <div>Results Not Found</div>
+                              }
                             </div>
                             <div className={styles.addNewEntity}>
                               <Button
                                 color="primary"
                                 className={styles.addNewEntityButton}
                                 onClick={this.handleAddNewEntity(face)}
+                                // onClick={this.handleAddNewEntity}
                               >
                                 ADD NEW
                               </Button>
