@@ -5,7 +5,7 @@ import { sortBy } from 'lodash';
 
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import { parseIetfTags } from 'veritone-languages';
+import LocalCode from 'locale-code';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranslationContent from './TranslationContent';
@@ -93,10 +93,24 @@ export default class TranslationEngineOutput extends Component {
 
     let translatedLanguagesInfo = [];
     translatedLanguages.forEach(languageCode => {
-      const languageData = parseIetfTags(languageCode);
-      const languageName = languageData
-        ? languageData.suggestedName
-        : languageCode;
+      let languageName;
+      if (languageCode.length === 2) {
+        languageName = LocalCode.getLanguageName(languageCode + '-XX');
+        if (!languageName || languageName.length === 0) {
+          languageName = languageCode;
+        }
+      } else {
+        languageName = LocalCode.getLanguageName(languageCode);
+        if (languageName && languageName.length > 0) {
+          const countryCode = LocalCode.getCountryCode(languageCode);
+          if (countryCode && countryCode.length > 0) {
+            languageName = languageName + ' (' + countryCode + ')';
+          }
+        } else {
+          languageName = languageCode;
+        }
+      }
+      
       translatedLanguagesInfo.push({
         language: languageCode,
         name: languageName

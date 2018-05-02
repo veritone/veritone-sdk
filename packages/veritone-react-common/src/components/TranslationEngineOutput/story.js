@@ -91,7 +91,7 @@ function renderMockData(
   startTimeMs,
   stopTimeMs,
   languages = [
-    'en ',
+    'en',
     'en-US',
     'fr-FR',
     'ja-JP',
