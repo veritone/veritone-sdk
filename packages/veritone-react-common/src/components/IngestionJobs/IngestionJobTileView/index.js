@@ -106,7 +106,8 @@ export default class SourceTileView extends React.Component {
         />
         <MenuColumn
           id="menu"
-          dataKey={menuActionsKey}
+          actions={['Edit', 'Delete']}
+          protectedActions={['Delete']}
           onSelectItem={this.props.onSelectMenuItem}
         />
       </TableComp>
