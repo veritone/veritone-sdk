@@ -63,7 +63,7 @@ describe('Column', function() {
     expect(nameWrapper.text()).not.toEqual('1');
   });
 
-  it('Renders nested \'dataKey\' value', function() {
+  it("Renders nested 'dataKey' value", function() {
     const data = {
       id: 1,
       profile: {
@@ -92,10 +92,16 @@ describe('Column', function() {
 
     const employerWrapper = mount(
       <SupressColumnWarnings>
-        <Column data={data} dataKey={['profile', 'employer', 'name']} cellRenderer={uppercase} />
+        <Column
+          data={data}
+          dataKey={['profile', 'employer', 'name']}
+          cellRenderer={uppercase}
+        />
       </SupressColumnWarnings>
     );
-    expect(employerWrapper.text()).toEqual(uppercase(data.profile.employer.name));
+    expect(employerWrapper.text()).toEqual(
+      uppercase(data.profile.employer.name)
+    );
   });
 
   it('Renders nothing if data is undefined', function() {
@@ -208,6 +214,27 @@ describe('MenuColumn', function() {
     expect(map(menuItems, 'key')).toEqual(
       expect.arrayContaining(['delete', 'manage'])
     );
+  });
+
+  it('accepts static list of actions', function() {
+    const data = {
+      title: 'Text',
+      desc: 'Desc'
+    };
+    const actions = ['delete', 'alter', 'manage'];
+
+    const wrapper = mount(
+      <SupressColumnWarnings>
+        <MenuColumn
+          data={data}
+          actions={actions}
+          protectedActions={['delete']}
+        />
+      </SupressColumnWarnings>
+    );
+
+    const menuItems = wrapper.find('Menu').prop('children');
+    expect(map(menuItems, 'key')).toEqual(expect.arrayContaining(actions));
   });
 });
 

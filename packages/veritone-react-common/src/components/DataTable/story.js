@@ -42,7 +42,7 @@ class BasicTable extends React.Component {
         showHeader
         onCellClick={this.props.onCellClick}
       >
-        {columns.map((c) => <Column key={c.dataKey} {...c} />)}
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
       </Table>
     );
   }
@@ -202,16 +202,53 @@ class HeadlessTable extends React.Component {
   }
 }
 
+class TableWithStaticMenuColumn extends React.Component {
+  static propTypes = {
+    data: arrayOf(object),
+    onCellClick: func
+  };
+
+  getRowData = i => this.props.data[i];
+
+  handleSelectItem(action, event) {
+    console.log('action, event:', action, event);
+  }
+
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader={false}
+        onCellClick={this.props.onCellClick}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+        <MenuColumn
+          actions={['View', 'Edit', 'Delete']}
+          onSelectItem={this.handleSelectItem}
+          protectedActions={['Delete']}
+        />
+      </Table>
+    );
+  }
+}
+
 function handleCellClick(row, columnKey, event) {
   console.log(`row: ${row}`, `columnKey: ${columnKey}`, event.currentTarget);
 }
 
 storiesOf('Table', module)
-  .add('Basic Table', () => <BasicTable data={data} onCellClick={handleCellClick} />)
+  .add('Basic Table', () => (
+    <BasicTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Basic Split Table', () => <BasicSplitTable data={data} />)
-  .add('Paginated Table', () => <PagedTable data={data} onCellClick={handleCellClick} />)
+  .add('Paginated Table', () => (
+    <PagedTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Paginated Split Table', () => <PagedSplitTable data={data} />)
-  .add('Table w/o Heading', () => <HeadlessTable data={data} onCellClick={handleCellClick} />)
+  .add('Table w/o Heading', () => (
+    <HeadlessTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Menu Column', () => {
     const data = {
       title: 'Some title',
@@ -239,4 +276,7 @@ storiesOf('Table', module)
         </TableBody>
       </MuiTable>
     );
-  });
+  })
+  .add('Table With Static Menu Column', () => (
+    <TableWithStaticMenuColumn data={data} onCellClick={handleCellClick}/>
+  ));
