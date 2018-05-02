@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import faker from 'faker';
 import { flow, map, range, startCase, truncate, upperFirst } from 'lodash';
-import { arrayOf, object } from 'prop-types';
+import { arrayOf, object, func } from 'prop-types';
 import MuiTable, { TableBody, TableRow } from 'material-ui/Table';
 
 import MenuColumn from './MenuColumn';
@@ -28,14 +28,11 @@ const columns = map(data[0], (val, key) => {
 
 class BasicTable extends React.Component {
   static propTypes = {
-    data: arrayOf(object)
+    data: arrayOf(object),
+    onCellClick: func
   };
 
   getRowData = i => this.props.data[i];
-
-  handleCellClick(row, columnKey) {
-    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
-  }
 
   render() {
     return (
@@ -43,7 +40,7 @@ class BasicTable extends React.Component {
         rowGetter={this.getRowData}
         rowCount={data.length}
         showHeader
-        onCellClick={this.handleCellClick}
+        onCellClick={this.props.onCellClick}
       >
         {columns.map(c => <Column key={c.dataKey} {...c} />)}
       </Table>
@@ -94,7 +91,8 @@ class BasicSplitTable extends React.Component {
 
 class PagedTable extends React.Component {
   static propTypes = {
-    data: arrayOf(object)
+    data: arrayOf(object),
+    onCellClick: func
   };
 
   getRowData = i => {
@@ -103,10 +101,6 @@ class PagedTable extends React.Component {
 
   handleRefreshPageData = () => {
     console.log('Refresh Me');
-  };
-
-  handleCellClick = (row, columnKey) => {
-    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
   };
 
   render() {
@@ -122,7 +116,7 @@ class PagedTable extends React.Component {
         initialItemsPerPage={5}
         showHeader
         onRefreshPageData={this.handleRefreshPageData}
-        onCellClick={this.handleCellClick}
+        onCellClick={this.props.onCellClick}
         emptyMessage={tableEmptyMessage}
         emptyFailureMessage={tableEmptyFailureMessage}
       >
@@ -132,7 +126,7 @@ class PagedTable extends React.Component {
   }
 }
 
-class SplitTable extends React.Component {
+class PagedSplitTable extends React.Component {
   static propTypes = {
     data: arrayOf(object)
   };
@@ -189,13 +183,36 @@ class SplitTable extends React.Component {
 
 class HeadlessTable extends React.Component {
   static propTypes = {
-    data: arrayOf(object)
+    data: arrayOf(object),
+    onCellClick: func
   };
 
   getRowData = i => this.props.data[i];
 
-  handleCellClick(row, columnKey) {
-    console.log(`row: ${row}`, `columnKey: ${columnKey}`);
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={data.length}
+        showHeader={false}
+        onCellClick={this.props.onCellClick}
+      >
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
+      </Table>
+    );
+  }
+}
+
+class TableWithStaticMenuColumn extends React.Component {
+  static propTypes = {
+    data: arrayOf(object),
+    onCellClick: func
+  };
+
+  getRowData = i => this.props.data[i];
+
+  handleSelectItem(action, event) {
+    console.log('action, event:', action, event);
   }
 
   render() {
@@ -204,20 +221,35 @@ class HeadlessTable extends React.Component {
         rowGetter={this.getRowData}
         rowCount={data.length}
         showHeader={false}
-        onCellClick={this.handleCellClick}
+        onCellClick={this.props.onCellClick}
       >
         {columns.map(c => <Column key={c.dataKey} {...c} />)}
+        <MenuColumn
+          actions={['View', 'Edit', 'Delete']}
+          onSelectItem={this.handleSelectItem}
+          protectedActions={['Delete']}
+        />
       </Table>
     );
   }
 }
 
+function handleCellClick(row, columnKey, event) {
+  console.log(`row: ${row}`, `columnKey: ${columnKey}`, event.currentTarget);
+}
+
 storiesOf('Table', module)
-  .add('Basic Table', () => <BasicTable data={data} />)
+  .add('Basic Table', () => (
+    <BasicTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Basic Split Table', () => <BasicSplitTable data={data} />)
-  .add('Paginated Table', () => <PagedTable data={data} />)
-  .add('Paginated Split Table', () => <SplitTable data={data} />)
-  .add('Table w/o Heading', () => <HeadlessTable data={data} />)
+  .add('Paginated Table', () => (
+    <PagedTable data={data} onCellClick={handleCellClick} />
+  ))
+  .add('Paginated Split Table', () => <PagedSplitTable data={data} />)
+  .add('Table w/o Heading', () => (
+    <HeadlessTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Menu Column', () => {
     const data = {
       title: 'Some title',
@@ -225,8 +257,8 @@ storiesOf('Table', module)
       actions: ['submit', 'delete', 'alter']
     };
 
-    function handleSelectItem(action, data) {
-      console.log('action, data:', action, data);
+    function handleSelectItem(action, data, event) {
+      console.log('action, data:', action, data, event);
     }
 
     return (
@@ -245,4 +277,7 @@ storiesOf('Table', module)
         </TableBody>
       </MuiTable>
     );
-  });
+  })
+  .add('Table With Static Menu Column', () => (
+    <TableWithStaticMenuColumn data={data} onCellClick={handleCellClick}/>
+  ));
