@@ -75,10 +75,12 @@ export default class MenuColumn extends React.Component {
   }
 
   renderMenuCell = (actions = [], ...rest) => {
-    const allActions = this.props.actions || difference(
-      [...actions, ...this.props.additionalActions],
-      this.props.excludeActions
-    );
+    const allActions =
+      this.props.actions ||
+      difference(
+        [...actions, ...this.props.additionalActions],
+        this.props.excludeActions
+      );
 
     return (
       allActions.length > 0 && (

@@ -42,7 +42,7 @@ class BasicTable extends React.Component {
         showHeader
         onCellClick={this.props.onCellClick}
       >
-        {columns.map((c) => <Column key={c.dataKey} {...c} />)}
+        {columns.map(c => <Column key={c.dataKey} {...c} />)}
       </Table>
     );
   }
@@ -226,6 +226,7 @@ class TableWithStaticMenuColumn extends React.Component {
         <MenuColumn
           actions={['View', 'Edit', 'Delete']}
           onSelectItem={this.handleSelectItem}
+          protectedActions={['Delete']}
         />
       </Table>
     );
@@ -237,11 +238,17 @@ function handleCellClick(row, columnKey, event) {
 }
 
 storiesOf('Table', module)
-  .add('Basic Table', () => <BasicTable data={data} onCellClick={handleCellClick} />)
+  .add('Basic Table', () => (
+    <BasicTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Basic Split Table', () => <BasicSplitTable data={data} />)
-  .add('Paginated Table', () => <PagedTable data={data} onCellClick={handleCellClick} />)
+  .add('Paginated Table', () => (
+    <PagedTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Paginated Split Table', () => <PagedSplitTable data={data} />)
-  .add('Table w/o Heading', () => <HeadlessTable data={data} onCellClick={handleCellClick} />)
+  .add('Table w/o Heading', () => (
+    <HeadlessTable data={data} onCellClick={handleCellClick} />
+  ))
   .add('Menu Column', () => {
     const data = {
       title: 'Some title',
@@ -270,4 +277,6 @@ storiesOf('Table', module)
       </MuiTable>
     );
   })
-  .add('Table With Static Menu Column', () => <TableWithStaticMenuColumn data={data} onCellClick={handleCellClick} />)
+  .add('Table With Static Menu Column', () => (
+    <TableWithStaticMenuColumn data={data} onCellClick={handleCellClick}/>
+  ));
