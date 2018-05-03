@@ -23,9 +23,7 @@ export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export video from './components/Video';
-export VideoSource from './components/Video/VideoSource';
 export MediaPlayer from './components/Video/MediaPlayer';
-export RestartMediaButton from './components/Video/RestartMediaButton';
 export AppContainer from './components/AppContainer';
 
 export RefreshButton from './components/RefreshButton';

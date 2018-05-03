@@ -2,14 +2,18 @@ import React from 'react';
 import { arrayOf, shape, string, func } from 'prop-types';
 import { get, find } from 'lodash';
 import shaka from 'shaka-player';
+
 export default class VideoSource extends React.Component {
   static propTypes = {
-    video: shape({ canPlayType: func }),
+    video: shape({
+      canPlayType: func.isRequired,
+      load: func.isRequired
+    }),
     src: string,
     streams: arrayOf(
       shape({
-        protocol: string,
-        uri: string
+        protocol: string.isRequired,
+        uri: string.isRequired
       })
     )
   };

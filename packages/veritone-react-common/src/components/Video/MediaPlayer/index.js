@@ -10,8 +10,9 @@ import {
   BigPlayButton
 } from 'video-react';
 
-import RestartMediaButton from '../RestartMediaButton';
-import VideoSource from '../VideoSource';
+import VideoSource from './VideoSource.js';
+import RestartMediaButton from './RestartMediaButton.js';
+
 import styles from './styles.scss';
 
 const MediaPlayer = ({ src, streams, playerRef, ...props }) => {

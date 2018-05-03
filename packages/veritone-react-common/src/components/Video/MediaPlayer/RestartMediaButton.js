@@ -2,30 +2,24 @@ import { string, func, shape } from 'prop-types';
 import React, { Component } from 'react';
 import classNames from 'classnames';
 
-const propTypes = {
-  actions: shape({
-    seek: func
-  }),
-  className: string
-};
-
 export default class RestartMediaButton extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.handleClick = this.handleClick.bind(this);
-  }
+  static propTypes = {
+    actions: shape({
+      seek: func.isRequired
+    }),
+    className: string
+  };
 
-  handleClick() {
+  handleClick = () => {
     if (this.props.actions) {
       this.props.actions.seek(0);
     }
-  }
+  };
 
   render() {
-    const { className } = this.props;
     return (
       <button
-        className={classNames(className, {
+        className={classNames(this.props.className, {
           'video-react-control': true,
           'video-react-button': true,
           'icon-skip_previous': true
@@ -35,5 +29,3 @@ export default class RestartMediaButton extends Component {
     );
   }
 }
-
-RestartMediaButton.propTypes = propTypes;

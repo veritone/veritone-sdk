@@ -2,7 +2,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
-import VideoSource from './VideoSource';
 import MediaPlayer from './MediaPlayer';
 import video from './';
 
@@ -14,13 +13,15 @@ const multipleStreams = [
   },
   {
     protocol: 'hls',
-    uri: 'http://local.veritone.com:9000/stream/400004518/master.m3u8'
+    uri:
+      'http://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8'
   }
 ];
 const hlsStream = [
   {
     protocol: 'hls',
-    uri: 'http://local.veritone.com:9000/stream/400004518/master.m3u8'
+    uri:
+      'http://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8'
   }
 ];
 const dashStream = [
@@ -33,37 +34,43 @@ const dashStream = [
 const demoMp4 = 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4';
 const alternateDemoMp4 =
   'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+const demoMp3 = 'https://www.sample-videos.com/audio/mp3/wave.mp3';
+const demoPosterImage =
+  '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
 storiesOf('Video', module).add('Base', () => (
   <video.Player autoPlay src={demoMp4} />
 ));
 
-storiesOf('Video', module).add('Styled Media Player', () => (
-  <MediaPlayer streams={multipleStreams} width={500} fluid={false} autoPlay />
+storiesOf('Video', module).add('MP4', () => (
+  <MediaPlayer streams={multipleStreams} width={500} fluid={false} />
 ));
 
 storiesOf('Video', module).add('DASH', () => (
-  <video.Player>
-    <VideoSource isVideoChild autoPlay streams={dashStream} />
-  </video.Player>
+  <MediaPlayer autoPlay streams={dashStream} width={500} fluid={false} />
 ));
 
 storiesOf('Video', module).add('HLS', () => (
-  <video.Player>
-    <VideoSource isVideoChild autoPlay streams={hlsStream} />
-  </video.Player>
+  <MediaPlayer autoPlay streams={hlsStream} width={500} fluid={false} />
+));
+
+storiesOf('Video', module).add('Multiple Streams', () => (
+  <MediaPlayer autoPlay streams={multipleStreams} width={500} fluid={false} />
 ));
 
 storiesOf('Video', module).add('Switch Source', () => {
-  const label = 'Videos';
+  const label = 'Video Sources';
   const options = [demoMp4, alternateDemoMp4];
   const value = select(label, options, options[0]);
 
-  return (
-    <div>
-      <video.Player autoPlay>
-        <VideoSource isVideoChild src={value} />
-      </video.Player>
-    </div>
-  );
+  return <MediaPlayer src={value} width={500} fluid={false} />;
 });
+
+storiesOf('Video', module).add('Audio only', () => (
+  <MediaPlayer
+    src={demoMp3}
+    width={500}
+    fluid={false}
+    poster={demoPosterImage}
+  />
+));

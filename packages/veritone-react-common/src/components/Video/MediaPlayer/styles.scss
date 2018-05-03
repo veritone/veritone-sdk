@@ -2,44 +2,37 @@
   font-size: 12px;
   font-family: Roboto;
   outline: none;
+}
 
-  .mediaPlayButton {
-    top: 50%;
-    left: 50%;
-    margin-left: -0.75em;
-    margin-top: -0.75em;
-    height: 1.5em;
-    width: 1.5em;
-    border-radius: 1em;
-    border: none;
+.mediaPlayButton:global(.video-react-big-play-button) {
+  top: 50%;
+  left: 50%;
+  margin-left: -0.75em;
+  margin-top: -0.75em;
+  height: 1.5em;
+  width: 1.5em;
+  border-radius: 1em;
+  border: none;
+}
+
+.mediaPlayerControls {
+  :global(.video-react-control) {
+    width: 3em;
   }
 
-  .mediaPlayerControls {
-    :global(.video-react-control) {
-      width: 3em;
-    }
+  :global(.video-react-time-control) {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
 
-    :global(.video-react-time-control) {
-      padding-left: 0.5em;
-      padding-right: 0.5em;
-    }
+  :global(.video-react-control-text),
+  :global(.video-react-mouse-display),
+  :global(.video-react-play-progress::after) {
+    font-family: Roboto !important;
+  }
 
-    :global(.video-react-control-text) {
-      font-family: Roboto !important;
-    }
-
-    :global(.video-react-mouse-display) {
-      font-family: Roboto !important;
-    }
-
-    :global(.video-react-play-progress::after) {
-      font-family: Roboto !important;
-    }
-
-    :global(.video-react-slider:focus) {
-      text-shadow: none;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-    }
+  :global(.video-react-slider:focus) {
+    text-shadow: none;
+    box-shadow: none;
   }
 }
