@@ -83,6 +83,12 @@ export function setOAuthToken(token) {
   };
 }
 
+export function checkAuthNoToken() {
+  return {
+    type: constants.CHECK_AUTH_NO_TOKEN,
+  };
+}
+
 export function requestOAuthGrant({ OAuthURI, onSuccess, onFailure }) {
   return {
     type: constants.REQUEST_OAUTH_GRANT,
