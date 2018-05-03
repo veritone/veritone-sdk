@@ -55,12 +55,6 @@ const reducer = createReducer(defaultState, {
       ...state,
       OAuthToken: payload
     };
-  },
-
-  [constants.CHECK_AUTH_NO_TOKEN](state) {
-    return {
-      ...state,
-    };
   }
 });
 
