@@ -1,14 +1,11 @@
-import { put, call, select } from 'redux-saga/effects';
-import { cloneableGenerator } from 'redux-saga/utils';
-import { removeFunctions as rF } from '../../../helpers/utils';
+import { put, select } from 'redux-saga/effects';
+import { withoutFunctions as wF } from '../../../helpers/utils';
 import {
   handleAppAuth,
-  watchAppAuth,
 } from '../../../../src/redux/modules/veritoneApp/saga';
 import * as appModule from '../../../../src/redux/modules/veritoneApp';
-import _ from 'lodash';
 import { modules } from 'veritone-redux-common';
-const { user: userModule, auth: authModule } = modules;
+const { user: userModule } = modules;
 
 describe('Saga: veritoneApp', () => {
   
@@ -16,14 +13,14 @@ describe('Saga: veritoneApp', () => {
     const gen = handleAppAuth();
     const err = new Error('test error');
 
-    expect(rF(gen.next().value)).toEqual(rF(put.resolve(userModule.fetchUser())));
+    expect(wF(gen.next().value)).toEqual(wF(put.resolve(userModule.fetchUser())));
     expect(gen.throw(err).done).toEqual(true);
   });
 
   it('should load widgets if auth succeeds', () => {
     const gen = handleAppAuth();
 
-    expect(rF(gen.next().value)).toEqual(rF(put.resolve(userModule.fetchUser())));
+    expect(wF(gen.next().value)).toEqual(wF(put.resolve(userModule.fetchUser())));
     expect(gen.next().value).toEqual(select(appModule.widgets));
     expect(gen.next().done).toEqual(true);
   })

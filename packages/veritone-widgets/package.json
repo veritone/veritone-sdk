@@ -41,7 +41,6 @@
     "@storybook/addon-knobs": "3.3.9",
     "@storybook/react": "v3.3.9",
     "babel-core": "^6.26.0",
-    "babel-jest": "^22.4.3",
     "babel-loader": "^7.1.3",
     "babel-plugin-add-react-displayname": "^0.0.5",
     "babel-plugin-date-fns": "^0.1.0",

@@ -20,7 +20,8 @@ export function* handleAppAuth() {
       }
     }
   } catch (e) {
-    // Do something with error
+    // todo: add onAuthFailedCallback or something similar to VeritoneApp?
+    // how does external user know if auth failed?
   }
 }
 
@@ -42,6 +43,3 @@ export function* watchAppAuth() {
 export default function* root() {
   yield fork(watchAppAuth);
 }
-
-// todo: add onAuthFailedCallback or something similar to VeritoneApp?
-// how does external user know if auth failed?
