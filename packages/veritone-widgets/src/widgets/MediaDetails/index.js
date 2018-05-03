@@ -34,6 +34,8 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput,
 } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
+const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
@@ -76,7 +78,8 @@ import widget from '../../shared/widget';
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
-    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
+    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
+    fetchApplications: applicationModule.fetchApplications
   },
   null,
   { withRef: true }
@@ -86,6 +89,7 @@ class MediaDetailsWidget extends React.Component {
     _widgetId: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
+    fetchApplications: func.isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
@@ -201,7 +205,23 @@ class MediaDetailsWidget extends React.Component {
       })
     ),
     schemaById: objectOf(any),
-    googleMapsApiKey: string
+    googleMapsApiKey: string,
+    contextMenuExtensions: shape({
+      mentions: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      ),
+      tdos: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      )
+    })
   };
 
   static defaultProps = {
@@ -225,6 +245,7 @@ class MediaDetailsWidget extends React.Component {
 
   componentDidMount() {
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
+    this.props.fetchApplications();
   }
 
   mediaPlayerRef = ref => {
@@ -578,22 +599,23 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' &&
             selectedEngineId && (
               <div className={styles.mediaScreen}>
-                <div className={styles.mediaView}>
-                  <video.Player
-                    src={this.getPrimaryAssetUri()}
-                    className={styles.videoPlayer}
-                    store={this.context.store}
-                    ref={this.mediaPlayerRef}
-                  >
-                    <video.BigPlayButton
-                      className={styles.mediaPlayButton}
-                      position="center"
-                    />
-                  </video.Player>
-                  <div className={styles.sourceLabel}>
-                    Source: {this.getMediaSource()}
-                  </div>
-                </div>
+                {!expandedMode &&
+                  <div className={styles.mediaView}>
+                    <video.Player
+                      src={this.getPrimaryAssetUri()}
+                      className={styles.videoPlayer}
+                      store={this.context.store}
+                      ref={this.mediaPlayerRef}
+                    >
+                      <video.BigPlayButton
+                        className={styles.mediaPlayButton}
+                        position="center"
+                      />
+                    </video.Player>
+                    <div className={styles.sourceLabel}>
+                      Source: {this.getMediaSource()}
+                    </div>
+                  </div>}
 
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
@@ -606,7 +628,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                       />
@@ -621,7 +642,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
                         }
@@ -634,7 +654,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         onObjectOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
@@ -650,7 +669,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
                         onEntrySelected={this.handleUpdateMediaPlayerTime}
                       />
                     )}
@@ -720,7 +738,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
                         className={styles.engineOuputContainer}
                         apiKey={googleMapsApiKey}
                         onClick={this.handleUpdateMediaPlayerTime}
@@ -740,6 +757,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -754,6 +772,7 @@ class MediaDetailsWidget extends React.Component {
             <MediaInfoPanel
               tdo={this.props.tdo}
               engineCategories={engineCategories}
+              contextMenuExtensions={this.props.contextMenuExtensions}
               kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}

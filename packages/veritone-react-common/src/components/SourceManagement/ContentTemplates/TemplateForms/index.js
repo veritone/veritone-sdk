@@ -22,12 +22,28 @@ export default class TemplateForms extends React.Component {
   };
 
   handleFieldChange = (schemaId, fieldId, type) => event => {
-    // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
+    const GEO_REGEX = /^-{0,1}[0-9]+\.[0-9]+, -{0,1}[0-9]+\.[0-9]+$/;
+    // fieldId can be object/array prop accessors. eg. 'wind.windSpeed' or 'tags.0'
     let currentValue; // Maintain root object reference
     const fields = fieldId.split('.');
     const rootObject = fields[0];
-    const eventValue = type === 'boolean' ? event.target.checked : event.target.value;
+    let eventValue;
     let pointer;
+
+    if (type.includes('boolean')) {
+      eventValue = event.target.checked;
+    } else if (type.includes('dateTime')) {
+      eventValue = event;
+    } else {
+      eventValue = event.target.value;
+    }
+
+    if (type.includes('geoPoint')) {
+      if (!GEO_REGEX.test(eventValue)) {
+        eventValue = '0.0, 0.0';
+      }
+    }
+
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
       if (!!parseInt(objectTraverse[0]) || objectTraverse[0] === '0') {
@@ -94,6 +110,8 @@ export default class TemplateForms extends React.Component {
       returnValue =  parseInt(value);
     } else if (type.includes('boolean')) {
       return value;
+    } else if (type.includes('dateTime')) {
+      returnValue = value.toISOString();
     }
     return returnValue || '';
   };

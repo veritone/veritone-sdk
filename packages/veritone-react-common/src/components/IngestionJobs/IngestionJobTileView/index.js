@@ -66,7 +66,6 @@ export default class SourceTileView extends React.Component {
     const tableProps = omit(this.props, ['jobs', 'paginate']);
     const ingestionJobKey =
       'ingestionJob.records[0].taskTemplates.records[0].engine';
-    const menuActionsKey = `${ingestionJobKey}.validStateActions`;
 
     return (
       <TableComp
@@ -106,7 +105,8 @@ export default class SourceTileView extends React.Component {
         />
         <MenuColumn
           id="menu"
-          dataKey={menuActionsKey}
+          actions={['Edit', 'Delete']}
+          protectedActions={['Delete']}
           onSelectItem={this.props.onSelectMenuItem}
         />
       </TableComp>

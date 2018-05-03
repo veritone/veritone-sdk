@@ -132,7 +132,7 @@ const SourceSelector = ({
         }
         <span className={styles.sourceMenuItemName}>{source.name}</span>
         {
-          version ?
+          version && !version.includes('undefined') ?
             <span className={styles.sourceMenuItemVersion}>Version {version}</span> :
             null
         }

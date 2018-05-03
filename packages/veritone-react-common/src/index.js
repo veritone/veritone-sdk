@@ -60,3 +60,4 @@ export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
 
 export SDOTable from './components/SDOTable';
+export SearchPill from './components/SearchPill';
