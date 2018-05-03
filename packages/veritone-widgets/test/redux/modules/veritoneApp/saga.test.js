@@ -1,6 +1,6 @@
 import { put, call, select } from 'redux-saga/effects';
 import { cloneableGenerator } from 'redux-saga/utils';
-import { removeFunctions } from '../../../helpers/utils';
+import { removeFunctions as rF } from '../../../helpers/utils';
 import {
   handleAppAuth,
   watchAppAuth,
@@ -9,7 +9,6 @@ import * as appModule from '../../../../src/redux/modules/veritoneApp';
 import _ from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { user: userModule, auth: authModule } = modules;
-const rF = removeFunctions;
 
 describe('Saga: veritoneApp', () => {
   
