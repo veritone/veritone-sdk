@@ -7,7 +7,7 @@ import {
 } from '../../../../src/redux/modules/veritoneApp/saga';
 import * as appModule from '../../../../src/redux/modules/veritoneApp';
 import _ from 'lodash';
-import { modules } from 'veritone-redux-common';
+import { modules } from '../../../../../veritone-redux-common/dist/bundle-es.js';
 const { user: userModule, auth: authModule } = modules;
 const rF = removeFunctions;
 
