@@ -36,9 +36,13 @@ export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutpu
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';
 export FaceEngineOutput from './components/FaceEngineOutput';
 export OCREngineOutputView from './components/OCREngineOutputView';
+export StructuredDataEngineOutput from './components/StructuredDataEngineOutput';
 export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
+export TranslationEngineOutput from './components/TranslationEngineOutput';
+export FingerprintEngineOutput from './components/FingerprintEngineOutput';
+export GeoEngineOutput from './components/GeoEngineOutput';
 
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';

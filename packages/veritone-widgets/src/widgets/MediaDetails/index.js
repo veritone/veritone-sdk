@@ -27,8 +27,12 @@ import {
   SentimentEngineOutput,
   TranscriptEngineOutput,
   FaceEngineOutput,
+  FingerprintEngineOutput,
   LogoDetectionEngineOutput,
-  ContentTemplateForm
+  ContentTemplateForm,
+  GeoEngineOutput,
+  TranslationEngineOutput,
+  StructuredDataEngineOutput,
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
@@ -61,8 +65,8 @@ import widget from '../../shared/widget';
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
     libraries: mediaDetailsModule.libraries(state, _widgetId),
     entities: mediaDetailsModule.entities(state, _widgetId),
-    currentMediaPlayerTime: state.player.currentTime,
-    contextMenuExtensions: applicationModule.getContextMenuExtensions(state)
+    schemaById: mediaDetailsModule.schemaById(state, _widgetId),
+    currentMediaPlayerTime: state.player.currentTime
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -100,11 +104,11 @@ class MediaDetailsWidget extends React.Component {
         id: string,
         editable: bool,
         iconClass: string,
+        categoryType: string,
         engines: arrayOf(
           shape({
             id: string,
-            name: string,
-            completedDateTime: number
+            name: string
           })
         )
       })
@@ -200,6 +204,8 @@ class MediaDetailsWidget extends React.Component {
         data: objectOf(any)
       })
     ),
+    schemaById: objectOf(any),
+    googleMapsApiKey: string,
     contextMenuExtensions: shape({
       mentions: arrayOf(
         shape({
@@ -220,7 +226,8 @@ class MediaDetailsWidget extends React.Component {
 
   static defaultProps = {
     libraries: [],
-    entities: []
+    entities: [],
+    schemaById: {}
   };
 
   static contextTypes = {
@@ -387,7 +394,10 @@ class MediaDetailsWidget extends React.Component {
       libraries,
       entities,
       contentTemplates,
-      tdoContentTemplates
+      tdo,
+      tdoContentTemplates,
+      schemaById,
+      googleMapsApiKey
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -589,37 +599,35 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' &&
             selectedEngineId && (
               <div className={styles.mediaScreen}>
-                <div className={styles.mediaView}>
-                  <video.Player
-                    src={this.getPrimaryAssetUri()}
-                    className={styles.videoPlayer}
-                    store={this.context.store}
-                    ref={this.mediaPlayerRef}
-                  >
-                    <video.BigPlayButton
-                      className={styles.mediaPlayButton}
-                      position="center"
-                    />
-                  </video.Player>
-                  <div className={styles.sourceLabel}>
-                    Source: {this.getMediaSource()}
-                  </div>
-                </div>
+                {!expandedMode &&
+                  <div className={styles.mediaView}>
+                    <video.Player
+                      src={this.getPrimaryAssetUri()}
+                      className={styles.videoPlayer}
+                      store={this.context.store}
+                      ref={this.mediaPlayerRef}
+                    >
+                      <video.BigPlayButton
+                        className={styles.mediaPlayButton}
+                        position="center"
+                      />
+                    </video.Player>
+                    <div className={styles.sourceLabel}>
+                      Source: {this.getMediaSource()}
+                    </div>
+                  </div>}
 
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         editMode={editModeEnabled}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                       />
@@ -634,7 +642,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
                         }
@@ -647,7 +654,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         onObjectOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
@@ -658,14 +664,11 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
                         onEntrySelected={this.handleUpdateMediaPlayerTime}
                       />
                     )}
@@ -683,11 +686,34 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <FingerprintEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        entities={entities}
+                        libraries={libraries}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <TranslationEngineOutput
+                        contents={engineResultsByEngineId[selectedEngineId]}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        //onRerunProcess={handle rerun process callback}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        //languages={language options}
+                        //defaultLanguage={'en-US'}
+                        //onLanguageChanged={handle on language change callback}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        mediaPlayerTimeIntervalMs={500}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
@@ -700,13 +726,23 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onTimeClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        onClick={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <GeoEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        className={styles.engineOuputContainer}
+                        apiKey={googleMapsApiKey}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
@@ -714,8 +750,16 @@ class MediaDetailsWidget extends React.Component {
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType ===
-                      'thirdPartyData' && <div>No thirdparty data</div>}
+                    selectedEngineCategory.categoryType === 'correlation' && (
+                      <StructuredDataEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        schemaById={schemaById}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
+                    )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'music' && (
                       <div>No {selectedEngineCategory.categoryType} data</div>

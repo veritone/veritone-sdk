@@ -19,7 +19,7 @@ export default class SourceDropdownMenu extends React.Component {
     handleSourceChange: func.isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired
-  }
+  };
   render() {
     return (
       <div>

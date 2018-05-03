@@ -77,7 +77,12 @@ export default class SourceManagementForm extends React.Component {
       // If there is no source, then just pick the first available sourceType
       const fieldValues = {};
       const sourceTypeIdx = 0;
-      const properties = get (sourceTypes, [sourceTypeIdx, 'sourceSchema', 'definition', 'properties'])
+      const properties = get(sourceTypes, [
+        sourceTypeIdx,
+        'sourceSchema',
+        'definition',
+        'properties'
+      ]);
 
       if (properties) {
         Object.keys(properties).forEach(field => {

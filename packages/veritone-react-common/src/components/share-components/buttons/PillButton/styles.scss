@@ -3,19 +3,20 @@
 .pillButton {
   padding: 10px;
   font-size: 14px;
+  line-height: 18px;
   border-radius: 20px;
   border: 1px solid $grey-4;
   background-color: $fullWhite;
 
   display: inline-flex;
-  flex-flow: row nowrap;
+  //flex-flow: row nowrap;
 
   &:hover {
     cursor: pointer;
   }
 
   .gap {
-    width: 1vw;
+    width: 5px;
     height: 1ex;
     display: inline-block;
   }
