@@ -1,34 +1,41 @@
-import { isFunction } from 'lodash';
+import { isFunction, get } from 'lodash';
 import { fork, call, takeLatest, put, select } from 'redux-saga/effects';
 import { modules } from 'veritone-redux-common';
 const { user: userModule, auth: authModule } = modules;
 
-import * as appModule from '.';
+import * as appModule from './';
 
-function* fetchAppStartupDependencies() {
-  yield put(userModule.fetchUser());
+export function* handleAppAuth() {
+  try {
+    const res = yield put.resolve(userModule.fetchUser());
+    if (get(res, 'error')) {
+      throw res.payload;
+    }
+    // get each widget to call its onauth dependencies
+    // put widgets into store and select them?
+    const widgets = yield select(appModule.widgets);
+    for (let widget of widgets) {
+      if (isFunction(widget.veritoneAppDidAuthenticate)) {
+        yield call(widget.veritoneAppDidAuthenticate);
+      }
+    }
+  } catch (e) {
+    // Do something with error
+  }
 }
 
-function* watchAppAuth() {
+export function* watchAppAuth() {
   yield takeLatest(
     [
       // fetch when we get a token, re-fetch if a new token is set
       authModule.SET_SESSION_TOKEN,
       authModule.SET_OAUTH_TOKEN,
       // fetch if an grant is completed
-      authModule.OAUTH_GRANT_FLOW_SUCCESS
+      authModule.OAUTH_GRANT_FLOW_SUCCESS,
+      // try to fetch StartupDependencies with no token
+      authModule.CHECK_AUTH_NO_TOKEN,
     ],
-    function*() {
-      yield call(fetchAppStartupDependencies);
-      // get each widget to call its onauth dependencies
-      // put widgets into store and select them?
-      const widgets = yield select(appModule.widgets);
-      for (let widget of widgets) {
-        if (isFunction(widget.veritoneAppDidAuthenticate)) {
-          yield call(widget.veritoneAppDidAuthenticate);
-        }
-      }
-    }
+    handleAppAuth
   );
 }
 
