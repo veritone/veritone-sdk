@@ -26,7 +26,7 @@ describe('Saga: veritoneApp', () => {
 
     expect(rF(gen.next().value)).toEqual(rF(put.resolve(userModule.fetchUser())));
     expect(gen.next().value).toEqual(select(appModule.widgets));
-    console.log(gen.next().done).toEqual(true);
+    expect(gen.next().done).toEqual(true);
   })
 
 });
