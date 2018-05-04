@@ -29,21 +29,13 @@ class _VeritoneApp {
   }
 
   login({ sessionToken, OAuthToken } = {}) {
-    return new Promise((resolve, reject) => {
-      if (sessionToken) {
-        this._store.dispatch(authModule.setSessionToken(sessionToken))
-          .then(payload => resolve(payload))
-          .catch(payload => reject(payload))
-      } else if (OAuthToken) {
-        this._store.dispatch(authModule.setOAuthToken(OAuthToken))
-          .then(payload => resolve(payload))
-          .catch(payload => reject(payload));
-      } else {
-        this._store.dispatch(authModule.checkAuthNoToken())
-          .then(payload => resolve(payload))
-          .catch(payload => reject(payload));
-      }
-    });
+    if (sessionToken) {
+      return this._store.dispatch(authModule.setSessionToken(sessionToken));
+    } else if (OAuthToken) {
+      return this._store.dispatch(authModule.setOAuthToken(OAuthToken));
+    } else {
+      return this._store.dispatch(authModule.checkAuthNoToken());
+    }
   }
 
   destroy() {
