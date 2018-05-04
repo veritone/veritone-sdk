@@ -2,14 +2,8 @@ import { createReducer } from 'helpers/redux';
 import {
   LOGIN_SUCCESS,
   FETCH_USER_SUCCESS,
-  FETCH_USER_FAILURE,
   REFRESH_TOKEN_SUCCESS
 } from '../user/constants';
-import { 
-  WAIT_FOR_ACTION,
-  ERROR_ACTION,
-  CALLBACK_ERROR_ARGUMENT
-} from '../../helpers/redux/promiseMiddleware';
 
 import * as constants from './constants';
 
@@ -81,10 +75,7 @@ export function setSessionToken(token) {
   // used for initial fetchUser calls when the token is already known.
   return {
     type: constants.SET_SESSION_TOKEN,
-    payload: token,
-    [WAIT_FOR_ACTION]: FETCH_USER_SUCCESS,
-    [ERROR_ACTION]: FETCH_USER_FAILURE,
-    [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
+    payload: token
   };
 }
 
@@ -93,19 +84,13 @@ export function setOAuthToken(token) {
   // outside the OAUTH_GRANT flow
   return {
     type: constants.SET_OAUTH_TOKEN,
-    payload: token,
-    [WAIT_FOR_ACTION]: FETCH_USER_SUCCESS,
-    [ERROR_ACTION]: FETCH_USER_FAILURE,
-    [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
+    payload: token
   };
 }
 
 export function checkAuthNoToken() {
   return {
-    type: constants.CHECK_AUTH_NO_TOKEN,
-    [WAIT_FOR_ACTION]: FETCH_USER_SUCCESS,
-    [ERROR_ACTION]: FETCH_USER_FAILURE,
-    [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
+    type: constants.CHECK_AUTH_NO_TOKEN
   };
 }
 

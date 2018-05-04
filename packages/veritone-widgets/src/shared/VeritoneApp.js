@@ -3,8 +3,18 @@ import ReactDOM from 'react-dom';
 import { isFunction } from 'lodash';
 import { Provider } from 'react-redux';
 
-import { modules } from 'veritone-redux-common';
-const { auth: authModule, config: configModule } = modules;
+import { modules, helpers } from 'veritone-redux-common';
+const { 
+  auth: authModule,
+  config: configModule,
+  user: userModule,
+} = modules;
+const { promiseMiddleware } = helpers;
+const {
+  WAIT_FOR_ACTION,
+  ERROR_ACTION,
+  CALLBACK_ERROR_ARGUMENT
+} = promiseMiddleware;
 
 import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
@@ -30,11 +40,26 @@ class _VeritoneApp {
 
   login({ sessionToken, OAuthToken } = {}) {
     if (sessionToken) {
-      return this._store.dispatch(authModule.setSessionToken(sessionToken));
+      return this._store.dispatch({
+        ...authModule.setSessionToken(sessionToken),
+        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
+        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
+        [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
+      });
     } else if (OAuthToken) {
-      return this._store.dispatch(authModule.setOAuthToken(OAuthToken));
+      return this._store.dispatch({
+        ...authModule.setOAuthToken(OAuthToken),
+        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
+        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
+        [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
+      });
     } else {
-      return this._store.dispatch(authModule.checkAuthNoToken());
+      return this._store.dispatch({
+        ...authModule.checkAuthNoToken(),
+        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
+        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
+        [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
+      });
     }
   }
 
