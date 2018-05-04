@@ -29,15 +29,21 @@ class _VeritoneApp {
   }
 
   login({ sessionToken, OAuthToken } = {}) {
-    // todo: handle promise result
-    // make sure it rejects on bad auth
-    if (sessionToken) {
-      this._store.dispatch(authModule.setSessionToken(sessionToken));
-    } else if (OAuthToken) {
-      this._store.dispatch(authModule.setOAuthToken(OAuthToken));
-    } else {
-      this._store.dispatch(authModule.checkAuthNoToken());
-    }
+    return new Promise((resolve, reject) => {
+      if (sessionToken) {
+        this._store.dispatch(authModule.setSessionToken(sessionToken))
+          .then(payload => resolve(payload))
+          .catch(payload => reject(payload))
+      } else if (OAuthToken) {
+        this._store.dispatch(authModule.setOAuthToken(OAuthToken))
+          .then(payload => resolve(payload))
+          .catch(payload => reject(payload));
+      } else {
+        this._store.dispatch(authModule.checkAuthNoToken())
+          .then(payload => resolve(payload))
+          .catch(payload => reject(payload));
+      }
+    });
   }
 
   destroy() {
