@@ -39,27 +39,22 @@ class _VeritoneApp {
   }
 
   login({ sessionToken, OAuthToken } = {}) {
+    // Allows us to transform dispatch into a promise by adding symbols
+    const addSymbols = (action) => {
+      return {
+        ...action,
+        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
+        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
+        [CALLBACK_ERROR_ARGUMENT]: action => action.payload
+      }
+    }
+
     if (sessionToken) {
-      return this._store.dispatch({
-        ...authModule.setSessionToken(sessionToken),
-        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
-        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
-        [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
-      });
+      return this._store.dispatch(addSymbols(authModule.setSessionToken(sessionToken)));
     } else if (OAuthToken) {
-      return this._store.dispatch({
-        ...authModule.setOAuthToken(OAuthToken),
-        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
-        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
-        [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
-      });
+      return this._store.dispatch(addSymbols(authModule.setOAuthToken(OAuthToken)));
     } else {
-      return this._store.dispatch({
-        ...authModule.checkAuthNoToken(),
-        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
-        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
-        [CALLBACK_ERROR_ARGUMENT]: action => action.payload,
-      });
+      return this._store.dispatch(addSymbols(authModule.checkAuthNoToken()));
     }
   }
 
