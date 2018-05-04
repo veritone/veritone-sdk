@@ -72,11 +72,11 @@ export default class ContentTemplateForm extends React.Component {
 
       this.setState(prevState => ({
         contentTemplates: {
-          ...prevState.contentTemplates,
           [templateSchemaId]: {
             ...templateData[templateSchemaId],
             data
-          }
+          },
+          ...prevState.contentTemplates
         }
       }));
     }

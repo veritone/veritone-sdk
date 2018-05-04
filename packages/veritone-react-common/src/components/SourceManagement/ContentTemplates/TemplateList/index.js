@@ -39,6 +39,7 @@ export default class TemplateList extends React.Component {
               className={styles.trashIcon}
               onClick={this.removeTemplate(schemaId)}
               aria-label="trash"
+              disableRipple
             >
               <Icon className={'icon-trash'} />
             </IconButton>
@@ -47,6 +48,7 @@ export default class TemplateList extends React.Component {
               className={styles.trashIcon}
               onClick={this.addTemplate(schemaId)}
               aria-label="add"
+              disableRipple
             >
               <Icon className={'icon-zoom-in'} />
             </IconButton>
