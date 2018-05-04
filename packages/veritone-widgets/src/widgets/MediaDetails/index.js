@@ -596,22 +596,22 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === 'mediaDetails' &&
-            selectedEngineId && (
-              <div className={styles.mediaScreen}>
-                {!expandedMode && (
-                  <div className={styles.mediaView}>
-                    <MediaPlayer
-                      store={this.context.store}
-                      playerRef={this.mediaPlayerRef}
-                      src={this.getPrimaryAssetUri()}
-                      streams={get(this.props, 'tdo.streams')}
-                    />
-                    <div className={styles.sourceLabel}>
-                      Source: {this.getMediaSource()}
-                    </div>
+          {this.state.selectedTabValue === 'mediaDetails' && (
+            <div className={styles.mediaScreen}>
+              {!expandedMode && (
+                <div className={styles.mediaView}>
+                  <MediaPlayer
+                    store={this.context.store}
+                    playerRef={this.mediaPlayerRef}
+                    src={this.getPrimaryAssetUri()}
+                    streams={get(this.props, 'tdo.streams')}
+                  />
+                  <div className={styles.sourceLabel}>
+                    Source: {this.getMediaSource()}
                   </div>
-                )}
+                </div>
+              )}
+              {selectedEngineId && (
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
@@ -762,8 +762,9 @@ class MediaDetailsWidget extends React.Component {
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
 
           {infoPanelIsOpen && (
             <MediaInfoPanel
