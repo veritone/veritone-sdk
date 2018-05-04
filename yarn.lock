@@ -11261,6 +11261,10 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
+shaka-player@^2.3.5:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/shaka-player/-/shaka-player-2.3.7.tgz#b301f67b8bd3e357620564f208fcadcd90db8256"
+
 shallow-clone@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shallow-clone/-/shallow-clone-1.0.0.tgz#4480cd06e882ef68b2ad88a3ea54832e2c48b571"
@@ -12603,9 +12607,9 @@ vfile@^2.0.0:
     unist-util-stringify-position "^1.0.0"
     vfile-message "^1.0.0"
 
-video-react@^0.10.4:
+"video-react@https://github.com/JordanBelford/video-react#build":
   version "0.10.4"
-  resolved "https://registry.yarnpkg.com/video-react/-/video-react-0.10.4.tgz#5948d99628f711096f6e54c19e832dbe2d77d554"
+  resolved "https://github.com/JordanBelford/video-react#7613401f4ea653fed51438cd6dddc9138fc2a88d"
   dependencies:
     classnames "^2.2.3"
     prop-types "^15.6.0"

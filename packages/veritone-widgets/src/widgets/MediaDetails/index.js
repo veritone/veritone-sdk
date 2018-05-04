@@ -21,7 +21,7 @@ import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
   MediaInfoPanel,
-  video,
+  MediaPlayer,
   FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
@@ -32,7 +32,7 @@ import {
   ContentTemplateForm,
   GeoEngineOutput,
   TranslationEngineOutput,
-  StructuredDataEngineOutput,
+  StructuredDataEngineOutput
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
@@ -596,27 +596,22 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === 'mediaDetails' &&
-            selectedEngineId && (
-              <div className={styles.mediaScreen}>
-                {!expandedMode &&
-                  <div className={styles.mediaView}>
-                    <video.Player
-                      src={this.getPrimaryAssetUri()}
-                      className={styles.videoPlayer}
-                      store={this.context.store}
-                      ref={this.mediaPlayerRef}
-                    >
-                      <video.BigPlayButton
-                        className={styles.mediaPlayButton}
-                        position="center"
-                      />
-                    </video.Player>
-                    <div className={styles.sourceLabel}>
-                      Source: {this.getMediaSource()}
-                    </div>
-                  </div>}
-
+          {this.state.selectedTabValue === 'mediaDetails' && (
+            <div className={styles.mediaScreen}>
+              {!expandedMode && (
+                <div className={styles.mediaView}>
+                  <MediaPlayer
+                    store={this.context.store}
+                    playerRef={this.mediaPlayerRef}
+                    src={this.getPrimaryAssetUri()}
+                    streams={get(this.props, 'tdo.streams')}
+                  />
+                  <div className={styles.sourceLabel}>
+                    Source: {this.getMediaSource()}
+                  </div>
+                </div>
+              )}
+              {selectedEngineId && (
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
@@ -734,7 +729,9 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'geolocation' && (
                       <GeoEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        startTimeStamp={(tdo && tdo.startDateTime) ? tdo.startDateTime : null}
+                        startTimeStamp={
+                          tdo && tdo.startDateTime ? tdo.startDateTime : null
+                        }
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
@@ -765,8 +762,9 @@ class MediaDetailsWidget extends React.Component {
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
 
           {infoPanelIsOpen && (
             <MediaInfoPanel

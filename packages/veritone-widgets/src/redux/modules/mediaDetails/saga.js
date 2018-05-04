@@ -47,6 +47,10 @@ const tdoInfoQueryClause = `id
     primaryAsset(assetType: "media") {
       id
       uri
+    }
+    streams {
+      protocol
+      uri
     }`;
 
 function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
@@ -132,11 +136,17 @@ function* loadTdoSaga(widgetId, tdoId) {
   if (get(tdo, 'engineRuns.records', false)) {
     tdo.engineRuns.records
       // filter those that have category, category icon, and are supported categories
-      .filter(engineRun =>
+      .filter(
+        engineRun =>
           get(engineRun, 'engine.category.iconClass.length') &&
-          orderedSupportedCategoryTypes.includes(get(engineRun, 'engine.category.categoryType')))
+          orderedSupportedCategoryTypes.includes(
+            get(engineRun, 'engine.category.categoryType')
+          )
+      )
       .forEach(engineRun => {
-        let engineCategory = engineCategories.find(category => category.id === engineRun.engine.category.id);
+        let engineCategory = engineCategories.find(
+          category => category.id === engineRun.engine.category.id
+        );
         if (!engineCategory) {
           engineCategory = Object.assign({}, engineRun.engine.category);
           engineCategory.iconClass = engineCategory.iconClass.replace(
@@ -150,7 +160,7 @@ function* loadTdoSaga(widgetId, tdoId) {
           engineCategories.push(engineCategory);
         }
         engineCategory.engines.push(engineRun.engine);
-    });
+      });
   }
 
   // order categories: first the most frequently used as defined by product, then the rest - alphabetically
