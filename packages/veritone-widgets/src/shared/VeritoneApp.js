@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { isFunction } from 'lodash';
 import { Provider } from 'react-redux';
-
+import * as appModule from '../redux/modules/veritoneApp';
+import appConfig from '../../config.json';
+import configureStore from '../redux/configureStore';
 import { modules, helpers } from 'veritone-redux-common';
 const { 
   auth: authModule,
@@ -15,10 +17,6 @@ const {
   ERROR_ACTION,
   CALLBACK_ERROR_ARGUMENT
 } = promiseMiddleware;
-
-import * as appModule from '../redux/modules/veritoneApp';
-import appConfig from '../../config.json';
-import configureStore from '../redux/configureStore';
 
 class _VeritoneApp {
   _store = configureStore();
