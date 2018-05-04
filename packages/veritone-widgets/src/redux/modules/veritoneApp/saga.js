@@ -34,7 +34,7 @@ export function* watchAppAuth() {
       // fetch if an grant is completed
       authModule.OAUTH_GRANT_FLOW_SUCCESS,
       // try to fetch StartupDependencies with no token
-      authModule.CHECK_AUTH_NO_TOKEN,
+      authModule.CHECK_AUTH_NO_TOKEN
     ],
     handleAppAuth
   );
