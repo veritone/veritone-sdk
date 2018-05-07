@@ -65,7 +65,7 @@ import widget from '../../shared/widget';
     expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
     libraries: mediaDetailsModule.libraries(state, _widgetId),
     entities: mediaDetailsModule.entities(state, _widgetId),
-    schemaById: mediaDetailsModule.schemaById(state, _widgetId),
+    schemasById: mediaDetailsModule.schemasById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -204,7 +204,7 @@ class MediaDetailsWidget extends React.Component {
         data: objectOf(any)
       })
     ),
-    schemaById: objectOf(any),
+    schemasById: objectOf(any),
     googleMapsApiKey: string,
     contextMenuExtensions: shape({
       mentions: arrayOf(
@@ -227,7 +227,7 @@ class MediaDetailsWidget extends React.Component {
   static defaultProps = {
     libraries: [],
     entities: [],
-    schemaById: {}
+    schemasById: {}
   };
 
   static contextTypes = {
@@ -396,7 +396,7 @@ class MediaDetailsWidget extends React.Component {
       contentTemplates,
       tdo,
       tdoContentTemplates,
-      schemaById,
+      schemasById,
       googleMapsApiKey
     } = this.props;
 
@@ -750,7 +750,7 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'correlation' && (
                       <StructuredDataEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        schemaById={schemaById}
+                        schemasById={schemasById}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}

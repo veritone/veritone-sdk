@@ -63,7 +63,7 @@ const defaultMDPState = {
   fetchingEntities: false,
   contentTemplates: {},
   tdoContentTemplates: {},
-  schemaById: {}
+  schemasById: {}
 };
 
 const defaultState = {};
@@ -480,7 +480,7 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
-    const allSchemas = Object.assign({}, state[widgetId].schemaById);
+    const allSchemas = Object.assign({}, state[widgetId].schemasById);
     values(payload).forEach(schema => {
       allSchemas[schema.id] = schema;
     });
@@ -488,7 +488,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        schemaById: allSchemas
+        schemasById: allSchemas
       }
     };
   }
@@ -522,8 +522,8 @@ export const contentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
 export const tdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
-export const schemaById = (state, widgetId) =>
-  get(local(state), [widgetId, 'schemaById']);
+export const schemasById = (state, widgetId) =>
+  get(local(state), [widgetId, 'schemasById']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
