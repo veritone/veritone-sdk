@@ -15,6 +15,7 @@
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
+  "homepage": "https://github.com/veritone/veritone-sdk/blob/master/packages/veritone-redux-common",
   "scripts": {
     "start": "",
     "test": "BABEL_ENV=test jest",
