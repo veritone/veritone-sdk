@@ -53,10 +53,9 @@ describe('Middleware: promiseMiddleware', () => {
       type: 'TEST',
       [WAIT_FOR_ACTION]: 'TEST_SUCCESS'
     };
-    promWrap(action)
-      .then(result => {
-        return expect(result).toBe('winnerwinner');
-      });
+    promWrap(action).then(result => {
+      return expect(result).toBe('winnerwinner');
+    });
     expect(promWrap(successAction)).toBeUndefined();
   });
 
@@ -67,10 +66,9 @@ describe('Middleware: promiseMiddleware', () => {
       [ERROR_ACTION]: 'TEST_ERROR',
       [CALLBACK_ERROR_ARGUMENT]: action => action.payload
     };
-    promWrap(action)
-      .catch(result => {
-        return expect(result).toBe('loserloser');
-      });
+    promWrap(action).catch(result => {
+      return expect(result).toBe('loserloser');
+    });
     expect(promWrap(errorAction)).toBeUndefined();
   });
 });

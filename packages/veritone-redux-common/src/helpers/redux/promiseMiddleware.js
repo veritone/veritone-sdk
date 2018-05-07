@@ -19,12 +19,11 @@ store.dispatch({
 .catch( error => console.error('Failed!' + error.message) );
 */
 
-
 // From documentation, needed for integrating with redux
-const fsaCompliantArgumentCb = (action) => {
+const fsaCompliantArgumentCb = action => {
   return action.payload || action.data || {};
 };
-const fsaCompliantErrorArgumentCb = (action) => {
+const fsaCompliantErrorArgumentCb = action => {
   return action.error || action.err || new Error('action.error not specified.');
 };
 // Add symbols to actions to activate promise return
@@ -34,7 +33,7 @@ export const ERROR_ACTION = Symbol('ERROR_ACTION');
 export const CALLBACK_ARGUMENT = Symbol('CALLBACK_ARGUMENT');
 export const CALLBACK_ERROR_ARGUMENT = Symbol('ERROR_CALLBACK_ARGUMENT');
 
-export function promiseMiddleware () {
+export function promiseMiddleware() {
   let pendingActionList = [];
   const promisesList = [];
 
@@ -42,22 +41,32 @@ export function promiseMiddleware () {
     return promisesList;
   };
 
-  const middleware = (store) => {
-    return function (next) {
-      return function (action) {
+  const middleware = store => {
+    return function(next) {
+      return function(action) {
         const successAction = action[WAIT_FOR_ACTION];
         const errorAction = action[ERROR_ACTION];
         const newPendingActionInfo = {};
 
         // loop through list, see if there are any pending
         // promise callbacks by comparing types
-        forEachRight(pendingActionList, (pendingActionInfo) => {
+        forEachRight(pendingActionList, pendingActionInfo => {
           if (pendingActionInfo.isSuccessAction(action)) {
-            pendingActionInfo.resolveCallback(pendingActionInfo.successArgumentCb(action));
-            pendingActionList.splice(pendingActionList.indexOf(pendingActionInfo), 1);
+            pendingActionInfo.resolveCallback(
+              pendingActionInfo.successArgumentCb(action)
+            );
+            pendingActionList.splice(
+              pendingActionList.indexOf(pendingActionInfo),
+              1
+            );
           } else if (pendingActionInfo.isErrorAction(action)) {
-            pendingActionInfo.rejectCallback(pendingActionInfo.errorArgumentCb(action));
-            pendingActionList.splice(pendingActionList.indexOf(pendingActionInfo), 1);
+            pendingActionInfo.rejectCallback(
+              pendingActionInfo.errorArgumentCb(action)
+            );
+            pendingActionList.splice(
+              pendingActionList.indexOf(pendingActionInfo),
+              1
+            );
           }
         });
 
@@ -66,26 +75,28 @@ export function promiseMiddleware () {
         if (!action[WAIT_FOR_ACTION]) {
           return next(action);
         }
-        
+
         // These are the comparison function
-        newPendingActionInfo.isSuccessAction = (isFunction(successAction)) ?
-          successAction : 
-          (action) => (action.type === successAction);
+        newPendingActionInfo.isSuccessAction = isFunction(successAction)
+          ? successAction
+          : action => action.type === successAction;
         if (errorAction) {
-          newPendingActionInfo.isErrorAction = (isFunction(errorAction)) ?
-            errorAction :
-            (action) => (action.type === errorAction);
+          newPendingActionInfo.isErrorAction = isFunction(errorAction)
+            ? errorAction
+            : action => action.type === errorAction;
         } else {
           newPendingActionInfo.isErrorAction = constant(false);
         }
 
         // If you need to change which action info to push into the
         // promise callbacks, you can change them here
-        newPendingActionInfo.successArgumentCb = action[CALLBACK_ARGUMENT] || fsaCompliantArgumentCb;
-        newPendingActionInfo.errorArgumentCb = action[CALLBACK_ERROR_ARGUMENT] || fsaCompliantErrorArgumentCb;
-        
+        newPendingActionInfo.successArgumentCb =
+          action[CALLBACK_ARGUMENT] || fsaCompliantArgumentCb;
+        newPendingActionInfo.errorArgumentCb =
+          action[CALLBACK_ERROR_ARGUMENT] || fsaCompliantErrorArgumentCb;
+
         // Setting up promise to be called when action types match
-        const promise = new Promise(function (resolve, reject) {
+        const promise = new Promise(function(resolve, reject) {
           newPendingActionInfo.resolveCallback = resolve;
           newPendingActionInfo.rejectCallback = reject;
         });
@@ -100,4 +111,4 @@ export function promiseMiddleware () {
     };
   };
   return Object.assign(middleware, { getPromisesList });
-};  
+}
