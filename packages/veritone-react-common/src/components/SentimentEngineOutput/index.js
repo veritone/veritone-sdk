@@ -76,7 +76,8 @@ export default class SentimentEngineOutput extends Component {
   };
 
   handleTimeClick = event => {
-    this.props.onClick && this.props.onClick(event.activeLabel, event.activeLabel);
+    this.props.onClick &&
+      this.props.onClick(event.activeLabel, event.activeLabel);
   };
 
   flattenEngineResultsToSeries = data => {

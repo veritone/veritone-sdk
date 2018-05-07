@@ -702,15 +702,13 @@ class MediaDetailsWidget extends React.Component {
                       <TranslationEngineOutput
                         contents={engineResultsByEngineId[selectedEngineId]}
                         onClick={this.handleUpdateMediaPlayerTime}
-                        //onRerunProcess={handle rerun process callback}
+                        onRerunProcess={this.handleRunProcess}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
                         onExpandClicked={this.toggleExpandedMode}
-                        //languages={language options}
-                        //defaultLanguage={'en-US'}
-                        //onLanguageChanged={handle on language change callback}
+                        defaultLanguage={'en-US'}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                       />
