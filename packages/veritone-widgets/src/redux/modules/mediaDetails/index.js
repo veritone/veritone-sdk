@@ -54,9 +54,9 @@ const defaultMDPState = {
   tdo: null,
   selectedEngineCategory: null,
   selectedEngineId: null,
-  editModeEnabled: false,
+  isEditModeEnabled: false,
   loadingEngineResults: false,
-  expandedMode: false,
+  isExpandedMode: false,
   libraries: [],
   fetchingLibraries: false,
   entities: [],
@@ -390,8 +390,8 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        editModeEnabled: !state[widgetId].editModeEnabled,
-        expandedMode: !state[widgetId].editModeEnabled
+        isEditModeEnabled: !state[widgetId].isEditModeEnabled,
+        isExpandedMode: !state[widgetId].isEditModeEnabled
       }
     };
   },
@@ -400,7 +400,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        infoPanelIsOpen: !state[widgetId].infoPanelIsOpen
+        isInfoPanelOpen: !state[widgetId].isInfoPanelOpen
       }
     };
   },
@@ -409,7 +409,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        expandedMode: !state[widgetId].expandedMode
+        isExpandedMode: !state[widgetId].isExpandedMode
       }
     };
   },
@@ -471,12 +471,9 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_SCHEMAS](state, { meta: { widgetId } }) {
+  [REQUEST_SCHEMAS](state) {
     return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId]
-      }
+      ...state
     };
   },
   [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
@@ -496,33 +493,33 @@ export default createReducer(defaultState, {
 
 const local = state => state[namespace];
 
-export const engineCategories = (state, widgetId) =>
+export const getEngineCategories = (state, widgetId) =>
   get(local(state), [widgetId, 'engineCategories']);
-export const engineResultsByEngineId = (state, widgetId) =>
+export const getEngineResultsByEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'engineResultsByEngineId']);
-export const engineResultRequestsByEngineId = (state, widgetId, engineId) =>
+export const getEngineResultRequestsByEngineId = (state, widgetId, engineId) =>
   get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
   [];
-export const tdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
-export const selectedEngineCategory = (state, widgetId) =>
+export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
+export const getSelectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
-export const selectedEngineId = (state, widgetId) =>
+export const getSelectedEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineId']);
-export const editModeEnabled = (state, widgetId) =>
-  get(local(state), [widgetId, 'editModeEnabled']);
-export const infoPanelIsOpen = (state, widgetId) =>
-  get(local(state), [widgetId, 'infoPanelIsOpen']);
-export const expandedModeEnabled = (state, widgetId) =>
-  get(local(state), [widgetId, 'expandedMode']);
-export const libraries = (state, widgetId) =>
+export const isEditModeEnabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'isEditModeEnabled']);
+export const isInfoPanelOpen = (state, widgetId) =>
+  get(local(state), [widgetId, 'isInfoPanelOpen']);
+export const isExpandedModeEnabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'isExpandedMode']);
+export const getLibraries = (state, widgetId) =>
   get(local(state), [widgetId, 'libraries']);
-export const entities = (state, widgetId) =>
+export const getEntities = (state, widgetId) =>
   get(local(state), [widgetId, 'entities']);
-export const contentTemplates = (state, widgetId) =>
+export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
-export const tdoContentTemplates = (state, widgetId) =>
+export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
-export const schemasById = (state, widgetId) =>
+export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
 
 export const initializeWidget = widgetId => ({

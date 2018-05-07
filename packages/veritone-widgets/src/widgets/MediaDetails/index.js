@@ -44,28 +44,28 @@ import widget from '../../shared/widget';
 
 @connect(
   (state, { _widgetId }) => ({
-    engineCategories: mediaDetailsModule.engineCategories(state, _widgetId),
-    tdo: mediaDetailsModule.tdo(state, _widgetId),
-    engineResultsByEngineId: mediaDetailsModule.engineResultsByEngineId(
+    engineCategories: mediaDetailsModule.getEngineCategories(state, _widgetId),
+    tdo: mediaDetailsModule.getTdo(state, _widgetId),
+    engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
       state,
       _widgetId
     ),
-    selectedEngineCategory: mediaDetailsModule.selectedEngineCategory(
+    selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
       _widgetId
     ),
-    selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
-    contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
-    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(
+    selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, _widgetId),
+    contentTemplates: mediaDetailsModule.getContentTemplates(state, _widgetId),
+    tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(
       state,
       _widgetId
     ),
-    editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
-    infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
-    expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
-    libraries: mediaDetailsModule.libraries(state, _widgetId),
-    entities: mediaDetailsModule.entities(state, _widgetId),
-    schemasById: mediaDetailsModule.schemasById(state, _widgetId),
+    isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, _widgetId),
+    isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, _widgetId),
+    isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, _widgetId),
+    libraries: mediaDetailsModule.getLibraries(state, _widgetId),
+    entities: mediaDetailsModule.getEntities(state, _widgetId),
+    schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -165,9 +165,9 @@ class MediaDetailsWidget extends React.Component {
     setEngineId: func,
     toggleEditMode: func,
     toggleInfoPanel: func,
-    editModeEnabled: bool,
-    infoPanelIsOpen: bool,
-    expandedMode: bool,
+    isEditModeEnabled: bool,
+    isInfoPanelOpen: bool,
+    isExpandedMode: bool,
     toggleExpandedMode: func,
     currentMediaPlayerTime: number,
     libraries: arrayOf(
@@ -271,7 +271,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getSelectedCategoryMessage = () => {
-    if (this.props.editModeEnabled) {
+    if (this.props.isEditModeEnabled) {
       return (
         'Use the edit screen below to correct ' +
         this.props.selectedEngineCategory.name.toLowerCase() +
@@ -311,10 +311,10 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onCancelEdit = () => {
-    if (this.props.expandedMode) {
+    if (this.props.isExpandedMode) {
       this.toggleExpandedMode();
     }
-    if (this.props.editModeEnabled) {
+    if (this.props.isEditModeEnabled) {
       this.toggleEditMode();
     }
   };
@@ -387,10 +387,10 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineCategory,
       selectedEngineId,
       engineResultsByEngineId,
-      infoPanelIsOpen,
-      expandedMode,
+      isInfoPanelOpen,
+      isExpandedMode,
       currentMediaPlayerTime,
-      editModeEnabled,
+      isEditModeEnabled,
       libraries,
       entities,
       contentTemplates,
@@ -404,7 +404,7 @@ class MediaDetailsWidget extends React.Component {
     return (
       <FullScreenDialog open>
         <Paper className={styles.mediaDetailsPageContent}>
-          {!expandedMode && (
+          {!isExpandedMode && (
             <div>
               <div className={styles.pageHeader}>
                 {get(
@@ -530,7 +530,7 @@ class MediaDetailsWidget extends React.Component {
             </div>
           )}
 
-          {expandedMode &&
+          {isExpandedMode &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
@@ -545,12 +545,12 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
-                  {editModeEnabled && (
+                  {isEditModeEnabled && (
                     <div className={styles.pageHeaderTitleLabelEditMode}>
                       Edit Mode: {selectedEngineCategory.name}
                     </div>
                   )}
-                  {!editModeEnabled && (
+                  {!isEditModeEnabled && (
                     <div className={styles.pageHeaderTitleLabelEditMode}>
                       {selectedEngineCategory.name}
                     </div>
@@ -571,10 +571,10 @@ class MediaDetailsWidget extends React.Component {
                       />
                       RUN PROCESS
                     </Button>
-                    {editModeEnabled && (
+                    {isEditModeEnabled && (
                       <div className={styles.actionButtonsSeparatorEditMode} />
                     )}
-                    {editModeEnabled && (
+                    {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
                         onClick={this.onCancelEdit}
@@ -582,7 +582,7 @@ class MediaDetailsWidget extends React.Component {
                         CANCEL
                       </Button>
                     )}
-                    {editModeEnabled && (
+                    {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
                         disabled={!this.state.hasPendingChanges}
@@ -598,7 +598,7 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
-              {!expandedMode && (
+              {!isExpandedMode && (
                 <div className={styles.mediaView}>
                   <MediaPlayer
                     store={this.context.store}
@@ -616,7 +616,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
-                        editMode={editModeEnabled}
+                        editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
@@ -766,7 +766,7 @@ class MediaDetailsWidget extends React.Component {
             </div>
           )}
 
-          {infoPanelIsOpen && (
+          {isInfoPanelOpen && (
             <MediaInfoPanel
               tdo={this.props.tdo}
               engineCategories={engineCategories}

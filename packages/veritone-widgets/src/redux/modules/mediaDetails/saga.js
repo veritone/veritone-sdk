@@ -32,8 +32,8 @@ import {
   loadTdoContentTemplatesComplete,
   selectEngineCategory,
   setEngineId,
-  tdo,
-  engineResultRequestsByEngineId
+  getTdo,
+  getEngineResultRequestsByEngineId
 } from '.';
 
 const tdoInfoQueryClause = `id
@@ -269,7 +269,7 @@ function* loadEngineResultsSaga(
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
   const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
   if (startOffsetMs) {
     variables.startOffsetMs = startOffsetMs;
@@ -382,7 +382,7 @@ function* loadTdoContentTemplatesSaga(widgetId) {
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
   const variables = { tdoId: requestTdo.id };
 
   let response;
@@ -499,7 +499,7 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
     return {};
   }
 
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
@@ -791,7 +791,7 @@ function* watchSetEngineId() {
     }
 
     // TODO: Currently fetching the entire tdo assets. Will eventually use mediaplayer time etc to fetch the required data
-    const currentTdo = yield select(tdo, widgetId);
+    const currentTdo = yield select(getTdo, widgetId);
     const startOfTdo = new Date(currentTdo.startDateTime).getTime();
     const endOfTdo = new Date(currentTdo.stopDateTime).getTime();
     let startOffsetMs, stopOffsetMs;
@@ -803,7 +803,7 @@ function* watchSetEngineId() {
     }
 
     let engineResultRequests = yield select(
-      engineResultRequestsByEngineId,
+      getEngineResultRequestsByEngineId,
       widgetId,
       selectedEngineId
     );
