@@ -7,9 +7,22 @@ import {
 } from './promiseMiddleware';
 
 describe('Middleware: promiseMiddleware', () => {
-  const mockStore = {};
-  const mockNext = () => {};
   let action;
+  let promWrap;
+  const successAction = {
+    type: 'TEST_SUCCESS',
+    payload: 'winnerwinner'
+  };
+  const errorAction = {
+    type: 'TEST_ERROR',
+    payload: 'loserloser'
+  };
+
+  beforeEach(() => {
+    const mockStore = {};
+    const mockNext = () => {};
+    promWrap = promiseMiddleware()(mockStore)(mockNext);
+  });
 
   it('exports symbols', () => {
     expect(typeof WAIT_FOR_ACTION).toBe('symbol');
@@ -23,57 +36,41 @@ describe('Middleware: promiseMiddleware', () => {
   });
 
   it('should not return promise if symbols are not present', () => {
-    const promWrap = promiseMiddleware()(mockStore)(mockNext);
-    action = {
-      type: 'TEST'
-    }
-    
+    action = { type: 'TEST' };
     expect(promWrap(action)).toBeUndefined();
   });
 
   it('should return promise if symbols are present', () => {
-    const promWrap = promiseMiddleware()(mockStore)(mockNext);
     action = {
       type: 'TEST',
       [WAIT_FOR_ACTION]: 'TEST_SUCCESS'
-    }
-    
+    };
     expect(promWrap(action)).toBeInstanceOf(Promise);
   });
 
   it('should resolve promise on successful action', () => {
-    const promWrap = promiseMiddleware()(mockStore)(mockNext);
     action = {
       type: 'TEST',
       [WAIT_FOR_ACTION]: 'TEST_SUCCESS'
-    }
-    const successAction = {
-      type: 'TEST_SUCCESS',
-      payload: 'winnerwinner'
-    }
-    const prom = promWrap(action);
-    prom.then(result => {
-      return expect(result).toBe('winnerwinner');
-    });
+    };
+    promWrap(action)
+      .then(result => {
+        return expect(result).toBe('winnerwinner');
+      });
     expect(promWrap(successAction)).toBeUndefined();
   });
 
   it('should reject promise on error action and grab payload', () => {
-    const promWrap = promiseMiddleware()(mockStore)(mockNext);
     action = {
       type: 'TEST',
       [WAIT_FOR_ACTION]: 'TEST_SUCCESS',
       [ERROR_ACTION]: 'TEST_ERROR',
       [CALLBACK_ERROR_ARGUMENT]: action => action.payload
-    }
-    const errorAction = {
-      type: 'TEST_ERROR',
-      payload: 'loserloser'
-    }
-    const prom = promWrap(action);
-    prom.catch(result => {
-      return expect(result).toBe('loserloser');
-    });
+    };
+    promWrap(action)
+      .catch(result => {
+        return expect(result).toBe('loserloser');
+      });
     expect(promWrap(errorAction)).toBeUndefined();
   });
 });
