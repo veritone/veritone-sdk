@@ -38,6 +38,7 @@ class _VeritoneApp {
 
   login({ sessionToken, OAuthToken } = {}) {
     // Allows us to transform dispatch into a promise by adding symbols
+    // See promiseMiddleware.js
     const addSymbols = (action) => {
       return {
         ...action,

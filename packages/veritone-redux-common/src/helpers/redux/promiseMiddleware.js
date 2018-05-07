@@ -70,15 +70,11 @@ export function promiseMiddleware () {
         // These are the comparison function
         newPendingActionInfo.isSuccessAction = (isFunction(successAction)) ?
           successAction : 
-          (action) => {
-            return action.type === successAction;
-          }
+          (action) => (action.type === successAction);
         if (errorAction) {
           newPendingActionInfo.isErrorAction = (isFunction(errorAction)) ?
             errorAction :
-            (action) => {
-              return action.type === errorAction;
-            }
+            (action) => (action.type === errorAction);
         } else {
           newPendingActionInfo.isErrorAction = constant(false);
         }
