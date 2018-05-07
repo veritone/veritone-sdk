@@ -258,8 +258,6 @@ class MediaDetailsWidget extends React.Component {
 
   handleRunProcess = () => {
     this.props.onRunProcess();
-    // close MediaDetails dialog to focus on the run process dialog
-    this.props.onClose();
   };
 
   handleEngineCategoryChange = selectedCategoryId => {
@@ -402,7 +400,7 @@ class MediaDetailsWidget extends React.Component {
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
-      <FullScreenDialog open>
+      <FullScreenDialog open className={styles.mdpFullScreenDialog}>
         <Paper className={styles.mediaDetailsPageContent}>
           {!isExpandedMode && (
             <div>
