@@ -6,11 +6,7 @@ import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 import { modules, helpers } from 'veritone-redux-common';
-const { 
-  auth: authModule,
-  config: configModule,
-  user: userModule,
-} = modules;
+const { auth: authModule, config: configModule, user: userModule } = modules;
 const { promiseMiddleware } = helpers;
 const {
   WAIT_FOR_ACTION,
@@ -39,19 +35,23 @@ class _VeritoneApp {
   login({ sessionToken, OAuthToken } = {}) {
     // Allows us to transform dispatch into a promise by adding symbols
     // See promiseMiddleware.js
-    const addSymbols = (action) => {
+    const addSymbols = action => {
       return {
         ...action,
         [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
         [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
         [CALLBACK_ERROR_ARGUMENT]: action => action.payload
-      }
-    }
+      };
+    };
 
     if (sessionToken) {
-      return this._store.dispatch(addSymbols(authModule.setSessionToken(sessionToken)));
+      return this._store.dispatch(
+        addSymbols(authModule.setSessionToken(sessionToken))
+      );
     } else if (OAuthToken) {
-      return this._store.dispatch(addSymbols(authModule.setOAuthToken(OAuthToken)));
+      return this._store.dispatch(
+        addSymbols(authModule.setOAuthToken(OAuthToken))
+      );
     } else {
       return this._store.dispatch(addSymbols(authModule.checkAuthNoToken()));
     }
