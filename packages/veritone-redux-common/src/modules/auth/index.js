@@ -15,7 +15,12 @@ const defaultState = {
 };
 
 const reducer = createReducer(defaultState, {
-  [constants.OAUTH_GRANT_FLOW_SUCCESS](state, { payload: { OAuthToken } }) {
+  [constants.OAUTH_GRANT_FLOW_SUCCESS](
+    state,
+    {
+      payload: { OAuthToken }
+    }
+  ) {
     return {
       ...state,
       OAuthToken
@@ -80,6 +85,12 @@ export function setOAuthToken(token) {
   return {
     type: constants.SET_OAUTH_TOKEN,
     payload: token
+  };
+}
+
+export function checkAuthNoToken() {
+  return {
+    type: constants.CHECK_AUTH_NO_TOKEN
   };
 }
 
