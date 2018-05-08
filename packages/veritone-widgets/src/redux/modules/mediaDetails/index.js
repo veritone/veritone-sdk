@@ -350,8 +350,7 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         success: null,
-        error: null,
-        warning: null
+        error: null
       }
     };
   },
@@ -361,17 +360,17 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         success: null,
-        error: null,
-        warning: null
+        error: null
       }
     };
   },
   [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](state, { error, meta: { widgetId } }) {
+    const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        updateTdoContentTemplatesError: error
+        error: error ? errorMessage : null,
       }
     };
   },

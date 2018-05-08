@@ -159,6 +159,7 @@ function* loadTdoSaga(widgetId, tdoId) {
           engineCategory.engines = [];
           engineCategories.push(engineCategory);
         }
+        engineRun.engine.status = engineRun.status;
         engineCategory.engines.push(engineRun.engine);
       });
   }
