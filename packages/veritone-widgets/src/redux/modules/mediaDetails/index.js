@@ -7,7 +7,8 @@ import {
   forEach,
   map,
   values,
-  uniqBy
+  uniqBy,
+  keyBy
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -112,7 +113,7 @@ export default createReducer(defaultState, {
   [LOAD_ENGINE_RESULTS](state, { payload, meta: { widgetId } }) {
     let resultRequests =
       state[widgetId].engineResultRequestsByEngineId[payload.engineId] || [];
-    let requestInsertIndex = findLastIndex(resultRequests, request => {
+    const requestInsertIndex = findLastIndex(resultRequests, request => {
       return request.stopOffsetMs < payload.startOffsetMs;
     });
     resultRequests = [
@@ -161,9 +162,9 @@ export default createReducer(defaultState, {
     state,
     { payload, meta: { widgetId, startOffsetMs, stopOffsetMs } }
   ) {
-    let previousResultsByEngineId =
+    const previousResultsByEngineId =
       state[widgetId].engineResultsByEngineId || {};
-    let engineResultRequestsById =
+    const engineResultRequestsById =
       state[widgetId].engineResultRequestsByEngineId;
     // It is possible results were requested by
     const resultsGroupedByEngineId = groupBy(payload, 'engineId');
@@ -349,8 +350,7 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         success: null,
-        error: null,
-        warning: null
+        error: null
       }
     };
   },
@@ -360,17 +360,17 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         success: null,
-        error: null,
-        warning: null
+        error: null
       }
     };
   },
   [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](state, { error, meta: { widgetId } }) {
+    const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        updateTdoContentTemplatesError: error
+        error: error ? errorMessage : null,
       }
     };
   },
@@ -482,7 +482,7 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_LIBRARIES_SUCCESS](state, { payload, meta: { widgetId } }) {
-    let allLibraries = uniqBy(
+    const allLibraries = uniqBy(
       values(payload).concat(state[widgetId].libraries),
       'id'
     );
@@ -492,7 +492,7 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         fetchingLibraries: false,
         fetchLibrariesError: null,
-        libraries: [...allLibraries]
+        libraries: allLibraries
       }
     };
   },
@@ -516,7 +516,7 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_ENTITIES_SUCCESS](state, { payload, meta: { widgetId } }) {
-    let allEntities = uniqBy(
+    const allEntities = uniqBy(
       values(payload).concat(state[widgetId].entities),
       'id'
     );
@@ -526,7 +526,7 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         fetchingLibraries: false,
         fetchLibrariesError: null,
-        entities: [...allEntities]
+        entities: allEntities
       }
     };
   },
@@ -536,15 +536,14 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
-    const allSchemas = Object.assign({}, state[widgetId].schemasById);
-    values(payload).forEach(schema => {
-      allSchemas[schema.id] = schema;
-    });
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        schemasById: allSchemas
+        schemasById: {
+          ...state.schemasById,
+          ...keyBy(Object.values(payload), 'id')
+        }
       }
     };
   }
