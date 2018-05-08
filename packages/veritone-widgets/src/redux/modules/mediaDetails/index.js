@@ -12,19 +12,26 @@ import {
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
-export const LOAD_ENGINE_CATEGORIES_COMPLETE =
-  'LOAD_ENGINE_CATEGORIES_COMPLETE';
+export const LOAD_ENGINE_CATEGORIES_SUCCESS =
+  'LOAD_ENGINE_CATEGORIES_SUCCESS';
+export const LOAD_ENGINE_CATEGORIES_FAILURE =
+  'LOAD_ENGINE_CATEGORIES_FAILURE';
 export const LOAD_ENGINE_RESULTS = 'LOAD_ENGINE_RESULTS';
-export const LOAD_ENGINE_RESULTS_COMPLETE = 'LOAD_ENGINE_RESULTS_COMPLETE';
+export const LOAD_ENGINE_RESULTS_SUCCESS = 'LOAD_ENGINE_RESULTS_SUCCESS';
+export const LOAD_ENGINE_RESULTS_FAILURE = 'LOAD_ENGINE_RESULTS_FAILURE';
 export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const UPDATE_TDO = 'UPDATE_TDO';
-export const UPDATE_TDO_COMPLETE = 'UPDATE_TDO_COMPLETE';
+export const UPDATE_TDO_SUCCESS = 'UPDATE_TDO_SUCCESS';
 export const LOAD_CONTENT_TEMPLATES = 'LOAD_CONTENT_TEMPLATES';
-export const LOAD_CONTENT_TEMPLATES_COMPLETE =
-  'LOAD_CONTENT_TEMPLATES_COMPLETE';
-export const LOAD_TDO_CONTENT_TEMPLATES_COMPLETE =
-  'LOAD_TDO_CONTENT_TEMPLATES_COMPLETE';
+export const LOAD_CONTENT_TEMPLATES_SUCCESS =
+  'LOAD_CONTENT_TEMPLATES_SUCCESS';
+export const LOAD_CONTENT_TEMPLATES_FAILURE =
+  'LOAD_CONTENT_TEMPLATES_FAILURE';
+export const LOAD_TDO_CONTENT_TEMPLATES_SUCCESS =
+  'LOAD_TDO_CONTENT_TEMPLATES_SUCCESS';
+export const LOAD_TDO_CONTENT_TEMPLATES_FAILURE =
+  'LOAD_TDO_CONTENT_TEMPLATES_FAILURE';
 export const UPDATE_TDO_CONTENT_TEMPLATES = 'UPDATE_TDO_CONTENT_TEMPLATES';
 export const UPDATE_TDO_CONTENT_TEMPLATES_FAILURE =
   'UPDATE_TDO_CONTENT_TEMPLATES_FAILURE';
@@ -33,7 +40,6 @@ export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
 export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
-export const ADD_ENGINE_RESULTS_REQUEST = 'ADD_ENGINE_RESULTS_REQUEST';
 export const TOGGLE_EXPANDED_MODE = 'TOGGLE_EXPANDED_MODE';
 export const REQUEST_LIBRARIES = 'REQUEST_LIBRARIES';
 export const REQUEST_LIBRARIES_SUCCESS = 'REQUEST_LIBRARIES_SUCCESS';
@@ -77,19 +83,34 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_CATEGORIES_COMPLETE](
+  [LOAD_ENGINE_CATEGORIES_SUCCESS](
     state,
-    { payload, meta: { warn, error, widgetId } }
+    { payload, meta: { warn, widgetId } }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: true,
+        error: null,
+        warning: warn || null,
+        engineCategories: payload
+      }
+    };
+  },
+  [LOAD_ENGINE_CATEGORIES_FAILURE](
+    state,
+    { meta: { warn, error, widgetId } }
   ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
+        success: false,
         error: error ? errorMessage : null,
         warning: warn || null,
-        engineCategories: payload
+        engineCategories: []
       }
     };
   },
@@ -141,12 +162,10 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_RESULTS_COMPLETE](
+  [LOAD_ENGINE_RESULTS_SUCCESS](
     state,
-    { payload, meta: { warn, error, widgetId, startOffsetMs, stopOffsetMs } }
+    { payload, meta: { widgetId, startOffsetMs, stopOffsetMs } }
   ) {
-    const errorMessage = get(error, 'message', error);
-
     let previousResultsByEngineId =
       state[widgetId].engineResultsByEngineId || {};
     let engineResultRequestsById =
@@ -194,14 +213,30 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !error || null,
-        error: error ? errorMessage : null,
+        success: true,
+        error: null,
         engineResultsByEngineId: {
           ...previousResultsByEngineId
         },
         engineResultRequestsByEngineId: {
           ...engineResultRequestsById
         }
+      }
+    };
+  },
+  [LOAD_ENGINE_RESULTS_FAILURE](
+    state,
+    { meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId } }
+  ) {
+    const errorMessage =
+      `Error fetching engine ${engineId} results for offset ${startOffsetMs} - ${stopOffsetMs} :` +
+      get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: false,
+        error: errorMessage,
       }
     };
   },
@@ -242,7 +277,7 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_COMPLETE](state, { payload, meta: { warn, error, widgetId } }) {
+  [UPDATE_TDO_SUCCESS](state, { payload, meta: { warn, error, widgetId } }) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -255,11 +290,10 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_CONTENT_TEMPLATES_COMPLETE](
+  [LOAD_TDO_CONTENT_TEMPLATES_SUCCESS](
     state,
-    { payload, meta: { warn, error, widgetId } }
+    { payload, meta: { widgetId } }
   ) {
-    const errorMessage = get(error, 'message', error);
     const tdoContentTemplates = {};
     if (payload && payload.records) {
       payload.records.forEach(asset => {
@@ -283,10 +317,24 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
-        error: error ? errorMessage : null,
-        warning: warn || null,
+        success: true,
+        error: null,
         tdoContentTemplates: tdoContentTemplates
+      }
+    };
+  },
+  [LOAD_TDO_CONTENT_TEMPLATES_FAILURE](
+    state,
+    { meta: { error, widgetId } }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: false,
+        error: error ? errorMessage : null,
+        tdoContentTemplates: {}
       }
     };
   },
@@ -327,16 +375,14 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         success: null,
-        error: null,
-        warning: null
+        error: null
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES_COMPLETE](
+  [LOAD_CONTENT_TEMPLATES_SUCCESS](
     state,
-    { payload, meta: { warn, error, widgetId } }
+    { payload, meta: { widgetId } }
   ) {
-    const errorMessage = get(error, 'message', error);
     const templateSchemas = {};
     // array of data registries containing an array of schemas
     payload.reduce((schemaStore, registryData) => {
@@ -358,10 +404,24 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
-        error: error ? errorMessage : null,
-        warning: warn || null,
+        success: true,
+        error: null,
         contentTemplates: templateSchemas
+      }
+    };
+  },
+  [LOAD_CONTENT_TEMPLATES_FAILURE](
+    state,
+    { meta: { error, widgetId } }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: false,
+        error: error ? errorMessage : null,
+        contentTemplates: {}
       }
     };
   },
@@ -527,14 +587,21 @@ export const initializeWidget = widgetId => ({
   meta: { widgetId }
 });
 
-export const loadEngineCategoriesComplete = (
+export const loadEngineCategoriesSuccess = (
   widgetId,
-  result,
-  { warn, error }
+  result
 ) => ({
-  type: LOAD_ENGINE_CATEGORIES_COMPLETE,
+  type: LOAD_ENGINE_CATEGORIES_SUCCESS,
   payload: result,
-  meta: { warn, error, widgetId }
+  meta: { widgetId }
+});
+
+export const loadEngineCategoriesFailure = (
+  widgetId,
+  { error }
+) => ({
+  type: LOAD_ENGINE_CATEGORIES_FAILURE,
+  meta: { error, widgetId }
 });
 
 export const loadEngineResultsRequest = (
@@ -548,18 +615,20 @@ export const loadEngineResultsRequest = (
   meta: { widgetId }
 });
 
-export const loadEngineResultsComplete = (
+export const loadEngineResultsSuccess = (
   result,
-  { warn, error, startOffsetMs, stopOffsetMs, engineId, widgetId }
+  { startOffsetMs, stopOffsetMs, engineId, widgetId }
 ) => ({
-  type: LOAD_ENGINE_RESULTS_COMPLETE,
+  type: LOAD_ENGINE_RESULTS_SUCCESS,
   payload: result,
-  meta: { warn, error, widgetId, startOffsetMs, stopOffsetMs, engineId }
+  meta: { widgetId, startOffsetMs, stopOffsetMs, engineId }
 });
 
-export const addEnginesResultsRequest = widgetId => ({
-  type: ADD_ENGINE_RESULTS_REQUEST,
-  meta: { widgetId }
+export const loadEngineResultsFailure = (
+  { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
+) => ({
+  type: LOAD_ENGINE_RESULTS_FAILURE,
+  meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
 });
 
 export const loadTdoRequest = (widgetId, tdoId, callback) => ({
@@ -585,20 +654,27 @@ export const updateTdoRequest = (
   meta: { widgetId }
 });
 
-export const updateTdoComplete = (widgetId, result, { warn, error }) => ({
-  type: UPDATE_TDO_COMPLETE,
+export const updateTdoSuccess = (widgetId, result, { warn, error }) => ({
+  type: UPDATE_TDO_SUCCESS,
   payload: result,
   meta: { warn, error, widgetId }
 });
 
-export const loadTdoContentTemplatesComplete = (
+export const loadTdoContentTemplatesSuccess = (
   widgetId,
-  result,
-  { warn, error }
+  result
 ) => ({
-  type: LOAD_TDO_CONTENT_TEMPLATES_COMPLETE,
+  type: LOAD_TDO_CONTENT_TEMPLATES_SUCCESS,
   payload: result,
-  meta: { warn, error, widgetId }
+  meta: { widgetId }
+});
+
+export const loadTdoContentTemplatesFailure = (
+  widgetId,
+  { error }
+) => ({
+  type: LOAD_TDO_CONTENT_TEMPLATES_FAILURE,
+  meta: { error, widgetId }
 });
 
 export const updateTdoContentTemplates = (
@@ -616,14 +692,21 @@ export const loadContentTemplates = widgetId => ({
   meta: { widgetId }
 });
 
-export const loadContentTemplatesComplete = (
+export const loadContentTemplatesSuccess = (
   widgetId,
-  result,
-  { warn, error }
+  result
 ) => ({
-  type: LOAD_CONTENT_TEMPLATES_COMPLETE,
+  type: LOAD_CONTENT_TEMPLATES_SUCCESS,
   payload: result,
-  meta: { warn, error, widgetId }
+  meta: { widgetId }
+});
+
+export const loadContentTemplatesFailure = (
+  widgetId,
+  { error }
+) => ({
+  type: LOAD_CONTENT_TEMPLATES_FAILURE,
+  meta: { error, widgetId }
 });
 
 export const selectEngineCategory = (widgetId, engineCategory) => ({

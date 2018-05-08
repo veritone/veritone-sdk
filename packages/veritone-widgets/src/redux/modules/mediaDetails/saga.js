@@ -6,7 +6,7 @@ const { auth: authModule, config: configModule } = modules;
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import {
   LOAD_ENGINE_RESULTS,
-  LOAD_ENGINE_RESULTS_COMPLETE,
+  LOAD_ENGINE_RESULTS_SUCCESS,
   LOAD_TDO,
   UPDATE_TDO,
   LOAD_CONTENT_TEMPLATES,
@@ -23,13 +23,17 @@ import {
   REQUEST_SCHEMAS,
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
-  loadEngineCategoriesComplete,
+  loadEngineCategoriesSuccess,
+  loadEngineCategoriesFailure,
   loadEngineResultsRequest,
-  loadEngineResultsComplete,
+  loadEngineResultsSuccess,
+  loadEngineResultsFailure,
   loadTdoSuccess,
-  updateTdoComplete,
-  loadContentTemplatesComplete,
-  loadTdoContentTemplatesComplete,
+  updateTdoSuccess,
+  loadContentTemplatesSuccess,
+  loadContentTemplatesFailure,
+  loadTdoContentTemplatesSuccess,
+  loadTdoContentTemplatesFailure,
   selectEngineCategory,
   setEngineId,
   getTdo,
@@ -53,8 +57,11 @@ const tdoInfoQueryClause = `id
       uri
     }`;
 
-function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
-  yield put(loadEngineCategoriesComplete(widgetId, result, { warning, error }));
+function* finishLoadEngineCategories(widgetId, result, { error }) {
+  if (error) {
+    return yield put(loadEngineCategoriesFailure(widgetId, { error }));
+  }
+  return yield put(loadEngineCategoriesSuccess(widgetId, result));
 }
 
 function* finishLoadTdo(widgetId, result, { warning, error }) {
@@ -62,7 +69,7 @@ function* finishLoadTdo(widgetId, result, { warning, error }) {
 }
 
 function* finishUpdateTdo(widgetId, result, { warning, error }) {
-  yield put(updateTdoComplete(widgetId, result, { warning, error }));
+  yield put(updateTdoSuccess(widgetId, result, { warning, error }));
 }
 
 function* loadTdoSaga(widgetId, tdoId) {
@@ -195,7 +202,6 @@ function* loadTdoSaga(widgetId, tdoId) {
   });
 
   yield* finishLoadEngineCategories(widgetId, engineCategories, {
-    warning: false,
     error: false
   });
   if (engineCategories.length) {
@@ -286,13 +292,11 @@ function* loadEngineResultsSaga(
       token
     });
   } catch (error) {
-    yield put(loadEngineResultsComplete(null, { error, widgetId }));
+    return yield put(loadEngineResultsFailure({ error, startOffsetMs, stopOffsetMs, engineId, widgetId }));
   }
 
   yield put(
-    loadEngineResultsComplete(response.data.engineResults.records, {
-      warning: false,
-      error: false,
+    loadEngineResultsSuccess(response.data.engineResults.records, {
       startOffsetMs,
       stopOffsetMs,
       widgetId
@@ -336,7 +340,7 @@ function* loadContentTemplates(widgetId) {
       token
     });
   } catch (error) {
-    return yield put(loadContentTemplatesComplete(widgetId, null, { error }));
+    return yield put(loadContentTemplatesFailure(widgetId, { error }));
   }
 
   if (response.errors && response.errors.length) {
@@ -345,12 +349,7 @@ function* loadContentTemplates(widgetId) {
 
   const result = get(response.data, 'dataRegistries.records', []);
 
-  yield put(
-    loadContentTemplatesComplete(widgetId, result, {
-      warning: false,
-      error: false
-    })
-  );
+  yield put(loadContentTemplatesSuccess(widgetId, result));
 }
 
 function* loadTdoContentTemplatesSaga(widgetId) {
@@ -395,7 +394,7 @@ function* loadTdoContentTemplatesSaga(widgetId) {
     });
   } catch (error) {
     return yield put(
-      loadTdoContentTemplatesComplete(widgetId, null, { error })
+      loadTdoContentTemplatesFailure(widgetId, { error })
     );
   }
 
@@ -405,12 +404,7 @@ function* loadTdoContentTemplatesSaga(widgetId) {
 
   const result = get(response.data, 'temporalDataObject.assets', {});
 
-  yield put(
-    loadTdoContentTemplatesComplete(widgetId, result, {
-      warning: false,
-      error: false
-    })
-  );
+  yield put(loadTdoContentTemplatesSuccess(widgetId, result));
 }
 
 function* updateTdoContentTemplatesSaga(
@@ -723,7 +717,7 @@ function* fetchSchemas(widgetId, schemaIds) {
 }
 
 function* watchLoadEngineResultsComplete() {
-  yield takeEvery(LOAD_ENGINE_RESULTS_COMPLETE, function*(action) {
+  yield takeEvery(LOAD_ENGINE_RESULTS_SUCCESS, function*(action) {
     let libraryIds = [],
       entityIds = [],
       schemaIds = [];
