@@ -181,16 +181,17 @@ export default class GeoMapView extends Component {
 
     return (
       <div className={classNames(styles.googleMapView, className)}>
-        { data && data.length &&
-          <GoogleMapComponent
-            path={data}
-            apiKey={apiKey}
-            travelMode={travelMode}
-            onClick={this.handleRouteClick}
-            onGoogleMapError={onGoogleMapError}
-            currentPos={estimatedPos}
-          />
-        }
+        {data &&
+          data.length && (
+            <GoogleMapComponent
+              path={data}
+              apiKey={apiKey}
+              travelMode={travelMode}
+              onClick={this.handleRouteClick}
+              onGoogleMapError={onGoogleMapError}
+              currentPos={estimatedPos}
+            />
+          )}
       </div>
     );
   }

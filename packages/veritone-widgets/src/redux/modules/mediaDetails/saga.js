@@ -230,11 +230,15 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   }
 
   if (!isEmpty(response.errors)) {
-    return yield* updateTdoFailure(widgetId, { error: 'Error updating media.' });
+    return yield* updateTdoFailure(widgetId, {
+      error: 'Error updating media.'
+    });
   }
 
   if (!get(response, 'data.updateTDO')) {
-    return yield* updateTdoFailure(widgetId, { error: 'TemporalDataObject not found after update' });
+    return yield* updateTdoFailure(widgetId, {
+      error: 'TemporalDataObject not found after update'
+    });
   }
 
   yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
@@ -279,7 +283,15 @@ function* loadEngineResultsSaga(
       token
     });
   } catch (error) {
-    return yield put(loadEngineResultsFailure({ error, startOffsetMs, stopOffsetMs, engineId, widgetId }));
+    return yield put(
+      loadEngineResultsFailure({
+        error,
+        startOffsetMs,
+        stopOffsetMs,
+        engineId,
+        widgetId
+      })
+    );
   }
 
   yield put(
@@ -331,7 +343,11 @@ function* loadContentTemplates(widgetId) {
   }
 
   if (!isEmpty(response.errors)) {
-    return yield put(loadContentTemplatesFailure(widgetId, { error: 'Error loading content templates.' }));
+    return yield put(
+      loadContentTemplatesFailure(widgetId, {
+        error: 'Error loading content templates.'
+      })
+    );
   }
 
   const result = get(response.data, 'dataRegistries.records', []);
@@ -384,7 +400,11 @@ function* loadTdoContentTemplatesSaga(widgetId) {
   }
 
   if (!isEmpty(response.errors)) {
-    return yield put(loadTdoContentTemplatesFailure(widgetId, { error: 'Error loading content templates for media.' }));
+    return yield put(
+      loadTdoContentTemplatesFailure(widgetId, {
+        error: 'Error loading content templates for media.'
+      })
+    );
   }
 
   const result = get(response.data, 'temporalDataObject.assets', {});

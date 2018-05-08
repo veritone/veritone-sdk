@@ -8,16 +8,18 @@ import classNames from 'classnames';
 import styles from './story.styles.scss';
 
 import GeoEngineOutput from './';
-storiesOf('GeoEngineOutput', module).add('No Api Key', () => {
-  return <GeoExample />;
-}).add('Has Api Key', () => {
-  return <GeoExample apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'}/>;
-});
+storiesOf('GeoEngineOutput', module)
+  .add('No Api Key', () => {
+    return <GeoExample />;
+  })
+  .add('Has Api Key', () => {
+    return <GeoExample apiKey={'AIzaSyBbJL_KdBKzgcVETRpqYlpJXvTK6Hjj5AQ'} />;
+  });
 
 export class GeoExample extends Component {
   static propTypes = {
     apiKey: string
-  }
+  };
 
   state = {
     selectedEngineId: '1',

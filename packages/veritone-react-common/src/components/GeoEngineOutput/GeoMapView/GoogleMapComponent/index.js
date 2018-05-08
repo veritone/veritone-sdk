@@ -34,16 +34,21 @@ export default class GoogleMapComponent extends Component {
   componentDidMount() {
     const { apiKey, onGoogleMapError } = this.props;
     const loader = new GoogleMapLoader(apiKey);
-    loader.load().then(() => {
+    loader
+      .load()
+      .then(() => {
         const maps = window.google.maps;
-        const mapInstance = this.map = new maps.Map(this.mapContainer.current, {});
+        const mapInstance = (this.map = new maps.Map(
+          this.mapContainer.current,
+          {}
+        ));
 
         this.drawContent();
         return mapInstance;
       })
       .catch(error => {
         onGoogleMapError && onGoogleMapError(error);
-        console.error('Can\'t load Google Map', {error: error});
+        console.error("Can't load Google Map", { error: error });
       });
   }
 
@@ -53,7 +58,10 @@ export default class GoogleMapComponent extends Component {
       this.body.setPosition(nextPos);
     }
 
-    if (!isEqual(nextProps.path, this.props.path) || nextProps.travelMode !== this.props.travelMode) {
+    if (
+      !isEqual(nextProps.path, this.props.path) ||
+      nextProps.travelMode !== this.props.travelMode
+    ) {
       this.clearContent();
       this.drawContent();
     }
@@ -70,13 +78,17 @@ export default class GoogleMapComponent extends Component {
 
       // Draw Markers
       if (path.length > 0) {
-        this.destination = GoogleMapHelpers.genDestinationMarker(endPoint, 1, map);
+        this.destination = GoogleMapHelpers.genDestinationMarker(
+          endPoint,
+          1,
+          map
+        );
         if (path.length > 1) {
           this.origin = GoogleMapHelpers.genOriginMarker(startPoint, 0.2, map);
           this.body = GoogleMapHelpers.genOriginMarker(currentPoint, 1, map);
-    
+
           // Draw Route
-           GoogleMapHelpers.drawDirection(
+          GoogleMapHelpers.drawDirection(
             startPoint,
             endPoint,
             map,
@@ -86,12 +98,12 @@ export default class GoogleMapComponent extends Component {
             this.route = route;
             const bounds = GoogleMapHelpers.genLatLngBounds(path);
             map.fitBounds(bounds);
-    
+
             // Add Listeners
             route.addListener('click', this.handleClicked);
             this.origin.addListener('click', this.handleClicked);
             this.destination.addListener('click', this.handleClicked);
-    
+
             return route;
           });
         }
@@ -99,7 +111,7 @@ export default class GoogleMapComponent extends Component {
     }
   }
 
-  clearContent () {
+  clearContent() {
     if (window.google && window.google.maps) {
       const event = window.google.maps.event;
       if (this.body) {
@@ -110,7 +122,7 @@ export default class GoogleMapComponent extends Component {
         event.clearInstanceListeners(this.route);
         this.route.setMap(null);
       }
-      
+
       if (this.origin) {
         event.clearInstanceListeners(this.origin);
         this.origin.setMap(null);
