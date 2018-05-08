@@ -49,26 +49,26 @@ describe('Middleware: promiseMiddleware', () => {
   });
 
   it('should resolve promise on successful action', () => {
+    expect.assertions(2);
     action = {
       type: 'TEST',
       [WAIT_FOR_ACTION]: 'TEST_SUCCESS'
     };
-    promWrap(action).then(result => {
-      return expect(result).toBe('winnerwinner');
-    });
+    const prom = promWrap(action);
     expect(promWrap(successAction)).toBeUndefined();
+    return expect(prom).resolves.toBe('winnerwinner');
   });
 
   it('should reject promise on error action and grab payload', () => {
+    expect.assertions(2);
     action = {
       type: 'TEST',
       [WAIT_FOR_ACTION]: 'TEST_SUCCESS',
       [ERROR_ACTION]: 'TEST_ERROR',
       [CALLBACK_ERROR_ARGUMENT]: action => action.payload
     };
-    promWrap(action).catch(result => {
-      return expect(result).toBe('loserloser');
-    });
+    const prom = promWrap(action);
     expect(promWrap(errorAction)).toBeUndefined();
+    return expect(prom).rejects.toBe('loserloser');
   });
 });

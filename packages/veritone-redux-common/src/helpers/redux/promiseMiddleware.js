@@ -35,11 +35,6 @@ export const CALLBACK_ERROR_ARGUMENT = Symbol('ERROR_CALLBACK_ARGUMENT');
 
 export function promiseMiddleware() {
   let pendingActionList = [];
-  const promisesList = [];
-
-  const getPromisesList = () => {
-    return promisesList;
-  };
 
   const middleware = store => {
     return function(next) {
@@ -102,13 +97,11 @@ export function promiseMiddleware() {
         });
 
         pendingActionList.push(newPendingActionInfo);
-        promisesList.push(promise);
-
         // Move on, but return a promise for dispatch
         next(action);
         return promise;
       };
     };
   };
-  return Object.assign(middleware, { getPromisesList });
+  return middleware;
 }
