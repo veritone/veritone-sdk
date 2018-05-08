@@ -85,11 +85,11 @@ export default class GeoEngineOutput extends Component {
     });
   };
 
-  handleMapLoadingError = (error) => {
+  handleMapLoadingError = error => {
     this.setState({
       currentView: 'timeView'
     });
-  }
+  };
 
   renderHeader() {
     const {

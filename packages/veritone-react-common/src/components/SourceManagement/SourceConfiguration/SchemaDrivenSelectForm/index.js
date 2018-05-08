@@ -139,16 +139,34 @@ export default class DynamicSelect extends React.Component {
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
 export function SourceTypeField({ id, type, required, title, ...rest }) {
-  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean', 'array', 'dateTime', 'geoPoint'];
+  const supportedTypes = [
+    'object',
+    'string',
+    'number',
+    'integer',
+    'boolean',
+    'array',
+    'dateTime',
+    'geoPoint'
+  ];
 
   if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
-    return <div className={styles.unsupportedMsg}>{`Unsupported Type: ${type} for ${title}`}</div>;
+    return (
+      <div
+        className={styles.unsupportedMsg}
+      >{`Unsupported Type: ${type} for ${title}`}</div>
+    );
   }
 
   if (type.includes('dateTime')) {
     return (
       <FormControl className={styles.dateTimeContainer}>
-        <InputLabel className={styles.textFieldLabel + ' ' + styles.dateTimeLabel} htmlFor={id}>{title}</InputLabel>
+        <InputLabel
+          className={styles.textFieldLabel + ' ' + styles.dateTimeLabel}
+          htmlFor={id}
+        >
+          {title}
+        </InputLabel>
         <DateTimePicker
           id={id}
           showIcon
@@ -168,7 +186,11 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
       <FormControlLabel
         label={title}
         control={
-          <Checkbox {...pick(rest, ['onChange'])} checked={rest.value} color="primary" />
+          <Checkbox
+            {...pick(rest, ['onChange'])}
+            checked={rest.value}
+            color="primary"
+          />
         }
       />
     );

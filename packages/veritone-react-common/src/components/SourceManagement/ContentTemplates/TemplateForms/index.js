@@ -47,7 +47,9 @@ export default class TemplateForms extends React.Component {
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
       if (!!parseInt(objectTraverse[0]) || objectTraverse[0] === '0') {
-        currentValue = cloneDeep(this.props.templates[schemaId].data[rootObject] || ['']);
+        currentValue = cloneDeep(
+          this.props.templates[schemaId].data[rootObject] || ['']
+        );
       } else {
         currentValue = Object.assign(
           {},
@@ -78,36 +80,28 @@ export default class TemplateForms extends React.Component {
     );
   };
 
-  handleArrayElementAdd = (schemaId, fieldId) => ($event) => {
+  handleArrayElementAdd = (schemaId, fieldId) => $event => {
     let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
     if (isArray(curArray)) {
       curArray.push('');
-      this.props.onTemplateDetailsChange(
-        schemaId,
-        fieldId,
-        curArray
-      );
+      this.props.onTemplateDetailsChange(schemaId, fieldId, curArray);
     }
-  }
+  };
 
-  handleArrayElementRemove = (schemaId, fieldId, index) => ($event) => {
+  handleArrayElementRemove = (schemaId, fieldId, index) => $event => {
     let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
     if (isArray(curArray)) {
       curArray.splice(index, 1);
-      this.props.onTemplateDetailsChange(
-        schemaId,
-        fieldId,
-        curArray
-      );
+      this.props.onTemplateDetailsChange(schemaId, fieldId, curArray);
     }
-  }
+  };
 
   parseType = (type, value) => {
     let returnValue = value;
     if (type.includes('number')) {
       returnValue = parseFloat(value);
     } else if (type.includes('integer')) {
-      returnValue =  parseInt(value);
+      returnValue = parseInt(value);
     } else if (type.includes('boolean')) {
       return value;
     } else if (type.includes('dateTime')) {
@@ -141,7 +135,8 @@ export default class TemplateForms extends React.Component {
                     onChange={this.handleFieldChange}
                     handleArrayElementAdd={this.handleArrayElementAdd}
                     handleArrayElementRemove={this.handleArrayElementRemove}
-                    key={schemaProp} />
+                    key={schemaProp}
+                  />
                 )
               );
             }
@@ -153,7 +148,8 @@ export default class TemplateForms extends React.Component {
               id={schemaId}
               fields={compact(formFields)}
               name={templates[schemaId].name}
-              remove={this.handleRemoveTemplate} />
+              remove={this.handleRemoveTemplate}
+            />
           );
         })}
       </div>
@@ -190,41 +186,43 @@ function BuildFormElements({
         title={title}
         value={value || ''}
         onChange={onChange(schemaId, schemaProp, type)}
-        {...rest} />
+        {...rest}
+      />
     );
   }
 
   if (type.includes('array')) {
-    element = (
-      (value || ['']).map((elem, index) => {
-
-        return (
-          <div key={`${schemaProp}.${'containter' + index}`} className={styles.arrayRow}>
-            <BuildFormElements
-              {...rest}
-              fieldId={`${fieldId}.${index}`}
-              schemaId={schemaId}
-              schemaProp={`${schemaProp}.${index}`}
-              type={items.type}
-              value={elem}
-              title={`${items.title} ${index + 1}`}
-              objectProperties={items.properties}
-              depth={depth + 1}
-              onChange={onChange}
-              key={`${schemaProp}.${'buildform' + index}`} />
-            {
-              isArray(value) && value.length > 1 ?
-                <div className={styles.arrayRemove}>
-                  <IconButton onClick={handleArrayElementRemove(schemaId, schemaProp, index)}>
-                    <ClearIcon />
-                  </IconButton>
-                </div> :
-                null
-            }
-          </div>
-        );
-      })
-    );
+    element = (value || ['']).map((elem, index) => {
+      return (
+        <div
+          key={`${schemaProp}.${'containter' + index}`}
+          className={styles.arrayRow}
+        >
+          <BuildFormElements
+            {...rest}
+            fieldId={`${fieldId}.${index}`}
+            schemaId={schemaId}
+            schemaProp={`${schemaProp}.${index}`}
+            type={items.type}
+            value={elem}
+            title={`${items.title} ${index + 1}`}
+            objectProperties={items.properties}
+            depth={depth + 1}
+            onChange={onChange}
+            key={`${schemaProp}.${'buildform' + index}`}
+          />
+          {isArray(value) && value.length > 1 ? (
+            <div className={styles.arrayRemove}>
+              <IconButton
+                onClick={handleArrayElementRemove(schemaId, schemaProp, index)}
+              >
+                <ClearIcon />
+              </IconButton>
+            </div>
+          ) : null}
+        </div>
+      );
+    });
     element = (
       <div className={styles.insetSection}>
         <span>{title}</span>
@@ -252,7 +250,8 @@ function BuildFormElements({
           objectProperties={objectProperties[objProp].properties}
           depth={depth + 1}
           onChange={onChange}
-          key={objProp} />
+          key={objProp}
+        />
       );
     });
     element = (
