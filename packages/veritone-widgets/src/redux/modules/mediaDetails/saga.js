@@ -307,7 +307,6 @@ function* loadContentTemplates(widgetId) {
         id
         name
         description
-        source
         organizationId
         schemas {
           records {
