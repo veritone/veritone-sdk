@@ -279,5 +279,5 @@ storiesOf('Table', module)
     );
   })
   .add('Table With Static Menu Column', () => (
-    <TableWithStaticMenuColumn data={data} onCellClick={handleCellClick}/>
+    <TableWithStaticMenuColumn data={data} onCellClick={handleCellClick} />
   ));

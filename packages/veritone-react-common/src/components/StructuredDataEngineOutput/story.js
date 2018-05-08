@@ -20,7 +20,7 @@ storiesOf('StructuredDataEngineOutput', module).add('Base', () => {
     <StructuredDataEngineOutput
       className={styles.outputViewRoot}
       data={mockEngineOutput}
-      schemaById={mockSchemaById}
+      schemasById={mockSchemaById}
       engines={engines}
       selectedEngineId={'engineOfInterest'}
       onEngineChange={action('on-engine-selected')}

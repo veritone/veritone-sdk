@@ -40,7 +40,8 @@ export default {
     'redux-form',
     'rechart',
     'recharts-scale',
-    'video-react'
+    'video-react',
+    'shaka-player'
   ],
   plugins: [
     replace({

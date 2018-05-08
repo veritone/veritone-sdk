@@ -1,5 +1,9 @@
 import React from 'react';
-import { withTheme, createMuiTheme, MuiThemeProvider } from 'material-ui/styles';
+import {
+  withTheme,
+  createMuiTheme,
+  MuiThemeProvider
+} from 'material-ui/styles';
 import { oneOf, func, number, string, arrayOf } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
 import blue from 'material-ui/colors/blue';
@@ -85,12 +89,11 @@ const initDate = new Date();
 @formValues('scheduleType')
 class Scheduler extends React.Component {
   static propTypes = {
-    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once'])
-      .isRequired,
+    scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once']).isRequired,
     onSubmit: func, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
     supportedScheduleTypes: arrayOf(string),
-    relativeSize: number,  // optional - used to scale text sizes from hosting app
+    relativeSize: number, // optional - used to scale text sizes from hosting app
     color: string
   };
 
@@ -136,7 +139,7 @@ class Scheduler extends React.Component {
     this.props.onSubmit(this.prepareResultData(vals));
   };
 
-  getTheme = ( { color, relativeSize } ) => {
+  getTheme = ({ color, relativeSize }) => {
     const theme = createMuiTheme({
       typography: {
         htmlFontSize: relativeSize || 13,
@@ -155,10 +158,10 @@ class Scheduler extends React.Component {
           main: blue[500],
           dark: blue[700]
         }
-      },
+      }
     });
     return theme;
-  }
+  };
 
   render() {
     const ActiveSectionComponent = {
@@ -213,25 +216,35 @@ class Scheduler extends React.Component {
 
     let ScheduleSelections;
     if (includes(this.props.supportedScheduleTypes, 'Any')) {
-      ScheduleSelections = [RecurringSelection, ContinuousSelection, ImmediateSelection, OnDemandSelection];
+      ScheduleSelections = [
+        RecurringSelection,
+        ContinuousSelection,
+        ImmediateSelection,
+        OnDemandSelection
+      ];
     } else {
       ScheduleSelections = [];
       this.props.supportedScheduleTypes.forEach(type => {
         if (ScheduleTypeSelection[type]) {
           ScheduleSelections.push(ScheduleTypeSelection[type]);
         }
-      })
+      });
     }
 
     return (
-      <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
+      <MuiThemeProvider
+        theme={this.getTheme({
+          color: this.props.color,
+          relativeSize: this.props.relativeSize
+        })}
+      >
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <Field
             component={RadioGroup}
             name="scheduleType"
             className={styles.scheduleTypeContainer}
           >
-            { ScheduleSelections }
+            {ScheduleSelections}
           </Field>
           <div className={styles.activeSectionContainer}>
             <ActiveSectionComponent />

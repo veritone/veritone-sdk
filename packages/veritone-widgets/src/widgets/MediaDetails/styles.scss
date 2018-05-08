@@ -1,3 +1,7 @@
+.mdpFullScreenDialog {
+  z-index: 2;
+}
+
 .mediaDetailsPageContent {
   width: 100% !important;
   height: 100% !important;
@@ -7,6 +11,7 @@
   display: flex;
   flex-direction: column;
   flex: auto;
+  z-index: auto;
 
   .pageHeader {
     display: flex;
@@ -176,16 +181,6 @@
 
     .mediaView {
       width: 450px;
-
-      .videoPlayer {
-        .mediaPlayButton {
-          margin-left: -0.75em;
-          height: 1.5em;
-          width: 1.5em;
-          border-radius: 1em;
-          border: none;
-        }
-      }
 
       .sourceLabel {
         color: rgba(0, 0, 0, 0.54);

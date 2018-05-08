@@ -148,11 +148,11 @@ export default class SourceManagementForm extends React.Component {
 
       this.setState(prevState => ({
         contentTemplates: {
-          ...prevState.contentTemplates,
           [templateSchemaId]: {
             ...templateData[templateSchemaId],
             data
-          }
+          },
+          ...prevState.contentTemplates
         }
       }));
     }
@@ -235,11 +235,7 @@ export default class SourceManagementForm extends React.Component {
             <div className={styles['btn-container']}>
               <Button onClick={this.handleOnClose}>Cancel</Button>
               <Button variant="raised" color="primary" type="submit">
-                {
-                  get(this.props, 'source.id') ?
-                  'Save' :
-                  'Create'
-                }
+                {get(this.props, 'source.id') ? 'Save' : 'Create'}
               </Button>
             </div>
           </form>

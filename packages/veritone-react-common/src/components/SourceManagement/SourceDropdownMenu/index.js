@@ -115,7 +115,12 @@ const SourceSelector = ({
       handleSourceChange(source.id);
       handleMenuClose();
     }
-    let version = source.sourceType && source.sourceType.sourceSchema ? source.sourceType.sourceSchema.majorVersion + '.' + source.sourceType.sourceSchema.majorVersion : undefined;
+    let version =
+      source.sourceType && source.sourceType.sourceSchema
+        ? source.sourceType.sourceSchema.majorVersion +
+          '.' +
+          source.sourceType.sourceSchema.majorVersion
+        : undefined;
     return (
       <MenuItem
         key={source.id}
@@ -123,19 +128,19 @@ const SourceSelector = ({
         selected={source.id === initialValue}
         onClick={handleItemClick}
       >
-        {
-          source.id === initialValue ?
-            <span className={styles.menuIconSpacer}>
-              <CheckIcon />
-            </span> :
-            <span className={styles.menuIconSpacer} />
-        }
+        {source.id === initialValue ? (
+          <span className={styles.menuIconSpacer}>
+            <CheckIcon />
+          </span>
+        ) : (
+          <span className={styles.menuIconSpacer} />
+        )}
         <span className={styles.sourceMenuItemName}>{source.name}</span>
-        {
-          version && !version.includes('undefined') ?
-            <span className={styles.sourceMenuItemVersion}>Version {version}</span> :
-            null
-        }
+        {version && !version.includes('undefined') ? (
+          <span className={styles.sourceMenuItemVersion}>
+            Version {version}
+          </span>
+        ) : null}
       </MenuItem>
     );
   });
@@ -144,10 +149,7 @@ const SourceSelector = ({
   let selectedSource = sources.find(source => source.id === initialValue);
   return (
     <FormControl>
-      <InputLabel
-        htmlFor="select-source"
-        className={styles.sourceLabel}
-      >
+      <InputLabel htmlFor="select-source" className={styles.sourceLabel}>
         Select a Source*
       </InputLabel>
       <Select
