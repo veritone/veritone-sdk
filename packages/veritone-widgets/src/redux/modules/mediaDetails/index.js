@@ -21,8 +21,10 @@ export const LOAD_ENGINE_RESULTS_SUCCESS = 'LOAD_ENGINE_RESULTS_SUCCESS';
 export const LOAD_ENGINE_RESULTS_FAILURE = 'LOAD_ENGINE_RESULTS_FAILURE';
 export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
+export const LOAD_TDO_FAILURE = 'LOAD_TDO_FAILURE';
 export const UPDATE_TDO = 'UPDATE_TDO';
 export const UPDATE_TDO_SUCCESS = 'UPDATE_TDO_SUCCESS';
+export const UPDATE_TDO_FAILURE = 'UPDATE_TDO_FAILURE';
 export const LOAD_CONTENT_TEMPLATES = 'LOAD_CONTENT_TEMPLATES';
 export const LOAD_CONTENT_TEMPLATES_SUCCESS =
   'LOAD_CONTENT_TEMPLATES_SUCCESS';
@@ -245,24 +247,33 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
+        success: true,
         error: null,
-        warning: null,
         tdo: null
       }
     };
   },
-  [LOAD_TDO_SUCCESS](state, { payload, meta: { warn, error, widgetId } }) {
+  [LOAD_TDO_SUCCESS](state, { payload, meta: { widgetId } }) {
     const tdo = payload;
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: true,
+        error: null,
+        tdo: tdo
+      }
+    };
+  },
+  [LOAD_TDO_FAILURE](state, { meta: { error, widgetId } }) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
+        success: false,
         error: error ? errorMessage : null,
-        warning: warn || null,
-        tdo: tdo
+        tdo: null
       }
     };
   },
@@ -271,22 +282,29 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
+        success: true,
         error: null,
-        warning: null
       }
     };
   },
-  [UPDATE_TDO_SUCCESS](state, { payload, meta: { warn, error, widgetId } }) {
+  [UPDATE_TDO_SUCCESS](state, { payload, meta: { widgetId } }) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        success: true,
+        tdo: payload
+      }
+    };
+  },
+  [UPDATE_TDO_FAILURE](state, { meta: { error, widgetId } }) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: !(warn || error) || null,
-        error: error ? errorMessage : null,
-        warning: warn || null,
-        tdo: payload
+        success: false,
+        error: error ? errorMessage : null
       }
     };
   },
@@ -637,10 +655,15 @@ export const loadTdoRequest = (widgetId, tdoId, callback) => ({
   meta: { widgetId }
 });
 
-export const loadTdoSuccess = (widgetId, result, { warn, error }) => ({
+export const loadTdoSuccess = (widgetId, result) => ({
   type: LOAD_TDO_SUCCESS,
   payload: result,
-  meta: { warn, error, widgetId }
+  meta: { widgetId }
+});
+
+export const loadTdoFailure = (widgetId, { error }) => ({
+  type: LOAD_TDO_FAILURE,
+  meta: { error, widgetId }
 });
 
 export const updateTdoRequest = (
@@ -654,10 +677,15 @@ export const updateTdoRequest = (
   meta: { widgetId }
 });
 
-export const updateTdoSuccess = (widgetId, result, { warn, error }) => ({
+export const updateTdoSuccess = (widgetId, result) => ({
   type: UPDATE_TDO_SUCCESS,
   payload: result,
-  meta: { warn, error, widgetId }
+  meta: { widgetId }
+});
+
+export const updateTdoFailure = (widgetId, { error }) => ({
+  type: UPDATE_TDO_FAILURE,
+  meta: { error, widgetId }
 });
 
 export const loadTdoContentTemplatesSuccess = (
