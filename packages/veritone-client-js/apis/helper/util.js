@@ -1,15 +1,15 @@
 export function mapObject(obj, fn) {
-	let result = {};
+  let result = {};
 
-	Object.keys(obj).forEach(k => {
-		result[k] = fn(obj[k], k, obj);
-	});
+  Object.keys(obj).forEach(k => {
+    result[k] = fn(obj[k], k, obj);
+  });
 
-	return result;
+  return result;
 }
 
 export function last(array = []) {
-	return array[array.length - 1];
+  return array[array.length - 1];
 }
 
 export function noop() {}

@@ -3,7 +3,7 @@
   "version": "1.0.5",
   "description": "",
   "main": "dist/bundle-browser.js",
-	"module": "index.js",
+  "module": "index.js",
   "scripts": {
     "build": "yarn run build:node && yarn run build:browser",
     "build:node": "NODE_ENV=production BUILD_ENV=node webpack",
@@ -12,12 +12,12 @@
     "test:watch": "NODE_ENV=test mocha --watch",
     "coverage": "NODE_ENV=test nyc mocha",
     "lint": "eslint --ext .js ./  --max-warnings 0",
-    "format": "prettier --single-quote --use-tabs --write \"./**/*.js\"",
+    "format": "prettier --config ../../.prettierrc --write \"./apis/**/*.js\"",
     "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
   "homepage": "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-client-js",
-	"repository": "https://github.com/veritone/veritone-sdk.git",
-	"keywords": ["veritone"],
+  "repository": "https://github.com/veritone/veritone-sdk.git",
+  "keywords": ["veritone"],
   "dependencies": {
     "async": "^2.5.0",
     "axios": "^0.16.2",
