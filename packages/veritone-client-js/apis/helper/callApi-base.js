@@ -116,10 +116,8 @@ export default function callApiFactory(doRequest) {
                         Authorization: `Bearer ${neededToken}`
                       }
                     : {},
-                  {
-                    ...headers,
-                    ...options.headers
-                  }
+                  headers,
+                  options.headers
                 ),
                 options
               },
