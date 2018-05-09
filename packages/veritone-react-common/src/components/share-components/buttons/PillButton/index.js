@@ -44,7 +44,7 @@ export default class PillButton extends Component {
     return (
       <div
         className={classNames(defaultStyles.pillButton, className, {
-          [defaultStyles.highlight]: highlight
+          [defaultStyles.highlighted]: highlight
         })}
         style={style}
         onClick={this.handleButtonClicked}
