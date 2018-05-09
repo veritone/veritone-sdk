@@ -76,19 +76,6 @@ process.on('unhandledRejection', error => {
 			);
 		});
 
-		it('requires an auth token', function() {
-			expect(() =>
-				callApi({ baseUrl: 'http://www.test.com', apiToken }, () => {})
-			).to.throw();
-
-			expect(() =>
-				callApi(
-					{ baseUrl: 'http://www.test.com', token: sessionToken, apiToken },
-					() => {}
-				)
-			).not.to.throw();
-		});
-
 		it('defaults version to 1', function() {
 			const scope = nock(apiBaseUri)
 				.get('/test-path')
@@ -418,6 +405,27 @@ process.on('unhandledRejection', error => {
 					_requestOptions: {
 						tokenType: 'session'
 					}
+				})
+			);
+
+			return requestFn().then(() => scope.done());
+		});
+
+		it('should not include an auth token if none was configured', function() {
+			const scope = nock(apiBaseUri, {
+				badheaders: ['authorization']
+			})
+				.get('/test-path')
+				.reply(200, 'ok');
+
+			const requestFn = callApi(
+				{
+					baseUrl: unversionedBaseUrl
+				},
+				() => ({
+					method: 'get',
+					path: 'test-path',
+					_requestOptions: {}
 				})
 			);
 

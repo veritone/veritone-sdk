@@ -110,11 +110,17 @@ export default function callApiFactory(doRequest) {
 								method,
 								data,
 								query,
-								headers: {
-									Authorization: `Bearer ${neededToken}`,
-									...headers,
-									...options.headers
-								},
+								headers: Object.assign(
+									neededToken
+										? {
+												Authorization: `Bearer ${neededToken}`
+										  }
+										: {},
+									{
+										...headers,
+										...options.headers
+									}
+								),
 								options
 							},
 							cb
@@ -146,16 +152,16 @@ function validateTokens({ token, apiToken, oauthToken }) {
 		}
 	}
 
-	if ((!token && !apiToken) || (token && !apiToken) || (apiToken && !token)) {
-		throw new Error(`callApi requires both token and apiToken.`);
+	if (token) {
+		if (typeof token !== 'string') {
+			throw new Error(`token must be a string`);
+		}
 	}
 
-	if (typeof token !== 'string') {
-		throw new Error(`token must be a string`);
-	}
-
-	if (typeof apiToken !== 'string') {
-		throw new Error(`apiToken must be a string`);
+	if (apiToken) {
+		if (typeof apiToken !== 'string') {
+			throw new Error(`apiToken must be a string`);
+		}
 	}
 }
 
