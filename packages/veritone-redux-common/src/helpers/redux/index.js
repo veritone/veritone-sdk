@@ -1,3 +1,19 @@
+import {
+  promiseMiddleware as main,
+  WAIT_FOR_ACTION,
+  ERROR_ACTION,
+  CALLBACK_ARGUMENT,
+  CALLBACK_ERROR_ARGUMENT
+} from './promiseMiddleware';
+
+export const promiseMiddleware = {
+  main,
+  WAIT_FOR_ACTION,
+  ERROR_ACTION,
+  CALLBACK_ARGUMENT,
+  CALLBACK_ERROR_ARGUMENT
+};
+
 export function createReducer(initialState, handlers) {
   return function reducer(state = initialState, action) {
     if (handlers.hasOwnProperty(action.type)) {
