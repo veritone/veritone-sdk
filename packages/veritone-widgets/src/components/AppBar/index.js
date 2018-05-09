@@ -42,4 +42,5 @@ class AppBar extends React.Component {
   }
 }
 
-export default widget(AppBar);
+const AppBarWidget = widget(AppBar);
+export { AppBar as default, AppBarWidget }

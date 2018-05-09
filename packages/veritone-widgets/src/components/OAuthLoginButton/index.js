@@ -75,4 +75,5 @@ class OAuthLoginButton extends React.Component {
   }
 }
 
-export default widget(OAuthLoginButton);
+const OAuthLoginButtonWidget = widget(OAuthLoginButton);
+export { OAuthLoginButton as default, OAuthLoginButtonWidget };

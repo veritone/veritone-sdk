@@ -3,7 +3,10 @@ import { noop } from 'lodash';
 import { bool, func, oneOf, number, string } from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
-import { FilePicker, ProgressDialog } from 'veritone-react-common';
+import {
+  FilePicker as FilePickerComponent,
+  ProgressDialog
+} from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/filePicker';
 import widget from '../../shared/widget';
@@ -26,7 +29,7 @@ import widget from '../../shared/widget';
   null,
   { withRef: true }
 )
-class FilePickerWidget extends React.Component {
+class FilePicker extends React.Component {
   static propTypes = {
     _widgetId: string.isRequired,
     open: bool,
@@ -64,7 +67,7 @@ class FilePickerWidget extends React.Component {
   _renderPickerDialog = () => {
     return (
       <Dialog open={this.props.open}>
-        <FilePicker
+        <FilePickerComponent
           {...this.props}
           onRequestClose={this.cancel}
           onPickFiles={this._onFilesSelected}
@@ -100,4 +103,5 @@ class FilePickerWidget extends React.Component {
   }
 }
 
-export default widget(FilePickerWidget);
+const FilePickerWidget = widget(FilePicker);
+export { FilePicker as default, FilePickerWidget };
