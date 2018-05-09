@@ -1,0 +1,25 @@
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.context {
+    flex-direction: column;
+    text-align: center; 
+    > div {
+        display: flex;
+        justify-content: center; 
+    }
+}
+
+.avatarHolder {
+    margin-top: 35px;
+}
+
+.greeting {
+    margin-top: 13px;
+    font-family: Roboto;
+    font-size: 14px;
+    line-height: 16px;
+    color: rgba(0,0,0,0.54);
+}

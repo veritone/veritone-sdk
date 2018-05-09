@@ -1,0 +1,30 @@
+.header {
+    width: 100%;
+    height: 64px;
+    padding: 20px 0;
+    background-color: #37474F;
+    display: flex;
+    flex-direction: row;
+}
+
+.iconHolder {
+    margin-left: 28px;
+    height: 24px;
+    width: 15px;
+    line-height: 24px;
+    i {
+        line-height: 26px;
+        font-size: 24px;
+        color: rgb(163, 170, 174)
+    }
+}
+
+.label {
+    margin-left: 40px;
+    height: 24px;
+    color: #FFFFFF;
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+}
