@@ -1,23 +1,23 @@
 {
-	"rules": {
-		"no-console": 0
-	},
-	"env": {
-		"es6": true,
-		"node": true,
-		"browser": true,
-		"mocha": true
-	},
-	"globals": {
-		"__BROWSER__": true
-	},
-	"parserOptions": {
-		"ecmaVersion": 8,
-		"sourceType": "module",
-		"ecmaFeatures": {
-			"impliedStrict": true,
-			"experimentalObjectRestSpread": true
-		}
-	},
-	"extends": ["eslint:recommended", "prettier"]
+  "rules": {
+    "no-console": 0
+  },
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true,
+    "mocha": true
+  },
+  "globals": {
+    "__BROWSER__": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "impliedStrict": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "extends": ["eslint:recommended", "prettier"]
 }
