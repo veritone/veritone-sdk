@@ -8,5 +8,6 @@ storiesOf('UserProfile', module).add('Base', () => (
         firstName="brian"
         lastName="gilkey"
         email="bgilkey@veritone.com"
+        passwordLastUpdated="2017-04-07T22:10:30.230Z"
     />
 ));

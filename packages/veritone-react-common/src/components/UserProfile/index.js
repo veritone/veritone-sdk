@@ -1,9 +1,10 @@
 import React from 'react';
 import cx from 'classnames';
 import { string, func } from 'prop-types';
-import Header from './HeaderBar/Header'
-import Profile from './Profile/Profile'
-import PersonalInfo from './PersonalInfo/PersonalInfo'
+import Header from './HeaderBar/Header';
+import Profile from './Profile/Profile';
+import PersonalInfo from './PersonalInfo/PersonalInfo';
+import Password from './Password/Password';
 
 import classes from './styles.scss';
 
@@ -11,7 +12,8 @@ export default class UserProfile extends React.Component {
     static propTypes = {
         firstName: string,
         lastName: string,
-        email: string,
+        email: string.isRequired,
+        passwordLastUpdated: string
 
     }
     language = {
@@ -31,6 +33,10 @@ export default class UserProfile extends React.Component {
             <PersonalInfo
                 firstName = {this.props.firstName} 
                 lastName = {this.props.lastName} 
+                email = {this.props.email}
+            />
+            <Password
+                lastUpdatedRaw = {this.props.passwordLastUpdated}
             />
         </div>
     )
