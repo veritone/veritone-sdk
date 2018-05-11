@@ -23,6 +23,22 @@ class MediaInfoPanel extends Component {
       features: objectOf(any),
       applicationIds: arrayOf(string)
     }).isRequired,
+    contextMenuExtensions: shape({
+      mentions: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      ),
+      tdos: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      )
+    }),
     onClose: func,
     onSaveMetadata: func
   };
@@ -188,6 +204,10 @@ class MediaInfoPanel extends Component {
     this.target1 = node;
   };
 
+  handleContextMenuClick = cme => {
+    window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
+  };
+
   render() {
     const {
       isOpen,
@@ -260,6 +280,21 @@ class MediaInfoPanel extends Component {
                               Download
                             </MenuItem>
                           )}
+                          {this.props.contextMenuExtensions &&
+                            this.props.contextMenuExtensions.tdos.map(
+                              tdoMenu => (
+                                <MenuItem
+                                  key={tdoMenu.id}
+                                  classes={{ root: styles.headerMenuItem }}
+                                  // eslint-disable-next-line
+                                  onClick={() =>
+                                    this.handleContextMenuClick(tdoMenu)
+                                  }
+                                >
+                                  {tdoMenu.label}
+                                </MenuItem>
+                              )
+                            )}
                         </MenuList>
                       </Paper>
                     </Grow>

@@ -23,6 +23,7 @@ export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export video from './components/Video';
+export MediaPlayer from './components/Video/MediaPlayer';
 export AppContainer from './components/AppContainer';
 
 export RefreshButton from './components/RefreshButton';
@@ -58,5 +59,5 @@ export SourceManagementOverview from './components/SourceManagement/';
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
-
 export SDOTable from './components/SDOTable';
+export SearchPill from './components/SearchPill';

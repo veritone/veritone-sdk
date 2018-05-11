@@ -18,6 +18,18 @@ $label-width: 150px;
   .formSectionRow {
     padding-top: 15px;
   }
+
+  label,
+  span,
+  input,
+  .periodSelect {
+    font-weight: inherit;
+    font-size: 0.8rem !important;
+  }
+
+  .periodSelect > div > div {
+    padding-top: 8px;
+  }
 }
 
 .repeatContainer {
@@ -91,6 +103,7 @@ $label-width: 150px;
 
   .leftInput input {
     text-align: right;
+    height: inherit;
   }
 }
 

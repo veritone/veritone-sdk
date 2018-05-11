@@ -7,8 +7,12 @@
   flex: row nowrap;
 
   .time {
-    font-weight: bold;
     padding: 20px 20px 20px 0;
+    color: $dark-black;
+    font-family: Roboto;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
   }
 
   .content {

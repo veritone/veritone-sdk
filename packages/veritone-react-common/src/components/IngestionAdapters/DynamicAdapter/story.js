@@ -173,6 +173,8 @@ const SOURCES = [
           },
           required: ['youtubeChannelUrl']
         },
+        majorVersion: 1,
+        minorVersion: 0,
         validActions: ['view', 'edit', 'deactivate', 'delete'],
         status: 'published'
       }
@@ -241,6 +243,8 @@ const SOURCES = [
           },
           required: ['youtubeChannelUrl']
         },
+        majorVersion: 1,
+        minorVersion: 0,
         validActions: ['view', 'edit', 'deactivate', 'delete'],
         status: 'published'
       }

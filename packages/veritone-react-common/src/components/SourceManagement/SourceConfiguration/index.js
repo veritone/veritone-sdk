@@ -1,5 +1,6 @@
 import React from 'react';
 import { any, arrayOf, objectOf, func } from 'prop-types';
+import { get } from 'lodash';
 
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
@@ -68,12 +69,18 @@ export default class SourceConfiguration extends React.Component {
   handleSourceChange = sourceTypeIndex => {
     if (sourceTypeIndex !== this.state.sourceTypeIndex) {
       const currentFields = {};
-      const properties = this.props.sourceTypes[sourceTypeIndex].sourceSchema
-        .definition.properties;
+      const properties = get(this.props.sourceTypes, [
+        sourceTypeIndex,
+        'sourceSchema',
+        'definition',
+        'properties'
+      ]);
 
-      Object.keys(properties).forEach(field => {
-        currentFields[field] = '';
-      });
+      if (properties) {
+        Object.keys(properties).forEach(field => {
+          currentFields[field] = '';
+        });
+      }
 
       return this.props.onInputChange({
         sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,

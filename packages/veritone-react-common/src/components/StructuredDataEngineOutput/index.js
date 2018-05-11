@@ -42,7 +42,7 @@ class StructuredDataEngineOutput extends Component {
         sourceEngineName: string
       })
     ),
-    schemaById: objectOf(any),
+    schemasById: objectOf(any),
     selectedEngineId: string,
     onEngineChange: func,
     className: string,
@@ -108,7 +108,7 @@ class StructuredDataEngineOutput extends Component {
   };
 
   getSchemaName = schemaId => {
-    const schema = this.props.schemaById[schemaId];
+    const schema = this.props.schemasById[schemaId];
     if (get(schema, 'dataRegistry.name')) {
       return get(schema, 'dataRegistry.name');
     }
@@ -137,7 +137,7 @@ class StructuredDataEngineOutput extends Component {
     const {
       className,
       engines,
-      schemaById,
+      schemasById,
       selectedEngineId,
       onExpandClicked
     } = this.props;
@@ -157,7 +157,7 @@ class StructuredDataEngineOutput extends Component {
           onEngineChange={this.handleEngineChange}
           onExpandClicked={onExpandClicked}
         >
-          {schemaById[selectedSchemaId] && (
+          {schemasById[selectedSchemaId] && (
             <Select
               value={selectedSchemaId}
               className={styles.schemaMenu}
@@ -187,11 +187,11 @@ class StructuredDataEngineOutput extends Component {
             </Select>
           )}
         </EngineOutputHeader>
-        {schemaById[selectedSchemaId] &&
+        {schemasById[selectedSchemaId] &&
           flattenStructuredData[selectedSchemaId] && (
             <SDOTable
               data={flattenStructuredData[selectedSchemaId]}
-              schema={schemaById[selectedSchemaId].definition.properties}
+              schema={schemasById[selectedSchemaId].definition.properties}
             />
           )}
       </div>

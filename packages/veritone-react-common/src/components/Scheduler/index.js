@@ -1,6 +1,12 @@
 import React from 'react';
-import { oneOf, func } from 'prop-types';
+import {
+  withTheme,
+  createMuiTheme,
+  MuiThemeProvider
+} from 'material-ui/styles';
+import { oneOf, func, number, string, arrayOf } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
+import blue from 'material-ui/colors/blue';
 import {
   noop,
   pick,
@@ -10,14 +16,14 @@ import {
   omit,
   difference,
   keys,
-  constant
+  constant,
+  includes
 } from 'lodash';
 import { withProps } from 'recompose';
 import { FormControlLabel } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 import { subDays } from 'date-fns';
 
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import RadioGroup from '../formComponents/RadioGroup';
 import styles from './styles.scss';
 import ImmediateSection from './ImmediateSection';
@@ -27,7 +33,6 @@ import ContinuousSection from './ContinuousSection';
 
 const initDate = new Date();
 
-@withMuiThemeProvider
 @withProps(props => ({
   initialValues: {
     // This provides defaults to the form. Shallow merged with
@@ -82,15 +87,21 @@ const initDate = new Date();
   form: 'scheduler'
 })
 @formValues('scheduleType')
-export default class Scheduler extends React.Component {
+class Scheduler extends React.Component {
   static propTypes = {
     scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once']).isRequired,
     onSubmit: func, // user-provided callback for result values
-    handleSubmit: func.isRequired // provided by redux-form
+    handleSubmit: func.isRequired, // provided by redux-form
+    supportedScheduleTypes: arrayOf(string),
+    relativeSize: number, // optional - used to scale text sizes from hosting app
+    color: string
   };
 
   static defaultProps = {
-    onSubmit: noop
+    onSubmit: noop,
+    relativeSize: 14,
+    color: '#2196F3',
+    supportedScheduleTypes: ['Any']
   };
 
   prepareResultData(formResult) {
@@ -128,6 +139,30 @@ export default class Scheduler extends React.Component {
     this.props.onSubmit(this.prepareResultData(vals));
   };
 
+  getTheme = ({ color, relativeSize }) => {
+    const theme = createMuiTheme({
+      typography: {
+        htmlFontSize: relativeSize || 13,
+        subheading: {
+          fontSize: '1em'
+        }
+      },
+      palette: {
+        primary: {
+          light: blue[300],
+          main: blue[500],
+          dark: blue[700]
+        },
+        secondary: {
+          light: blue[300],
+          main: blue[500],
+          dark: blue[700]
+        }
+      }
+    });
+    return theme;
+  };
+
   render() {
     const ActiveSectionComponent = {
       Recurring: RecurringSection,
@@ -136,34 +171,86 @@ export default class Scheduler extends React.Component {
       Once: OnDemandSection
     }[this.props.scheduleType];
 
+    const RecurringSelection = (
+      <FormControlLabel
+        key="recurring"
+        value="Recurring"
+        control={<Radio />}
+        label="Recurring"
+      />
+    );
+
+    const ContinuousSelection = (
+      <FormControlLabel
+        key="continuous"
+        value="Continuous"
+        control={<Radio />}
+        label="Continuous"
+      />
+    );
+
+    const ImmediateSelection = (
+      <FormControlLabel
+        key="immediate"
+        value="Now"
+        control={<Radio />}
+        label="Immediate"
+      />
+    );
+
+    const OnDemandSelection = (
+      <FormControlLabel
+        key="ondemand"
+        value="Once"
+        control={<Radio />}
+        label="On Demand"
+      />
+    );
+
+    const ScheduleTypeSelection = {
+      Recurring: RecurringSelection,
+      Continuous: ContinuousSelection,
+      Now: ImmediateSelection,
+      Once: OnDemandSelection
+    };
+
+    let ScheduleSelections;
+    if (includes(this.props.supportedScheduleTypes, 'Any')) {
+      ScheduleSelections = [
+        RecurringSelection,
+        ContinuousSelection,
+        ImmediateSelection,
+        OnDemandSelection
+      ];
+    } else {
+      ScheduleSelections = [];
+      this.props.supportedScheduleTypes.forEach(type => {
+        if (ScheduleTypeSelection[type]) {
+          ScheduleSelections.push(ScheduleTypeSelection[type]);
+        }
+      });
+    }
+
     return (
-      <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
-        <Field
-          component={RadioGroup}
-          name="scheduleType"
-          className={styles.scheduleTypeContainer}
-        >
-          <FormControlLabel
-            value="Recurring"
-            control={<Radio />}
-            label="Recurring"
-          />
-          <FormControlLabel
-            value="Continuous"
-            control={<Radio />}
-            label="Continuous"
-          />
-          <FormControlLabel value="Now" control={<Radio />} label="Immediate" />
-          <FormControlLabel
-            value="Once"
-            control={<Radio />}
-            label="On Demand"
-          />
-        </Field>
-        <div className={styles.activeSectionContainer}>
-          <ActiveSectionComponent />
-        </div>
-      </Form>
+      <MuiThemeProvider
+        theme={this.getTheme({
+          color: this.props.color,
+          relativeSize: this.props.relativeSize
+        })}
+      >
+        <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
+          <Field
+            component={RadioGroup}
+            name="scheduleType"
+            className={styles.scheduleTypeContainer}
+          >
+            {ScheduleSelections}
+          </Field>
+          <div className={styles.activeSectionContainer}>
+            <ActiveSectionComponent />
+          </div>
+        </Form>
+      </MuiThemeProvider>
     );
   }
 }
@@ -197,3 +284,5 @@ function filterRecurringPeriods(result, recurringPeriod) {
 
   return result;
 }
+
+export default withTheme()(Scheduler);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { pick, has, noop } from 'lodash';
+import { has, noop } from 'lodash';
 import Nullstate from './Nullstate';
 import SourceManagementForm from './SourceManagementForm';
 import SourceTileView from './SourceTileView';
@@ -141,6 +141,44 @@ const dataSchemas = {
                     },
                     username: {
                       type: 'string'
+                    },
+                    testArray: {
+                      type: 'array',
+                      title: 'Array Test',
+                      items: {
+                        type: 'number',
+                        title: 'item title'
+                      }
+                    },
+                    testObject: {
+                      type: 'object',
+                      title: 'Object Test',
+                      properties: {
+                        objectString: {
+                          type: 'string',
+                          title: 'Object String'
+                        },
+                        objectNumber: {
+                          type: 'number',
+                          title: 'Object Number'
+                        }
+                      }
+                    },
+                    number: {
+                      type: 'number',
+                      title: 'Number'
+                    },
+                    geoLocation: {
+                      type: 'geoPoint',
+                      title: 'geoLocation'
+                    },
+                    trueOrFalse: {
+                      type: 'boolean',
+                      title: 'Boolean'
+                    },
+                    datetimeEnd: {
+                      type: 'dateTime',
+                      title: 'datetimeEnd'
                     }
                   }
                 }
@@ -248,6 +286,10 @@ const initialTemplates = createInitialTemplates(
   templateSource.data.source.contentTemplates
 );
 
+function displayForm(form) {
+  console.log(form);
+}
+
 storiesOf('SourceManagement', module)
   .add('Nullstate', () => <Nullstate />)
   .add('TileView', () => <SourceTileView sources={sourceResults} />)
@@ -257,29 +299,19 @@ storiesOf('SourceManagement', module)
         sourceTypes={sourceTypes.sourceTypes.records}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={noop}
+        onSubmit={displayForm}
         onClose={noop}
       />
     );
   })
   .add('Edit Source', () => {
-    const sourceConfig = {
-      ...pick(sourceResult.data.source, [
-        'name',
-        'thumbnailUrl',
-        'details',
-        'sourceTypeId',
-        'sourceType'
-      ])
-    };
-
     return (
       <SourceManagementForm
         sourceTypes={sourceTypes.sourceTypes.records}
-        source={sourceConfig}
+        source={sourceResult.data.source}
         templateData={templateData}
         initialTemplates={initialTemplates}
-        onSubmit={noop}
+        onSubmit={displayForm}
         onClose={noop}
       />
     );
@@ -288,6 +320,6 @@ storiesOf('SourceManagement', module)
     <ContentTemplateForm
       templateData={templateData}
       initialTemplates={initialTemplates}
-      onSubmit={noop}
+      onSubmit={displayForm}
     />
   ));

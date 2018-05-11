@@ -11,6 +11,7 @@ import { capitalize, omit, noop } from 'lodash';
 export default class SourceTileView extends React.Component {
   static propTypes = {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
+    onSelectSource: func,
     onSelectMenuItem: func,
     paginate: bool
   };
@@ -55,6 +56,7 @@ export default class SourceTileView extends React.Component {
       <TableComp
         rowGetter={this.getSourceData}
         rowCount={this.props.sources.length}
+        onCellClick={this.props.onSelectSource}
         rowHeight={48}
         {...tableProps}
       >
@@ -82,9 +84,9 @@ export default class SourceTileView extends React.Component {
         />
         <MenuColumn
           id="menu"
-          dataKey="sourceType.sourceSchema.validActions"
+          actions={['Edit', 'Delete']}
+          protectedActions={['Delete']}
           onSelectItem={this.props.onSelectMenuItem}
-          excludeActions={['view', 'publish', 'deactivate']}
         />
       </TableComp>
     );

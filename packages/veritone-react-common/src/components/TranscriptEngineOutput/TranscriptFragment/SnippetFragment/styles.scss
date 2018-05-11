@@ -3,9 +3,14 @@
 .transcriptSnippet {
   margin-right: 1px;
   outline: none;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 300;
 
   &:hover {
-    border-bottom: 2px solid $blue-1;
+    color: $blue-1;
   }
 }
 
@@ -18,6 +23,5 @@
 }
 
 .highlight {
-  color: $light-black;
-  font-weight: bolder;
+  font-weight: 500;
 }
