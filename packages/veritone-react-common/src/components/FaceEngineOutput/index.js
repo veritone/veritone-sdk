@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import Tabs, { Tab } from 'material-ui/Tabs';
-import Icon from 'material-ui/Icon';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import { find, isObject, isEmpty, get } from 'lodash';
@@ -19,13 +16,12 @@ import {
 import cx from 'classnames';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import noAvatar from 'images/no-avatar.png';
 import EngineOutputHeader from '../EngineOutputHeader';
-import NoFacesFound from './NoFacesFound';
 import FaceGrid from './FaceGrid';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
+import FacesByLibrary from './FacesByLibrary';
 
 import styles from './styles.scss';
 
@@ -46,12 +42,12 @@ class FaceEngineOutput extends Component {
         )
       })
     ).isRequired,
-    libraries: arrayOf(
-      shape({
-        id: string,
-        name: string
-      })
-    ).isRequired,
+    // libraries: arrayOf(
+    //   shape({
+    //     id: string,
+    //     name: string
+    //   })
+    // ).isRequired,
     entities: arrayOf(
       shape({
         id: string.isRequired,
@@ -100,14 +96,13 @@ class FaceEngineOutput extends Component {
   componentWillMount() {
     this.processFaces(
       this.props.data,
-      this.props.libraries,
       this.props.entities
     );
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.entities || nextProps.libraries || nextProps.data) {
-      this.processFaces(nextProps.data, nextProps.libraries, nextProps.entities);
+    if (nextProps.entities || nextProps.data) {
+      this.processFaces(nextProps.data, nextProps.entities);
     }
   }
 
@@ -151,7 +146,7 @@ class FaceEngineOutput extends Component {
     };
   };
 
-  processFaces = (faceData, libraries, entities) => {
+  processFaces = (faceData, entities) => {
     const detectedFaceObjects = [];
     const recognizedEntityObjectMap = {};
     if (isEmpty(faceData)) {
@@ -168,19 +163,22 @@ class FaceEngineOutput extends Component {
 
     const secondMap = {};
     const entitiesByLibrary = {};
+
     faceSeries.forEach(faceObj => {
       const entity = find(entities, { id: faceObj.object.entityId });
-      if (entity && entity.name && libraries.length) {
-        const library = find(libraries, { id: entity.libraryId });
-        let recognizedEntityObj = {
+      if (entity && entity.name && entities.length) {
+        // const library = find(entities, { id: entity.libraryId });
+        const libraryEntity = find(entities, { libraryId: entity.libraryId });
+        const recognizedEntityObj = {
           entityId: entity.id,
-          libraryId: library.id,
-          libraryName: library.name,
+          libraryId: libraryEntity.libraryId,
+          // libraryName: libraryEntity.name,
+          libraryName: libraryEntity.library.name,
           fullName: entity.name,
           entity: {
             ...entity,
-            libraryId: library.id,
-            libraryName: library.name
+            libraryId: libraryEntity.libraryId,
+            libraryName: libraryEntity.library.name
           },
           profileImage: entity.profileImageUrl,
           count: 1,
@@ -194,6 +192,7 @@ class FaceEngineOutput extends Component {
           ],
           stopTimeMs: faceObj.stopTimeMs
         };
+
         if (recognizedEntityObjectMap[recognizedEntityObj.entityId]) {
           recognizedEntityObjectMap[
             entity.id
@@ -248,6 +247,11 @@ class FaceEngineOutput extends Component {
       }
     });
 
+    console.log('detectedFaceObjects:', detectedFaceObjects)
+    console.log('recognizedEntityObj:', recognizedEntityObjectMap);
+    console.log('entitiesByLibrary:', entitiesByLibrary);
+    console.log('framesBySeconds:', secondMap);
+
     this.setState({
       detectedFaces: detectedFaceObjects,
       recognizedEntityObjectMap: recognizedEntityObjectMap,
@@ -272,13 +276,11 @@ class FaceEngineOutput extends Component {
 
   handleEntitySelect = entityId => evt => {
     if (this.state.recognizedEntityObjectMap[entityId]) {
-      this.setState(prevState => {
-        return {
-          selectedEntity: {
-            ...prevState.recognizedEntityObjectMap[entityId]
-          }
-        };
-      });
+      this.setState(prevState => ({
+        selectedEntity: {
+          ...prevState.recognizedEntityObjectMap[entityId]
+        }
+      }));
     }
   };
 
@@ -296,7 +298,7 @@ class FaceEngineOutput extends Component {
   };
 
   render() {
-    let {
+    const {
       enableEditMode,
       onAddNewEntity,
       entitySearchResults,
@@ -311,7 +313,7 @@ class FaceEngineOutput extends Component {
       onEngineChange,
       onExpandClicked
     } = this.props;
-    let { viewMode } = this.state;
+    const { viewMode } = this.state;
 
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -363,7 +365,8 @@ class FaceEngineOutput extends Component {
         </Tabs>
         {this.state.activeTab === 'faceRecognition' && (
           <div className={styles.faceTabBody}>
-            {this.state.selectedEntity && (
+            {this.state.selectedEntity
+              ?
               <EntityInformation
                 entity={this.state.selectedEntity.entity}
                 count={this.state.selectedEntity.count}
@@ -371,93 +374,15 @@ class FaceEngineOutput extends Component {
                 onBackClicked={this.removeSelectedEntity}
                 onOccurrenceClicked={onFaceOccurrenceClicked}
               />
-            )}
-            {viewMode === 'summary' &&
-              !this.state.selectedEntity && (
-                <div>
-                  {isEmpty(this.state.entitiesByLibrary) ? (
-                    <NoFacesFound />
-                  ) : (
-                    <div>
-                      {Object.keys(this.state.entitiesByLibrary).map(
-                        (key, index) => {
-                          return (
-                            <div key={'faces-by-libary-' + key}>
-                              <div className={styles.libraryName}>
-                                <Icon
-                                  className={cx(
-                                    styles.libraryIcon,
-                                    'icon-library-app'
-                                  )}
-                                />
-                                <span>
-                                  Library:{' '}
-                                  <strong>
-                                    {
-                                      this.state.entitiesByLibrary[key]
-                                        .libraryName
-                                    }
-                                  </strong>
-                                </span>
-                              </div>
-                              <div className={styles.entityCountContainer}>
-                                {this.state.entitiesByLibrary[key].faces.map(
-                                  (face, index) => {
-                                    return (
-                                      <Chip
-                                        key={'face-' + face.entityId}
-                                        className={styles.entityCountChip}
-                                        label={
-                                          <span>
-                                            {face.fullName}{' '}
-                                            <a>({face.count})</a>
-                                          </span>
-                                        }
-                                        avatar={
-                                          <Avatar
-                                            className={styles.faceAvatar}
-                                            src={
-                                              face.profileImage
-                                                ? face.profileImage
-                                                : noAvatar
-                                            }
-                                          />
-                                        }
-                                        onClick={this.handleEntitySelect(
-                                          face.entityId
-                                        )}
-                                      />
-                                    );
-                                  }
-                                )}
-                              </div>
-                            </div>
-                          );
-                        }
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            {viewMode === 'byFrame' &&
-              !this.state.selectedEntity && (
-                <FacesByFrame
-                  currentMediaPlayerTime={currentMediaPlayerTime}
-                  recognizedEntityObjectMap={
-                    this.state.recognizedEntityObjectMap
-                  }
-                  framesBySeconds={this.state.framesBySeconds}
-                  onSelectEntity={this.handleEntitySelect}
-                />
-              )}
-            {viewMode === 'byScene' &&
-              !this.state.selectedEntity && (
-                <FacesByScene
-                  currentMediaPlayerTime={currentMediaPlayerTime}
-                  recognizedEntityObjects={Object.values(this.state.recognizedEntityObjectMap)}
-                  onSelectEntity={this.handleEntitySelect}
-                />
-              )}
+              : <FaceEntitiesView
+                viewMode={viewMode}
+                entitiesByLibrary={this.state.entitiesByLibrary}
+                recognizedEntityObjectMap={this.state.recognizedEntityObjectMap}
+                currentMediaPlayerTime={currentMediaPlayerTime}
+                framesBySeconds={this.state.framesBySeconds}
+                onSelectEntity={this.handleEntitySelect}
+              />
+            }
           </div>
         )}
         {this.state.activeTab === 'faceDetection' && (
@@ -479,5 +404,42 @@ class FaceEngineOutput extends Component {
     );
   }
 }
+
+export const FaceEntitiesView = ({
+  viewMode,
+  entitiesByLibrary,
+  currentMediaPlayerTime,
+  recognizedEntityObjectMap,
+  framesBySeconds,
+  onSelectEntity
+}) => {
+  if (viewMode === 'summary') {
+    return (
+      <FacesByLibrary
+        faceEntityLibraries={entitiesByLibrary}
+        onSelectEntity={onSelectEntity}
+      />
+    )
+  } else if (viewMode === 'byFrame') {
+    return (
+      <FacesByFrame
+        currentMediaPlayerTime={currentMediaPlayerTime}
+        recognizedEntityObjectMap={recognizedEntityObjectMap}
+        framesBySeconds={framesBySeconds}
+        onSelectEntity={onSelectEntity}
+      />
+    )
+  } else if (viewMode === 'byScene') {
+    return (
+      <FacesByScene
+        currentMediaPlayerTime={currentMediaPlayerTime}
+        recognizedEntityObjects={Object.values(recognizedEntityObjectMap)}
+        onSelectEntity={onSelectEntity}
+      />
+    );
+  }
+
+  return;
+};
 
 export default FaceEngineOutput;

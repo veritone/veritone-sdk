@@ -13,7 +13,7 @@ export default function callGraphQLApi({
       operationName
     }),
     headers: {
-      Authorization: `bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   }).then(r => r.json());

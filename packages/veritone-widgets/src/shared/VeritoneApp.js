@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom';
 import { isFunction } from 'lodash';
 import { Provider } from 'react-redux';
 
-import { modules } from 'veritone-redux-common';
+import { modules, util } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
 import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
+const Sagas = util.reactReduxSaga.Sagas;
 
 class _VeritoneApp {
   _store = configureStore();
@@ -88,6 +89,7 @@ class _VeritoneApp {
 
     ReactDOM.render(
       <Provider store={this._store}>
+        <Sagas middleware={this._store.sagaMiddleware}>
         <div>
           {appModule.widgets(this._store.getState()).map(w => {
             if (!w._elId) {
@@ -113,6 +115,7 @@ class _VeritoneApp {
             }
           })}
         </div>
+        </Sagas>
       </Provider>,
       this._containerEl
     );

@@ -1,67 +1,54 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { util } from 'veritone-redux-common';
 
-import * as mediaDetails from 'redux/modules/mediaDetails';
-import rootSaga from 'redux/modules/mediaDetails/saga';
-
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Icon from 'material-ui/Icon';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
-import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
-import { find, isObject, isEmpty, get } from 'lodash';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
+import { find, isObject, isEmpty, get, noop, omit, head } from 'lodash';
 import {
   shape,
   number,
   string,
   bool,
   arrayOf,
-  func
+  func,
+  objectOf,
+  oneOfType
 } from 'prop-types';
-import cx from 'classnames';
 
-import noAvatar from 'images/no-avatar.png';
-import EngineOutputHeader from '../EngineOutputHeader';
-import NoFacesFound from './NoFacesFound';
-import FaceGrid from './FaceGrid';
-import EntityInformation from './EntityInformation';
-import FacesByScene from './FacesByScene';
-import FacesByFrame from './FacesByFrame';
+import {
+  FaceEngineOutput
+} from 'veritone-react-common';
 
-import styles from './styles.scss';
+import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
+import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 
 const saga = util.reactReduxSaga.saga;
+import widget from '../../shared/widget';
 
 @saga(rootSaga)
 @connect(
-  state => ({
-    engineResults: mediaDetails.engineResultsByEngineId(state),
-    isFetchingEngineResults: mediaDetails.isFetchingEngineResults(state),
-    libraries: mediaDetails.libraries(state),
-    isFetchingLibraries: mediaDetails.isFetchingLibraries(state),
+  (state, { selectedEngineId }) => ({
+    // data: faceEngineOutput.engineResultsByEngineId(state, selectedEngineId),
+    // entities: faceEngineOutput.libraryEntities(state),
+    libraries: faceEngineOutput.libraries(state),
+    isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
+    isFetchingLibraryEntities: faceEngineOutput.isFetchingLibraryEntities(state),
+    isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state)
   }),
-  { createNewEntity: mediaDetails.createNewEntity },
+  { fetchLibraries: faceEngineOutput.fetchLibraries },
   null,
   { withRef: true }
 )
-export default class FaceEngineOutput extends Component {
+class FaceEngineOutputContainer extends Component {
   static propTypes = {
-    data: arrayOf(
-      shape({
-        series: arrayOf(
-          shape({
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            object: shape({
-              label: string,
-              uri: string
-            })
-          })
-        )
-      })
-    ).isRequired,
     tdo: shape({
       id: string,
       details: shape({
@@ -78,13 +65,41 @@ export default class FaceEngineOutput extends Component {
       security: shape({
         global: bool
       })
-    }),
+    }).isRequired,
     engines: arrayOf(
       shape({
         id: string.isRequired,
         name: string.isRequired
       })
     ).isRequired,
+    selectedEngineId: string,
+    data: arrayOf(
+      shape({
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            object: shape({
+              label: string,
+              uri: string
+            })
+          })
+        )
+      })
+    ),
+    entities: arrayOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired,
+        libraryId: string.isRequired,
+        library: shape({
+          id: string,
+          name: string
+        }),
+        profileImageUrl: string,
+        jsondata: objectOf(oneOfType([string, number]))
+      })
+    ),
     entitySearchResults: arrayOf(
       shape({
         name: string.isRequired,
@@ -92,13 +107,6 @@ export default class FaceEngineOutput extends Component {
         profileImageUrl: string
       })
     ),
-    libraries: arrayOf(
-      shape({
-        id: string,
-        name: string
-      })
-    ).isRequired,
-    selectedEngineId: string,
     onEngineChange: func,
     enableEditMode: bool,
     currentMediaPlayerTime: number,
@@ -112,224 +120,63 @@ export default class FaceEngineOutput extends Component {
   };
 
   state = {
-    activeTab: 'faceRecognition',
-    detectedFaces: [],
-    recognizedEntityObjects: [],
-    recognizedEntityObjectMap: {},
-    framesBySeconds: {},
     selectedEntity: null,
-    viewMode: 'summary',
     dialogOpen: false,
     newEntity: {}
   };
 
-  componentWillMount() {
-    this.processFaces(
-      this.props.data,
-      this.props.libraries,
-      this.props.entities
-    );
-  }
-
   componentWillReceiveProps(nextProps) {
-    if (nextProps.entities || nextProps.libraries || nextProps.data) {
-      this.processFaces(nextProps.data, nextProps.libraries, nextProps.entities);
+    if (!this.props.libraries.length && nextProps.libraries.length) {
+      this.setNewEntityLibrary(head(nextProps.libraries).id)
     }
   }
 
-  getFrameNamespaceForMatch = faceObj => {
-    if (faceObj.object.boundingPoly) {
-      return JSON.stringify(faceObj.object.boundingPoly);
-    }
-  };
+  handleAddNewEntity = (faceEntity) => {
+    console.log('faceEntity:', faceEntity)
+    this.props.fetchLibraries({
+      libraryType: 'people'
+    });
+    this.openDialog();
+  }
 
-  // Gets list of nearest seconds which the face/entity appears in (MS)
-  getArrayOfSecondSpots = timeSlot => {
-    let secondSpots = [];
-    if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
-      return secondSpots;
-    }
-    let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
-    while (timeCursor <= timeSlot.stopTimeMs) {
-      secondSpots.push(timeCursor);
-      timeCursor += 1000;
-    }
-    return secondSpots;
-  };
+  handleNewEntityLibraryChange = (e) => {
+    this.setNewEntityLibrary(e.target.value);
+  }
 
-  setRecognizedEntityObj = (recognizedEntityObj, faceObj) => {
-    return {
-      ...recognizedEntityObj,
-      count: recognizedEntityObj.count + 1,
-      timeSlots: [
-        ...recognizedEntityObj.timeSlots,
-        {
-          stopTimeMs: faceObj.stopTimeMs,
-          startTimeMs: faceObj.startTimeMs,
-          originalImage: faceObj.object.uri,
-          confidence: faceObj.object.confidence
-        }
-      ],
-      stopTimeMs:
-        recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
-          ? faceObj.stopTimeMs
-          : recognizedEntityObj.stopTimeMs
-    };
-  };
-
-  processFaces = (faceData, libraries, entities) => {
-    const detectedFaceObjects = [];
-    const recognizedEntityObjectMap = {};
-    if (isEmpty(faceData)) {
-      return;
-    }
-
-    const faceSeries = faceData.reduce((accumulator, faceSeries) => {
-      if (!isEmpty(faceSeries.series)) {
-        return [...accumulator, ...faceSeries.series];
+  setNewEntityLibrary = (libraryId) => {
+    this.setState(prevState => ({
+      newEntity: {
+        ...prevState.newEntity,
+        library: libraryId
       }
+    }));
+  }
 
-      return accumulator;
-    }, []);
-
-    const secondMap = {};
-    const entitiesByLibrary = {};
-    faceSeries.forEach(faceObj => {
-      const entity = find(entities, { id: faceObj.object.entityId });
-      if (entity && entity.name && libraries.length) {
-        const library = find(libraries, { id: entity.libraryId });
-        let recognizedEntityObj = {
-          entityId: entity.id,
-          libraryId: library.id,
-          libraryName: library.name,
-          fullName: entity.name,
-          entity: {
-            ...entity,
-            libraryId: library.id,
-            libraryName: library.name
-          },
-          profileImage: entity.profileImageUrl,
-          count: 1,
-          timeSlots: [
-            {
-              stopTimeMs: faceObj.stopTimeMs,
-              startTimeMs: faceObj.startTimeMs,
-              originalImage: faceObj.object.uri,
-              confidence: faceObj.object.confidence
-            }
-          ],
-          stopTimeMs: faceObj.stopTimeMs
-        };
-        if (recognizedEntityObjectMap[recognizedEntityObj.entityId]) {
-          recognizedEntityObjectMap[
-            entity.id
-          ] = this.setRecognizedEntityObj(
-            recognizedEntityObjectMap[recognizedEntityObj.entityId],
-            faceObj
-          );
-        } else {
-          recognizedEntityObjectMap[recognizedEntityObj.entityId] = recognizedEntityObj;
-          entitiesByLibrary[recognizedEntityObj.libraryId] = {
-            libraryId: recognizedEntityObj.libraryId,
-            libraryName: recognizedEntityObj.libraryName,
-            faces: [
-              ...get(entitiesByLibrary[recognizedEntityObj.libraryId], 'faces', []),
-              recognizedEntityObj
-            ]
-          }
-        }
-
-        // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
-        const matchNamespace = this.getFrameNamespaceForMatch(faceObj);
-        if (matchNamespace) {
-          const secondSpots = this.getArrayOfSecondSpots(faceObj);
-          secondSpots.forEach(second => {
-            if (!secondMap[second]) {
-              secondMap[second] = {};
-            }
-            if (!secondMap[second][matchNamespace]) {
-              secondMap[second][matchNamespace] = {
-                startTimeMs: faceObj.startTimeMs,
-                stopTimeMs: faceObj.stopTimeMs,
-                originalImage: faceObj.object.uri,
-                entities: [],
-                boundingPoly: faceObj.object.boundingPoly
-              };
-            }
-
-            const match = {
-              confidence: faceObj.object.confidence,
-              entityId: faceObj.object.entityId
-            };
-
-            secondMap[second][matchNamespace].entities.push(match);
-
-            secondMap[second][matchNamespace].entities.sort((a, b) => {
-              return b.confidence - a.confidence;
-            });
-          });
-        }
-      } else if (!faceObj.entityId) {
-        detectedFaceObjects.push(faceObj);
+  setNewEntityName = (e) => {
+    e.persist();
+    this.setState(prevState => ({
+      newEntity: {
+        ...prevState.newEntity,
+        name: e.target.value
       }
-    });
+    }));
+  }
 
-    this.setState({
-      detectedFaces: detectedFaceObjects,
-      recognizedEntityObjectMap: recognizedEntityObjectMap,
-      entitiesByLibrary: entitiesByLibrary,
-      framesBySeconds: secondMap
-    });
-  };
-
-  handleTabChange = (event, activeTab) => {
-    if (activeTab !== this.state.activeTab) {
-      this.setState({ activeTab });
-    }
-  };
-
-  getLibraryById = id => {
-    return this.props.libraries.find(library => library.id == id);
-  };
-
-  getEntityById = (library, entityId) => {
-    return library.entities.find(e => e.entityId === entityId);
-  };
-
-  handleEntitySelect = entityId => evt => {
-    if (this.state.recognizedEntityObjectMap[entityId]) {
-      this.setState(prevState => {
-        return {
-          selectedEntity: {
-            ...prevState.recognizedEntityObjectMap[entityId]
-          }
-        };
-      });
-    }
-  };
-
-  handleViewModeChange = evt => {
-    this.setState({
-      viewMode: evt.target.value,
-      selectedEntity: null
-    });
-  };
-
-  removeSelectedEntity = () => {
-    this.setState({
-      selectedEntity: null
-    });
-  };
+  openDialog = () => {
+    this.setState({ dialogOpen: true });
+  }
 
   closeDialog = () => {
     this.setState({ dialogOpen: false });
   }
 
   saveNewEntity = () => {
-    return this.props.createNewEntity(this.state.newEntity);
+    console.log('this.state.newEntity:', this.state.newEntity)
+    // return this.props.createNewEntity(this.state.newEntity);
   }
 
   renderNewEntityModal = () => {
+    const { isFetchingLibraries, libraries } = this.props;
     return (
       <Dialog
         open={this.state.dialogOpen}
@@ -348,18 +195,28 @@ export default class FaceEngineOutput extends Component {
             id="name"
             label="Name"
             fullWidth
+            required
+            value={this.state.newEntity.name || ''}
+            onChange={this.setNewEntityName}
           />
           <TextField
             id="select-library"
             select
             label="Choose Library"
-            value={this.state.currency}
-            onChange={this.handleChange('currency')}
+            value={this.state.newEntity.library || 'Loading...'}
+              // libraries.length
+              //   ? (this.state.newEntity.library || head(libraries).id)
+              //   : isFetchingLibraries ? 'Loading...' : ''
+            onChange={this.handleNewEntityLibraryChange}
             margin="dense"
+            fullWidth
+            required
           >
-            {this.props.isFetchingLibraries
-              ? 'Loading...'
-              : this.props.libraries.map(library => (
+            {isFetchingLibraries
+              ? <MenuItem value={'Loading...'}>
+                  {'Loading...'}
+                </MenuItem>
+              : libraries.map(library => (
                 <MenuItem key={library.id} value={library.id}>
                   {library.name}
                 </MenuItem>
@@ -380,196 +237,28 @@ export default class FaceEngineOutput extends Component {
   }
 
   render() {
-    const {
-      enableEditMode,
-      onAddNewEntity,
-      entitySearchResults,
-      className,
-      onFaceOccurrenceClicked,
-      currentMediaPlayerTime,
-      onRemoveFaceDetection,
-      onEditFaceDetection,
-      onSearchForEntities,
-      engines,
-      selectedEngineId,
-      onEngineChange,
-      onExpandClicked
-    } = this.props;
+    const faceEngineProps = omit(this.props, [
+      'isFetchingEngineResults',
+      'isFetchingLibraryEntities',
+      'tdo'
+    ]);
 
-    const { viewMode } = this.state;
+    if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
+      return null;
+    }
 
     return (
-      <div className={cx(styles.faceEngineOutput, className)}>
-        <EngineOutputHeader
-          title="Faces"
-          engines={engines}
-          selectedEngineId={selectedEngineId}
-          onEngineChange={onEngineChange}
-          onExpandClicked={onExpandClicked}
-        >
-          <Select
-            autoWidth
-            value={viewMode}
-            onChange={this.handleViewModeChange}
-            className={cx(styles.displayOptions)}
-            MenuProps={{
-              anchorOrigin: {
-                horizontal: 'center',
-                vertical: 'bottom'
-              },
-              transformOrigin: {
-                horizontal: 'center'
-              },
-              getContentAnchorEl: null
-            }}
-          >
-            <MenuItem value="summary" className={cx(styles.view)}>
-              Summary
-            </MenuItem>
-            <MenuItem value="byFrame">By Frame</MenuItem>
-            <MenuItem value="byScene">By Scene</MenuItem>
-          </Select>
-        </EngineOutputHeader>
-        <Tabs
-          value={this.state.activeTab}
-          onChange={this.handleTabChange}
-          indicatorColor="primary"
-        >
-          <Tab
-            classes={{ root: styles.faceTab }}
-            label="Face Recognition"
-            value="faceRecognition"
-          />
-          <Tab
-            classes={{ root: styles.faceTab }}
-            label="Face Detection"
-            value="faceDetection"
-          />
-        </Tabs>
-        {this.state.activeTab === 'faceRecognition' && (
-          <div className={styles.faceTabBody}>
-            {this.state.selectedEntity
-              ?
-                <EntityInformation
-                  entity={this.state.selectedEntity.entity}
-                  count={this.state.selectedEntity.count}
-                  timeSlots={this.state.selectedEntity.timeSlots}
-                  onBackClicked={this.removeSelectedEntity}
-                  onOccurrenceClicked={onFaceOccurrenceClicked}
-                />
-              : <FaceEntitiesView
-                  viewMode={viewMode}
-                  recognizedEntityObjectMap={this.state.recognizedEntityObjectMap}
-                  currentMediaPlayerTime={currentMediaPlayerTime}
-                  framesBySeconds={this.state.framesBySeconds}
-                  onSelectEntity={this.handleEntitySelect}
-                />
-            }
-          </div>
-        )}
-        {this.state.activeTab === 'faceDetection' && (
-          <div className={styles.faceTabBody}>
-            <FaceGrid
-              faces={this.state.detectedFaces}
-              enableEditMode={enableEditMode}
-              viewMode={viewMode}
-              onAddNewEntity={onAddNewEntity}
-              entitySearchResults={entitySearchResults}
-              onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-              onRemoveFaceDetection={onRemoveFaceDetection}
-              onEditFaceDetection={onEditFaceDetection}
-              onSearchForEntities={onSearchForEntities}
-            />
-          </div>
-        )}
+      <Fragment>
+        <FaceEngineOutput
+          {...faceEngineProps}
+          onAddNewEntity={this.handleAddNewEntity}
+          enableEditMode
+        />
         {this.renderNewEntityModal()}
-      </div>
+      </Fragment>
     );
   }
 }
 
-export const FaceEntitiesView = ({
-  viewMode,
-  entitiesByLibrary,
-  currentMediaPlayerTime,
-  recognizedEntityObjectMap,
-  framesBySeconds,
-  handleEntitySelect
-}) => {
-  if (viewMode === 'summary') {
-    return (
-      isEmpty(entitiesByLibrary)
-        ? <NoFacesFound />
-        : <FacesByLibrary faceEntityLibraries={entitiesByLibrary} />
-    )
-  } else if (viewMode === 'byFrame') {
-    return (
-      <FacesByFrame
-        currentMediaPlayerTime={currentMediaPlayerTime}
-        recognizedEntityObjectMap={recognizedEntityObjectMap}
-        framesBySeconds={framesBySeconds}
-        onSelectEntity={handleEntitySelect}
-      />
-    )
-  } else if (viewMode === 'byScene') {
-    return (
-      <FacesByScene
-        currentMediaPlayerTime={currentMediaPlayerTime}
-        recognizedEntityObjects={Object.values(recognizedEntityObjectMap)}
-        onSelectEntity={handleEntitySelect}
-      />
-    );
-  }
-
-  return;
-};
-
-const FacesByLibrary = ({ faceEntityLibraries, handleEntitySelect }) => {
-  return (
-    <div>
-      {Object.keys(faceEntityLibraries).map((key, index) => (
-        <div key={`faces-by-library-${key}`}>
-          <div className={styles.libraryName}>
-            <Icon
-              className={cx(styles.libraryIcon, 'icon-library-app')}
-            />
-            <span>
-              {`Library: `}
-              <strong>
-                {faceEntityLibraries[key].libraryName}
-              </strong>
-            </span>
-          </div>
-          <div className={styles.entityCountContainer}>
-            {faceEntityLibraries[key].faces.map((face, index) => (
-              <Chip
-                key={`face-${face.entityId}`}
-                className={styles.entityCountChip}
-                label={
-                  <span>
-                    {`${face.fullName} `}
-                    <a>({face.count})</a>
-                  </span>
-                }
-                avatar={
-                  <Avatar
-                    className={styles.faceAvatar}
-                    src={face.profileImage || noAvatar}
-                  />
-                }
-                onClick={handleEntitySelect(face.entityId)}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-class NewFaceEntity extends React.Component {
-
-  render() {
-    
-  }
-}
+// export default widget(FaceEngineOutputContainer);
+export default FaceEngineOutputContainer;

@@ -56,3 +56,9 @@ export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
 
 export SDOTable from './components/SDOTable';
+
+export EntityInformation from './components/FaceEngineOutput/EntityInformation'
+export FacesByLibrary from './components/FaceEngineOutput/FacesByLibrary'
+export FaceGrid from './components/FaceEngineOutput/FaceGrid'
+export FacesByFrame from './components/FaceEngineOutput/FacesByFrame'
+export FacesByScene from './components/FaceEngineOutput/FacesByScene'

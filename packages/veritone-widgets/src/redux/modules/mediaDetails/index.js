@@ -89,18 +89,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [FETCHING_ENGINE_RESULTS](state, action) {
-    return {
-      ...state,
-      loadingEngineResults: true
-    }
-  },
-  [DONE_FETCHING_ENGINE_RESULTS](state, action) {
-    return {
-      ...state,
-      loadingEngineResults: false
-    }
-  },
   [LOAD_ENGINE_RESULTS](state, { payload, meta: { widgetId } }) {
     let resultRequests =
       state[widgetId].engineResultRequestsByEngineId[payload.engineId] || [];
