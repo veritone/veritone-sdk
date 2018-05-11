@@ -559,8 +559,8 @@ export const getEngineResultRequestsByEngineId = (state, widgetId, engineId) =>
   get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
   [];
 export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
-export const getTdoMetadata = (state, widgetId) => 
-  get(local(state), [widgetId, 'tod', 'details']);
+export const getTdoMetadata = (state, widgetId) =>
+  get(local(state), [widgetId, 'tdo', 'details']);
 export const getSelectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
 export const getSelectedEngineId = (state, widgetId) =>
