@@ -27,12 +27,12 @@
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
     "react-transition-group": "1.x",
-    "recompose": "^0.26.0",
     "recharts": "^1.0.0-beta.10",
+    "recompose": "^0.26.0",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
     "shaka-player": "^2.3.5",
-    "video-react": "https://github.com/JordanBelford/video-react#build"
+    "video-react": "^0.10.5"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",

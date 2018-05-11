@@ -306,10 +306,12 @@ export default class SentimentEngineOutput extends Component {
                 dataKey="sentiment"
                 stroke="url(#splitColor)"
                 fill="url(#splitColor)"
+                isAnimationActive={false}
               />
 
               {/* Draw media player time */}
-              <ReferenceLine x={referenceValue} stroke="orange" />
+              {referenceValue > 0 &&
+                <ReferenceLine x={referenceValue} stroke="orange" />}
             </AreaChart>
           </ResponsiveContainer>
         </div>

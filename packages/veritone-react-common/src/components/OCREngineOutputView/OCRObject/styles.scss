@@ -16,6 +16,11 @@
     background-color: $light-blue;
   }
 
+  &:hover {
+    cursor: pointer;
+    background-color: $grey-2;
+  }
+
   .ocrText {
     color: $dark-black;
   }
