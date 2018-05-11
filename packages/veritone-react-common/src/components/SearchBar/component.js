@@ -250,7 +250,7 @@ export class SampleSearchBar extends React.Component {
     let libraries = [];
     let getEntity = null;
     try {
-      auth = await this.getAuth();
+      auth = this.props.auth ? this.props.auth : await this.getAuth();
       getEntity = this.getEntityFetch(auth);
       libraries = await this.getLibraries(auth);
     } catch (e) {
