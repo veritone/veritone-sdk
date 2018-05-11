@@ -64,6 +64,10 @@ class GeoPicker extends React.Component {
     defaultLongitude: -117.92
   };
 
+  componentWillUnmount() {
+    GoogleMapsLoader.release();
+  }
+
   googleMaps = null;
   _googleMapsMountPoint = null;
   _lastMarker = null;
@@ -71,6 +75,11 @@ class GeoPicker extends React.Component {
   drawingManager = null;
 
   mountGoogleMaps = google => {
+    // don't mount if it's already been unmounted
+    if (!this._googleMapsMountPoint) {
+      return;
+    }
+
     const MAP_OPTIONS = {
       zoom: this.props.defaultZoom,
       center: {
