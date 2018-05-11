@@ -143,7 +143,7 @@ class DynamicAdapter extends React.Component {
 }
 
 function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
-  return fields
+  return (fields || [])
     .map(field => {
       let inputId = field.name + 'DynamicField';
       let camelCasedFieldName = startCase(toLower(field.name));
