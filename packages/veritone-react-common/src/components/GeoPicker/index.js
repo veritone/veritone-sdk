@@ -15,9 +15,9 @@ import GoogleMapsLoader from 'google-maps';
 
 import styles from './styles.scss';
 
-/* eslint-disable no-undef*/
 const MARKER = 'marker';
 const CIRCLE = 'circle';
+const UNIT_OF_DISTANCE = 'm';
 
 class GeoPicker extends React.Component {
   static CIRCLE_OPTIONS = {
@@ -35,14 +35,71 @@ class GeoPicker extends React.Component {
     point: MARKER,
     radius: CIRCLE
   };
-  static UNIT_OF_DISTANCE = 'm';
+
+  static propTypes = {
+    gmapsAPIKey: string.isRequired,
+    defaultZoom: number,
+    defaultLatitude: number,
+    defaultLongitude: number,
+    geoType: oneOf(['point', 'radius']).isRequired,
+    location: oneOfType([
+      shape({
+        distance: number,
+        latitude: number,
+        longitude: number,
+        units: oneOf([UNIT_OF_DISTANCE])
+      }),
+      shape({
+        latitude: number,
+        longitude: number
+      })
+    ]),
+    readOnly: bool,
+    onSelectGeolocation: func
+  };
+
+  static defaultProps = {
+    defaultZoom: 14,
+    defaultLatitude: 33.62,
+    defaultLongitude: -117.92
+  };
 
   googleMaps = null;
   _googleMapsMountPoint = null;
   _lastMarker = null;
   _lastCircle = null;
+  drawingManager = null;
 
-  loadedGoogleMaps = () => {
+  mountGoogleMaps = google => {
+    const MAP_OPTIONS = {
+      zoom: this.props.defaultZoom,
+      center: {
+        lng: this.props.defaultLongitude,
+        lat: this.props.defaultLatitude
+      }
+    };
+
+    this.googleMaps = new google.maps.Map(
+      this._googleMapsMountPoint,
+      MAP_OPTIONS
+    );
+
+    // enable input if not read only
+    if (!this.props.readOnly) {
+      this.drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: GeoPicker.GEOINPUT_OPTIONS[this.props.geoType],
+        drawingControl: true,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.BOTTOM_CENTER,
+          drawingModes: [GeoPicker.GEOINPUT_OPTIONS[this.props.geoType]]
+        },
+        circleOptions: GeoPicker.CIRCLE_OPTIONS
+      });
+
+      this.drawingManager.setMap(this.googleMaps);
+    }
+
+    // render the point or distance
     if (GeoPicker.GEOINPUT_OPTIONS[this.props.geoType] === MARKER) {
       // single point
       if (this.props.location) {
@@ -60,11 +117,13 @@ class GeoPicker extends React.Component {
       }
 
       if (!this.props.readOnly) {
-        google.maps.event.addListener(this.drawingManager, 'markercomplete', this.onDrawMarker);
+        google.maps.event.addListener(
+          this.drawingManager,
+          'markercomplete',
+          this.onDrawMarker
+        );
       }
-    } else if (
-      GeoPicker.GEOINPUT_OPTIONS[this.props.geoType] === CIRCLE
-    ) {
+    } else if (GeoPicker.GEOINPUT_OPTIONS[this.props.geoType] === CIRCLE) {
       // radius based distance
       if (this.props.location) {
         this._lastCircle = new google.maps.Circle({
@@ -81,41 +140,13 @@ class GeoPicker extends React.Component {
       }
 
       if (!this.props.readOnly) {
-        google.maps.event.addListener(this.drawingManager, 'circlecomplete', this.onDrawCircle);
+        google.maps.event.addListener(
+          this.drawingManager,
+          'circlecomplete',
+          this.onDrawCircle
+        );
       }
     }
-  };
-
-  mountGoogleMaps = () => {
-    const MAP_OPTIONS = {
-      zoom: 14,
-      center: { lng: -117.92, lat: 33.62 }
-    };
-
-    this.googleMaps = new google.maps.Map(
-      this._googleMapsMountPoint,
-      MAP_OPTIONS
-    );
-
-    if (!this.props.readOnly) {
-      this.drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: GeoPicker.GEOINPUT_OPTIONS[this.props.geoType],
-        drawingControl: true,
-        drawingControlOptions: {
-          position: google.maps.ControlPosition.BOTTOM_CENTER,
-          drawingModes: [GeoPicker.GEOINPUT_OPTIONS[this.props.geoType]]
-        },
-        circleOptions: GeoPicker.CIRCLE_OPTIONS
-      });
-
-      this.drawingManager.setMap(this.googleMaps);
-    }
-
-    google.maps.event.addDomListener(
-      window,
-      'load',
-      this.loadedGoogleMaps
-    );
   };
 
   clearDraw = () => {
@@ -167,7 +198,10 @@ class GeoPicker extends React.Component {
 
   render() {
     return (
-      <div ref={this.loadGoogleMaps} style={ {width: "100%", height: "100%", display: 'flex' } }>
+      <div
+        ref={this.loadGoogleMaps}
+        style={{ width: '100%', height: '100%', display: 'flex' }}
+      >
         <div className={styles.loading_container}>
           <CircularProgress
             className={styles.loading_spinner}
@@ -182,25 +216,5 @@ class GeoPicker extends React.Component {
     );
   }
 }
-/* eslint-enable no-undef*/
-
-GeoPicker.propTypes = {
-  gmapsAPIKey: string.isRequired,
-  geoType: oneOf(['point', 'radius']).isRequired,
-  location: oneOfType([
-    shape({
-      distance: number,
-      latitude: number,
-      longitude: number,
-      units: oneOf([GeoPicker.UNIT_OF_DISTANCE])
-    }),
-    shape({
-      latitude: number,
-      longitude: number
-    })
-  ]),
-  readOnly: bool,
-  onSelectGeolocation: func
-};
 
 export default GeoPicker;
