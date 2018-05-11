@@ -34,10 +34,10 @@ class _VeritoneApp {
     // make sure it rejects on bad auth
     if (sessionToken) {
       this._store.dispatch(authModule.setSessionToken(sessionToken));
-    }
-
-    if (OAuthToken) {
+    } else if (OAuthToken) {
       this._store.dispatch(authModule.setOAuthToken(OAuthToken));
+    } else {
+      this._store.dispatch(authModule.checkAuthNoToken());
     }
   }
 

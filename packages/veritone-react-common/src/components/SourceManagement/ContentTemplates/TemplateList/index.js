@@ -39,6 +39,7 @@ export default class TemplateList extends React.Component {
               className={styles.trashIcon}
               onClick={this.removeTemplate(schemaId)}
               aria-label="trash"
+              disableRipple
             >
               <Icon className={'icon-trash'} />
             </IconButton>
@@ -47,6 +48,7 @@ export default class TemplateList extends React.Component {
               className={styles.trashIcon}
               onClick={this.addTemplate(schemaId)}
               aria-label="add"
+              disableRipple
             >
               <Icon className={'icon-zoom-in'} />
             </IconButton>
@@ -61,7 +63,8 @@ export default class TemplateList extends React.Component {
       <div className={styles['template-list']}>
         <div className={styles.title}>Content Templates</div>
         <div className={styles.description}>
-          Add more information to the files you ingest to help organize, search and filter quickly.
+          Add more information to the files you ingest to help organize, search
+          and filter quickly.
         </div>
         {this.buildTemplateList()}
       </div>

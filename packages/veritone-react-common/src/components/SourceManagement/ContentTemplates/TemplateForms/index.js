@@ -1,6 +1,9 @@
 import React from 'react';
 import { any, objectOf, func } from 'prop-types';
-import { isObject, compact } from 'lodash';
+import { isObject, compact, cloneDeep, isArray } from 'lodash';
+import AddIcon from 'material-ui-icons/Add';
+import ClearIcon from 'material-ui-icons/Clear';
+import IconButton from 'material-ui/IconButton';
 
 import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
 import FormCard from '../FormCard';
@@ -19,17 +22,40 @@ export default class TemplateForms extends React.Component {
   };
 
   handleFieldChange = (schemaId, fieldId, type) => event => {
-    // fieldId can be object prop accessors. eg. 'wind.windSpeed' or 'wind.windDegree'
+    const GEO_REGEX = /^-{0,1}[0-9]+\.[0-9]+, -{0,1}[0-9]+\.[0-9]+$/;
+    // fieldId can be object/array prop accessors. eg. 'wind.windSpeed' or 'tags.0'
     let currentValue; // Maintain root object reference
     const fields = fieldId.split('.');
     const rootObject = fields[0];
+    let eventValue;
     let pointer;
+
+    if (type.includes('boolean')) {
+      eventValue = event.target.checked;
+    } else if (type.includes('dateTime')) {
+      eventValue = event;
+    } else {
+      eventValue = event.target.value;
+    }
+
+    if (type.includes('geoPoint')) {
+      if (!GEO_REGEX.test(eventValue)) {
+        eventValue = '0.0, 0.0';
+      }
+    }
+
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
-      currentValue = Object.assign(
-        {},
-        this.props.templates[schemaId].data[rootObject]
-      );
+      if (!!parseInt(objectTraverse[0]) || objectTraverse[0] === '0') {
+        currentValue = cloneDeep(
+          this.props.templates[schemaId].data[rootObject] || ['']
+        );
+      } else {
+        currentValue = Object.assign(
+          {},
+          this.props.templates[schemaId].data[rootObject]
+        );
+      }
       pointer = currentValue;
       objectTraverse.forEach((field, index) => {
         // Initialize any undefined nested objects
@@ -38,14 +64,14 @@ export default class TemplateForms extends React.Component {
           pointer = pointer[field];
         } else {
           if (event.target.value) {
-            pointer[field] = this.parseType(type, event.target.value);
+            pointer[field] = this.parseType(type, eventValue);
           } else {
             delete pointer[field];
           }
         }
       });
     } else {
-      currentValue = this.parseType(type, event.target.value);
+      currentValue = this.parseType(type, eventValue);
     }
     return this.props.onTemplateDetailsChange(
       schemaId,
@@ -54,15 +80,34 @@ export default class TemplateForms extends React.Component {
     );
   };
 
-  parseType = (type, value) => {
-    if (type.includes('number')) {
-      return parseFloat(value);
-    } else if (type.includes('integer')) {
-      return parseInt(value);
-    } else if (type.includes('boolean')) {
-      return value === 'true';
+  handleArrayElementAdd = (schemaId, fieldId) => $event => {
+    let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
+    if (isArray(curArray)) {
+      curArray.push('');
+      this.props.onTemplateDetailsChange(schemaId, fieldId, curArray);
     }
-    return value;
+  };
+
+  handleArrayElementRemove = (schemaId, fieldId, index) => $event => {
+    let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
+    if (isArray(curArray)) {
+      curArray.splice(index, 1);
+      this.props.onTemplateDetailsChange(schemaId, fieldId, curArray);
+    }
+  };
+
+  parseType = (type, value) => {
+    let returnValue = value;
+    if (type.includes('number')) {
+      returnValue = parseFloat(value);
+    } else if (type.includes('integer')) {
+      returnValue = parseInt(value);
+    } else if (type.includes('boolean')) {
+      return value;
+    } else if (type.includes('dateTime')) {
+      returnValue = value.toISOString();
+    }
+    return returnValue || '';
   };
 
   render() {
@@ -74,22 +119,22 @@ export default class TemplateForms extends React.Component {
           const schemaProps = templates[schemaId].definition.properties;
           const formFields = Object.keys(schemaProps).map(
             (schemaProp, propIdx) => {
-              const type = schemaProps[schemaProp].type;
+              const { type, items } = schemaProps[schemaProp];
 
               return (
                 type && (
                   <BuildFormElements
                     fieldId={`${schemaProp}-${schemaId}`}
                     schemaId={schemaId}
+                    schemaProp={schemaProp}
                     type={type}
+                    items={items}
                     value={templates[schemaId].data[schemaProp]}
                     title={schemaProps[schemaProp].title || schemaProp}
                     objectProperties={schemaProps[schemaProp].properties}
-                    onChange={this.handleFieldChange(
-                      schemaId,
-                      schemaProp,
-                      type
-                    )}
+                    onChange={this.handleFieldChange}
+                    handleArrayElementAdd={this.handleArrayElementAdd}
+                    handleArrayElementRemove={this.handleArrayElementRemove}
                     key={schemaProp}
                   />
                 )
@@ -115,11 +160,16 @@ export default class TemplateForms extends React.Component {
 function BuildFormElements({
   fieldId,
   schemaId,
+  schemaProp,
   type,
+  items,
   title,
   value,
   objectProperties,
+  onChange,
   depth = 0,
+  handleArrayElementAdd,
+  handleArrayElementRemove,
   ...rest
 }) {
   if (!type) {
@@ -128,15 +178,61 @@ function BuildFormElements({
 
   let element;
 
-  if (!type.includes('object')) {
+  if (!type.includes('object') && !type.includes('array')) {
     element = (
       <SourceTypeField
         id={fieldId}
         type={type}
         title={title}
-        value={`${value}` || ''}
+        value={value || ''}
+        onChange={onChange(schemaId, schemaProp, type)}
         {...rest}
       />
+    );
+  }
+
+  if (type.includes('array')) {
+    element = (value || ['']).map((elem, index) => {
+      return (
+        <div
+          key={`${schemaProp}.${'containter' + index}`}
+          className={styles.arrayRow}
+        >
+          <BuildFormElements
+            {...rest}
+            fieldId={`${fieldId}.${index}`}
+            schemaId={schemaId}
+            schemaProp={`${schemaProp}.${index}`}
+            type={items.type}
+            value={elem}
+            title={`${items.title} ${index + 1}`}
+            objectProperties={items.properties}
+            depth={depth + 1}
+            onChange={onChange}
+            key={`${schemaProp}.${'buildform' + index}`}
+          />
+          {isArray(value) && value.length > 1 ? (
+            <div className={styles.arrayRemove}>
+              <IconButton
+                onClick={handleArrayElementRemove(schemaId, schemaProp, index)}
+              >
+                <ClearIcon />
+              </IconButton>
+            </div>
+          ) : null}
+        </div>
+      );
+    });
+    element = (
+      <div className={styles.insetSection}>
+        <span>{title}</span>
+        {element}
+        <div className={styles.arrayAdd}>
+          <IconButton onClick={handleArrayElementAdd(schemaId, schemaProp)}>
+            <AddIcon />
+          </IconButton>
+        </div>
+      </div>
     );
   }
 
@@ -147,17 +243,19 @@ function BuildFormElements({
           {...rest}
           fieldId={`${fieldId}.${objProp}`}
           schemaId={schemaId}
+          schemaProp={`${schemaProp}.${objProp}`}
           type={objectProperties[objProp].type}
           value={(value && value[objProp]) || ''}
           title={objectProperties[objProp].title || objProp}
           objectProperties={objectProperties[objProp].properties}
           depth={depth + 1}
+          onChange={onChange}
           key={objProp}
         />
       );
     });
     element = (
-      <div>
+      <div className={styles.insetSection}>
         <span>{title}</span>
         {element}
       </div>

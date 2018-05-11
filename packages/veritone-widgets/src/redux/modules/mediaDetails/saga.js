@@ -1,12 +1,12 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { get, uniq } from 'lodash';
+import { get, uniq, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import {
   LOAD_ENGINE_RESULTS,
-  LOAD_ENGINE_RESULTS_COMPLETE,
+  LOAD_ENGINE_RESULTS_SUCCESS,
   LOAD_TDO,
   UPDATE_TDO,
   LOAD_CONTENT_TEMPLATES,
@@ -20,17 +20,26 @@ import {
   REQUEST_ENTITIES,
   REQUEST_ENTITIES_SUCCESS,
   REQUEST_ENTITIES_FAILURE,
-  loadEngineCategoriesComplete,
+  REQUEST_SCHEMAS,
+  REQUEST_SCHEMAS_SUCCESS,
+  REQUEST_SCHEMAS_FAILURE,
+  loadEngineCategoriesSuccess,
+  loadEngineCategoriesFailure,
   loadEngineResultsRequest,
-  loadEngineResultsComplete,
+  loadEngineResultsSuccess,
+  loadEngineResultsFailure,
   loadTdoSuccess,
-  updateTdoComplete,
-  loadContentTemplatesComplete,
-  loadTdoContentTemplatesComplete,
+  loadTdoFailure,
+  updateTdoSuccess,
+  updateTdoFailure,
+  loadContentTemplatesSuccess,
+  loadContentTemplatesFailure,
+  loadTdoContentTemplatesSuccess,
+  loadTdoContentTemplatesFailure,
   selectEngineCategory,
   setEngineId,
-  tdo,
-  engineResultRequestsByEngineId
+  getTdo,
+  getEngineResultRequestsByEngineId
 } from '.';
 
 const tdoInfoQueryClause = `id
@@ -44,18 +53,17 @@ const tdoInfoQueryClause = `id
     primaryAsset(assetType: "media") {
       id
       uri
+    }
+    streams {
+      protocol
+      uri
     }`;
 
-function* finishLoadEngineCategories(widgetId, result, { warning, error }) {
-  yield put(loadEngineCategoriesComplete(widgetId, result, { warning, error }));
-}
-
-function* finishLoadTdo(widgetId, result, { warning, error }) {
-  yield put(loadTdoSuccess(widgetId, result, { warning, error }));
-}
-
-function* finishUpdateTdo(widgetId, result, { warning, error }) {
-  yield put(updateTdoComplete(widgetId, result, { warning, error }));
+function* finishLoadEngineCategories(widgetId, result, { error }) {
+  if (error) {
+    return yield put(loadEngineCategoriesFailure(widgetId, { error }));
+  }
+  return yield put(loadEngineCategoriesSuccess(widgetId, result));
 }
 
 function* loadTdoSaga(widgetId, tdoId) {
@@ -63,42 +71,20 @@ function* loadTdoSaga(widgetId, tdoId) {
       temporalDataObject(id: $tdoId) {
         ${tdoInfoQueryClause}
         # Run engines and categories query clauses
-        vtnStandardAssets: assets(limit:1000, type: "vtn-standard") {
+        engineRuns {
           records {
-            sourceData {
-              task {
-                engine {
-                  name
-                  id
-                  category {
-                    id
-                    name
-                    iconClass
-                    editable
-                    categoryType
-                  }
-                }
+            engine {
+              id
+              name
+              category {
+                id
+                name
+                categoryType
+                iconClass
+                editable
               }
             }
-          }
-        }
-        jobs {
-          records {
-            tasks (limit: 1000, status: complete ) {
-              records {
-                engine {
-                  id 
-                  name
-                  category {
-                    id
-                    name
-                    iconClass
-                    editable
-                    categoryType
-                  }
-                }
-              }
-            }
+            status
           }
         }
       }
@@ -121,123 +107,16 @@ function* loadTdoSaga(widgetId, tdoId) {
       token
     });
   } catch (error) {
-    return yield* finishLoadTdo(widgetId, null, { error });
+    return yield* loadTdoFailure(widgetId, { error });
   }
 
-  if (!response || !response.data || !response.data.temporalDataObject) {
-    console.warn('TemporalDataObject not found');
-    return yield* finishLoadTdo(widgetId, response.data.temporalDataObject, {
-      error: 'TemporalDataObject not found'
+  if (!get(response, 'data.temporalDataObject')) {
+    return yield* loadTdoFailure(widgetId, {
+      error: 'Media not found'
     });
   }
 
-  let engineCategories = [];
-  // array of categories that Media Details does not support
-  let unsupportedResultCategories = [
-    'conductor',
-    'reducer',
-    'thumbnail',
-    'transcode',
-    // TODO: remove these temporarily disabled categories
-    'fingerprint',
-    'geolocation',
-    'stationPlayout',
-    'music'
-  ];
-
-  const tdo = response.data.temporalDataObject;
-  const engineCategoryById = new Map();
-
-  // Engine and engineCategory extractor from task data
-  const extractEngineCategoriesFromTaskData = function(task) {
-    let engineCategory = engineCategoryById.get(task.engine.category.id);
-    if (!engineCategory) {
-      engineCategory = Object.assign({}, task.engine.category);
-      engineCategory.iconClass = engineCategory.iconClass.replace(
-        '-engine',
-        ''
-      );
-      engineCategory.engines = [];
-      engineCategoryById.set(engineCategory.id, engineCategory);
-    }
-
-    const engineFromTask = {};
-    engineFromTask.id = task.engine.id;
-    engineFromTask.name = task.engine.name;
-    engineFromTask.completedDateTime = Number(task.completedDateTime);
-
-    const filteredEngineIdx = engineCategory.engines.findIndex(
-      filteredEngine => filteredEngine.id === engineFromTask.id
-    );
-    if (filteredEngineIdx === -1) {
-      engineCategory.engines.push(engineFromTask);
-    }
-  };
-
-  // Convert data from tasks to EngineCategories
-  // {
-  //  name
-  //  id
-  //  editable
-  //  iconClass
-  //  categoryType
-  //  engines [{
-  //    id
-  //    name
-  //    completedDateTime
-  //    }
-  //  ]}
-  if (get(tdo, 'jobs.records', false)) {
-    tdo.jobs.records.forEach(job => {
-      const jobTasks = get(job, 'tasks.records', []);
-      jobTasks
-        .filter(
-          task =>
-            get(task, 'engine.category.iconClass', false) &&
-            !unsupportedResultCategories.some(
-              categoryType => categoryType === task.engine.category.categoryType
-            )
-        )
-        .forEach(task => extractEngineCategoriesFromTaskData(task));
-    });
-  }
-  if (get(tdo, 'vtnStandardAssets.records', false)) {
-    tdo.vtnStandardAssets.records
-      .filter(
-        asset =>
-          get(asset, 'sourceData.task.engine.category.iconClass', false) &&
-          !unsupportedResultCategories.some(
-            categoryType =>
-              categoryType ===
-              asset.sourceData.task.engine.category.categoryType
-          )
-      )
-      .forEach(asset =>
-        extractEngineCategoriesFromTaskData(asset.sourceData.task)
-      );
-  }
-
-  // list all categories
-  const filteredCategories = [];
-  const categoriesIterator = engineCategoryById.values();
-  let nextCategory = categoriesIterator.next();
-  while (!nextCategory.done) {
-    filteredCategories.push(nextCategory.value);
-    nextCategory = categoriesIterator.next();
-  }
-  engineCategories = filteredCategories;
-
-  // order categories first must go most frequently used (ask PMs), the rest - alphabetically
-  engineCategories.sort((category1, category2) => {
-    if (category1.categoryType < category2.categoryType) {
-      return -1;
-    }
-    if (category1.categoryType > category2.categoryType) {
-      return 1;
-    }
-    return 0;
-  });
-  const orderedCategoryTypes = [
+  const orderedSupportedCategoryTypes = [
     'transcript',
     'face',
     'object',
@@ -247,11 +126,57 @@ function* loadTdoSaga(widgetId, tdoId) {
     'translate',
     'sentiment',
     'geolocation',
-    'stationPlayout',
-    'sdo',
-    'music'
+    'correlation'
   ];
-  orderedCategoryTypes.reverse().forEach(orderedCategoryType => {
+
+  const tdo = response.data.temporalDataObject;
+  let engineCategories = [];
+
+  // Extract EngineCategories data from EngineRuns
+  if (get(tdo, 'engineRuns.records', false)) {
+    tdo.engineRuns.records
+      // filter those that have category, category icon, and are supported categories
+      .filter(
+        engineRun =>
+          get(engineRun, 'engine.category.iconClass.length') &&
+          orderedSupportedCategoryTypes.includes(
+            get(engineRun, 'engine.category.categoryType')
+          )
+      )
+      .forEach(engineRun => {
+        let engineCategory = engineCategories.find(
+          category => category.id === engineRun.engine.category.id
+        );
+        if (!engineCategory) {
+          engineCategory = Object.assign({}, engineRun.engine.category);
+          engineCategory.iconClass = engineCategory.iconClass.replace(
+            '-engine',
+            ''
+          );
+          if (engineCategory.categoryType === 'correlation') {
+            engineCategory.iconClass = 'icon-third-party-data';
+          }
+          engineCategory.engines = [];
+          engineCategories.push(engineCategory);
+        }
+        engineRun.engine.status = engineRun.status;
+        engineCategory.engines.push(engineRun.engine);
+      });
+  }
+
+  // order categories: first the most frequently used as defined by product, then the rest - alphabetically
+  engineCategories.sort((category1, category2) => {
+    // sort all alphabetically
+    if (category1.categoryType < category2.categoryType) {
+      return -1;
+    }
+    if (category1.categoryType > category2.categoryType) {
+      return 1;
+    }
+    return 0;
+  });
+  orderedSupportedCategoryTypes.reverse().forEach(orderedCategoryType => {
+    // reverse ordered and add to the result at the front
     const index = engineCategories.findIndex(
       category => category.categoryType === orderedCategoryType
     );
@@ -265,13 +190,9 @@ function* loadTdoSaga(widgetId, tdoId) {
   delete tdo.jobs;
   delete tdo.assets;
 
-  yield* finishLoadTdo(widgetId, tdo, {
-    warning: false,
-    error: false
-  });
+  yield put(loadTdoSuccess(widgetId, tdo));
 
   yield* finishLoadEngineCategories(widgetId, engineCategories, {
-    warning: false,
     error: false
   });
   if (engineCategories.length) {
@@ -306,21 +227,22 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
       token
     });
   } catch (error) {
-    return yield* finishUpdateTdo(widgetId, null, { error });
+    return yield* updateTdoFailure(widgetId, { error });
   }
 
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.warn(error));
+  if (!isEmpty(response.errors)) {
+    return yield* updateTdoFailure(widgetId, {
+      error: 'Error updating media.'
+    });
   }
 
-  if (!response || !response.data || !response.data.updateTDO) {
-    console.warn('TemporalDataObject not found after update');
+  if (!get(response, 'data.updateTDO')) {
+    return yield* updateTdoFailure(widgetId, {
+      error: 'TemporalDataObject not found after update'
+    });
   }
 
-  yield* finishUpdateTdo(widgetId, response.data.updateTDO, {
-    warning: false,
-    error: false
-  });
+  yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
 }
 
 function* loadEngineResultsSaga(
@@ -345,7 +267,7 @@ function* loadEngineResultsSaga(
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
   const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
   if (startOffsetMs) {
     variables.startOffsetMs = startOffsetMs;
@@ -362,13 +284,19 @@ function* loadEngineResultsSaga(
       token
     });
   } catch (error) {
-    yield put(loadEngineResultsComplete(null, { error, widgetId }));
+    return yield put(
+      loadEngineResultsFailure({
+        error,
+        startOffsetMs,
+        stopOffsetMs,
+        engineId,
+        widgetId
+      })
+    );
   }
 
   yield put(
-    loadEngineResultsComplete(response.data.engineResults.records, {
-      warning: false,
-      error: false,
+    loadEngineResultsSuccess(response.data.engineResults.records, {
       startOffsetMs,
       stopOffsetMs,
       widgetId
@@ -383,7 +311,6 @@ function* loadContentTemplates(widgetId) {
         id
         name
         description
-        source
         organizationId
         schemas {
           records {
@@ -412,21 +339,20 @@ function* loadContentTemplates(widgetId) {
       token
     });
   } catch (error) {
-    return yield put(loadContentTemplatesComplete(widgetId, null, { error }));
+    return yield put(loadContentTemplatesFailure(widgetId, { error }));
   }
 
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.warn(error));
+  if (!isEmpty(response.errors)) {
+    return yield put(
+      loadContentTemplatesFailure(widgetId, {
+        error: 'Error loading content templates.'
+      })
+    );
   }
 
   const result = get(response.data, 'dataRegistries.records', []);
 
-  yield put(
-    loadContentTemplatesComplete(widgetId, result, {
-      warning: false,
-      error: false
-    })
-  );
+  yield put(loadContentTemplatesSuccess(widgetId, result));
 }
 
 function* loadTdoContentTemplatesSaga(widgetId) {
@@ -458,7 +384,7 @@ function* loadTdoContentTemplatesSaga(widgetId) {
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
   const variables = { tdoId: requestTdo.id };
 
   let response;
@@ -470,23 +396,20 @@ function* loadTdoContentTemplatesSaga(widgetId) {
       variables
     });
   } catch (error) {
-    return yield put(
-      loadTdoContentTemplatesComplete(widgetId, null, { error })
-    );
+    return yield put(loadTdoContentTemplatesFailure(widgetId, { error }));
   }
 
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error => console.warn(error));
+  if (!isEmpty(response.errors)) {
+    return yield put(
+      loadTdoContentTemplatesFailure(widgetId, {
+        error: 'Error loading content templates for media.'
+      })
+    );
   }
 
   const result = get(response.data, 'temporalDataObject.assets', {});
 
-  yield put(
-    loadTdoContentTemplatesComplete(widgetId, result, {
-      warning: false,
-      error: false
-    })
-  );
+  yield put(loadTdoContentTemplatesSuccess(widgetId, result));
 }
 
 function* updateTdoContentTemplatesSaga(
@@ -508,10 +431,7 @@ function* updateTdoContentTemplatesSaga(
     response = { errors: [error] };
   }
 
-  if (response.errors && response.errors.length) {
-    response.errors.forEach(error =>
-      console.error('Failed to update content template: ' + error)
-    );
+  if (!isEmpty(response.errors)) {
     yield put({
       type: UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
       error: 'Error updating content templates.'
@@ -542,9 +462,6 @@ function* deleteAssetsSaga(assetIds) {
     ', '
   )}){ ${deleteAssetClauses.join(' ')} }`;
 
-  console.log('delete assets query');
-  console.log(deleteAssetsQuery);
-
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
@@ -562,7 +479,7 @@ function* deleteAssetsSaga(assetIds) {
   } catch (error) {
     errors.push(error);
   }
-  if (get(response, 'errors.length', 0)) {
+  if (!isEmpty(response.errors)) {
     response.errors.forEach(error => errors.push(error));
   }
 
@@ -578,7 +495,7 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
     return {};
   }
 
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
@@ -610,7 +527,7 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
     } catch (error) {
       errors.push(error);
     }
-    if (get(response, 'errors.length', 0)) {
+    if (!isEmpty(response.errors)) {
       response.errors.forEach(error => errors.push(error));
     }
   }
@@ -629,10 +546,6 @@ function* watchUpdateTdoContentTemplates() {
       contentTemplatesToCreate
     } = action.payload;
     const { widgetId } = action.meta;
-    console.log('Content templates to delete');
-    console.log(contentTemplatesToDelete);
-    console.log('Content templates to create');
-    console.log(contentTemplatesToCreate);
     yield call(
       updateTdoContentTemplatesSaga,
       widgetId,
@@ -753,10 +666,63 @@ function* fetchEntities(widgetId, entityIds) {
   }
 }
 
+function* fetchSchemas(widgetId, schemaIds) {
+  yield put({ type: REQUEST_SCHEMAS, meta: { widgetId } });
+  let schemaQueries = schemaIds.map((id, index) => {
+    return `
+      schema${index}: schema(id:"${id}") {
+        id
+        status
+        definition
+        majorVersion
+        minorVersion
+        validActions
+        dataRegistry {
+          name
+        }
+      }
+    `;
+  });
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: `query{${schemaQueries.join(' ')}}`,
+      token
+    });
+  } catch (error) {
+    yield put({
+      type: REQUEST_SCHEMAS_FAILURE,
+      error: 'Error fetching schemas from server.'
+    });
+  }
+
+  if (response.errors) {
+    yield put({
+      type: REQUEST_SCHEMAS_FAILURE,
+      error: 'Error thrown while fetching schemas',
+      meta: { widgetId }
+    });
+  } else {
+    yield put({
+      type: REQUEST_SCHEMAS_SUCCESS,
+      payload: response.data,
+      meta: { widgetId }
+    });
+  }
+}
+
 function* watchLoadEngineResultsComplete() {
-  yield takeEvery(LOAD_ENGINE_RESULTS_COMPLETE, function*(action) {
+  yield takeEvery(LOAD_ENGINE_RESULTS_SUCCESS, function*(action) {
     let libraryIds = [],
-      entityIds = [];
+      entityIds = [],
+      schemaIds = [];
     action.payload.forEach(jsonData => {
       jsonData.jsondata.series.forEach(s => {
         let entityId = get(s, 'object.entityId');
@@ -767,6 +733,12 @@ function* watchLoadEngineResultsComplete() {
         if (libraryId) {
           libraryIds.push(libraryId);
         }
+        let structuredData = get(s, 'structuredData');
+        if (structuredData) {
+          Object.keys(structuredData).forEach(schemaId =>
+            schemaIds.push(schemaId)
+          );
+        }
       });
     });
 
@@ -775,6 +747,9 @@ function* watchLoadEngineResultsComplete() {
         call(fetchLibraries, action.meta.widgetId, uniq(libraryIds)),
         call(fetchEntities, action.meta.widgetId, uniq(entityIds))
       ]);
+    }
+    if (schemaIds.length) {
+      yield call(fetchSchemas, action.meta.widgetId, uniq(schemaIds));
     }
   });
 }
@@ -812,7 +787,7 @@ function* watchSetEngineId() {
     }
 
     // TODO: Currently fetching the entire tdo assets. Will eventually use mediaplayer time etc to fetch the required data
-    const currentTdo = yield select(tdo, widgetId);
+    const currentTdo = yield select(getTdo, widgetId);
     const startOfTdo = new Date(currentTdo.startDateTime).getTime();
     const endOfTdo = new Date(currentTdo.stopDateTime).getTime();
     let startOffsetMs, stopOffsetMs;
@@ -824,7 +799,7 @@ function* watchSetEngineId() {
     }
 
     let engineResultRequests = yield select(
-      engineResultRequestsByEngineId,
+      getEngineResultRequestsByEngineId,
       widgetId,
       selectedEngineId
     );

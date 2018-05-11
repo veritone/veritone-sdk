@@ -1,21 +1,30 @@
 @import 'src/styles/modules/variables';
 
 .pillButton {
-  padding: 10px;
+  height: 40px;
+  padding: 12px;
   font-size: 14px;
+  color: $dark-black;
+  line-height: 16px;
   border-radius: 20px;
   border: 1px solid $grey-4;
   background-color: $fullWhite;
 
   display: inline-flex;
-  flex-flow: row nowrap;
+  //flex-flow: row nowrap;
 
   &:hover {
     cursor: pointer;
+    background-color: $grey-2;
+  }
+
+  &.highlighted {
+    border-color: $blue-1;
+    background-color: $light-blue;
   }
 
   .gap {
-    width: 1vw;
+    width: 5px;
     height: 1ex;
     display: inline-block;
   }
@@ -32,9 +41,4 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
-
-.highlight {
-  border-color: $blue-1;
-  background-color: #dbf0fe;
 }

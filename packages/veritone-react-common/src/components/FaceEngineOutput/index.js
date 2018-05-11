@@ -194,22 +194,26 @@ class FaceEngineOutput extends Component {
         };
 
         if (recognizedEntityObjectMap[recognizedEntityObj.entityId]) {
-          recognizedEntityObjectMap[
-            entity.id
-          ] = this.setRecognizedEntityObj(
+          recognizedEntityObjectMap[entity.id] = this.setRecognizedEntityObj(
             recognizedEntityObjectMap[recognizedEntityObj.entityId],
             faceObj
           );
         } else {
-          recognizedEntityObjectMap[recognizedEntityObj.entityId] = recognizedEntityObj;
+          recognizedEntityObjectMap[
+            recognizedEntityObj.entityId
+          ] = recognizedEntityObj;
           entitiesByLibrary[recognizedEntityObj.libraryId] = {
             libraryId: recognizedEntityObj.libraryId,
             libraryName: recognizedEntityObj.libraryName,
             faces: [
-                ...get(entitiesByLibrary[recognizedEntityObj.libraryId], 'faces', []),
-                recognizedEntityObj
+              ...get(
+                entitiesByLibrary[recognizedEntityObj.libraryId],
+                'faces',
+                []
+              ),
+              recognizedEntityObj
             ]
-          }
+          };
         }
 
         // TODO: optimize this so that we aren't storing a map since this will probably get pretty big

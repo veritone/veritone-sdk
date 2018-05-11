@@ -8,6 +8,7 @@
     "classnames": "^2.2.5",
     "date-fns": "^1.29.0",
     "downshift": "^1.31.2",
+    "locale-code": "^2.0.1",
     "lodash": "^4.17.4",
     "material-ui": "v1.0.0-beta.36",
     "material-ui-icons": "^1.0.0-beta.17",
@@ -25,12 +26,13 @@
     "react-lines-ellipsis": "^0.10.2",
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
-    "recharts": "^1.0.0-beta.10",
     "react-transition-group": "1.x",
+    "recharts": "^1.0.0-beta.10",
     "recompose": "^0.26.0",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
-    "video-react": "^0.10.4"
+    "shaka-player": "^2.3.5",
+    "video-react": "^0.10.5"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",

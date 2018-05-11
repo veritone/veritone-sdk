@@ -29,3 +29,9 @@ export const auth = {
   ...authConstants,
   authRootSaga
 };
+
+import applicationReducer, * as applicationModule from './application';
+export const application = {
+  reducer: applicationReducer,
+  ...applicationModule
+};

@@ -22,11 +22,11 @@ build:
         yarn run lintall
 
     - script:
-      name: test all packages
-      code: |
-        yarn run testall
-
-    - script:
       name: build all packages
       code: |
         yarn run buildall
+
+    - script:
+      name: test all packages
+      code: |
+        yarn run testall

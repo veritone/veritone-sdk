@@ -23,6 +23,7 @@ export FilePicker from './components/FilePicker';
 export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export video from './components/Video';
+export MediaPlayer from './components/Video/MediaPlayer';
 export AppContainer from './components/AppContainer';
 
 export RefreshButton from './components/RefreshButton';
@@ -36,9 +37,13 @@ export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutpu
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';
 export FaceEngineOutput from './components/FaceEngineOutput';
 export OCREngineOutputView from './components/OCREngineOutputView';
+export StructuredDataEngineOutput from './components/StructuredDataEngineOutput';
 export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
+export TranslationEngineOutput from './components/TranslationEngineOutput';
+export FingerprintEngineOutput from './components/FingerprintEngineOutput';
+export GeoEngineOutput from './components/GeoEngineOutput';
 
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
@@ -54,11 +59,6 @@ export SourceManagementOverview from './components/SourceManagement/';
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
-
 export SDOTable from './components/SDOTable';
 
-export EntityInformation from './components/FaceEngineOutput/EntityInformation'
-export FacesByLibrary from './components/FaceEngineOutput/FacesByLibrary'
-export FaceGrid from './components/FaceEngineOutput/FaceGrid'
-export FacesByFrame from './components/FaceEngineOutput/FacesByFrame'
-export FacesByScene from './components/FaceEngineOutput/FacesByScene'
+export SearchPill from './components/SearchPill';

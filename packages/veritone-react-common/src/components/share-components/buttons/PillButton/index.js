@@ -21,12 +21,12 @@ export default class PillButton extends Component {
   };
 
   handleButtonClicked = event => {
-    let { onClick, data } = this.props;
+    const { onClick, data } = this.props;
     onClick && onClick(event, data);
   };
 
   render() {
-    let {
+    const {
       label,
       info,
       style,
@@ -39,12 +39,12 @@ export default class PillButton extends Component {
       infoClassName,
       highlight
     } = this.props;
-    let hasGap = label && label.length > 0 && info && info.length > 0;
+    const hasGap = label && label.length > 0 && info && info.length > 0;
 
     return (
       <div
         className={classNames(defaultStyles.pillButton, className, {
-          [defaultStyles.highlight]: highlight
+          [defaultStyles.highlighted]: highlight
         })}
         style={style}
         onClick={this.handleButtonClicked}

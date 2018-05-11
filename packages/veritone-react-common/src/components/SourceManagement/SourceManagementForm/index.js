@@ -6,13 +6,14 @@ import Icon from 'material-ui/Icon';
 import IconButton from 'material-ui/IconButton';
 import Button from 'material-ui/Button';
 
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
 import SourceConfiguration from '../SourceConfiguration';
 import ContentTemplates from '../ContentTemplates';
 
 import styles from './styles.scss';
-
+@withMuiThemeProvider
 export default class SourceManagementForm extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,
@@ -76,7 +77,12 @@ export default class SourceManagementForm extends React.Component {
       // If there is no source, then just pick the first available sourceType
       const fieldValues = {};
       const sourceTypeIdx = 0;
-      const properties = get (sourceTypes, [sourceTypeIdx, 'sourceSchema', 'definition', 'properties'])
+      const properties = get(sourceTypes, [
+        sourceTypeIdx,
+        'sourceSchema',
+        'definition',
+        'properties'
+      ]);
 
       if (properties) {
         Object.keys(properties).forEach(field => {
@@ -142,11 +148,11 @@ export default class SourceManagementForm extends React.Component {
 
       this.setState(prevState => ({
         contentTemplates: {
-          ...prevState.contentTemplates,
           [templateSchemaId]: {
             ...templateData[templateSchemaId],
             data
-          }
+          },
+          ...prevState.contentTemplates
         }
       }));
     }
@@ -209,7 +215,7 @@ export default class SourceManagementForm extends React.Component {
               />
             </Tabs>
           </ModalHeader>
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.handleSubmit} className={styles.formScroll}>
             {activeTab === 0 && (
               <SourceConfiguration
                 sourceTypes={this.props.sourceTypes}
@@ -229,7 +235,7 @@ export default class SourceManagementForm extends React.Component {
             <div className={styles['btn-container']}>
               <Button onClick={this.handleOnClose}>Cancel</Button>
               <Button variant="raised" color="primary" type="submit">
-                Create
+                {get(this.props, 'source.id') ? 'Save' : 'Create'}
               </Button>
             </div>
           </form>

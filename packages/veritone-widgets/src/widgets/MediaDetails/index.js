@@ -21,15 +21,21 @@ import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
   MediaInfoPanel,
-  video,
+  MediaPlayer,
   FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
   TranscriptEngineOutput,
   FaceEngineOutput,
+  FingerprintEngineOutput,
   LogoDetectionEngineOutput,
-  ContentTemplateForm
+  ContentTemplateForm,
+  GeoEngineOutput,
+  TranslationEngineOutput,
+  StructuredDataEngineOutput
 } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
+const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
@@ -38,27 +44,28 @@ import widget from '../../shared/widget';
 
 @connect(
   (state, { _widgetId }) => ({
-    engineCategories: mediaDetailsModule.engineCategories(state, _widgetId),
-    tdo: mediaDetailsModule.tdo(state, _widgetId),
-    engineResultsByEngineId: mediaDetailsModule.engineResultsByEngineId(
+    engineCategories: mediaDetailsModule.getEngineCategories(state, _widgetId),
+    tdo: mediaDetailsModule.getTdo(state, _widgetId),
+    engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
       state,
       _widgetId
     ),
-    selectedEngineCategory: mediaDetailsModule.selectedEngineCategory(
+    selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
       _widgetId
     ),
-    selectedEngineId: mediaDetailsModule.selectedEngineId(state, _widgetId),
-    contentTemplates: mediaDetailsModule.contentTemplates(state, _widgetId),
-    tdoContentTemplates: mediaDetailsModule.tdoContentTemplates(
+    selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, _widgetId),
+    contentTemplates: mediaDetailsModule.getContentTemplates(state, _widgetId),
+    tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(
       state,
       _widgetId
     ),
-    editModeEnabled: mediaDetailsModule.editModeEnabled(state, _widgetId),
-    infoPanelIsOpen: mediaDetailsModule.infoPanelIsOpen(state, _widgetId),
-    expandedMode: mediaDetailsModule.expandedModeEnabled(state, _widgetId),
-    libraries: mediaDetailsModule.libraries(state, _widgetId),
-    entities: mediaDetailsModule.entities(state, _widgetId),
+    isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, _widgetId),
+    isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, _widgetId),
+    isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, _widgetId),
+    libraries: mediaDetailsModule.getLibraries(state, _widgetId),
+    entities: mediaDetailsModule.getEntities(state, _widgetId),
+    schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -71,7 +78,8 @@ import widget from '../../shared/widget';
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
-    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode
+    toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
+    fetchApplications: applicationModule.fetchApplications
   },
   null,
   { withRef: true }
@@ -81,6 +89,7 @@ class MediaDetailsWidget extends React.Component {
     _widgetId: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
+    fetchApplications: func.isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
@@ -95,11 +104,11 @@ class MediaDetailsWidget extends React.Component {
         id: string,
         editable: bool,
         iconClass: string,
+        categoryType: string,
         engines: arrayOf(
           shape({
             id: string,
-            name: string,
-            completedDateTime: number
+            name: string
           })
         )
       })
@@ -156,9 +165,9 @@ class MediaDetailsWidget extends React.Component {
     setEngineId: func,
     toggleEditMode: func,
     toggleInfoPanel: func,
-    editModeEnabled: bool,
-    infoPanelIsOpen: bool,
-    expandedMode: bool,
+    isEditModeEnabled: bool,
+    isInfoPanelOpen: bool,
+    isExpandedMode: bool,
     toggleExpandedMode: func,
     currentMediaPlayerTime: number,
     libraries: arrayOf(
@@ -194,12 +203,31 @@ class MediaDetailsWidget extends React.Component {
         definition: objectOf(any),
         data: objectOf(any)
       })
-    )
+    ),
+    schemasById: objectOf(any),
+    googleMapsApiKey: string,
+    contextMenuExtensions: shape({
+      mentions: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      ),
+      tdos: arrayOf(
+        shape({
+          id: string.isRequired,
+          label: string.isRequired,
+          url: string.isRequired
+        })
+      )
+    })
   };
 
   static defaultProps = {
     libraries: [],
-    entities: []
+    entities: [],
+    schemasById: {}
   };
 
   static contextTypes = {
@@ -217,6 +245,7 @@ class MediaDetailsWidget extends React.Component {
 
   componentDidMount() {
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
+    this.props.fetchApplications();
   }
 
   mediaPlayerRef = ref => {
@@ -229,8 +258,6 @@ class MediaDetailsWidget extends React.Component {
 
   handleRunProcess = () => {
     this.props.onRunProcess();
-    // close MediaDetails dialog to focus on the run process dialog
-    this.props.onClose();
   };
 
   handleEngineCategoryChange = selectedCategoryId => {
@@ -242,7 +269,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getSelectedCategoryMessage = () => {
-    if (this.props.editModeEnabled) {
+    if (this.props.isEditModeEnabled) {
       return (
         'Use the edit screen below to correct ' +
         this.props.selectedEngineCategory.name.toLowerCase() +
@@ -282,10 +309,10 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onCancelEdit = () => {
-    if (this.props.expandedMode) {
+    if (this.props.isExpandedMode) {
       this.toggleExpandedMode();
     }
-    if (this.props.editModeEnabled) {
+    if (this.props.isEditModeEnabled) {
       this.toggleEditMode();
     }
   };
@@ -358,21 +385,24 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineCategory,
       selectedEngineId,
       engineResultsByEngineId,
-      infoPanelIsOpen,
-      expandedMode,
+      isInfoPanelOpen,
+      isExpandedMode,
       currentMediaPlayerTime,
-      editModeEnabled,
+      isEditModeEnabled,
       libraries,
       entities,
       contentTemplates,
-      tdoContentTemplates
+      tdo,
+      tdoContentTemplates,
+      schemasById,
+      googleMapsApiKey
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
-      <FullScreenDialog open>
+      <FullScreenDialog open className={styles.mdpFullScreenDialog}>
         <Paper className={styles.mediaDetailsPageContent}>
-          {!expandedMode && (
+          {!isExpandedMode && (
             <div>
               <div className={styles.pageHeader}>
                 {get(
@@ -498,7 +528,7 @@ class MediaDetailsWidget extends React.Component {
             </div>
           )}
 
-          {expandedMode &&
+          {isExpandedMode &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
@@ -513,12 +543,12 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
-                  {editModeEnabled && (
+                  {isEditModeEnabled && (
                     <div className={styles.pageHeaderTitleLabelEditMode}>
                       Edit Mode: {selectedEngineCategory.name}
                     </div>
                   )}
-                  {!editModeEnabled && (
+                  {!isEditModeEnabled && (
                     <div className={styles.pageHeaderTitleLabelEditMode}>
                       {selectedEngineCategory.name}
                     </div>
@@ -539,10 +569,10 @@ class MediaDetailsWidget extends React.Component {
                       />
                       RUN PROCESS
                     </Button>
-                    {editModeEnabled && (
+                    {isEditModeEnabled && (
                       <div className={styles.actionButtonsSeparatorEditMode} />
                     )}
-                    {editModeEnabled && (
+                    {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
                         onClick={this.onCancelEdit}
@@ -550,7 +580,7 @@ class MediaDetailsWidget extends React.Component {
                         CANCEL
                       </Button>
                     )}
-                    {editModeEnabled && (
+                    {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
                         disabled={!this.state.hasPendingChanges}
@@ -564,40 +594,33 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {this.state.selectedTabValue === 'mediaDetails' &&
-            selectedEngineId && (
-              <div className={styles.mediaScreen}>
+          {this.state.selectedTabValue === 'mediaDetails' && (
+            <div className={styles.mediaScreen}>
+              {!isExpandedMode && (
                 <div className={styles.mediaView}>
-                  <video.Player
-                    src={this.getPrimaryAssetUri()}
-                    className={styles.videoPlayer}
+                  <MediaPlayer
                     store={this.context.store}
-                    ref={this.mediaPlayerRef}
-                  >
-                    <video.BigPlayButton
-                      className={styles.mediaPlayButton}
-                      position="center"
-                    />
-                  </video.Player>
+                    playerRef={this.mediaPlayerRef}
+                    src={this.getPrimaryAssetUri()}
+                    streams={get(this.props, 'tdo.streams')}
+                  />
                   <div className={styles.sourceLabel}>
                     Source: {this.getMediaSource()}
                   </div>
                 </div>
-
+              )}
+              {selectedEngineId && (
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
-                        editMode={editModeEnabled}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        editMode={isEditModeEnabled}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                       />
@@ -612,7 +635,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
                         }
@@ -625,7 +647,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onExpandClicked={this.toggleExpandedMode}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         onObjectOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
@@ -636,14 +657,11 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
-                        mediaPlayerTimeMs={Math.round(
-                          currentMediaPlayerTime * 1000
-                        )}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
                         onEntrySelected={this.handleUpdateMediaPlayerTime}
                       />
                     )}
@@ -661,11 +679,32 @@ class MediaDetailsWidget extends React.Component {
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <FingerprintEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        entities={entities}
+                        libraries={libraries}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <TranslationEngineOutput
+                        contents={engineResultsByEngineId[selectedEngineId]}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        onRerunProcess={this.handleRunProcess}
+                        className={styles.engineOuputContainer}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                        defaultLanguage={'en-US'}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        mediaPlayerTimeIntervalMs={500}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
@@ -678,13 +717,25 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onTimeClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        onClick={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
+                      <GeoEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        startTimeStamp={
+                          tdo && tdo.startDateTime ? tdo.startDateTime : null
+                        }
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        className={styles.engineOuputContainer}
+                        apiKey={googleMapsApiKey}
+                        onClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                      />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType ===
@@ -692,20 +743,30 @@ class MediaDetailsWidget extends React.Component {
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                   {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType ===
-                      'thirdPartyData' && <div>No thirdparty data</div>}
+                    selectedEngineCategory.categoryType === 'correlation' && (
+                      <StructuredDataEngineOutput
+                        data={engineResultsByEngineId[selectedEngineId]}
+                        schemasById={schemasById}
+                        engines={selectedEngineCategory.engines}
+                        selectedEngineId={selectedEngineId}
+                        onEngineChange={this.handleSelectEngine}
+                        onExpandClicked={this.toggleExpandedMode}
+                      />
+                    )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'music' && (
                       <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
 
-          {infoPanelIsOpen && (
+          {isInfoPanelOpen && (
             <MediaInfoPanel
               tdo={this.props.tdo}
               engineCategories={engineCategories}
+              contextMenuExtensions={this.props.contextMenuExtensions}
               kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}

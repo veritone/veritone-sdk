@@ -5,9 +5,11 @@ import { sortBy } from 'lodash';
 
 import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
+import LocalCode from 'locale-code';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranslationContent from './TranslationContent';
+
 import styles from './styles.scss';
 
 export default class TranslationEngineOutput extends Component {
@@ -43,12 +45,6 @@ export default class TranslationEngineOutput extends Component {
     ).isRequired,
     selectedEngineId: string.isRequired,
 
-    languages: arrayOf(
-      shape({
-        language: string,
-        name: string
-      })
-    ),
     defaultLanguage: string,
 
     className: string,
@@ -80,7 +76,7 @@ export default class TranslationEngineOutput extends Component {
   };
 
   setLanguageOptions() {
-    const { contents, languages, defaultLanguage } = this.props;
+    const { contents, defaultLanguage } = this.props;
 
     const translatedLanguages = [];
     contents.forEach(dataChunk => {
@@ -95,15 +91,38 @@ export default class TranslationEngineOutput extends Component {
     });
     translatedLanguages.sort();
 
+    let translatedLanguagesInfo = [];
+    translatedLanguages.forEach(languageCode => {
+      let languageName;
+      if (languageCode.length === 2) {
+        languageName = LocalCode.getLanguageName(languageCode + '-XX');
+        if (!languageName || languageName.length === 0) {
+          languageName = languageCode;
+        }
+      } else {
+        languageName = LocalCode.getLanguageName(languageCode);
+        if (languageName && languageName.length > 0) {
+          const countryCode = LocalCode.getCountryCode(languageCode);
+          if (countryCode && countryCode.length > 0) {
+            languageName = languageName + ' (' + countryCode + ')';
+          }
+        } else {
+          languageName = languageCode;
+        }
+      }
+      
+      translatedLanguagesInfo.push({
+        language: languageCode,
+        name: languageName
+      });
+    });
+    translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
+
     this.setState(prevState => {
       const selectedLanguage =
         (prevState && prevState.selectedLanguage) ||
         defaultLanguage ||
         translatedLanguages[0];
-      let translatedLanguagesInfo = languages.filter(langInfo => {
-        return translatedLanguages.includes(langInfo.language) && langInfo;
-      });
-      translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
       return {
         languages: translatedLanguagesInfo,
@@ -185,7 +204,7 @@ export default class TranslationEngineOutput extends Component {
                 className={classNames(styles.language)}
                 key={'language-' + languageInfo.language}
               >
-                {languageInfo.name}
+                {languageInfo.name || languageInfo.language}
               </MenuItem>
             );
           })}

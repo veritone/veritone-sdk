@@ -1,6 +1,8 @@
 import { apiMiddleware } from 'redux-api-middleware-fixed';
 
-export const getBaseMiddlewares = () => [apiMiddleware(fetch)];
+import thunkMiddleware from 'redux-thunk';
+
+export const getBaseMiddlewares = () => [apiMiddleware(fetch), thunkMiddleware];
 
 export const getDevOnlyMiddlewares = () => {
   return process.env.NODE_ENV !== 'production'

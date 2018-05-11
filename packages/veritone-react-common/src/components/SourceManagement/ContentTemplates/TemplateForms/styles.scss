@@ -1,6 +1,38 @@
 .formsContainer {
   padding-top: 20px;
   padding-left: 30px;
-  height: 100vh;
-  overflow: auto;
+}
+
+.insetSection {
+  padding-top: 20px;
+
+  & > span {
+    font-size: 15px;
+  }
+}
+
+.arrayRow {
+  display: flex;
+  flex-direction: row;
+
+  & > div:first-child {
+    width: 100%;
+  }
+}
+
+.arrayAdd {
+  text-align: center;
+}
+
+.arrayRemove {
+  cursor: pointer;
+  padding-top: 40px;
+  padding-left: 10px;
+}
+
+.arrayAdd,
+.arrayRemove {
+  span {
+    cursor: pointer;
+  }
 }

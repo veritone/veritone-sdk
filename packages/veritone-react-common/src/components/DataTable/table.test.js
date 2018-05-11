@@ -215,6 +215,27 @@ describe('MenuColumn', function() {
       expect.arrayContaining(['delete', 'manage'])
     );
   });
+
+  it('accepts static list of actions', function() {
+    const data = {
+      title: 'Text',
+      desc: 'Desc'
+    };
+    const actions = ['delete', 'alter', 'manage'];
+
+    const wrapper = mount(
+      <SupressColumnWarnings>
+        <MenuColumn
+          data={data}
+          actions={actions}
+          protectedActions={['delete']}
+        />
+      </SupressColumnWarnings>
+    );
+
+    const menuItems = wrapper.find('Menu').prop('children');
+    expect(map(menuItems, 'key')).toEqual(expect.arrayContaining(actions));
+  });
 });
 
 describe('Table', function() {

@@ -20,7 +20,8 @@ import faceEngineOutputReducer, {
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
-  auth: { reducer: authReducer, namespace: authNamespace }
+  auth: { reducer: authReducer, namespace: authNamespace },
+  application: { reducer: applicationReducer, namespace: applicationNamespace }
 } = modules;
 
 import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
@@ -34,6 +35,7 @@ export default function createReducer(asyncReducers) {
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
+    [applicationNamespace]: applicationReducer,
     form: formReducer,
     player: playerReducer,
     operation: operationReducer,

@@ -27,7 +27,6 @@ export class TranslationExample extends Component {
       { id: '2', name: 'Engine-Y' },
       { id: '3', name: 'Engine-Z' }
     ],
-    languages: languageOptions,
     contents: renderMockData(0, 50000)
   };
 
@@ -57,7 +56,6 @@ export class TranslationExample extends Component {
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClicked={action('expand clicked')}
-          languages={state.languages}
           defaultLanguage={'en-US'}
           onLanguageChanged={action('language changed')}
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
@@ -75,7 +73,6 @@ export class TranslationExample extends Component {
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
           onExpandClicked={action('expand clicked')}
-          languages={state.languages}
           defaultLanguage={'en-US'}
           onLanguageChanged={action('language changed')}
           onScroll={this.handleDataRequesting}
@@ -93,7 +90,16 @@ export class TranslationExample extends Component {
 function renderMockData(
   startTimeMs,
   stopTimeMs,
-  languages = ['en-GB', 'en-US', 'fr-FR', 'ja-JP', 'ar-EG', 'es-MX', 'es-ES'],
+  languages = [
+    'en',
+    'en-US',
+    'fr-FR',
+    'ja-JP',
+    'ar-EG',
+    'es-MX',
+    'es-ES',
+    'xx-DD'
+  ],
   errorRatio = 0.1,
   noDataRatio = 0.1
 ) {
@@ -224,16 +230,4 @@ const arSentences = [
   'عل وتم أجزاء ولكسمبورغ. عرض تم علاقة إستيلاء, لان إذ العناد اسبوعين. دون قررت ليبين والكساد ثم. إذ تشكيل الشتاء، المزيفة بين, أي اتّجة التكاليف جعل.',
   'وسفن أمّا الهادي لم أخذ, فبعد والمعدات أسر عل, أسر بـ لفشل دأبوا. بقعة تطوير في لمّ. حلّت والديون استرجاع وقد ان. وتم تسبب الشتاء الثالث، في, ماذا عُقر العدّ أي بال, شيء سكان الخاسرة أي. هذه ٣٠ فسقط وسمّيت, بحث مايو أوزار قد.',
   'عجّل الإقتصادية أن دون, أحكم ومحاولة تعد ٣٠. هو أوسع بتحدّي باستخدام الا. مع مكّن المارق وإقامة مكن, ومن غينيا أسابيع التّحول ان. ألمّ وتنصيب ذلك ٣٠, شعار الساحل هو حيث, لدحر أفريقيا الشهيرة عن شيء. ما جهة أحدث منتصف, وترك الهادي ثم تلك. وقد إجلاء الصعداء قد, عل أسر وبعد إستعمل.'
-];
-
-const languageOptions = [
-  { language: 'en-US', name: 'American English' },
-  { language: 'en-GB', name: 'British English' },
-  { language: 'en-AU', name: 'Australian English' },
-  { language: 'fr-FR', name: 'French' },
-  { language: 'fr-CA', name: 'Canadian French' },
-  { language: 'es-ES', name: 'Spanish' },
-  { language: 'es-MX', name: 'Mexican Spanish' },
-  { language: 'ja-JP', name: 'Japanese' },
-  { language: 'ar-EG', name: 'Arabic' }
 ];

@@ -13,6 +13,7 @@ import {
 } from 'material-ui/Form';
 import { InputLabel } from 'material-ui/Input';
 import Checkbox from 'material-ui/Checkbox';
+import { DateTimePicker } from '../../../formComponents';
 
 import styles from './styles.scss';
 
@@ -53,7 +54,10 @@ export default class DynamicSelect extends React.Component {
   };
 
   renderFields = () => {
-    const definition = get(this.props.sourceTypes[this.props.currentSourceType], 'sourceSchema.definition');
+    const definition = get(
+      this.props.sourceTypes[this.props.currentSourceType],
+      'sourceSchema.definition'
+    );
     const properties = definition && definition.properties;
     const requiredFields = has(definition, 'required')
       ? definition.required
@@ -135,10 +139,46 @@ export default class DynamicSelect extends React.Component {
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
 export function SourceTypeField({ id, type, required, title, ...rest }) {
-  const supportedTypes = ['object', 'string', 'number', 'integer', 'boolean'];
+  const supportedTypes = [
+    'object',
+    'string',
+    'number',
+    'integer',
+    'boolean',
+    'array',
+    'dateTime',
+    'geoPoint'
+  ];
 
   if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
-    return <div>{`Unsupported Type: ${type} for ${title}`}</div>;
+    return (
+      <div
+        className={styles.unsupportedMsg}
+      >{`Unsupported Type: ${type} for ${title}`}</div>
+    );
+  }
+
+  if (type.includes('dateTime')) {
+    return (
+      <FormControl className={styles.dateTimeContainer}>
+        <InputLabel
+          className={styles.textFieldLabel + ' ' + styles.dateTimeLabel}
+          htmlFor={id}
+        >
+          {title}
+        </InputLabel>
+        <DateTimePicker
+          id={id}
+          showIcon
+          showTimezone
+          input={{
+            value: rest.value ? new Date(rest.value) : new Date(),
+            onChange: rest.onChange
+          }}
+          {...rest}
+        />
+      </FormControl>
+    );
   }
 
   if (type.includes('boolean')) {
@@ -146,7 +186,11 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
       <FormControlLabel
         label={title}
         control={
-          <Checkbox {...pick(rest, ['value', 'onChange'])} color="primary" />
+          <Checkbox
+            {...pick(rest, ['onChange'])}
+            checked={rest.value}
+            color="primary"
+          />
         }
       />
     );
@@ -170,11 +214,15 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
     inputProps.type = 'number';
   }
 
+  if (type.includes('geoPoint')) {
+    rest.helperText = 'eg. 12.0, 2.0';
+  }
+
   return (
     <TextField
       id={id}
       key={id}
-      className={styles.textFieldExtra}
+      InputLabelProps={{ className: styles.textFieldLabel }}
       {...inputProps}
       {...rest}
     />
