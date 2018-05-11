@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { node, number } from 'prop-types';
 
 class HorizontalScroll extends React.Component {
@@ -22,6 +22,10 @@ class HorizontalScroll extends React.Component {
     this.stopScrolling();
   }
 
+  scrollContent = null;
+  keepScrolling = false;
+  continueScrolling = false;
+
   continueScrolling = amount => {
     this.setState((prevState, props) => {
       let newOffsetLeft = prevState.offsetLeft + amount;
@@ -40,28 +44,31 @@ class HorizontalScroll extends React.Component {
     });
   };
 
-  onMouseDown = e => {
-    let scrollAmount = parseInt(e.currentTarget.getAttribute('data-amount'));
+  scrollLeft = e => {
+    this.scroll(-1 * this.props.scrollAmount);
+  };
+
+  scrollRight = e => {
+    this.scroll(this.props.scrollAmount);
+  };
+
+  scroll(amount) {
     if (!this.keepScrolling) {
-      this.continueScrolling(scrollAmount);
+      this.continueScrolling(amount);
       this.keepScrolling = window.setInterval(
         this.continueScrolling,
         50,
-        scrollAmount
+        amount
       );
     }
-  };
+  }
 
-  onMouseUp = e => {
-    this.stopScrolling();
-  };
-
-  stopScrolling() {
+  stopScrolling = e => {
     if (this.keepScrolling) {
       window.clearInterval(this.keepScrolling);
       this.keepScrolling = undefined;
     }
-  }
+  };
 
   setScrollContent = ref => {
     this.scrollContent = ref;
@@ -71,35 +78,28 @@ class HorizontalScroll extends React.Component {
   };
 
   render() {
-    return [
-      <div
-        key="scrollLeft"
-        data-amount={`-${this.props.scrollAmount}`}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-      >
-        {this.state.showScrollButtons ? this.props.leftScrollButton : undefined}
-      </div>,
-      <div
-        key="scrollChildren"
-        ref={this.setScrollContent}
-        style={{
-          overflowX: 'hidden'
-        }}
-      >
-        {this.props.children}
-      </div>,
-      <div
-        key="scrollRight"
-        data-amount={`${this.props.scrollAmount}`}
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-      >
-        {this.state.showScrollButtons
-          ? this.props.rightScrollButton
-          : undefined}
-      </div>
-    ];
+    return (
+      <Fragment>
+        <div onMouseDown={this.scrollLeft} onMouseUp={this.stopScrolling}>
+          {this.state.showScrollButtons
+            ? this.props.leftScrollButton
+            : undefined}
+        </div>
+        <div
+          ref={this.setScrollContent}
+          style={{
+            overflowX: 'hidden'
+          }}
+        >
+          {this.props.children}
+        </div>
+        <div onMouseDown={this.scrollRight} onMouseUp={this.stopScrolling}>
+          {this.state.showScrollButtons
+            ? this.props.rightScrollButton
+            : undefined}
+        </div>
+      </Fragment>
+    );
   }
 }
 

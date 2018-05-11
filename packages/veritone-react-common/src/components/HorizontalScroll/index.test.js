@@ -33,4 +33,16 @@ describe('Horizontal Scroll', function() {
     );
     expect(wrapper.length).toBeTruthy();
   });
+
+  it('renders the scroll content', function() {
+    const wrapper = shallow(
+      <HorizontalScroll
+        leftScrollButton={<LeftScrollButton />}
+        rightScrollButton={<RightScrollButton />}
+      >
+        <HorizontalContent />
+      </HorizontalScroll>
+    );
+    expect(wrapper.find(HorizontalContent)).toBeTruthy();
+  });
 });
