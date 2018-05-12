@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { string, number, func, bool } from 'prop-types';
+import { string, func, bool } from 'prop-types';
 
 import styles from './styles.scss';
 
