@@ -53,10 +53,7 @@ class FaceGrid extends Component {
   };
 
   handleAddNewEntity = (faceIdx) => (face, entity) => {
-    console.log('faceIdx:', faceIdx)
-    console.log('entity:', entity);
-    console.log('face:', face);
-    this.props.onAddNewEntity(this.props.faces[faceIdx]);
+    this.props.onAddNewEntity(faceIdx);
     // return this.setState({
     //   dialogOpen: true,
     //   selectedFace: faceIdx,

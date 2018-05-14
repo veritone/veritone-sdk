@@ -1,16 +1,22 @@
-export const FETCHING_ENGINE_RESULTS = 'vtn/face-engine-output/FETCHING_ENGINE_RESULTS';
-export const FETCH_ENGINE_RESULTS_SUCCESS = 'vtn/face-engine-output/FETCH_ENGINE_RESULTS_SUCCESS';
-export const FETCH_ENGINE_RESULTS_FAILURE = 'vtn/face-engine-output/FETCH_ENGINE_RESULTS_FAILURE';
-export const DONE_FETCHING_ENGINE_RESULTS = 'vtn/face-engine-output/DONE_FETCHING_ENGINE_RESULTS';
+export const namespace = 'face-engine-output';
 
-export const FETCHING_LIBRARY_ENTITIES = 'vtn/face-engine-output/FETCHING_LIBRARY_ENTITIES';
-export const FETCHING_LIBRARY_ENTITIES_SUCCESS = 'vtn/face-engine-output/FETCHING_LIBRARY_ENTITIES_SUCCESS';
-export const FETCHING_LIBRARY_ENTITIES_FAILURE = 'vtn/face-engine-output/FETCHING_LIBRARY_ENTITIES_FAILURE';
-export const DONE_FETCHING_LIBRARY_ENTITIES = 'vtn/face-engine-output/DONE_FETCHING_LIBRARY_ENTITIES';
+export const FETCHING_ENGINE_RESULTS = `vtn/${namespace}/FETCHING_ENGINE_RESULTS`;
+export const FETCH_ENGINE_RESULTS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_RESULTS_SUCCESS`;
+export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESULTS_FAILURE`;
+export const DONE_FETCHING_ENGINE_RESULTS = `vtn/${namespace}/DONE_FETCHING_ENGINE_RESULTS`;
 
-export const FETCH_LIBRARIES = 'vtn/face-engine-output/FETCH_LIBRARIES';
-export const FETCH_LIBRARIES_SUCCESS = 'vtn/face-engine-output/FETCH_LIBRARIES_SUCCESS';
-export const FETCH_LIBRARIES_FAILURE = 'vtn/face-engine-output/FETCH_LIBRARIES_FAILURE';
+export const FETCH_ENTITIES = `vtn/${namespace}/FETCH_ENTITIES`;
+export const FETCH_ENTITIES_SUCCESS = `vtn/${namespace}/FETCH_ENTITIES_SUCCESS`;
+export const FETCH_ENTITIES_FAILURE = `vtn/${namespace}/FETCH_ENTITIES_FAILURE`;
+export const DONE_FETCHING_ENTITIES = `vtn/${namespace}/DONE_FETCH_ENTITIES`;
+
+export const FETCH_LIBRARIES = `vtn/${namespace}/FETCH_LIBRARIES`;
+export const FETCH_LIBRARIES_SUCCESS = `vtn/${namespace}/FETCH_LIBRARIES_SUCCESS`;
+export const FETCH_LIBRARIES_FAILURE = `vtn/${namespace}/FETCH_LIBRARIES_FAILURE`;
+
+export const CREATE_ENTITY = `vtn/${namespace}/CREATE_ENTITY`;
+export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
+export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
 
 
 import {
@@ -20,22 +26,23 @@ findLastIndex,
 findIndex,
 groupBy,
 forEach,
-keyBy
+keyBy,
+isEmpty,
+isObject
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
+import { createSelector } from 'reselect'
 
 const { createReducer } = helpers;
-
-export const namespace = 'face-engine-output';
 
 const defaultState = {
   engineResultsByEngineId: {},
   fetchedEngineResults: {},
-  libraryEntities: {},
+  entities: {},
   libraries: {},
   isFetchingEngineResults: false,
-  isFetchingLibraryEntities: false,
-  isFetchingLibraries: false,
+  isFetchingEntities: false,
+  isFetchingLibraries: false
 };
 
 const reducer = createReducer(defaultState, {
@@ -60,7 +67,6 @@ const reducer = createReducer(defaultState, {
     const { startOffsetMs, stopOffsetMs } = action.meta;
 
     const previousResultsByEngineId = state.engineResultsByEngineId || {};
-    // const engineResultRequestsById = state.engineResultRequestsByEngineId;
     // It is possible results were requested by
     const resultsGroupedByEngineId = groupBy(engineResults, 'engineId');
 
@@ -88,32 +94,32 @@ const reducer = createReducer(defaultState, {
       ...state
     }
   },
-  [FETCHING_LIBRARY_ENTITIES](state, action) {
+  [FETCH_ENTITIES](state, action) {
     return {
       ...state,
-      isFetchingLibraryEntities: true
+      isFetchingEntities: true
     }
   },
-  [FETCHING_LIBRARY_ENTITIES_SUCCESS](state, action) {
+  [FETCH_ENTITIES_SUCCESS](state, action) {
     if (action.payload.errors) {
-      return this[FETCHING_LIBRARY_ENTITIES_FAILURE](state, action);
+      return this[FETCH_ENTITIES_FAILURE](state, action);
     }
 
-    const libraryEntities = keyBy(Object.values(action.payload.data), 'id');
+    const entities = keyBy(Object.values(action.payload.data), 'id');
 
     return {
       ...state,
-      libraryEntities: {
-        ...state.libraryEntities,
-        ...libraryEntities
+      entities: {
+        ...state.entities,
+        ...entities
       },
-      isFetchingLibraryEntities: false,
+      isFetchingEntities: false,
     };
   },
-  [FETCHING_LIBRARY_ENTITIES_FAILURE](state, action) {
+  [FETCH_ENTITIES_FAILURE](state, action) {
     return {
       ...state,
-      isFetchingLibraryEntities: false
+      isFetchingEntities: false
     }
   },
   [FETCH_LIBRARIES](state, action) {
@@ -142,6 +148,33 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       isFetchingLibraries: false
+    }
+  },
+  [CREATE_ENTITY_SUCCESS](state, action) {
+    if (action.payload.errors) {
+      return this[CREATE_ENTITY_FAILURE](state, action);
+    }
+    console.log('action.meta:', action.meta)
+    // const entity = action.payload.data.entity;
+    const { unrecognizedFaces } = getFaces({ [namespace]: state }, action.meta.selectedEngineId);
+    console.log('unrecognizedFaces:', unrecognizedFaces)
+    const { selectedEntity } = action.meta;
+
+    const detectedFace = unrecognizedFaces[selectedEntity];
+    console.log('face obj:', state.engineResultsByEngineId[action.meta.selectedEngineId][0].series[selectedEntity])
+    console.log('detectedFace:', detectedFace)
+
+    // return {
+    //   ...state,
+    //   entities: {
+    //     ...state.entities,
+    //     [entity.id]: entity
+    //   }
+    // };
+  },
+  [CREATE_ENTITY_FAILURE](state, action) {
+    return {
+      ...state
     }
   }
 });
@@ -172,36 +205,58 @@ export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
 
-export const engineResultsByEngineId = (state, engineId) =>
-  map(
+export const getEngineResultsByEngineId = (state, engineId) => {
+  console.log('state:', state)
+  console.log('local(state):', local(state));
+  console.log('engineId:', engineId);
+  console.log('engineResult:', get(local(state), ['engineResultsByEngineId', engineId]));
+
+  return map(
     get(local(state), ['engineResultsByEngineId', engineId]),
     engineResults => ({ series: engineResults.series })
   );
+
+}
 
 export const fetchedEngineResultByEngineId = (state, engineId) =>
   get(local(state), ['fetchedEngineResults', engineId], [])
 
 
-  /* ENTITIES */
-export const fetchingLibraryEntities = (meta) => ({
-  type: FETCHING_LIBRARY_ENTITIES,
+  /* LIBRARY ENTITIES */
+export const fetchingEntities = (meta) => ({
+  type: FETCH_ENTITIES,
   meta
 });
-export const fetchLibraryEntitiesSuccess = (payload, meta) => ({
-  type: FETCHING_LIBRARY_ENTITIES_SUCCESS,
+export const fetchEntitiesSuccess = (payload, meta) => ({
+  type: FETCH_ENTITIES_SUCCESS,
   payload,
   meta
 });
-export const fetchLibraryEntitiesFailure = (error, meta) => ({
-  type: FETCHING_LIBRARY_ENTITIES_FAILURE,
+export const fetchEntitiesFailure = (error, meta) => ({
+  type: FETCH_ENTITIES_FAILURE,
   error,
   meta
 });
-export function isFetchingLibraryEntities(state) {
-  return local(state).isFetchingLibraryEntities;
+export const createEntity = (payload, meta) => ({
+  type: CREATE_ENTITY,
+  payload,
+  meta
+});
+export const createEntitySuccess = (payload, meta) => ({
+  type: CREATE_ENTITY_SUCCESS,
+  payload,
+  meta
+});
+export const createEntityFailure = (payload, meta) => ({
+  type: CREATE_ENTITY_FAILURE,
+  payload,
+  meta
+});
+export function isFetchingEntities(state) {
+  return local(state).isFetchingEntities;
 }
-export const libraryEntities = (state) =>
-  Object.values(get(local(state), 'libraryEntities', []));
+export const getEntities = (state) =>
+  Object.values(get(local(state), 'entities', []));
 
 
 /* LIBRARIES */
@@ -224,6 +279,161 @@ export function isFetchingLibraries(state) {
   return local(state).isFetchingLibraries;
 }
 
-export function libraries(state) {
+export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
+
+/* SELECTORS */
+export const getFaces = createSelector(
+  [getEngineResultsByEngineId, getEntities],
+  (faceData, entities) => {
+    console.log('+'.repeat(50))
+    const faceEntities = {
+      unrecognizedFaces: [],
+      recognizedFaces: {},
+      entitiesByLibrary: {},
+      framesBySeconds: {}
+    };
+
+    console.log('faceData:', faceData)
+
+    function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
+      return {
+        ...recognizedEntityObj,
+        count: recognizedEntityObj.count + 1,
+        timeSlots: [
+          ...recognizedEntityObj.timeSlots,
+          {
+            stopTimeMs: faceObj.stopTimeMs,
+            startTimeMs: faceObj.startTimeMs,
+            originalImage: faceObj.object.uri,
+            confidence: faceObj.object.confidence
+          }
+        ],
+        stopTimeMs:
+          recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
+            ? faceObj.stopTimeMs
+            : recognizedEntityObj.stopTimeMs
+      };
+    };
+
+    function getFrameNamespaceForMatch(faceObj) {
+      if (faceObj.object.boundingPoly) {
+        return JSON.stringify(faceObj.object.boundingPoly);
+      }
+    };
+
+    // Gets list of nearest seconds which the face/entity appears in (MS)
+    function getArrayOfSecondSpots(timeSlot) {
+      const secondSpots = [];
+
+      if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
+        return secondSpots;
+      }
+
+      let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
+
+      while (timeCursor <= timeSlot.stopTimeMs) {
+        secondSpots.push(timeCursor);
+        timeCursor += 1000;
+      }
+
+      return secondSpots;
+    };
+
+    // if (isEmpty(faceData)) {
+    //   return faceEntities;
+    // }
+
+    // flatten data series for currently selected engine
+    const faceSeries = faceData.reduce((accumulator, faceSeries) => {
+      if (!isEmpty(faceSeries.series)) {
+        return [...accumulator, ...faceSeries.series];
+      }
+      return accumulator;
+    }, []);
+
+    faceSeries.forEach(faceObj => { // for each face object
+      // locate entity that the face object belongs to
+      const entity = find(entities, { id: faceObj.object.entityId });
+
+      if (!faceObj.entityId || !entities.length || !entity || !entity.name) {
+        faceEntities.unrecognizedFaces.push(faceObj);
+      } else {
+        // try to locate library entity that contains the face object
+        const libraryEntity = find(entities, { libraryId: entity.libraryId });
+        // build object for library entity for "recognized" face
+        const recognizedEntityObj = {
+          entityId: entity.id,
+          libraryId: libraryEntity.libraryId,
+          libraryName: libraryEntity.library.name,
+          fullName: entity.name,
+          profileImage: entity.profileImageUrl,
+          count: 1,
+          timeSlots: [
+            {
+              stopTimeMs: faceObj.stopTimeMs,
+              startTimeMs: faceObj.startTimeMs,
+              originalImage: faceObj.object.uri,
+              confidence: faceObj.object.confidence
+            }
+          ],
+          stopTimeMs: faceObj.stopTimeMs
+        };
+
+        if (faceEntities.recognizedFaces[entity.id]) {
+          faceEntities.recognizedFaces[entity.id] = setRecognizedEntityObj(
+            faceEntities.recognizedFaces[entity.id],
+            faceObj
+          );
+        } else {
+          faceEntities.recognizedFaces[entity.id] = recognizedEntityObj;
+          faceEntities.entitiesByLibrary[libraryEntity.libraryId] = {
+            libraryId: libraryEntity.libraryId,
+            libraryName: recognizedEntityObj.libraryName,
+            faces: [
+              ...get(
+                faceEntities.entitiesByLibrary[libraryEntity.libraryId],
+                'faces',
+                []
+              ),
+              recognizedEntityObj
+            ]
+          };
+        }
+
+        // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
+        const matchNamespace = getFrameNamespaceForMatch(faceObj);
+        if (matchNamespace) {
+          const secondSpots = getArrayOfSecondSpots(faceObj);
+          secondSpots.forEach(second => {
+            if (!faceEntities.secondMap[second]) {
+              faceEntities.secondMap[second] = {};
+            }
+            if (!faceEntities.secondMap[second][matchNamespace]) {
+              faceEntities.secondMap[second][matchNamespace] = {
+                startTimeMs: faceObj.startTimeMs,
+                stopTimeMs: faceObj.stopTimeMs,
+                originalImage: faceObj.object.uri,
+                entities: [],
+                boundingPoly: faceObj.object.boundingPoly
+              };
+            }
+
+            const match = {
+              confidence: faceObj.object.confidence,
+              entityId: faceObj.object.entityId
+            };
+
+            faceEntities.secondMap[second][matchNamespace].entities.push(match);
+            faceEntities.secondMap[second][matchNamespace].entities.sort((a, b) => {
+              return b.confidence - a.confidence;
+            });
+          });
+        }
+      }
+    });
+
+    return faceEntities;
+  }
+)

@@ -42,3 +42,28 @@ export const getLibrariesByType =`
       }
     }
   }`;
+
+export const createEntity = `
+  ${entityFieldsFragment}
+  mutation CreateEntity($input: CreateEntity!) {
+    entity: createEntity(input: $input) {
+      ...entityFields
+    }
+  }
+`;
+
+
+/* FRAGMENTS */
+const entityFieldsFragment = `
+  fragment entityFields on Entity {
+    id
+    name
+    libraryId
+    library {
+      id
+      name
+    }
+    profileImageUrl
+    jsondata
+  }
+`;

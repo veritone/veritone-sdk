@@ -36,14 +36,19 @@ import widget from '../../shared/widget';
 @saga(rootSaga)
 @connect(
   (state, { selectedEngineId }) => ({
-    // data: faceEngineOutput.engineResultsByEngineId(state, selectedEngineId),
-    // entities: faceEngineOutput.libraryEntities(state),
-    libraries: faceEngineOutput.libraries(state),
+    // data: faceEngineOutput.getEngineResultsByEngineId(state, selectedEngineId),
+    entities: faceEngineOutput.getEntities(state),
+    faces: faceEngineOutput.getFaces(state, selectedEngineId),
+    libraries: faceEngineOutput.getLibraries(state),
     isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
-    isFetchingLibraryEntities: faceEngineOutput.isFetchingLibraryEntities(state),
+    isFetchingLibraryEntities: faceEngineOutput.isFetchingEntities(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state)
   }),
-  { fetchLibraries: faceEngineOutput.fetchLibraries },
+  {
+    fetchLibraries: faceEngineOutput.fetchLibraries,
+    createEntity: faceEngineOutput.createEntity,
+    createEntitySuccess: faceEngineOutput.createEntitySuccess
+  },
   null,
   { withRef: true }
 )
@@ -120,9 +125,11 @@ class FaceEngineOutputContainer extends Component {
   };
 
   state = {
-    selectedEntity: null,
+    selectedEntity: null, // selected unrecognized face object from which to create a new 'entity'
     dialogOpen: false,
-    newEntity: {}
+    newEntity: {},
+    recognizedFaces: {},
+    unrecognizedFaces: []
   };
 
   componentWillReceiveProps(nextProps) {
@@ -131,17 +138,199 @@ class FaceEngineOutputContainer extends Component {
     }
   }
 
-  handleAddNewEntity = (faceEntity) => {
-    console.log('faceEntity:', faceEntity)
+  // processFaces = (faceData, entities) => { 
+  //   if (isEmpty(faceData)) {
+  //     return;
+  //   }
+
+  //   // const detectedFaceObjects = [];
+  //   // const recognizedEntityObjectMap = {};
+  //   const recognizedFaces = {};
+  //   const unrecognizedFaces = [];
+
+  //   // flatten   data series for currently selected engine
+  //   const faceSeries = faceData.reduce((accumulator, faceSeries) => {
+  //     if (!isEmpty(faceSeries.series)) {
+  //       return [...accumulator, ...faceSeries.series];
+  //     }
+
+  //     return accumulator;
+  //   }, []);
+
+  //   const secondMap = {};
+  //   const entitiesByLibrary = {};
+
+  //   faceSeries.forEach(faceObj => { // for each face object
+  //     // locate entity that the face object belongs to
+  //     const entity = find(entities, { id: faceObj.object.entityId });
+
+  //     if (!faceObj.entityId || !entities.length || !entity || !entity.name) {
+  //       unrecognizedFaces.push(faceObj);
+  //     } else {
+  //       // try to locate library entity that contains the face object
+  //       const libraryEntity = find(entities, { libraryId: entity.libraryId });
+  //       // build object for library entity for "recognized" face
+  //       const recognizedEntityObj = {
+  //         entityId: entity.id,
+  //         libraryId: libraryEntity.libraryId,
+  //         // libraryName: libraryEntity.name,
+  //         libraryName: libraryEntity.library.name,
+  //         fullName: entity.name,
+  //         // entity: {
+  //         //   ...entity,
+  //         //   libraryId: libraryEntity.libraryId,
+  //         //   libraryName: libraryEntity.library.name
+  //         // },
+  //         profileImage: entity.profileImageUrl,
+  //         count: 1,
+  //         timeSlots: [
+  //           {
+  //             stopTimeMs: faceObj.stopTimeMs,
+  //             startTimeMs: faceObj.startTimeMs,
+  //             originalImage: faceObj.object.uri,
+  //             confidence: faceObj.object.confidence
+  //           }
+  //         ],
+  //         stopTimeMs: faceObj.stopTimeMs
+  //       };
+
+  //       // if (recognizedFaces[recognizedEntityObj.entityId]) {
+  //       if (recognizedFaces[entity.id]) {
+  //         recognizedFaces[entity.id] = this.setRecognizedEntityObj(
+  //           // recognizedFaces[recognizedEntityObj.entityId],
+  //           recognizedFaces[entity.id],
+  //           faceObj
+  //         );
+  //       } else {
+  //         // recognizedFaces[recognizedEntityObj.entityId] = recognizedEntityObj;
+  //         recognizedFaces[entity.id] = recognizedEntityObj;
+  //         // entitiesByLibrary[recognizedEntityObj.libraryId] = {
+  //         entitiesByLibrary[libraryEntity.libraryId] = {
+  //           // libraryId: recognizedEntityObj.libraryId,
+  //           libraryId: libraryEntity.libraryId,
+  //           libraryName: recognizedEntityObj.libraryName,
+  //           faces: [
+  //             ...get(
+  //               // entitiesByLibrary[recognizedEntityObj.libraryId],
+  //               entitiesByLibrary[libraryEntity.libraryId],
+  //               'faces',
+  //               []
+  //             ),
+  //             recognizedEntityObj
+  //           ]
+  //         };
+  //       }
+
+  //       // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
+  //       const matchNamespace = this.getFrameNamespaceForMatch(faceObj);
+  //       if (matchNamespace) {
+  //         const secondSpots = this.getArrayOfSecondSpots(faceObj);
+  //         secondSpots.forEach(second => {
+  //           if (!secondMap[second]) {
+  //             secondMap[second] = {};
+  //           }
+  //           if (!secondMap[second][matchNamespace]) {
+  //             secondMap[second][matchNamespace] = {
+  //               startTimeMs: faceObj.startTimeMs,
+  //               stopTimeMs: faceObj.stopTimeMs,
+  //               originalImage: faceObj.object.uri,
+  //               entities: [],
+  //               boundingPoly: faceObj.object.boundingPoly
+  //             };
+  //           }
+
+  //           const match = {
+  //             confidence: faceObj.object.confidence,
+  //             entityId: faceObj.object.entityId
+  //           };
+
+  //           secondMap[second][matchNamespace].entities.push(match);
+
+  //           secondMap[second][matchNamespace].entities.sort((a, b) => {
+  //             return b.confidence - a.confidence;
+  //           });
+  //         });
+  //       }
+  //     }
+
+  //     // } else if (!faceObj.entityId) {
+  //     //   // detectedFaceObjects.push(faceObj);
+  //     //   unrecognizedFaces.push(faceObj);
+  //     // }
+  //   });
+
+  //   console.log('unrecognizedFaces:', unrecognizedFaces)
+  //   console.log('recognizedFaces:', recognizedFaces);
+  //   console.log('entitiesByLibrary:', entitiesByLibrary);
+  //   console.log('framesBySeconds:', secondMap);
+
+  //   this.setState({
+  //     // detectedFaces: detectedFaceObjects,
+  //     unrecognizedFaces,
+  //     // recognizedEntityObjectMap: recognizedEntityObjectMap,
+  //     recognizedFaces,
+  //     entitiesByLibrary: entitiesByLibrary,
+  //     framesBySeconds: secondMap
+  //   });
+  // };
+
+  handleAddNewEntity = (selectedEntity) => {
     this.props.fetchLibraries({
       libraryType: 'people'
     });
     this.openDialog();
+    this.setState({
+      selectedEntity
+    })
   }
 
   handleNewEntityLibraryChange = (e) => {
     this.setNewEntityLibrary(e.target.value);
   }
+
+  // getFrameNamespaceForMatch = faceObj => {
+  //   if (faceObj.object.boundingPoly) {
+  //     return JSON.stringify(faceObj.object.boundingPoly);
+  //   }
+  // };
+
+  // // Gets list of nearest seconds which the face/entity appears in (MS)
+  // getArrayOfSecondSpots = timeSlot => {
+  //   const secondSpots = [];
+
+  //   if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
+  //     return secondSpots;
+  //   }
+
+  //   let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
+
+  //   while (timeCursor <= timeSlot.stopTimeMs) {
+  //     secondSpots.push(timeCursor);
+  //     timeCursor += 1000;
+  //   }
+
+  //   return secondSpots;
+  // };
+
+  // setRecognizedEntityObj = (recognizedEntityObj, faceObj) => {
+  //   return {
+  //     ...recognizedEntityObj,
+  //     count: recognizedEntityObj.count + 1,
+  //     timeSlots: [
+  //       ...recognizedEntityObj.timeSlots,
+  //       {
+  //         stopTimeMs: faceObj.stopTimeMs,
+  //         startTimeMs: faceObj.startTimeMs,
+  //         originalImage: faceObj.object.uri,
+  //         confidence: faceObj.object.confidence
+  //       }
+  //     ],
+  //     stopTimeMs:
+  //       recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
+  //         ? faceObj.stopTimeMs
+  //         : recognizedEntityObj.stopTimeMs
+  //   };
+  // };
 
   setNewEntityLibrary = (libraryId) => {
     this.setState(prevState => ({
@@ -171,8 +360,14 @@ class FaceEngineOutputContainer extends Component {
   }
 
   saveNewEntity = () => {
-    console.log('this.state.newEntity:', this.state.newEntity)
-    // return this.props.createNewEntity(this.state.newEntity);
+    // return this.props.createEntity(
+    return this.props.createEntitySuccess(
+      this.state.newEntity,
+      {
+        selectedEngineId: this.props.selectedEngineId,
+        selectedEntity: this.state.selectedEntity,
+      }
+    );
   }
 
   renderNewEntityModal = () => {
@@ -240,7 +435,8 @@ class FaceEngineOutputContainer extends Component {
     const faceEngineProps = omit(this.props, [
       'isFetchingEngineResults',
       'isFetchingLibraryEntities',
-      'tdo'
+      'tdo',
+      'faces'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
@@ -251,6 +447,7 @@ class FaceEngineOutputContainer extends Component {
       <Fragment>
         <FaceEngineOutput
           {...faceEngineProps}
+          {...this.props.faces}
           onAddNewEntity={this.handleAddNewEntity}
           enableEditMode
         />
