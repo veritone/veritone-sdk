@@ -8,3 +8,6 @@
 
 ## 1.0.2
 * add config for stylelint
+
+## 2.0.0
+* Add a bunch of new eslint and stylelint rules

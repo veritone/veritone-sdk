@@ -38,7 +38,9 @@ class FileListItem extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.readImageFile(nextProps.file);
+    if (nextProps.file !== this.props.file) {
+      this.readImageFile(nextProps.file);
+    }
   }
 
   readImageFile = file => {

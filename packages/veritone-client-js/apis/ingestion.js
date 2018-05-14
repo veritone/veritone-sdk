@@ -1,82 +1,82 @@
 import { endpoints } from './config';
 
 export default {
-	createIngestion(ingestion) {
-		return {
-			method: 'post',
-			path: endpoints.ingestion,
-			data: ingestion
-		};
-	},
+  createIngestion(ingestion) {
+    return {
+      method: 'post',
+      path: endpoints.ingestion,
+      data: ingestion
+    };
+  },
 
-	getIngestions(options = {}) {
-		return {
-			method: 'get',
-			path: endpoints.ingestion,
-			query: options
-		};
-	},
+  getIngestions(options = {}) {
+    return {
+      method: 'get',
+      path: endpoints.ingestion,
+      query: options
+    };
+  },
 
-	getIngestion(ingestionId, options = {}) {
-		if (typeof ingestionId !== 'string' || ingestionId === '') {
-			throw new Error('Missing ingestionId');
-		}
+  getIngestion(ingestionId, options = {}) {
+    if (typeof ingestionId !== 'string' || ingestionId === '') {
+      throw new Error('Missing ingestionId');
+    }
 
-		return {
-			method: 'get',
-			path: `${endpoints.ingestion}/${ingestionId}`,
-			query: options
-		};
-	},
+    return {
+      method: 'get',
+      path: `${endpoints.ingestion}/${ingestionId}`,
+      query: options
+    };
+  },
 
-	updateIngestion(ingestionId, patch) {
-		if (typeof ingestionId !== 'string' || ingestionId === '') {
-			throw new Error('Missing ingestionId');
-		}
+  updateIngestion(ingestionId, patch) {
+    if (typeof ingestionId !== 'string' || ingestionId === '') {
+      throw new Error('Missing ingestionId');
+    }
 
-		return {
-			method: 'put',
-			path: `${endpoints.ingestion}/${ingestionId}`,
-			data: patch
-		};
-	},
+    return {
+      method: 'put',
+      path: `${endpoints.ingestion}/${ingestionId}`,
+      data: patch
+    };
+  },
 
-	deleteIngestion(ingestionId, options) {
-		if (typeof ingestionId !== 'string' || ingestionId === '') {
-			throw new Error('Missing ingestionId');
-		}
+  deleteIngestion(ingestionId, options) {
+    if (typeof ingestionId !== 'string' || ingestionId === '') {
+      throw new Error('Missing ingestionId');
+    }
 
-		return {
-			method: 'delete',
-			path: `${endpoints.ingestion}/${ingestionId}`,
-			query: options
-		};
-	},
+    return {
+      method: 'delete',
+      path: `${endpoints.ingestion}/${ingestionId}`,
+      query: options
+    };
+  },
 
-	ingestionConnect(connectOptions) {
-		if (typeof connectOptions === 'undefined') {
-			throw new Error('Missing Connect Options');
-		}
+  ingestionConnect(connectOptions) {
+    if (typeof connectOptions === 'undefined') {
+      throw new Error('Missing Connect Options');
+    }
 
-		return {
-			method: 'post',
-			path: `${endpoints.ingestion}/connect`,
-			data: connectOptions
-		};
-	},
+    return {
+      method: 'post',
+      path: `${endpoints.ingestion}/connect`,
+      data: connectOptions
+    };
+  },
 
-	verifyEmailIngestion(emailOptions) {
-		if (
-			typeof emailOptions === 'undefined' ||
-			(typeof emailOptions === 'object' && !emailOptions.emailAddress)
-		) {
-			throw new Error('Missing email address');
-		}
+  verifyEmailIngestion(emailOptions) {
+    if (
+      typeof emailOptions === 'undefined' ||
+      (typeof emailOptions === 'object' && !emailOptions.emailAddress)
+    ) {
+      throw new Error('Missing email address');
+    }
 
-		return {
-			method: 'post',
-			path: `${endpoints.ingestion}/verifyEmailIngestion`,
-			data: emailOptions
-		};
-	}
+    return {
+      method: 'post',
+      path: `${endpoints.ingestion}/verifyEmailIngestion`,
+      data: emailOptions
+    };
+  }
 };

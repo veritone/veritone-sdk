@@ -10,7 +10,8 @@
     "buildall": "./buildall.sh",
     "publish-dev": "./publish-dev.sh",
     "lintall": "yarn wsrun lint --fast-exit --exclude-missing",
-    "testall": "yarn wsrun test --fast-exit --exclude-missing"
+    "testall": "yarn wsrun test --fast-exit --exclude-missing",
+    "formatall": "yarn wsrun format --exclude-missing"
   },
   "husky": {
     "hooks": {
@@ -20,7 +21,7 @@
   "workspaces": ["packages/*"],
   "devDependencies": {
     "husky": "^0.15.0-rc.13",
-    "prettier": "^1.11.1",
+    "prettier": "1.12.1",
     "wsrun": "^2.0.0"
   }
 }
