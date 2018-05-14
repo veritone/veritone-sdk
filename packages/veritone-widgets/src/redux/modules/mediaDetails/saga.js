@@ -135,6 +135,21 @@ function* loadTdoSaga(widgetId, tdoId) {
   // Extract EngineCategories data from EngineRuns
   if (get(tdo, 'engineRuns.records', false)) {
     tdo.engineRuns.records
+      // add bulk-edit-transcript engine if one was run
+      .map(engineRun => {
+        const engineId = get(engineRun, 'engine.id');
+        if ((engineId === 'bde0b023-333d-acb0-e01a-f95c74214607' || engineId === 'bulk-edit-transcript') && !engineRun.engine.category) {
+          engineRun.engine.name = 'User Generated';
+          engineRun.engine.category = {
+            id: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
+            name: "Transcription",
+            iconClass: "icon-transcription",
+            categoryType: "transcript",
+            editable: true
+          }
+        }
+        return engineRun;
+      })
       // filter those that have category, category icon, and are supported categories
       .filter(
         engineRun =>
