@@ -2,13 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { isFunction } from 'lodash';
 import { Provider } from 'react-redux';
-
-import { modules } from 'veritone-redux-common';
-const { auth: authModule, config: configModule } = modules;
-
 import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
+import { modules, helpers } from 'veritone-redux-common';
+const { auth: authModule, config: configModule, user: userModule } = modules;
+const { promiseMiddleware } = helpers;
+const {
+  WAIT_FOR_ACTION,
+  ERROR_ACTION,
+  CALLBACK_ERROR_ARGUMENT
+} = promiseMiddleware;
 
 class _VeritoneApp {
   _store = configureStore();
@@ -29,14 +33,27 @@ class _VeritoneApp {
   }
 
   login({ sessionToken, OAuthToken } = {}) {
-    // todo: handle promise result
-    // make sure it rejects on bad auth
-    if (sessionToken) {
-      this._store.dispatch(authModule.setSessionToken(sessionToken));
-    }
+    // Allows us to transform dispatch into a promise by adding symbols
+    // See promiseMiddleware.js
+    const addSymbols = action => {
+      return {
+        ...action,
+        [WAIT_FOR_ACTION]: userModule.FETCH_USER_SUCCESS,
+        [ERROR_ACTION]: userModule.FETCH_USER_FAILURE,
+        [CALLBACK_ERROR_ARGUMENT]: action => action.payload
+      };
+    };
 
-    if (OAuthToken) {
-      this._store.dispatch(authModule.setOAuthToken(OAuthToken));
+    if (sessionToken) {
+      return this._store.dispatch(
+        addSymbols(authModule.setSessionToken(sessionToken))
+      );
+    } else if (OAuthToken) {
+      return this._store.dispatch(
+        addSymbols(authModule.setOAuthToken(OAuthToken))
+      );
+    } else {
+      return this._store.dispatch(addSymbols(authModule.checkAuthNoToken()));
     }
   }
 
@@ -127,7 +144,7 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
   if (!_appSingleton) {
     if (_isWidget) {
       console.warn(
-        `A widget was registered to an app which hasn't yet been authenticated. import VeritoneApp first and call login().`
+        `A widget was registered to an app which hasn't yet been initialized. Import and call VeritoneApp before constructing any widgets.`
       );
       return;
     }

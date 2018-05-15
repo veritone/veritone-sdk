@@ -1,38 +1,38 @@
 import { endpoints } from './config';
 
 export default {
-	createToken(tokenLabel, rights) {
-		if (typeof tokenLabel !== 'string' || tokenLabel === '') {
-			throw new Error('Missing label!');
-		}
+  createToken(tokenLabel, rights) {
+    if (typeof tokenLabel !== 'string' || tokenLabel === '') {
+      throw new Error('Missing label!');
+    }
 
-		if (!rights || !rights.length) {
-			throw new Error('Missing rights!');
-		}
+    if (!rights || !rights.length) {
+      throw new Error('Missing rights!');
+    }
 
-		return {
-			method: 'post',
-			path: `${endpoints.application}/token`,
-			data: { tokenLabel, rights },
-			_requestOptions: {
-				validateStatus: s => s === 200
-			}
-		};
-	},
+    return {
+      method: 'post',
+      path: `${endpoints.application}/token`,
+      data: { tokenLabel, rights },
+      _requestOptions: {
+        validateStatus: s => s === 200
+      }
+    };
+  },
 
-	revokeToken(token) {
-		if (typeof token !== 'string' || token === '') {
-			throw new Error('Missing token!');
-		}
+  revokeToken(token) {
+    if (typeof token !== 'string' || token === '') {
+      throw new Error('Missing token!');
+    }
 
-		return {
-			method: 'delete',
-			path: `${endpoints.application}/token/${token}`,
-			_requestOptions: {
-				validateStatus: s => s === 200 || s === 204
-			}
-		};
-	}
+    return {
+      method: 'delete',
+      path: `${endpoints.application}/token/${token}`,
+      _requestOptions: {
+        validateStatus: s => s === 200 || s === 204
+      }
+    };
+  }
 };
 // createToken: function createToken(label, rights, callback) {
 // 	if (typeof label !== 'string' || label === '') {

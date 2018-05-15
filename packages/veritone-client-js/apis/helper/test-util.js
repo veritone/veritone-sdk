@@ -9,15 +9,15 @@ import { get, isRegExp, forOwn, isPlainObject } from 'lodash';
 // }) === true
 
 function walk(obj, cb, path = '') {
-	forOwn(obj, (v, k) => {
-		const newPath = path === '' ? k : `${path}.${k}`;
+  forOwn(obj, (v, k) => {
+    const newPath = path === '' ? k : `${path}.${k}`;
 
-		if (isPlainObject(v)) {
-			return walk(v, cb, newPath);
-		}
+    if (isPlainObject(v)) {
+      return walk(v, cb, newPath);
+    }
 
-		cb(v, k, newPath);
-	});
+    cb(v, k, newPath);
+  });
 }
 
 // do nothing if obj matches source, otherwise throw a relevant error.
@@ -25,23 +25,23 @@ function walk(obj, cb, path = '') {
 // objectVal is compared with ===. if sourceVal is a regex, objectVal is
 // tested against it.
 export function assertMatches(obj, source) {
-	return walk(source, (srcVal, key, path) => {
-		const objVal = get(obj, path);
+  return walk(source, (srcVal, key, path) => {
+    const objVal = get(obj, path);
 
-		if (isRegExp(srcVal)) {
-			if (!srcVal.test(objVal)) {
-				throw new Error(
-					`Expected ${objVal} to match ${srcVal} at path "${path}"`
-				);
-			}
+    if (isRegExp(srcVal)) {
+      if (!srcVal.test(objVal)) {
+        throw new Error(
+          `Expected ${objVal} to match ${srcVal} at path "${path}"`
+        );
+      }
 
-			return true;
-		}
+      return true;
+    }
 
-		if (srcVal !== objVal) {
-			throw new Error(
-				`Expected "${objVal}" to equal "${srcVal}" at path "${path}"`
-			);
-		}
-	});
+    if (srcVal !== objVal) {
+      throw new Error(
+        `Expected "${objVal}" to equal "${srcVal}" at path "${path}"`
+      );
+    }
+  });
 }

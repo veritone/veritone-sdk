@@ -26,7 +26,12 @@ const defaultState = {
 };
 
 export default createReducer(defaultState, {
-  [PICK_START](state, { meta: { id } }) {
+  [PICK_START](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
     return {
       [id]: {
         ...defaultPickerState,
@@ -35,7 +40,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [PICK_END](state, { meta: { id } }) {
+  [PICK_END](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
     return {
       ...state,
       [id]: {
@@ -44,7 +54,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPLOAD_REQUEST](state, { meta: { id } }) {
+  [UPLOAD_REQUEST](
+    state,
+    {
+      meta: { id }
+    }
+  ) {
     // todo: status message
     return {
       ...state,
@@ -59,7 +74,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPLOAD_PROGRESS](state, { payload, meta: { fileKey, id } }) {
+  [UPLOAD_PROGRESS](
+    state,
+    {
+      payload,
+      meta: { fileKey, id }
+    }
+  ) {
     // todo: status message
     return {
       ...state,
@@ -72,7 +93,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPLOAD_COMPLETE](state, { payload, meta: { warn, error, id } }) {
+  [UPLOAD_COMPLETE](
+    state,
+    {
+      payload,
+      meta: { warn, error, id }
+    }
+  ) {
     const errorMessage = get(error, 'message', error); // Error or string
     return {
       ...state,
