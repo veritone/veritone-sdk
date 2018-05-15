@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { string, number, func, bool } from 'prop-types';
+import { string, func, bool } from 'prop-types';
 
 import styles from './styles.scss';
 
 const Image = ({
   src,
-  height = 100,
-  width = 100,
+  height = '100px',
+  width = '100px',
   type = 'cover',
   border,
   label,
@@ -40,8 +40,8 @@ const Image = ({
 
 Image.propTypes = {
   src: string.isRequired,
-  height: number,
-  width: number,
+  height: string,
+  width: string,
   type: string,
   onClick: func,
   border: bool,
