@@ -176,7 +176,8 @@ export function fetchUser() {
       ],
       endpoint: state => `${getConfig(state).apiRoot}/v1/admin/current-user`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: 'include'
     }
   };
 }
