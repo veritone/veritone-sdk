@@ -21,6 +21,7 @@ import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
   MediaInfoPanel,
+  Image,
   MediaPlayer,
   FullScreenDialog,
   OCREngineOutputView,
@@ -398,6 +399,8 @@ class MediaDetailsWidget extends React.Component {
       googleMapsApiKey
     } = this.props;
 
+    let isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
+
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
@@ -598,12 +601,21 @@ class MediaDetailsWidget extends React.Component {
             <div className={styles.mediaScreen}>
               {!isExpandedMode && (
                 <div className={styles.mediaView}>
-                  <MediaPlayer
-                    store={this.context.store}
-                    playerRef={this.mediaPlayerRef}
-                    src={this.getPrimaryAssetUri()}
-                    streams={get(this.props, 'tdo.streams')}
-                  />
+                  {isImage ? (
+                    <Image
+                      src={this.getPrimaryAssetUri()}
+                      width="100%"
+                      height="100%"
+                      type="contain"
+                    />
+                  ) : (
+                    <MediaPlayer
+                      store={this.context.store}
+                      playerRef={this.mediaPlayerRef}
+                      src={this.getPrimaryAssetUri()}
+                      streams={get(this.props, 'tdo.streams')}
+                    />
+                  )}
                   <div className={styles.sourceLabel}>
                     Source: {this.getMediaSource()}
                   </div>
