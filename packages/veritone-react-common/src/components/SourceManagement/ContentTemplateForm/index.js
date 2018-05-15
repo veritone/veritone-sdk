@@ -106,7 +106,7 @@ export default class ContentTemplateForm extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form className={styles.formHeight} onSubmit={this.handleSubmit}>
         <ContentTemplates
           templateData={this.props.templateData}
           selectedTemplateSchemas={this.state.contentTemplates}
