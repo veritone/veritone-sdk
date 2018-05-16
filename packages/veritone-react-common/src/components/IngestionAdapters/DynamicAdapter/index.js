@@ -6,7 +6,7 @@ import { MenuItem } from 'material-ui/Menu';
 import TextField from 'material-ui/TextField';
 import { InputLabel } from 'material-ui/Input';
 
-import { get, isArray, clone, startCase, toLower, includes } from 'lodash';
+import { get, isArray, cloneDeep, startCase, toLower, includes } from 'lodash';
 import { objectOf, any, func, arrayOf, string } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -42,15 +42,15 @@ class DynamicAdapter extends React.Component {
       fields.forEach(field => {
         if (field.name) {
           let propValue = get(this.props.configuration, field.name);
-          if (field.defaultValue) {
+          if (propValue) {
+            newState[field.name] = cloneDeep(propValue);
+          } else if (field.defaultValue) {
             newState[field.name] =
-              propValue ||
               (!includes(field.defaultValue, ',')
                 ? field.defaultValue
                 : field.defaultValue.split(','));
           } else if (field.defaultValues) {
-            newState[field.name] =
-              propValue || clone(field.defaultValues) || [];
+            newState[field.name] = cloneDeep(field.defaultValues) || [];
           }
         }
       });
