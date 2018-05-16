@@ -74,7 +74,12 @@ const defaultMDPState = {
 const defaultState = {};
 
 export default createReducer(defaultState, {
-  [INITIALIZE_WIDGET](state, { meta: { widgetId } }) {
+  [INITIALIZE_WIDGET](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -84,7 +89,10 @@ export default createReducer(defaultState, {
   },
   [LOAD_ENGINE_CATEGORIES_SUCCESS](
     state,
-    { payload, meta: { warn, widgetId } }
+    {
+      payload,
+      meta: { warn, widgetId }
+    }
   ) {
     return {
       ...state,
@@ -97,7 +105,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_CATEGORIES_FAILURE](state, { meta: { warn, error, widgetId } }) {
+  [LOAD_ENGINE_CATEGORIES_FAILURE](
+    state,
+    {
+      meta: { warn, error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -110,7 +123,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_RESULTS](state, { payload, meta: { widgetId } }) {
+  [LOAD_ENGINE_RESULTS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     let resultRequests =
       state[widgetId].engineResultRequestsByEngineId[payload.engineId] || [];
     const requestInsertIndex = findLastIndex(resultRequests, request => {
@@ -160,7 +179,10 @@ export default createReducer(defaultState, {
   },
   [LOAD_ENGINE_RESULTS_SUCCESS](
     state,
-    { payload, meta: { widgetId, startOffsetMs, stopOffsetMs } }
+    {
+      payload,
+      meta: { widgetId, startOffsetMs, stopOffsetMs }
+    }
   ) {
     const previousResultsByEngineId =
       state[widgetId].engineResultsByEngineId || {};
@@ -222,7 +244,9 @@ export default createReducer(defaultState, {
   },
   [LOAD_ENGINE_RESULTS_FAILURE](
     state,
-    { meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId } }
+    {
+      meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
+    }
   ) {
     const errorMessage =
       `Error fetching engine ${engineId} results for offset ${startOffsetMs} - ${stopOffsetMs} :` +
@@ -236,7 +260,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO](state, { meta: { widgetId } }) {
+  [LOAD_TDO](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -247,7 +276,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [LOAD_TDO_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const tdo = payload;
     return {
       ...state,
@@ -259,7 +294,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_FAILURE](state, { meta: { error, widgetId } }) {
+  [LOAD_TDO_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -271,7 +311,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO](state, { meta: { widgetId } }) {
+  [UPDATE_TDO](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -281,7 +326,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [UPDATE_TDO_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -291,7 +342,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_FAILURE](state, { meta: { error, widgetId } }) {
+  [UPDATE_TDO_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -302,7 +358,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_CONTENT_TEMPLATES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [LOAD_TDO_CONTENT_TEMPLATES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const tdoContentTemplates = {};
     if (payload && payload.records) {
       payload.records.forEach(asset => {
@@ -332,7 +394,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_CONTENT_TEMPLATES_FAILURE](state, { meta: { error, widgetId } }) {
+  [LOAD_TDO_CONTENT_TEMPLATES_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -344,7 +411,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO](state, { meta: { widgetId } }) {
+  [UPDATE_TDO](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -354,7 +426,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_CONTENT_TEMPLATES](state, { meta: { widgetId } }) {
+  [UPDATE_TDO_CONTENT_TEMPLATES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -364,17 +441,28 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](state, { error, meta: { widgetId } }) {
+  [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](
+    state,
+    {
+      error,
+      meta: { widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        error: error ? errorMessage : null,
+        error: error ? errorMessage : null
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES](state, { meta: { widgetId } }) {
+  [LOAD_CONTENT_TEMPLATES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -384,7 +472,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [LOAD_CONTENT_TEMPLATES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const templateSchemas = {};
     // array of data registries containing an array of schemas
     payload.reduce((schemaStore, registryData) => {
@@ -412,7 +506,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES_FAILURE](state, { meta: { error, widgetId } }) {
+  [LOAD_CONTENT_TEMPLATES_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -424,7 +523,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SELECT_ENGINE_CATEGORY](state, { payload, meta: { widgetId } }) {
+  [SELECT_ENGINE_CATEGORY](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -435,7 +540,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SET_SELECTED_ENGINE_ID](state, { payload, meta: { widgetId } }) {
+  [SET_SELECTED_ENGINE_ID](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -444,7 +555,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [TOGGLE_EDIT_MODE](state, { meta: { widgetId } }) {
+  [TOGGLE_EDIT_MODE](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -454,7 +570,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [TOGGLE_INFO_PANEL](state, { meta: { widgetId } }) {
+  [TOGGLE_INFO_PANEL](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -463,7 +584,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [TOGGLE_EXPANDED_MODE](state, { meta: { widgetId } }) {
+  [TOGGLE_EXPANDED_MODE](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -472,7 +598,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES](state, { meta: { widgetId } }) {
+  [REQUEST_LIBRARIES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -481,7 +612,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [REQUEST_LIBRARIES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const allLibraries = uniqBy(
       values(payload).concat(state[widgetId].libraries),
       'id'
@@ -496,7 +633,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES_FAILURE](state, { error, meta: { widgetId } }) {
+  [REQUEST_LIBRARIES_FAILURE](
+    state,
+    {
+      error,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -506,7 +649,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_ENTITIES](state, { meta: { widgetId } }) {
+  [REQUEST_ENTITIES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -515,7 +663,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_ENTITIES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [REQUEST_ENTITIES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const allEntities = uniqBy(
       values(payload).concat(state[widgetId].entities),
       'id'
@@ -535,7 +689,13 @@ export default createReducer(defaultState, {
       ...state
     };
   },
-  [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [REQUEST_SCHEMAS_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {

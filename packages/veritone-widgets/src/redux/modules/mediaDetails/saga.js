@@ -151,15 +151,19 @@ function* loadTdoSaga(widgetId, tdoId) {
       // add bulk-edit-transcript engine if one was run
       .map(engineRun => {
         const engineId = get(engineRun, 'engine.id');
-        if ((engineId === 'bde0b023-333d-acb0-e01a-f95c74214607' || engineId === 'bulk-edit-transcript') && !engineRun.engine.category) {
+        if (
+          (engineId === 'bde0b023-333d-acb0-e01a-f95c74214607' ||
+            engineId === 'bulk-edit-transcript') &&
+          !engineRun.engine.category
+        ) {
           engineRun.engine.name = 'User Generated';
           engineRun.engine.category = {
-            id: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
-            name: "Transcription",
-            iconClass: "icon-transcription",
-            categoryType: "transcript",
+            id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
+            name: 'Transcription',
+            iconClass: 'icon-transcription',
+            categoryType: 'transcript',
             editable: true
-          }
+          };
         }
         return engineRun;
       })
@@ -231,10 +235,10 @@ function* loadTdoSaga(widgetId, tdoId) {
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
-  const updateTdoQuery = `mutation updateTDO($tdoId: ID!){
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
       updateTDO( input: {
         id: $tdoId
-        ${tdoDataToUpdate}
+        details: $details
       })
       {
         ${tdoInfoQueryClause}
@@ -251,7 +255,10 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: updateTdoQuery,
-      variables: { tdoId },
+      variables: {
+        tdoId,
+        details: !isEmpty(tdoDataToUpdate) ? tdoDataToUpdate : null
+      },
       token
     });
   } catch (error) {
@@ -851,9 +858,12 @@ function* uploadImage(fileToUpload, widgetId) {
 
   let uploadingImageToS3 = true;
   while (uploadingImageToS3) {
-    const { error, success, file, descriptor: { unsignedUrl } } = yield take(
-      resultChan
-    );
+    const {
+      error,
+      success,
+      file,
+      descriptor: { unsignedUrl }
+    } = yield take(resultChan);
 
     if (success || error) {
       uploadingImageToS3 = false;
@@ -901,61 +911,35 @@ function* watchUpdateTdoRequest() {
 
     const metaData = yield select(getTdoMetadata, widgetId);
     // Take the new updated metadata and construct the query for graphql
-    const detailsParams = [];
-    if (get(tdoDataToUpdate, 'veritoneFile.filename')) {
-      detailsParams.push(
-        `veritoneFile: { filename: "${get(
-          tdoDataToUpdate,
-          'veritoneFile.filename'
-        )}" }`
-      );
+    const detailsToSave = {};
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneFile'))) {
+      detailsToSave.veritoneFile = {
+        ...get(metaData, 'veritoneFile'),
+        ...get(tdoDataToUpdate, 'veritoneFile')
+      };
     }
-    if (get(tdoDataToUpdate, 'veritoneCustom.source')) {
-      detailsParams.push(
-        `veritoneCustom: { source: "${get(
-          tdoDataToUpdate,
-          'veritoneCustom.source'
-        )}" }`
-      );
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneCustom'))) {
+      detailsToSave.veritoneCustom = {
+        ...get(metaData, 'veritoneCustom'),
+        ...get(tdoDataToUpdate, 'veritoneCustom')
+      };
     }
-    if (
-      get(tdoDataToUpdate, 'veritoneProgram.programLiveImage') ||
-      get(tdoDataToUpdate, 'veritoneProgram.programImage')
-    ) {
-      let programData = '';
-      if (get(tdoDataToUpdate, 'veritoneProgram.programLiveImage')) {
-        programData += `programLiveImage: "${get(
-          tdoDataToUpdate,
-          'veritoneProgram.programLiveImage'
-        )}"`;
-      } else if (get(metaData, 'veritoneProgram.programLiveImage')) {
-        programData += `programLiveImage: "${get(
-          metaData,
-          'veritoneProgram.programLiveImage'
-        )}"`;
-      }
-      if (get(tdoDataToUpdate, 'veritoneProgram.programImage')) {
-        programData += ` programImage: "${get(
-          tdoDataToUpdate,
-          'veritoneProgram.programImage'
-        )}"`;
-      } else if (get(metaData, 'veritoneProgram.programImage')) {
-        programData += ` programImage: "${get(
-          metaData,
-          'veritoneProgram.programImage'
-        )}"`;
-      }
-      if (programData.length) {
-        detailsParams.push(`veritoneProgram: { ${programData} }`);
-      }
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneProgram'))) {
+      detailsToSave.veritoneProgram = {
+        ...detailsToSave.veritoneProgram,
+        programImage:
+          get(tdoDataToUpdate, 'veritoneProgram.programImage') ||
+          get(metaData, 'veritoneProgram.programImage'),
+        programLiveImage:
+          get(tdoDataToUpdate, 'veritoneProgram.programLiveImage') ||
+          get(metaData, 'veritoneProgram.programLiveImage')
+      };
     }
     if (get(tdoDataToUpdate, 'tags.length')) {
-      const tagQueryStrings = get(tdoDataToUpdate, 'tags').map(tag => {
-        return `{ value: "${tag.value}" }`;
+      detailsToSave.tags = get(tdoDataToUpdate, 'tags').map(tag => {
+        return { value: tag.value };
       });
-      detailsParams.push(`tags: [ ${tagQueryStrings.join(', ')} ]`);
     }
-    const detailsToSave = `details: { ${detailsParams.join(' ')} }`;
     yield call(updateTdoSaga, widgetId, tdoId, detailsToSave);
   });
 }
