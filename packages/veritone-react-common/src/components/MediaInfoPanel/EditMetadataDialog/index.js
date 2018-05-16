@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
+import DeleteIcon from 'material-ui-icons/Delete';
+import EditIcon from 'material-ui-icons/Edit';
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -29,10 +31,9 @@ class EditMetadataDialog extends Component {
     source: get(this.props.metadata, 'veritoneCustom.source', ''),
     programLiveImage: get(
       this.props.metadata,
-      'veritoneProgram.programLiveImage',
-      ''
+      'veritoneProgram.programLiveImage'
     ),
-    programImage: get(this.props.metadata, 'veritoneProgram.programImage', ''),
+    programImage: get(this.props.metadata, 'veritoneProgram.programImage'),
     selectingFile: false
   };
 
@@ -75,27 +76,33 @@ class EditMetadataDialog extends Component {
       ...metadataToUpdate,
       veritoneProgram: {
         ...metadataToUpdate.veritoneProgram,
-        programLiveImage: this.state.programLiveImageFile,
-        programImage: this.state.programImageFile
+        programLiveImage: this.state.programLiveImageFile || this.state.programLiveImage,
+        programImage: this.state.programImageFile || this.state.programImage
       }
     }
     this.props.onSave(metadataToUpdate);
   };
 
   hasPendingChanges = () => {
-    const { filename, source } = this.state;
+    const { filename, source, programLiveImage, programImage } = this.state;
     return (
       filename !== get(this.props.metadata, 'veritoneFile.filename', '') ||
       source !== get(this.props.metadata, 'veritoneCustom.source', '') ||
-      this.state.programImageFile ||
-      this.state.programLiveImageFile
+      programLiveImage !== get(
+        this.props.metadata,
+        'veritoneProgram.programLiveImage'
+      )  ||
+      programImage !== get(
+        this.props.metadata,
+        'veritoneProgram.programImage'
+      )
     );
   };
 
   handleStartPickFiles = fileType => event => {
     this.setState({
       selectingFile: true,
-      selectFileType: fileType
+      selectImageType: fileType
     });
   };
 
@@ -105,10 +112,10 @@ class EditMetadataDialog extends Component {
     fileReader.onload = () => {
       this.setState((prevState, props) => {
         return {
-          [prevState.selectFileType]: fileReader.result,
-          [prevState.selectFileType + 'File']: files[0],
+          [prevState.selectImageType]: fileReader.result,
+          [prevState.selectImageType + 'File']: files[0],
           selectingFile: false,
-          selectFileType: null
+          selectImageType: null
         };
       });
     };
@@ -119,9 +126,17 @@ class EditMetadataDialog extends Component {
   handleCloseFilePicker = () => {
     this.setState({
       selectingFile: false,
-      selectFileType: null
+      selectImageType: null
     });
   };
+
+  handleRemoveImage = imageType => event => {
+    console.log(imageType);
+    this.setState({
+      [imageType]: '',
+      [imageType + 'File']: null
+    })
+  }
 
   render() {
     return (
@@ -196,45 +211,41 @@ class EditMetadataDialog extends Component {
               <div className={styles.programImagesSection}>
                 <div
                   className={styles.imageSection}
-                  onClick={this.handleStartPickFiles('programLiveImage')}
                 >
                   <div className={styles.programImageLabel}>
                     Program Live Image
                   </div>
-                  {this.state.programLiveImage &&
-                    this.state.programLiveImage.length && (
-                      <img
-                        className={styles.programLiveImage}
-                        src={this.state.programLiveImage}
-                      />
-                    )}
-                  {(!this.state.programLiveImage ||
-                    !this.state.programLiveImage.length) && (
-                    <img
-                      className={styles.programLiveImage}
-                      src="//static.veritone.com/veritone-ui/default-nullstate.svg"
+                  <div className={styles.programLiveImageContainer}>
+                    <img className={styles.programLiveImage}
+                      src={
+                        get(this.state, 'programLiveImage.length') ?
+                          this.state.programLiveImage :
+                          "//static.veritone.com/veritone-ui/default-nullstate.svg"
+                      }
                     />
-                  )}
+                    <div className={styles.imageOverlay}>
+                      <EditIcon classes={{root:styles.editProgramLiveImageIcon}} className="icon-mode_edit2" onClick={this.handleStartPickFiles('programLiveImage')}/>
+                      { !!get(this.state, 'programLiveImage.length') && <DeleteIcon classes={{root:styles.editProgramLiveImageIcon}} className="icon-trashcan" onClick={this.handleRemoveImage('programLiveImage')}/>}
+                    </div>
+                  </div>
                 </div>
                 <div
                   className={styles.imageSection}
-                  onClick={this.handleStartPickFiles('programImage')}
                 >
                   <div className={styles.programImageLabel}>Program Image</div>
-                  {this.state.programImage &&
-                    this.state.programImage.length && (
-                      <img
-                        className={styles.programImage}
-                        src={this.state.programImage}
-                      />
-                    )}
-                  {(!this.state.programImage ||
-                    !this.state.programImage.length) && (
-                    <img
-                      className={styles.programImage}
-                      src="//static.veritone.com/veritone-ui/program_image_null.svg"
+                  <div className={styles.programImageContainer}>
+                    <img className={styles.programImage}
+                      src={ 
+                        get(this.state, 'programImage.length') ?
+                          this.state.programImage :
+                          "//static.veritone.com/veritone-ui/program_image_null.svg"
+                      }
                     />
-                  )}
+                    <div className={styles.imageOverlay}>
+                      <EditIcon classes={{root:styles.editProgramImageIcon}} className="icon-mode_edit2" onClick={this.handleStartPickFiles('programImage')}/>
+                      { !!get(this.state, 'programImage.length') && <DeleteIcon classes={{root:styles.editProgramImageIcon}} onClick={this.handleRemoveImage('programImage')}/> }
+                    </div>
+                  </div>
                 </div>
               </div>
             </DialogContent>
