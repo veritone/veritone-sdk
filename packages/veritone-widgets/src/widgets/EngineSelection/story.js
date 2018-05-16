@@ -1,6 +1,7 @@
 import React from 'react';
 import { bool, string } from 'prop-types';
 import { connect } from 'react-redux';
+import { noop } from 'lodash';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { modules } from 'veritone-redux-common';
@@ -39,8 +40,8 @@ class Story extends React.Component {
 
     this._engineSelection = new EngineSelectionWidget({
       elId: 'engine-selection-widget',
-      onSave: () => {},
-      onCancel: () => {}
+      onSave: noop,
+      onCancel: noop
     });
   }
 
@@ -74,9 +75,9 @@ class Story extends React.Component {
             or log in via oauth:
             <p>
               implicit:
-              <span id="login-button-widget-implicit"/>
+              <span id="login-button-widget-implicit" />
               auth code:
-              <span id="login-button-widget-auth-code"/>
+              <span id="login-button-widget-auth-code" />
             </p>
           </div>
         )}

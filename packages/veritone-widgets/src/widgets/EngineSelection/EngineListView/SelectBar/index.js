@@ -1,7 +1,9 @@
 import React from 'react';
-import { func, number, bool, string } from 'prop-types';
+import { func, number, bool, string, arrayOf, shape } from 'prop-types';
 
 import Checkbox from 'material-ui/Checkbox';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
 
 import SearchBar from './SearchBar';
 
@@ -14,9 +16,16 @@ export default class SelectBar extends React.Component {
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
     isChecked: bool.isRequired,
-    hideActions: bool.isRequired,
+    hideActionMenuItems: bool.isRequired,
     isSearchOpen: bool.isRequired,
     onToggleSearch: func.isRequired,
+    actionMenuItems: arrayOf(
+      shape({
+        buttonText: string,
+        iconClass: string,
+        onClick: func.isRequired
+      })
+    ),
     count: number.isRequired
   };
 
@@ -31,16 +40,45 @@ export default class SelectBar extends React.Component {
         />
         <div>Select All ({this.props.count})</div>
 
-        <div className={styles.selectBarIcons}>
-          <SearchBar
-            onSearch={this.props.onSearch}
-            onClearSearch={this.props.onClearSearch}
-            onToggleSearch={this.props.onToggleSearch}
-            searchQuery={this.props.searchQuery}
-            isOpen={this.props.isSearchOpen}
-            hideActions={this.props.hideActions}
-          />
-        </div>
+        {!this.props.hideActionMenuItems && (
+          <div className={styles.selectBarIcons}>
+            <SearchBar
+              onSearch={this.props.onSearch}
+              onClearSearch={this.props.onClearSearch}
+              onToggleSearch={this.props.onToggleSearch}
+              searchQuery={this.props.searchQuery}
+              isOpen={this.props.isSearchOpen}
+            />
+            {this.props.actionMenuItems && (
+              <div className={styles.actionMenuDividerContainer}>
+                <div className={styles.actionMenuDivider} />
+              </div>
+            )}
+            {this.props.actionMenuItems &&
+              this.props.actionMenuItems.map((item, key) => {
+                if (item.buttonText) {
+                  return (
+                    <Button
+                      key={key} // eslint-disable-line
+                      onClick={item.onClick}
+                      color="primary"
+                    >
+                      {item.buttonText}
+                    </Button>
+                  );
+                }
+
+                return (
+                  <IconButton
+                    key={key} // eslint-disable-line
+                    onClick={item.onClick}
+                  >
+                    <i className={item.iconClass} />
+                  </IconButton>
+                );
+              })}
+          </div>
+        )}
       </div>
     );
   }

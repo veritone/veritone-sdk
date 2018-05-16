@@ -14,10 +14,9 @@ export default class SearchBar extends React.Component {
   static propTypes = {
     searchQuery: string,
     onToggleSearch: func.isRequired,
-    isOpen: bool.isRequired,
+    isOpen: bool,
     onSearch: func.isRequired,
-    onClearSearch: func.isRequired,
-    hideActions: bool.isRequired
+    onClearSearch: func.isRequired
   };
 
   static defaultProps = {
@@ -54,6 +53,7 @@ export default class SearchBar extends React.Component {
       <TextField
         className={styles.searchBar}
         placeholder="Search by engine name"
+        defaultValue={this.props.searchQuery}
         onChange={this.handleChange}
         inputProps={{
           className: styles.searchBarInput
@@ -79,14 +79,12 @@ export default class SearchBar extends React.Component {
 
   renderClosedState = () => (
     <div>
-      {!this.props.hideActions && (
-        <IconButton
-          onClick={this.handleToggleSearch}
-          className={styles.searchBarIcon}
-        >
-          <SearchIcon />
-        </IconButton>
-      )}
+      <IconButton
+        onClick={this.handleToggleSearch}
+        className={styles.searchBarIcon}
+      >
+        <SearchIcon />
+      </IconButton>
     </div>
   );
 

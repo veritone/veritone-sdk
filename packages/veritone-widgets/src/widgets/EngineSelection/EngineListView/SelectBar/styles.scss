@@ -42,3 +42,13 @@
     background-color: $blue-1 !important;
   }
 }
+
+.actionMenuDividerContainer {
+  padding: 0 20px;
+}
+
+.actionMenuDivider {
+  border-right: 1px solid $light-black;
+  width: 1px;
+  height: 28px;
+}

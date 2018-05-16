@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, arrayOf, string, bool } from 'prop-types';
-import { noop } from 'lodash';
+import { func, arrayOf, string, bool, shape } from 'prop-types';
 
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
@@ -27,6 +26,13 @@ class EngineSelectionWidget extends React.Component {
   static propTypes = {
     onSave: func.isRequired,
     onCancel: func.isRequired,
+    actionMenuItems: arrayOf(
+      shape({
+        buttonText: string,
+        iconClass: string,
+        onClick: func.isRequired
+      })
+    ),
     fetchEngines: func.isRequired,
     setAllEnginesSelected: func.isRequired,
     setDeselectedEngineIds: func.isRequired,
@@ -37,8 +43,6 @@ class EngineSelectionWidget extends React.Component {
   };
 
   static defaultProps = {
-    onSave: noop,
-    onCancel: noop,
     deselectedEngineIds: [],
     allEnginesSelected: false,
     hideActions: false
@@ -81,27 +85,22 @@ class EngineSelectionWidget extends React.Component {
     });
   };
 
-  renderDetailView = () => (
-    <EngineDetailView
-      onCloseDetailView={this.handleHideDetail}
-      engine={this.state.engineDetails}
-    />
-  );
-
-  renderListView = () => (
-    <EngineListView
-      onViewDetail={this.handleViewDetail}
-      onSave={this.save}
-      onCancel={this.props.onCancel}
-      allEnginesSelected={this.props.allEnginesSelected}
-      hideActions={this.props.hideActions}
-    />
-  );
-
   render() {
-    return this.state.showDetailView
-      ? this.renderDetailView()
-      : this.renderListView();
+    return this.state.showDetailView ? (
+      <EngineDetailView
+        onCloseDetailView={this.handleHideDetail}
+        engine={this.state.engineDetails}
+      />
+    ) : (
+      <EngineListView
+        onViewDetail={this.handleViewDetail}
+        onSave={this.save}
+        onCancel={this.props.onCancel}
+        actionMenuItems={this.props.actionMenuItems}
+        allEnginesSelected={this.props.allEnginesSelected}
+        hideActions={this.props.hideActions}
+      />
+    );
   }
 }
 

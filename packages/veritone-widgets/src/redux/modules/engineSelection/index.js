@@ -69,7 +69,6 @@ export default createReducer(defaultState, {
     const selectedEngineIds = state.allEnginesSelected
       ? difference(normalizedResults, state.deselectedEngineIds)
       : [];
-    // console.log('selectedEngineIds', selectedEngineIds);
 
     return {
       ...state,

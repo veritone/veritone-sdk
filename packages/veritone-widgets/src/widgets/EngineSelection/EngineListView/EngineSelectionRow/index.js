@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bool, object, func, string, shape } from 'prop-types';
+import { get } from 'lodash';
 
 import { Lozenge, Truncate } from 'veritone-react-common';
 
@@ -46,7 +47,6 @@ export default class EngineSelectionRow extends React.Component {
       iconPath: string,
       ownerOrganization: object
     }).isRequired,
-    engineId: string.isRequired,
     isSelected: bool.isRequired,
     isChecked: bool.isRequired,
     onViewDetail: func.isRequired,
@@ -67,7 +67,7 @@ export default class EngineSelectionRow extends React.Component {
   };
 
   render() {
-    const { name, iconClass, color } = this.props.engine.category || {};
+    const { name, iconClass, color } = get(this.props, 'engine.category', {});
 
     const deploymentModelLogo = {
       FullyNetworkIsolated: networkIsolatedLogo,
@@ -99,7 +99,7 @@ export default class EngineSelectionRow extends React.Component {
                   {this.props.engine.name}
                 </div>
                 <div className={styles.orgName}>
-                  {this.props.engine.ownerOrganization.name}
+                  {get(this.props, 'engine.ownerOrganization.name')}
                 </div>
               </div>
             </div>

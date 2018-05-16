@@ -61,9 +61,9 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 export default class EngineListView extends React.Component {
   static propTypes = {
-    allEngines: objectOf(object).isRequired,
+    allEngines: objectOf(object),
     onViewDetail: func.isRequired,
-    currentResults: arrayOf(string).isRequired,
+    currentResults: arrayOf(string),
     allEnginesChecked: bool.isRequired,
     selectedEngineIds: arrayOf(string).isRequired,
     checkedEngineIds: arrayOf(string).isRequired,
@@ -89,6 +89,13 @@ export default class EngineListView extends React.Component {
     toggleSearch: func.isRequired,
     onSave: func.isRequired,
     onCancel: func.isRequired,
+    actionMenuItems: arrayOf(
+      shape({
+        buttonText: string,
+        iconClass: string,
+        onClick: func.isRequired
+      })
+    ),
     hideActions: bool
   };
 
@@ -145,15 +152,6 @@ export default class EngineListView extends React.Component {
     </div>
   );
 
-  renderNoResults = () => (
-    <div className={styles.noResults}>
-      <i className="icon-engines" />
-      <span className={styles.noResultsMessage}>
-        Your search returned no results.
-      </span>
-    </div>
-  );
-
   handleClearFilter = id => {
     const { filter, value } = JSON.parse(id);
     const { filters } = this.props;
@@ -176,26 +174,6 @@ export default class EngineListView extends React.Component {
       });
     }
   };
-
-  renderTabs = () => (
-    <Tabs
-      className={styles.tabs}
-      value={this.props.currentTabIndex}
-      onChange={this.handleTabChange}
-      indicatorColor="primary"
-      textColor="primary"
-      fullWidth
-    >
-      <Tab
-        classes={{ textColorPrimarySelected: styles.tab }}
-        label="Your Engines"
-      />
-      <Tab
-        classes={{ textColorPrimarySelected: styles.tab }}
-        label="Explore All Engines"
-      />
-    </Tabs>
-  );
 
   renderYourEnginesTab = () => {
     if (isEmpty(this.props.selectedEngineIds)) {
@@ -224,7 +202,14 @@ export default class EngineListView extends React.Component {
     }
 
     if (isEmpty(this.props.currentResults)) {
-      return this.renderNoResults();
+      return (
+        <div className={styles.noResults}>
+          <i className="icon-engines" />
+          <span className={styles.noResultsMessage}>
+            Your search returned no results.
+          </span>
+        </div>
+      );
     }
 
     return this.renderEngineList();
@@ -235,8 +220,7 @@ export default class EngineListView extends React.Component {
   };
 
   render() {
-    const { checkedEngineIds } = this.props;
-    const { currentTabIndex } = this.props;
+    const { checkedEngineIds, currentTabIndex } = this.props;
     const tabs = {
       0: this.renderYourEnginesTab(),
       1: this.renderExploreAllEnginesTab()
@@ -263,7 +247,25 @@ export default class EngineListView extends React.Component {
               allEngines={Object.keys(this.props.allEngines)}
             />
           )}
-          {isEmpty(checkedEngineIds) && this.renderTabs()}
+          {isEmpty(checkedEngineIds) && (
+            <Tabs
+              className={styles.tabs}
+              value={this.props.currentTabIndex}
+              onChange={this.handleTabChange}
+              indicatorColor="primary"
+              textColor="primary"
+              fullWidth
+            >
+              <Tab
+                classes={{ textColorPrimarySelected: styles.tab }}
+                label="Your Engines"
+              />
+              <Tab
+                classes={{ textColorPrimarySelected: styles.tab }}
+                label="Explore All Engines"
+              />
+            </Tabs>
+          )}
           <div className={styles.engineListContainer}>
             <SelectBar
               onCheckAll={this.handleCheckAll}
@@ -273,10 +275,9 @@ export default class EngineListView extends React.Component {
               onToggleSearch={this.props.toggleSearch}
               isSearchOpen={this.props.isSearchOpen}
               isChecked={this.props.allEnginesChecked}
-              hideActions={
-                this.props.failedToFetchEngines ||
-                this.props.isFetchingEngines ||
-                !currentTabIndex
+              actionMenuItems={this.props.actionMenuItems}
+              hideActionMenuItems={
+                this.props.failedToFetchEngines || !currentTabIndex
               }
               count={
                 currentTabIndex
