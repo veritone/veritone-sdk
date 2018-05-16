@@ -6,11 +6,13 @@ import Select from 'material-ui/Select';
 import { MenuItem } from 'material-ui/Menu';
 import Radio, { RadioGroup } from 'material-ui/Radio';
 import { FormControlLabel } from 'material-ui/Form';
+import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent from './TranscriptContent';
 import styles from './styles.scss';
 
+@withMuiThemeProvider
 export default class TranscriptEngineOutput extends Component {
   static propTypes = {
     data: arrayOf(
@@ -47,6 +49,7 @@ export default class TranscriptEngineOutput extends Component {
     contentClassName: string,
 
     editMode: bool,
+    onChange: func,
 
     onClick: func,
     onScroll: func,
@@ -72,13 +75,17 @@ export default class TranscriptEngineOutput extends Component {
     super(props);
 
     this.state = {
-      overview: false
+      viewType: 'overview',
+      editType: 'snippet'
     };
   }
 
   handleViewChange = event => {
-    event.target.value === 'overview' && this.setState({ overview: true });
-    event.target.value === 'time' && this.setState({ overview: false });
+    this.setState({ viewType: event.target.value });
+  };
+
+  handleEditChange = event => {
+    this.setState({ editType: event.target.value });
   };
 
   renderEditOptions() {
@@ -86,19 +93,19 @@ export default class TranscriptEngineOutput extends Component {
       <RadioGroup
         row
         aria-label="edit_mode"
-        value={this.state.overview ? 'overview' : 'time'}
+        value={this.state.editType}
         name="editMode"
         className={classNames(styles.radioButton)}
-        onChange={this.handleViewChange}
+        onChange={this.handleEditChange}
       >
         <FormControlLabel
-          value="time"
+          value="snippet"
           className={styles.label}
           control={<Radio color="primary" />}
           label="Snippet Edit"
         />
         <FormControlLabel
-          value="overview"
+          value="bulk"
           className={styles.label}
           control={<Radio color="primary" />}
           label="Bulk Edit"
@@ -111,7 +118,7 @@ export default class TranscriptEngineOutput extends Component {
     return (
       <Select
         autoWidth
-        value={this.state.overview ? 'overview' : 'time'}
+        value={this.state.viewType}
         className={styles.viewDropdown}
         onChange={this.handleViewChange}
         MenuProps={{
@@ -169,6 +176,7 @@ export default class TranscriptEngineOutput extends Component {
       onClick,
       onScroll,
       editMode,
+      onChange,
       mediaLengthMs,
       neglectableTimeMs,
       estimatedDisplayTimeMs,
@@ -182,7 +190,8 @@ export default class TranscriptEngineOutput extends Component {
         <TranscriptContent
           data={data}
           editMode={editMode}
-          overview={this.state.overview}
+          viewType={this.state.viewType}
+          editType={this.state.editType}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
           estimatedDisplayTimeMs={estimatedDisplayTimeMs}
@@ -190,6 +199,7 @@ export default class TranscriptEngineOutput extends Component {
           neglectableTimeMs={neglectableTimeMs}
           onClick={onClick}
           onScroll={onScroll}
+          onChange={onChange}
           className={classNames(contentClassName)}
         />
       </div>

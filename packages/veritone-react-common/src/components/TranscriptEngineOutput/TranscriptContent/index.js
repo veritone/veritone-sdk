@@ -35,10 +35,12 @@ export default class TranscriptContent extends Component {
     className: string,
 
     editMode: bool,
-    overview: bool,
+    viewType: string,
+    editType: string,
 
     onClick: func,
     onScroll: func,
+    onChange: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -50,7 +52,8 @@ export default class TranscriptContent extends Component {
 
   static defaultProps = {
     editMode: false,
-    overview: false,
+    viewType: 'time',
+    editType: 'snippet',
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -58,6 +61,10 @@ export default class TranscriptContent extends Component {
   handleOnClick = (target, value) => {
     this.props.onClick &&
       this.props.onClick(value.startTimeMs, value.stopTimeMs);
+  };
+
+  handleDataChanged = (target, value) => {
+    this.props.onChange && this.props.onChange(target, value);
   };
 
   parseData() {
@@ -235,6 +242,7 @@ export default class TranscriptContent extends Component {
               key={'transcript-snippet' + segmentData.startTimeMs}
               content={segmentData}
               editMode={editMode}
+              onChange={this.handleDataChanged}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
@@ -249,6 +257,10 @@ export default class TranscriptContent extends Component {
               key={'transcript--snippet' + segmentData.startTimeMs}
               startTimeMs={segmentData.startTimeMs}
               stopTimeMs={segmentData.stopTimeMs}
+              editMode={editMode}
+              onChange={this.handleDataChanged}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
             />
           );
           break;
@@ -260,74 +272,89 @@ export default class TranscriptContent extends Component {
   };
 
   renderOverviewSegments = parsedData => {
-    let { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const {
+      editMode,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
+    } = this.props;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    let stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const overviewSegments = [];
+    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
+      const segmentStartTime = segmentData.startTimeMs;
+      const segmentStopTime = segmentData.stopTimeMs;
 
+      let segmentContent;
+      switch (segmentData.status) {
+        case 'success':
+          segmentContent = (
+            <OverviewSegment
+              key={'transcript-overview' + segmentStartTime}
+              content={segmentData}
+              onClick={this.handleOnClick}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+              classNames={classNames(styles.contentSegment)}
+            />
+          );
+          break;
+        case 'no-transcript':
+          segmentContent = (
+            <NoDataSegment
+              key={'transcript--overview' + segmentStartTime}
+              overview
+              startTimeMs={segmentStartTime}
+              stopTimeMs={segmentStopTime}
+              editMode={editMode}
+              onChange={this.handleDataChanged}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+            />
+          );
+          break;
+      }
+
+      overviewSegments.push({
+        start: segmentStartTime,
+        stop: segmentStopTime,
+        content: segmentContent
+      });
+    });
+
+    return overviewSegments;
+  };
+
+  renderBulkEdit = parsedData => {
     let overalStartTime = 0;
     let overalStopTime = 0;
     let overalString = '';
 
-    let overviewSegments = [];
+    const overviewSegments = [];
     parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
-      let segmentStartTime = segmentData.startTimeMs;
-      let segmentStopTime = segmentData.stopTimeMs;
+      const segmentStartTime = segmentData.startTimeMs;
+      const segmentStopTime = segmentData.stopTimeMs;
 
-      if (editMode) {
-        overalStartTime > segmentStartTime &&
-          (overalStartTime = segmentStartTime);
-        overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
+      overalStartTime > segmentStartTime &&
+        (overalStartTime = segmentStartTime);
+      overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
 
-        if (segmentData.status === 'success') {
-          overalString = overalString + segmentData.sentences;
-        } else {
-          overalString = overalString + '\n\n\n';
-        }
-
-        if (segmentIndex === parsedData.overviewSegments.length - 1) {
-          // Reach the last segment
-          overviewSegments.push({
-            start: overalStartTime,
-            stop: overalStopTime,
-            content: (
-              <TranscriptBulkEdit
-                key={'transcript-bulk-edit' + overalStopTime}
-                content={overalString}
-              />
-            )
-          });
-        }
+      if (segmentData.status === 'success') {
+        overalString = overalString + segmentData.sentences;
       } else {
-        let segmentContent;
-        switch (segmentData.status) {
-          case 'success':
-            segmentContent = (
-              <OverviewSegment
-                key={'transcript-overview' + segmentStartTime}
-                content={segmentData}
-                onClick={this.handleOnClick}
-                startMediaPlayHeadMs={mediaPlayerTimeMs}
-                stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                classNames={classNames(styles.contentSegment)}
-              />
-            );
-            break;
-          case 'no-transcript':
-            segmentContent = (
-              <NoDataSegment
-                key={'transcript--overview' + segmentStartTime}
-                overview
-                startTimeMs={segmentStartTime}
-                stopTimeMs={segmentStopTime}
-              />
-            );
-            break;
-        }
+        overalString = overalString + '\n\n\n';
+      }
 
+      if (segmentIndex === parsedData.overviewSegments.length - 1) {
+        // Reach the last segment
         overviewSegments.push({
-          start: segmentStartTime,
-          stop: segmentStopTime,
-          content: segmentContent
+          start: overalStartTime,
+          stop: overalStopTime,
+          content: (
+            <TranscriptBulkEdit
+              key={'transcript-bulk-edit' + overalStopTime}
+              content={overalString}
+            />
+          )
         });
       }
     });
@@ -335,9 +362,37 @@ export default class TranscriptContent extends Component {
     return overviewSegments;
   };
 
+  renderEditMode = parsedData => {
+    let content;
+    switch (this.props.editType) {
+      case 'snippet':
+        content = this.renderSnippetSegments(parsedData);
+        break;
+      case 'bulk':
+        content = this.renderBulkEdit(parsedData);
+        break;
+    }
+
+    return content;
+  };
+
+  renderViewMode = parsedData => {
+    let content;
+    switch (this.props.viewType) {
+      case 'time':
+        content = this.renderSnippetSegments(parsedData);
+        break;
+      case 'overview':
+        content = this.renderOverviewSegments(parsedData);
+        break;
+    }
+
+    return content;
+  };
+
   render() {
     let {
-      overview,
+      editMode,
       className,
       mediaLengthMs,
       neglectableTimeMs,
@@ -346,18 +401,21 @@ export default class TranscriptContent extends Component {
     } = this.props;
 
     let parsedData = this.parseData();
+
     return (
       <div className={classNames(styles.transcriptContent, className)}>
         <DynamicContentScroll
           className={classNames(styles.container)}
-          onScroll={onScroll}
-          totalSize={parsedData.lazyLoading && onScroll ? mediaLengthMs : 0}
+          onScroll={!editMode && onScroll}
+          totalSize={
+            parsedData.lazyLoading && onScroll && !editMode ? mediaLengthMs : 0
+          }
           estimatedDisplaySize={estimatedDisplayTimeMs}
           neglectableSize={neglectableTimeMs}
           contents={
-            overview
-              ? this.renderOverviewSegments(parsedData)
-              : this.renderSnippetSegments(parsedData)
+            editMode
+              ? this.renderEditMode(parsedData)
+              : this.renderViewMode(parsedData)
           }
         />
       </div>

@@ -15,19 +15,21 @@ export default class SnippetFragment extends Component {
     editMode: bool,
     onClick: func,
     onChange: func,
-    className: string
+    className: string,
+    changeOnBlur: bool
   };
 
   static defaultProps = {
     active: false,
-    editMode: false
+    editMode: false,
+    changeOnBlur: true
   };
 
   handleSnippetClick = event => {
-    let { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
+    const { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
 
     if (!editMode && onClick) {
-      let data = {
+      const data = {
         value: value,
         startTimeMs: startTimeMs,
         stopTimeMs: stopTimeMs
@@ -37,10 +39,38 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetChange = event => {
-    let { value, startTimeMs, stopTimeMs, editMode, onChange } = this.props;
+    const {
+      value,
+      startTimeMs,
+      stopTimeMs,
+      editMode,
+      onChange,
+      changeOnBlur
+    } = this.props;
 
-    if (editMode && onChange) {
-      let data = {
+    if (editMode && onChange && !changeOnBlur) {
+      const data = {
+        newValue: event.target.value,
+        originalValue: value,
+        startTimeMs: startTimeMs,
+        stopTimeMs: stopTimeMs
+      };
+      onChange(event, data);
+    }
+  };
+
+  handleSnippetFocusOut = event => {
+    const {
+      value,
+      startTimeMs,
+      stopTimeMs,
+      editMode,
+      onChange,
+      changeOnBlur
+    } = this.props;
+    const newVal = event.target.textContent;
+    if (editMode && onChange && changeOnBlur && newVal !== value) {
+      const data = {
         newValue: event.target.value,
         originalValue: value,
         startTimeMs: startTimeMs,
@@ -51,7 +81,7 @@ export default class SnippetFragment extends Component {
   };
 
   render() {
-    let { value, active, editMode, className } = this.props;
+    const { value, active, editMode, className } = this.props;
 
     return (
       <ContentEditable
@@ -59,6 +89,7 @@ export default class SnippetFragment extends Component {
         html={value}
         disabled={!editMode}
         onClick={this.handleSnippetClick}
+        onBlur={this.handleSnippetFocusOut}
         onChange={this.handleSnippetChange}
         className={classNames(styles.transcriptSnippet, className, {
           [styles.read]: !editMode,

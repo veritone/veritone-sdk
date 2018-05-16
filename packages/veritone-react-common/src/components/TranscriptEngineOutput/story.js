@@ -84,6 +84,7 @@ export class TranscriptExample extends Component {
     return (
       <TranscriptEngineOutput
         editMode={boolean('Edit Mode', false)}
+        onChange={action('on change')}
         data={this.state.data}
         className={styles.outputViewRoot}
         mediaPlayerTimeMs={1000 * number('media player time', 0)}
