@@ -131,7 +131,6 @@ class EditMetadataDialog extends Component {
   };
 
   handleRemoveImage = imageType => event => {
-    console.log(imageType);
     this.setState({
       [imageType]: '',
       [imageType + 'File']: null
