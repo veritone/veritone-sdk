@@ -237,7 +237,7 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     selectedTabValue: 'mediaDetails',
-    hasPendingChanges: false
+    hasPendingChanges: true
   };
 
   componentWillMount() {
@@ -315,21 +315,22 @@ class MediaDetailsWidget extends React.Component {
     // move this to transcript edit to mock snippet edit mode
     // add 'User Generated' transcript engineId / bulk-edit-transcript
     // 'bde0b023-333d-acb0-e01a-f95c74214607'
-    // file = {
-    //   sourceEngineId: 'bde0b023-333d-acb0-e01a-f95c74214607',
-    //   series: [{
-    //       startTimeMs: 110, stopTimeMs: 5250,
-    //       words: [{ word: 'Hey guys Tom Patterson here founder and C.E.O. of Tommy John', confidence: 1 }]
-    //     }, {
-    //       startTimeMs: 5259, stopTimeMs: 10469,
-    //       words: [{ word: 'HERE GOES ANOTHER MODIFIED PART', confidence: 1 }]
-    //     }, {
-    //       startTimeMs: 10480, stopTimeMs: 15509,
-    //       words: [{ word: 'of you have joined the Tommy John revolution', confidence: 1 }]
-    //     }]
-    // };
 
-    const data = this.props.engineResultsByEngineId[this.props.selectedEngineId];
+    // const data = this.props.engineResultsByEngineId[this.props.selectedEngineId];
+    const data = {
+      sourceEngineId: 'bde0b023-333d-acb0-e01a-f95c74214607',
+      series: [{
+          startTimeMs: 110, stopTimeMs: 5250,
+          words: [{ word: 'Hey guys Tom Patterson here founder and C.E.O. of Tommy John', confidence: 1 }]
+        }, {
+          startTimeMs: 5259, stopTimeMs: 10469,
+          words: [{ word: 'HERE GOES ANOTHER MODIFIED PART', confidence: 1 }]
+        }, {
+          startTimeMs: 10480, stopTimeMs: 15509,
+          words: [{ word: 'of you have joined the Tommy John revolution', confidence: 1 }]
+        }
+      ]
+    };
 
     this.props.saveAssetData(this.props._widgetId,
       {

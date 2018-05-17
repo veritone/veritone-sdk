@@ -551,7 +551,7 @@ function* deleteAssetsSaga(assetIds) {
 }
 
 function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData) {
-  const requestTdo = yield select(tdo, widgetId);
+  const requestTdo = yield select(getTdo, widgetId);
   // const createAssetQuery =
   //   `mutation createAsset($containerId: ID!, $type: String, $contentType: String, $sourceData: SetAssetSourceData){
   //     createAsset( input: {
@@ -606,30 +606,32 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
         id
       }`;
 
-  const token = yield select(authModule.selectSessionToken);
-  let headers = {
-    Authorization: 'Bearer ' + token
-  };
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-
-
+  const token = yield select(authModule.selectSessionToken);
 
   const formData = new FormData();
+  formData.append('query', createAssetQuery);
   formData.append('file', fileData);
-  var request = new XMLHttpRequest();
-  request.open('POST', graphQLUrl, true);
-  request.setRequestHeader('Content-Type', 'multipart/form-data');
-  request.setRequestHeader('Authorization', 'Bearer ' + token);
-  request.send(formData);
+
+  const saveFile = function ({ endpoint, data, authToken }) {
+    return fetch(endpoint, {
+      method: 'post',
+      body: data,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(r => {
+      return r.json();
+    });
+  };
 
   let response;
   try {
-    // TODO: make a call here
-    // copi graphjQLApi caller
-
+    response = yield call(saveFile, { endpoint: graphQLUrl, data: formData, authToken: token});
   } catch (error) {
     return yield put(createFileAssetFailure(widgetId, { error }));
   }
@@ -1026,7 +1028,7 @@ function* watchSaveAssetData() {
       const contentType = 'application/json';
       const type = 'vtn-standard';
       // TODO: this should be category specific 'User Edited' engine id. Remove name
-      const sourceData = `{ name: "test create vtn-asset", engineId: ${action.payload.sourceEngineId} }`;
+      const sourceData = `{ name: "test create vtn-asset", engineId: ${assetData.sourceEngineId} }`;
       const { widgetId } = action.meta;
       yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
     }
