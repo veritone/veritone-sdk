@@ -67,7 +67,7 @@ export default class EngineSelectionRow extends React.Component {
   };
 
   render() {
-    const { name, iconClass, color } = get(this.props, 'engine.category', {});
+    const { name, iconClass, color } = this.props.engine.category || {};
 
     const deploymentModelLogo = {
       FullyNetworkIsolated: networkIsolatedLogo,
