@@ -488,12 +488,17 @@ export const getFaces = createSelector(
   }
 )
 
-export const getAssetData = (state, engineId) => {
+export const getFaceEngineAssetData = (state, engineId) => {
   const engineResults = local(state).engineResultsByEngineId[engineId];
-
+  const userEdited = {
+    sourceEngineName: '',
+    sourceEngineId: ''
+  };
   return engineResults.map(engineResult => ({
-    ...pick(engineResult, ['sourceEngineId', 'sourceEngineName', 'taskId']),
-    object: map(engineResult.series, 'object')
+    ...pick(engineResult, [
+      'series'
+    ]),
+    ...userEdited
   }));
 }
 
