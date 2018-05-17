@@ -1,30 +1,40 @@
 import React from 'react';
+import { noop } from 'lodash';
 import { bool, arrayOf, string, func, number, objectOf, any } from 'prop-types';
 import { InfiniteLoader, AutoSizer, List } from 'react-virtualized';
 import EngineSelectionRow from './EngineSelectionRow/';
 
 // see https://github.com/bvaughn/react-virtualized/blob/master/docs/creatingAnInfiniteLoadingList.md
-function EngineList({
-  hasNextPage,
-  isNextPageLoading,
-  list = [],
-  loadNextPage,
-  onViewDetail
-}) {
-  const rowCount = hasNextPage ? list.length + 1 : list.length;
-  const loadMoreRows = isNextPageLoading ? () => {} : loadNextPage;
-  const isRowLoaded = ({ index }) => !hasNextPage || index < list.length;
+export default class EngineList extends React.Component {
+  static propTypes = {
+    hasNextPage: bool.isRequired,
+    isNextPageLoading: bool.isRequired,
+    list: arrayOf(string).isRequired,
+    loadNextPage: func,
+    onViewDetail: func.isRequired
+  };
 
-  const rowRenderer = ({ index, key, style }) => {
+  handleLoadMoreRows = () => {
+    if (this.props.isNextPageLoading) {
+      return noop;
+    }
+
+    return this.props.loadNextPage;
+  };
+
+  isRowLoaded = ({ index }) =>
+    !this.props.hasNextPage || index < this.props.list.length;
+
+  rowRenderer = ({ index, key, style }) => {
     let content;
 
-    if (!isRowLoaded({ index })) {
+    if (!this.isRowLoaded({ index })) {
       content = 'Loading...';
     } else {
       content = (
         <EngineSelectionRow
-          engineId={list[index]}
-          onViewDetail={onViewDetail}
+          engineId={this.props.list[index]}
+          onViewDetail={this.props.onViewDetail}
         />
       );
     }
@@ -36,41 +46,34 @@ function EngineList({
     );
   };
 
-  return (
-    <InfiniteLoader
-      isRowLoaded={isRowLoaded} // eslint-disable-line
-      loadMoreRows={loadMoreRows}
-      rowCount={rowCount}
-    >
-      {({ onRowsRendered, registerChild }) => (
-        <AutoSizer>
-          {({ width, height }) => (
-            <List
-              ref={registerChild}
-              style={{ outline: 0, padding: '0 20px' }}
-              height={height}
-              onRowsRendered={onRowsRendered}
-              rowCount={rowCount}
-              rowHeight={177}
-              rowRenderer={rowRenderer} // eslint-disable-line
-              width={width}
-            />
-          )}
-        </AutoSizer>
-      )}
-    </InfiniteLoader>
-  );
+  render() {
+    const rowCount = this.props.hasNextPage
+      ? this.props.list.length + 1
+      : this.props.list.length;
+
+    return (
+      <InfiniteLoader
+        isRowLoaded={this.isRowLoaded} // eslint-disable-line
+        loadMoreRows={this.handleLoadMoreRows}
+        rowCount={rowCount}
+      >
+        {({ onRowsRendered, registerChild }) => (
+          <AutoSizer>
+            {({ width, height }) => (
+              <List
+                ref={registerChild}
+                style={{ outline: 0, padding: '0 20px' }}
+                height={height}
+                onRowsRendered={onRowsRendered}
+                rowCount={rowCount}
+                rowHeight={177}
+                rowRenderer={this.rowRenderer}
+                width={width}
+              />
+            )}
+          </AutoSizer>
+        )}
+      </InfiniteLoader>
+    );
+  }
 }
-
-EngineList.propTypes = {
-  hasNextPage: bool.isRequired,
-  isNextPageLoading: bool.isRequired,
-  list: arrayOf(string).isRequired,
-  loadNextPage: func,
-  onViewDetail: func.isRequired,
-  index: number,
-  key: number,
-  style: objectOf(any)
-};
-
-export default EngineList;
