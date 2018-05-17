@@ -1,30 +1,36 @@
 import React from 'react';
-import { string } from 'prop-types';
+import { string, func } from 'prop-types';
 
 import Paper from 'material-ui/Paper';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
 import classes from './styles.scss';
 
-const PersonalInfo = ({firstName, lastName, email}) => {
-
+const PersonalInfo = ({
+    firstName,
+    lastName,
+    email,
+    handleNameChangeSubmit,
+    handleChangeModalToggle
+}) => {
     const name  = `${firstName} ${lastName}`;
     return (
         <div className={classes.container}>
             <div className={classes.context}>
-                <h2>Your Personal info</h2>
-                <p>Manage this basic information - your name and email.</p>
+                <h2 className={classes.header}>Your Personal info</h2>
+                <p className={classes.subHeader}>Manage this basic information - your name and email.</p>
                 <Paper className={classes.infoBoxes}>
                     <Table className={classes.infoTable}>
                         <TableBody>
                             <TableRow className={classes.infoRow}>
                                 <TableCell className={classes.rowLabel}>Name</TableCell>
-                                <TableCell >{name}</TableCell>
-                                <TableCell><i className='icon-mode_edit2' /></TableCell>
+                                <TableCell className={classes.rowData}>{name}</TableCell>
+                                <TableCell className={classes.iconHolder} ><i onClick={() => handleChangeModalToggle()} className={`icon-mode_edit2 ${classes.icon}`}/></TableCell>
                             </TableRow>
                             <TableRow className={classes.infoRow}>
                                 <TableCell className={classes.rowLabel}>Email</TableCell>
-                                <TableCell >{email}</TableCell>
+                                <TableCell className={classes.rowData}>{email}</TableCell>
+                                <TableCell></TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -37,7 +43,9 @@ const PersonalInfo = ({firstName, lastName, email}) => {
 PersonalInfo.propTypes = {
     email: string.isRequired,
     firstName: string,
-    lastName: string
+    lastName: string,
+    changeName: func.isRequired,
+    handleChangeModalToggle: func.isRequired
 }
 
 export default PersonalInfo;
