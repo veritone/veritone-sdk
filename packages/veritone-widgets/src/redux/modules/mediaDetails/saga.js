@@ -552,60 +552,23 @@ function* deleteAssetsSaga(assetIds) {
 
 function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData) {
   const requestTdo = yield select(getTdo, widgetId);
-  // const createAssetQuery =
-  //   `mutation createAsset($containerId: ID!, $type: String, $contentType: String, $sourceData: SetAssetSourceData){
-  //     createAsset( input: {
-  //       containerId: $containerId,
-  //       type: $type,
-  //       contentType: $contentType,
-  //       sourceData: $sourceData
-  //     }) {
-  //       id
-  //     }
-  //   }`;
-  //
-  // const config = yield select(configModule.getConfig);
-  // const { apiRoot, graphQLEndpoint } = config;
-  // const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  // const token = yield select(authModule.selectSessionToken);
-  // const variables = {
-  //   containerId: requestTdo.id,
-  //   type: type,
-  //   contentType: contentType,
-  //   sourceData: sourceData
-  // };
-  //
-  // // TODO create a post request and add multipart file thing
-  //
-  // let response;
-  // try {
-  //   response = yield call(callGraphQLApi, {
-  //     endpoint: graphQLUrl,
-  //     query: createAssetQuery,
-  //     variables: variables,
-  //     file: 'TODO file should go here',
-  //     token
-  //   });
-  // } catch (error) {
-  //   return yield put(createFileAssetFailure(widgetId, { error }));
-  // }
-  // if (!isEmpty(response.errors)) {
-  //   return yield put(createFileAssetFailure(widgetId, { error: response.errors.join(', \n') }));
-  // }
-  // if (!get(response, 'data.id')) {
-  //   return yield put(createFileAssetFailure(widgetId, { error: 'Failed to create file asset.' }));
-  // }
+  const createAssetQuery = `mutation createAsset($tdoId: ID!, $type: String, $contentType: String, $file: UploadedFile){
+    createAsset( input: {
+      containerId: $tdoId,
+      type: $type,
+      contentType: $contentType,
+      sourceData: ${sourceData},
+      file: $file
+    })
+    { id }
+  }`;
 
-  const createAssetQuery =
-    `mutation createAsset( input: {
-        containerId: ${requestTdo.id},
-        type: ${type},
-        contentType: ${contentType},
-        sourceData: ${sourceData}
-      }) {
-        id
-      }`;
-
+  const variables = {
+    tdoId: requestTdo.id,
+    type: type,
+    contentType: contentType,
+    file: fileData
+  };
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
@@ -614,15 +577,15 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
 
   const formData = new FormData();
   formData.append('query', createAssetQuery);
-  formData.append('file', fileData);
+  formData.append('variables', JSON.stringify(variables));
+  // formData.append('file', fileData);
 
   const saveFile = function ({ endpoint, data, authToken }) {
     return fetch(endpoint, {
       method: 'post',
       body: data,
       headers: {
-        Authorization: `Bearer ${authToken}`,
-        'Content-Type': 'multipart/form-data'
+        Authorization: `Bearer ${authToken}`
       }
     }).then(r => {
       return r.json();
@@ -641,7 +604,6 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   if (!get(response, 'data.id')) {
     return yield put(createFileAssetFailure(widgetId, { error: 'Failed to create file asset.' }));
   }
-
 
   yield put(createFileAssetSuccess(widgetId));
   return response;
@@ -1028,7 +990,7 @@ function* watchSaveAssetData() {
       const contentType = 'application/json';
       const type = 'vtn-standard';
       // TODO: this should be category specific 'User Edited' engine id. Remove name
-      const sourceData = `{ name: "test create vtn-asset", engineId: ${assetData.sourceEngineId} }`;
+      const sourceData = `{ name: "test create vtn-asset", engineId: "${assetData.sourceEngineId}" }`;
       const { widgetId } = action.meta;
       yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
     }
