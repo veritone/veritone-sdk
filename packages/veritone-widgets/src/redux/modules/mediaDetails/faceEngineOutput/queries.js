@@ -1,6 +1,22 @@
+/* FRAGMENTS */
+const entityFieldsFragment = `
+  fragment entityFields on Entity {
+    id
+    name
+    libraryId
+    library {
+      id
+      name
+    }
+    profileImageUrl
+    jsondata
+  }
+`;
+
+/* QUERIES */
 export const getEngineResultsQuery = `
   query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
-    engineResults(id: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
+    engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
       records {
         tdoId
         engineId
@@ -49,21 +65,5 @@ export const createEntity = `
     entity: createEntity(input: $input) {
       ...entityFields
     }
-  }
-`;
-
-
-/* FRAGMENTS */
-const entityFieldsFragment = `
-  fragment entityFields on Entity {
-    id
-    name
-    libraryId
-    library {
-      id
-      name
-    }
-    profileImageUrl
-    jsondata
   }
 `;

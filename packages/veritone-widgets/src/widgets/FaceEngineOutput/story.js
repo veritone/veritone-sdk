@@ -229,9 +229,158 @@ const tdo = {
   }
 };
 
+// const tdo = {
+//   "id": "50360384",
+//   "details": {
+//     "veritoneFile": {
+//       "size": 17513308,
+//       "filename": "Ripple CEO Explains Why His Digital Currency Can Transform Banking _ CNBC-Ket7OgJXrZY.mp4"
+//     },
+//     "veritoneMediaSource": {
+//       "mediaSourceId": "-1",
+//       "mediaSourceName": "OCR test",
+//       "mediaSourceTypeId": "5"
+//     },
+//     "veritoneProgram": {
+//       "programId": "-1",
+//       "programName": "OCR test",
+//       "programImage": "",
+//       "programLiveImage": "https://inspirent.s3.amazonaws.com/assets/50360384/b9d66d49-cf70-4dd6-b8cf-29cd71459f71.jpeg",
+//       "primaryMediaSourceId": "390atg6e"
+//     },
+//     "youtubeAdapter": {
+//       "id": "Ket7OgJXrZY",
+//       "name": "Ripple CEO Explains Why His Digital Currency Can Transform Banking _ CNBC-Ket7OgJXrZY.mp4",
+//       "metadata": {
+//         "id": "Ket7OgJXrZY",
+//         "abr": 192,
+//         "ext": "mp4",
+//         "url": "https://r5---sn-p5qlsnd6.googlevideo.com/videoplayback?ratebypass=yes&mn=sn-p5qlsnd6%2Csn-vgqskne6&mm=31%2C26&requiressl=yes&mime=video%2Fmp4&expire=1517027351&dur=173.453&pl=13&key=yt6&source=youtube&ms=au%2Conr&mv=m&mt=1517005635&ipbits=0&sparams=dur%2Cei%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cexpire&signature=54C9A1716345BB5CF6123EB3D3462F2FD85607F7.D2FAEEC76B893C35AA54F8A4541BB8E5F12E46A3&ip=34.203.70.16&fvip=5&lmt=1514415359556714&ei=t6trWrykJoHu8wSwyJuoBQ&id=o-AIMbbocUNyzm9spNN0dwFS8GKhmWmHxiGOf38iEV2YeS&initcwndbps=2723750&itag=22",
+//         "size": 17513308,
+//         "tags": [
+//           "CNBC",
+//           "Mad Money",
+//           "Squawk Box",
+//           "Power Lunch",
+//           "Opening Bell",
+//           "Closing Bell",
+//           "Financial News",
+//           "Finance News",
+//           "Stock News",
+//           "Stocks",
+//           "Trading",
+//           "Investing",
+//           "Stock Market",
+//           "US News",
+//           "World News",
+//           "ripple",
+//           "ripple ceo",
+//           "ripple ceo interview",
+//           "brad garlinghouse",
+//           "block chain",
+//           "blockchain",
+//           "blockchain technology",
+//           "real time settlements",
+//           "sending money in real time settlements",
+//           "ripple digital currency",
+//           "banking in 2018",
+//           "2018 banking",
+//           "banking trends",
+//           "future of cryptocurrency",
+//           "future of crypto",
+//           "bitcoin futures"
+//         ],
+//         "title": "Ripple CEO Explains Why His Digital Currency Can Transform Banking | CNBC",
+//         "width": 1280,
+//         "acodec": "mp4a.40.2",
+//         "format": "22 - 1280x720 (hd720)",
+//         "height": 720,
+//         "series": null,
+//         "vcodec": "avc1.64001F",
+//         "creator": null,
+//         "formats": [],
+//         "is_live": null,
+//         "license": "Standard YouTube License",
+//         "chapters": null,
+//         "duration": "2:53",
+//         "end_time": null,
+//         "playlist": null,
+//         "protocol": "https",
+//         "uploader": "CNBC",
+//         "_filename": "Ripple CEO Explains Why His Digital Currency Can Transform Banking _ CNBC-Ket7OgJXrZY.mp4",
+//         "age_limit": 0,
+//         "alt_title": null,
+//         "extractor": "youtube",
+//         "format_id": "22",
+//         "fulltitle": "Ripple CEO Explains Why His Digital Currency Can Transform Banking | CNBC",
+//         "subtitles": {},
+//         "thumbnail": "https://i.ytimg.com/vi/Ket7OgJXrZY/hqdefault.jpg",
+//         "categories": [
+//           "News & Politics"
+//         ],
+//         "display_id": "Ket7OgJXrZY",
+//         "like_count": 507,
+//         "player_url": "/yts/jsbin/player-vflX4ueE4/en_US/base.js",
+//         "resolution": "1280x720 (hd720)",
+//         "start_time": null,
+//         "thumbnails": [
+//           {
+//             "id": "0",
+//             "url": "https://i.ytimg.com/vi/Ket7OgJXrZY/hqdefault.jpg"
+//           }
+//         ],
+//         "view_count": 54385,
+//         "annotations": null,
+//         "description": "Ripple CEO Brad Garlinghouse discusses the use of block chain technology to send money across the world in real time settlements.\n» Subscribe to CNBC: http://cnb.cx/SubscribeCNBC\n\nAbout CNBC: From 'Wall Street' to 'Main Street' to award winning original documentaries and Reality TV series, CNBC has you covered. Experience special sneak peeks of your favorite shows, exclusive video and more.\n\nConnect with CNBC News Online\nGet the latest news: http://www.cnbc.com/\nFind CNBC News on Facebook: http://cnb.cx/LikeCNBC\nFollow CNBC News on Twitter: http://cnb.cx/FollowCNBC\nFollow CNBC News on Google+: http://cnb.cx/PlusCNBC\nFollow CNBC News on Instagram: http://cnb.cx/InstagramCNBC\n\nRipple CEO Explains Why His Digital Currency Can Transform Banking | CNBC",
+//         "format_note": "hd720",
+//         "upload_date": "20171227",
+//         "uploader_id": "cnbc",
+//         "webpage_url": "https://www.youtube.com/watch?v=Ket7OgJXrZY",
+//         "http_headers": {
+//           "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+//           "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/47.0 (Chrome)",
+//           "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+//           "Accept-Encoding": "gzip, deflate",
+//           "Accept-Language": "en-us,en;q=0.5"
+//         },
+//         "uploader_url": "http://www.youtube.com/user/cnbc",
+//         "_duration_hms": "00:02:53",
+//         "_duration_raw": 173,
+//         "dislike_count": 39,
+//         "extractor_key": "Youtube",
+//         "season_number": null,
+//         "average_rating": 4.71428585052,
+//         "episode_number": null,
+//         "playlist_index": null,
+//         "automatic_captions": {},
+//         "requested_subtitles": null,
+//         "webpage_url_basename": "Ket7OgJXrZY"
+//       }
+//     },
+//     "veritonePermissions": {
+//       "acls": [
+//         {
+//           "groupId": "ea738f5b-9f52-45f3-8db8-3167bfd625fe",
+//           "permission": "owner"
+//         }
+//       ],
+//       "isPublic": false
+//     },
+//     "tags": [],
+//     "date": "2018-01-26T22:25:12.285Z"
+//   },
+//   "startDateTime": "2018-01-26T22:29:13.000Z",
+//   "stopDateTime": "2018-01-26T22:32:06.000Z",
+//   "security": {
+//     "global": false
+//   }
+// }
+
 const engines = [
   {
-    "id": "imagedetection-facerecognition-veritone",
+    // "id": "imagedetection-facerecognition-veritone",
+    "id": "84b513bd-d64d-3a35-9d42-579c8611fdbf",
+    // "id": "imagedetection-facerecognition-kairos",
     "name": "Semblance"
   }
 ];
@@ -245,13 +394,26 @@ storiesOf('FaceEngineOutput', module)
   </Provider>
 ))
 .add('Base', () => {
+  // const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
+  //   if (faceSeries.series.length) {
+  //     const unrecognizedFaces = faceSeries.series.filter(faceObj => !faceObj.object.entityId);
+  //     return [...accumulator, ...unrecognizedFaces];
+  //   }
+  //   return accumulator;
+  // }, []);
+
+  // console.log('faceSeries:', faceSeries)
+
   return (
     <FaceEngineOutput
-      data={faceObjects}
+      // data={faceObjects}
       tdo={tdo}
       engines={engines}
-      entities={entities}
-      selectedEngineId="84b513bd-d64d-3a35-9d42-579c8611fdbf"
+      // entities={entities}
+      selectedEngineId={engines[0].id}
+      // unrecognizedFaces={faceSeries}
+      enableEditMode
+      baseUrlImagePrefix="https://s3-us-west-1.amazonaws.com/prod-veritone-face"
     />
   )
 });

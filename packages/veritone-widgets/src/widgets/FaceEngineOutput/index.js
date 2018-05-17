@@ -11,7 +11,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
-import { find, isObject, isEmpty, get, noop, omit, head } from 'lodash';
+import { find, isObject, isEmpty, get, noop, pick, head } from 'lodash';
 import {
   shape,
   number,
@@ -36,7 +36,7 @@ import widget from '../../shared/widget';
 @saga(rootSaga)
 @connect(
   (state, { selectedEngineId }) => ({
-    // data: faceEngineOutput.getEngineResultsByEngineId(state, selectedEngineId),
+    // data: faceEngineOutput.getFaceDataByEngine(state, selectedEngineId),
     entities: faceEngineOutput.getEntities(state),
     faces: faceEngineOutput.getFaces(state, selectedEngineId),
     libraries: faceEngineOutput.getLibraries(state),
@@ -46,8 +46,7 @@ import widget from '../../shared/widget';
   }),
   {
     fetchLibraries: faceEngineOutput.fetchLibraries,
-    createEntity: faceEngineOutput.createEntity,
-    createEntitySuccess: faceEngineOutput.createEntitySuccess
+    createEntity: faceEngineOutput.createEntity
   },
   null,
   { withRef: true }
@@ -127,7 +126,11 @@ class FaceEngineOutputContainer extends Component {
   state = {
     selectedEntity: null, // selected unrecognized face object from which to create a new 'entity'
     dialogOpen: false,
-    newEntity: {},
+    newEntity: {
+      libraryId: '',
+      name: '',
+      profileImageUrl: ''
+    },
     recognizedFaces: {},
     unrecognizedFaces: []
   };
@@ -137,142 +140,6 @@ class FaceEngineOutputContainer extends Component {
       this.setNewEntityLibrary(head(nextProps.libraries).id)
     }
   }
-
-  // processFaces = (faceData, entities) => { 
-  //   if (isEmpty(faceData)) {
-  //     return;
-  //   }
-
-  //   // const detectedFaceObjects = [];
-  //   // const recognizedEntityObjectMap = {};
-  //   const recognizedFaces = {};
-  //   const unrecognizedFaces = [];
-
-  //   // flatten   data series for currently selected engine
-  //   const faceSeries = faceData.reduce((accumulator, faceSeries) => {
-  //     if (!isEmpty(faceSeries.series)) {
-  //       return [...accumulator, ...faceSeries.series];
-  //     }
-
-  //     return accumulator;
-  //   }, []);
-
-  //   const secondMap = {};
-  //   const entitiesByLibrary = {};
-
-  //   faceSeries.forEach(faceObj => { // for each face object
-  //     // locate entity that the face object belongs to
-  //     const entity = find(entities, { id: faceObj.object.entityId });
-
-  //     if (!faceObj.entityId || !entities.length || !entity || !entity.name) {
-  //       unrecognizedFaces.push(faceObj);
-  //     } else {
-  //       // try to locate library entity that contains the face object
-  //       const libraryEntity = find(entities, { libraryId: entity.libraryId });
-  //       // build object for library entity for "recognized" face
-  //       const recognizedEntityObj = {
-  //         entityId: entity.id,
-  //         libraryId: libraryEntity.libraryId,
-  //         // libraryName: libraryEntity.name,
-  //         libraryName: libraryEntity.library.name,
-  //         fullName: entity.name,
-  //         // entity: {
-  //         //   ...entity,
-  //         //   libraryId: libraryEntity.libraryId,
-  //         //   libraryName: libraryEntity.library.name
-  //         // },
-  //         profileImage: entity.profileImageUrl,
-  //         count: 1,
-  //         timeSlots: [
-  //           {
-  //             stopTimeMs: faceObj.stopTimeMs,
-  //             startTimeMs: faceObj.startTimeMs,
-  //             originalImage: faceObj.object.uri,
-  //             confidence: faceObj.object.confidence
-  //           }
-  //         ],
-  //         stopTimeMs: faceObj.stopTimeMs
-  //       };
-
-  //       // if (recognizedFaces[recognizedEntityObj.entityId]) {
-  //       if (recognizedFaces[entity.id]) {
-  //         recognizedFaces[entity.id] = this.setRecognizedEntityObj(
-  //           // recognizedFaces[recognizedEntityObj.entityId],
-  //           recognizedFaces[entity.id],
-  //           faceObj
-  //         );
-  //       } else {
-  //         // recognizedFaces[recognizedEntityObj.entityId] = recognizedEntityObj;
-  //         recognizedFaces[entity.id] = recognizedEntityObj;
-  //         // entitiesByLibrary[recognizedEntityObj.libraryId] = {
-  //         entitiesByLibrary[libraryEntity.libraryId] = {
-  //           // libraryId: recognizedEntityObj.libraryId,
-  //           libraryId: libraryEntity.libraryId,
-  //           libraryName: recognizedEntityObj.libraryName,
-  //           faces: [
-  //             ...get(
-  //               // entitiesByLibrary[recognizedEntityObj.libraryId],
-  //               entitiesByLibrary[libraryEntity.libraryId],
-  //               'faces',
-  //               []
-  //             ),
-  //             recognizedEntityObj
-  //           ]
-  //         };
-  //       }
-
-  //       // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
-  //       const matchNamespace = this.getFrameNamespaceForMatch(faceObj);
-  //       if (matchNamespace) {
-  //         const secondSpots = this.getArrayOfSecondSpots(faceObj);
-  //         secondSpots.forEach(second => {
-  //           if (!secondMap[second]) {
-  //             secondMap[second] = {};
-  //           }
-  //           if (!secondMap[second][matchNamespace]) {
-  //             secondMap[second][matchNamespace] = {
-  //               startTimeMs: faceObj.startTimeMs,
-  //               stopTimeMs: faceObj.stopTimeMs,
-  //               originalImage: faceObj.object.uri,
-  //               entities: [],
-  //               boundingPoly: faceObj.object.boundingPoly
-  //             };
-  //           }
-
-  //           const match = {
-  //             confidence: faceObj.object.confidence,
-  //             entityId: faceObj.object.entityId
-  //           };
-
-  //           secondMap[second][matchNamespace].entities.push(match);
-
-  //           secondMap[second][matchNamespace].entities.sort((a, b) => {
-  //             return b.confidence - a.confidence;
-  //           });
-  //         });
-  //       }
-  //     }
-
-  //     // } else if (!faceObj.entityId) {
-  //     //   // detectedFaceObjects.push(faceObj);
-  //     //   unrecognizedFaces.push(faceObj);
-  //     // }
-  //   });
-
-  //   console.log('unrecognizedFaces:', unrecognizedFaces)
-  //   console.log('recognizedFaces:', recognizedFaces);
-  //   console.log('entitiesByLibrary:', entitiesByLibrary);
-  //   console.log('framesBySeconds:', secondMap);
-
-  //   this.setState({
-  //     // detectedFaces: detectedFaceObjects,
-  //     unrecognizedFaces,
-  //     // recognizedEntityObjectMap: recognizedEntityObjectMap,
-  //     recognizedFaces,
-  //     entitiesByLibrary: entitiesByLibrary,
-  //     framesBySeconds: secondMap
-  //   });
-  // };
 
   handleAddNewEntity = (selectedEntity) => {
     this.props.fetchLibraries({
@@ -288,55 +155,11 @@ class FaceEngineOutputContainer extends Component {
     this.setNewEntityLibrary(e.target.value);
   }
 
-  // getFrameNamespaceForMatch = faceObj => {
-  //   if (faceObj.object.boundingPoly) {
-  //     return JSON.stringify(faceObj.object.boundingPoly);
-  //   }
-  // };
-
-  // // Gets list of nearest seconds which the face/entity appears in (MS)
-  // getArrayOfSecondSpots = timeSlot => {
-  //   const secondSpots = [];
-
-  //   if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
-  //     return secondSpots;
-  //   }
-
-  //   let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
-
-  //   while (timeCursor <= timeSlot.stopTimeMs) {
-  //     secondSpots.push(timeCursor);
-  //     timeCursor += 1000;
-  //   }
-
-  //   return secondSpots;
-  // };
-
-  // setRecognizedEntityObj = (recognizedEntityObj, faceObj) => {
-  //   return {
-  //     ...recognizedEntityObj,
-  //     count: recognizedEntityObj.count + 1,
-  //     timeSlots: [
-  //       ...recognizedEntityObj.timeSlots,
-  //       {
-  //         stopTimeMs: faceObj.stopTimeMs,
-  //         startTimeMs: faceObj.startTimeMs,
-  //         originalImage: faceObj.object.uri,
-  //         confidence: faceObj.object.confidence
-  //       }
-  //     ],
-  //     stopTimeMs:
-  //       recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
-  //         ? faceObj.stopTimeMs
-  //         : recognizedEntityObj.stopTimeMs
-  //   };
-  // };
-
   setNewEntityLibrary = (libraryId) => {
     this.setState(prevState => ({
       newEntity: {
         ...prevState.newEntity,
-        library: libraryId
+        libraryId
       }
     }));
   }
@@ -360,14 +183,17 @@ class FaceEngineOutputContainer extends Component {
   }
 
   saveNewEntity = () => {
-    // return this.props.createEntity(
-    return this.props.createEntitySuccess(
-      this.state.newEntity,
-      {
-        selectedEngineId: this.props.selectedEngineId,
-        selectedEntity: this.state.selectedEntity,
-      }
-    );
+    const entity = {
+      ...this.state.newEntity,
+      profileImageUrl: this.state.selectedEntity.object.uri,
+    };
+
+    this.props.createEntity(entity, {
+      selectedEngineId: this.props.selectedEngineId,
+      selectedEntity: this.state.selectedEntity,
+    });
+
+    return this.closeDialog();
   }
 
   renderNewEntityModal = () => {
@@ -398,7 +224,7 @@ class FaceEngineOutputContainer extends Component {
             id="select-library"
             select
             label="Choose Library"
-            value={this.state.newEntity.library || 'Loading...'}
+            value={this.state.newEntity.libraryId || 'Loading...'}
               // libraries.length
               //   ? (this.state.newEntity.library || head(libraries).id)
               //   : isFetchingLibraries ? 'Loading...' : ''
@@ -432,11 +258,10 @@ class FaceEngineOutputContainer extends Component {
   }
 
   render() {
-    const faceEngineProps = omit(this.props, [
-      'isFetchingEngineResults',
-      'isFetchingLibraryEntities',
-      'tdo',
-      'faces'
+    const faceEngineProps = pick(this.props, [
+      'enableEditMode',
+      'engines',
+      'currentMediaPlayerTime'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
@@ -446,10 +271,9 @@ class FaceEngineOutputContainer extends Component {
     return (
       <Fragment>
         <FaceEngineOutput
-          {...faceEngineProps}
           {...this.props.faces}
+          {...faceEngineProps}
           onAddNewEntity={this.handleAddNewEntity}
-          enableEditMode
         />
         {this.renderNewEntityModal()}
       </Fragment>

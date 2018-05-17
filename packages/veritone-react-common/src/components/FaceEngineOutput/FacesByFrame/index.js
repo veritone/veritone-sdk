@@ -35,7 +35,7 @@ class FacesByFrame extends Component {
     onSelectEntity: func
   };
   render() {
-    let {
+    const {
       recognizedEntityObjectMap,
       framesBySeconds,
       currentMediaPlayerTime,

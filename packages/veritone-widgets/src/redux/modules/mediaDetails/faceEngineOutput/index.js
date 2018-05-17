@@ -20,15 +20,17 @@ export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
 
 
 import {
-get,
-map,
-findLastIndex,
-findIndex,
-groupBy,
-forEach,
-keyBy,
-isEmpty,
-isObject
+  get,
+  map,
+  findIndex,
+  find,
+  groupBy,
+  forEach,
+  keyBy,
+  isEmpty,
+  isObject,
+  set,
+  pick,
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 import { createSelector } from 'reselect'
@@ -67,7 +69,6 @@ const reducer = createReducer(defaultState, {
     const { startOffsetMs, stopOffsetMs } = action.meta;
 
     const previousResultsByEngineId = state.engineResultsByEngineId || {};
-    // It is possible results were requested by
     const resultsGroupedByEngineId = groupBy(engineResults, 'engineId');
 
     forEach(resultsGroupedByEngineId, (results, engineId) => {
@@ -154,23 +155,63 @@ const reducer = createReducer(defaultState, {
     if (action.payload.errors) {
       return this[CREATE_ENTITY_FAILURE](state, action);
     }
-    console.log('action.meta:', action.meta)
-    // const entity = action.payload.data.entity;
-    const { unrecognizedFaces } = getFaces({ [namespace]: state }, action.meta.selectedEngineId);
-    console.log('unrecognizedFaces:', unrecognizedFaces)
-    const { selectedEntity } = action.meta;
 
-    const detectedFace = unrecognizedFaces[selectedEntity];
-    console.log('face obj:', state.engineResultsByEngineId[action.meta.selectedEngineId][0].series[selectedEntity])
-    console.log('detectedFace:', detectedFace)
+    const { entity } = action.payload.data;
+    const { selectedEntity, selectedEngineId } = action.meta;
+    console.log('selectedEntity:', selectedEntity)
+    // const { unrecognizedFaces } = getFaces({ [namespace]: state }, selectedEngineId);
+    // console.log('unrecognizedFaces:', unrecognizedFaces)
 
-    // return {
-    //   ...state,
-    //   entities: {
-    //     ...state.entities,
-    //     [entity.id]: entity
-    //   }
-    // };
+    // const detectedFace = unrecognizedFaces[selectedEntity];
+    // console.log('detectedFace:', detectedFace)
+
+    // const findCriteria = pick(detectedFace, ['uri', 'boundingPoly']);
+    const objectCriteria = pick(selectedEntity.object, ['uri', 'boundingPoly']);
+
+    console.log('objectCriteria:', objectCriteria)
+    console.log('engineResult:', state.engineResultsByEngineId[selectedEngineId])
+
+    const detectedFacePath = state.engineResultsByEngineId[selectedEngineId]
+    .reduce((acc, engineResult, engineResultIdx) => {
+      const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
+
+      // return (faceIdx > -1) ? [selectedEngineId, engineResultIdx, 'series', faceIdx] : acc;
+      return (faceIdx > -1) ? [engineResultIdx, 'series', faceIdx] : acc;
+    }, []);
+    console.log('detectedFacePath:', detectedFacePath)
+
+    if (!detectedFacePath.length) {
+      return {
+        ...state
+      };
+    }
+
+    const engineResults = [ ...state.engineResultsByEngineId[selectedEngineId] ];
+    // console.log('faceObj:', get(engineResults, detectedFacePath))
+    set(engineResults, detectedFacePath, {
+      // ...detectedFace,
+      ...selectedEntity,
+      object: {
+        // ...detectedFace.object,
+        ...selectedEntity.object,
+        entityId: entity.id,
+        libraryId: entity.libraryId
+      }
+    });
+
+    // console.log('faceObj:', get(engineResults, detectedFacePath));
+
+    return {
+      ...state,
+      entities: {
+        ...state.entities,
+        [entity.id]: entity
+      },
+      engineResultsByEngineId: {
+        ...state.engineResultsByEngineId,
+        [selectedEngineId]: engineResults
+      }
+    };
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
@@ -205,18 +246,11 @@ export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
 
-export const getEngineResultsByEngineId = (state, engineId) => {
-  console.log('state:', state)
-  console.log('local(state):', local(state));
-  console.log('engineId:', engineId);
-  console.log('engineResult:', get(local(state), ['engineResultsByEngineId', engineId]));
-
-  return map(
+export const getFaceDataByEngine = (state, engineId) =>
+  map(
     get(local(state), ['engineResultsByEngineId', engineId]),
     engineResults => ({ series: engineResults.series })
   );
-
-}
 
 export const fetchedEngineResultByEngineId = (state, engineId) =>
   get(local(state), ['fetchedEngineResults', engineId], [])
@@ -285,17 +319,14 @@ export function getLibraries(state) {
 
 /* SELECTORS */
 export const getFaces = createSelector(
-  [getEngineResultsByEngineId, getEntities],
+  [getFaceDataByEngine, getEntities],
   (faceData, entities) => {
-    console.log('+'.repeat(50))
     const faceEntities = {
       unrecognizedFaces: [],
       recognizedFaces: {},
       entitiesByLibrary: {},
       framesBySeconds: {}
     };
-
-    console.log('faceData:', faceData)
 
     function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
       return {
@@ -357,7 +388,7 @@ export const getFaces = createSelector(
       // locate entity that the face object belongs to
       const entity = find(entities, { id: faceObj.object.entityId });
 
-      if (!faceObj.entityId || !entities.length || !entity || !entity.name) {
+      if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
         // try to locate library entity that contains the face object
@@ -368,6 +399,11 @@ export const getFaces = createSelector(
           libraryId: libraryEntity.libraryId,
           libraryName: libraryEntity.library.name,
           fullName: entity.name,
+          entity: {
+            ...entity,
+            libraryId: libraryEntity.libraryId,
+            libraryName: libraryEntity.library.name
+          },
           profileImage: entity.profileImageUrl,
           count: 1,
           timeSlots: [
@@ -437,3 +473,12 @@ export const getFaces = createSelector(
     return faceEntities;
   }
 )
+
+export const getAssetData = (state, engineId) => {
+  const engineResults = local(state).engineResultsByEngineId[engineId];
+
+  return engineResults.map(engineResult => ({
+    ...pick(engineResult, ['sourceEngineId', 'sourceEngineName', 'taskId']),
+    object: map(engineResult.series, 'object')
+  }));
+}
