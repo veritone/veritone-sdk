@@ -33,14 +33,14 @@ class FileListItem extends Component {
     dataUrl: ''
   };
 
-  componentWillMount() {
-    this.readImageFile(this.props.file);
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.file !== this.props.file) {
       this.readImageFile(nextProps.file);
     }
+  }
+
+  UNSAFE_componentWillMount() {
+    this.readImageFile(this.props.file);
   }
 
   readImageFile = file => {

@@ -24,7 +24,7 @@ export default class SearchBar extends React.Component {
     searchQuery: ''
   };
 
-  componentWillMount(props) {
+  UNSAFE_componentWillMount(props) {
     this.forwardChange = debounce(
       event => this.props.onSearch(event.target.value),
       300

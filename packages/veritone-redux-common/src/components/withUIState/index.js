@@ -70,7 +70,17 @@ const withUIState = (
       clearStateForKey: noop
     };
 
-    componentWillMount() {
+    componentDidMount() {
+      this.isMounting = false;
+    }
+
+    componentWillUnmount() {
+      if (!persist) {
+        this.props.clearStateForKey(this.props.uiStateKey);
+      }
+    }
+
+    UNSAFE_componentWillMount() {
       this.isMounting = true;
 
       if (persist) {
@@ -83,16 +93,6 @@ const withUIState = (
       }
 
       this.resetUIState();
-    }
-
-    componentDidMount() {
-      this.isMounting = false;
-    }
-
-    componentWillUnmount() {
-      if (!persist) {
-        this.props.clearStateForKey(this.props.uiStateKey);
-      }
     }
 
     setUIState = state => {
