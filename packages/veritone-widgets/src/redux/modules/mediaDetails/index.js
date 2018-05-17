@@ -50,6 +50,14 @@ export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
 export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 
+export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
+export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
+export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
+
+export const CREATE_TRANSCRIPT_BULK_EDIT_ASSET = 'CREATE_TRANSCRIPT_BULK_EDIT_ASSET';
+export const CREATE_TRANSCRIPT_BULK_EDIT_ASSET_SUCCESS = 'CREATE_TRANSCRIPT_BULK_EDIT_ASSET_SUCCESS';
+export const CREATE_TRANSCRIPT_BULK_EDIT_ASSET_FAILURE = 'CREATE_TRANSCRIPT_BULK_EDIT_ASSET_FAILURE';
+
 export const namespace = 'mediaDetails';
 
 const defaultMDPState = {
@@ -728,4 +736,48 @@ export const toggleInfoPanel = widgetId => ({
 export const toggleExpandedMode = widgetId => ({
   type: TOGGLE_EXPANDED_MODE,
   meta: { widgetId }
+});
+
+export const saveAssetData = (widgetId, payload) => {
+  return {
+    type: SAVE_ASSET_DATA,
+    payload: payload,
+    meta: { widgetId }
+  };
+};
+
+export const createFileAssetSuccess = (widgetId) => ({
+  type: SAVE_ASSET_DATA_SUCCESS,
+  meta: { widgetId }
+});
+
+export const createFileAssetFailure = (widgetId, { error }) => ({
+  type: SAVE_ASSET_DATA_FAILURE,
+  meta: { error, widgetId }
+});
+
+export const createBulkEditTranscriptAsset = (widgetId, payload) => {
+  const contentType = 'text/plain';
+  const type = 'v-bulk-edit-transcript';
+  const sourceData = {
+    name: 'test create bulk transcript edit', // TODO: remove this
+  };
+  const text = payload;
+  const sourceTranscriptEngineId = payload.engineId;
+  return {
+    type: CREATE_TRANSCRIPT_BULK_EDIT_ASSET,
+    payload: { type, contentType, sourceData, fileData: text, engineId: sourceTranscriptEngineId },
+    meta: { widgetId }
+  };
+};
+
+export const createBulkEditTranscriptAssetSuccess = (widgetId, result) => ({
+  type: CREATE_TRANSCRIPT_BULK_EDIT_ASSET_SUCCESS,
+  payload: result,
+  meta: { widgetId }
+});
+
+export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
+  type: CREATE_TRANSCRIPT_BULK_EDIT_ASSET_FAILURE,
+  meta: { error, widgetId }
 });
