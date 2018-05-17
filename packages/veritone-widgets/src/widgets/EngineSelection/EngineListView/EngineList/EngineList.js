@@ -1,6 +1,6 @@
 import React from 'react';
 import { noop } from 'lodash';
-import { bool, arrayOf, string, func, number, objectOf, any } from 'prop-types';
+import { bool, arrayOf, string, func } from 'prop-types';
 import { InfiniteLoader, AutoSizer, List } from 'react-virtualized';
 import EngineSelectionRow from './EngineSelectionRow/';
 
