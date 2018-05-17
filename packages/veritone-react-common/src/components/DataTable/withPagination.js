@@ -38,7 +38,7 @@ const withPagination = WrappedTable => {
     }
 
     // eslint-disable-next-line react/sort-comp
-    UNSAFE_componentWillReceiveProp(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
       if (nextProps.rowCount < this.props.rowCount) {
         // if the dataset is a different size, flip to first page
         return this.setState({ page: 0 });
