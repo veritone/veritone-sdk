@@ -18,6 +18,7 @@ export const CREATE_ENTITY = `vtn/${namespace}/CREATE_ENTITY`;
 export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
 export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
 
+const UPDATE_ENGINE_RESULT = `vtn/${namespace}/UPDATE_ENGINE_RESULT`;
 
 import {
   get,
@@ -217,6 +218,18 @@ const reducer = createReducer(defaultState, {
     return {
       ...state
     }
+  },
+  [UPDATE_ENGINE_RESULT](state, action) {
+    const engineResult = { ...state.engineResultsByEngineId[action.payload.selectedEngineId][0] };
+    engineResult.series = [ ...engineResult.series, ...action.payload.unrecognizedFaces];
+
+    return {
+      ...state,
+      engineResultsByEngineId: {
+        ...state.engineResultsByEngineId,
+        [action.payload.selectedEngineId]: [engineResult]
+      }
+    };
   }
 });
 export default reducer;
@@ -325,7 +338,8 @@ export const getFaces = createSelector(
       unrecognizedFaces: [],
       recognizedFaces: {},
       entitiesByLibrary: {},
-      framesBySeconds: {}
+      framesBySeconds: {},
+      secondMap: {}
     };
 
     function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
@@ -482,3 +496,12 @@ export const getAssetData = (state, engineId) => {
     object: map(engineResult.series, 'object')
   }));
 }
+
+
+export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({
+  type: UPDATE_ENGINE_RESULT,
+  payload: {
+    selectedEngineId,
+    unrecognizedFaces
+  }
+});

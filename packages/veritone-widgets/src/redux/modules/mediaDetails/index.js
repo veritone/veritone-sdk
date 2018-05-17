@@ -50,6 +50,8 @@ export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
 export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 
+export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
+
 export const namespace = 'mediaDetails';
 
 const defaultMDPState = {
@@ -68,7 +70,8 @@ const defaultMDPState = {
   fetchingEntities: false,
   contentTemplates: {},
   tdoContentTemplates: {},
-  schemasById: {}
+  schemasById: {},
+  enableSave: false
 };
 
 const defaultState = {};
@@ -546,6 +549,12 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [TOGGLE_SAVE_MODE](state, action) {
+    return {
+      ...state,
+      enableSave: action.payload.enableSave
+    }
   }
 });
 
@@ -579,6 +588,8 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
+export const allowSave = (state, widgetId) =>
+  get(local(state), [widgetId, 'enableSave']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -728,4 +739,11 @@ export const toggleInfoPanel = widgetId => ({
 export const toggleExpandedMode = widgetId => ({
   type: TOGGLE_EXPANDED_MODE,
   meta: { widgetId }
+});
+
+export const toggleSaveMode = (enableSave) => ({
+  type: TOGGLE_SAVE_MODE,
+  payload: {
+    enableSave
+  }
 });

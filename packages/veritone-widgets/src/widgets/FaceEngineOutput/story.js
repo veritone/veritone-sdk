@@ -394,13 +394,13 @@ storiesOf('FaceEngineOutput', module)
   </Provider>
 ))
 .add('Base', () => {
-  // const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
-  //   if (faceSeries.series.length) {
-  //     const unrecognizedFaces = faceSeries.series.filter(faceObj => !faceObj.object.entityId);
-  //     return [...accumulator, ...unrecognizedFaces];
-  //   }
-  //   return accumulator;
-  // }, []);
+  const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
+    if (faceSeries.series.length) {
+      const unrecognizedFaces = faceSeries.series.filter(faceObj => !faceObj.object.entityId);
+      return [...accumulator, ...unrecognizedFaces];
+    }
+    return accumulator;
+  }, []);
 
   // console.log('faceSeries:', faceSeries)
 
@@ -411,7 +411,7 @@ storiesOf('FaceEngineOutput', module)
       engines={engines}
       // entities={entities}
       selectedEngineId={engines[0].id}
-      // unrecognizedFaces={faceSeries}
+      unrecognizedFaces={faceSeries}
       enableEditMode
       baseUrlImagePrefix="https://s3-us-west-1.amazonaws.com/prod-veritone-face"
     />

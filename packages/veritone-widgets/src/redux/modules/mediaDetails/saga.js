@@ -39,8 +39,11 @@ import {
   selectEngineCategory,
   setEngineId,
   getTdo,
-  getEngineResultRequestsByEngineId
+  getEngineResultRequestsByEngineId,
+  toggleSaveMode
 } from '.';
+
+import { CREATE_ENTITY_SUCCESS } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
     details
@@ -849,6 +852,16 @@ function* watchSelectEngineCategory() {
   });
 }
 
+function* enableSaveMode() {
+  yield put(toggleSaveMode(true))
+}
+function* watchFaceEngineEntityCreate() {
+  yield takeEvery(
+    (action) => action.type === CREATE_ENTITY_SUCCESS,
+    enableSaveMode
+  );
+}
+
 export default function* root() {
   yield all([
     fork(watchLoadEngineResultsRequest),
@@ -858,6 +871,7 @@ export default function* root() {
     fork(watchSetEngineId),
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
-    fork(watchUpdateTdoContentTemplates)
+    fork(watchUpdateTdoContentTemplates),
+    fork(watchFaceEngineEntityCreate)
   ]);
 }
