@@ -756,21 +756,6 @@ export const createFileAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createBulkEditTranscriptAsset = (widgetId, payload) => {
-  const contentType = 'text/plain';
-  const type = 'v-bulk-edit-transcript';
-  const sourceData = {
-    name: 'test create bulk transcript edit', // TODO: remove this
-  };
-  const text = payload;
-  const sourceTranscriptEngineId = payload.engineId;
-  return {
-    type: CREATE_TRANSCRIPT_BULK_EDIT_ASSET,
-    payload: { type, contentType, sourceData, fileData: text, engineId: sourceTranscriptEngineId },
-    meta: { widgetId }
-  };
-};
-
 export const createBulkEditTranscriptAssetSuccess = (widgetId, result) => ({
   type: CREATE_TRANSCRIPT_BULK_EDIT_ASSET_SUCCESS,
   payload: result,

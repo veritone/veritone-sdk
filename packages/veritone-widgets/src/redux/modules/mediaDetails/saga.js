@@ -1,6 +1,7 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { get, uniq, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
+import { getFaceEngineAssetData } from 'faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -152,7 +153,11 @@ function* loadTdoSaga(widgetId, tdoId) {
             categoryType: "transcript",
             editable: true
           }
-        }
+        } else
+          // TODO: use actual face edit engine
+          if (engineId === 'user-edited-face-engine-results' && !engineRun.engine.category) {
+
+          }
         return engineRun;
       })
       // filter those that have category, category icon, and are supported categories
@@ -578,7 +583,11 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   const formData = new FormData();
   formData.append('query', createAssetQuery);
   formData.append('variables', JSON.stringify(variables));
-  // formData.append('file', fileData);
+  if (contentType === 'application/json') {
+    formData.append('file', new Blob([JSON.stringify(fileData)], {type: contentType}));
+  } else {
+    formData.append('file', new Blob([fileData], {type: contentType}));
+  }
 
   const saveFile = function ({ endpoint, data, authToken }) {
     return fetch(endpoint, {
@@ -972,41 +981,41 @@ function* watchSelectEngineCategory() {
 function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
 
-    // const assetData = yield select(faceEngineOutputModule.getAssetData, action.payload.selectedEngineId)
-    const assetData = action.payload.data;
-
     if (action.payload.selectedEngineCategory.categoryType === 'transcript' && action.payload.selectedEngineCategory.isBulkEdit) {
+      let assetData = action.payload.data;
       const contentType = 'text/plain';
       const type = 'v-bulk-edit-transcript';
       const sourceData = `{ name: 'test create bulk transcript edit' }`; // TODO: remove this
       const sourceTranscriptEngineId = action.payload.selectedEngineId;
       const { widgetId } = action.meta;
       yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, assetData, sourceTranscriptEngineId);
-    } else {
-      // process vtn-standard asset
-      if (!assetData.sourceEngineId) {
-        throw new Error('Source engine id must be set on the engine result');
-      }
-      const contentType = 'application/json';
-      const type = 'vtn-standard';
-      // TODO: this should be category specific 'User Edited' engine id. Remove name
-      const sourceData = `{ name: "test create vtn-asset", engineId: "${assetData.sourceEngineId}" }`;
-      const { widgetId } = action.meta;
-      yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
+      // done saving bulk transcript
+      return;
     }
 
+    let assetData;
+    if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
+      // assetData = yield select(getTranscriptEngineAssetData, action.payload.selectedEngineId);
+      assetData = action.payload.data;
+    }
+    if (action.payload.selectedEngineCategory.categoryType === 'face') {
+      assetData = yield select(getFaceEngineAssetData, action.payload.selectedEngineId);
+    }
 
+    if (!assetData) {
+      throw new Error('Asset data to store must be provided');
+    }
+    if (!assetData.sourceEngineId) {
+      throw new Error('Source engine id must be set on the engine result');
+    }
 
+    const contentType = 'application/json';
+    const type = 'vtn-standard';
+    const sourceData = `{ name: "test create vtn-asset", engineId: "${assetData.sourceEngineId}" }`;
+    const { widgetId } = action.meta;
+    yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
   });
 }
-
-// function* watchCreateBulkEditTranscriptAsset() {
-//   yield takeEvery(CREATE_TRANSCRIPT_BULK_EDIT_ASSET, function*(action) {
-//     const { type, contentType, sourceData, fileData } = action.payload;
-//     const { widgetId } = action.meta;
-//     yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, fileData);
-//   });
-// }
 
 export default function* root() {
   yield all([
@@ -1019,6 +1028,5 @@ export default function* root() {
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
     fork(watchSaveAssetData)
-    // fork(watchCreateBulkEditTranscriptAsset)
   ]);
 }
