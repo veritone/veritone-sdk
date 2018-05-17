@@ -189,6 +189,7 @@ export default createReducer(defaultState, {
     return {
       ...state,
       currentTabIndex: action.payload.tabIndex,
+      searchQuery: '',
       isSearchOpen: false
     };
   },

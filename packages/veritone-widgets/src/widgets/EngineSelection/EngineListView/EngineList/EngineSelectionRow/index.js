@@ -10,14 +10,14 @@ const { engine: engineModule } = modules;
 
 import Checkbox from 'material-ui/Checkbox';
 
-import networkIsolatedLogo from '../../images/networkisolated_logo.png';
-import externalAccessLogo from '../../images/externalaccess_logo.png';
-import externalProcessingLogo from '../../images/externalprocessing_logo.png';
-import humanReviewLogo from '../../images/humanreview_logo.png';
+import networkIsolatedLogo from '../../../images/networkisolated_logo.png';
+import externalAccessLogo from '../../../images/externalaccess_logo.png';
+import externalProcessingLogo from '../../../images/externalprocessing_logo.png';
+import humanReviewLogo from '../../../images/humanreview_logo.png';
 
-import * as engineSelectionModule from '../../../../redux/modules/engineSelection';
+import * as engineSelectionModule from '../../../../../redux/modules/engineSelection';
 
-import ToggleButton from '../../ToggleButton/';
+import ToggleButton from '../../../ToggleButton/';
 
 import styles from './styles.scss';
 

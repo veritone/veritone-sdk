@@ -10,20 +10,19 @@ import {
   shape,
   number
 } from 'prop-types';
-import { isEmpty, isArray, isString, without, noop } from 'lodash';
+import { isEmpty } from 'lodash';
 
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Button from 'material-ui/Button';
-import { CircularProgress } from 'material-ui/Progress';
 import { withMuiThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
 import SelectBar from './SelectBar/';
 import EnginesSideBar from './SideBar';
-import EngineList from './EngineList';
 import SelectedActionBar from './SelectedActionBar/';
-import FailureScreen from './FailureScreen/';
+import YourEnginesView from './EngineList/YourEnginesView';
+import ExploreAllEnginesView from './EngineList/ExploreAllEnginesView';
 
 import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 
@@ -36,8 +35,6 @@ import styles from './styles.scss';
     allEnginesChecked: engineSelectionModule.allEnginesChecked(state),
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state),
     checkedEngineIds: engineSelectionModule.getCheckedEngineIds(state),
-    filters: engineSelectionModule.getEngineFilters(state),
-    isFetchingEngines: engineModule.isFetchingEngines(state),
     failedToFetchEngines: engineModule.failedToFetchEngines(state),
     searchQuery: engineSelectionModule.getSearchQuery(state),
     currentTabIndex: engineSelectionModule.getCurrentTabIndex(state),
@@ -46,14 +43,10 @@ import styles from './styles.scss';
   {
     selectEngines: engineSelectionModule.selectEngines,
     deselectEngines: engineSelectionModule.deselectEngines,
-    refetchEngines: engineSelectionModule.refetchEngines,
     searchEngines: engineSelectionModule.searchEngines,
     checkAllEngines: engineSelectionModule.checkAllEngines,
     uncheckAllEngines: engineSelectionModule.uncheckAllEngines,
     clearSearch: engineSelectionModule.clearSearch,
-    addEngineFilter: engineSelectionModule.addEngineFilter,
-    removeEngineFilter: engineSelectionModule.removeEngineFilter,
-    clearAllFilters: engineSelectionModule.clearAllFilters,
     changeTab: engineSelectionModule.changeTab,
     toggleSearch: engineSelectionModule.toggleSearch
   }
@@ -62,29 +55,21 @@ import styles from './styles.scss';
 export default class EngineListView extends React.Component {
   static propTypes = {
     allEngines: objectOf(object),
-    onViewDetail: func.isRequired,
     currentResults: arrayOf(string),
     allEnginesChecked: bool.isRequired,
     selectedEngineIds: arrayOf(string).isRequired,
     checkedEngineIds: arrayOf(string).isRequired,
-    filters: shape({
-      category: arrayOf(string)
-    }).isRequired,
-    isFetchingEngines: bool.isRequired,
-    failedToFetchEngines: bool.isRequired,
+    onViewDetail: func.isRequired,
     searchQuery: string,
+    failedToFetchEngines: bool.isRequired,
     currentTabIndex: number.isRequired,
     isSearchOpen: bool.isRequired,
     selectEngines: func.isRequired,
     deselectEngines: func.isRequired,
-    refetchEngines: func.isRequired,
     searchEngines: func.isRequired,
     checkAllEngines: func.isRequired,
     uncheckAllEngines: func.isRequired,
     clearSearch: func.isRequired,
-    addEngineFilter: func.isRequired,
-    removeEngineFilter: func.isRequired,
-    clearAllFilters: func.isRequired,
     changeTab: func.isRequired,
     toggleSearch: func.isRequired,
     onSave: func.isRequired,
@@ -122,118 +107,30 @@ export default class EngineListView extends React.Component {
     this.props.changeTab(tabIndex);
   };
 
-  renderEngineList = selectedEngines => (
-    <EngineList
-      hasNextPage={false}
-      isNextPageLoading={false}
-      loadNextPage={noop}
-      onViewDetail={this.props.onViewDetail}
-      list={selectedEngines || this.props.currentResults}
-    />
-  );
-
-  renderNoEnabledEngines = () => (
-    <div className={styles.noEnabledEngines}>
-      <div className={styles.noEnabledEnginesContainer}>
-        <div className={styles.noEnabledEnginesIcon}>
-          <i className="icon-engines" />
-        </div>
-        <div className={styles.noEnabledEnginesText}>
-          You have no enabled engines.
-        </div>
-        <Button
-          variant="raised"
-          color="primary"
-          onClick={e => this.handleTabChange(e, 1)} // eslint-disable-line
-        >
-          Explore all engines
-        </Button>
-      </div>
-    </div>
-  );
-
-  handleClearFilter = id => {
-    const { filter, value } = JSON.parse(id);
-    const { filters } = this.props;
-
-    if (!filters[filter].length) {
-      return;
-    }
-
-    if (isArray(filters[filter])) {
-      this.props.addEngineFilter({
-        type: filter,
-        value: without(filters[filter], value)
-      });
-    }
-
-    if (isString(filters[filter])) {
-      this.props.removeEngineFilter({
-        type: filter,
-        value
-      });
-    }
-  };
-
-  renderYourEnginesTab = () => {
-    if (isEmpty(this.props.selectedEngineIds)) {
-      return this.renderNoEnabledEngines();
-    }
-
-    return this.renderEngineList(this.props.selectedEngineIds);
-  };
-
-  renderExploreAllEnginesTab = () => {
-    if (this.props.failedToFetchEngines) {
-      return (
-        <FailureScreen
-          message="Failed to fetch engines."
-          onRetry={this.props.refetchEngines}
-        />
-      );
-    }
-
-    if (this.props.isFetchingEngines) {
-      return (
-        <div className={styles.isFetching}>
-          <CircularProgress size={50} />
-        </div>
-      );
-    }
-
-    if (isEmpty(this.props.currentResults)) {
-      return (
-        <div className={styles.noResults}>
-          <i className="icon-engines" />
-          <span className={styles.noResultsMessage}>
-            Your search returned no results.
-          </span>
-        </div>
-      );
-    }
-
-    return this.renderEngineList();
-  };
-
   handleSave = () => {
     this.props.onSave();
   };
 
   render() {
     const { checkedEngineIds, currentTabIndex } = this.props;
-    const tabs = {
-      0: this.renderYourEnginesTab(),
-      1: this.renderExploreAllEnginesTab()
-    };
+    const tabs = [
+      <YourEnginesView
+        key={0}
+        selectedEngineIds={this.props.selectedEngineIds}
+        onViewDetail={this.props.onViewDetail}
+        onExploreAllEnginesClick={this.handleTabChange}
+      />,
+      <ExploreAllEnginesView
+        key={1}
+        currentResults={this.props.currentResults}
+        onViewDetail={this.props.onViewDetail}
+        failedToFetchEngines={this.props.failedToFetchEngines}
+      />
+    ];
 
     return (
       <div className={styles.engineSelection}>
-        <EnginesSideBar
-          filters={this.props.filters}
-          filterBy={this.props.addEngineFilter}
-          onClearAllFilters={this.props.clearAllFilters}
-          onClearFilter={this.handleClearFilter}
-        />
+        <EnginesSideBar />
         <div className={styles.engineSelectionContent}>
           {!isEmpty(checkedEngineIds) && (
             <SelectedActionBar
