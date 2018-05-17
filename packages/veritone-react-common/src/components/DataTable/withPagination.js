@@ -28,20 +28,20 @@ const withPagination = WrappedTable => {
       rowsPerPage: this.props.initialItemsPerPage
     };
 
-    // eslint-disable-next-line react/sort-comp
-    UNSAFE_componentWillReceiveProp(nextProps) {
-      if (nextProps.rowCount < this.props.rowCount) {
-        // if the dataset is a different size, flip to first page
-        return this.setState({ page: 0 });
-      }
-    }
-
     componentDidUpdate(prevProps, prevState) {
       if (
         this.state.page !== prevState.page ||
         this.state.rowsPerPage !== prevState.rowsPerPage
       ) {
         this.callOnShowCellRange();
+      }
+    }
+
+    // eslint-disable-next-line react/sort-comp
+    UNSAFE_componentWillReceiveProp(nextProps) {
+      if (nextProps.rowCount < this.props.rowCount) {
+        // if the dataset is a different size, flip to first page
+        return this.setState({ page: 0 });
       }
     }
 
