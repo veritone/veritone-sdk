@@ -112,8 +112,6 @@ export default class EnginesSideBar extends React.Component {
       {}
     );
 
-    console.log('components', formComponents);
-
     return (
       <div className={styles.sideBar}>
         <Sidebar
