@@ -493,7 +493,7 @@ export const getFaceEngineAssetData = (state, engineId) => {
   // TODO: create an actual engine in DB
   const userEdited = {
     sourceEngineId: 'user-edited-face-engine-results',
-    sourceEngineName: 'sourceEngineName'
+    sourceEngineName: 'User Generated'
   };
   return engineResults.map(engineResult => ({
     ...pick(engineResult, [
@@ -504,7 +504,6 @@ export const getFaceEngineAssetData = (state, engineId) => {
     ...userEdited
   }));
 }
-
 
 export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({
   type: UPDATE_ENGINE_RESULT,

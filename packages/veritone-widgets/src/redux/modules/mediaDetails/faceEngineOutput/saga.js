@@ -9,7 +9,7 @@ import callGraphQLApi from '../../../../shared/callGraphQLApi';
 const { auth: authModule, config: configModule } = modules;
 
 // const token = 'ad5161c1-8cc7-4c2b-b076-ad2ce888578c';
-const token = '960f8c13-f015-4d79-a9c3-0adabf443c93';
+const token = '6dc0201c-d6f5-4b0f-a631-bf305a1a091d';
 const graphQLUrl = "https://api.aws-dev.veritone.com/v3/graphql";
 
 function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {

@@ -584,6 +584,8 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
+export const isSaveEnabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'enableSave']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,

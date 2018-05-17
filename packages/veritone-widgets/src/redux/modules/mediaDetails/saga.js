@@ -1,7 +1,7 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { get, uniq, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import { getFaceEngineAssetData } from 'faceEngineOutput';
+import { getFaceEngineAssetData } from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -156,7 +156,14 @@ function* loadTdoSaga(widgetId, tdoId) {
         } else
           // TODO: use actual face edit engine
           if (engineId === 'user-edited-face-engine-results' && !engineRun.engine.category) {
-
+            engineRun.engine.name = 'User Generated';
+            engineRun.engine.category = {
+              id: "6faad6b7-0837-45f9-b161-2f6bf31b7a07",
+              name: "Facial Detection",
+              categoryType: "face",
+              iconClass: "icon-face",
+              editable: true
+            }
           }
         return engineRun;
       })

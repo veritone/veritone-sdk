@@ -66,7 +66,8 @@ import widget from '../../shared/widget';
     libraries: mediaDetailsModule.getLibraries(state, _widgetId),
     entities: mediaDetailsModule.getEntities(state, _widgetId),
     schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
-    currentMediaPlayerTime: state.player.currentTime
+    currentMediaPlayerTime: state.player.currentTime,
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state, _widgetId)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -402,7 +403,8 @@ class MediaDetailsWidget extends React.Component {
       tdo,
       tdoContentTemplates,
       schemasById,
-      googleMapsApiKey
+      googleMapsApiKey,
+      isSaveEnabled
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
