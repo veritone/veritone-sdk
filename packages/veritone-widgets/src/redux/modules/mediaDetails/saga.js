@@ -25,7 +25,6 @@ import {
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
   SAVE_ASSET_DATA,
-  CREATE_TRANSCRIPT_BULK_EDIT_ASSET,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadEngineResultsRequest,
@@ -43,11 +42,12 @@ import {
   setEngineId,
   getTdo,
   getEngineResultRequestsByEngineId,
+  toggleSaveMode,
   createFileAssetSuccess,
-  createFileAssetFailure,
-  createBulkEditTranscriptAssetSuccess,
-  createBulkEditTranscriptAssetFailure
+  createFileAssetFailure
 } from '.';
+
+import { CREATE_ENTITY_SUCCESS } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
     details
@@ -978,6 +978,17 @@ function* watchSelectEngineCategory() {
   });
 }
 
+function* enableSaveMode() {
+  yield put(toggleSaveMode(true))
+}
+
+function* watchFaceEngineEntityCreate() {
+  yield takeEvery(
+    (action) => action.type === CREATE_ENTITY_SUCCESS,
+    enableSaveMode
+  );
+}
+
 function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
 
@@ -1027,6 +1038,7 @@ export default function* root() {
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
+    fork(watchFaceEngineEntityCreate),
     fork(watchSaveAssetData)
   ]);
 }

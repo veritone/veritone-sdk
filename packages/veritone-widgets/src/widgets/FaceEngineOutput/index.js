@@ -11,6 +11,7 @@ import Dialog, {
 } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
+import Select from 'material-ui/Select';
 import { find, isObject, isEmpty, get, noop, pick, head } from 'lodash';
 import {
   shape,
@@ -46,7 +47,8 @@ import widget from '../../shared/widget';
   }),
   {
     fetchLibraries: faceEngineOutput.fetchLibraries,
-    createEntity: faceEngineOutput.createEntity
+    createEntity: faceEngineOutput.createEntity,
+    updateEngineResult: faceEngineOutput.updateEngineResult
   },
   null,
   { withRef: true }
@@ -138,6 +140,13 @@ class FaceEngineOutputContainer extends Component {
   componentWillReceiveProps(nextProps) {
     if (!this.props.libraries.length && nextProps.libraries.length) {
       this.setNewEntityLibrary(head(nextProps.libraries).id)
+    }
+
+    if (!this.props.entities.length && nextProps.entities.length) {
+      this.props.updateEngineResult(
+        this.props.selectedEngineId,
+        this.props.unrecognizedFaces
+      )
     }
   }
 
@@ -232,6 +241,16 @@ class FaceEngineOutputContainer extends Component {
             margin="dense"
             fullWidth
             required
+            SelectProps={{
+              MenuProps: {
+                /* temporary fix to address scrolling issue discussed here: https://github.com/mui-org/material-ui/issues/10601 */
+                PaperProps: {
+                  style: {
+                    transform: 'translate3d(0, 0, 0)'
+                  }
+                }
+              }
+            }}
           >
             {isFetchingLibraries
               ? <MenuItem value={'Loading...'}>
@@ -244,6 +263,29 @@ class FaceEngineOutputContainer extends Component {
               ))
             }
           </TextField>
+          {/* <Select
+            id="select-library"
+            label="Choose Library"
+            value={this.state.newEntity.libraryId || 'Loading...'}
+              // libraries.length
+              //   ? (this.state.newEntity.library || head(libraries).id)
+              //   : isFetchingLibraries ? 'Loading...' : ''
+            onChange={this.handleNewEntityLibraryChange}
+            margin="dense"
+            fullWidth
+            required
+          >
+            {isFetchingLibraries
+              ? <option value={'Loading...'}>
+                  {'Loading...'}
+                </option>
+              : libraries.map(library => (
+                <option key={library.id} value={library.id}>
+                  {library.name}
+                </option>
+              ))
+            }
+          </Select> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={this.closeDialog} color="primary">
@@ -261,7 +303,8 @@ class FaceEngineOutputContainer extends Component {
     const faceEngineProps = pick(this.props, [
       'enableEditMode',
       'engines',
-      'currentMediaPlayerTime'
+      'currentMediaPlayerTime',
+      // 'unrecognizedFaces'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
