@@ -294,7 +294,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getPrimaryAssetUri = () => {
-    return get(this.props, 'tdo.primaryAsset.uri');
+    return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
   toggleEditMode = () => {

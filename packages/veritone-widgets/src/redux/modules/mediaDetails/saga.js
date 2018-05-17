@@ -52,7 +52,7 @@ const tdoInfoQueryClause = `id
     }
     primaryAsset(assetType: "media") {
       id
-      uri
+      signedUri
     }
     streams {
       protocol
