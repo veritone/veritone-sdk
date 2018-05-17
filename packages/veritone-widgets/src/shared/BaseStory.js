@@ -97,6 +97,7 @@ export default class BaseStory extends React.Component {
         {this.state.showingWidget && (
           <div>
             {map(this.props.widgetInstanceMethods, (handler, key) => (
+              // eslint-disable-next-line
               <button key={key} onClick={() => handler(this._widget)}>
                 {key}
               </button>
