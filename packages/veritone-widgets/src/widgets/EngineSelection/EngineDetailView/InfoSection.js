@@ -24,7 +24,7 @@ function InfoSection({ engine, onAdd, onRemove, isSelected }) {
   return (
     <div className={styles.row}>
       <div className={styles.avatar}>
-        {engine.iconPath && <img src={this.props.engine.iconPath} />}
+        {engine.iconPath && <img src={engine.iconPath} />}
         {!engine.iconPath && <i className="icon-engines" />}
       </div>
       <div className={styles.container}>

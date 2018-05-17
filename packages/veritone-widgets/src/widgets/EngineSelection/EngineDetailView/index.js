@@ -39,9 +39,7 @@ export default class EngineDetailView extends React.Component {
     deselectEngines: func.isRequired
   };
 
-  static defaultProps = {
-    engine: {}
-  };
+  static defaultProps = {};
 
   render() {
     return (
