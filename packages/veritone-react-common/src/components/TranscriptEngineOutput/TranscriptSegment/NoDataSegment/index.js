@@ -57,7 +57,7 @@ export default class NoDataSegment extends Component {
         }
         startTimeMs={startTimeMs}
         stopTimeMs={stopTimeMs}
-        editMode={true}
+        editMode
         onChange={this.handleSnippetChange}
         className={classNames(styles.snippet)}
       />
@@ -71,9 +71,7 @@ export default class NoDataSegment extends Component {
       startTimeMs,
       stopTimeMs,
       className,
-      timeClassName,
-      startMediaPlayHeadMs,
-      stopMediaPlayHeadMs
+      timeClassName
     } = this.props;
 
     let timeString = msToReadableString(startTimeMs, true);

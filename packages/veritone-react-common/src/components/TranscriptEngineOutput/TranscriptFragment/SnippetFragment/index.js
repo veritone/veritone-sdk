@@ -39,7 +39,7 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetChange = event => {
-    const { startTimeMs, stopTimeMs } = this.props;
+    const { startTimeMs, stopTimeMs, changeOnBlur } = this.props;
     const newValue = event.target.value;
     !changeOnBlur && this.triggerOnChange(newValue, startTimeMs, stopTimeMs);
   };
