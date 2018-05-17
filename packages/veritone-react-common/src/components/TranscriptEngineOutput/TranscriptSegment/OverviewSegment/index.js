@@ -38,17 +38,17 @@ export default class OverviewSegment extends Component {
   };
 
   renderReadContent = () => {
-    let {
+    const {
       content,
       fragmentClassName,
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
     } = this.props;
 
-    let readContents = [];
+    const readContents = [];
     content.fragments.forEach(fragmentData => {
-      let startTime = fragmentData.startTimeMs;
-      let stopTime = fragmentData.stopTimeMs;
+      const startTime = fragmentData.startTimeMs;
+      const stopTime = fragmentData.stopTimeMs;
 
       readContents.push(
         <OverviewFragment

@@ -40,7 +40,7 @@ export default class SnippetSegment extends Component {
   };
 
   handleSnippetClick = (event, entryData) => {
-    let { editMode, onClick } = this.props;
+    const { editMode, onClick } = this.props;
 
     if (!editMode && onClick) {
       onClick(event, entryData);
@@ -48,7 +48,7 @@ export default class SnippetSegment extends Component {
   };
 
   handleSnippetChange = (event, entryData) => {
-    let { editMode, onChange } = this.props;
+    const { editMode, onChange } = this.props;
 
     if (editMode && onChange) {
       onChange(event, entryData);
@@ -56,9 +56,9 @@ export default class SnippetSegment extends Component {
   };
 
   renderTime(startTime) {
-    let { content, timeClassName } = this.props;
+    const { content, timeClassName } = this.props;
 
-    let formatedTime = msToReadableString(content.startTimeMs, true);
+    const formatedTime = msToReadableString(content.startTimeMs, true);
     return (
       <div className={classNames(styles.time, timeClassName)}>
         {formatedTime}

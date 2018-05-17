@@ -63,8 +63,8 @@ export default class TranscriptContent extends Component {
       this.props.onClick(value.startTimeMs, value.stopTimeMs);
   };
 
-  handleDataChanged = (target, value) => {
-    this.props.onChange && this.props.onChange(target, value);
+  handleDataChanged = value => {
+    this.props.onChange && this.props.onChange(value);
   };
 
   parseData() {
@@ -76,8 +76,8 @@ export default class TranscriptContent extends Component {
       };
     }
 
-    let snippetSegments = [];
-    let overviewSegments = [];
+    const snippetSegments = [];
+    const overviewSegments = [];
 
     let overviewStartTime = 0;
     let overviewStopTime = 0;
@@ -85,7 +85,7 @@ export default class TranscriptContent extends Component {
     let overviewSentences = '';
     let overviewStatus = undefined;
 
-    let saveOverviewData = () => {
+    const saveOverviewData = () => {
       //---Save Previous Overview Data---
       overviewSegments.push({
         startTimeMs: overviewStartTime,
@@ -224,13 +224,17 @@ export default class TranscriptContent extends Component {
   }
 
   renderSnippetSegments = parsedData => {
-    let { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const {
+      editMode,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
+    } = this.props;
 
-    let stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    let snippetSegments = [];
+    const snippetSegments = [];
     parsedData.snippetSegments.forEach(segmentData => {
-      let segment = {
+      const segment = {
         start: segmentData.startTimeMs,
         stop: segmentData.stopTimeMs
       };
@@ -353,6 +357,9 @@ export default class TranscriptContent extends Component {
             <TranscriptBulkEdit
               key={'transcript-bulk-edit' + overalStopTime}
               content={overalString}
+              onChange={this.handleDataChanged}
+              startTimeMs={overalStartTime}
+              stopTimeMs={overalStopTime}
             />
           )
         });
@@ -391,7 +398,7 @@ export default class TranscriptContent extends Component {
   };
 
   render() {
-    let {
+    const {
       editMode,
       className,
       mediaLengthMs,
@@ -400,13 +407,13 @@ export default class TranscriptContent extends Component {
       onScroll
     } = this.props;
 
-    let parsedData = this.parseData();
+    const parsedData = this.parseData();
 
     return (
       <div className={classNames(styles.transcriptContent, className)}>
         <DynamicContentScroll
           className={classNames(styles.container)}
-          onScroll={!editMode && onScroll}
+          onScroll={!editMode ? onScroll : null}
           totalSize={
             parsedData.lazyLoading && onScroll && !editMode ? mediaLengthMs : 0
           }

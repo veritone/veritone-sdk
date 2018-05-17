@@ -12,8 +12,8 @@ export default class NoDataSegment extends Component {
     editMode: bool,
     onChange: func,
     overview: bool,
-    startTimeMs: number,
-    stopTimeMs: number,
+    startTimeMs: number.isRequired,
+    stopTimeMs: number.isRequired,
     className: string,
     timeClassName: string,
     contentClassName: string,
@@ -21,29 +21,57 @@ export default class NoDataSegment extends Component {
     stopMediaPlayHeadMs: number
   };
 
-  static defaultProps = {
-    overview: false,
-    startTimeMs: 0,
-    stopTimeMs: 0
-  };
-
   handleSnippetChange = (event, entryData) => {
-    let { editMode, onChange } = this.props;
+    const { editMode, onChange } = this.props;
 
     if (editMode && onChange) {
       onChange(event, entryData);
     }
   };
 
+  renderInfoView() {
+    return (
+      <div className={classNames(styles.content, this.props.contentClassName)}>
+        No Transcript Data Available
+      </div>
+    );
+  }
+
+  renderEditView() {
+    const {
+      startTimeMs,
+      stopTimeMs,
+      startMediaPlayHeadMs,
+      stopMediaPlayHeadMs
+    } = this.props;
+
+    return (
+      <SnippetFragment
+        key={'snippet-' + startTimeMs + '-' + stopTimeMs}
+        value={'No Transcript Data Available '}
+        active={
+          !(
+            stopMediaPlayHeadMs < startTimeMs ||
+            startMediaPlayHeadMs > stopTimeMs
+          )
+        }
+        startTimeMs={startTimeMs}
+        stopTimeMs={stopTimeMs}
+        editMode={true}
+        onChange={this.handleSnippetChange}
+        className={classNames(styles.snippet)}
+      />
+    );
+  }
+
   render() {
-    let {
+    const {
       editMode,
       overview,
       startTimeMs,
       stopTimeMs,
       className,
       timeClassName,
-      contentClassName,
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
     } = this.props;
@@ -62,28 +90,7 @@ export default class NoDataSegment extends Component {
         <div className={classNames(styles.time, timeClassName)}>
           {timeString}
         </div>
-        <div
-          className={classNames(styles.content, contentClassName, {
-            [styles.hidden]: editMode
-          })}
-        >
-          No Transcript Data Available
-        </div>
-        <SnippetFragment
-          key={'snippet-' + startTimeMs + '-' + stopTimeMs}
-          value={'No Transcript Data Available '}
-          active={
-            !(
-              stopMediaPlayHeadMs < startTimeMs ||
-              startMediaPlayHeadMs > stopTimeMs
-            )
-          }
-          startTimeMs={startTimeMs}
-          stopTimeMs={stopTimeMs}
-          editMode={editMode}
-          onChange={this.handleSnippetChange}
-          className={classNames(styles.snippet, { [styles.hidden]: !editMode })}
-        />
+        {editMode ? this.renderEditView() : this.renderInfoView()}
       </div>
     );
   }

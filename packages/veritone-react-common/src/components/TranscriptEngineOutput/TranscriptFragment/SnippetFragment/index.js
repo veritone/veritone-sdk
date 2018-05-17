@@ -10,8 +10,8 @@ export default class SnippetFragment extends Component {
   static propTypes = {
     value: string,
     active: bool,
-    startTimeMs: number,
-    stopTimeMs: number,
+    startTimeMs: number.isRequired,
+    stopTimeMs: number.isRequired,
     editMode: bool,
     onClick: func,
     onChange: func,
@@ -39,44 +39,42 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetChange = event => {
-    const {
-      value,
-      startTimeMs,
-      stopTimeMs,
-      editMode,
-      onChange,
-      changeOnBlur
-    } = this.props;
-
-    if (editMode && onChange && !changeOnBlur) {
-      const data = {
-        newValue: event.target.value,
-        originalValue: value,
-        startTimeMs: startTimeMs,
-        stopTimeMs: stopTimeMs
-      };
-      onChange(event, data);
-    }
+    const { startTimeMs, stopTimeMs } = this.props;
+    const newValue = event.target.value;
+    !changeOnBlur && this.triggerOnChange(newValue, startTimeMs, stopTimeMs);
   };
 
   handleSnippetFocusOut = event => {
-    const {
-      value,
-      startTimeMs,
-      stopTimeMs,
-      editMode,
-      onChange,
-      changeOnBlur
-    } = this.props;
+    const { startTimeMs, stopTimeMs, changeOnBlur } = this.props;
     const newVal = event.target.textContent;
-    if (editMode && onChange && changeOnBlur && newVal !== value) {
-      const data = {
-        newValue: event.target.value,
-        originalValue: value,
-        startTimeMs: startTimeMs,
-        stopTimeMs: stopTimeMs
-      };
-      onChange(event, data);
+    const newStartTime = startTimeMs; //These 2 are the same for now. We will have an to edit time in the future
+    const newStopTime = stopTimeMs; //These 2 are the same for now. We will have an to edit time in the future
+    changeOnBlur && this.triggerOnChange(newVal, newStartTime, newStopTime);
+  };
+
+  triggerOnChange = (newValue, newStartTime, newStopTime) => {
+    const { value, startTimeMs, stopTimeMs, editMode, onChange } = this.props;
+
+    if (
+      editMode &&
+      onChange &&
+      (value !== newValue ||
+        startTimeMs !== newStartTime ||
+        stopTimeMs !== newStopTime)
+    ) {
+      onChange({
+        type: 'snippet',
+        newValue: {
+          value: newValue,
+          startTimeMs: newStartTime,
+          stopTimeMs: newStopTime
+        },
+        originalValue: {
+          value: value,
+          startTimeMs: startTimeMs,
+          stopTimeMs: stopTimeMs
+        }
+      });
     }
   };
 
