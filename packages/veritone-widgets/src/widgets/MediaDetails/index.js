@@ -26,7 +26,6 @@ import {
   OCREngineOutputView,
   SentimentEngineOutput,
   TranscriptEngineOutput,
-  FaceEngineOutput,
   FingerprintEngineOutput,
   LogoDetectionEngineOutput,
   ContentTemplateForm,
@@ -34,6 +33,7 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput
 } from 'veritone-react-common';
+import FaceEngineOutput from '../FaceEngineOutput';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
@@ -237,8 +237,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
-    selectedTabValue: 'mediaDetails',
-    hasPendingChanges: true
+    selectedTabValue: 'mediaDetails'
   };
 
   componentWillMount() {
@@ -592,7 +591,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={!this.state.hasPendingChanges}
+                        disabled={!isSaveEnabled}
                         onClick={this.onSaveEdit}
                       >
                         SAVE
@@ -637,16 +636,11 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'face' && (
                       <FaceEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
-                        libraries={libraries}
-                        entities={entities}
+                        tdo={tdo}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
                       />
                     )}
                   {selectedEngineCategory &&

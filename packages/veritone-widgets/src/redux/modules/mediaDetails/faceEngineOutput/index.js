@@ -490,9 +490,9 @@ export const getFaces = createSelector(
 
 export const getFaceEngineAssetData = (state, engineId) => {
   const engineResults = local(state).engineResultsByEngineId[engineId];
-  // TODO: create an actual engine in DB
+  // On the result use engineAliasId for 'user-edited-face-engine-results'
   const userEdited = {
-    sourceEngineId: 'user-edited-face-engine-results',
+    sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
     sourceEngineName: 'User Generated'
   };
   return engineResults.map(engineResult => ({

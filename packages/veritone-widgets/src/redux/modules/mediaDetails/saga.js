@@ -144,7 +144,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     tdo.engineRuns.records
       .map(engineRun => {
         const engineId = get(engineRun, 'engine.id');
-        if ((engineId === 'bde0b023-333d-acb0-e01a-f95c74214607' || engineId === 'bulk-edit-transcript') && !engineRun.engine.category) {
+        if (engineId === 'bulk-edit-transcript' || engineId === 'bde0b023-333d-acb0-e01a-f95c74214607') {
           engineRun.engine.name = 'User Generated';
           engineRun.engine.category = {
             id: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
@@ -155,7 +155,7 @@ function* loadTdoSaga(widgetId, tdoId) {
           }
         } else
           // TODO: use actual face edit engine
-          if (engineId === 'user-edited-face-engine-results' && !engineRun.engine.category) {
+          if (engineId === 'user-edited-face-engine-results' || engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd') {
             engineRun.engine.name = 'User Generated';
             engineRun.engine.category = {
               id: "6faad6b7-0837-45f9-b161-2f6bf31b7a07",
@@ -1003,7 +1003,7 @@ function* watchSaveAssetData() {
       let assetData = action.payload.data;
       const contentType = 'text/plain';
       const type = 'v-bulk-edit-transcript';
-      const sourceData = `{ name: 'test create bulk transcript edit' }`; // TODO: remove this
+      const sourceData = '{}';
       const sourceTranscriptEngineId = action.payload.selectedEngineId;
       const { widgetId } = action.meta;
       yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, assetData, sourceTranscriptEngineId);
@@ -1015,8 +1015,7 @@ function* watchSaveAssetData() {
     if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
       // assetData = yield select(getTranscriptEngineAssetData, action.payload.selectedEngineId);
       assetData = action.payload.data;
-    }
-    if (action.payload.selectedEngineCategory.categoryType === 'face') {
+    } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(getFaceEngineAssetData, action.payload.selectedEngineId);
     }
 
@@ -1029,7 +1028,7 @@ function* watchSaveAssetData() {
 
     const contentType = 'application/json';
     const type = 'vtn-standard';
-    const sourceData = `{ name: "test create vtn-asset", engineId: "${assetData.sourceEngineId}" }`;
+    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${assetData.sourceEngineId}" }`;
     const { widgetId } = action.meta;
     yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
   });
