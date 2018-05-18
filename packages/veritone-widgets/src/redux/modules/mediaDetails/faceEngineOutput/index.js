@@ -488,15 +488,22 @@ export const getFaces = createSelector(
   }
 )
 
-export const getAssetData = (state, engineId) => {
+export const getFaceEngineAssetData = (state, engineId) => {
   const engineResults = local(state).engineResultsByEngineId[engineId];
-
+  // On the result use engineAliasId for 'user-edited-face-engine-results'
+  const userEdited = {
+    sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
+    sourceEngineName: 'User Generated'
+  };
   return engineResults.map(engineResult => ({
-    ...pick(engineResult, ['sourceEngineId', 'sourceEngineName', 'taskId']),
-    object: map(engineResult.series, 'object')
+    ...pick(engineResult, [
+      'sourceEngineId',
+      'sourceEngineName',
+      'series'
+    ]),
+    ...userEdited
   }));
 }
-
 
 export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({
   type: UPDATE_ENGINE_RESULT,

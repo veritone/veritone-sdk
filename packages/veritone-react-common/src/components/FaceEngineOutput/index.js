@@ -72,7 +72,7 @@ class FaceEngineOutput extends Component {
         profileImageUrl: string
       })
     ),
-    enableEditMode: bool,
+    editMode: bool,
     currentMediaPlayerTime: number,
     onAddNewEntity: func,
     className: string,
@@ -134,8 +134,9 @@ class FaceEngineOutput extends Component {
   };
 
   render() {
+    console.log('React Common -> this.props', this.props);
     const {
-      enableEditMode,
+      editMode,
       onAddNewEntity,
       entitySearchResults,
       className,
@@ -225,7 +226,7 @@ class FaceEngineOutput extends Component {
           <div className={styles.faceTabBody}>
             <FaceGrid
               faces={this.props.unrecognizedFaces}
-              enableEditMode={enableEditMode}
+              editMode={editMode}
               viewMode={viewMode}
               onAddNewEntity={onAddNewEntity}
               entitySearchResults={entitySearchResults}

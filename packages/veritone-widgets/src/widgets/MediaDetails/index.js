@@ -26,7 +26,6 @@ import {
   OCREngineOutputView,
   SentimentEngineOutput,
   TranscriptEngineOutput,
-  FaceEngineOutput,
   FingerprintEngineOutput,
   LogoDetectionEngineOutput,
   ContentTemplateForm,
@@ -34,6 +33,7 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput
 } from 'veritone-react-common';
+import FaceEngineOutput from '../FaceEngineOutput';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
@@ -66,7 +66,8 @@ import widget from '../../shared/widget';
     libraries: mediaDetailsModule.getLibraries(state, _widgetId),
     entities: mediaDetailsModule.getEntities(state, _widgetId),
     schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
-    currentMediaPlayerTime: state.player.currentTime
+    currentMediaPlayerTime: state.player.currentTime,
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state, _widgetId)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -79,7 +80,8 @@ import widget from '../../shared/widget';
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    fetchApplications: applicationModule.fetchApplications
+    fetchApplications: applicationModule.fetchApplications,
+    saveAssetData: mediaDetailsModule.saveAssetData
   },
   null,
   { withRef: true }
@@ -235,8 +237,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
-    selectedTabValue: 'mediaDetails',
-    hasPendingChanges: false
+    selectedTabValue: 'mediaDetails'
   };
 
   componentWillMount() {
@@ -293,7 +294,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getPrimaryAssetUri = () => {
-    return get(this.props, 'tdo.primaryAsset.uri');
+    return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
   toggleEditMode = () => {
@@ -306,6 +307,12 @@ class MediaDetailsWidget extends React.Component {
 
   onSaveEdit = () => {
     this.toggleEditMode();
+
+    this.props.saveAssetData(this.props._widgetId,
+      {
+        selectedEngineId: this.props.selectedEngineId,
+        selectedEngineCategory: this.props.selectedEngineCategory
+      });
   };
 
   onCancelEdit = () => {
@@ -395,7 +402,8 @@ class MediaDetailsWidget extends React.Component {
       tdo,
       tdoContentTemplates,
       schemasById,
-      googleMapsApiKey
+      googleMapsApiKey,
+      isSaveEnabled
     } = this.props;
 
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -583,7 +591,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={!this.state.hasPendingChanges}
+                        disabled={!isSaveEnabled}
                         onClick={this.onSaveEdit}
                       >
                         SAVE
@@ -628,16 +636,11 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'face' && (
                       <FaceEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
-                        libraries={libraries}
-                        entities={entities}
+                        tdo={tdo}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
                       />
                     )}
                   {selectedEngineCategory &&

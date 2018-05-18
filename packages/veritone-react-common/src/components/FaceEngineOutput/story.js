@@ -20,7 +20,7 @@ import FaceEngineOutput from './';
 
 class FaceEngineOutputStory extends Component {
   static propTypes = {
-    enableEditMode: bool,
+    editMode: bool,
     mediaPlayerPosition: number,
     onAddNewEntity: func,
     onFaceOccurrenceClicked: func,
@@ -157,7 +157,7 @@ class FaceEngineOutputStory extends Component {
 
   render() {
     const {
-      enableEditMode,
+      editMode,
       mediaPlayerPosition,
       onAddNewEntity,
       onFaceOccurrenceClicked
@@ -175,7 +175,7 @@ class FaceEngineOutputStory extends Component {
         selectedEngineId={this.state.selectedEngineId}
         onExpandClicked={this.toggleExpandedMode}
         onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-        enableEditMode={enableEditMode}
+        editMode={editMode}
         entitySearchResults={this.state.entitySearchResults}
         onAddNewEntity={onAddNewEntity}
         onRemoveFaceDetection={this.handleRemoveFaceDetection}
@@ -192,7 +192,7 @@ storiesOf('FaceEngineOutput', module).add('Base', () => {
       faceEngineOutput={faceObjects}
       libraries={libraries}
       entities={entities}
-      enableEditMode={boolean('enableEditMode', false)}
+      editMode={boolean('editMode', false)}
       mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
         range: true,
         min: 0,
