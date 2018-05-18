@@ -412,7 +412,7 @@ storiesOf('FaceEngineOutput', module)
       // entities={entities}
       selectedEngineId={engines[0].id}
       unrecognizedFaces={faceSeries}
-      enableEditMode
+      editMode
       baseUrlImagePrefix="https://s3-us-west-1.amazonaws.com/prod-veritone-face"
     />
   )

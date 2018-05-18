@@ -49,8 +49,10 @@ export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
 export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
 export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
-
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
+export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
+export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
+export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -549,12 +551,6 @@ export default createReducer(defaultState, {
         }
       }
     };
-  },
-  [TOGGLE_SAVE_MODE](state, action) {
-    return {
-      ...state,
-      enableSave: action.payload.enableSave
-    }
   }
 });
 
@@ -588,7 +584,7 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
-export const allowSave = (state, widgetId) =>
+export const isSaveEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'enableSave']);
 
 export const initializeWidget = widgetId => ({
@@ -746,4 +742,22 @@ export const toggleSaveMode = (enableSave) => ({
   payload: {
     enableSave
   }
+});
+
+export const saveAssetData = (widgetId, payload) => {
+  return {
+    type: SAVE_ASSET_DATA,
+    payload: payload,
+    meta: { widgetId }
+  };
+};
+
+export const createFileAssetSuccess = (widgetId) => ({
+  type: SAVE_ASSET_DATA_SUCCESS,
+  meta: { widgetId }
+});
+
+export const createFileAssetFailure = (widgetId, { error }) => ({
+  type: SAVE_ASSET_DATA_FAILURE,
+  meta: { error, widgetId }
 });

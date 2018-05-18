@@ -114,7 +114,7 @@ class FaceEngineOutputContainer extends Component {
       })
     ),
     onEngineChange: func,
-    enableEditMode: bool,
+    editMode: bool,
     currentMediaPlayerTime: number,
     className: string,
     onFaceOccurrenceClicked: func,
@@ -142,12 +142,12 @@ class FaceEngineOutputContainer extends Component {
       this.setNewEntityLibrary(head(nextProps.libraries).id)
     }
 
-    if (!this.props.entities.length && nextProps.entities.length) {
-      this.props.updateEngineResult(
-        this.props.selectedEngineId,
-        this.props.unrecognizedFaces
-      )
-    }
+    // if (!this.props.entities.length && nextProps.entities.length) {
+    //   this.props.updateEngineResult(
+    //     this.props.selectedEngineId,
+    //     this.props.unrecognizedFaces
+    //   )
+    // }
   }
 
   handleAddNewEntity = (selectedEntity) => {
@@ -300,8 +300,10 @@ class FaceEngineOutputContainer extends Component {
   }
 
   render() {
+    console.log('Widget Face Engine Output:', this.props);
+
     const faceEngineProps = pick(this.props, [
-      'enableEditMode',
+      'editMode',
       'engines',
       'currentMediaPlayerTime',
       // 'unrecognizedFaces'
@@ -310,6 +312,7 @@ class FaceEngineOutputContainer extends Component {
     if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
       return null;
     }
+
 
     return (
       <Fragment>
@@ -324,5 +327,4 @@ class FaceEngineOutputContainer extends Component {
   }
 }
 
-// export default widget(FaceEngineOutputContainer);
 export default FaceEngineOutputContainer;

@@ -1,6 +1,7 @@
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { get, uniq, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
+import { getFaceEngineAssetData } from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -23,6 +24,7 @@ import {
   REQUEST_SCHEMAS,
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
+  SAVE_ASSET_DATA,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadEngineResultsRequest,
@@ -40,7 +42,9 @@ import {
   setEngineId,
   getTdo,
   getEngineResultRequestsByEngineId,
-  toggleSaveMode
+  toggleSaveMode,
+  createFileAssetSuccess,
+  createFileAssetFailure
 } from '.';
 
 import { CREATE_ENTITY_SUCCESS } from './faceEngineOutput';
@@ -55,7 +59,7 @@ const tdoInfoQueryClause = `id
     }
     primaryAsset(assetType: "media") {
       id
-      uri
+      signedUri
     }
     streams {
       protocol
@@ -138,6 +142,31 @@ function* loadTdoSaga(widgetId, tdoId) {
   // Extract EngineCategories data from EngineRuns
   if (get(tdo, 'engineRuns.records', false)) {
     tdo.engineRuns.records
+      .map(engineRun => {
+        const engineId = get(engineRun, 'engine.id');
+        if (engineId === 'bulk-edit-transcript' || engineId === 'bde0b023-333d-acb0-e01a-f95c74214607') {
+          engineRun.engine.name = 'User Generated';
+          engineRun.engine.category = {
+            id: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
+            name: "Transcription",
+            iconClass: "icon-transcription",
+            categoryType: "transcript",
+            editable: true
+          }
+        } else
+          // TODO: use actual face edit engine
+          if (engineId === 'user-edited-face-engine-results' || engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd') {
+            engineRun.engine.name = 'User Generated';
+            engineRun.engine.category = {
+              id: "6faad6b7-0837-45f9-b161-2f6bf31b7a07",
+              name: "Facial Detection",
+              categoryType: "face",
+              iconClass: "icon-face",
+              editable: true
+            }
+          }
+        return engineRun;
+      })
       // filter those that have category, category icon, and are supported categories
       .filter(
         engineRun =>
@@ -248,12 +277,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
 }
 
-function* loadEngineResultsSaga(
-  widgetId,
-  engineId,
-  startOffsetMs,
-  stopOffsetMs
-) {
+function* loadEngineResultsSaga(widgetId, engineId, startOffsetMs, stopOffsetMs) {
   const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
       engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
         records {
@@ -415,11 +439,7 @@ function* loadTdoContentTemplatesSaga(widgetId) {
   yield put(loadTdoContentTemplatesSuccess(widgetId, result));
 }
 
-function* updateTdoContentTemplatesSaga(
-  widgetId,
-  contentTemplatesToDelete,
-  contentTemplatesToCreate
-) {
+function* updateTdoContentTemplatesSaga(widgetId, contentTemplatesToDelete, contentTemplatesToCreate) {
   const assetIdsToDelete = contentTemplatesToDelete
     .filter(contentTemplate => !!contentTemplate.assetId)
     .map(contentTemplate => contentTemplate.assetId);
@@ -442,6 +462,55 @@ function* updateTdoContentTemplatesSaga(
   }
 
   yield call(loadTdoContentTemplatesSaga, widgetId);
+}
+
+function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
+  if (!contentTemplates || !contentTemplates.length) {
+    return {};
+  }
+
+  const requestTdo = yield select(getTdo, widgetId);
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  const errors = [];
+  const applyContentTemplatesQuery = `mutation updateTDO($tdoId: ID!, $schemaId: ID!, $data: JSONData){
+      updateTDO( input: {
+        id: $tdoId
+        contentTemplates: [{schemaId: $schemaId, data: $data}]
+      })
+      { id }
+    }`;
+  for (let i = 0; i < contentTemplates.length; i++) {
+    const variables = {
+      tdoId: requestTdo.id,
+      schemaId: contentTemplates[i].id,
+      data: contentTemplates[i].data
+    };
+    let response;
+    try {
+      response = yield call(callGraphQLApi, {
+        endpoint: graphQLUrl,
+        query: applyContentTemplatesQuery,
+        token,
+        variables
+      });
+    } catch (error) {
+      errors.push(error);
+    }
+    if (!isEmpty(response.errors)) {
+      response.errors.forEach(error => errors.push(error));
+    }
+  }
+
+  if (errors.length) {
+    return { errors };
+  }
+
+  return {};
 }
 
 function* deleteAssetsSaga(assetIds) {
@@ -493,53 +562,117 @@ function* deleteAssetsSaga(assetIds) {
   return {};
 }
 
-function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
-  if (!contentTemplates || !contentTemplates.length) {
-    return {};
-  }
-
+function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData) {
   const requestTdo = yield select(getTdo, widgetId);
+  const createAssetQuery = `mutation createAsset($tdoId: ID!, $type: String, $contentType: String, $file: UploadedFile){
+    createAsset( input: {
+      containerId: $tdoId,
+      type: $type,
+      contentType: $contentType,
+      sourceData: ${sourceData},
+      file: $file
+    })
+    { id }
+  }`;
+
+  const variables = {
+    tdoId: requestTdo.id,
+    type: type,
+    contentType: contentType,
+    file: fileData
+  };
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
 
-  const errors = [];
-  const applyContentTemplatesQuery = `mutation updateTDO($tdoId: ID!, $schemaId: ID!, $data: JSONData){
-      updateTDO( input: {
-        id: $tdoId
-        contentTemplates: [{schemaId: $schemaId, data: $data}]
-      })
-      { id }
+  const formData = new FormData();
+  formData.append('query', createAssetQuery);
+  formData.append('variables', JSON.stringify(variables));
+  if (contentType === 'application/json') {
+    formData.append('file', new Blob([JSON.stringify(fileData)], {type: contentType}));
+  } else {
+    formData.append('file', new Blob([fileData], {type: contentType}));
+  }
+
+  const saveFile = function ({ endpoint, data, authToken }) {
+    return fetch(endpoint, {
+      method: 'post',
+      body: data,
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    }).then(r => {
+      return r.json();
+    });
+  };
+
+  let response;
+  try {
+    response = yield call(saveFile, { endpoint: graphQLUrl, data: formData, authToken: token});
+  } catch (error) {
+    return yield put(createFileAssetFailure(widgetId, { error }));
+  }
+  if (!isEmpty(response.errors)) {
+    return yield put(createFileAssetFailure(widgetId, { error: response.errors.join(', \n') }));
+  }
+  if (!get(response, 'data.id')) {
+    return yield put(createFileAssetFailure(widgetId, { error: 'Failed to create file asset.' }));
+  }
+
+  yield put(createFileAssetSuccess(widgetId));
+  return response;
+}
+
+function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceData, engineId) {
+  const requestTdo = yield select(tdo, widgetId);
+  let response;
+  try {
+    response = yield call(createFileAssetSaga, {
+      widgetId, type, contentType, sourceData, text
+    });
+  } catch (error) {
+    return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
+  }
+  if (!response) {
+    return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error: 'Failed to create bulk edit text asset.' }));
+  }
+  const temporaryBulkEditAssetId = response.data.id;
+
+  // TODO: get this originalTranscriptAssetId by engineId ( engineId must be GUID, limit 1)
+  // 1st by 'vtn-standard' asset.type and engineId
+  // 2nd by 'transcript' asset.type and asset.metadata.source == engineId || == engine.assety
+  //
+  const originalTranscriptAssetId = null;
+
+  // start bulk-edit-task
+  const createJobQuery =
+    `mutation {
+      createJob(input: {
+        targetId: '${requestTdo.id}',
+        tasks: [{
+          engineId: 'bulk-edit-transcript',
+          taskPayload: {
+            originalTranscriptAssetId: '${originalTranscriptAssetId}',
+            temporaryBulkEditAssetId: '${temporaryBulkEditAssetId}'
+          }
+        }]
+      }) {
+        targetId,
+        id
+        tasks {
+          records {
+            id
+          }
+        }
+      }
     }`;
-  for (let i = 0; i < contentTemplates.length; i++) {
-    const variables = {
-      tdoId: requestTdo.id,
-      schemaId: contentTemplates[i].id,
-      data: contentTemplates[i].data
-    };
-    let response;
-    try {
-      response = yield call(callGraphQLApi, {
-        endpoint: graphQLUrl,
-        query: applyContentTemplatesQuery,
-        token,
-        variables
-      });
-    } catch (error) {
-      errors.push(error);
-    }
-    if (!isEmpty(response.errors)) {
-      response.errors.forEach(error => errors.push(error));
-    }
-  }
 
-  if (errors.length) {
-    return { errors };
-  }
+  // TODO: run this job
+  // TODO: check results
 
-  return {};
+  return yield put(createBulkEditTranscriptAssetSuccess(widgetId));
 }
 
 function* watchUpdateTdoContentTemplates() {
@@ -855,11 +988,50 @@ function* watchSelectEngineCategory() {
 function* enableSaveMode() {
   yield put(toggleSaveMode(true))
 }
+
 function* watchFaceEngineEntityCreate() {
   yield takeEvery(
     (action) => action.type === CREATE_ENTITY_SUCCESS,
     enableSaveMode
   );
+}
+
+function* watchSaveAssetData() {
+  yield takeEvery(SAVE_ASSET_DATA, function*(action) {
+
+    if (action.payload.selectedEngineCategory.categoryType === 'transcript' && action.payload.selectedEngineCategory.isBulkEdit) {
+      let assetData = action.payload.data;
+      const contentType = 'text/plain';
+      const type = 'v-bulk-edit-transcript';
+      const sourceData = '{}';
+      const sourceTranscriptEngineId = action.payload.selectedEngineId;
+      const { widgetId } = action.meta;
+      yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, assetData, sourceTranscriptEngineId);
+      // done saving bulk transcript
+      return;
+    }
+
+    let assetData;
+    if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
+      // assetData = yield select(getTranscriptEngineAssetData, action.payload.selectedEngineId);
+      assetData = action.payload.data;
+    } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
+      assetData = yield select(getFaceEngineAssetData, action.payload.selectedEngineId);
+    }
+
+    if (!assetData) {
+      throw new Error('Asset data to store must be provided');
+    }
+    if (!assetData.sourceEngineId) {
+      throw new Error('Source engine id must be set on the engine result');
+    }
+
+    const contentType = 'application/json';
+    const type = 'vtn-standard';
+    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${assetData.sourceEngineId}" }`;
+    const { widgetId } = action.meta;
+    yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
+  });
 }
 
 export default function* root() {
@@ -872,6 +1044,7 @@ export default function* root() {
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
-    fork(watchFaceEngineEntityCreate)
+    fork(watchFaceEngineEntityCreate),
+    fork(watchSaveAssetData)
   ]);
 }
