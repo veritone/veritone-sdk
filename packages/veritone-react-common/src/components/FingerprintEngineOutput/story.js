@@ -21,7 +21,7 @@ storiesOf('FingerprintEngineOutput', module).add('Base', () => {
       selectedEngineId={selectedEngineId}
       engines={engines}
       onEngineChange={action('engine select')}
-      onExpandClicked={action('expand view clicked')}
+      onExpandClick={action('expand view clicked')}
     />
   );
 });

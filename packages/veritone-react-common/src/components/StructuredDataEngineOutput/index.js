@@ -46,7 +46,7 @@ class StructuredDataEngineOutput extends Component {
     selectedEngineId: string,
     onEngineChange: func,
     className: string,
-    onExpandClicked: func
+    onExpandClick: func
   };
 
   static defaultProps = {
@@ -139,7 +139,7 @@ class StructuredDataEngineOutput extends Component {
       engines,
       schemasById,
       selectedEngineId,
-      onExpandClicked
+      onExpandClick
     } = this.props;
 
     const {
@@ -155,7 +155,7 @@ class StructuredDataEngineOutput extends Component {
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={this.handleEngineChange}
-          onExpandClicked={onExpandClicked}
+          onExpandClick={onExpandClick}
         >
           {schemasById[selectedSchemaId] && (
             <Select
@@ -176,7 +176,7 @@ class StructuredDataEngineOutput extends Component {
               {engineSchemaIds.map(schemaId => {
                 return (
                   <MenuItem
-                    key={'structured-data-schema-menu-item-' + schemaId}
+                    key={`structured-data-schema-menu-item-${schemaId}`}
                     value={schemaId}
                     className={styles.schemaMenuItem}
                   >

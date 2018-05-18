@@ -14,12 +14,12 @@ export default class FingerprintContent extends Component {
     libraries: arrayOf(
       shape({
         name: string,
-        libraryId: string,
+        libraryId: string.isRequired,
         description: string,
         entities: arrayOf(
           shape({
             name: string,
-            entityId: string,
+            entityId: string.isRequired,
             metadata: object,
             profileImageUrl: string,
             matches: arrayOf(

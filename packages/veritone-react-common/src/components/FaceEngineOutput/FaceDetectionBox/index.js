@@ -22,7 +22,7 @@ const renderEntitySearchMenu = ({
   return results.map((result, index) => {
     return (
       <MenuItem
-        key={'menu-entity-' + result.id}
+        key={`menu-entity-${result.id}`}
         component="div"
         {...getItemProps({
           item: result,

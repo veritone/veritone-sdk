@@ -7,15 +7,15 @@ import styles from './styles.scss';
 
 class OCRObject extends Component {
   static propTypes = {
-    text: string,
-    startTime: number,
-    endTime: number,
+    text: string.isRequired,
+    startTime: number.isRequired,
+    endTime: number.isRequired,
     onClick: func,
     currentMediaPlayerTime: number
   };
 
   render() {
-    let {
+    const {
       text,
       startTime,
       endTime,
@@ -23,7 +23,7 @@ class OCRObject extends Component {
       currentMediaPlayerTime
     } = this.props;
 
-    let highlightOcr =
+    const highlightOcr =
       currentMediaPlayerTime >= startTime && currentMediaPlayerTime <= endTime;
 
     return (

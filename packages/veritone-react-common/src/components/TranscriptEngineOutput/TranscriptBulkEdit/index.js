@@ -25,7 +25,7 @@ export default class TranscriptBulkEdit extends Component {
   };
 
   render() {
-    let { className } = this.props;
+    const { className } = this.props;
     return (
       <div className={classNames(styles.transcriptBulkEdit, className)}>
         <textarea

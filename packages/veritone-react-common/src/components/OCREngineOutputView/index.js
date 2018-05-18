@@ -36,7 +36,7 @@ class OCREngineOutputView extends Component {
     ),
     selectedEngineId: string,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
     onOcrClicked: func,
     className: string,
     currentMediaPlayerTime: number
@@ -51,13 +51,13 @@ class OCREngineOutputView extends Component {
   };
 
   render() {
-    let {
+    const {
       data,
       className,
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       currentMediaPlayerTime
     } = this.props;
 
@@ -68,17 +68,13 @@ class OCREngineOutputView extends Component {
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={onEngineChange}
-          onExpandClicked={onExpandClicked}
+          onExpandClick={onExpandClick}
         />
         <div className={styles.ocrContent}>
           {data.map(dataObject => {
             return (
               <Fragment
-                key={
-                  'ocr-object-group-' +
-                  dataObject.sourceEngineId +
-                  dataObject.taskId
-                }
+                key={`ocr-object-group-${dataObject.sourceEngineId}-${dataObject.taskId}`}
               >
                 {dataObject.status === 'FETCHING' && (
                   <div>Display a progress</div>
@@ -86,17 +82,9 @@ class OCREngineOutputView extends Component {
                 {dataObject.series && (
                   <span>
                     {dataObject.series.map(ocrObject => {
-                      {
-                        /* TDO: key may not be unique enough */
-                      }
                       return (
                         <OCRObject
-                          key={
-                            'ocr-object-' +
-                            ocrObject.startTimeMs +
-                            ocrObject.stopTimeMs +
-                            ocrObject.object.text
-                          }
+                          key={`ocr-object-${ocrObject.startTimeMs}-${ocrObject.stopTimeMs}-${ocrObject.object.text}`}
                           text={ocrObject.object.text}
                           startTime={ocrObject.startTimeMs}
                           endTime={ocrObject.stopTimeMs}

@@ -28,7 +28,7 @@ storiesOf('SentimentEngineOutput', module).add('Base', () => {
       selectedEngineId={selectedEngineId}
       engines={engines}
       onEngineChange={action('entry clicked')}
-      onExpandClicked={action('expand button clicked')}
+      onExpandClick={action('expand button clicked')}
     />
   );
 });

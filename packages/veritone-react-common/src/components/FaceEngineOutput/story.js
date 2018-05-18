@@ -12,7 +12,7 @@ import {
 import { storiesOf } from '@storybook/react';
 import { boolean, number as knobNumber } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
-import { isEqual } from 'lodash';
+import { isEqual, isEmpty } from 'lodash';
 
 import styles from './story.styles.scss';
 
@@ -141,8 +141,8 @@ class FaceEngineOutputStory extends Component {
   };
 
   searchForEntities = searchQuery => {
-    if (searchQuery && searchQuery.length) {
-      let searchRegex = new RegExp(searchQuery, 'gi');
+    if (!isEmpty(searchQuery)) {
+      const searchRegex = new RegExp(searchQuery, 'gi');
       this.setState({
         entitySearchResults: this.props.entities.filter(entity => {
           return entity.name.match(searchRegex);
@@ -156,7 +156,7 @@ class FaceEngineOutputStory extends Component {
   };
 
   render() {
-    let {
+    const {
       enableEditMode,
       mediaPlayerPosition,
       onAddNewEntity,
@@ -173,7 +173,7 @@ class FaceEngineOutputStory extends Component {
         engines={this.state.engines}
         onEngineChange={this.handleSelectEngine}
         selectedEngineId={this.state.selectedEngineId}
-        onExpandClicked={this.toggleExpandedMode}
+        onExpandClick={this.toggleExpandedMode}
         onFaceOccurrenceClicked={onFaceOccurrenceClicked}
         enableEditMode={enableEditMode}
         entitySearchResults={this.state.entitySearchResults}
@@ -206,7 +206,7 @@ storiesOf('FaceEngineOutput', module).add('Base', () => {
   );
 });
 
-let faceObjects = [
+const faceObjects = [
   {
     series: [
       {
@@ -330,7 +330,7 @@ let faceObjects = [
   }
 ];
 
-let entities = [
+const entities = [
   {
     id: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
     name: 'Paul McCartney',
@@ -384,7 +384,7 @@ let entities = [
   }
 ];
 
-let libraries = [
+const libraries = [
   {
     id: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
     name: 'Beatles'

@@ -92,14 +92,14 @@ storiesOf('ObjectDetectionEngineOutput', module).add('Base', () => {
       selectedEngineId="2dc5166f-c0ad-4d84-8a85-515c42b5d357"
       engines={engines}
       onEngineChange={action('Engine Changed')}
-      onObjectOccurrenceClicked={action('Object occurence clicked')}
+      onObjectOccurrenceClick={action('Object occurence clicked')}
       currentMediaPlayerTime={number('mediaPlayerPosition', 0, {
         range: true,
         min: 0,
         max: 13000,
         step: 100
       })}
-      onExpandClicked={action('Expand Clicked')}
+      onExpandClick={action('Expand Clicked')}
     />
   );
 });

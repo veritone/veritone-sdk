@@ -47,7 +47,7 @@ export default class LogoDetectionEngineOutput extends Component {
     onScroll: func,
     onEntrySelected: func,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -81,11 +81,11 @@ export default class LogoDetectionEngineOutput extends Component {
 
     let contents = [];
 
-    data.map((chunk, index) => {
+    data.map((chunk) => {
       let groupStartTime = chunk.startTimeMs;
       let groupStopTime = chunk.stopTimeMs;
 
-      let items = [];
+      const items = [];
       let series = chunk.series;
       if (series && series.length > 0) {
         // Sort detected logos by there start time and end time
@@ -110,26 +110,19 @@ export default class LogoDetectionEngineOutput extends Component {
             }
 
             //Look for detected logo
-            let startTime = Math.floor(itemInfo.startTimeMs / 1000) * 1000;
-            let stopTime = Math.ceil(itemInfo.stopTimeMs / 1000) * 1000;
-            let startTimeString = msToReadableString(itemInfo.startTimeMs);
-            let stopTimeString = msToReadableString(itemInfo.stopTimeMs);
-            let logoItem = (
+            const startTime = Math.floor(itemInfo.startTimeMs / 1000) * 1000;
+            const stopTime = Math.ceil(itemInfo.stopTimeMs / 1000) * 1000;
+            const startTimeString = msToReadableString(itemInfo.startTimeMs);
+            const stopTimeString = msToReadableString(itemInfo.stopTimeMs);
+            const logoItem = (
               <PillButton
                 value={index}
                 label={itemInfo.object.label}
-                info={startTimeString + ' - ' + stopTimeString}
+                info={`${startTimeString} - ${stopTimeString}`}
                 className={classNames(styles.item, entryClassName)}
                 labelClassName={classNames(styles.label, entryLabelClassName)}
                 infoClassName={entryInfoClassName}
-                key={
-                  'logo-' +
-                  startTime +
-                  '-' +
-                  stopTime +
-                  '-' +
-                  itemInfo.object.label
-                }
+                key={`logo-${startTime}-${stopTime}-${itemInfo.object.label}`}
                 onClick={this.handleEntrySelected}
                 data={itemInfo}
                 highlight={
@@ -155,19 +148,19 @@ export default class LogoDetectionEngineOutput extends Component {
   }
 
   render() {
-    let {
+    const {
       title,
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       onScroll,
       mediaLengthMs,
       neglectableTimeMs,
       estimatedDisplayTimeMs
     } = this.props;
 
-    let contents = this.renderContents();
+    const contents = this.renderContents();
 
     return (
       <div className={classNames(styles.logoDetection, this.props.className)}>
@@ -176,7 +169,7 @@ export default class LogoDetectionEngineOutput extends Component {
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={onEngineChange}
-          onExpandClicked={onExpandClicked}
+          onExpandClick={onExpandClick}
         />
         <DynamicContentScroll
           contents={contents}

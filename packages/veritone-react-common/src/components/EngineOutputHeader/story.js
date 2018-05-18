@@ -23,7 +23,7 @@ storiesOf('EngineOutputHeader', module)
       <EngineOutputHeader
         title="Test title"
         engines={engines}
-        onExpandClicked={action('onExpandClicked')}
+        onExpandClick={action('onExpandClick')}
         onEngineChange={action('onEngineChange')}
       />
     );
@@ -44,7 +44,7 @@ storiesOf('EngineOutputHeader', module)
       <EngineOutputHeader
         title="Test title"
         engines={engines}
-        onExpandClicked={action('onExpandClicked')}
+        onExpandClick={action('onExpandClick')}
         onEngineChange={action('onEngineChange')}
       >
         <Select value="test1">

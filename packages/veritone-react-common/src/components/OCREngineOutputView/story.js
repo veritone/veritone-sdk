@@ -14,13 +14,13 @@ storiesOf('OCREngineOutputView', module).add('Base', () => {
       engines={engines}
       selectedEngineId="9a6ac62d-a881-8884-6ee0-f15ab84fcbe2"
       onEngineChange={action('onEngineChange')}
-      onExpandClicked={action('onExpandClicked')}
+      onExpandClick={action('onExpandClick')}
       onOcrClicked={action('onOcrClicked')}
     />
   );
 });
 
-let ocrAssets = [
+const ocrAssets = [
   {
     series: [
       {

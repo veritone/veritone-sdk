@@ -45,7 +45,7 @@ export class LogoDetectionExample extends Component {
   };
 
   render() {
-    let state = this.state;
+    const state = this.state;
     return (
       <div className={styles.outputViewRoot}>
         <LogoDetectionEngineOutput
@@ -58,7 +58,7 @@ export class LogoDetectionExample extends Component {
           onScroll={this.props.lazyLoading && this.handleLazyLoading}
           onEntrySelected={action('on select')}
           onEngineChange={action('on engine changed')}
-          onExpandClicked={action('on expand clicked')}
+          onExpandClick={action('on expand clicked')}
           mediaLengthMs={this.props.lazyLoading && 1800000}
           neglectableTimeMs={this.props.lazyLoading && 1000}
           estimatedDisplayTimeMs={this.props.lazyLoading && 240000}
@@ -69,8 +69,8 @@ export class LogoDetectionExample extends Component {
 }
 
 function genMockData(numEntry = 88, startTimeMs = 0, stopTimeMs = 2000000) {
-  let data = [];
-  let labelOptions = [
+  const data = [];
+  const labelOptions = [
     'ESPN',
     'Veritone',
     'Google',
@@ -99,13 +99,13 @@ function genMockData(numEntry = 88, startTimeMs = 0, stopTimeMs = 2000000) {
     'Universal Pictures'
   ];
 
-  let timeInterval = stopTimeMs - startTimeMs;
-  let maxOptionIndex = labelOptions.length - 1;
+  const timeInterval = stopTimeMs - startTimeMs;
+  const maxOptionIndex = labelOptions.length - 1;
   for (let entryIndex = 0; entryIndex < numEntry; entryIndex++) {
-    let labelIndex = Math.round(Math.random() * maxOptionIndex);
-    let entryStartTime = startTimeMs + Math.round(Math.random() * timeInterval);
-    let displayTime = Math.round(Math.random() * (stopTimeMs - entryStartTime));
-    let entry = {
+    const labelIndex = Math.round(Math.random() * maxOptionIndex);
+    const entryStartTime = startTimeMs + Math.round(Math.random() * timeInterval);
+    const displayTime = Math.round(Math.random() * (stopTimeMs - entryStartTime));
+    const entry = {
       startTimeMs: entryStartTime,
       stopTimeMs: entryStartTime + displayTime,
       object: {

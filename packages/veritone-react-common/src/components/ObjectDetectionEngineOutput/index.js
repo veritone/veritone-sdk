@@ -14,7 +14,7 @@ const ObjectGroup = ({
   currentMediaPlayerTime,
   onObjectClicked
 }) => {
-  let handleObjectClicked = (startTime, stopTime) => evt =>
+  const handleObjectClick = (startTime, stopTime) => evt =>
     onObjectClicked(startTime, stopTime);
   return (
     <span>
@@ -22,25 +22,16 @@ const ObjectGroup = ({
         objectGroup.series.map(objectData => {
           return (
             <PillButton
-              key={
-                'object-pill-' +
-                kebabCase(objectData.object.label) +
-                objectData.startTimeMs +
-                objectData.stopTimeMs
-              }
+              key={`object-pill-${kebabCase(objectData.object.label)}-${objectData.startTimeMs}-${objectData.stopTimeMs}`}
               label={objectData.object.label}
-              info={
-                msToReadableString(objectData.startTimeMs) +
-                ' - ' +
-                msToReadableString(objectData.stopTimeMs)
-              }
+              info={`${msToReadableString(objectData.startTimeMs)} - ${msToReadableString(objectData.stopTimeMs)}`}
               className={styles.objectPill}
               infoClassName={styles.objectAppearanceTime}
               highlight={
                 currentMediaPlayerTime >= objectData.startTimeMs &&
                 currentMediaPlayerTime <= objectData.stopTimeMs
               }
-              onClick={handleObjectClicked(
+              onClick={handleObjectClick(
                 objectData.startTimeMs,
                 objectData.stopTimeMs
               )}
@@ -84,7 +75,7 @@ class ObjectDetectionEngineOutput extends Component {
         )
       })
     ),
-    onObjectOccurrenceClicked: func,
+    onObjectOccurrenceClick: func,
     selectedEngineId: string,
     engines: arrayOf(
       shape({
@@ -95,7 +86,7 @@ class ObjectDetectionEngineOutput extends Component {
     onEngineChange: func,
     className: string,
     currentMediaPlayerTime: number,
-    onExpandClicked: func
+    onExpandClick: func
   };
 
   static defaultProps = {
@@ -103,26 +94,26 @@ class ObjectDetectionEngineOutput extends Component {
     engines: []
   };
 
-  handleObjectClicked = (startTime, stopTime) => {
-    this.props.onObjectOccurrenceClicked(startTime, stopTime);
+  handleObjectClick = (startTime, stopTime) => {
+    this.props.onObjectOccurrenceClick(startTime, stopTime);
   };
 
   render() {
-    let {
+    const {
       data,
       className,
       selectedEngineId,
       engines,
       onEngineChange,
       currentMediaPlayerTime,
-      onExpandClicked
+      onExpandClick
     } = this.props;
 
     return (
       <div className={classNames(styles.objectDetectionOutputView, className)}>
         <EngineOutputHeader
           title="Object Detection"
-          onExpandClicked={onExpandClicked}
+          onExpandClick={onExpandClick}
           onEngineChange={onEngineChange}
           selectedEngineId={selectedEngineId}
           engines={engines}
@@ -131,14 +122,10 @@ class ObjectDetectionEngineOutput extends Component {
           {data.map(objectGroup => {
             return (
               <ObjectGroup
-                key={
-                  'object-group-' +
-                  objectGroup.sourceEngineId +
-                  objectGroup.taskId
-                }
+                key={`object-group-${objectGroup.sourceEngineId}-${objectGroup.taskId}`}
                 objectGroup={objectGroup}
                 currentMediaPlayerTime={currentMediaPlayerTime}
-                onObjectClicked={this.handleObjectClicked}
+                onObjectClicked={this.handleObjectClick}
               />
             );
           })}

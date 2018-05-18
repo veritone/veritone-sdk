@@ -38,13 +38,7 @@ export default class GeoTimeView extends Component {
               <GeoTimeEntry
                 data={entry}
                 onClick={onClick}
-                key={
-                  'geo-entry-' +
-                  entry.startTimeMs +
-                  entry.stopTimeMs +
-                  entry.latitude +
-                  entry.longitude
-                }
+                key={`geo-entry-${entry.startTimeMs}-${entry.stopTimeMs}-${entry.latitude}-${entry.longitude}`}
               />
             );
           })}

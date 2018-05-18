@@ -24,10 +24,10 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetClick = event => {
-    let { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
+    const { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
 
     if (!editMode && onClick) {
-      let data = {
+      const data = {
         value: value,
         startTimeMs: startTimeMs,
         stopTimeMs: stopTimeMs
@@ -37,10 +37,10 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetChange = event => {
-    let { value, startTimeMs, stopTimeMs, editMode, onChange } = this.props;
+    const { value, startTimeMs, stopTimeMs, editMode, onChange } = this.props;
 
     if (editMode && onChange) {
-      let data = {
+      const data = {
         newValue: event.target.value,
         originalValue: value,
         startTimeMs: startTimeMs,
@@ -51,7 +51,7 @@ export default class SnippetFragment extends Component {
   };
 
   render() {
-    let { value, active, editMode, className } = this.props;
+    const { value, active, editMode, className } = this.props;
 
     return (
       <ContentEditable
