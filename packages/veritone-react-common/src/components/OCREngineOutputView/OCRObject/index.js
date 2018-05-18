@@ -8,8 +8,8 @@ import styles from './styles.scss';
 class OCRObject extends Component {
   static propTypes = {
     text: string.isRequired,
-    startTime: number.isRequired,
-    endTime: number.isRequired,
+    startTime: number,
+    endTime: number,
     onClick: func,
     currentMediaPlayerTime: number
   };
@@ -34,9 +34,10 @@ class OCRObject extends Component {
         onClick={onClick}
       >
         <span className={styles.ocrText}>{text}</span>
-        <span className={styles.ocrObjectTimestamp}>
-          {msToReadableString(startTime)} - {msToReadableString(endTime)}
-        </span>
+        {startTime >= 0 && endTime >= 0 &&
+          <span className={styles.ocrObjectTimestamp}>
+            {msToReadableString(startTime)} - {msToReadableString(endTime)}
+          </span>}
       </div>
     );
   }
