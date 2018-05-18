@@ -626,7 +626,7 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   return response;
 }
 
-function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceData) {
+function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceData, text) {
   let createFileAssetResponse;
   try {
     createFileAssetResponse = yield call(createFileAssetSaga, {

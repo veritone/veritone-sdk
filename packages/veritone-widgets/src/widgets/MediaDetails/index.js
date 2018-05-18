@@ -223,7 +223,9 @@ class MediaDetailsWidget extends React.Component {
           url: string.isRequired
         })
       )
-    })
+    }),
+    saveAssetData: func,
+    isSaveEnabled: bool
   };
 
   static defaultProps = {
@@ -306,13 +308,12 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onSaveEdit = () => {
-    this.toggleEditMode();
-
     this.props.saveAssetData(this.props._widgetId,
       {
         selectedEngineId: this.props.selectedEngineId,
         selectedEngineCategory: this.props.selectedEngineCategory
       });
+    this.toggleEditMode();
   };
 
   onCancelEdit = () => {
