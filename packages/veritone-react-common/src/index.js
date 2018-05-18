@@ -26,3 +26,5 @@ export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
 export SearchPill from './components/SearchPill';
+export HorizontalScroll from './components/HorizontalScroll';
+export GeoPicker from './components/GeoPicker';
