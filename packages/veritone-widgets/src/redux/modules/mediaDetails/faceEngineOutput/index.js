@@ -220,7 +220,6 @@ const reducer = createReducer(defaultState, {
     }
   },
   [UPDATE_ENGINE_RESULT](state, action) {
-    console.log('UPDATE ENGINE RESULT:', action.payload)
     const engineResult = { ...state.engineResultsByEngineId[action.payload.selectedEngineId][0] };
     engineResult.series = [ ...engineResult.series, ...action.payload.unrecognizedFaces];
 

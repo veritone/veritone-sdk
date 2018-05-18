@@ -558,7 +558,6 @@ export default createReducer(defaultState, {
     };
   },
   [TOGGLE_SAVE_MODE](state, action) {
-    console.log('!!! reducer enableSaveMode');
     return {
       ...state,
       enableSave: action.payload.enableSave
