@@ -51,8 +51,13 @@ export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
 export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
-export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
 export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
+export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
+export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
+  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
+  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -759,12 +764,27 @@ export const saveAssetData = (widgetId, payload) => {
   };
 };
 
+export const saveAssetDataFailure = (widgetId, { error }) => ({
+  type: SAVE_ASSET_DATA_FAILURE,
+  meta: { error, widgetId }
+});
+
 export const createFileAssetSuccess = (widgetId) => ({
-  type: SAVE_ASSET_DATA_SUCCESS,
+  type: CREATE_FILE_ASSET_SUCCESS,
   meta: { widgetId }
 });
 
 export const createFileAssetFailure = (widgetId, { error }) => ({
-  type: SAVE_ASSET_DATA_FAILURE,
+  type: CREATE_FILE_ASSET_FAILURE,
+  meta: { error, widgetId }
+});
+
+export const createBulkEditTranscriptAssetSuccess = (widgetId) => ({
+  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
+  meta: { widgetId }
+});
+
+export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
+  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
   meta: { error, widgetId }
 });
