@@ -67,7 +67,7 @@ import widget from '../../shared/widget';
     entities: mediaDetailsModule.getEntities(state, _widgetId),
     schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime,
-    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state, _widgetId)
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -641,6 +641,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
+                        editMode={isEditModeEnabled}
                       />
                     )}
                   {selectedEngineCategory &&

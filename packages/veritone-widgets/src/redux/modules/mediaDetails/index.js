@@ -551,6 +551,13 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [TOGGLE_SAVE_MODE](state, action) {
+    console.log('!!! reducer enableSaveMode');
+    return {
+      ...state,
+      enableSave: action.payload.enableSave
+    };
   }
 });
 
@@ -584,8 +591,8 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
-export const isSaveEnabled = (state, widgetId) =>
-  get(local(state), [widgetId, 'enableSave']);
+export const isSaveEnabled = (state) =>
+  get(local(state), ['enableSave']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,

@@ -986,10 +986,12 @@ function* watchSelectEngineCategory() {
 }
 
 function* enableSaveMode() {
+  console.log('!!! enableSaveMode');
   yield put(toggleSaveMode(true))
 }
 
 function* watchFaceEngineEntityCreate() {
+  console.log('!!! watchFaceEngineEntityCreate');
   yield takeEvery(
     (action) => action.type === CREATE_ENTITY_SUCCESS,
     enableSaveMode
