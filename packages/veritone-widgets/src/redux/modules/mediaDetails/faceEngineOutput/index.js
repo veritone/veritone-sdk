@@ -569,12 +569,13 @@ export const getFaceEngineAssetData = (state, engineId) => {
     sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
     sourceEngineName: 'User Generated'
   };
-  return engineResults.map(engineResult => ({
-    ...pick(engineResult, [
-      'series'
-    ]),
-    ...userEdited
-  }));
+  const allSeries = engineResults.reduce((accumulator, engineResult) => {
+    return [...accumulator, ...engineResult.series];
+  }, []);
+  return {
+    ...userEdited,
+    series: allSeries
+  }
 }
 
 export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({

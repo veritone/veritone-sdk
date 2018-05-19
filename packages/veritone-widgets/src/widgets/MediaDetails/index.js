@@ -67,7 +67,7 @@ import widget from '../../shared/widget';
     entities: mediaDetailsModule.getEntities(state, _widgetId),
     schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
     currentMediaPlayerTime: state.player.currentTime,
-    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state, _widgetId)
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -223,7 +223,9 @@ class MediaDetailsWidget extends React.Component {
           url: string.isRequired
         })
       )
-    })
+    }),
+    saveAssetData: func,
+    isSaveEnabled: bool
   };
 
   static defaultProps = {
@@ -306,13 +308,12 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onSaveEdit = () => {
-    this.toggleEditMode();
-
     this.props.saveAssetData(this.props._widgetId,
       {
         selectedEngineId: this.props.selectedEngineId,
         selectedEngineCategory: this.props.selectedEngineCategory
       });
+    this.toggleEditMode();
   };
 
   onCancelEdit = () => {
@@ -641,6 +642,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
+                        editMode={isEditModeEnabled}
                       />
                     )}
                   {selectedEngineCategory &&
