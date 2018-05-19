@@ -100,7 +100,7 @@ class FaceGrid extends Component {
 
   render() {
     const { faces } = this.props;
-    console.log('faces:', faces);
+
     return (
       <div className={styles.faceGrid}>
         {!faces.length

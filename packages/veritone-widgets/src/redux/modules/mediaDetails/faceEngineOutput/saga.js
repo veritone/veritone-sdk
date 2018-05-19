@@ -1,17 +1,17 @@
-import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
+import { fork, all, call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
 import { get, isUndefined } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import * as engineResults from '.';
+import * as faceEngineOutput from '.';
 import * as gqlQuery from './queries';
 
 import callGraphQLApi from '../../../../shared/callGraphQLApi';
 
 const { auth: authModule, config: configModule } = modules;
 
-// const token = 'ad5161c1-8cc7-4c2b-b076-ad2ce888578c';
-const token = '6dc0201c-d6f5-4b0f-a631-bf305a1a091d';
+const token = 'b2ab1515-2438-42a2-970c-f3b11809a1aa';
 const graphQLUrl = "https://api.aws-dev.veritone.com/v3/graphql";
 
+/* WATCH FUNCTIONS */
 function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
   const config = yield select(configModule.getConfig);
   // const token = yield select(authModule.selectSessionToken);
@@ -37,7 +37,7 @@ function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
   }
 
   try {
-    yield put(engineResults.fetchingEngineResults(meta));
+    yield put(faceEngineOutput.fetchingEngineResults(meta));
 
     const response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
@@ -46,11 +46,11 @@ function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
       token
     });
 
-    yield put(engineResults.fetchEngineResultsSuccess(response, meta));
+    yield put(faceEngineOutput.fetchEngineResultsSuccess(response, meta));
   } catch (error) {
-    yield put(engineResults.fetchEngineResultsFailure(error, meta));
+    yield put(faceEngineOutput.fetchEngineResultsFailure(error, meta));
   } finally {
-    yield put(engineResults.doneFetchingEngineResults(meta));
+    yield put(faceEngineOutput.doneFetchingEngineResults(meta));
   }
 }
 
@@ -68,9 +68,9 @@ function* fetchEntities(entityIds) {
       token
     });
 
-    yield put(engineResults.fetchEntitiesSuccess(response, { entityIds }));
+    yield put(faceEngineOutput.fetchEntitiesSuccess(response, { entityIds }));
   } catch (error) {
-    yield put(engineResults.fetchEntitiesFailure(error, { entityIds }));
+    yield put(faceEngineOutput.fetchEntitiesFailure(error, { entityIds }));
   }
 }
 
@@ -89,9 +89,9 @@ function* fetchLibraries(action) {
       token
     });
 
-    yield put(engineResults.fetchLibrariesSuccess(response, { libraryType }));
+    yield put(faceEngineOutput.fetchLibrariesSuccess(response, { libraryType }));
   } catch (error) {
-    yield put(engineResults.fetchLibrariesFailure(error, { libraryType }));
+    yield put(faceEngineOutput.fetchLibrariesFailure(error, { libraryType }));
   }
 }
 
@@ -106,13 +106,39 @@ function* createNewEntity(action) {
     const response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: gqlQuery.createEntity,
-      variables: { input: action.payload },
+      variables: { input: action.payload.entity },
       token
     });
 
-    yield put(engineResults.createEntitySuccess(response,  meta));
+    yield put(faceEngineOutput.createEntitySuccess(response,  meta));
   } catch (error) {
-    yield put(engineResults.createEntityFailure(error, meta));
+    yield put(faceEngineOutput.createEntityFailure(error, meta));
+  }
+}
+
+function* searchForEntities(action) {
+
+  const { libraryType, searchText } = action.payload;
+
+  const meta = {
+    libraryType,
+    searchText
+  };
+
+  try {
+    const response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: gqlQuery.searchForEntities,
+      variables: {
+        type: libraryType,
+        name: searchText
+      },
+      token
+    });
+
+    yield put(faceEngineOutput.fetchEntitySearchResultsSuccess(response, meta));
+  } catch (error) {
+    yield put(faceEngineOutput.fetchEntitySearchResultsFailure(error, meta));
   }
 }
 
@@ -126,9 +152,11 @@ function* onMount(tdo, selectedEngineId) {
   );
 }
 
+/* WATCHERS */
+
 function* watchFetchEngineResults() {
   yield takeEvery(
-    (action) => action.type === engineResults.FETCH_ENGINE_RESULTS_SUCCESS,
+    (action) => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS_SUCCESS,
     function* (action) {
       const entityIds = {};
 
@@ -154,15 +182,22 @@ function* watchFetchEngineResults() {
 
 function* watchFetchLibraries() {
   yield takeEvery(
-    (action) => action.type === engineResults.FETCH_LIBRARIES,
+    (action) => action.type === faceEngineOutput.FETCH_LIBRARIES,
     fetchLibraries
   )
 }
 
 function* watchCreateEntity() {
   yield takeEvery(
-    (action) => action.type === engineResults.CREATE_ENTITY,
+    (action) => action.type === faceEngineOutput.CREATE_ENTITY,
     createNewEntity
+  )
+}
+
+function* watchSearchEntities() {
+  yield takeLatest(
+    (action) => action.type === faceEngineOutput.SEARCH_ENTITIES,
+    searchForEntities
   )
 }
 
@@ -171,6 +206,7 @@ export default function* root({ tdo, selectedEngineId }) {
     fork(onMount, tdo, selectedEngineId),
     fork(watchFetchEngineResults),
     fork(watchFetchLibraries),
-    fork(watchCreateEntity)
+    fork(watchCreateEntity),
+    fork(watchSearchEntities)
   ]);
 }

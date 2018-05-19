@@ -1,5 +1,5 @@
 /* FRAGMENTS */
-const entityFieldsFragment = `
+export const entityFieldsFragment = `
   fragment entityFields on Entity {
     id
     name
@@ -9,7 +9,6 @@ const entityFieldsFragment = `
       name
     }
     profileImageUrl
-    jsondata
   }
 `;
 
@@ -64,6 +63,21 @@ export const createEntity = `
   mutation CreateEntity($input: CreateEntity!) {
     entity: createEntity(input: $input) {
       ...entityFields
+      jsondata
     }
   }
 `;
+
+export const searchForEntities =`
+  ${entityFieldsFragment}
+  query SearchForEntities($type: String, $name: String) {
+    libraries(type: $type) {
+      records {
+        entities(name: $name) {
+          records {
+            ...entityFields
+          }
+        }
+      }
+    }
+  }`;

@@ -12,7 +12,7 @@ import Dialog, {
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import Select from 'material-ui/Select';
-import { find, isObject, isEmpty, get, noop, pick, head } from 'lodash';
+import { find, isObject, isEmpty, get, noop, pick, head, debounce } from 'lodash';
 import {
   shape,
   number,
@@ -41,6 +41,7 @@ import widget from '../../shared/widget';
     entities: faceEngineOutput.getEntities(state),
     faces: faceEngineOutput.getFaces(state, selectedEngineId),
     libraries: faceEngineOutput.getLibraries(state),
+    entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
     isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
     isFetchingLibraryEntities: faceEngineOutput.isFetchingEntities(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state)
@@ -48,6 +49,8 @@ import widget from '../../shared/widget';
   {
     fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
+    updateEngineResultEntity: faceEngineOutput.updateEngineResultEntity,
+    fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
     updateEngineResult: faceEngineOutput.updateEngineResult
   },
   null,
@@ -109,7 +112,11 @@ class FaceEngineOutputContainer extends Component {
     entitySearchResults: arrayOf(
       shape({
         name: string.isRequired,
-        libraryName: string.isRequired,
+        // libraryName: string.isRequired,
+        library: shape({
+          id: string,
+          name: string.isRequired
+        }),
         profileImageUrl: string
       })
     ),
@@ -126,7 +133,7 @@ class FaceEngineOutputContainer extends Component {
   };
 
   state = {
-    selectedEntity: null, // selected unrecognized face object from which to create a new 'entity'
+    currentlyEditedFace: null, // selected unrecognized face object from which to create a new 'entity'
     dialogOpen: false,
     newEntity: {
       libraryId: '',
@@ -142,21 +149,36 @@ class FaceEngineOutputContainer extends Component {
       this.setNewEntityLibrary(head(nextProps.libraries).id)
     }
 
-    // if (!this.props.entities.length && nextProps.entities.length) {
-    //   this.props.updateEngineResult(
-    //     this.props.selectedEngineId,
-    //     this.props.unrecognizedFaces
-    //   )
-    // }
+    if (!this.props.entities.length && nextProps.entities.length) {
+      this.props.updateEngineResult(
+        this.props.selectedEngineId,
+        this.props.unrecognizedFaces
+      )
+    }
   }
 
-  handleAddNewEntity = (selectedEntity) => {
+  handleSearchEntities = (searchText) => {
+    console.log('searchText:', searchText)
+    if (searchText && searchText.length) {
+      this.props.fetchEntitySearchResults('people', searchText);
+    }
+  }
+
+  handleFaceDetectionEntitySelect = (currentlyEditedFace, selectedEntity)  => {
+    this.props.updateEngineResultEntity(
+      this.props.selectedEngineId,
+      currentlyEditedFace,
+      selectedEntity
+    )
+  }
+
+  handleAddNewEntity = (currentlyEditedFace) => {
     this.props.fetchLibraries({
       libraryType: 'people'
     });
     this.openDialog();
     this.setState({
-      selectedEntity
+      currentlyEditedFace
     })
   }
 
@@ -194,12 +216,12 @@ class FaceEngineOutputContainer extends Component {
   saveNewEntity = () => {
     const entity = {
       ...this.state.newEntity,
-      profileImageUrl: this.state.selectedEntity.object.uri,
+      profileImageUrl: this.state.currentlyEditedFace.object.uri,
     };
 
-    this.props.createEntity(entity, {
+    this.props.createEntity({ entity }, {
       selectedEngineId: this.props.selectedEngineId,
-      selectedEntity: this.state.selectedEntity,
+      faceObj: this.state.currentlyEditedFace,
     });
 
     return this.closeDialog();
@@ -300,12 +322,11 @@ class FaceEngineOutputContainer extends Component {
   }
 
   render() {
-    console.log('Widget Face Engine Output:', this.props);
-
     const faceEngineProps = pick(this.props, [
       'editMode',
       'engines',
       'currentMediaPlayerTime',
+      'entitySearchResults'
       // 'unrecognizedFaces'
     ]);
 
@@ -320,6 +341,8 @@ class FaceEngineOutputContainer extends Component {
           {...this.props.faces}
           {...faceEngineProps}
           onAddNewEntity={this.handleAddNewEntity}
+          onSearchForEntities={debounce(this.handleSearchEntities, 500)}
+          onEditFaceDetection={this.handleFaceDetectionEntitySelect}
         />
         {this.renderNewEntityModal()}
       </Fragment>

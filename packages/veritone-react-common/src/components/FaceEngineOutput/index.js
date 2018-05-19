@@ -68,7 +68,11 @@ class FaceEngineOutput extends Component {
     entitySearchResults: arrayOf(
       shape({
         name: string.isRequired,
-        libraryName: string.isRequired,
+        // libraryName: string.isRequired,
+        library: shape({
+          id: string,
+          name: string.isRequired
+        }),
         profileImageUrl: string
       })
     ),
@@ -134,7 +138,6 @@ class FaceEngineOutput extends Component {
   };
 
   render() {
-    console.log('React Common -> this.props', this.props);
     const {
       editMode,
       onAddNewEntity,

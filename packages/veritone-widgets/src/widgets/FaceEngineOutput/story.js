@@ -1,5 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { number as knobNumber } from '@storybook/addon-knobs';
 import { Provider } from 'react-redux';
 import { util } from 'veritone-redux-common';
 import configureStore from '../../redux/configureStore';
@@ -414,6 +415,12 @@ storiesOf('FaceEngineOutput', module)
       unrecognizedFaces={faceSeries}
       editMode
       baseUrlImagePrefix="https://s3-us-west-1.amazonaws.com/prod-veritone-face"
+      currentMediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
+        range: true,
+        min: 0,
+        max: 6000,
+        step: 1000
+      })}
     />
   )
 });
