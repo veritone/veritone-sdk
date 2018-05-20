@@ -9,7 +9,7 @@ import { FormControlLabel } from 'material-ui/Form';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import TranscriptContent from './TranscriptContent';
+import TranscriptContent, { View, Edit } from './TranscriptContent';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -50,6 +50,8 @@ export default class TranscriptEngineOutput extends Component {
 
     editMode: bool,
     onChange: func,
+    editType: string,
+    onEditTypeChange: func,
 
     onClick: func,
     onScroll: func,
@@ -67,6 +69,7 @@ export default class TranscriptEngineOutput extends Component {
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
+    editType: Edit.SNIPPET,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -75,8 +78,8 @@ export default class TranscriptEngineOutput extends Component {
     super(props);
 
     this.state = {
-      viewType: 'overview',
-      editType: 'snippet'
+      viewType: View.OVERVIEW,
+      editType: Edit.SNIPPET
     };
   }
 
@@ -85,27 +88,33 @@ export default class TranscriptEngineOutput extends Component {
   };
 
   handleEditChange = event => {
-    this.setState({ editType: event.target.value });
+    const onEditChangeCallback = this.props.onEditTypeChange;
+    if (onEditChangeCallback) {
+      this.props.onEditTypeChange({type: event.target.value});
+    } else {
+      this.setState({ editType: event.target.value });
+    }
   };
 
   renderEditOptions() {
+    const editType = this.props.onEditTypeChange ? this.props.editType : this.state.editType;
     return (
       <RadioGroup
         row
         aria-label="edit_mode"
-        value={this.state.editType}
+        value={editType}
         name="editMode"
         className={classNames(styles.radioButton)}
         onChange={this.handleEditChange}
       >
         <FormControlLabel
-          value="snippet"
+          value={Edit.SNIPPET}
           className={styles.label}
           control={<Radio color="primary" />}
           label="Snippet Edit"
         />
         <FormControlLabel
-          value="bulk"
+          value={Edit.BULK}
           className={styles.label}
           control={<Radio color="primary" />}
           label="Bulk Edit"
@@ -132,10 +141,10 @@ export default class TranscriptEngineOutput extends Component {
           getContentAnchorEl: null
         }}
       >
-        <MenuItem value="time" className={classNames(styles.view)}>
+        <MenuItem value={View.TIME} className={classNames(styles.view)}>
           Time
         </MenuItem>
-        <MenuItem value="overview" className={classNames(styles.view)}>
+        <MenuItem value={View.OVERVIEW} className={classNames(styles.view)}>
           Overview
         </MenuItem>
       </Select>
@@ -177,6 +186,8 @@ export default class TranscriptEngineOutput extends Component {
       onScroll,
       editMode,
       onChange,
+      editType,
+      onEditTypeChange,
       mediaLengthMs,
       neglectableTimeMs,
       estimatedDisplayTimeMs,
@@ -185,13 +196,15 @@ export default class TranscriptEngineOutput extends Component {
       mediaPlayerTimeIntervalMs
     } = this.props;
 
+    const currentEditType = onEditTypeChange ? editType : this.state.editType;
+
     return (
       <div className={classNames(styles.content)}>
         <TranscriptContent
           data={data}
           editMode={editMode}
           viewType={this.state.viewType}
-          editType={this.state.editType}
+          editType={currentEditType}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
           estimatedDisplayTimeMs={estimatedDisplayTimeMs}

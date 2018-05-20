@@ -4,9 +4,10 @@ import { storiesOf } from '@storybook/react';
 import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
+import { Provider } from 'react-redux';
+import configureStore from '../../redux/configureStore';
 import TranscriptEngineOutputWidget from './';
-
-
+import styles from './story.styles.scss';
 
 const initialStartTime = 0;
 const initialStopTime = 200000;
@@ -118,27 +119,31 @@ const mockData = genMockData(
   false
 );
 
-
+const store = configureStore();
 storiesOf('Transcript Engine Output', module)
   .add('Widget', () => {
     return (
-      <TranscriptEngineOutputWidget 
-        editMode={boolean('Edit Mode', false)}
-        data={mockData}
-        mediaPlayerTimeMs={1000 * number('media player time', 0)}
-        mediaPlayerTimeIntervalMs={
-          1000 * number('media player time Interval', 1)
-        }
-        mediaLengthMs={9000000}
-        neglectableTimeMs={2000}
-        estimatedDisplayTimeMs={1500000}
-        onClick={action('on click')}
-        onChange={action('on change')}
-        engines={engines}
-        selectedEngineId={selectedEngineId}
-        onEngineChange={action('engine changed')}
-        onExpandClicked={action('expand view clicked')}
-      />
+      <div className={styles.transcriptEngineOutputWidget}>
+        <Provider store={store}>
+          <TranscriptEngineOutputWidget 
+            editMode={boolean('Edit Mode', false)}
+            data={mockData}
+            mediaPlayerTimeMs={1000 * number('media player time', 0)}
+            mediaPlayerTimeIntervalMs={
+              1000 * number('media player time Interval', 1)
+            }
+            mediaLengthMs={9000000}
+            neglectableTimeMs={2000}
+            estimatedDisplayTimeMs={1500000}
+            onClick={action('on click')}
+            onChange={action('on change')}
+            engines={engines}
+            selectedEngineId={selectedEngineId}
+            onEngineChange={action('engine changed')}
+            onExpandClicked={action('expand view clicked')}
+          />
+        </Provider>
+      </div>
     );
 });
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { sortBy } from 'lodash';
+import { orderBy } from 'lodash';
 import classNames from 'classnames';
 
 import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
@@ -10,6 +10,15 @@ import OverviewSegment from '../TranscriptSegment/OverviewSegment';
 import TranscriptBulkEdit from '../TranscriptBulkEdit';
 
 import styles from './styles.scss';
+export const View = {
+  TIME: 'TIME',
+  OVERVIEW: 'OVERVIEW'
+};
+
+export const Edit = {
+  BULK: 'BULK',
+  SNIPPET: 'SNIPPET'
+};
 
 export default class TranscriptContent extends Component {
   static propTypes = {
@@ -52,8 +61,8 @@ export default class TranscriptContent extends Component {
 
   static defaultProps = {
     editMode: false,
-    viewType: 'time',
-    editType: 'snippet',
+    viewType: View.TIME,
+    editType: Edit.SNIPPET,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -156,8 +165,8 @@ export default class TranscriptContent extends Component {
 
             //---Get Correct Word---
             let selectedWord;
-            let words = entry.words;
-            words ? (words = sortBy(words, 'confidence')) : (words = []);
+            let words = entry.words || [];
+            words = orderBy(words, ['confidence'], ['desc']);
             words.length > 0
               ? (selectedWord = words[0].word)
               : (selectedWord = '');
@@ -372,11 +381,11 @@ export default class TranscriptContent extends Component {
   renderEditMode = parsedData => {
     let content;
     switch (this.props.editType) {
-      case 'snippet':
-        content = this.renderSnippetSegments(parsedData);
-        break;
-      case 'bulk':
+      case Edit.BULK:
         content = this.renderBulkEdit(parsedData);
+        break;
+      case Edit.SNIPPET:
+        content = this.renderSnippetSegments(parsedData);
         break;
     }
 
@@ -386,10 +395,10 @@ export default class TranscriptContent extends Component {
   renderViewMode = parsedData => {
     let content;
     switch (this.props.viewType) {
-      case 'time':
+      case View.TIME:
         content = this.renderSnippetSegments(parsedData);
         break;
-      case 'overview':
+      case View.OVERVIEW:
         content = this.renderOverviewSegments(parsedData);
         break;
     }

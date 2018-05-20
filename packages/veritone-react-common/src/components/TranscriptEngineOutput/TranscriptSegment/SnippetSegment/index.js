@@ -47,11 +47,14 @@ export default class SnippetSegment extends Component {
     }
   };
 
-  handleSnippetChange = (event, entryData) => {
-    const { editMode, onChange } = this.props;
+  handleSnippetChange = (entryData) => {
+    const { editMode, onChange, sentenceMode } = this.props;
 
     if (editMode && onChange) {
-      onChange(event, entryData);
+      if (!sentenceMode) {
+        entryData.originalValue.value = entryData.originalValue.value.replace(/\s$/, '');
+      }
+      onChange(entryData);
     }
   };
 

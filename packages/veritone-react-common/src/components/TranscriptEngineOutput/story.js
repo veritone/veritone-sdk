@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { bool } from 'prop-types';
+import { bool, func } from 'prop-types';
 
 import { storiesOf } from '@storybook/react';
 import { boolean, number } from '@storybook/addon-knobs/react';
@@ -14,11 +14,18 @@ storiesOf('TranscriptEngineOutput', module)
   })
   .add('With Lazy Loading', () => {
     return <TranscriptExample lazyLoading />;
+  })
+  .add('With Lazy Loading Edit Mode Callback', () => {
+    return <TranscriptExample 
+      lazyLoading 
+      onEditTypeChange={action('on edit mode change')} 
+    />;
   });
 
 export class TranscriptExample extends Component {
   static propTypes = {
-    lazyLoading: bool
+    lazyLoading: bool,
+    onEditTypeChange: func
   };
 
   static defaultProps = {
@@ -85,6 +92,7 @@ export class TranscriptExample extends Component {
       <TranscriptEngineOutput
         editMode={boolean('Edit Mode', false)}
         onChange={action('on change')}
+        onEditTypeChange={this.props.onEditTypeChange}
         data={this.state.data}
         className={styles.outputViewRoot}
         mediaPlayerTimeMs={1000 * number('media player time', 0)}
