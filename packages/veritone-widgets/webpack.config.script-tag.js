@@ -22,7 +22,7 @@ module.exports = {
   output: {
     library: '[name]',
     libraryTarget: 'umd',
-    libraryExport: 'default', // root export is widget's "export default"
+    // libraryExport: 'default', // root export is widget's "export default"
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist/umd')
   },
