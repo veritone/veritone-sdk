@@ -35,6 +35,7 @@ import {
   StructuredDataEngineOutput
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
+import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
@@ -634,7 +635,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutput
+                      <TranscriptEngineOutputWidget
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}

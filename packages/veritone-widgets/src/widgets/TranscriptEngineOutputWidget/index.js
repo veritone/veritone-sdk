@@ -113,7 +113,8 @@ export default class TranscriptEngineOutputWidget extends Component {
 
   // Use the above function when we update to a later version of react
   componentWillReceiveProps (nextProps) {
-    this.props.receiveData(nextProps.data);
+    const { data, selectedEngineId, engines } = nextProps;
+    this.props.receiveData(data, selectedEngineId, engines);
   }
 
   handleContentChanged = (value) => {

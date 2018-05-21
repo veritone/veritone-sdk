@@ -2,6 +2,7 @@ import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { get, uniq, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData } from './faceEngineOutput';
+import { getTranscriptEditAssetData } from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -1047,7 +1048,7 @@ function* watchSaveAssetData() {
     if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
       // TODO: uncomment below when getTranscriptEditAssetData is redux connected
       assetData = action.payload.data;
-      // assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
+      assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
         const type = 'v-bulk-edit-transcript';
