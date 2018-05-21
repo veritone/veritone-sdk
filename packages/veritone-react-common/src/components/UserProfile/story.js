@@ -16,7 +16,7 @@ storiesOf('UserProfile', module).add('Base', () => (
         passwordLastUpdated="2017-04-07T22:10:30.230Z"
         handleNameChangeRequest={action('Name Change Submitted')}
         handlePasswordResetRequest={action('Password Reset Request Submitted')}
-        close={() => action('Edit Profile Close')}
+        close={action('Edit Profile Close')}
     />
 ))
     .add('Change Name Modal', () => {

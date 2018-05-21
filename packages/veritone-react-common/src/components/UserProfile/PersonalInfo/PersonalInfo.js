@@ -2,7 +2,7 @@ import React from 'react';
 import { string, func } from 'prop-types';
 
 import Paper from 'material-ui/Paper';
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import Table, { TableBody, TableCell, TableRow } from 'material-ui/Table';
 
 import classes from './styles.scss';
 
@@ -24,12 +24,12 @@ const PersonalInfo = ({
                             <TableRow className={classes.infoRow}>
                                 <TableCell className={classes.rowLabel}>Name</TableCell>
                                 <TableCell className={classes.rowData}>{name}</TableCell>
-                                <TableCell className={classes.iconHolder} ><i onClick={() => handleChangeModalToggle()} className={`icon-mode_edit2 ${classes.icon}`}/></TableCell>
+                                <TableCell className={classes.iconHolder} ><i onClick={handleChangeModalToggle} className={`icon-mode_edit2 ${classes.icon}`}/></TableCell>
                             </TableRow>
                             <TableRow className={classes.infoRow}>
                                 <TableCell className={classes.rowLabel}>Email</TableCell>
                                 <TableCell className={classes.rowData}>{email}</TableCell>
-                                <TableCell></TableCell>
+                                <TableCell/>
                             </TableRow>
                         </TableBody>
                     </Table>

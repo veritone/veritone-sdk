@@ -2,7 +2,7 @@ import React from 'react';
 import { string, func } from 'prop-types';
 
 import Paper from 'material-ui/Paper';
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import Table, { TableBody, TableCell, TableRow } from 'material-ui/Table';
 
 import classes from './styles.scss';
 

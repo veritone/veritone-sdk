@@ -1,5 +1,5 @@
 import React from 'react';
-import { string } from 'prop-types';
+import { string, func } from 'prop-types';
 
 import Avatar from '../../Avatar/index';
 
@@ -24,7 +24,8 @@ const Profile = ({firstName, lastName, filePickerHandler}) => {
 
 Profile.propTypes = {
     firstName: string,
-    lastName: string
+    lastName: string,
+    filePickerHandler: func.isRequired
 }
 
 export default Profile;

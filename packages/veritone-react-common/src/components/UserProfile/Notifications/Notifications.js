@@ -1,9 +1,9 @@
 import React from 'react';
-import { string, func, bool } from 'prop-types';
+import { string, func } from 'prop-types';
 
 import Snackbar from 'material-ui/Snackbar';
 
-const Notification = ({messageKey, onClose}) => {
+const Notifications = ({messageKey, onClose}) => {
     const messages = {
         nameChanged: 'Your Name has successfully been Updated',
         passwordRequestSent: 'A password rest link has been sent to your email',
@@ -22,9 +22,9 @@ const Notification = ({messageKey, onClose}) => {
     );
 }
 
-Notification.proptypes = {
+Notifications.proptypes = {
     messageKey: string,
     onClose: func.isRequired,
 }
 
-export default Notification;
+export default Notifications;

@@ -67,7 +67,7 @@ const ChangeName = ({
       </Button>
       <Button 
         className={`${classes.actionBtn} ${classes.btn}`}
-        onClick={() => handleSubmit({firstName: firstNameDirty, lastName: lastNameDirty})}>
+        onClick={handleSubmit.bind(this, {firstName: firstNameDirty, lastName: lastNameDirty})}>
         Done
       </Button>
     </DialogActions>
