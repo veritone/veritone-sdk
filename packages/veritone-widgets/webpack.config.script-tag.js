@@ -1,7 +1,7 @@
 const path = require('path');
 const { readdirSync } = require('fs');
 
-const allWidgets = readdirSync(path.resolve(__dirname, 'src/components'));
+const allWidgets = readdirSync(path.resolve(__dirname, 'src/widgets'));
 
 module.exports = {
   mode: 'production',
@@ -13,7 +13,7 @@ module.exports = {
         ...result,
         [widgetName]: path.resolve(
           __dirname,
-          `src/components/${widgetName}/index.js`
+          `src/widgets/${widgetName}/index.js`
         )
       }),
       {}

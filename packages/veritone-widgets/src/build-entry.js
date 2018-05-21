@@ -2,9 +2,9 @@ import r from 'regenerator-runtime/runtime';
 window.regeneratorRuntime = r;
 
 export VeritoneApp from './shared/VeritoneApp';
-export AppBar, { AppBarWidget } from './components/AppBar';
+export AppBar, { AppBarWidget } from './widgets/AppBar';
 export OAuthLoginButton, {
   OAuthLoginButtonWidget
-} from './components/OAuthLoginButton';
-export FilePicker, { FilePickerWidget } from './components/FilePicker';
-export { TableWidget } from './components/Table';
+} from './widgets/OAuthLoginButton';
+export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
+export { TableWidget } from './widgets/Table';
