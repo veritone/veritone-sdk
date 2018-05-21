@@ -1,9 +1,10 @@
 import React from 'react';
-import cx from 'classnames';
 import { string, func } from 'prop-types';
 import { format as libFormat } from 'date-fns';
 
-import FilePicker from 'components/FilePicker';
+// import FilePicker from 'components/FilePicker';
+
+import {isBoolean} from 'lodash';
 
 import Header from './HeaderBar/Header';
 import Profile from './Profile/Profile';
@@ -69,7 +70,7 @@ export default class UserProfile extends React.Component {
     handleChangeModalToggle = (setState) => {
         const current = this.state.changeNameModalOpen;
         
-        if (typeof(setState) === "boolean") {
+        if (isBoolean(setState)) {
             this.setState({changeNameModalOpen: setState});
         } else {
             this.setState({changeNameModalOpen: !current});
@@ -77,7 +78,7 @@ export default class UserProfile extends React.Component {
     }
 
     handleRequestResetModalToggle = (setState) => {
-        if (typeof(setState) === "boolean") {
+        if (isBoolean(setState)) {
             this.setState({requestPasswordRestModalOpen: setState});
         } else {
             const current = this.state.requestPasswordRestModalOpen;
@@ -99,9 +100,11 @@ export default class UserProfile extends React.Component {
 
     handleNameChangeSubmit = () => {
         const success = () => {
+            const firstName = this.state.firstNameDirty;
+            const lastName = this.state.lastNameDirty;
             this.setState({
-                firstName: this.state.firstNameDirty,
-                lastName: this.state.lastNameDirty,
+                firstName: firstName,
+                lastName: lastName,
                 notificationToShow: 'nameChanged',
                 changeNameModalOpen: false,
             });
