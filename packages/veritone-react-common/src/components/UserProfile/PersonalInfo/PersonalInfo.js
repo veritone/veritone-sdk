@@ -10,7 +10,6 @@ const PersonalInfo = ({
     firstName,
     lastName,
     email,
-    handleNameChangeSubmit,
     handleChangeModalToggle
 }) => {
     const name  = `${firstName} ${lastName}`;
@@ -44,7 +43,6 @@ PersonalInfo.propTypes = {
     email: string.isRequired,
     firstName: string,
     lastName: string,
-    changeName: func.isRequired,
     handleChangeModalToggle: func.isRequired
 }
 

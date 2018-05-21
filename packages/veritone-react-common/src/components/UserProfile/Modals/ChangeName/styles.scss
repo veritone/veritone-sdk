@@ -1,3 +1,23 @@
+.header {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.71px;
+    line-height: 24px;
+    h2 {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.iconHolder {
+    i {
+        color: rgb(117, 117, 117)
+    }
+}
+
+.inputGroup {
+    margin: 13px 0 !important;
+}
 
 .focusedInput {
     color: #368BF7 !important;
@@ -9,11 +29,24 @@
     }
 }
 
-.btnDone {
-
+.btnGroup {
+    margin: 0 0 20px !important;
 }
 
-.btnCancel {
-    
+.btn {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    line-height: 16px !important;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0) !important;
+    }
 }
 
+.actionBtn {
+    color: #368BF7 !important;
+}
+
+.cancelBtn {
+    color: #000000 !important;
+}

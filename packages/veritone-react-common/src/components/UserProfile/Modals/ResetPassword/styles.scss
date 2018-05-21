@@ -3,6 +3,16 @@
     font-weight: 500;
     letter-spacing: 0.71px;
     line-height: 24px;
+    h2 {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.iconHolder {
+    i {
+        color: rgb(117, 117, 117)
+    }
 }
 
 .dialog {
@@ -18,6 +28,9 @@
     font-weight: 500;
     letter-spacing: 0.5px;
     line-height: 16px;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0) !important;
+    }
 }
 
 .actionBtn {

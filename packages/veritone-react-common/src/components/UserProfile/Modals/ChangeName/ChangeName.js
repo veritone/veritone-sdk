@@ -24,9 +24,14 @@ const ChangeName = ({
   
   return (
   <Dialog open={open} className={classes.modal}>
-    <DialogTitle>Change Name</DialogTitle>
-    <DialogContent>
-      <FormControl aria-describedby="first-name-text" fullWidth>
+    <DialogTitle className={classes.header}>
+      Change Name
+      <div className={classes.iconHolder}>
+        <i className="icon-close-exit" onClick={handleClose}/>
+      </div>
+    </DialogTitle>
+    <DialogContent className={classes.context}>
+      <FormControl className={classes.inputGroup} aria-describedby="first-name-text" fullWidth>
       <InputLabel 
           htmlFor="first-name-text" 
           FormControlClasses={{ focused: classes.focusedInput }}>
@@ -38,9 +43,8 @@ const ChangeName = ({
           autoFocus 
           classes={{ focused: classes.underline }}/>
       </FormControl>
-
       <FormControl 
-        className={classes.formControl} 
+        className={classes.inputGroup} 
         aria-describedby="last-name-text" 
         fullWidth>
         <InputLabel 
@@ -55,21 +59,20 @@ const ChangeName = ({
           classes={{ focused: classes.underline }} />
       </FormControl>
     </DialogContent>
-    <DialogActions>
+    <DialogActions className={classes.btnGroup}>
       <Button 
-        className={`${classes.btnDone} ${classes.btn}`}
+        className={`${classes.cancelBtn} ${classes.btn}`}
         onClick={handleClose}>
         Cancel
       </Button>
       <Button 
-        className={`${classes.btnDone} ${classes.btn}`}
+        className={`${classes.actionBtn} ${classes.btn}`}
         onClick={() => handleSubmit({firstName: firstNameDirty, lastName: lastNameDirty})}>
         Done
       </Button>
     </DialogActions>
   </Dialog>
 )};
-
 
 ChangeName.propTypes = {
   firstName: string.isRequired,
@@ -80,6 +83,5 @@ ChangeName.propTypes = {
   handleClose: func.isRequired,
   handleSubmit: func.isRequired,
 }
-
 
 export default ChangeName;

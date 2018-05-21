@@ -11,7 +11,12 @@ import classes from './styles.scss';
 
 const ResetPassword = ({ open, requestReset, closeHandler }) => (
   <Dialog open={open} className={classes.modal}>
-    <DialogTitle className={classes.title}>Reset Password</DialogTitle>
+    <DialogTitle className={classes.title}>
+      Reset Password
+      <div className={classes.iconHolder}>
+        <i className="icon-close-exit" onClick={closeHandler}/>
+      </div>
+    </DialogTitle>
     <DialogContent>
       <p className={classes.dialog}>
         Vertione will send a reset password link via the email on your account.

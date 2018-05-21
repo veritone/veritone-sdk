@@ -1,19 +1,19 @@
 import React from 'react'; 
-import { string } from 'prop-types';
+import { func } from 'prop-types';
 
 import classes from './styles.scss';
 
-const Header = ({title}) => (
+const Header = ({close}) => (
     <div className={classes.header}>
         <div className={classes.iconHolder}>
-            <i className="icon-close-exit" />
+            <i className="icon-close-exit" onClick={close()}/>
         </div>
-        <div className={classes.label}>{title}</div>
+        <div className={classes.label}>My Account</div>
     </div>
 );
 
 Header.propTypes = {
-    title: string.isRequired
+    close: func.isRequired,
 }
 
 export default Header;

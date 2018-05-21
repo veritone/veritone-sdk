@@ -1,11 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
+import { boolean, select as selectKnob } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 
 import UserProfile from './';
 import ChangeName from './Modals/ChangeName/ChangeName';
 import ResetPassword from './Modals/ResetPassword/ResetPassword';
+import Notification from './Notification/Notification';
 
 storiesOf('UserProfile', module).add('Base', () => (
     <UserProfile
@@ -15,6 +16,7 @@ storiesOf('UserProfile', module).add('Base', () => (
         passwordLastUpdated="2017-04-07T22:10:30.230Z"
         handleNameChangeRequest={action('Name Change Submitted')}
         handlePasswordResetRequest={action('Password Reset Request Submitted')}
+        close={() => action('Edit Profile Close')}
     />
 ))
     .add('Change Name Modal', () => {
@@ -48,6 +50,23 @@ storiesOf('UserProfile', module).add('Base', () => (
                 open={openModal}
                 requestReset={requestReset}
                 closeHandler={closeHandler}
+            />
+        );
+    })
+    .add('Notifications', () => {
+        const selectOptions = {
+            changedName: 'changedName',
+            passwordRequestSent: 'passwordRequestSent',
+            error: 'error',
+        };
+
+        const onClose = () => action('Notification Closed');
+        const message = selectKnob('message to show', selectOptions, 'changedName');
+
+        return (
+            <Notification
+                onClose={onClose}
+                message={message}
             />
         );
     })
