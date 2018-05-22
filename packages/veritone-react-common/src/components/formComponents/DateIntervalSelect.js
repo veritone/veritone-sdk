@@ -20,10 +20,18 @@ const DateIntervalSelect = ({
   customIntervalLabel,
   ...props
 }) => {
+  const fixedProps = {
+    ...props,
+    input: {
+      ...props.input,
+      value: props.input.value.toString()
+    }
+  };
+
   return (
-    <Select {...props}>
+    <Select {...fixedProps}>
       {map(intervals, (interval, id) => (
-        <MenuItem value={interval} key={id}>
+        <MenuItem value={interval.toString()} key={id}>
           {interval.label}
         </MenuItem>
       ))}
