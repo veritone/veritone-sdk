@@ -58,5 +58,5 @@ class Story extends React.Component {
 const app = VeritoneApp();
 
 storiesOf('Table', module).add('Base', () => {
-  return <Story sessionToken={sessionToken} store={app._store} />;
+  return <Story store={app._store} />;
 });

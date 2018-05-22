@@ -129,8 +129,7 @@ class UrlUploader extends Component {
           <Input
             classes={{
               root: styles.fileUrlPickerInputRoot,
-              input: styles.fileUlrPickerInput,
-              inkbar: styles.inkbarStyle
+              input: styles.fileUlrPickerInput
             }}
             id="url-input"
             onKeyPress={this.preventInput}
