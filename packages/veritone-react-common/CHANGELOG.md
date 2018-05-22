@@ -85,3 +85,7 @@
 * Added SearchPill component
 * Updated veritone icons css file
 
+## 5.0.0
+* Bumped React and React DOM to 16.3.0
+* Updated to Material-UI v1.0.0!
+
