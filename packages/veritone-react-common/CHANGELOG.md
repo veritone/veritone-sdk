@@ -74,3 +74,14 @@
 * * props.dataKey to dataTables can now be any value accepted by lodash _.get. This means nested keys are now supported.
 
 * Updated veritone icons file
+
+## 4.5.0
+* AppContainer
+* * Removed the overflow-y rule which was causing a scrollbar to always appear, even when no scrolling content existed.
+* MenuColumn
+* * Added props.actions to specify actions that don't appear in data
+* Added GeoPicker component
+* Added HorizontalScroll component
+* Added SearchPill component
+* Updated veritone icons css file
+
