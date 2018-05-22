@@ -5,7 +5,7 @@ import { action } from '@storybook/addon-actions';
 import faker from 'faker';
 
 import VeritoneApp from '../../shared/VeritoneApp';
-import TableWidget from './';
+import { TableWidget } from './';
 import { startCase, upperCase, map, flow, truncate, range } from 'lodash';
 
 const row = () => ({

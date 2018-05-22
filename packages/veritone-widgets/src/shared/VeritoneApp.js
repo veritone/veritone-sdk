@@ -136,12 +136,12 @@ class _VeritoneApp {
   }
 }
 
-let _appSingleton;
+let window = window || {};
 export default function VeritoneApp(config, { _isWidget } = {}) {
   // client calls this on init to configure the app:
   // import VeritoneApp from 'veritone-widgets';
   // VeritoneApp({ ...myConfig })
-  if (!_appSingleton) {
+  if (!window.__veritoneAppSingleton) {
     if (_isWidget) {
       console.warn(
         `A widget was registered to an app which hasn't yet been initialized. Import and call VeritoneApp before constructing any widgets.`
@@ -149,8 +149,8 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
       return;
     }
 
-    _appSingleton = new _VeritoneApp(config);
+    window.__veritoneAppSingleton = new _VeritoneApp(config);
   }
 
-  return _appSingleton;
+  return window.__veritoneAppSingleton;
 }

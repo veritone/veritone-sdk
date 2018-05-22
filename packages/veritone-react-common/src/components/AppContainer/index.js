@@ -43,8 +43,7 @@ const AppContainer = ({
         style={{
           height: '100%',
           width: `calc(100% - ${outerStyle.paddingLeft}`,
-          overflowX: 'hidden',
-          overflowY: 'scroll'
+          overflowX: 'hidden'
         }}
         className={classes.inner}
       >
