@@ -21,8 +21,7 @@ const { engine: engineModule } = modules;
 import SelectBar from './SelectBar/';
 import EnginesSideBar from './SideBar';
 import SelectedActionBar from './SelectedActionBar/';
-import YourEnginesView from './EngineList/YourEnginesView';
-import ExploreAllEnginesView from './EngineList/ExploreAllEnginesView';
+import EngineListContainer from './EngineListContainer';
 
 import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 
@@ -35,6 +34,7 @@ import styles from './styles.scss';
     allEnginesChecked: engineSelectionModule.allEnginesChecked(state),
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state),
     checkedEngineIds: engineSelectionModule.getCheckedEngineIds(state),
+    isFetchingEngines: engineModule.isFetchingEngines(state),
     failedToFetchEngines: engineModule.failedToFetchEngines(state),
     searchQuery: engineSelectionModule.getSearchQuery(state),
     currentTabIndex: engineSelectionModule.getCurrentTabIndex(state),
@@ -59,8 +59,10 @@ export default class EngineListView extends React.Component {
     allEnginesChecked: bool.isRequired,
     selectedEngineIds: arrayOf(string).isRequired,
     checkedEngineIds: arrayOf(string).isRequired,
+    preSelectedEngineIds: arrayOf(string),
     onViewDetail: func.isRequired,
     searchQuery: string,
+    isFetchingEngines: bool.isRequired,
     failedToFetchEngines: bool.isRequired,
     currentTabIndex: number.isRequired,
     isSearchOpen: bool.isRequired,
@@ -89,6 +91,18 @@ export default class EngineListView extends React.Component {
     currentResults: []
   };
 
+  state = {};
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+      isEmpty(prevProps.allEngines) &&
+      !isEmpty(this.props.allEngines) &&
+      this.props.preSelectedEngineIds
+    ) {
+      this.props.selectEngines(this.props.preSelectedEngineIds);
+    }
+  }
+
   handleCheckAll = () => {
     const enginesToCheck = this.props.currentTabIndex
       ? this.props.currentResults
@@ -113,20 +127,6 @@ export default class EngineListView extends React.Component {
 
   render() {
     const { checkedEngineIds, currentTabIndex } = this.props;
-    const tabs = [
-      <YourEnginesView
-        key={0}
-        selectedEngineIds={this.props.selectedEngineIds}
-        onViewDetail={this.props.onViewDetail}
-        onExploreAllEnginesClick={this.handleTabChange}
-      />,
-      <ExploreAllEnginesView
-        key={1}
-        currentResults={this.props.currentResults}
-        onViewDetail={this.props.onViewDetail}
-        failedToFetchEngines={this.props.failedToFetchEngines}
-      />
-    ];
 
     return (
       <div className={styles.engineSelection}>
@@ -182,7 +182,20 @@ export default class EngineListView extends React.Component {
                   : this.props.selectedEngineIds.length
               }
             />
-            <div className={styles.engineList}>{tabs[currentTabIndex]}</div>
+            <div className={styles.engineList}>
+              <EngineListContainer
+                currentTabIndex={this.props.currentTabIndex}
+                engineIds={
+                  currentTabIndex
+                    ? this.props.currentResults
+                    : this.props.selectedEngineIds
+                }
+                onViewDetail={this.props.onViewDetail}
+                isFetchingEngines={this.props.isFetchingEngines}
+                failedToFetchEngines={this.props.failedToFetchEngines}
+                onExploreAllEnginesClick={this.handleTabChange}
+              />
+            </div>
             {!this.props.hideActions && (
               <div className={styles.footer}>
                 <Button

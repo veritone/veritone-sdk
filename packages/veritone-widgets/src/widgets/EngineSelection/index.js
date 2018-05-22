@@ -37,6 +37,8 @@ class EngineSelectionWidget extends React.Component {
     setAllEnginesSelected: func.isRequired,
     setDeselectedEngineIds: func.isRequired,
     allEnginesSelected: bool,
+    preDeselectedEngineIds: arrayOf(string),
+    preSelectedEngineIds: arrayOf(string),
     selectedEngineIds: arrayOf(string),
     deselectedEngineIds: arrayOf(string),
     hideActions: bool
@@ -54,13 +56,13 @@ class EngineSelectionWidget extends React.Component {
   };
 
   componentDidMount() {
-    this.props.setDeselectedEngineIds(this.props.deselectedEngineIds);
+    this.props.setDeselectedEngineIds(this.props.preDeselectedEngineIds);
     this.props.setAllEnginesSelected(this.props.allEnginesSelected);
     this.props.fetchEngines();
   }
 
   save = () => {
-    this.props.onSave(
+    return this.props.onSave(
       this.props.allEnginesSelected
         ? this.props.deselectedEngineIds
         : this.props.selectedEngineIds
@@ -99,6 +101,7 @@ class EngineSelectionWidget extends React.Component {
         actionMenuItems={this.props.actionMenuItems}
         allEnginesSelected={this.props.allEnginesSelected}
         hideActions={this.props.hideActions}
+        preSelectedEngineIds={this.props.preSelectedEngineIds}
       />
     );
   }
