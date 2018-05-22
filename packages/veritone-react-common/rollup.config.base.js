@@ -24,6 +24,7 @@ export default {
     ...Object.keys(muiIcons).map(name => `@material-ui/icons/${name}`),
     ...Object.keys(mui).map(name => `@material-ui/core/${name}`),
     ...Object.keys(mui.colors).map(name => `@material-ui/core/colors/${name}`),
+    '@material-ui/core/styles',
     'mime-types',
     'pluralize',
     'prop-types',
