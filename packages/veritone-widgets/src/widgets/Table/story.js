@@ -1,6 +1,5 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import faker from 'faker';
 
@@ -59,7 +58,5 @@ class Story extends React.Component {
 const app = VeritoneApp();
 
 storiesOf('Table', module).add('Base', () => {
-  const sessionToken = text('Api Session Token', '');
-
-  return <Story sessionToken={sessionToken} store={app._store} />;
+  return <Story store={app._store} />;
 });

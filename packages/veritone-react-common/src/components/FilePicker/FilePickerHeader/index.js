@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import IconButton from 'material-ui/IconButton';
+import Tabs  from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import IconButton from '@material-ui/core/IconButton';
 import { string, func, bool } from 'prop-types';
 
 import styles from './styles.scss';

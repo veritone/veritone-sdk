@@ -3,14 +3,14 @@ import { map } from 'lodash';
 import { withProps } from 'recompose';
 import { bool, func, objectOf, any } from 'prop-types';
 import { connect } from 'react-redux';
-import Switch from 'material-ui/Switch';
+import Switch from '@material-ui/core/Switch';
 import { AppContainer } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 
 const { user } = modules;
 import VeritoneApp from './VeritoneApp';
 import devConfig from '../../config.dev.json';
-import { OAuthLoginButtonWidget } from '../components/OAuthLoginButton';
+import { OAuthLoginButtonWidget } from '../widgets/OAuthLoginButton';
 
 const app = VeritoneApp();
 

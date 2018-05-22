@@ -8,8 +8,8 @@ import {
   string
 } from 'prop-types';
 import { map } from 'lodash';
-import { MenuItem } from 'material-ui/Menu';
-import { ListItem } from 'material-ui/List';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItem from '@material-ui/core/ListItem';
 
 import { Interval, defaultIntervals } from 'helpers/date';
 import Select from './Select';
@@ -20,10 +20,18 @@ const DateIntervalSelect = ({
   customIntervalLabel,
   ...props
 }) => {
+  const fixedProps = {
+    ...props,
+    input: {
+      ...props.input,
+      value: props.input.value.toString()
+    }
+  };
+
   return (
-    <Select {...props}>
+    <Select {...fixedProps}>
       {map(intervals, (interval, id) => (
-        <MenuItem value={interval} key={id}>
+        <MenuItem value={interval.toString()} key={id}>
           {interval.label}
         </MenuItem>
       ))}
