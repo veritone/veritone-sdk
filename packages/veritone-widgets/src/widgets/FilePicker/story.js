@@ -3,7 +3,7 @@ import { func } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 
 import BaseStory from '../../shared/BaseStory';
-import FilePicker, { FilePickerWidget } from '.';
+import FilePicker, { FilePickerWidget } from './';
 
 const FilePickerButton = (
   { handlePickFiles } // eslint-disable-line

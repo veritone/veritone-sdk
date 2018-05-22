@@ -1,4 +1,4 @@
-import reducer, * as module from '.';
+import reducer, * as module from './';
 
 describe('ui-state module', function() {
   describe('setStateForKey/getStateForKey', function() {

@@ -13,8 +13,8 @@ import {
 } from 'material-ui/Form';
 import Radio from 'material-ui/Radio';
 import { MenuItem } from 'material-ui/Menu';
-import Visibility from 'material-ui-icons/Visibility';
-import InfoIcon from 'material-ui-icons/Info';
+import Visibility from '@material-ui/icons/Visibility';
+import InfoIcon from '@material-ui/icons/Info';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
 

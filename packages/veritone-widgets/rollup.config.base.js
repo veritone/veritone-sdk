@@ -8,7 +8,7 @@ import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
 
 import * as mui from 'material-ui';
-import * as muiIcons from 'material-ui-icons';
+import * as muiIcons from '@material-ui/icons';
 import * as lodash from 'lodash';
 
 import sass from './rollup-postcss-sass-loader';

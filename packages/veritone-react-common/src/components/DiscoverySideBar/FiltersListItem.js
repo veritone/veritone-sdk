@@ -1,5 +1,5 @@
 import React from 'react';
-import CloseIcon from 'material-ui-icons/Close';
+import CloseIcon from '@material-ui/icons/Close';
 import IconButton from 'material-ui/IconButton';
 import { func, string, number } from 'prop-types';
 

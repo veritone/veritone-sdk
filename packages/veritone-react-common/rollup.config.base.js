@@ -9,7 +9,7 @@ import postcss from 'rollup-plugin-postcss';
 import { snakeCase } from 'lodash';
 
 import * as mui from 'material-ui';
-import * as muiIcons from 'material-ui-icons';
+import * as muiIcons from '@material-ui/icons';
 import * as datefns from 'date-fns';
 import * as lodash from 'lodash';
 import sass from './rollup-postcss-sass-loader';

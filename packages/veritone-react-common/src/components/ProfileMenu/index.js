@@ -1,5 +1,5 @@
 import React from 'react';
-import AccountIcon from 'material-ui-icons/AccountCircle';
+import AccountIcon from '@material-ui/icons/AccountCircle';
 import Menu from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
 import { string, func, shape } from 'prop-types';

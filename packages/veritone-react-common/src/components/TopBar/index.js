@@ -4,9 +4,9 @@ import Paper from 'material-ui/Paper';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import { ListItemText } from 'material-ui/List';
 import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
-import ArrowBackIcon from 'material-ui-icons/ArrowBack';
-import MoreVertIcon from 'material-ui-icons/MoreVert';
+import MenuIcon from '@material-ui/icons/Menu';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
   string,
   bool,

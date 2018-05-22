@@ -11,7 +11,7 @@ import {
 } from 'lodash';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
-import MoreVertIcon from 'material-ui-icons/MoreVert';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Divider from 'material-ui/Divider';
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
 import { Column } from './';

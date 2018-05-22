@@ -12,8 +12,8 @@ import {
   any
 } from 'prop-types';
 import Button from 'material-ui/Button';
-import ArrowBackIcon from 'material-ui-icons/ArrowBack';
-import ChevronRightIcon from 'material-ui-icons/ChevronRight';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import { intersperse } from 'helpers/fp';
 import styles from './styles/sectiontree.scss';

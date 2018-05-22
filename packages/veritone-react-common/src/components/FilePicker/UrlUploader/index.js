@@ -117,7 +117,7 @@ class UrlUploader extends Component {
           error={this.state.uploadError}
         >
           <InputLabel
-            FormControlClasses={{
+            FormLabelClasses={{
               error: styles.fileUrlInputError,
               focused: styles.fileUrlInputFocused
             }}

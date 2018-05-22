@@ -3,7 +3,7 @@ import { func, bool, string } from 'prop-types';
 
 import Typography from 'material-ui/Typography';
 import Avatar from 'material-ui/Avatar';
-import { Cancel } from 'material-ui-icons';
+import Cancel from '@material-ui/icons/Cancel';
 
 import cx from 'classnames';
 import styles from './styles.scss';
