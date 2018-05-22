@@ -3,7 +3,7 @@ import { noop } from 'lodash';
 import { bool, func, oneOf, number, string } from 'prop-types';
 import { connect } from 'react-redux';
 import { withPropsOnChange } from 'recompose';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
 import {
   FilePicker as FilePickerComponent,
   ProgressDialog

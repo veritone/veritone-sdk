@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import IconButton from 'material-ui/IconButton';
+import IconButton from '@material-ui/core/IconButton';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { func, string, bool } from 'prop-types';
 import styles from './styles/index.scss';

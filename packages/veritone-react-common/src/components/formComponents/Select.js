@@ -1,4 +1,4 @@
-import Select from 'material-ui/Select';
+import Select from '@material-ui/core/Select';
 import { createComponent, mapError } from './redux-form-material-ui';
 
 export default createComponent(

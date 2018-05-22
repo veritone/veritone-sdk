@@ -8,8 +8,8 @@ import {
   string
 } from 'prop-types';
 import { map } from 'lodash';
-import { MenuItem } from 'material-ui/Menu';
-import { ListItem } from 'material-ui/List';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItem from '@material-ui/core/ListItem';
 
 import { Interval, defaultIntervals } from 'helpers/date';
 import Select from './Select';

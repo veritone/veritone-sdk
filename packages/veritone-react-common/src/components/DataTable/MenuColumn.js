@@ -9,10 +9,11 @@ import {
   intersection,
   difference
 } from 'lodash';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import IconButton from 'material-ui/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Divider from 'material-ui/Divider';
+import Divider from '@material-ui/core/Divider';
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
 import { Column } from './';
 

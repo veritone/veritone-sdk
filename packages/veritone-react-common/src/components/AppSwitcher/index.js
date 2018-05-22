@@ -1,7 +1,7 @@
 import React from 'react';
-import Menu from 'material-ui/Menu';
+import Menu from '@material-ui/core/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
-import IconButton from 'material-ui/IconButton';
+import IconButton from '@material-ui/core/IconButton';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';

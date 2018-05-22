@@ -1,6 +1,9 @@
 import React from 'react';
 import { range, filter, get, includes, map, uppercase } from 'lodash';
-import MuiTable, { TableBody, TableRow, TableCell } from 'material-ui/Table';
+import MuiTable from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
 import { mount } from 'enzyme';
 import MenuColumn from './MenuColumn';
 import { LOADING } from './shared';

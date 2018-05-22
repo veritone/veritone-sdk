@@ -1,6 +1,6 @@
 import React from 'react';
-import Paper from 'material-ui/Paper';
-import IconButton from 'material-ui/IconButton';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 import {

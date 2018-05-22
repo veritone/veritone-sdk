@@ -1,9 +1,10 @@
 import React from 'react';
 import cx from 'classnames';
-import Paper from 'material-ui/Paper';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import { ListItemText } from 'material-ui/List';
-import IconButton from 'material-ui/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Menu  from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MoreVertIcon from '@material-ui/icons/MoreVert';

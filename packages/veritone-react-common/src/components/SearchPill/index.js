@@ -1,8 +1,8 @@
 import React from 'react';
 import { func, bool, string } from 'prop-types';
 
-import Typography from 'material-ui/Typography';
-import Avatar from 'material-ui/Avatar';
+import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
 import Cancel from '@material-ui/icons/Cancel';
 
 import cx from 'classnames';
