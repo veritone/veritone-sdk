@@ -269,8 +269,11 @@ export default {
       let fields = get(adapterStep, 'fields');
       if (fields) {
         fields.forEach(
-          field =>
-            (configuration[field.name] = ingestionTask.payload[field.name])
+          field => {
+            if (ingestionTask.payload && field.name) {
+              configuration[field.name] = ingestionTask.payload[field.name];
+            }
+          }
         );
       }
     }
