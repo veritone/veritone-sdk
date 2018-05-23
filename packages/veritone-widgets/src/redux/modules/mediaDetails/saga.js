@@ -683,7 +683,13 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
           temporaryBulkEditAssetId: $bulkTextAssetId,
           saveTtmlToVtnStandard: true
         }
-      }]
+      },
+      {
+        engineId: 'insert-into-index'
+      },
+			{
+			  engineId: 'mention-generate'
+			}]
     }) {
       id
       tasks {
