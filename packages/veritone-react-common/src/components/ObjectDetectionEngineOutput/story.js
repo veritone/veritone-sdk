@@ -8,6 +8,9 @@ import ObjectDetectionOuput from './';
 
 const objectDetectionAssets = [
   {
+    startTimeMs: 0,
+    stopTimeMs: 2000,
+    sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
     series: [
       {
         startTimeMs: 0,
@@ -36,6 +39,9 @@ const objectDetectionAssets = [
     ]
   },
   {
+    startTimeMs: 9000,
+    stopTimeMs: 13000,
+    sourceEngineId: '2dc5166f-c0ad-4d84-8a85-515c42b5d357',
     series: [
       {
         stopTimeMs: 12000,

@@ -278,10 +278,7 @@ class MediaInfoPanel extends Component {
                     </IconButton>
                   </div>
                 </Target>
-                <Popper
-                  placement="bottom-end"
-                  eventsEnabled={isMenuOpen}
-                >
+                <Popper placement="bottom-end" eventsEnabled={isMenuOpen}>
                   <ClickAwayListener onClickAway={this.onMenuClose}>
                     <Grow
                       in={isMenuOpen}

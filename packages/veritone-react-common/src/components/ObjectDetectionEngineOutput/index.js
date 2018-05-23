@@ -131,11 +131,9 @@ class ObjectDetectionEngineOutput extends Component {
           {data.map(objectGroup => {
             return (
               <ObjectGroup
-                key={
-                  'object-group-' +
-                  objectGroup.sourceEngineId +
-                  objectGroup.taskId
-                }
+                key={`object-group-${objectGroup.sourceEngineId}-${
+                  objectGroup.startTimeMs
+                }-${objectGroup.stopTimeMs}`}
                 objectGroup={objectGroup}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onObjectClicked={this.handleObjectClicked}
