@@ -1,18 +1,40 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { number } from '@storybook/addon-knobs/react';
 
 import styles from './story.styles.scss';
 
 import OCREngineOutputView from './';
 
+const texts = [
+  'WITH \n DEVELOPING NOW \n TED CRUZ GAINING IN POLLS AND FUND-RAISING CNN \n Sara Murray CNW Political Reporter \n LIVE \n NAS58.43 \n AONY ON CHAMPS-ELYSEES, MAYOR SAYS \n U.S. TIGHTENING SECURITY I SITUATION ROOM \n ',
+  'Just some random text',
+  'word',
+  'Medium length text that was recognized in the video',
+  'A much longer text that was recognized in the video to test things to see if it will wrap multiple lines.'
+];
+const engines = [
+  {
+    id: '9a6ac62d-a881-8884-6ee0-f15ab84fcbe2',
+    name: 'Cortex'
+  }
+];
+const mockData = genMockData(0, 60000, 1000, texts);
+
 storiesOf('OCREngineOutputView', module).add('Base', () => {
   return (
     <OCREngineOutputView
-      data={ocrAssets}
+      data={mockData}
       className={styles.outputViewRoot}
       engines={engines}
       selectedEngineId="9a6ac62d-a881-8884-6ee0-f15ab84fcbe2"
+      currentMediaPlayerTime={number('mediaPlayerPosition', 0, {
+        range: true,
+        min: 0,
+        max: 600000,
+        step: 100
+      })}
       onEngineChange={action('onEngineChange')}
       onExpandClicked={action('onExpandClicked')}
       onOcrClicked={action('onOcrClicked')}
@@ -20,56 +42,36 @@ storiesOf('OCREngineOutputView', module).add('Base', () => {
   );
 });
 
-let ocrAssets = [
-  {
-    series: [
-      {
-        stopTimeMs: 1000,
-        startTimeMs: 0,
-        object: {
-          text:
-            'WITH \n DEVELOPING NOW \n TED CRUZ GAINING IN POLLS AND FUND-RAISING CNN \n Sara Murray CNW Political Reporter \n LIVE \n NAS58.43 \n AONY ON CHAMPS-ELYSEES, MAYOR SAYS \n U.S. TIGHTENING SECURITY I SITUATION ROOM \n '
-        }
-      },
-      {
-        stopTimeMs: 2000,
-        startTimeMs: 1000,
-        object: {
-          text:
-            'WITH \n DEVELOPING NOW \n TED CRUZ GAINING IN POLLS AND FUND-RAISING CNN \n Sara Murray CNW Political Reporter \n LIVE \n NAS -58.43 \n IONY ON CHAMPS-ELYSEES, MAYOR SAYS \n U.S. TIGHTENING SECURITY It SITUATION ROOM \n '
-        }
-      },
-      {
-        stopTimeMs: 3000,
-        startTimeMs: 2000,
-        object: {
-          text:
-            'WITH \n DEVELOPING NOW \n TED CRUZ GAINING IN POLLS AND FUND-RAISINGN \n Sara Murray CNW Political Reporter \n LIVE \n NAS58.43 \n I CHAMPS-ELYSEES, MAYOR SAYS \n U.S. TIGHTENING SECURITY IN HIGH-F sTUATION ROOM \n '
-        }
-      },
-      {
-        stopTimeMs: 4000,
-        startTimeMs: 3000,
-        object: {
-          text:
-            'THE WITH \n DEVELOPING NOW \n TED CRUZ GAINING IN POLLS AND FUND-RAISING CNN \n Sara Murray CW Political Reporter \n LIVE \n NAS58.43 \n ELYSEES, MAYOR SAYS \n U.S. TIGHTENING SECURTY IN HIGH-PROFILE L SITUATION ROOM \n '
-        }
-      },
-      {
-        stopTimeMs: 5000,
-        startTimeMs: 4000,
-        object: {
-          text:
-            'THE WITH \n DEVELOPING NOW \n LIVE \n TED CRUZ GAINING IN POLLS AND FUND-RAISING CNN \n Sara Murray \n MAYOR SAYS \n CNW Political Reporter \n NASS8.43 \n U.S. TIGHTENING SECURITY IN HIGH-PROFILE LOCATIONS SITUATION ROOM \n '
-        }
+// Mock Data Generator
+function genMockData(startTime, stopTime, timeInterval, texts) {
+  const series = [];
+  const numEntries = Math.ceil((stopTime - startTime) / timeInterval);
+  for (let entryIndex = 0; entryIndex < numEntries; entryIndex++) {
+    const entryStartTime = startTime + entryIndex * timeInterval;
+    const randomTextIndex = getRandomIndex(texts);
+    series.push({
+      startTimeMs: entryStartTime,
+      stopTimeMs: entryStartTime + Math.floor(Math.random() * 5000),
+      object: {
+        text: texts[randomTextIndex]
       }
-    ]
+    });
   }
-];
 
-let engines = [
-  {
-    id: '9a6ac62d-a881-8884-6ee0-f15ab84fcbe2',
-    name: 'Cortex'
+  return [
+    {
+      startTimeMs: startTime,
+      stopTimeMs: stopTime,
+      status: 'success',
+      series: series
+    }
+  ];
+}
+
+function getRandomIndex(source) {
+  if (source && source.length > 0) {
+    return Math.round(Math.random() * (source.length - 1));
+  } else {
+    return -1;
   }
-];
+}
