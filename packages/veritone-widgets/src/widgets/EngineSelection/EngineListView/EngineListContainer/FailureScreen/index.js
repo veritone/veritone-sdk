@@ -1,9 +1,9 @@
 import React from 'react';
 import { string, func } from 'prop-types';
-import ErrorOutlineIcon from 'material-ui-icons/ErrorOutline';
-import Button from 'material-ui/Button';
-import RefreshIcon from 'material-ui-icons/Refresh';
-import { blue } from 'material-ui/colors';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import Button from '@material-ui/core/Button';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import blue from '@material-ui/core/colors/blue';
 
 import styles from './styles.scss';
 

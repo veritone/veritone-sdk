@@ -7,11 +7,9 @@ import { text } from '@storybook/addon-knobs';
 import { modules } from 'veritone-redux-common';
 const { user } = modules;
 
-import devConfig from '../../../config.dev.json';
 import VeritoneApp from '../../shared/VeritoneApp';
-import OAuthLoginButton from '../OAuthLoginButton';
 
-import EngineSelectionWidget from './';
+import { EngineSelectionWidget } from './';
 
 @connect(state => ({
   userIsAuthenticated: user.userIsAuthenticated(state),
@@ -25,19 +23,6 @@ class Story extends React.Component {
   };
 
   componentDidMount() {
-    this._oauthButton = new OAuthLoginButton({
-      mode: 'authCode',
-      elId: 'login-button-widget-auth-code',
-      OAuthURI: 'http://local.veritone-sample-app.com:5001/auth/veritone'
-    });
-
-    this._oauthButtonImplicit = new OAuthLoginButton({
-      mode: 'implicit',
-      elId: 'login-button-widget-implicit',
-      clientId: devConfig.clientId,
-      redirectUri: window.origin
-    });
-
     this._engineSelection = new EngineSelectionWidget({
       elId: 'engine-selection-widget',
       onSave: noop,
@@ -47,8 +32,6 @@ class Story extends React.Component {
 
   componentWillUnmount() {
     this._engineSelection.destroy();
-    this._oauthButton.destroy();
-    this._oauthButtonImplicit.destroy();
   }
 
   handleLogin = () => {
@@ -71,13 +54,6 @@ class Story extends React.Component {
                   ? 'Log In via session token'
                   : 'Log In via session token (Please set a token in the "Knobs" panel below)'}
               </button>
-            </p>
-            or log in via oauth:
-            <p>
-              implicit:
-              <span id="login-button-widget-implicit" />
-              auth code:
-              <span id="login-button-widget-auth-code" />
             </p>
           </div>
         )}

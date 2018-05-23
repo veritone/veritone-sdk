@@ -9,7 +9,7 @@ import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
-@connect(
+const connectWrapper = connect(
   state => ({
     deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(state),
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state)
@@ -21,8 +21,10 @@ import widget from '../../shared/widget';
   },
   null,
   { withRef: true }
-)
-class EngineSelectionWidget extends React.Component {
+);
+
+@connectWrapper
+class EngineSelection extends React.Component {
   static propTypes = {
     onSave: func.isRequired,
     onCancel: func.isRequired,
@@ -107,4 +109,5 @@ class EngineSelectionWidget extends React.Component {
   }
 }
 
-export default widget(EngineSelectionWidget);
+const EngineSelectionWidget = widget(EngineSelection);
+export { EngineSelectionWidget };

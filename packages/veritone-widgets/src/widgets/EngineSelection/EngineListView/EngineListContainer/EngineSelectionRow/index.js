@@ -8,7 +8,7 @@ import { Lozenge, Truncate } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
-import Checkbox from 'material-ui/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import networkIsolatedLogo from '../../../images/networkisolated_logo.png';
 import externalAccessLogo from '../../../images/externalaccess_logo.png';

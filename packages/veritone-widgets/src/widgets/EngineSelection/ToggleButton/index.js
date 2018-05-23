@@ -2,8 +2,8 @@ import React from 'react';
 import { func, bool, string } from 'prop-types';
 import cx from 'classnames';
 
-import Button from 'material-ui/Button';
-import ClearIcon from 'material-ui-icons/Clear';
+import Button from '@material-ui/core/Button';
+import ClearIcon from '@material-ui/icons/Clear';
 
 import styles from './styles.scss';
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { arrayOf, string, number, func, bool } from 'prop-types';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import BackIcon from 'material-ui-icons/KeyboardBackspace';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import BackIcon from '@material-ui/icons/KeyboardBackspace';
 
 import styles from './styles.scss';
 

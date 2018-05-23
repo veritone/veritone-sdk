@@ -1,6 +1,6 @@
 import React from 'react';
 import { string } from 'prop-types';
-import { blue } from 'material-ui/colors';
+import blue from '@material-ui/core/colors/blue';
 
 import styles from './styles.scss';
 

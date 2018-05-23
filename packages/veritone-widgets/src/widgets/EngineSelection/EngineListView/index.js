@@ -12,8 +12,9 @@ import {
 } from 'prop-types';
 import { isEmpty } from 'lodash';
 
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Button from 'material-ui/Button';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
 import { withMuiThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
@@ -153,12 +154,9 @@ export default class EngineListView extends React.Component {
               textColor="primary"
               fullWidth
             >
+              <Tab classes={{ selected: styles.tab }} label="Your Engines" />
               <Tab
-                classes={{ textColorPrimarySelected: styles.tab }}
-                label="Your Engines"
-              />
-              <Tab
-                classes={{ textColorPrimarySelected: styles.tab }}
+                classes={{ selected: styles.tab }}
                 label="Explore All Engines"
               />
             </Tabs>

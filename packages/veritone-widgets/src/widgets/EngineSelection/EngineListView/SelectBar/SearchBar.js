@@ -2,11 +2,11 @@ import React from 'react';
 import { bool, func, string } from 'prop-types';
 import { debounce } from 'lodash';
 
-import IconButton from 'material-ui/IconButton';
-import SearchIcon from 'material-ui-icons/Search';
-import CloseIcon from 'material-ui-icons/Close';
-import TextField from 'material-ui/TextField';
-import { InputAdornment } from 'material-ui/Input';
+import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import CloseIcon from '@material-ui/icons/Close';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 import styles from './styles.scss';
 

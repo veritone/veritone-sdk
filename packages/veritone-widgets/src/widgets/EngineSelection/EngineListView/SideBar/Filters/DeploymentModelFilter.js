@@ -1,6 +1,6 @@
 import React from 'react';
 import { func, shape, string } from 'prop-types';
-import Radio from 'material-ui/Radio';
+import Radio from '@material-ui/core/Radio';
 
 import styles from '../styles.scss';
 
@@ -30,7 +30,7 @@ class DeploymentModelFilter extends React.Component {
           <div className={styles.inlineFilter} key={deploymentModel}>
             <Radio
               color="primary"
-              classes={{ default: styles.radio }}
+              classes={{ root: styles.radio }}
               checked={this.props.filters.deploymentModel === deploymentModel}
               onChange={this.handleChange}
               value={deploymentModel}

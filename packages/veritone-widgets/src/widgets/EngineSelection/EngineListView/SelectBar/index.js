@@ -1,9 +1,9 @@
 import React from 'react';
 import { func, number, bool, string, arrayOf, shape } from 'prop-types';
 
-import Checkbox from 'material-ui/Checkbox';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
+import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 
 import SearchBar from './SearchBar';
 

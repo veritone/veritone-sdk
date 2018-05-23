@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { func, string, arrayOf, bool, number } from 'prop-types';
 import { isEmpty, noop } from 'lodash';
 
-import Button from 'material-ui/Button';
-import { CircularProgress } from 'material-ui/Progress';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import EngineList from './EngineList';
 import FailureScreen from './FailureScreen/';

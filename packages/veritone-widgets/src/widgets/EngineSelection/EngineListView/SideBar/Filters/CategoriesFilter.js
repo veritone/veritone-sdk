@@ -1,7 +1,7 @@
 import React from 'react';
 import { func, arrayOf, string, shape } from 'prop-types';
 import { without } from 'lodash';
-import Checkbox from 'material-ui/Checkbox';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import styles from '../styles.scss';
 
@@ -62,7 +62,7 @@ class CategoriesFilter extends React.Component {
               <div className={styles.inlineFilter}>
                 <Checkbox
                   color="primary"
-                  classes={{ default: styles.checkbox }}
+                  classes={{ root: styles.checkbox }}
                   checked={this.props.filters.category.includes(category)}
                   onClick={() => this.handleClick(category)} // eslint-disable-line
                 />
