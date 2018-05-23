@@ -1,6 +1,6 @@
 import React from 'react';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import { blue } from 'material-ui/colors';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blue';
 
 export default function withMuiThemeProvider(Component) {
   return class WrappedWithMuiTheme extends React.Component {

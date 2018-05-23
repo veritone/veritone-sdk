@@ -1,12 +1,13 @@
 {
   "name": "veritone-widgets",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "dependencies": {
+    "@material-ui/core": "^1.0.0",
+    "@material-ui/icons": "^1.0.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
-    "material-ui": "v1.0.0-beta.36",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
     "react-redux": "^5.0.6",
     "react-redux-saga": "^1.0.2",
     "react-virtualized": "^9.18.5",
@@ -14,9 +15,9 @@
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",
     "redux-thunk": "^2.2.0",
-    "veritone-oauth-helpers": "^2.0.1",
-    "veritone-react-common": "^4.0.0",
-    "veritone-redux-common": "^3.1.0"
+    "veritone-oauth-helpers": "^2.1.0",
+    "veritone-react-common": "^5.0.0",
+    "veritone-redux-common": "^3.3.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",

@@ -8,8 +8,8 @@ import analyze from 'rollup-analyzer-plugin';
 import postcss from 'rollup-plugin-postcss';
 import { snakeCase } from 'lodash';
 
-import * as mui from 'material-ui';
-import * as muiIcons from 'material-ui-icons';
+import * as mui from '@material-ui/core';
+import * as muiIcons from '@material-ui/icons';
 import * as datefns from 'date-fns';
 import * as lodash from 'lodash';
 import sass from './rollup-postcss-sass-loader';
@@ -21,12 +21,10 @@ export default {
     ...Object.keys(datefns).map(name => `date-fns/${snakeCase(name)}`),
     ...Object.keys(lodash).map(name => `lodash/${name}`),
     ...Object.keys(lodash).map(name => `lodash/fp/${name}`),
-    ...Object.keys(muiIcons).map(name => `material-ui-icons/${name}`),
-    ...Object.keys(mui).map(name => `material-ui/${name}`),
-    ...Object.keys(mui.colors).map(name => `material-ui/colors/${name}`),
-    'material-ui/styles',
-    'material-ui/Form',
-    'material-ui/Progress',
+    ...Object.keys(muiIcons).map(name => `@material-ui/icons/${name}`),
+    ...Object.keys(mui).map(name => `@material-ui/core/${name}`),
+    ...Object.keys(mui.colors).map(name => `@material-ui/core/colors/${name}`),
+    '@material-ui/core/styles',
     'mime-types',
     'pluralize',
     'prop-types',

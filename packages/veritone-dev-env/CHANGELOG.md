@@ -11,3 +11,6 @@
 
 ## 2.0.0
 * Add a bunch of new eslint and stylelint rules
+
+## 2.0.1
+* Do not error on :export pseudo selector

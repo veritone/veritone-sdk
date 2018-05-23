@@ -9,8 +9,8 @@ import {
   number
 } from 'prop-types';
 
-import { CircularProgress } from 'material-ui/Progress';
-import Typography from 'material-ui/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 import GoogleMapsLoader from 'google-maps';
 
 import styles from './styles.scss';

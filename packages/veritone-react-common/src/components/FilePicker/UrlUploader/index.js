@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { FormControl } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 import mime from 'mime-types';
 import { func, arrayOf, string } from 'prop-types';
 
@@ -117,7 +118,7 @@ class UrlUploader extends Component {
           error={this.state.uploadError}
         >
           <InputLabel
-            FormControlClasses={{
+            FormLabelClasses={{
               error: styles.fileUrlInputError,
               focused: styles.fileUrlInputFocused
             }}
@@ -128,8 +129,7 @@ class UrlUploader extends Component {
           <Input
             classes={{
               root: styles.fileUrlPickerInputRoot,
-              input: styles.fileUlrPickerInput,
-              inkbar: styles.inkbarStyle
+              input: styles.fileUlrPickerInput
             }}
             id="url-input"
             onKeyPress={this.preventInput}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { noop } from 'lodash';
 import { mount } from 'enzyme';
-import AttachMoneyIcon from 'material-ui-icons/Apps';
+import AttachMoneyIcon from '@material-ui/icons/Apps';
 
 import SectionTree, { SectionTreeTab } from './SectionTree';
 
