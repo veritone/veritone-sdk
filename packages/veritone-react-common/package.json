@@ -23,6 +23,7 @@
     "react-dom": "^16.2.0",
     "react-dotdotdot": "^1.2.3",
     "react-infinite-calendar": "^2.3.1",
+    "react-lines-ellipsis": "^0.10.2",
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
     "react-transition-group": "1.x",
