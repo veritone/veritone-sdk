@@ -435,7 +435,7 @@ class MediaDetailsWidget extends React.Component {
                   0
                 ) <= 120 && (
                   <div className={styles.pageHeaderTitleLabel}>
-                    {get(this.props, 'tdo.details.veritoneFile.filename', '')}
+                    {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
                 )}
                 <div className={styles.pageHeaderActionButtons}>
