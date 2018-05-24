@@ -10,7 +10,7 @@ import Dialog, {
   DialogTitle
 } from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import { objectOf, func, bool, any } from 'prop-types';
+import { shape, func, bool, string } from 'prop-types';
 import { get } from 'lodash';
 import { withStyles } from 'material-ui/styles';
 import FilePicker from 'components/FilePicker';
@@ -20,7 +20,18 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class EditMetadataDialog extends Component {
   static propTypes = {
-    metadata: objectOf(any),
+    metadata: shape({
+      veritoneProgram: shape({
+        programLiveImage: string,
+        programImage: string
+      }),
+      veritoneFile: shape({
+        filename: string
+      }),
+      veritoneCustom: shape({
+        source: string
+      })
+    }),
     isOpen: bool,
     onSave: func,
     onClose: func
