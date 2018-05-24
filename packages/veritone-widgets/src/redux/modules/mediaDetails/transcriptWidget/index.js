@@ -1,27 +1,27 @@
-import { get, find, isEqual } from 'lodash';
+import { get, isEqual } from 'lodash';
 import { fromJS } from 'immutable';
 
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
 export const transcriptNamespace = 'veritoneTranscriptWidget';
-const UNDO = transcriptNamespace + '_UNDO';
-const REDO = transcriptNamespace + '_REDO';
-const RESET = transcriptNamespace + '_RESET';
-const CHANGE = transcriptNamespace + '_CHANGE';
-const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
-const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
+export const UNDO = transcriptNamespace + '_UNDO';
+export const REDO = transcriptNamespace + '_REDO';
+export const RESET = transcriptNamespace + '_RESET';
+export const CHANGE = transcriptNamespace + '_CHANGE';
+export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
+export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
+export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
 
-const maxHistorySize = 1000;  // Only alow user to undo 1000 times
+const removeableIndex = 1;            // index 0 is reserved for initial value
+const maxBulkHistorySize = 100;       // Only alow user to undo 50 times in bulk edit
+const maxSnippetHistorySize = 1000;   // Only alow user to undo 1000 times in snippet edit
 const initialState = {
   data: [],
   past: [],
   future: [],
   present: null,
-  engines: [],
-  selectedEngineId: '',
   isBulkEdit: false,
-  mediaLengthMs: -1,
 };
 
 const transcriptReducer = createReducer(initialState, {
@@ -96,14 +96,13 @@ const transcriptReducer = createReducer(initialState, {
 
   [RECEIVE_DATA](state, action) {
     const past = state.past;
-    const { data, selectedEngineId, engines } = action;
-    const oldEngineId = state.selectedEngineId;
+    const { data } = action;
     const oldData = (past && past.length > 0) ? past[0].toJS() : state.data;
-    if (isEqual(data, oldData) && selectedEngineId === oldEngineId) {      //Compare new received data with the prev received data
+    if (isEqual(data, oldData)) {
       return { ...state };
     } else {
       const present = fromJS(data);
-      return {...state, data: data, past:[], future:[], present: present, selectedEngineId: selectedEngineId, engines: engines};
+      return { ...state, data: data, past:[], future:[], present: present };
     }
   }
 });
@@ -123,9 +122,10 @@ function handleBulkEdit (state, action) {
   }];
 
   const newPast = state.past || [];
+  const newPresent = fromJS(newData);
   const prevPresent = state.present;
   newPast.push(prevPresent);
-  const newPresent = fromJS(newData);
+  (newPast.length > maxBulkHistorySize) && newPast.splice(removeableIndex, 0);  // remove extra history
   return {...state, data:newData, past: newPast, future: [], present: newPresent, isBulkEdit: true};
 }
 
@@ -145,7 +145,7 @@ function handleSnippetEdit (state, action) {
       const orgStartTime = entry.get('startTimeMs');
       const orgStopTime = entry.get('stopTimeMs');
       const orgWords = entry.get('words');
-      
+
       if (targetData.startTimeMs === orgStartTime && targetData.stopTimeMs === orgStopTime) {
         if (!orgWords) {
           isNoContent = !targetData.value;
@@ -166,8 +166,10 @@ function handleSnippetEdit (state, action) {
     return entryIndex >= 0;
   });
 
+  console.log(chunkIndex, entryIndex);
+
   if (chunkIndex >= 0 && entryIndex >= 0) {
-    (newPast.length > maxHistorySize) && newPast.splice(1, 0);  // skip index 0 since it's the initial value
+    (newPast.length > maxSnippetHistorySize) && newPast.splice(removeableIndex, 0);  // remove extra history
 
     newPast.push(prevPresent);
     let newPresent;
@@ -199,40 +201,34 @@ export const redo = () => ({ type: REDO });
 export const reset = () => ({ type: RESET });
 export const change = newData => ({type: CHANGE, data: newData});
 export const clearData = () => ({type: CLEAR_DATA});
-export const receiveData = (newData, selectedEngineId, engines) => ({
-  type: RECEIVE_DATA, 
-  data: newData, 
-  selectedEngineId: selectedEngineId,
-  engines: engines
-});
+export const receiveData = (newData) => ({type: RECEIVE_DATA, data: newData});
+export const updateEditStatus = (state) => ({
+  type: UPDATE_EDIT_STATUS,
+  hasChanged: this.hasChanged(state)
+})
 export const currentData = state => get(state[transcriptNamespace], 'data');
 export const hasChanged = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
 };
-export const getTranscriptEditAssetData = (state, engineId) => {
-  const { isBulkEdit, selectedEngineId, engines, data, past } = state[transcriptNamespace];
+export const getTranscriptEditAssetData = (state) => {
+  const { isBulkEdit, data } = state[transcriptNamespace];
 
-  if (!engineId || selectedEngineId === engineId) {
-    const changedData = {
-      isBulkEdit: isBulkEdit,
-      hasChanged: (past.length > 0),
-      sourceEngineId: selectedEngineId,
-      sourceEngineName: get(find(engines, 'id', selectedEngineId), 'name', selectedEngineId)
-    };
+  const changedData = {
+    isBulkEdit: isBulkEdit,
+    sourceEngineId: 'bde0b023-333d-acb0-e01a-f95c74214607',
+    sourceEngineName: 'User Generated'
+  };
 
-    if (isBulkEdit) {
-      changedData.text = get(data, '[0].series[0].words[0].word', '');
-    } else {
-      let series = [];
-      data.forEach(chunk => {
-        series = series.concat(chunk.series);
-      });
-      changedData.series = series;
-    }
-
-    return changedData;
+  if (isBulkEdit) {
+    changedData.text = get(data, '[0].series[0].words[0].word', '');
   } else {
-    return null;
+    let series = [];
+    data.forEach(chunk => {
+      series = series.concat(chunk.series);
+    });
+    changedData.series = series;
   }
+
+  return changedData;
 }

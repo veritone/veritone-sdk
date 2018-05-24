@@ -48,12 +48,9 @@ export default class SnippetSegment extends Component {
   };
 
   handleSnippetChange = (entryData) => {
-    const { editMode, onChange, sentenceMode } = this.props;
+    const { editMode, onChange } = this.props;
 
     if (editMode && onChange) {
-      if (!sentenceMode) {
-        entryData.originalValue.value = entryData.originalValue.value.replace(/\s$/, '');
-      }
       onChange(entryData);
     }
   };
@@ -85,8 +82,8 @@ export default class SnippetSegment extends Component {
 
       contentComponents.push(
         <SnippetFragment
-          key={'snippet-' + entry.value + '-' + startTime + '-' + stopTime}
-          value={entry.value + ' '}
+          key={'snippet-' + startTime + '-' + stopTime}
+          value={entry.value}
           active={
             !(
               stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
@@ -97,6 +94,7 @@ export default class SnippetSegment extends Component {
           editMode={editMode}
           onClick={this.handleSnippetClick}
           onChange={this.handleSnippetChange}
+          className={classNames(styles.fragment)}
         />
       );
     });

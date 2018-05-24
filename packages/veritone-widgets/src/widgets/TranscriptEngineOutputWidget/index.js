@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf } from 'prop-types';
+import { get, isEqual } from 'lodash';
 
 import Dialog, {
   DialogActions,
@@ -10,23 +11,27 @@ import Dialog, {
 import Button from 'material-ui/Button';
 
 import { connect } from 'react-redux';
-import * as transcriptStore from '../../redux/modules/mediaDetails/transcriptWidget';
-
+import { util } from 'veritone-redux-common';
+import * as TranscriptRedux from '../../redux/modules/mediaDetails/transcriptWidget';
+import transcriptSaga, { changeWidthDebounce } from '../../redux/modules/mediaDetails/transcriptWidget/saga';
 import { TranscriptEngineOutput, TranscriptEditMode } from 'veritone-react-common';
+
+const saga = util.reactReduxSaga.saga;
 import widget from '../../shared/widget';
 
+@saga(transcriptSaga)
 @connect(
   (state) => ({
-    hasChanged: transcriptStore.hasChanged(state),
-    currentData: transcriptStore.currentData(state)
+    hasChanged: TranscriptRedux.hasChanged(state),
+    currentData: TranscriptRedux.currentData(state)
   }),
   {
-    undo: transcriptStore.undo,
-    redo: transcriptStore.redo,
-    reset: transcriptStore.reset,
-    change: transcriptStore.change,
-    clearData: transcriptStore.clearData,
-    receiveData: transcriptStore.receiveData
+    //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option 
+    //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
+    change: changeWidthDebounce,
+    reset: TranscriptRedux.reset,
+    clearData: TranscriptRedux.clearData,
+    receiveData: TranscriptRedux.receiveData
   },
   null,
   { withRef: true }
@@ -90,12 +95,12 @@ export default class TranscriptEngineOutputWidget extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
 
-    undo: func,
-    redo: func,
-    reset: func,
-    change: func,
-    clearData: func,
-    receiveData: func,
+    //undo: func,     //Uncomment when needed to enable undo option
+    //redo: func,     //Uncomment when needed to enable redo option
+    reset: func.isRequired,
+    change: func.isRequired,
+    clearData: func.isRequired,
+    receiveData: func.isRequired,
     hasChanged: bool
   }
 
@@ -107,14 +112,22 @@ export default class TranscriptEngineOutputWidget extends Component {
   // use this when we update to react ^16.3.0
   /*
   static getDerivedStateFromProps (nextProps, prevState) {
-    this.receiveData(nextProps);
+    const hasNewData = !isEqual(this.props.data, nextProps.data);
+    const hasInitialData = isEqual(this.props.currentData, nextProps.data);
+    (hasNewData || !hasInitialData) && this.receiveData(nextProps.data);
   }
   */
 
   // Use the above function when we update to a later version of react
   componentWillReceiveProps (nextProps) {
-    const { data, selectedEngineId, engines } = nextProps;
-    this.props.receiveData(data, selectedEngineId, engines);
+    const hasNewData = !isEqual(this.props.data, nextProps.data);
+    const missingInitialData = !this.props.currentData || this.props.currentData.length === 0;
+
+    (hasNewData || missingInitialData) && this.props.receiveData(nextProps.data);
+  }
+
+  componentWillUnmount() {
+    this.props.clearData && this.props.clearData();
   }
 
   handleContentChanged = (value) => {

@@ -52,6 +52,7 @@ import {
 } from '.';
 
 import { CREATE_ENTITY_SUCCESS } from './faceEngineOutput';
+import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 
 const tdoInfoQueryClause = `id
     details
@@ -617,7 +618,7 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   if (!isEmpty(response.errors)) {
     return yield put(createFileAssetFailure(widgetId, { error: response.errors.join(', \n') }));
   }
-  if (!get(response, 'data.id')) {
+  if (!get(response, 'data.createAsset.id')) {
     return yield put(createFileAssetFailure(widgetId, { error: 'Failed to create file asset.' }));
   }
 
@@ -626,11 +627,10 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
 }
 
 function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceData, text) {
+  console.log('create bulk edit', widgetId, type, contentType, sourceData, text);
   let createFileAssetResponse;
   try {
-    createFileAssetResponse = yield call(createFileAssetSaga, {
-      widgetId, type, contentType, sourceData, text
-    });
+    createFileAssetResponse = yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, text);
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
@@ -671,19 +671,23 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
     }));
   }
 
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.id');
+  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
   const originalTranscriptAssetId = get(getPrimaryTranscriptAssetResponse, 'data.temporalDataObject.primaryAsset.id');
 
-  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!, $originalAssetId: String, $bulkTextAssetId: String){
+  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
-        engineId: 'bulk-edit-transcript',
+        engineId: "bulk-edit-transcript",
         payload: {
-          originalTranscriptAssetId: $originalAssetId,
-          temporaryBulkEditAssetId: $bulkTextAssetId,
+          originalTranscriptAssetId: "${originalTranscriptAssetId}",
+          temporaryBulkEditAssetId: "${bulkTextAssetId}",
           saveTtmlToVtnStandard: true
         }
+      }, {
+        engineId: "insert-into-index"
+      }, {
+        engineId: "mention-generate"
       }]
     }) {
       id
@@ -697,10 +701,11 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
 
   let runBulkEditJobResponse;
   try {
+    console.log(originalTranscriptAssetId, bulkTextAssetId);
     runBulkEditJobResponse = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
-      variables: { tdoId: requestTdo.id, originalAssetId: originalTranscriptAssetId, bulkTextAssetId: bulkTextAssetId},
+      variables: { tdoId: requestTdo.id},
       token
     });
   } catch (error) {
@@ -1031,6 +1036,12 @@ function* watchSelectEngineCategory() {
   });
 }
 
+function* watchTranscriptStatus () {
+  yield takeEvery(UPDATE_EDIT_STATUS, function* (action) {
+    yield put(toggleSaveMode(action.hasChanged))
+  })
+}
+
 function* enableSaveMode() {
   yield put(toggleSaveMode(true))
 }
@@ -1046,8 +1057,6 @@ function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
     let assetData;
     if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
-      // TODO: uncomment below when getTranscriptEditAssetData is redux connected
-      assetData = action.payload.data;
       assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
@@ -1057,6 +1066,7 @@ function* watchSaveAssetData() {
         // do save bulk transcript asset and return
         return yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, assetData.text);
       }
+      delete assetData.isBulkEdit;
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(getFaceEngineAssetData, action.payload.selectedEngineId);
     }
@@ -1086,6 +1096,7 @@ export default function* root() {
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
     fork(watchFaceEngineEntityCreate),
+    fork(watchTranscriptStatus),
     fork(watchSaveAssetData)
   ]);
 }

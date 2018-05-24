@@ -22,8 +22,44 @@ export default class SnippetFragment extends Component {
   static defaultProps = {
     active: false,
     editMode: false,
-    changeOnBlur: true
+    changeOnBlur: false
   };
+
+  // use this when we update to react ^16.3.0
+  /*
+  static getDerivedStateFromProps (nextProps, prevState) {
+    const { value, startTimeMs, stopTimeMs } = nextProps;
+
+    if (!this.originalValue) {
+      this.originalValue = {
+        value: value,
+        startTimeMs: startTimeMs,
+        stopTimeMs: stopTimeMs
+      }
+    }
+  }
+  */
+
+  // Use the above function when we update to a later version of react
+  componentWillReceiveProps (nextProps) {
+    const { value, startTimeMs, stopTimeMs } = nextProps;
+    if (!this.originalValue) {
+      this.originalValue = {
+        value: value,
+        startTimeMs: startTimeMs,
+        stopTimeMs: stopTimeMs
+      }
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { active, value, className, editMode } = nextProps;
+    const newMode = editMode !== this.props.editMode;
+    const newHighlight = active !== this.props.active;
+    const newClass = className !== this.props.className;
+    const newValue = this.currentValue ? value !== this.currentValue.value : false;
+    return newMode || newClass || newValue || newHighlight;
+  }
 
   handleSnippetClick = event => {
     const { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
@@ -45,14 +81,14 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetFocusOut = event => {
-    const { startTimeMs, stopTimeMs, changeOnBlur } = this.props;
+    const { startTimeMs, stopTimeMs } = this.props;
     const newVal = event.target.textContent;
-    const newStartTime = startTimeMs; //These 2 are the same for now. We will have an to edit time in the future
-    const newStopTime = stopTimeMs; //These 2 are the same for now. We will have an to edit time in the future
-    changeOnBlur && this.triggerOnChange(newVal, newStartTime, newStopTime);
+    const newStartTime = startTimeMs; //These 2 are the same for now. We will have options to edit time in the future
+    const newStopTime = stopTimeMs;   //These 2 are the same for now. We will have options to edit time in the future
+    this.triggerOnChange(newVal, newStartTime, newStopTime, true);
   };
 
-  triggerOnChange = (newValue, newStartTime, newStopTime) => {
+  triggerOnChange = (newValue, newStartTime, newStopTime, onBlur = false) => {
     const { value, startTimeMs, stopTimeMs, editMode, onChange } = this.props;
 
     if (
@@ -62,25 +98,23 @@ export default class SnippetFragment extends Component {
         startTimeMs !== newStartTime ||
         stopTimeMs !== newStopTime)
     ) {
+      this.currentValue = {
+        value: newValue,
+        startTimeMs: newStartTime,
+        stopTimeMs: newStopTime
+      };
+
       onChange({
         type: 'snippet',
-        newValue: {
-          value: newValue,
-          startTimeMs: newStartTime,
-          stopTimeMs: newStopTime
-        },
-        originalValue: {
-          value: value,
-          startTimeMs: startTimeMs,
-          stopTimeMs: stopTimeMs
-        }
+        onBlur: onBlur,
+        newValue: this.currentValue,
+        originalValue: this.originalValue
       });
     }
   };
 
   render() {
     const { value, active, editMode, className } = this.props;
-
     return (
       <ContentEditable
         tagName="span"
@@ -94,6 +128,7 @@ export default class SnippetFragment extends Component {
           [styles.edit]: editMode,
           [styles.highlight]: active
         })}
+        ref={this.textInput}
       />
     );
   }

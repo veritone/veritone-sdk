@@ -15,7 +15,7 @@ export default class TranscriptBulkEdit extends Component {
   };
 
   static defaultProps = {
-    changeOnBlur: true
+    changeOnBlur: false
   };
 
   state = {
@@ -31,14 +31,15 @@ export default class TranscriptBulkEdit extends Component {
   };
 
   handleOnBlur = event => {
-    this.props.changeOnBlur && this.triggerOnChange(this.state.content);
+    this.triggerOnChange(this.state.content, true);
   };
 
-  triggerOnChange(newContent) {
+  triggerOnChange(newContent, onBlur = false) {
     const { content, onChange, startTimeMs, stopTimeMs } = this.props;
     if (onChange && content !== newContent) {
       onChange({
         type: 'bulk',
+        onBlur: onBlur,
         newValue: {
           value: newContent,
           startTimeMs: startTimeMs,
