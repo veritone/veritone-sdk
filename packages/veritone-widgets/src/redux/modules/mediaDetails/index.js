@@ -51,6 +51,7 @@ export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
 export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
+export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
 export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
 export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
@@ -768,8 +769,11 @@ export const saveAssetDataFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createFileAssetSuccess = (widgetId) => ({
+export const createFileAssetSuccess = (assetId, widgetId) => ({
   type: CREATE_FILE_ASSET_SUCCESS,
+  payload: {
+    assetId
+  },
   meta: { widgetId }
 });
 

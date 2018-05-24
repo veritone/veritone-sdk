@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf } from 'prop-types';
-import { get, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 
 import Dialog, {
   DialogActions,
@@ -17,7 +17,6 @@ import transcriptSaga, { changeWidthDebounce } from '../../redux/modules/mediaDe
 import { TranscriptEngineOutput, TranscriptEditMode } from 'veritone-react-common';
 
 const saga = util.reactReduxSaga.saga;
-import widget from '../../shared/widget';
 
 @saga(transcriptSaga)
 @connect(

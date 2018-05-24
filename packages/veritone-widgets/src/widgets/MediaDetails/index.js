@@ -655,6 +655,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         editMode={isEditModeEnabled}
+                        toggleEditMode={this.props.toggleEditMode}
                       />
                     )}
                   {selectedEngineCategory &&

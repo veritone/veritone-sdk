@@ -8,7 +8,7 @@ import callGraphQLApi from '../../../../shared/callGraphQLApi';
 
 const { auth: authModule, config: configModule } = modules;
 
-const token = 'b2ab1515-2438-42a2-970c-f3b11809a1aa';
+const token = '4de3579f-f2d1-481f-8f29-c53e206801b5';
 const graphQLUrl = "https://api.aws-dev.veritone.com/v3/graphql";
 
 /* WATCH FUNCTIONS */

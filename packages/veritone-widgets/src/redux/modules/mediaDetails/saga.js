@@ -26,6 +26,7 @@ import {
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
   SAVE_ASSET_DATA,
+  CREATE_FILE_ASSET_SUCCESS,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadEngineResultsRequest,
@@ -51,8 +52,8 @@ import {
   createBulkEditTranscriptAssetFailure
 } from '.';
 
-import { CREATE_ENTITY_SUCCESS } from './faceEngineOutput';
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
+import { UPDATE_ENGINE_RESULT_ENTITY } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
     details
@@ -622,7 +623,12 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
     return yield put(createFileAssetFailure(widgetId, { error: 'Failed to create file asset.' }));
   }
 
-  yield put(createFileAssetSuccess(widgetId));
+  const assetId = get(response, 'data.createAsset.id');
+
+  if (assetId) {
+    yield put(createFileAssetSuccess(widgetId, assetId));
+  }
+
   return response;
 }
 
@@ -1042,14 +1048,12 @@ function* watchTranscriptStatus () {
   })
 }
 
-function* enableSaveMode() {
-  yield put(toggleSaveMode(true))
-}
-
-function* watchFaceEngineEntityCreate() {
+function* watchFaceEngineEntityUpdate() {
   yield takeEvery(
-    (action) => action.type === CREATE_ENTITY_SUCCESS,
-    enableSaveMode
+    (action) => action.type === UPDATE_ENGINE_RESULT_ENTITY,
+    function* (action) {
+      yield put(toggleSaveMode(true));
+    }
   );
 }
 
@@ -1085,6 +1089,59 @@ function* watchSaveAssetData() {
   });
 }
 
+function* watchCreateFileAssetSuccess() {
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
+
+  const crateJobQuery = `mutation createJob($tdoId: ID!) {
+    createJob(input: {
+      targetId: $tdoId,
+      tasks: [{
+        engineId: 'insert-into-index'
+      }]
+    }) {
+      id
+      tasks {
+        records {
+          id
+          jobId
+        }
+      }
+    }
+  }`;
+
+  yield takeEvery(
+    action => action.type === CREATE_FILE_ASSET_SUCCESS,
+    function* insertIntoIndex(action) {
+      const { widgetId } = action.meta;
+
+      try {
+        const tdo = yield select(getTdo, widgetId);
+        const response = yield call(callGraphQLApi, {
+          endpoint: graphQLUrl,
+          query: crateJobQuery,
+          variables: { tdoId: tdo.id },
+          token
+        });
+
+        if (!get(response, 'data.id')) {
+          throw new Error('Failed to create insert-into-index task.');
+        }
+        if (isEmpty(get(response, 'data.tasks.records')) || !get(response.data.tasks.records[0], 'id')) {
+          throw new Error('Failed to create insert-into-index task.');
+        }
+      } catch (error) {
+        // return yield put(insertIntoIndexFailure(widgetId, { error }));
+      }
+
+    }
+  )
+}
+
 export default function* root() {
   yield all([
     fork(watchLoadEngineResultsRequest),
@@ -1095,8 +1152,9 @@ export default function* root() {
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
-    fork(watchFaceEngineEntityCreate),
     fork(watchTranscriptStatus),
-    fork(watchSaveAssetData)
+    fork(watchFaceEngineEntityUpdate),
+    fork(watchSaveAssetData),
+    fork(watchCreateFileAssetSuccess)
   ]);
 }

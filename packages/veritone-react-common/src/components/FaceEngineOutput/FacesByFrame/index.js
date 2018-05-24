@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { number, objectOf, shape, string, func, arrayOf } from 'prop-types';
-
 import NoFacesFound from '../NoFacesFound';
 import FaceFrameContainer from '../FaceFrameContainer';
 
@@ -34,6 +33,7 @@ class FacesByFrame extends Component {
     currentMediaPlayerTime: number,
     onSelectEntity: func
   };
+
   render() {
     const {
       recognizedEntityObjectMap,
