@@ -69,8 +69,8 @@ export default class TranscriptContent extends Component {
       };
     }
 
-    let snippetSegments = [];
-    let overviewSegments = [];
+    const snippetSegments = [];
+    const overviewSegments = [];
 
     let overviewStartTime = 0;
     let overviewStopTime = 0;
@@ -78,7 +78,7 @@ export default class TranscriptContent extends Component {
     let overviewSentences = '';
     let overviewStatus = undefined;
 
-    let saveOverviewData = () => {
+    const saveOverviewData = () => {
       //---Save Previous Overview Data---
       overviewSegments.push({
         startTimeMs: overviewStartTime,
@@ -97,9 +97,9 @@ export default class TranscriptContent extends Component {
 
     let lazyLoading = true;
     this.props.data.forEach(chunk => {
-      let groupStartTime = chunk.startTimeMs;
-      let groupStopTime = chunk.stopTimeMs;
-      let groupStatus = chunk.status;
+      const groupStartTime = chunk.startTimeMs;
+      const groupStopTime = chunk.stopTimeMs;
+      const groupStatus = chunk.status;
 
       lazyLoading =
         lazyLoading &&
@@ -107,7 +107,7 @@ export default class TranscriptContent extends Component {
         groupStopTime !== undefined &&
         groupStatus !== undefined;
 
-      let series = chunk.series;
+      const series = chunk.series;
       if (series && series.length > 0) {
         let snippetStatus = undefined;
         let snippetStartTime = groupStartTime;
@@ -115,7 +115,7 @@ export default class TranscriptContent extends Component {
         let snippetParts = [];
         let snippetSentences = '';
 
-        let saveSnippetData = () => {
+        const saveSnippetData = () => {
           //---Save Previous Snippets Data---
           snippetSegments.push({
             startTimeMs: snippetStartTime,
@@ -217,11 +217,11 @@ export default class TranscriptContent extends Component {
   }
 
   renderSnippetSegments = parsedData => {
-    let { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
 
-    let stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    let snippetSegments = [];
+    const snippetSegments = [];
     parsedData.snippetSegments.forEach(segmentData => {
       let segment = {
         start: segmentData.startTimeMs,
@@ -232,7 +232,7 @@ export default class TranscriptContent extends Component {
         case 'success':
           segment.content = (
             <SnippetSegment
-              key={'transcript-snippet' + segmentData.startTimeMs}
+              key={`transcript-snippet-${segmentData.startTimeMs}`}
               content={segmentData}
               editMode={editMode}
               onClick={this.handleOnClick}
@@ -246,7 +246,7 @@ export default class TranscriptContent extends Component {
         case 'no-transcript':
           segment.content = (
             <NoDataSegment
-              key={'transcript--snippet' + segmentData.startTimeMs}
+              key={`transcript--snippet-${segmentData.startTimeMs}`}
               startTimeMs={segmentData.startTimeMs}
               stopTimeMs={segmentData.stopTimeMs}
             />
@@ -260,18 +260,18 @@ export default class TranscriptContent extends Component {
   };
 
   renderOverviewSegments = parsedData => {
-    let { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
 
-    let stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
     let overalStartTime = 0;
     let overalStopTime = 0;
     let overalString = '';
 
-    let overviewSegments = [];
+    const overviewSegments = [];
     parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
-      let segmentStartTime = segmentData.startTimeMs;
-      let segmentStopTime = segmentData.stopTimeMs;
+      const segmentStartTime = segmentData.startTimeMs;
+      const segmentStopTime = segmentData.stopTimeMs;
 
       if (editMode) {
         overalStartTime > segmentStartTime &&
@@ -291,7 +291,7 @@ export default class TranscriptContent extends Component {
             stop: overalStopTime,
             content: (
               <TranscriptBulkEdit
-                key={'transcript-bulk-edit' + overalStopTime}
+                key={`transcript-bulk-edit-${overalStopTime}`}
                 content={overalString}
               />
             )
@@ -303,7 +303,7 @@ export default class TranscriptContent extends Component {
           case 'success':
             segmentContent = (
               <OverviewSegment
-                key={'transcript-overview' + segmentStartTime}
+                key={`transcript-overview-${segmentStartTime}`}
                 content={segmentData}
                 onClick={this.handleOnClick}
                 startMediaPlayHeadMs={mediaPlayerTimeMs}
@@ -315,7 +315,7 @@ export default class TranscriptContent extends Component {
           case 'no-transcript':
             segmentContent = (
               <NoDataSegment
-                key={'transcript--overview' + segmentStartTime}
+                key={`transcript--overview-${segmentStartTime}`}
                 overview
                 startTimeMs={segmentStartTime}
                 stopTimeMs={segmentStopTime}
@@ -336,7 +336,7 @@ export default class TranscriptContent extends Component {
   };
 
   render() {
-    let {
+    const {
       overview,
       className,
       mediaLengthMs,
@@ -345,7 +345,7 @@ export default class TranscriptContent extends Component {
       onScroll
     } = this.props;
 
-    let parsedData = this.parseData();
+    const parsedData = this.parseData();
     return (
       <div className={classNames(styles.transcriptContent, className)}>
         <DynamicContentScroll

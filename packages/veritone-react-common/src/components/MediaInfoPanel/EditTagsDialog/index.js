@@ -85,7 +85,6 @@ class EditTagsDialog extends Component {
   onSave = () => {
     const tagToSave = this.state.tags.slice();
     this.addTagAsUnique(this.state.newTagValue, tagToSave);
-    console.log(tagToSave);
     this.props.onSave(tagToSave);
   };
 

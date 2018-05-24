@@ -17,7 +17,7 @@ export default class OverviewSegment extends Component {
   };
 
   handleFragmentClicked = event => {
-    let { content, onClick } = this.props;
+    const { content, onClick } = this.props;
 
     if (onClick) {
       onClick(event, content);
@@ -25,7 +25,7 @@ export default class OverviewSegment extends Component {
   };
 
   render() {
-    let { content, active, className } = this.props;
+    const { content, active, className } = this.props;
 
     return (
       <span

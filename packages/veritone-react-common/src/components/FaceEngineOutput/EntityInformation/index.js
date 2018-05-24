@@ -103,16 +103,7 @@ class EntityInformation extends Component {
                       <div
                         onClick={this.handleFaceOccurrenceClicked(timeSlot)}
                         className={styles.faceOccurrence}
-                        key={
-                          'face-match-' +
-                          entity.entityId +
-                          '-' +
-                          timeSlot.startTimeMs +
-                          '-' +
-                          timeSlot.stopTimeMs +
-                          '-' +
-                          timeSlot.originalImage
-                        }
+                        key={`face-match-${entity.entityId}-${timeSlot.startTimeMs}-${timeSlot.stopTimeMs}-${timeSlot.originalImage}`}
                       >
                         <span className={styles.faceOccurrenceTimestamp}>
                           {msToReadableString(timeSlot.startTimeMs)} -{' '}
@@ -132,9 +123,7 @@ class EntityInformation extends Component {
                   Object.keys(entity.jsondata).map((objKey, index) => {
                     return (
                       <div
-                        key={
-                          'entity-' + entity.entityId + '-jsondata-' + objKey
-                        }
+                        key={`entity-${entity.entityId}-jsondata-${objKey}`}
                         className={styles.jsondataItem}
                       >
                         <div className={styles.metadataLabel}>

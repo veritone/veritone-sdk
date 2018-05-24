@@ -10,11 +10,11 @@ export default class FingerPrintLibraries extends Component {
     libraries: arrayOf(
       shape({
         name: string,
-        libraryId: string,
+        libraryId: string.isRequired,
         entities: arrayOf(
           shape({
             name: string,
-            entityId: string,
+            entityId: string.isRequired,
             matches: arrayOf(
               shape({
                 startTimeMs: number,
@@ -57,7 +57,7 @@ export default class FingerPrintLibraries extends Component {
               <FingerprintLibrary
                 libraryData={libraryData}
                 onClick={onClick}
-                key={'fingerprint-lib-' + libraryData.libraryId}
+                key={`fingerprint-lib-${libraryData.libraryId}`}
                 mediaPlayerTimeMs={mediaPlayerTimeMs}
                 mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
               />

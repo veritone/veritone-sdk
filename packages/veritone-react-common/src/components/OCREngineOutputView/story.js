@@ -36,7 +36,7 @@ storiesOf('OCREngineOutputView', module).add('Base', () => {
         step: 100
       })}
       onEngineChange={action('onEngineChange')}
-      onExpandClicked={action('onExpandClicked')}
+      onExpandClick={action('onExpandClick')}
       onOcrClicked={action('onOcrClicked')}
     />
   );

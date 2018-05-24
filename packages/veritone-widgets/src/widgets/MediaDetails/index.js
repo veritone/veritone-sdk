@@ -294,7 +294,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   getPrimaryAssetUri = () => {
-    return get(this.props, 'tdo.primaryAsset.uri');
+    return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
   toggleEditMode = () => {
@@ -660,7 +660,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onObjectOccurrenceClicked={
+                        onObjectOccurrenceClick={
                           this.handleUpdateMediaPlayerTime
                         }
                       />
@@ -699,7 +699,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
+                        onExpandClick={this.toggleExpandedMode}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -712,7 +712,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
+                        onExpandClick={this.toggleExpandedMode}
                         defaultLanguage={'en-US'}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
@@ -762,7 +762,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
+                        onExpandClick={this.toggleExpandedMode}
                       />
                     )}
                   {selectedEngineCategory &&

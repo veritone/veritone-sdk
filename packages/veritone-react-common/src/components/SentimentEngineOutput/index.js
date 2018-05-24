@@ -25,7 +25,7 @@ export default class SentimentEngineOutput extends Component {
     ),
     selectedEngineId: string,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
     className: string,
     mediaPlayerTimeMs: number,
     timeWindowSizeMs: number,
@@ -326,7 +326,7 @@ export default class SentimentEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked
+      onExpandClick
     } = this.props;
 
     const extractedData = this.extractPropsData();
@@ -341,7 +341,7 @@ export default class SentimentEngineOutput extends Component {
               engines={engines}
               selectedEngineId={selectedEngineId}
               onEngineChange={onEngineChange}
-              onExpandClicked={onExpandClicked}
+              onExpandClick={onExpandClick}
             />
           )}
         {this.renderSummary(extractedData.average)}

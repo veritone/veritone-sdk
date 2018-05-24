@@ -51,7 +51,7 @@ export default class TranscriptEngineOutput extends Component {
     onClick: func,
     onScroll: func,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -136,13 +136,13 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderHeader() {
-    let {
+    const {
       title,
       engines,
       selectedEngineId,
       editMode,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       headerClassName
     } = this.props;
 
@@ -153,7 +153,7 @@ export default class TranscriptEngineOutput extends Component {
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
-        onExpandClicked={onExpandClicked}
+        onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
         <div className={classNames(styles.controllers)}>
@@ -164,7 +164,7 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderBody() {
-    let {
+    const {
       data,
       onClick,
       onScroll,
@@ -197,7 +197,7 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   render() {
-    let { className } = this.props;
+    const { className } = this.props;
 
     return (
       <div className={classNames(styles.transcriptOutput, className)}>

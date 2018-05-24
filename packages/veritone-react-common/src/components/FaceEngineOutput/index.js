@@ -84,7 +84,7 @@ class FaceEngineOutput extends Component {
     onRemoveFaceDetection: func,
     onEditFaceDetection: func,
     onSearchForEntities: func,
-    onExpandClicked: func
+    onExpandClick: func
   };
 
   state = {
@@ -317,7 +317,7 @@ class FaceEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked
+      onExpandClick
     } = this.props;
     let { viewMode } = this.state;
 
@@ -328,7 +328,7 @@ class FaceEngineOutput extends Component {
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={onEngineChange}
-          onExpandClicked={onExpandClicked}
+          onExpandClick={onExpandClick}
         >
           <Select
             autoWidth
@@ -388,9 +388,9 @@ class FaceEngineOutput extends Component {
                   ) : (
                     <div>
                       {Object.keys(this.state.entitiesByLibrary).map(
-                        (key, index) => {
+                        (key) => {
                           return (
-                            <div key={'faces-by-libary-' + key}>
+                            <div key={`faces-by-libary-${key}`}>
                               <div className={styles.libraryName}>
                                 <Icon
                                   className={cx(
@@ -410,10 +410,10 @@ class FaceEngineOutput extends Component {
                               </div>
                               <div className={styles.entityCountContainer}>
                                 {this.state.entitiesByLibrary[key].faces.map(
-                                  (face, index) => {
+                                  (face) => {
                                     return (
                                       <Chip
-                                        key={'face-' + face.entityId}
+                                        key={`face-${face.entityId}`}
                                         className={styles.entityCountChip}
                                         label={
                                           <span>

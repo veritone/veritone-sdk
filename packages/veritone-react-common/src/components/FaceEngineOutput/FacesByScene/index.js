@@ -49,7 +49,7 @@ class FacesByScene extends Component {
       if (entityCurrentlyInFrame) {
         return (
           <RecognizedFaceMatch
-            key={'scene-view-recognized-entity-' + entityObject.entityId}
+            key={`scene-view-recognized-entity-${entityObject.entityId}`}
             entity={entityObject}
             confidence={entityCurrentlyInFrame.confidence}
             onViewDetailsClick={onSelectEntity}

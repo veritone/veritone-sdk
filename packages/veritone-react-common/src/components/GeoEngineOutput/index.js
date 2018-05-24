@@ -62,7 +62,7 @@ export default class GeoEngineOutput extends Component {
 
     onClick: func,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number
@@ -97,7 +97,7 @@ export default class GeoEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       headerClassName
     } = this.props;
 
@@ -107,7 +107,7 @@ export default class GeoEngineOutput extends Component {
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
-        onExpandClicked={onExpandClicked}
+        onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
         <Select

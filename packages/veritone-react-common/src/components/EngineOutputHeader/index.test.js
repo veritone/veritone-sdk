@@ -62,7 +62,7 @@ describe('EngineOutputHeader', () => {
   it('should call onExpandClick to be called when the expand button is clicked', () => {
     const expandClicked = jest.fn();
     const wrapper = mount(
-      <EngineOutputHeader title="Test Title" onExpandClicked={expandClicked} />
+      <EngineOutputHeader title="Test Title" onExpandClick={expandClicked} />
     );
     let expandButton = wrapper.find(IconButton);
     expandButton.simulate('click');

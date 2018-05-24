@@ -6,14 +6,14 @@ import styles from './styles.scss';
 
 class RecognizedFaceMatch extends Component {
   static propTypes = {
-    entity: shape({}),
+    entity: shape({}).isRequired,
     onViewDetailsClick: func,
     confidence: number
   };
 
   render() {
-    let { entity, confidence, onViewDetailsClick } = this.props;
-    let confidenceColor =
+    const { entity, confidence, onViewDetailsClick } = this.props;
+    const confidenceColor =
       Math.round(confidence * 100) >= 90
         ? styles.greenBackground
         : styles.orangeBackground;

@@ -42,7 +42,7 @@ export class GeoExample extends Component {
           engines={this.state.engines}
           selectedEngineId={this.state.selectedEngineId}
           onEngineChange={action('engine change')}
-          onExpandClicked={action('expand button clicked')}
+          onExpandClick={action('expand button clicked')}
           mediaPlayerTimeMs={1000 * number('Media Player Time', 0)}
         />
       </div>

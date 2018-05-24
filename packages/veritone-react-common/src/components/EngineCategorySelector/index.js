@@ -49,10 +49,7 @@ export default class EngineCategorySelector extends Component {
                         }}
                       >
                         <Icon
-                          className={engineCategory.iconClass.replace(
-                            '-engine',
-                            ''
-                          )}
+                          className={engineCategory.iconClass}
                           classes={{ root: styles.categoryIcon }}
                         />
                       </Tooltip>
