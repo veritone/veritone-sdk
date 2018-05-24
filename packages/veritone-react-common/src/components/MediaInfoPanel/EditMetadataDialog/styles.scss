@@ -68,18 +68,64 @@
         line-height: 16px;
       }
 
-      .programLiveImage {
+      .programLiveImageContainer {
         height: 120px;
         width: 200px;
         margin-top: 20px;
+        position: relative;
+
+        .programLiveImage {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .imageOverlay {
+          height: 32px;
+        }
       }
 
-      .programImage {
+      .programImageContainer {
         height: 120px;
         width: 120px;
         border-radius: 60px;
         margin-top: 20px;
         margin-left: 10px;
+        overflow: hidden;
+        position: relative;
+
+        .programImage {
+          width: 100%;
+          height: 100%;
+        }
+
+        .imageOverlay {
+          height: 36px;
+        }
+      }
+
+      .imageOverlay {
+        position: absolute;
+        width: 100%;
+        background-color: black;
+        opacity: 0.75;
+        bottom: 0;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .editProgramImageIcon {
+          font-size: 20px;
+          margin: 0 7px;
+          opacity: 1;
+        }
+
+        .editProgramLiveImageIcon {
+          font-size: 20px;
+          margin: 0 10px;
+          opacity: 1;
+        }
       }
     }
   }
