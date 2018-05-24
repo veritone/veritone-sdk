@@ -95,7 +95,6 @@ class FaceDetectionBox extends Component {
 
   handleAddNewEntity = entity => evt => {
     this.props.addNewEntity(this.props.face, entity);
-    // this.props.addNewEntity(this.props.face, entity);
   };
 
   handleEntitySelect = entity => {
@@ -162,7 +161,7 @@ class FaceDetectionBox extends Component {
             {this.state.editFaceEntity ? (
               <Downshift
                 isOpen={this.state.dropdownOpen}
-                inputValue={styles.entityName}
+                // inputValue={styles.entityName}
                 itemToString={this.itemToString}
                 onSelect={this.handleEntitySelect}
                 onInputValueChange={onSearchForEntities}

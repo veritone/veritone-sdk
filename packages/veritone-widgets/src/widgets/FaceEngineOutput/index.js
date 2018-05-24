@@ -12,7 +12,7 @@ import Dialog, {
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import Select from 'material-ui/Select';
-import { find, isObject, isEmpty, get, noop, pick, head, debounce } from 'lodash';
+import { pick, head, debounce } from 'lodash';
 import {
   shape,
   number,
@@ -32,14 +32,12 @@ import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOu
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 
 const saga = util.reactReduxSaga.saga;
-import widget from '../../shared/widget';
 
 @saga(rootSaga)
 @connect(
   (state, { selectedEngineId }) => ({
-    // data: faceEngineOutput.getFaceDataByEngine(state, selectedEngineId),
-    entities: faceEngineOutput.getEntities(state),
     faces: faceEngineOutput.getFaces(state, selectedEngineId),
+    entities: faceEngineOutput.getEntities(state),
     libraries: faceEngineOutput.getLibraries(state),
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
     isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
@@ -82,20 +80,30 @@ class FaceEngineOutputContainer extends Component {
       })
     ).isRequired,
     selectedEngineId: string,
-    data: arrayOf(
-      shape({
-        series: arrayOf(
-          shape({
-            startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            object: shape({
-              label: string,
-              uri: string
-            })
+    faces: shape({
+      recognizedFaces: arrayOf(
+        shape({
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
+          object: shape({
+            label: string,
+            uri: string,
+            entityId: string,
+            libraryId: string,
           })
-        )
-      })
-    ),
+        })
+      ),
+      unrecognizedFaces: arrayOf(
+        shape({
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
+          object: shape({
+            label: string,
+            uri: string
+          })
+        })
+      )
+    }),
     entities: arrayOf(
       shape({
         id: string.isRequired,
@@ -112,12 +120,17 @@ class FaceEngineOutputContainer extends Component {
     entitySearchResults: arrayOf(
       shape({
         name: string.isRequired,
-        // libraryName: string.isRequired,
         library: shape({
           id: string,
           name: string.isRequired
         }),
         profileImageUrl: string
+      })
+    ),
+    libraries: arrayOf(
+      shape({
+        id: string,
+        name: string
       })
     ),
     onEngineChange: func,
@@ -129,7 +142,10 @@ class FaceEngineOutputContainer extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClicked: func,
-    isFetchingLibraries: bool
+    isFetchingEngineResults: bool,
+    isFetchingEntities: bool,
+    isFetchingLibraries: bool,
+    toggleEditMode: func
   };
 
   state = {
@@ -139,14 +155,20 @@ class FaceEngineOutputContainer extends Component {
       libraryId: '',
       name: '',
       profileImageUrl: ''
-    },
-    recognizedFaces: {},
-    unrecognizedFaces: []
+    }
   };
 
   componentWillReceiveProps(nextProps) {
+    const { isFetchingEngineResults, isFetchingEntities, faces, editMode } = nextProps;
+
     if (!this.props.libraries.length && nextProps.libraries.length) {
       this.setNewEntityLibrary(head(nextProps.libraries).id)
+    }
+
+    if (!editMode && !isFetchingEngineResults && !isFetchingEntities && !faces.unrecognizedFaces.length) {
+      if (this.props.toggleEditMode) {
+        this.props.toggleEditMode(false);
+      }
     }
 
     if (!this.props.entities.length && nextProps.entities.length) {
@@ -325,15 +347,14 @@ class FaceEngineOutputContainer extends Component {
     const faceEngineProps = pick(this.props, [
       'editMode',
       'engines',
+      'entities',
       'currentMediaPlayerTime',
       'entitySearchResults'
-      // 'unrecognizedFaces'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
       return null;
     }
-
 
     return (
       <Fragment>
@@ -341,7 +362,7 @@ class FaceEngineOutputContainer extends Component {
           {...this.props.faces}
           {...faceEngineProps}
           onAddNewEntity={this.handleAddNewEntity}
-          onSearchForEntities={debounce(this.handleSearchEntities, 500)}
+          onSearchForEntities={debounce(this.handleSearchEntities, 300)}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
         />
         {this.renderNewEntityModal()}

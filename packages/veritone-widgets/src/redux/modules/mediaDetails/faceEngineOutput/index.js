@@ -21,7 +21,7 @@ export const SEARCH_ENTITIES = `vtn/${namespace}/SEARCH_ENTITIES`;
 export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS`;
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
-const UPDATE_ENGINE_RESULT_ENTITY = `vtn/${namespace}/UPDATE_ENGINE_RESULT_ENTITY`;
+export const UPDATE_ENGINE_RESULT_ENTITY = `vtn/${namespace}/UPDATE_ENGINE_RESULT_ENTITY`;
 
 const UPDATE_ENGINE_RESULT = `vtn/${namespace}/UPDATE_ENGINE_RESULT`;
 
@@ -34,7 +34,6 @@ import {
   forEach,
   keyBy,
   isEmpty,
-  isObject,
   set,
   pick,
   flatten
@@ -168,57 +167,8 @@ const reducer = createReducer(defaultState, {
       ...pick(action.meta, ['faceObj', 'selectedEngineId']),
       entity: action.payload.data.entity
     }
+
     return this[UPDATE_ENGINE_RESULT_ENTITY](state, { payload });
-
-    const { entity } = action.payload.data;
-    const { currentlyEditedFace, selectedEngineId } = action.meta;
-    // const { unrecognizedFaces } = getFaces({ [namespace]: state }, selectedEngineId);
-    // console.log('unrecognizedFaces:', unrecognizedFaces)
-
-    // const detectedFace = unrecognizedFaces[currentlyEditedFace];
-    // console.log('detectedFace:', detectedFace)
-
-    // const findCriteria = pick(detectedFace, ['uri', 'boundingPoly']);
-    const objectCriteria = pick(currentlyEditedFace.object, ['uri', 'boundingPoly']);
-
-    const detectedFacePath = state.engineResultsByEngineId[selectedEngineId]
-    .reduce((acc, engineResult, engineResultIdx) => {
-      const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
-
-      // return (faceIdx > -1) ? [selectedEngineId, engineResultIdx, 'series', faceIdx] : acc;
-      return (faceIdx > -1) ? [engineResultIdx, 'series', faceIdx] : acc;
-    }, []);
-
-    if (!detectedFacePath.length) {
-      return {
-        ...state
-      };
-    }
-
-    const engineResults = [ ...state.engineResultsByEngineId[selectedEngineId] ];
-
-    set(engineResults, detectedFacePath, {
-      // ...detectedFace,
-      ...currentlyEditedFace,
-      object: {
-        // ...detectedFace.object,
-        ...currentlyEditedFace.object,
-        entityId: entity.id,
-        libraryId: entity.libraryId
-      }
-    });
-
-    return {
-      ...state,
-      entities: {
-        ...state.entities,
-        [entity.id]: entity
-      },
-      engineResultsByEngineId: {
-        ...state.engineResultsByEngineId,
-        [selectedEngineId]: engineResults
-      }
-    };
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
@@ -328,6 +278,14 @@ export const fetchEngineResultsFailure = (error, meta) => ({
   error,
   meta
 });
+export const updateEngineResultEntity = (selectedEngineId, faceObj, entity) => ({
+  type: UPDATE_ENGINE_RESULT_ENTITY,
+  payload: {
+    selectedEngineId,
+    faceObj,
+    entity
+  }
+});
 
 export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
@@ -343,7 +301,7 @@ export const fetchedEngineResultByEngineId = (state, engineId) =>
   get(local(state), ['fetchedEngineResults', engineId], [])
 
 
-  /* LIBRARY ENTITIES */
+  /* ENTITIES */
 export const fetchingEntities = (meta) => ({
   type: FETCH_ENTITIES,
   meta
@@ -373,6 +331,25 @@ export const createEntityFailure = (payload, meta) => ({
   payload,
   meta
 });
+
+export const fetchEntitySearchResults = (libraryType, searchText) => ({
+  type: SEARCH_ENTITIES,
+  payload: {
+    libraryType,
+    searchText
+  }
+});
+export const fetchEntitySearchResultsSuccess = (payload, meta) => ({
+  type: SEARCH_ENTITIES_SUCCESS,
+  payload,
+  meta
+});
+export const fetchEntitySearchResultsFailure = (payload, meta) => ({
+  type: SEARCH_ENTITIES_FAILURE,
+  payload,
+  meta
+});
+
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
 }
@@ -410,59 +387,8 @@ export const getFaces = createSelector(
   (faceData, entities) => {
     const faceEntities = {
       unrecognizedFaces: [],
-      recognizedFaces: {},
-      entitiesByLibrary: {},
-      framesBySeconds: {},
-      secondMap: {}
+      recognizedFaces: [],
     };
-
-    function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
-      return {
-        ...recognizedEntityObj,
-        count: recognizedEntityObj.count + 1,
-        timeSlots: [
-          ...recognizedEntityObj.timeSlots,
-          {
-            stopTimeMs: faceObj.stopTimeMs,
-            startTimeMs: faceObj.startTimeMs,
-            originalImage: faceObj.object.uri,
-            confidence: faceObj.object.confidence
-          }
-        ],
-        stopTimeMs:
-          recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
-            ? faceObj.stopTimeMs
-            : recognizedEntityObj.stopTimeMs
-      };
-    };
-
-    function getFrameNamespaceForMatch(faceObj) {
-      if (faceObj.object.boundingPoly) {
-        return JSON.stringify(faceObj.object.boundingPoly);
-      }
-    };
-
-    // Gets list of nearest seconds which the face/entity appears in (MS)
-    function getArrayOfSecondSpots(timeSlot) {
-      const secondSpots = [];
-
-      if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
-        return secondSpots;
-      }
-
-      let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
-
-      while (timeCursor <= timeSlot.stopTimeMs) {
-        secondSpots.push(timeCursor);
-        timeCursor += 1000;
-      }
-
-      return secondSpots;
-    };
-
-    // if (isEmpty(faceData)) {
-    //   return faceEntities;
-    // }
 
     // flatten data series for currently selected engine
     const faceSeries = faceData.reduce((accumulator, faceSeries) => {
@@ -479,82 +405,7 @@ export const getFaces = createSelector(
       if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
-        // try to locate library entity that contains the face object
-        const libraryEntity = find(entities, { libraryId: entity.libraryId });
-        // build object for library entity for "recognized" face
-        const recognizedEntityObj = {
-          entityId: entity.id,
-          libraryId: libraryEntity.libraryId,
-          libraryName: libraryEntity.library.name,
-          fullName: entity.name,
-          entity: {
-            ...entity,
-            libraryId: libraryEntity.libraryId,
-            libraryName: libraryEntity.library.name
-          },
-          profileImage: entity.profileImageUrl,
-          count: 1,
-          timeSlots: [
-            {
-              stopTimeMs: faceObj.stopTimeMs,
-              startTimeMs: faceObj.startTimeMs,
-              originalImage: faceObj.object.uri,
-              confidence: faceObj.object.confidence
-            }
-          ],
-          stopTimeMs: faceObj.stopTimeMs
-        };
-
-        if (faceEntities.recognizedFaces[entity.id]) {
-          faceEntities.recognizedFaces[entity.id] = setRecognizedEntityObj(
-            faceEntities.recognizedFaces[entity.id],
-            faceObj
-          );
-        } else {
-          faceEntities.recognizedFaces[entity.id] = recognizedEntityObj;
-          faceEntities.entitiesByLibrary[libraryEntity.libraryId] = {
-            libraryId: libraryEntity.libraryId,
-            libraryName: recognizedEntityObj.libraryName,
-            faces: [
-              ...get(
-                faceEntities.entitiesByLibrary[libraryEntity.libraryId],
-                'faces',
-                []
-              ),
-              recognizedEntityObj
-            ]
-          };
-        }
-
-        // TODO: optimize this so that we aren't storing a map since this will probably get pretty big
-        const matchNamespace = getFrameNamespaceForMatch(faceObj);
-        if (matchNamespace) {
-          const secondSpots = getArrayOfSecondSpots(faceObj);
-          secondSpots.forEach(second => {
-            if (!faceEntities.secondMap[second]) {
-              faceEntities.secondMap[second] = {};
-            }
-            if (!faceEntities.secondMap[second][matchNamespace]) {
-              faceEntities.secondMap[second][matchNamespace] = {
-                startTimeMs: faceObj.startTimeMs,
-                stopTimeMs: faceObj.stopTimeMs,
-                originalImage: faceObj.object.uri,
-                entities: [],
-                boundingPoly: faceObj.object.boundingPoly
-              };
-            }
-
-            const match = {
-              confidence: faceObj.object.confidence,
-              entityId: faceObj.object.entityId
-            };
-
-            faceEntities.secondMap[second][matchNamespace].entities.push(match);
-            faceEntities.secondMap[second][matchNamespace].entities.sort((a, b) => {
-              return b.confidence - a.confidence;
-            });
-          });
-        }
+        faceEntities.recognizedFaces.push(faceObj);
       }
     });
 
@@ -583,33 +434,6 @@ export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({
   payload: {
     selectedEngineId,
     unrecognizedFaces
-  }
-});
-
-export const fetchEntitySearchResults = (libraryType, searchText) => ({
-  type: SEARCH_ENTITIES,
-  payload: {
-    libraryType,
-    searchText
-  }
-});
-export const fetchEntitySearchResultsSuccess = (payload, meta) => ({
-  type: SEARCH_ENTITIES_SUCCESS,
-  payload,
-  meta
-});
-export const fetchEntitySearchResultsFailure = (payload, meta) => ({
-  type: SEARCH_ENTITIES_FAILURE,
-  payload,
-  meta
-});
-
-export const updateEngineResultEntity = (selectedEngineId, faceObj, entity) => ({
-  type: UPDATE_ENGINE_RESULT_ENTITY,
-  payload: {
-    selectedEngineId,
-    faceObj,
-    entity
   }
 });
 
