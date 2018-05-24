@@ -13,6 +13,7 @@ import mediaDetailsReducer, {
   namespace as mediaDetailsNamespace
 } from './modules/mediaDetails';
 
+import transcriptReducer, { transcriptNamespace } from './modules/mediaDetails/transcriptWidget';
 import faceEngineOutputReducer, {
   namespace as faceEngineOutputNamespace
 } from './modules/mediaDetails/faceEngineOutput';
@@ -30,6 +31,7 @@ export default function createReducer(asyncReducers) {
   return combineReducers({
     [filePickerNamespace]: filePickerReducer,
     [mediaDetailsNamespace]: mediaDetailsReducer,
+    [transcriptNamespace]: transcriptReducer,
     [faceEngineOutputNamespace]: faceEngineOutputReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,

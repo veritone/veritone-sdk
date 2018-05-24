@@ -40,25 +40,25 @@ export default class SnippetSegment extends Component {
   };
 
   handleSnippetClick = (event, entryData) => {
-    let { editMode, onClick } = this.props;
+    const { editMode, onClick } = this.props;
 
     if (!editMode && onClick) {
       onClick(event, entryData);
     }
   };
 
-  handleSnippetChange = (event, entryData) => {
-    let { editMode, onChange } = this.props;
+  handleSnippetChange = (entryData) => {
+    const { editMode, onChange } = this.props;
 
     if (editMode && onChange) {
-      onChange(event, entryData);
+      onChange(entryData);
     }
   };
 
   renderTime(startTime) {
-    let { content, timeClassName } = this.props;
+    const { content, timeClassName } = this.props;
 
-    let formatedTime = msToReadableString(content.startTimeMs, true);
+    const formatedTime = msToReadableString(content.startTimeMs, true);
     return (
       <div className={classNames(styles.time, timeClassName)}>
         {formatedTime}
@@ -82,8 +82,8 @@ export default class SnippetSegment extends Component {
 
       contentComponents.push(
         <SnippetFragment
-          key={'snippet-' + entry.value + '-' + startTime + '-' + stopTime}
-          value={entry.value + ' '}
+          key={'snippet-' + startTime + '-' + stopTime}
+          value={entry.value}
           active={
             !(
               stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
@@ -94,6 +94,7 @@ export default class SnippetSegment extends Component {
           editMode={editMode}
           onClick={this.handleSnippetClick}
           onChange={this.handleSnippetChange}
+          className={classNames(styles.fragment)}
         />
       );
     });

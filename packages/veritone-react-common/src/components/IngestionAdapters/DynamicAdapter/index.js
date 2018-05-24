@@ -143,7 +143,7 @@ class DynamicAdapter extends React.Component {
 }
 
 function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
-  return fields
+  return (fields || [])
     .map(field => {
       let inputId = field.name + 'DynamicField';
       let camelCasedFieldName = startCase(toLower(field.name));
@@ -229,12 +229,15 @@ export default {
     let errors = [];
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
+        if (adapterStep.sourceRequired && !configuration.sourceId) {
+          errors.push('Source is required');
+        }
         if (field.defaultValue && !configuration[field.name]) {
           errors.push(startCase(toLower(field.name)) + ' is invalid');
         } else if (
           field.defaultValues &&
           isArray(configuration[field.name]) &&
-          configuration[field.name].length
+          !configuration[field.name].length
         ) {
           errors.push(
             'At least one ' +

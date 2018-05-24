@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { sortBy } from 'lodash';
+import { orderBy } from 'lodash';
 import classNames from 'classnames';
 
 import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
@@ -10,6 +10,15 @@ import OverviewSegment from '../TranscriptSegment/OverviewSegment';
 import TranscriptBulkEdit from '../TranscriptBulkEdit';
 
 import styles from './styles.scss';
+export const View = {
+  TIME: 'TIME',
+  OVERVIEW: 'OVERVIEW'
+};
+
+export const Edit = {
+  BULK: 'BULK',
+  SNIPPET: 'SNIPPET'
+};
 
 export default class TranscriptContent extends Component {
   static propTypes = {
@@ -35,10 +44,12 @@ export default class TranscriptContent extends Component {
     className: string,
 
     editMode: bool,
-    overview: bool,
+    viewType: string,
+    editType: string,
 
     onClick: func,
     onScroll: func,
+    onChange: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -50,7 +61,8 @@ export default class TranscriptContent extends Component {
 
   static defaultProps = {
     editMode: false,
-    overview: false,
+    viewType: View.TIME,
+    editType: Edit.SNIPPET,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -58,6 +70,10 @@ export default class TranscriptContent extends Component {
   handleOnClick = (target, value) => {
     this.props.onClick &&
       this.props.onClick(value.startTimeMs, value.stopTimeMs);
+  };
+
+  handleDataChanged = value => {
+    this.props.onChange && this.props.onChange(value);
   };
 
   parseData() {
@@ -69,8 +85,8 @@ export default class TranscriptContent extends Component {
       };
     }
 
-    let snippetSegments = [];
-    let overviewSegments = [];
+    const snippetSegments = [];
+    const overviewSegments = [];
 
     let overviewStartTime = 0;
     let overviewStopTime = 0;
@@ -78,7 +94,7 @@ export default class TranscriptContent extends Component {
     let overviewSentences = '';
     let overviewStatus = undefined;
 
-    let saveOverviewData = () => {
+    const saveOverviewData = () => {
       //---Save Previous Overview Data---
       overviewSegments.push({
         startTimeMs: overviewStartTime,
@@ -149,8 +165,8 @@ export default class TranscriptContent extends Component {
 
             //---Get Correct Word---
             let selectedWord;
-            let words = entry.words;
-            words ? (words = sortBy(words, 'confidence')) : (words = []);
+            let words = entry.words || [];
+            words = orderBy(words, ['confidence'], ['desc']);
             words.length > 0
               ? (selectedWord = words[0].word)
               : (selectedWord = '');
@@ -217,13 +233,17 @@ export default class TranscriptContent extends Component {
   }
 
   renderSnippetSegments = parsedData => {
-    let { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const {
+      editMode,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
+    } = this.props;
 
-    let stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    let snippetSegments = [];
+    const snippetSegments = [];
     parsedData.snippetSegments.forEach(segmentData => {
-      let segment = {
+      const segment = {
         start: segmentData.startTimeMs,
         stop: segmentData.stopTimeMs
       };
@@ -235,6 +255,7 @@ export default class TranscriptContent extends Component {
               key={'transcript-snippet' + segmentData.startTimeMs}
               content={segmentData}
               editMode={editMode}
+              onChange={this.handleDataChanged}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
@@ -249,6 +270,10 @@ export default class TranscriptContent extends Component {
               key={'transcript--snippet' + segmentData.startTimeMs}
               startTimeMs={segmentData.startTimeMs}
               stopTimeMs={segmentData.stopTimeMs}
+              editMode={editMode}
+              onChange={this.handleDataChanged}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
             />
           );
           break;
@@ -260,74 +285,92 @@ export default class TranscriptContent extends Component {
   };
 
   renderOverviewSegments = parsedData => {
-    let { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const {
+      editMode,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
+    } = this.props;
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    let stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
+    const overviewSegments = [];
+    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
+      const segmentStartTime = segmentData.startTimeMs;
+      const segmentStopTime = segmentData.stopTimeMs;
 
+      let segmentContent;
+      switch (segmentData.status) {
+        case 'success':
+          segmentContent = (
+            <OverviewSegment
+              key={'transcript-overview' + segmentStartTime}
+              content={segmentData}
+              onClick={this.handleOnClick}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+              classNames={classNames(styles.contentSegment)}
+            />
+          );
+          break;
+        case 'no-transcript':
+          segmentContent = (
+            <NoDataSegment
+              key={'transcript--overview' + segmentStartTime}
+              overview
+              startTimeMs={segmentStartTime}
+              stopTimeMs={segmentStopTime}
+              editMode={editMode}
+              onChange={this.handleDataChanged}
+              startMediaPlayHeadMs={mediaPlayerTimeMs}
+              stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+            />
+          );
+          break;
+      }
+
+      overviewSegments.push({
+        start: segmentStartTime,
+        stop: segmentStopTime,
+        content: segmentContent
+      });
+    });
+
+    return overviewSegments;
+  };
+
+  renderBulkEdit = parsedData => {
     let overalStartTime = 0;
     let overalStopTime = 0;
     let overalString = '';
 
-    let overviewSegments = [];
+    const overviewSegments = [];
     parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
-      let segmentStartTime = segmentData.startTimeMs;
-      let segmentStopTime = segmentData.stopTimeMs;
+      const segmentStartTime = segmentData.startTimeMs;
+      const segmentStopTime = segmentData.stopTimeMs;
 
-      if (editMode) {
-        overalStartTime > segmentStartTime &&
-          (overalStartTime = segmentStartTime);
-        overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
+      overalStartTime > segmentStartTime &&
+        (overalStartTime = segmentStartTime);
+      overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
 
-        if (segmentData.status === 'success') {
-          overalString = overalString + segmentData.sentences;
-        } else {
-          overalString = overalString + '\n\n\n';
-        }
-
-        if (segmentIndex === parsedData.overviewSegments.length - 1) {
-          // Reach the last segment
-          overviewSegments.push({
-            start: overalStartTime,
-            stop: overalStopTime,
-            content: (
-              <TranscriptBulkEdit
-                key={'transcript-bulk-edit' + overalStopTime}
-                content={overalString}
-              />
-            )
-          });
-        }
+      if (segmentData.status === 'success') {
+        overalString = overalString + segmentData.sentences;
       } else {
-        let segmentContent;
-        switch (segmentData.status) {
-          case 'success':
-            segmentContent = (
-              <OverviewSegment
-                key={'transcript-overview' + segmentStartTime}
-                content={segmentData}
-                onClick={this.handleOnClick}
-                startMediaPlayHeadMs={mediaPlayerTimeMs}
-                stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-                classNames={classNames(styles.contentSegment)}
-              />
-            );
-            break;
-          case 'no-transcript':
-            segmentContent = (
-              <NoDataSegment
-                key={'transcript--overview' + segmentStartTime}
-                overview
-                startTimeMs={segmentStartTime}
-                stopTimeMs={segmentStopTime}
-              />
-            );
-            break;
-        }
+        overalString = overalString + '\n\n\n';
+      }
 
+      if (segmentIndex === parsedData.overviewSegments.length - 1) {
+        // Reach the last segment
         overviewSegments.push({
-          start: segmentStartTime,
-          stop: segmentStopTime,
-          content: segmentContent
+          start: overalStartTime,
+          stop: overalStopTime,
+          content: (
+            <TranscriptBulkEdit
+              key={'transcript-bulk-edit' + overalStopTime}
+              content={overalString}
+              onChange={this.handleDataChanged}
+              startTimeMs={overalStartTime}
+              stopTimeMs={overalStopTime}
+            />
+          )
         });
       }
     });
@@ -335,9 +378,37 @@ export default class TranscriptContent extends Component {
     return overviewSegments;
   };
 
+  renderEditMode = parsedData => {
+    let content;
+    switch (this.props.editType) {
+      case Edit.BULK:
+        content = this.renderBulkEdit(parsedData);
+        break;
+      case Edit.SNIPPET:
+        content = this.renderSnippetSegments(parsedData);
+        break;
+    }
+
+    return content;
+  };
+
+  renderViewMode = parsedData => {
+    let content;
+    switch (this.props.viewType) {
+      case View.TIME:
+        content = this.renderSnippetSegments(parsedData);
+        break;
+      case View.OVERVIEW:
+        content = this.renderOverviewSegments(parsedData);
+        break;
+    }
+
+    return content;
+  };
+
   render() {
-    let {
-      overview,
+    const {
+      editMode,
       className,
       mediaLengthMs,
       neglectableTimeMs,
@@ -345,19 +416,22 @@ export default class TranscriptContent extends Component {
       onScroll
     } = this.props;
 
-    let parsedData = this.parseData();
+    const parsedData = this.parseData();
+
     return (
       <div className={classNames(styles.transcriptContent, className)}>
         <DynamicContentScroll
           className={classNames(styles.container)}
-          onScroll={onScroll}
-          totalSize={parsedData.lazyLoading && onScroll ? mediaLengthMs : 0}
+          onScroll={!editMode ? onScroll : null}
+          totalSize={
+            parsedData.lazyLoading && onScroll && !editMode ? mediaLengthMs : 0
+          }
           estimatedDisplaySize={estimatedDisplayTimeMs}
           neglectableSize={neglectableTimeMs}
           contents={
-            overview
-              ? this.renderOverviewSegments(parsedData)
-              : this.renderSnippetSegments(parsedData)
+            editMode
+              ? this.renderEditMode(parsedData)
+              : this.renderViewMode(parsedData)
           }
         />
       </div>

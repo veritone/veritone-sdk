@@ -7,8 +7,13 @@
   flex-direction: row;
   border-bottom: 1px solid $faint-black;
 
+  font-weight: 400;
+  color: $dark-black;
+  font-family: Roboto;
+
   .time {
-    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
     padding: 20px 20px 20px 0;
   }
 
@@ -20,8 +25,17 @@
     font-weight: lighter;
   }
 
+  .snippet {
+    margin: 20px 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+
   &.overview {
     flex-direction: column;
+    border-top: 1px solid $faint-black;
 
     .time {
       text-align: center;
@@ -29,6 +43,10 @@
       padding: 20px 0 0;
     }
   }
+}
+
+.transcriptNoData:first-child {
+  border-top: none;
 }
 
 .transcriptNoData:last-child {

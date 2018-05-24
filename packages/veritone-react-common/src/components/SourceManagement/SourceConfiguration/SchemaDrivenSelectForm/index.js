@@ -63,6 +63,10 @@ export default class DynamicSelect extends React.Component {
       ? definition.required
       : [];
 
+    if (!definition || !properties) {
+      return [];
+    }
+
     return Object.keys(this.props.fieldValues).map((fieldId, index) => {
       return (
         <SourceTypeField

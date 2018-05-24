@@ -2,6 +2,7 @@ import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import { get, uniq, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData } from './faceEngineOutput';
+import { getTranscriptEditAssetData } from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -51,6 +52,7 @@ import {
   createBulkEditTranscriptAssetFailure
 } from '.';
 
+import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 import { UPDATE_ENGINE_RESULT_ENTITY } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
@@ -618,11 +620,11 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   if (!isEmpty(response.errors)) {
     return yield put(createFileAssetFailure(widgetId, { error: response.errors.join(', \n') }));
   }
-  if (!get(response, 'data.id')) {
+  if (!get(response, 'data.createAsset.id')) {
     return yield put(createFileAssetFailure(widgetId, { error: 'Failed to create file asset.' }));
   }
 
-  const assetId = get(response, 'data.id');
+  const assetId = get(response, 'data.createAsset.id');
 
   if (assetId) {
     yield put(createFileAssetSuccess(widgetId, assetId));
@@ -632,11 +634,10 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
 }
 
 function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceData, text) {
+  console.log('create bulk edit', widgetId, type, contentType, sourceData, text);
   let createFileAssetResponse;
   try {
-    createFileAssetResponse = yield call(createFileAssetSaga, {
-      widgetId, type, contentType, sourceData, text
-    });
+    createFileAssetResponse = yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, text);
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
@@ -677,26 +678,24 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
     }));
   }
 
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.id');
+  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
   const originalTranscriptAssetId = get(getPrimaryTranscriptAssetResponse, 'data.temporalDataObject.primaryAsset.id');
 
-  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!, $originalAssetId: String, $bulkTextAssetId: String){
+  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
-        engineId: 'bulk-edit-transcript',
+        engineId: "bulk-edit-transcript",
         payload: {
-          originalTranscriptAssetId: $originalAssetId,
-          temporaryBulkEditAssetId: $bulkTextAssetId,
+          originalTranscriptAssetId: "${originalTranscriptAssetId}",
+          temporaryBulkEditAssetId: "${bulkTextAssetId}",
           saveTtmlToVtnStandard: true
         }
-      },
-      {
-        engineId: 'insert-into-index'
-      },
-			{
-			  engineId: 'mention-generate'
-			}]
+      }, {
+        engineId: "insert-into-index"
+      }, {
+        engineId: "mention-generate"
+      }]
     }) {
       id
       tasks {
@@ -709,10 +708,11 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
 
   let runBulkEditJobResponse;
   try {
+    console.log(originalTranscriptAssetId, bulkTextAssetId);
     runBulkEditJobResponse = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
-      variables: { tdoId: requestTdo.id, originalAssetId: originalTranscriptAssetId, bulkTextAssetId: bulkTextAssetId},
+      variables: { tdoId: requestTdo.id},
       token
     });
   } catch (error) {
@@ -1043,6 +1043,12 @@ function* watchSelectEngineCategory() {
   });
 }
 
+function* watchTranscriptStatus () {
+  yield takeEvery(UPDATE_EDIT_STATUS, function* (action) {
+    yield put(toggleSaveMode(action.hasChanged))
+  })
+}
+
 function* watchFaceEngineEntityUpdate() {
   yield takeEvery(
     (action) => action.type === UPDATE_ENGINE_RESULT_ENTITY,
@@ -1056,9 +1062,7 @@ function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
     let assetData;
     if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
-      // TODO: uncomment below when getTranscriptEditAssetData is redux connected
-      assetData = action.payload.data;
-      // assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
+      assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
         const type = 'v-bulk-edit-transcript';
@@ -1067,6 +1071,7 @@ function* watchSaveAssetData() {
         // do save bulk transcript asset and return
         return yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, assetData.text);
       }
+      delete assetData.isBulkEdit;
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(getFaceEngineAssetData, action.payload.selectedEngineId);
     }
@@ -1148,6 +1153,7 @@ export default function* root() {
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
+    fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess)

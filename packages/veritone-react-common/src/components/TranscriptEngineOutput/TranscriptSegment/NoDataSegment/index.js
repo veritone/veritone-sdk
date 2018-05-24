@@ -1,34 +1,78 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
-import { string, number, bool } from 'prop-types';
+import { string, number, bool, func } from 'prop-types';
+
+import SnippetFragment from '../../TranscriptFragment/SnippetFragment';
 import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 
 export default class NoDataSegment extends Component {
   static propTypes = {
+    editMode: bool,
+    onChange: func,
     overview: bool,
-    startTimeMs: number,
-    stopTimeMs: number,
+    startTimeMs: number.isRequired,
+    stopTimeMs: number.isRequired,
     className: string,
     timeClassName: string,
-    contentClassName: string
+    contentClassName: string,
+    startMediaPlayHeadMs: number,
+    stopMediaPlayHeadMs: number
   };
 
-  static defaultProps = {
-    overview: false,
-    startTimeMs: 0,
-    stopTimeMs: 0
+  handleSnippetChange = (entryData) => {
+    const { editMode, onChange } = this.props;
+
+    if (editMode && onChange) {
+      delete entryData.originalValue.value;
+      onChange(entryData);
+    }
   };
+
+  renderInfoView() {
+    return (
+      <div className={classNames(styles.content, this.props.contentClassName)}>
+        No Transcript Data Available
+      </div>
+    );
+  }
+
+  renderEditView() {
+    const {
+      startTimeMs,
+      stopTimeMs,
+      startMediaPlayHeadMs,
+      stopMediaPlayHeadMs
+    } = this.props;
+
+    return (
+      <SnippetFragment
+        key={'snippet-' + startTimeMs + '-' + stopTimeMs}
+        value={'No Transcript Data Available '}
+        active={
+          !(
+            stopMediaPlayHeadMs < startTimeMs ||
+            startMediaPlayHeadMs > stopTimeMs
+          )
+        }
+        startTimeMs={startTimeMs}
+        stopTimeMs={stopTimeMs}
+        editMode
+        onChange={this.handleSnippetChange}
+        className={classNames(styles.snippet)}
+      />
+    );
+  }
 
   render() {
-    let {
+    const {
+      editMode,
       overview,
       startTimeMs,
       stopTimeMs,
       className,
-      timeClassName,
-      contentClassName
+      timeClassName
     } = this.props;
 
     let timeString = msToReadableString(startTimeMs, true);
@@ -45,9 +89,7 @@ export default class NoDataSegment extends Component {
         <div className={classNames(styles.time, timeClassName)}>
           {timeString}
         </div>
-        <div className={classNames(styles.content, contentClassName)}>
-          No Transcript Data Available
-        </div>
+        {editMode ? this.renderEditView() : this.renderInfoView()}
       </div>
     );
   }

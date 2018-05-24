@@ -32,6 +32,7 @@ export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
 
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
+export { Edit as TranscriptEditMode } from './components/TranscriptEngineOutput/TranscriptContent';
 export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';

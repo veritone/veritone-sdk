@@ -21,11 +21,11 @@ import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
   MediaInfoPanel,
+  Image,
   MediaPlayer,
   FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
-  TranscriptEngineOutput,
   FingerprintEngineOutput,
   LogoDetectionEngineOutput,
   ContentTemplateForm,
@@ -34,6 +34,7 @@ import {
   StructuredDataEngineOutput
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
+import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import Tooltip from 'material-ui/Tooltip';
@@ -418,6 +419,8 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
+    let isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
+
     let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
@@ -619,12 +622,21 @@ class MediaDetailsWidget extends React.Component {
             <div className={styles.mediaScreen}>
               {!isExpandedMode && (
                 <div className={styles.mediaView}>
-                  <MediaPlayer
-                    store={this.context.store}
-                    playerRef={this.mediaPlayerRef}
-                    src={this.getPrimaryAssetUri()}
-                    streams={get(this.props, 'tdo.streams')}
-                  />
+                  {isImage ? (
+                    <Image
+                      src={this.getPrimaryAssetUri()}
+                      width="100%"
+                      height="100%"
+                      type="contain"
+                    />
+                  ) : (
+                    <MediaPlayer
+                      store={this.context.store}
+                      playerRef={this.mediaPlayerRef}
+                      src={this.getPrimaryAssetUri()}
+                      streams={get(this.props, 'tdo.streams')}
+                    />
+                  )}
                   <div className={styles.sourceLabel}>
                     Source: {this.getMediaSource()}
                   </div>
@@ -634,7 +646,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutput
+                      <TranscriptEngineOutputWidget
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}

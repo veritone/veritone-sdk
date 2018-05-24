@@ -4,6 +4,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
+    "immutable": "^3.8.2",
     "material-ui": "v1.0.0-beta.36",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

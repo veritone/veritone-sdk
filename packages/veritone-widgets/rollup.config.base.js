@@ -61,7 +61,10 @@ export default {
       // modulesOnly: true
     }),
     commonjs({
-      include: ['../../node_modules/**', 'node_modules/**', '../**']
+      include: ['../../node_modules/**', 'node_modules/**', '../**'],
+      namedExports: {
+        '../../node_modules/immutable/dist/immutable.js': [ 'fromJS']
+      }
     }),
 
     postcss({
