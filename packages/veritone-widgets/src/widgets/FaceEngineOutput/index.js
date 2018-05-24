@@ -142,6 +142,7 @@ class FaceEngineOutputContainer extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClicked: func,
+    fetchLibraries: func,
     isFetchingEngineResults: bool,
     isFetchingEntities: bool,
     isFetchingLibraries: bool,
@@ -153,8 +154,7 @@ class FaceEngineOutputContainer extends Component {
     dialogOpen: false,
     newEntity: {
       libraryId: '',
-      name: '',
-      profileImageUrl: ''
+      name: ''
     }
   };
 
@@ -195,9 +195,12 @@ class FaceEngineOutputContainer extends Component {
   }
 
   handleAddNewEntity = (currentlyEditedFace) => {
-    this.props.fetchLibraries({
-      libraryType: 'people'
-    });
+    if (!this.props.libraries.length) {
+      this.props.fetchLibraries({
+        libraryType: 'people'
+      });
+    }
+
     this.openDialog();
     this.setState({
       currentlyEditedFace
@@ -232,7 +235,18 @@ class FaceEngineOutputContainer extends Component {
   }
 
   closeDialog = () => {
-    this.setState({ dialogOpen: false });
+    this.setState({
+      dialogOpen: false,
+    });
+  }
+
+  clearNewEntityForm = () => {
+    this.setState(prevState => ({
+      newEntity: {
+        libraryId: '',
+        name: ''
+      }
+    }));
   }
 
   saveNewEntity = () => {
@@ -249,7 +263,7 @@ class FaceEngineOutputContainer extends Component {
     return this.closeDialog();
   }
 
-  renderNewEntityModal = () => {
+  renderAddNewEntityModal = () => {
     const { isFetchingLibraries, libraries } = this.props;
     return (
       <Dialog
@@ -257,6 +271,7 @@ class FaceEngineOutputContainer extends Component {
         onClose={this.closeDialog}
         aria-labelledby="new-entity-title"
         disableBackdropClick
+        onExited={this.clearNewEntityForm}
       >
         <DialogTitle id="new-entity-title">Add New</DialogTitle>
         <DialogContent>
@@ -277,10 +292,7 @@ class FaceEngineOutputContainer extends Component {
             id="select-library"
             select
             label="Choose Library"
-            value={this.state.newEntity.libraryId || 'Loading...'}
-              // libraries.length
-              //   ? (this.state.newEntity.library || head(libraries).id)
-              //   : isFetchingLibraries ? 'Loading...' : ''
+            value={this.state.newEntity.libraryId || (libraries.length ? libraries[0].id : 'Loading...')}
             onChange={this.handleNewEntityLibraryChange}
             margin="dense"
             fullWidth
@@ -352,7 +364,7 @@ class FaceEngineOutputContainer extends Component {
       'entitySearchResults'
     ]);
 
-    if (this.props.isFetchingEngineResults || this.props.isFetchingLibraryEntities) {
+    if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
       return null;
     }
 
@@ -362,10 +374,10 @@ class FaceEngineOutputContainer extends Component {
           {...this.props.faces}
           {...faceEngineProps}
           onAddNewEntity={this.handleAddNewEntity}
-          onSearchForEntities={debounce(this.handleSearchEntities, 300)}
+          onSearchForEntities={debounce(this.handleSearchEntities, 400)}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
         />
-        {this.renderNewEntityModal()}
+        {this.renderAddNewEntityModal()}
       </Fragment>
     );
   }
