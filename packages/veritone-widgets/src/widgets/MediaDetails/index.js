@@ -297,6 +297,17 @@ class MediaDetailsWidget extends React.Component {
     return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
+  isEditableEngineResults = () => {
+    if (!get(this.props, 'selectedEngineCategory.editable')) {
+      return false;
+    }
+    if (get(this.props, 'selectedEngineCategory.categoryType') === 'transcript') {
+      const isPublicMedia = get(this.props, 'tdo.security.global', false);
+      return !isPublicMedia;
+    }
+    return true;
+  };
+
   toggleEditMode = () => {
     this.props.toggleEditMode(this.props._widgetId);
   };
@@ -515,7 +526,7 @@ class MediaDetailsWidget extends React.Component {
                           }
                         />
                       </div>
-                      {selectedEngineCategory.editable && (
+                      {this.isEditableEngineResults() && (
                         <Button
                           variant="raised"
                           color="primary"
