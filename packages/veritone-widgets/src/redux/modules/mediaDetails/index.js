@@ -769,7 +769,7 @@ export const saveAssetDataFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createFileAssetSuccess = (assetId, widgetId) => ({
+export const createFileAssetSuccess = (widgetId, assetId) => ({
   type: CREATE_FILE_ASSET_SUCCESS,
   payload: {
     assetId

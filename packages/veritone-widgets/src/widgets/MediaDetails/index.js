@@ -239,7 +239,8 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
-    selectedTabValue: 'mediaDetails'
+    selectedTabValue: 'mediaDetails',
+    showEditBtn: true
   };
 
   componentWillMount() {
@@ -249,6 +250,16 @@ class MediaDetailsWidget extends React.Component {
   componentDidMount() {
     this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
     this.props.fetchApplications();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
+      this.handleShowEditBtn(true);
+    }
+  }
+
+  handleShowEditBtn = (boolVal) => {
+    this.setState({ showEditBtn: boolVal });
   }
 
   mediaPlayerRef = ref => {
@@ -521,7 +532,8 @@ class MediaDetailsWidget extends React.Component {
                           }
                         />
                       </div>
-                      {selectedEngineCategory.editable && (
+                      {selectedEngineCategory.editable &&
+                      this.state.showEditBtn && (
                         <Button
                           variant="raised"
                           color="primary"
@@ -643,7 +655,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         editMode={isEditModeEnabled}
-                        toggleEditMode={this.props.toggleEditMode}
+                        allowEdit={this.handleShowEditBtn}
                       />
                     )}
                   {selectedEngineCategory &&

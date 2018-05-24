@@ -35,12 +35,14 @@ class FacesByFrame extends Component {
   };
 
   render() {
+    console.log('*'.repeat(100))
     const {
       recognizedEntityObjectMap,
       framesBySeconds,
       currentMediaPlayerTime,
       onSelectEntity
     } = this.props;
+    console.log('framesBySeconds:', framesBySeconds)
 
     return (
       <div>

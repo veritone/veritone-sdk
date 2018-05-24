@@ -160,9 +160,9 @@ class FaceDetectionBox extends Component {
             </span>
             {this.state.editFaceEntity ? (
               <Downshift
-                isOpen={this.state.dropdownOpen}
+                // isOpen={this.state.dropdownOpen}
                 // inputValue={styles.entityName}
-                itemToString={this.itemToString}
+                // itemToString={this.itemToString}
                 onSelect={this.handleEntitySelect}
                 onInputValueChange={onSearchForEntities}
               >
@@ -170,7 +170,7 @@ class FaceDetectionBox extends Component {
                   getInputProps,
                   getItemProps,
                   isOpen,
-                  inputValue,
+                  // inputValue,
                   selectedItem,
                   highlightedIndex
                 }) => (
@@ -178,7 +178,7 @@ class FaceDetectionBox extends Component {
                     <Target>
                       <Input
                         {...getInputProps({
-                          value: inputValue,
+                          // value: inputValue,
                           placeholder: 'Unkown',
                           autoFocus: true,
                           className: styles.entitySearchInput
@@ -205,7 +205,6 @@ class FaceDetectionBox extends Component {
                                 color="primary"
                                 className={styles.addNewEntityButton}
                                 onClick={this.handleAddNewEntity(face)}
-                                // onClick={this.handleAddNewEntity}
                               >
                                 ADD NEW
                               </Button>

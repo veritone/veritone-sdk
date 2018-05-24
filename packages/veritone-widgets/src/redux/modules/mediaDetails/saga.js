@@ -605,7 +605,7 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
       }
     }).then(r => {
       return r.json();
-    });
+    })
   };
 
   let response;
@@ -614,6 +614,7 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   } catch (error) {
     return yield put(createFileAssetFailure(widgetId, { error }));
   }
+
   if (!isEmpty(response.errors)) {
     return yield put(createFileAssetFailure(widgetId, { error: response.errors.join(', \n') }));
   }
@@ -1092,7 +1093,7 @@ function* watchCreateFileAssetSuccess() {
   const oauthToken = yield select(authModule.selectOAuthToken);
   const token = sessionToken || oauthToken;
 
-  const crateJobQuery = `mutation createJob($tdoId: ID!) {
+  const createJobQuery = `mutation createJob($tdoId: ID!) {
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
@@ -1118,7 +1119,7 @@ function* watchCreateFileAssetSuccess() {
         const tdo = yield select(getTdo, widgetId);
         const response = yield call(callGraphQLApi, {
           endpoint: graphQLUrl,
-          query: crateJobQuery,
+          query: createJobQuery,
           variables: { tdoId: tdo.id },
           token
         });
