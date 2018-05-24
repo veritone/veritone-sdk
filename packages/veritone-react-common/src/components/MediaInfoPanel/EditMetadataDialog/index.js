@@ -216,15 +216,11 @@ class EditMetadataDialog extends Component {
                   </div>
                   <div className={styles.programLiveImageContainer}>
                     <img className={styles.programLiveImage}
-                      src={
-                        get(this.state, 'programLiveImage.length') ?
-                          this.state.programLiveImage :
-                          "//static.veritone.com/veritone-ui/default-nullstate.svg"
-                      }
+                      src={ this.state.programLiveImage || "//static.veritone.com/veritone-ui/default-nullstate.svg" }
                     />
                     <div className={styles.imageOverlay}>
                       <EditIcon classes={{root:styles.editProgramLiveImageIcon}} className="icon-mode_edit2" onClick={this.handleStartPickFiles('programLiveImage')}/>
-                      { !!get(this.state, 'programLiveImage.length') && <DeleteIcon classes={{root:styles.editProgramLiveImageIcon}} className="icon-trashcan" onClick={this.handleRemoveImage('programLiveImage')}/>}
+                      { this.state.programLiveImage && <DeleteIcon classes={{root:styles.editProgramLiveImageIcon}} className="icon-trashcan" onClick={this.handleRemoveImage('programLiveImage')}/>}
                     </div>
                   </div>
                 </div>
@@ -234,15 +230,11 @@ class EditMetadataDialog extends Component {
                   <div className={styles.programImageLabel}>Program Image</div>
                   <div className={styles.programImageContainer}>
                     <img className={styles.programImage}
-                      src={ 
-                        get(this.state, 'programImage.length') ?
-                          this.state.programImage :
-                          "//static.veritone.com/veritone-ui/program_image_null.svg"
-                      }
+                      src={ this.state.programImage || "//static.veritone.com/veritone-ui/program_image_null.svg" }
                     />
                     <div className={styles.imageOverlay}>
                       <EditIcon classes={{root:styles.editProgramImageIcon}} className="icon-mode_edit2" onClick={this.handleStartPickFiles('programImage')}/>
-                      { !!get(this.state, 'programImage.length') && <DeleteIcon classes={{root:styles.editProgramImageIcon}} onClick={this.handleRemoveImage('programImage')}/> }
+                      { this.state.programImage && <DeleteIcon classes={{root:styles.editProgramImageIcon}} onClick={this.handleRemoveImage('programImage')}/>}
                     </div>
                   </div>
                 </div>
