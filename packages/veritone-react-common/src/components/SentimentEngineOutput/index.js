@@ -310,8 +310,9 @@ export default class SentimentEngineOutput extends Component {
               />
 
               {/* Draw media player time */}
-              {referenceValue > 0 &&
-                <ReferenceLine x={referenceValue} stroke="orange" />}
+              {referenceValue > 0 && (
+                <ReferenceLine x={referenceValue} stroke="orange" />
+              )}
             </AreaChart>
           </ResponsiveContainer>
         </div>

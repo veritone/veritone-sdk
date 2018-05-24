@@ -278,10 +278,7 @@ class MediaInfoPanel extends Component {
                     </IconButton>
                   </div>
                 </Target>
-                <Popper
-                  placement="bottom-end"
-                  eventsEnabled={isMenuOpen}
-                >
+                <Popper placement="bottom-end" eventsEnabled={isMenuOpen}>
                   <ClickAwayListener onClickAway={this.onMenuClose}>
                     <Grow
                       in={isMenuOpen}
@@ -345,7 +342,7 @@ class MediaInfoPanel extends Component {
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
-                {get(this.props.tdo, 'details.veritoneFile.filename', '')}
+                {get(this.props.tdo, 'details.veritoneFile.filename', 'No Filename')}
               </div>
             </div>
             {this.props.tdo.details.date && (
@@ -356,15 +353,16 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Duration</div>
-              <div className={styles.infoFieldData}>
-                {this.differenceToHhMmSs(
-                  this.props.tdo.startDateTime,
-                  this.props.tdo.stopDateTime
-                )}
-              </div>
-            </div>
+            {this.props.tdo.startDateTime && this.props.tdo.stopDateTime &&
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Duration</div>
+                <div className={styles.infoFieldData}>
+                  {this.differenceToHhMmSs(
+                    this.props.tdo.startDateTime,
+                    this.props.tdo.stopDateTime
+                  )}
+                </div>
+              </div>}
             {this.props.engineCategories &&
               this.props.engineCategories.length && (
                 <div className={styles.infoField}>
