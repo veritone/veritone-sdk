@@ -307,11 +307,33 @@ class MediaDetailsWidget extends React.Component {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
     }
-    if (get(this.props, 'selectedEngineCategory.categoryType') === 'transcript') {
-      const isPublicMedia = get(this.props, 'tdo.security.global', false);
-      return !isPublicMedia;
+    return !this.isMediaPublic() && this.isOwnMedia();
+  };
+
+  isMediaPublic = () => {
+    if (!get(this.props, 'tdo.security.global', false)) {
+      return false;
+    }
+    // check flag explicitly set to false
+    if (get(this.props, 'tdo.isPublic') === false) {
+      return false;
     }
     return true;
+  };
+
+  isOwnMedia = () => {
+    if (get(this.props, 'tdo.isOwn') === true) {
+      return true;
+    }
+    const applicationIds = get(this.props.kvp, 'applicationIds', []);
+    const tdoApplicationId = get(this.props, 'tdo.applicationId');
+    if (
+      tdoApplicationId &&
+      applicationIds.includes(tdoApplicationId)
+    ) {
+      return true;
+    }
+    return false;
   };
 
   toggleEditMode = () => {
