@@ -1,6 +1,6 @@
 import React from 'react';
-import LibCheckbox from 'material-ui/Checkbox';
-import { FormControlLabel } from 'material-ui/Form';
+import LibCheckbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 // based on https://github.com/erikras/redux-form-material-ui/blob/5.0/src/Checkbox.js
 const Checkbox = ({

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { shape, string, number, func, arrayOf } from 'prop-types';
 import classNames from 'classnames';
-import Button from 'material-ui/Button';
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { startCase } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -103,16 +104,7 @@ class EntityInformation extends Component {
                       <div
                         onClick={this.handleFaceOccurrenceClicked(timeSlot)}
                         className={styles.faceOccurrence}
-                        key={
-                          'face-match-' +
-                          entity.entityId +
-                          '-' +
-                          timeSlot.startTimeMs +
-                          '-' +
-                          timeSlot.stopTimeMs +
-                          '-' +
-                          timeSlot.originalImage
-                        }
+                        key={`face-match-${entity.entityId}-${timeSlot.startTimeMs}-${timeSlot.stopTimeMs}-${timeSlot.originalImage}`}
                       >
                         <span className={styles.faceOccurrenceTimestamp}>
                           {msToReadableString(timeSlot.startTimeMs)} -{' '}
@@ -132,9 +124,7 @@ class EntityInformation extends Component {
                   Object.keys(entity.jsondata).map((objKey, index) => {
                     return (
                       <div
-                        key={
-                          'entity-' + entity.entityId + '-jsondata-' + objKey
-                        }
+                        key={`entity-${entity.entityId}-jsondata-${objKey}`}
                         className={styles.jsondataItem}
                       >
                         <div className={styles.metadataLabel}>

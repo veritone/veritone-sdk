@@ -1,10 +1,13 @@
 ## Quick Start
+As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. 
+
+### Widgets (framework agnostic)
 ```javascript
-import { VeritoneApp } from 'veritone-widgets'
+import { VeritoneApp, OAuthLoginButtonWidget, AppBarWidget } from 'veritone-widgets'
 const app = VeritoneApp();
 
 // a "log in with veritone" button
-const oauthButton = new OAuthLoginButton({
+const oauthButton = new OAuthLoginButtonWidget({
   // the ID of an existing element in your document where the button will appear
   elId: 'login-button-widget',
   // the ID of your Veritone application (found in Developer App)
@@ -26,8 +29,19 @@ const appBar = new AppBarWidget({
   appSwitcher: true
 });
 ```
+### React Components
+```javascript
+import { OAuthLoginButton } from 'veritone-widgets'
 
-## Use
+render(
+  <OAuthLoginButton
+    clientId="my-client-id"
+    redirectUri="https://my-app.com/handle_oauth_callback"
+  />
+)
+```
+
+## Use (widgets)
 ### 1. Create an instance of VeritoneApp
 `VeritoneApp` is a container for all the widgets and widget data in an app. Before using any widgets, you need to import and call it. Typically this will be done when your application is loaded and initialized.
 
@@ -68,19 +82,19 @@ _Note_: Unless you are handling the OAuth flow on your own and providing the tok
 The actual code you write to use widgets will vary based on your framework of choice, but in general, it should be as follows.
 
 ```javascript
-// assuming VeritoneApp has already been initailized as described earlier, and given a document like:
+// assuming VeritoneApp has already been initialized as described earlier, and given a document like:
 <body>
   ...
   <div id="login-button-widget" />
 </body>
 
 // you can render the login button to the document like this:
-import { OAuthLoginButton } from 'veritone-widgets'
-const oauthButton = new OAuthLoginButton({
+import { OAuthLoginButtonWidget } from 'veritone-widgets'
+const oauthButton = new OAuthLoginButtonWidget({
   // the ID of an existing element in your document where the button will appear
   elId: 'login-button-widget',
   // the ID of your Veritone application (found in Developer App)
-  clientId: 'my-client-id'
+  clientId: 'my-client-id',
   // the route in your app that will handle OAuth responses (more details below)
   redirectUri: 'https://my-app.com/handle_oauth_callback',
   // optional callbacks to retrieve the OAuth token for using outside of VeritoneApp:
@@ -89,7 +103,7 @@ const oauthButton = new OAuthLoginButton({
 });
 ```
 
-When `new OAuthLoginButton({ ... })` runs, the widget will appear on your page.
+When `new OAuthLoginButtonWidget({ ... })` runs, the widget will appear on your page.
 
 #### Example: Using the AppBar widget
 All Veritone apps should also include the AppBar widget.
@@ -100,7 +114,7 @@ All Veritone apps should also include the AppBar widget.
   ...
 </body>
 
-import { AppBar } from 'veritone-widgets'
+import { AppBarWidget } from 'veritone-widgets'
 const appBar = new AppBarWidget({
   elId: 'appBar-widget',
   title: 'My App',
@@ -117,13 +131,13 @@ For environments that do not support javascript module imports, widgets can also
 <body>
   <div id="appBar-widget"></div>
 
-  <script src="https://unpkg.com/veritone-widgets@^4/dist/umd/VeritoneApp.js"></script>
-  <script src="https://unpkg.com/veritone-widgets@^4/dist/umd/AppBar.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^5/dist/umd/VeritoneApp.js"></script>
+  <script src="https://unpkg.com/veritone-widgets@^5/dist/umd/AppBar.js"></script>
 
   <script>
-    const app = VeritoneApp();
+    const app = VeritoneApp.default();
 
-    const appBar = new AppBar({
+    const appBar = new AppBar.AppBarWidget({
       elId: 'appBar-widget',
       title: 'AppBar Widget',
       profileMenu: true,
@@ -143,7 +157,7 @@ Note that the OAuthLoginButton widget in the example above is being configured w
 Some widgets have methods which can be called on an instance of that widget. For example, the FilePicker widget has the methods `pick()` and `cancel()` to open and close the picker dialog, respectively.
 
 ```javascript
-this._picker = new FilePicker({
+this._picker = new FilePickerWidget({
   elId: 'file-picker-widget',
   accept: ['image/*'],
   multiple: true
@@ -166,7 +180,7 @@ In practice, a widget is just a wrapper around a React component. The easiest wa
 ### Destroying widgets
 To remove a widget, call `destroy()` on the instance
 ```javascript
-const oauthButton = new OAuthLoginButton({ ... });
+const oauthButton = new OAuthLoginButtonWidget({ ... });
 ...
 oauthButton.destroy();
 ```

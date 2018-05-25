@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Typography from 'material-ui/Typography';
+import Typography from '@material-ui/core/Typography';
 
-import { createMount } from 'material-ui/test-utils';
+import { createMount } from '@material-ui/core/test-utils';
 
 import SearchPill from './';
 

@@ -1,15 +1,14 @@
 import React, { Component, Fragment } from 'react';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import Icon from 'material-ui/Icon';
-import DeleteIcon from 'material-ui-icons/Delete';
-import EditIcon from 'material-ui-icons/Edit';
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle
-} from 'material-ui/Dialog';
-import TextField from 'material-ui/TextField';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
 import { shape, func, bool, string } from 'prop-types';
 import { get } from 'lodash';
 import { withStyles } from 'material-ui/styles';

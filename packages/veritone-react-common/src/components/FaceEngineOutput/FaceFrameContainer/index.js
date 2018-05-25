@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { number, string, arrayOf, shape, objectOf, func } from 'prop-types';
-import Icon from 'material-ui/Icon';
-import Button from 'material-ui/Button';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 import cx from 'classnames';
 
 import { msToReadableString } from 'helpers/time';
@@ -71,12 +71,7 @@ class FaceFrameContainer extends Component {
             {faceFrameEntities.map(entity => {
               return (
                 <RecognizedFaceMatch
-                  key={
-                    'frame-view-recognized-entity-' +
-                    entity.entityId +
-                    '-' +
-                    entity.confidence
-                  }
+                  key={`frame-view-recognized-entity-${entity.entityId}-${entity.confidence}`}
                   entity={recognizedEntityObjectMap[entity.entityId]}
                   confidence={entity.confidence}
                   onViewDetailsClick={onSelectEntity}

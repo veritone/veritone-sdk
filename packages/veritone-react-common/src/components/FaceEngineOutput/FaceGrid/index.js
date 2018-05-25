@@ -43,16 +43,7 @@ class FaceGrid extends Component {
     return faces.map(face => {
       return (
         <FaceDetectionBox
-          key={
-            'face-' +
-            face.startTimeMs +
-            '-' +
-            face.stopTimeMs +
-            '-' +
-            face.object.label +
-            '-' +
-            face.object.originalImage
-          }
+          key={`face-${face.startTimeMs}-${face.stopTimeMs}-${face.object.label}-${face.object.originalImage}`}
           face={face}
           enableEdit={this.props.enableEditMode}
           addNewEntity={this.props.onAddNewEntity}

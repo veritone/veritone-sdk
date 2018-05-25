@@ -1,7 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
 import { string, node, bool } from 'prop-types';
-import { FormControl, FormLabel } from 'material-ui/Form';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 import styles from './styles.scss';
 
 const LabeledInputGroup = ({ label, hasIconOffset, children }) => (

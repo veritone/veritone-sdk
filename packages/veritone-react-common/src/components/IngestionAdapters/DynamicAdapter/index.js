@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import TextField from 'material-ui/TextField';
-import { InputLabel } from 'material-ui/Input';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
 
-import { get, isArray, clone, startCase, toLower, includes } from 'lodash';
+import { get, isArray, cloneDeep, isUndefined, startCase, toLower, includes } from 'lodash';
 import { objectOf, any, func, arrayOf, string } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -42,15 +43,15 @@ class DynamicAdapter extends React.Component {
       fields.forEach(field => {
         if (field.name) {
           let propValue = get(this.props.configuration, field.name);
-          if (field.defaultValue) {
+          if (!isUndefined(propValue)) {
+            newState[field.name] = cloneDeep(propValue);
+          } else if (field.defaultValue) {
             newState[field.name] =
-              propValue ||
               (!includes(field.defaultValue, ',')
                 ? field.defaultValue
                 : field.defaultValue.split(','));
           } else if (field.defaultValues) {
-            newState[field.name] =
-              propValue || clone(field.defaultValues) || [];
+            newState[field.name] = cloneDeep(field.defaultValues) || [];
           }
         }
       });
@@ -269,8 +270,11 @@ export default {
       let fields = get(adapterStep, 'fields');
       if (fields) {
         fields.forEach(
-          field =>
-            (configuration[field.name] = ingestionTask.payload[field.name])
+          field => {
+            if (ingestionTask.payload && field.name) {
+              configuration[field.name] = ingestionTask.payload[field.name];
+            }
+          }
         );
       }
     }

@@ -3,8 +3,8 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import LocalCode from 'locale-code';
 
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -56,7 +56,7 @@ export default class TranslationEngineOutput extends Component {
     onScroll: func,
     onRerunProcess: func.isRequired,
     onEngineChange: func.isRequired,
-    onExpandClicked: func,
+    onExpandClick: func,
     onLanguageChanged: func,
 
     mediaLengthMs: number,
@@ -168,7 +168,7 @@ export default class TranslationEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       headerClassName
     } = this.props;
 
@@ -178,7 +178,7 @@ export default class TranslationEngineOutput extends Component {
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
-        onExpandClicked={onExpandClicked}
+        onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
         <Select
@@ -202,7 +202,7 @@ export default class TranslationEngineOutput extends Component {
               <MenuItem
                 value={languageInfo.language}
                 className={classNames(styles.language)}
-                key={'language-' + languageInfo.language}
+                key={`language-${languageInfo.language}`}
               >
                 {languageInfo.name || languageInfo.language}
               </MenuItem>

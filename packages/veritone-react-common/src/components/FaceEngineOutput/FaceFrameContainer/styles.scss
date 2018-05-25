@@ -3,7 +3,7 @@
 .frameContainer {
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
+  border: 1px solid $grey-4;
   padding: 20px;
   margin-bottom: 20px;
 }
@@ -24,7 +24,7 @@
   width: 80px;
   height: 80px;
   border-radius: 4px;
-  background-color: #e0e0e0;
+  background-color: $grey-4;
   margin-top: 20px;
 }
 

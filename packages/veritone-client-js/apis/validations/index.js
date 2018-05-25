@@ -1,5 +1,5 @@
 import validateRecording from './recording';
 
 export default {
-	recording: validateRecording
+  recording: validateRecording
 };

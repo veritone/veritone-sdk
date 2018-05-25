@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import { Manager, Target, Popper } from 'react-popper';
-import ClickAwayListener from 'material-ui/utils/ClickAwayListener';
-import Drawer from 'material-ui/Drawer';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Drawer from '@material-ui/core/Drawer';
 import { get } from 'lodash';
-import Grow from 'material-ui/transitions/Grow';
-import IconButton from 'material-ui/IconButton';
-import Icon from 'material-ui/Icon';
-import { MenuItem, MenuList } from 'material-ui/Menu';
-import MoreVertIcon from 'material-ui-icons/MoreVert';
-import Paper from 'material-ui/Paper';
+import Grow from '@material-ui/core/Grow';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Paper from '@material-ui/core/Paper';
 import { func, arrayOf, shape, string, bool } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
@@ -358,7 +359,7 @@ class MediaInfoPanel extends Component {
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
-                {get(tdo, 'details.veritoneFile.filename', '')}
+                {get(tdo, 'details.veritoneFile.filename', 'No Filename')}
               </div>
             </div>
             {tdo.details.date && (
@@ -369,12 +370,16 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            <div className={styles.infoField}>
-              <div className={styles.infoFieldLabel}>Duration</div>
-              <div className={styles.infoFieldData}>
-                {this.differenceToHhMmSs(tdo.startDateTime, tdo.stopDateTime)}
-              </div>
-            </div>
+            {tdo.startDateTime && tdo.stopDateTime &&
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Duration</div>
+                <div className={styles.infoFieldData}>
+                  {this.differenceToHhMmSs(
+                    tdo.startDateTime,
+                    tdo.stopDateTime
+                  )}
+                </div>
+              </div>}
             {this.props.engineCategories &&
               this.props.engineCategories.length && (
                 <div className={styles.infoField}>

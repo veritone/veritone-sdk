@@ -31,7 +31,7 @@ export default class FingerprintEngineOutput extends Component {
     entities: arrayOf(
       shape({
         name: string,
-        entityId: string,
+        entityId: string.isRequired,
         libraryId: string,
         description: string,
         profileImageUrl: string,
@@ -42,7 +42,7 @@ export default class FingerprintEngineOutput extends Component {
     libraries: arrayOf(
       shape({
         name: string,
-        libraryId: string,
+        libraryId: string.isRequired,
         description: string
       })
     ),
@@ -56,7 +56,7 @@ export default class FingerprintEngineOutput extends Component {
     ),
     selectedEngineId: string,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
 
     className: string,
     headerClassName: string,
@@ -127,7 +127,7 @@ export default class FingerprintEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       headerClassName
     } = this.props;
 
@@ -137,7 +137,7 @@ export default class FingerprintEngineOutput extends Component {
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
-        onExpandClicked={onExpandClicked}
+        onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       />
     );

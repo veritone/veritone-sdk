@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import IconButton from 'material-ui/IconButton';
-import Icon from 'material-ui/Icon';
-import Tooltip from 'material-ui/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import Tooltip from '@material-ui/core/Tooltip';
 import { string, func } from 'prop-types';
 import styles from './styles.scss';
 

@@ -60,7 +60,7 @@ export default class EntityStreamData extends Component {
               label={label}
               data={entry}
               onClick={this.handleOnClick}
-              key={'entity-match-' + entryStartTime + entryStopTime}
+              key={`entity-match-${entryStartTime}-${entryStopTime}`}
               className={classNames(styles.textButton)}
               highlight={active}
             />

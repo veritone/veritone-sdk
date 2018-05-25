@@ -22,7 +22,7 @@ export default class NoDataSegment extends Component {
   };
 
   render() {
-    let {
+    const {
       overview,
       startTimeMs,
       stopTimeMs,
