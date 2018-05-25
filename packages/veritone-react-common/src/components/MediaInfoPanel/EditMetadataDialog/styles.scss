@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .editMetadataDialogPaper {
   min-width: 640px;
@@ -32,18 +33,16 @@
   .textInput {
     margin-top: 20px;
     color: $dark-black;
-    line-height: 16px;
 
     input {
+      @include mui-text('body1');
       font-family: Roboto;
-      font-size: 14px;
     }
 
     label {
+      @include mui-text('caption');
       color: $light-black;
       font-family: Roboto;
-      font-size: 12px;
-      font-weight: 400;
       transform: none;
     }
   }
@@ -60,12 +59,11 @@
       align-content: center;
 
       .programImageLabel {
+        @include mui-text('body1');
         text-align: center;
         height: 16px;
         color: $dark-black;
         font-family: Roboto;
-        font-size: 14px;
-        line-height: 16px;
       }
 
       .programLiveImageContainer {
