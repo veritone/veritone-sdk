@@ -110,7 +110,7 @@ export default class TranslationEngineOutput extends Component {
           languageName = languageCode;
         }
       }
-      
+
       translatedLanguagesInfo.push({
         language: languageCode,
         name: languageName

@@ -926,13 +926,9 @@ function* watchUpdateTdoRequest() {
     }
     if (!isEmpty(get(tdoDataToUpdate, 'veritoneProgram'))) {
       detailsToSave.veritoneProgram = {
-        ...detailsToSave.veritoneProgram,
-        programImage:
-          get(tdoDataToUpdate, 'veritoneProgram.programImage') ||
-          get(metaData, 'veritoneProgram.programImage'),
-        programLiveImage:
-          get(tdoDataToUpdate, 'veritoneProgram.programLiveImage') ||
-          get(metaData, 'veritoneProgram.programLiveImage')
+        ...get(metaData, 'veritoneProgram'),
+        programImage: get(tdoDataToUpdate, 'veritoneProgram.programImage'),
+        programLiveImage: get(tdoDataToUpdate, 'veritoneProgram.programLiveImage')
       };
     }
     if (get(tdoDataToUpdate, 'tags.length')) {

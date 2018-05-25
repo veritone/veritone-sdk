@@ -10,17 +10,63 @@ import Icon from 'material-ui/Icon';
 import { MenuItem, MenuList } from 'material-ui/Menu';
 import MoreVertIcon from 'material-ui-icons/MoreVert';
 import Paper from 'material-ui/Paper';
-import { objectOf, func, arrayOf, any, shape, string } from 'prop-types';
+import { func, arrayOf, shape, string, bool } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
   static propTypes = {
-    tdo: objectOf(any).isRequired,
-    engineCategories: arrayOf(any).isRequired,
+    tdo: shape({
+      applicationId: string,
+      details: shape({
+        veritoneProgram: shape({
+          programLiveImage: string,
+          programImage: string
+        }),
+        veritoneFile: shape({
+          filename: string
+        }),
+        veritoneCustom: shape({
+          source: string
+        })
+      }),
+      id: string,
+      primaryAsset: shape({
+        id: string,
+        uri: string
+      }),
+      security: shape({
+        global: bool
+      }),
+      startDateTime: string,
+      stopDateTime: string
+    }).isRequired,
+    engineCategories: arrayOf(
+      shape({
+        id: string,
+        editable: bool,
+        engines: arrayOf(
+          shape({
+            category: shape({
+              id: string,
+              editable: bool,
+              iconClass: string,
+              categoryType: string,
+              name: string
+            }),
+            name: string,
+            id: string,
+            status: string
+          })
+        )
+      })
+    ).isRequired,
     kvp: shape({
-      features: objectOf(any),
+      features: shape({
+        downloadMedia: string,
+        downloadPublicMedia: string
+      }),
       applicationIds: arrayOf(string)
     }).isRequired,
     contextMenuExtensions: shape({
@@ -222,8 +268,10 @@ class MediaInfoPanel extends Component {
       ...tdo.details,
       veritoneProgram: {
         ...tdo.details.veritoneProgram,
-        programImage: tdo.sourceImageUrl || tdo.details.veritoneProgram.programImage,
-        programLiveImage: tdo.thumbnailUrl || tdo.details.veritoneProgram.programLiveImage
+        programImage:
+          tdo.sourceImageUrl || tdo.details.veritoneProgram.programImage,
+        programLiveImage:
+          tdo.thumbnailUrl || tdo.details.veritoneProgram.programLiveImage
       }
     };
 
@@ -246,10 +294,7 @@ class MediaInfoPanel extends Component {
                     </IconButton>
                   </div>
                 </Target>
-                <Popper
-                  placement="bottom-end"
-                  eventsEnabled={isMenuOpen}
-                >
+                <Popper placement="bottom-end" eventsEnabled={isMenuOpen}>
                   <ClickAwayListener onClickAway={this.onMenuClose}>
                     <Grow
                       in={isMenuOpen}
@@ -327,10 +372,7 @@ class MediaInfoPanel extends Component {
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Duration</div>
               <div className={styles.infoFieldData}>
-                {this.differenceToHhMmSs(
-                  tdo.startDateTime,
-                  tdo.stopDateTime
-                )}
+                {this.differenceToHhMmSs(tdo.startDateTime, tdo.stopDateTime)}
               </div>
             </div>
             {this.props.engineCategories &&
@@ -364,51 +406,23 @@ class MediaInfoPanel extends Component {
             <div className={styles.programImagesSection}>
               <div>
                 Program Live Image
-                {get(
-                  tdo,
-                  'thumbnailUrl.length',
-                  0
-                ) > 0 && (
-                  <img
-                    className={styles.programLiveImage}
-                    src={
-                      tdo.thumbnailUrl
-                    }
-                  />
-                )}
-                {get(
-                  tdo,
-                  'thumbnailUrl.length',
-                  0
-                ) === 0 && (
-                  <img
-                    className={styles.programLiveImage}
-                    src="//static.veritone.com/veritone-ui/default-nullstate.svg"
-                  />
-                )}
+                <img
+                  className={styles.programLiveImage}
+                  src={
+                    tdo.thumbnailUrl ||
+                    '//static.veritone.com/veritone-ui/default-nullstate.svg'
+                  }
+                />
               </div>
               <div>
                 Program Image
-                {get(
-                  tdo,
-                  'sourceImageUrl.length',
-                  0
-                ) > 0 && (
-                  <img
-                    className={styles.programImage}
-                    src={tdo.sourceImageUrl}
-                  />
-                )}
-                {get(
-                  tdo,
-                  'sourceImageUrl.length',
-                  0
-                ) === 0 && (
-                  <img
-                    className={styles.programImage}
-                    src="//static.veritone.com/veritone-ui/program_image_null.svg"
-                  />
-                )}
+                <img
+                  className={styles.programImage}
+                  src={
+                    tdo.sourceImageUrl ||
+                    '//static.veritone.com/veritone-ui/program_image_null.svg'
+                  }
+                />
               </div>
             </div>
           </Paper>
