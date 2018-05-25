@@ -4,20 +4,19 @@ import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
 import { createLogger } from 'redux-logger';
 import { storiesOf } from '@storybook/react';
-import { InputLabel, InputAdornment } from 'material-ui/Input';
-import {
-  FormHelperText,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  FormGroup
-} from 'material-ui/Form';
-import Radio from 'material-ui/Radio';
-import { MenuItem } from 'material-ui/Menu';
-import Visibility from 'material-ui-icons/Visibility';
-import InfoIcon from 'material-ui-icons/Info';
-import IconButton from 'material-ui/IconButton';
-import Tooltip from 'material-ui/Tooltip';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Radio from '@material-ui/core/Radio';
+import MenuItem from '@material-ui/core/MenuItem';
+import Visibility from '@material-ui/icons/Visibility';
+import InfoIcon from '@material-ui/icons/Info';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { defaultIntervals } from 'helpers/date';
 import TextField from './TextField';

@@ -1,8 +1,9 @@
 import React from 'react';
 import cx from 'classnames';
 import { objectOf, any, func } from 'prop-types';
-import { MenuItem } from 'material-ui/Menu';
-import { ListItemIcon, ListItemText } from 'material-ui/List';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import styles from './styles.scss';
 

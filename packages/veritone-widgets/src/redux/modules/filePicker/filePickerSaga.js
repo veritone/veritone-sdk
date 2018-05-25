@@ -15,7 +15,7 @@ const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
-import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
+import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));

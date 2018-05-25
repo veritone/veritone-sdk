@@ -19,6 +19,7 @@ This allows redux-common to use more than one version of the API.
 
 * *Required change in user code*: config.apiRoot must not specify the api version.
 
+
 > Previously: apiRoot: 'https://api.veritone.com/v1'
 
 > Now: apiRoot: 'https://api.veritone.com‘
@@ -49,3 +50,7 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.2.0
 * The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
+
+## 3.3.0
+* Bumped React and React DOM to 16.3.0
+* Add `promiseMiddleware`, a middleware for promisifying Redux actions.

@@ -1,13 +1,13 @@
 import React from 'react';
 import cx from 'classnames';
-import IconButton from 'material-ui/IconButton';
-import FirstPageIcon from 'material-ui-icons/FirstPage';
-import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
-import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
-import LastPageIcon from 'material-ui-icons/LastPage';
-import { TableCell } from 'material-ui/Table';
-import SelectInput from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import TableCell from '@material-ui/core/TableCell';
+import SelectInput from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { func, number } from 'prop-types';
 import RefreshButton from 'components/RefreshButton';

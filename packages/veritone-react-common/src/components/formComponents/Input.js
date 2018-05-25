@@ -1,5 +1,5 @@
 import React from 'react';
-import LibInput from 'material-ui/Input';
+import LibInput from '@material-ui/core/Input';
 
 /* eslint-disable react/prop-types */
 const Input = ({ meta, input, ...props }) => {
