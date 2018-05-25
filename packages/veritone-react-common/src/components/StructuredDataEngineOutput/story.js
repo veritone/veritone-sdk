@@ -1,6 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { boolean } from '@storybook/addon-knobs/react';
+import EngineOutputNullState from '../EngineOutputNullState';
+
 import styles from './story.styles.scss';
 import StructuredDataEngineOutput from './';
 
@@ -24,6 +27,15 @@ storiesOf('StructuredDataEngineOutput', module).add('Base', () => {
       engines={engines}
       selectedEngineId={'engineOfInterest'}
       onEngineChange={action('on-engine-selected')}
+      outputNullState={
+        boolean('showNullState') && (
+          <EngineOutputNullState
+            engineStatus="failed"
+            engineName="fakeEngine"
+            onRunProcess={action('Run Process')}
+          />
+        )
+      }
     />
   );
 });

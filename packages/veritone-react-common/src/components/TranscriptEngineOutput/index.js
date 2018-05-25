@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
 import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
@@ -59,7 +59,8 @@ export default class TranscriptEngineOutput extends Component {
     estimatedDisplayTimeMs: number,
 
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -175,25 +176,28 @@ export default class TranscriptEngineOutput extends Component {
       estimatedDisplayTimeMs,
       contentClassName,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      outputNullState
     } = this.props;
 
     return (
-      <div className={classNames(styles.content)}>
-        <TranscriptContent
-          data={data}
-          editMode={editMode}
-          overview={this.state.overview}
-          mediaPlayerTimeMs={mediaPlayerTimeMs}
-          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-          estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-          mediaLengthMs={mediaLengthMs}
-          neglectableTimeMs={neglectableTimeMs}
-          onClick={onClick}
-          onScroll={onScroll}
-          className={classNames(contentClassName)}
-        />
-      </div>
+      outputNullState || (
+        <div className={classNames(styles.content)}>
+          <TranscriptContent
+            data={data}
+            editMode={editMode}
+            overview={this.state.overview}
+            mediaPlayerTimeMs={mediaPlayerTimeMs}
+            mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+            estimatedDisplayTimeMs={estimatedDisplayTimeMs}
+            mediaLengthMs={mediaLengthMs}
+            neglectableTimeMs={neglectableTimeMs}
+            onClick={onClick}
+            onScroll={onScroll}
+            className={classNames(contentClassName)}
+          />
+        </div>
+      )
     );
   }
 

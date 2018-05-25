@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, any, func, shape } from 'prop-types';
+import { number, string, arrayOf, any, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
 import {
   ResponsiveContainer,
@@ -34,7 +34,8 @@ export default class SentimentEngineOutput extends Component {
     sentimentTicks: arrayOf(number),
     sentimentDomain: arrayOf(number),
     onClick: func,
-    onTimeScroll: func
+    onTimeScroll: func,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -327,7 +328,8 @@ export default class SentimentEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClick
+      onExpandClick,
+      outputNullState
     } = this.props;
 
     const extractedData = this.extractPropsData();
@@ -345,8 +347,9 @@ export default class SentimentEngineOutput extends Component {
               onExpandClick={onExpandClick}
             />
           )}
-        {this.renderSummary(extractedData.average)}
-        {this.renderChart(extractedData)}
+        {outputNullState}
+        {!outputNullState && this.renderSummary(extractedData.average)}
+        {!outputNullState && this.renderChart(extractedData)}
       </div>
     );
   }

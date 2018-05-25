@@ -7,7 +7,8 @@ import {
   string,
   objectOf,
   any,
-  func
+  func,
+  node
 } from 'prop-types';
 import { get } from 'lodash';
 import classNames from 'classnames';
@@ -48,7 +49,8 @@ class StructuredDataEngineOutput extends Component {
     onEngineChange: func,
     className: string,
     onExpandClick: func,
-    isExpandedMode: bool
+    isExpandedMode: bool,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -144,7 +146,8 @@ class StructuredDataEngineOutput extends Component {
       schemasById,
       selectedEngineId,
       onExpandClick,
-      isExpandedMode
+      isExpandedMode,
+      outputNullState
     } = this.props;
 
     const {
@@ -193,13 +196,14 @@ class StructuredDataEngineOutput extends Component {
             </Select>
           )}
         </EngineOutputHeader>
-        {schemasById[selectedSchemaId] &&
-          flattenStructuredData[selectedSchemaId] && (
-            <SDOTable
-              data={flattenStructuredData[selectedSchemaId]}
-              schema={schemasById[selectedSchemaId].definition.properties}
-            />
-          )}
+        {outputNullState ||
+          (schemasById[selectedSchemaId] &&
+            flattenStructuredData[selectedSchemaId] && (
+              <SDOTable
+                data={flattenStructuredData[selectedSchemaId]}
+                schema={schemasById[selectedSchemaId].definition.properties}
+              />
+            ))}
       </div>
     );
   }
