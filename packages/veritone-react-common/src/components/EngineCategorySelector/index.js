@@ -46,7 +46,7 @@ export default class EngineCategorySelector extends Component {
                         enterDelay={1000}
                         leaveDelay={700}
                         classes={{
-                          root: styles.categoryTabTooltip
+                          tooltip: styles.categoryTabTooltip
                         }}
                       >
                         <Icon
@@ -57,7 +57,7 @@ export default class EngineCategorySelector extends Component {
                     }
                     classes={{
                       root: styles.engineCategoryTab,
-                      textColorInheritSelected:
+                      selected:
                         styles.engineCategoryTabSelectedColor
                     }}
                   />
