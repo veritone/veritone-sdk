@@ -72,7 +72,7 @@ class EngineOutputHeader extends Component {
                 getContentAnchorEl: null
               }}
             >
-              {engines.map((e) => {
+              {engines.map(e => {
                 return (
                   <MenuItem
                     key={`engine-menu-item-${e.id}`}

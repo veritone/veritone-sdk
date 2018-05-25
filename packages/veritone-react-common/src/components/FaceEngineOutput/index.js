@@ -388,62 +388,59 @@ class FaceEngineOutput extends Component {
                     <NoFacesFound />
                   ) : (
                     <div>
-                      {Object.keys(this.state.entitiesByLibrary).map(
-                        (key) => {
-                          return (
-                            <div key={`faces-by-libary-${key}`}>
-                              <div className={styles.libraryName}>
-                                <Icon
-                                  className={cx(
-                                    styles.libraryIcon,
-                                    'icon-library-app'
-                                  )}
-                                />
-                                <span>
-                                  Library:{' '}
-                                  <strong>
-                                    {
-                                      this.state.entitiesByLibrary[key]
-                                        .libraryName
-                                    }
-                                  </strong>
-                                </span>
-                              </div>
-                              <div className={styles.entityCountContainer}>
-                                {this.state.entitiesByLibrary[key].faces.map(
-                                  (face) => {
-                                    return (
-                                      <Chip
-                                        key={`face-${face.entityId}`}
-                                        className={styles.entityCountChip}
-                                        label={
-                                          <span>
-                                            {face.fullName}{' '}
-                                            <a>({face.count})</a>
-                                          </span>
-                                        }
-                                        avatar={
-                                          <Avatar
-                                            className={styles.faceAvatar}
-                                            src={
-                                              face.profileImage
-                                                ? face.profileImage
-                                                : noAvatar
-                                            }
-                                          />
-                                        }
-                                        onClick={this.handleEntitySelect(
-                                          face.entityId
-                                        )}
-                                      />
-                                    );
-                                  }
+                      {Object.keys(this.state.entitiesByLibrary).map(key => {
+                        return (
+                          <div key={`faces-by-libary-${key}`}>
+                            <div className={styles.libraryName}>
+                              <Icon
+                                className={cx(
+                                  styles.libraryIcon,
+                                  'icon-library-app'
                                 )}
-                              </div>
+                              />
+                              <span>
+                                Library:{' '}
+                                <strong>
+                                  {
+                                    this.state.entitiesByLibrary[key]
+                                      .libraryName
+                                  }
+                                </strong>
+                              </span>
                             </div>
-                          );
-                        }
-                      )}
+                            <div className={styles.entityCountContainer}>
+                              {this.state.entitiesByLibrary[key].faces.map(
+                                face => {
+                                  return (
+                                    <Chip
+                                      key={`face-${face.entityId}`}
+                                      className={styles.entityCountChip}
+                                      label={
+                                        <span>
+                                          {face.fullName} <a>({face.count})</a>
+                                        </span>
+                                      }
+                                      avatar={
+                                        <Avatar
+                                          className={styles.faceAvatar}
+                                          src={
+                                            face.profileImage
+                                              ? face.profileImage
+                                              : noAvatar
+                                          }
+                                        />
+                                      }
+                                      onClick={this.handleEntitySelect(
+                                        face.entityId
+                                      )}
+                                    />
+                                  );
+                                }
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

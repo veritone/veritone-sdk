@@ -22,9 +22,13 @@ const ObjectGroup = ({
         objectGroup.series.map(objectData => {
           return (
             <PillButton
-              key={`object-pill-${kebabCase(objectData.object.label)}-${objectData.startTimeMs}-${objectData.stopTimeMs}`}
+              key={`object-pill-${kebabCase(objectData.object.label)}-${
+                objectData.startTimeMs
+              }-${objectData.stopTimeMs}`}
               label={objectData.object.label}
-              info={`${msToReadableString(objectData.startTimeMs)} - ${msToReadableString(objectData.stopTimeMs)}`}
+              info={`${msToReadableString(
+                objectData.startTimeMs
+              )} - ${msToReadableString(objectData.stopTimeMs)}`}
               className={styles.objectPill}
               infoClassName={styles.objectAppearanceTime}
               highlight={
@@ -122,7 +126,9 @@ class ObjectDetectionEngineOutput extends Component {
           {data.map(objectGroup => {
             return (
               <ObjectGroup
-                key={`object-group-${objectGroup.sourceEngineId}-${objectGroup.taskId}-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
+                key={`object-group-${objectGroup.sourceEngineId}-${
+                  objectGroup.taskId
+                }-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
                 objectGroup={objectGroup}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onObjectClicked={this.handleObjectClick}

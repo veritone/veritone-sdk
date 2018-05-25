@@ -71,7 +71,9 @@ class FaceFrameContainer extends Component {
             {faceFrameEntities.map(entity => {
               return (
                 <RecognizedFaceMatch
-                  key={`frame-view-recognized-entity-${entity.entityId}-${entity.confidence}`}
+                  key={`frame-view-recognized-entity-${entity.entityId}-${
+                    entity.confidence
+                  }`}
                   entity={recognizedEntityObjectMap[entity.entityId]}
                   confidence={entity.confidence}
                   onViewDetailsClick={onSelectEntity}

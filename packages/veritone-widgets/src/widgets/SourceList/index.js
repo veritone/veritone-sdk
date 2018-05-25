@@ -11,16 +11,40 @@ class SourceListWidget extends React.Component {
     onSelectMenuItem: func.isRequired,
     onCreateSource: func.isRequired,
     onSelectSource: func.isRequired,
-    paginate: bool
+    paginate: bool,
+    fetchData: func
   };
 
-  render() {
-    const viewProps = omit(this.props, ['onCreateSource']);
+  constructor(props) {
+    super(props);
+    this.state = {
+      sources: props.sources
+    }
+  }
 
-    return !this.props.sources.length ? (
+  handleFetchData = ({ start, end }) => {
+    if (this.props.fetchData && !this.state.sources[end + 1]) {
+      this.props.fetchData(end - start + 1, end + 1);
+    }
+  }
+
+  updateSources = (sources) => {
+    this.setState({
+      sources
+    })
+  }
+
+  render() {
+    const viewProps = omit(this.props, ['onCreateSource', 'fetchData']);
+
+    return !this.state.sources.length ? (
       <SourceNullState onClick={this.props.onCreateSource} />
     ) : (
-      <SourceTileView {...viewProps} />
+      <SourceTileView
+        {...viewProps}
+        sources={this.state.sources}
+        onFetchData={this.handleFetchData}
+      />
     );
   }
 }

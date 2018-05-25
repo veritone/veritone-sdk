@@ -13,11 +13,13 @@ export default class SourceTileView extends React.Component {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
     onSelectSource: func,
     onSelectMenuItem: func,
-    paginate: bool
+    paginate: bool,
+    onFetchData: func
   };
 
   static defaultProps = {
-    onSelectMenuItem: noop
+    onSelectMenuItem: noop,
+    onFetchData: noop
   };
 
   getSourceData = i => {
@@ -49,8 +51,13 @@ export default class SourceTileView extends React.Component {
     const tableProps = omit(this.props, [
       'sources',
       'onSelectMenuItem',
-      'paginate'
+      'paginate',
+      'onFetchData'
     ]);
+
+    if (this.props.paginate) {
+      tableProps.onShowCellRange = this.props.onFetchData;
+    }
 
     return (
       <TableComp
