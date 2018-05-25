@@ -2,8 +2,11 @@ import { apiMiddleware } from 'redux-api-middleware-fixed';
 import { helpers } from 'veritone-redux-common';
 const { promiseMiddleware } = helpers;
 
+import thunkMiddleware from 'redux-thunk';
+
 export const getBaseMiddlewares = () => [
   apiMiddleware(fetch),
+  thunkMiddleware,
   promiseMiddleware.main()
 ];
 
