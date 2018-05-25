@@ -509,9 +509,9 @@ class MediaDetailsWidget extends React.Component {
               <Tabs
                 value={this.state.selectedTabValue}
                 onChange={this.handleTabChange}
-                indicatorColor="#f9a02c"
                 classes={{
-                  flexContainer: styles.mediaDetailsPageTabSelector
+                  flexContainer: styles.mediaDetailsPageTabSelector,
+                  indicator: styles.tabIndicator
                 }}
               >
                 <Tab
