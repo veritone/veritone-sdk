@@ -10,8 +10,8 @@ import {
 } from 'prop-types';
 import { get } from 'lodash';
 import classNames from 'classnames';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import EngineOutputHeader from '../EngineOutputHeader';
 import SDOTable from '../SDOTable';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';

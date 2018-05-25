@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Tooltip from 'material-ui/Tooltip';
+import Icon from '@material-ui/core/Icon';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Tooltip from '@material-ui/core/Tooltip';
 import { func, string, arrayOf, any } from 'prop-types';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';

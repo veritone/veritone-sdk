@@ -1,8 +1,8 @@
 import React from 'react';
 import { string } from 'prop-types';
 import { Field, FormSection, formValues } from 'redux-form';
-import { MenuItem } from 'material-ui/Menu';
-import { FormGroup } from 'material-ui/Form';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormGroup from '@material-ui/core/FormGroup';
 import pluralize from 'pluralize';
 
 import TextField from '../formComponents/TextField';

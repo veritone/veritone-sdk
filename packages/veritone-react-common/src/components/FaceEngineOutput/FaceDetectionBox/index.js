@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { shape, number, string, arrayOf, bool, func } from 'prop-types';
 import classNames from 'classnames';
 import Downshift from 'downshift';
-import Input from 'material-ui/Input';
-import Paper from 'material-ui/Paper';
-import Button from 'material-ui/Button';
-import { MenuItem } from 'material-ui/Menu';
-import Avatar from 'material-ui/Avatar';
+import Input from '@material-ui/core/Input';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import Avatar from '@material-ui/core/Avatar';
 import { Manager, Target, Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';

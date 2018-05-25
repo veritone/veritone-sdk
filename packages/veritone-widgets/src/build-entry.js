@@ -8,7 +8,7 @@ export OAuthLoginButton, {
 } from './widgets/OAuthLoginButton';
 export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
 export MediaDetailsPage from './widgets/MediaDetails';
-export Table, { FilePickerWidget } from './widgets/Table';
+export { TableWidget as Table, TableWidget } from './widgets/Table';
 export SourceManagement from './widgets/SourceManagementOverview';
 export SourceList from './widgets/SourceList';
 export SourceManagementForm from './widgets/SourceManagementForm';

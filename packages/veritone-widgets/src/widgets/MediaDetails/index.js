@@ -1,9 +1,10 @@
 import React from 'react';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Paper from 'material-ui/Paper';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Paper from '@material-ui/core/Paper';
 import {
   bool,
   func,
@@ -37,7 +38,7 @@ import {
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
-import Tooltip from 'material-ui/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';

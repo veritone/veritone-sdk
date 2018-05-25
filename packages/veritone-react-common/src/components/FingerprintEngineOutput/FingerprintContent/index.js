@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape, object } from 'prop-types';
 import classNames from 'classnames';
 
-import Icon from 'material-ui/Icon';
-import Button from 'material-ui/Button';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 
 import FingerprintEntity from '../FingerprintEntity';
 import FingerprintLibraries from '../FingerprintLibraries';

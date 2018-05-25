@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Icon from 'material-ui/Icon';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Icon from '@material-ui/core/Icon';
+import Chip from '@material-ui/core/Chip';
+import Avatar from '@material-ui/core/Avatar';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { find, isObject, isEmpty, get } from 'lodash';
 import {
   shape,

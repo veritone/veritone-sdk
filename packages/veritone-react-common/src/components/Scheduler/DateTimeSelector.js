@@ -1,7 +1,7 @@
 import React from 'react';
 import { string, bool } from 'prop-types';
 import { Field } from 'redux-form';
-import { FormGroup } from 'material-ui/Form';
+import FormGroup from '@material-ui/core/FormGroup';
 
 import DateTimePicker from '../formComponents/DateTimePicker';
 import LabeledInputGroup from './LabeledInputGroup';

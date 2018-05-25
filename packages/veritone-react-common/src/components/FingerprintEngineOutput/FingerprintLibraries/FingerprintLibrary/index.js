@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 
-import Icon from 'material-ui/Icon';
+import Icon from '@material-ui/core/Icon';
 import PillButton from '../../../share-components/buttons/PillButton';
 import styles from './styles.scss';
 

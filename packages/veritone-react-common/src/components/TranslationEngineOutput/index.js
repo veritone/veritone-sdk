@@ -3,8 +3,8 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import LocalCode from 'locale-code';
 
 import EngineOutputHeader from '../EngineOutputHeader';

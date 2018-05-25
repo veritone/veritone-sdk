@@ -2,10 +2,10 @@ import React from 'react';
 import { any, arrayOf, objectOf, func } from 'prop-types';
 import { get } from 'lodash';
 
-import TextField from 'material-ui/TextField';
-import { FormControl } from 'material-ui/Form';
-import Avatar from 'material-ui/Avatar';
-import Dialog from 'material-ui/Dialog';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Avatar from '@material-ui/core/Avatar';
+import Dialog from '@material-ui/core/Dialog';
 import FilePicker from 'components/FilePicker';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import defaultThumbnail from 'images/cms-sources-null.svg';

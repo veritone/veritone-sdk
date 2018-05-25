@@ -3,8 +3,8 @@ import { number, string, func, shape, arrayOf } from 'prop-types';
 
 import classNames from 'classnames';
 
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { format } from '../../helpers/date';
 

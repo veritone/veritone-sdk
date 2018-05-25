@@ -4,7 +4,7 @@ import { arrayOf, any, objectOf, func, bool } from 'prop-types';
 
 import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
-import Avatar from 'material-ui/Avatar';
+import Avatar from '@material-ui/core/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
 import { capitalize, omit, noop } from 'lodash';
 

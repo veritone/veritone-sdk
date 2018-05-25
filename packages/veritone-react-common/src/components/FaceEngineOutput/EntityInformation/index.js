@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { shape, string, number, func, arrayOf } from 'prop-types';
 import classNames from 'classnames';
-import Button from 'material-ui/Button';
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { startCase } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';

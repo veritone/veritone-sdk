@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
 
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import Radio, { RadioGroup } from 'material-ui/Radio';
-import { FormControlLabel } from 'material-ui/Form';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent from './TranscriptContent';

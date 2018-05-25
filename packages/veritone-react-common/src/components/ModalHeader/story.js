@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import cx from 'classnames';
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 import styles from './styles.scss';
 
 import ModalHeader from './';

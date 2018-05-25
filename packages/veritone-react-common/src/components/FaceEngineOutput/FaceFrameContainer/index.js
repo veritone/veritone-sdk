@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { number, string, arrayOf, shape, objectOf, func } from 'prop-types';
-import Icon from 'material-ui/Icon';
-import Button from 'material-ui/Button';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 import cx from 'classnames';
 
 import { msToReadableString } from 'helpers/time';

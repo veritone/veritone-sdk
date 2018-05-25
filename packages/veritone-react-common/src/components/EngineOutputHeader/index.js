@@ -9,10 +9,10 @@ import {
   func
 } from 'prop-types';
 import { isEmpty } from 'lodash';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import ZoomOutMap from 'material-ui-icons/ZoomOutMap';
-import IconButton from 'material-ui/IconButton';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import IconButton from '@material-ui/core/IconButton';
 
 import styles from './styles.scss';
 

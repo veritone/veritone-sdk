@@ -1,8 +1,8 @@
 import React from 'react';
 import { any, arrayOf, func, string } from 'prop-types';
 
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 import styles from './styles.scss';
 
 export default class FormCard extends React.Component {
