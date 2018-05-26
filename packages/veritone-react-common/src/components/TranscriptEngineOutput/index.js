@@ -90,7 +90,7 @@ export default class TranscriptEngineOutput extends Component {
   handleEditChange = event => {
     const onEditChangeCallback = this.props.onEditTypeChange;
     if (onEditChangeCallback) {
-      this.props.onEditTypeChange({type: event.target.value});
+      onEditChangeCallback({type: event.target.value});
     } else {
       this.setState({ editType: event.target.value });
     }

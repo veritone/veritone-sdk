@@ -2,18 +2,11 @@ import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf } from 'prop-types';
 import { isEqual } from 'lodash';
 
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from 'material-ui/Dialog';
-import Button from 'material-ui/Button';
-
 import { connect } from 'react-redux';
 import { util } from 'veritone-redux-common';
 import * as TranscriptRedux from '../../redux/modules/mediaDetails/transcriptWidget';
 import transcriptSaga, { changeWidthDebounce } from '../../redux/modules/mediaDetails/transcriptWidget/saga';
+import { AlertDialog } from 'veritone-react-common';
 import { TranscriptEngineOutput, TranscriptEditMode } from 'veritone-react-common';
 
 const saga = util.reactReduxSaga.saga;
@@ -147,15 +140,15 @@ export default class TranscriptEngineOutputWidget extends Component {
     }
   }
 
-  handleAlertConfirm = (event) => {
-    switch (event.currentTarget.value) {
+  handleAlertConfirm = (value) => {
+    switch (value) {
       case 'cancel':
       this.setState({
         alert: false,
       });
       break;
 
-      case 'continue':
+      case 'approve':
       this.props.reset();
       this.setState((prevState) => {
         return {
@@ -166,34 +159,6 @@ export default class TranscriptEngineOutputWidget extends Component {
       });
       break;
     }
-  }
-
-  renderPopup () {
-    const alertTitle = 'Alert title goes here';
-    const alertDescription = 'Alert Description Goes Here';
-    return (
-      <Dialog
-          open={this.state.alert}
-          onClose={this.handleClose}
-          aria-labelledby="alert-title"
-          aria-describedby="alert-description"
-        >
-          <DialogTitle id="alert-title">{alertTitle}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-description">
-              {alertDescription}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleAlertConfirm} color="primary" value="cancel">
-              Cancel
-            </Button>
-            <Button onClick={this.handleAlertConfirm} color="primary" value="continue" autoFocus>
-              Continue
-            </Button>
-          </DialogActions>
-        </Dialog>
-    )
   }
 
   render () {
@@ -216,6 +181,10 @@ export default class TranscriptEngineOutputWidget extends Component {
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
+
+    const alertDescription = 'It looks like you have been editing something. If you leave before saving, your changes will be lost.';
+    const cancelButtonLabel = 'Cancel';
+    const approveButtonLabel = 'Continue';
 
     return (
       <Fragment>
@@ -248,7 +217,14 @@ export default class TranscriptEngineOutputWidget extends Component {
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
         />
-        { this.renderPopup() }
+        <AlertDialog 
+          open = {this.state.alert}
+          content = {alertDescription}
+          cancelButtonLabel = {cancelButtonLabel}
+          approveButtonLabel = {approveButtonLabel}
+          onCancel = {this.handleAlertConfirm}
+          onApprove = {this.handleAlertConfirm}
+        />
       </Fragment>
     );
   }

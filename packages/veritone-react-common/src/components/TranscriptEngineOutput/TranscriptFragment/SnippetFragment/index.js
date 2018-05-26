@@ -25,33 +25,6 @@ export default class SnippetFragment extends Component {
     changeOnBlur: false
   };
 
-  // use this when we update to react ^16.3.0
-  /*
-  static getDerivedStateFromProps (nextProps, prevState) {
-    const { value, startTimeMs, stopTimeMs } = nextProps;
-
-    if (!this.originalValue) {
-      this.originalValue = {
-        value: value,
-        startTimeMs: startTimeMs,
-        stopTimeMs: stopTimeMs
-      }
-    }
-  }
-  */
-
-  // Use the above function when we update to a later version of react
-  componentWillReceiveProps (nextProps) {
-    const { value, startTimeMs, stopTimeMs } = nextProps;
-    if (!this.originalValue) {
-      this.originalValue = {
-        value: value,
-        startTimeMs: startTimeMs,
-        stopTimeMs: stopTimeMs
-      }
-    }
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     const { active, value, className, editMode } = nextProps;
     const newMode = editMode !== this.props.editMode;
@@ -60,6 +33,12 @@ export default class SnippetFragment extends Component {
     const newValue = this.currentValue ? value !== this.currentValue.value : false;
     return newMode || newClass || newValue || newHighlight;
   }
+
+  originalValue = {
+    value: this.props.value,
+    startTimeMs: this.props.startTimeMs,
+    stopTimeMs: this.props.stopTimeMs
+  };
 
   handleSnippetClick = event => {
     const { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
