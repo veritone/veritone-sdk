@@ -27,7 +27,7 @@ describe('Image', () => {
   });
 
   it('Border can be set', () => {
-    const wrapper = mount(<Image src={TEST_IMG} border={true} />);
+    const wrapper = mount(<Image src={TEST_IMG} border />);
     expect(wrapper.children().props().style.border).toBe('1px solid #E4E4E4');
   })
 });
