@@ -70,16 +70,7 @@ const withUIState = (
       clearStateForKey: noop
     };
 
-    componentDidMount() {
-      this.isMounting = false;
-    }
-
-    componentWillUnmount() {
-      if (!persist) {
-        this.props.clearStateForKey(this.props.uiStateKey);
-      }
-    }
-
+    // eslint-disable-next-line react/sort-comp
     UNSAFE_componentWillMount() {
       this.isMounting = true;
 
@@ -93,6 +84,16 @@ const withUIState = (
       }
 
       this.resetUIState();
+    }
+
+    componentDidMount() {
+      this.isMounting = false;
+    }
+
+    componentWillUnmount() {
+      if (!persist) {
+        this.props.clearStateForKey(this.props.uiStateKey);
+      }
     }
 
     setUIState = state => {
