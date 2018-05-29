@@ -34,7 +34,8 @@ export default class DynamicSelect extends React.Component {
     oneSourceType: false
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     if (this.props.sourceTypes.length === 1) {
       this.setState({ oneSourceType: true });
     }

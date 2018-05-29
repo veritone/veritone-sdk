@@ -98,7 +98,8 @@ class FaceEngineOutput extends Component {
     viewMode: 'summary'
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.processFaces(
       this.props.data,
       this.props.libraries,

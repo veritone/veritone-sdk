@@ -33,7 +33,8 @@ class FileListItem extends Component {
     dataUrl: ''
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.readImageFile(this.props.file);
   }
 

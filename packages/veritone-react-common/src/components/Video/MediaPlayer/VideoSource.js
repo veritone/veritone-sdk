@@ -22,7 +22,8 @@ export default class VideoSource extends React.Component {
     src: null
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     shaka.polyfill.installAll();
   }
 

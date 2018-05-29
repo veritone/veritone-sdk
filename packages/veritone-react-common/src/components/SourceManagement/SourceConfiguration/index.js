@@ -28,7 +28,8 @@ export default class SourceConfiguration extends React.Component {
     thumbnailUrl: ''
   };
 
-  componentWillMount = () => {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount = () => {
     const { sourceTypes, source } = this.props;
     const newState = {};
 

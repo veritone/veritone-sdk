@@ -246,7 +246,8 @@ class MediaDetailsWidget extends React.Component {
     hasPendingChanges: false
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
   }
 

@@ -59,7 +59,8 @@ class StructuredDataEngineOutput extends Component {
     engineSchemaIds: []
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.processStructuredData(this.props.data);
   }
 
