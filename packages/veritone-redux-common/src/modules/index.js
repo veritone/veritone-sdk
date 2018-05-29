@@ -29,3 +29,12 @@ export const auth = {
   ...authConstants,
   authRootSaga
 };
+
+import confirmationRootSaga from './confirmation/saga';
+import confirmationReducer, * as confirmationModule from './confirmation';
+
+export const confirmation = {
+  reducer: confirmationReducer,
+  ...confirmationModule,
+  confirmationRootSaga
+};
