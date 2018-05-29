@@ -2,7 +2,7 @@
 
 .filePickerHeader {
   width: 100%;
-  height: 88px;
+  min-height: 93px;
   display: flex;
   flex-direction: column;
   background-color: $grey-1;
@@ -10,6 +10,7 @@
 }
 
 .filePickerTitle {
+  flex: auto;
   font-size: 18px;
   padding-left: 20px;
   padding-top: 20px;

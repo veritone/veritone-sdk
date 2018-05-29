@@ -1,14 +1,24 @@
-import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { get, uniq, isEmpty } from 'lodash';
+import {
+  fork,
+  all,
+  call,
+  put,
+  takeEvery,
+  select,
+  take
+} from 'redux-saga/effects';
+import { get, uniq, isObject, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
+import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   LOAD_ENGINE_RESULTS,
   LOAD_ENGINE_RESULTS_SUCCESS,
   LOAD_TDO,
   UPDATE_TDO,
+  UPDATE_TDO_FAILURE,
   LOAD_CONTENT_TEMPLATES,
   UPDATE_TDO_CONTENT_TEMPLATES,
   UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
@@ -38,6 +48,7 @@ import {
   loadTdoContentTemplatesFailure,
   selectEngineCategory,
   setEngineId,
+  getTdoMetadata,
   getTdo,
   getEngineResultRequestsByEngineId
 } from '.';
@@ -50,6 +61,8 @@ const tdoInfoQueryClause = `id
     security {
       global
     }
+    thumbnailUrl
+    sourceImageUrl
     primaryAsset(assetType: "media") {
       id
       signedUri
@@ -138,15 +151,19 @@ function* loadTdoSaga(widgetId, tdoId) {
       // add bulk-edit-transcript engine if one was run
       .map(engineRun => {
         const engineId = get(engineRun, 'engine.id');
-        if ((engineId === 'bde0b023-333d-acb0-e01a-f95c74214607' || engineId === 'bulk-edit-transcript') && !engineRun.engine.category) {
+        if (
+          (engineId === 'bde0b023-333d-acb0-e01a-f95c74214607' ||
+            engineId === 'bulk-edit-transcript') &&
+          !engineRun.engine.category
+        ) {
           engineRun.engine.name = 'User Generated';
           engineRun.engine.category = {
-            id: "67cd4dd0-2f75-445d-a6f0-2f297d6cd182",
-            name: "Transcription",
-            iconClass: "icon-transcription",
-            categoryType: "transcript",
+            id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
+            name: 'Transcription',
+            iconClass: 'icon-transcription',
+            categoryType: 'transcript',
             editable: true
-          }
+          };
         }
         return engineRun;
       })
@@ -218,10 +235,10 @@ function* loadTdoSaga(widgetId, tdoId) {
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
-  const updateTdoQuery = `mutation updateTDO($tdoId: ID!){
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
       updateTDO( input: {
         id: $tdoId
-        ${tdoDataToUpdate}
+        details: $details
       })
       {
         ${tdoInfoQueryClause}
@@ -238,7 +255,10 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: updateTdoQuery,
-      variables: { tdoId },
+      variables: {
+        tdoId,
+        details: !isEmpty(tdoDataToUpdate) ? tdoDataToUpdate : null
+      },
       token
     });
   } catch (error) {
@@ -777,11 +797,146 @@ function* watchLoadTdoRequest() {
   });
 }
 
+function* uploadImage(fileToUpload, widgetId) {
+  const getUrlQuery = `query urls($name: String!){
+    getSignedWritableUrl(key: $name) {
+      url
+      key
+      bucket
+      expiresInSeconds
+      getUrl
+      unsignedUrl
+    }
+  }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let signedWritableUrlResponse;
+  try {
+    signedWritableUrlResponse = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: getUrlQuery,
+      variables: { name },
+      token
+    });
+  } catch (error) {
+    return yield* put({
+      type: UPDATE_TDO_FAILURE,
+      payload: error,
+      meta: { widgetId }
+    });
+  }
+
+  if (
+    signedWritableUrlResponse.errors &&
+    signedWritableUrlResponse.errors.length
+  ) {
+    throw new Error(
+      `Call to getSignedWritableUrl returned error: ${
+        signedWritableUrlResponse.errors[0].message
+      }`
+    );
+  }
+
+  let resultChan;
+  try {
+    resultChan = yield call(
+      uploadFilesChannel,
+      [signedWritableUrlResponse.data.getSignedWritableUrl],
+      [fileToUpload]
+    );
+  } catch (error) {
+    return yield* put({
+      type: UPDATE_TDO_FAILURE,
+      payload: error,
+      meta: { widgetId }
+    });
+  }
+
+  let uploadingImageToS3 = true;
+  while (uploadingImageToS3) {
+    const {
+      error,
+      success,
+      file,
+      descriptor: { unsignedUrl }
+    } = yield take(resultChan);
+
+    if (success || error) {
+      uploadingImageToS3 = false;
+
+      if (error) {
+        throw new Error(`Error while uploading ${file.filename}`);
+      }
+      return yield unsignedUrl;
+    }
+    continue;
+  }
+}
+
 function* watchUpdateTdoRequest() {
   yield takeEvery(UPDATE_TDO, function*(action) {
     const { tdoId, tdoDataToUpdate } = action.payload;
     const { widgetId } = action.meta;
-    yield call(updateTdoSaga, widgetId, tdoId, tdoDataToUpdate);
+
+    // Check to see if programImage and programLiveImages are file objects and if so upload.
+    try {
+      const programLiveImage = get(
+        tdoDataToUpdate,
+        'veritoneProgram.programLiveImage'
+      );
+      if (isObject(programLiveImage)) {
+        tdoDataToUpdate.veritoneProgram.programLiveImage = yield call(
+          uploadImage,
+          tdoDataToUpdate.veritoneProgram.programLiveImage
+        );
+      }
+      const programImage = get(tdoDataToUpdate, 'veritoneProgram.programImage');
+      if (isObject(programImage)) {
+        tdoDataToUpdate.veritoneProgram.programImage = yield call(
+          uploadImage,
+          tdoDataToUpdate.veritoneProgram.programImage
+        );
+      }
+    } catch (error) {
+      return yield put({
+        type: UPDATE_TDO_FAILURE,
+        payload: error,
+        meta: { widgetId }
+      });
+    }
+
+    const metaData = yield select(getTdoMetadata, widgetId);
+    // Take the new updated metadata and construct the query for graphql
+    const detailsToSave = {};
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneFile'))) {
+      detailsToSave.veritoneFile = {
+        ...get(metaData, 'veritoneFile'),
+        ...get(tdoDataToUpdate, 'veritoneFile')
+      };
+    }
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneCustom'))) {
+      detailsToSave.veritoneCustom = {
+        ...get(metaData, 'veritoneCustom'),
+        ...get(tdoDataToUpdate, 'veritoneCustom')
+      };
+    }
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneProgram'))) {
+      detailsToSave.veritoneProgram = {
+        ...get(metaData, 'veritoneProgram'),
+        programImage: get(tdoDataToUpdate, 'veritoneProgram.programImage'),
+        programLiveImage: get(tdoDataToUpdate, 'veritoneProgram.programLiveImage')
+      };
+    }
+    if (get(tdoDataToUpdate, 'tags.length')) {
+      detailsToSave.tags = get(tdoDataToUpdate, 'tags').map(tag => {
+        return { value: tag.value };
+      });
+    }
+    yield call(updateTdoSaga, widgetId, tdoId, detailsToSave);
   });
 }
 

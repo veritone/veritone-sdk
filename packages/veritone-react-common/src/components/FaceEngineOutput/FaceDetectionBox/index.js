@@ -74,7 +74,8 @@ class FaceDetectionBox extends Component {
     hovered: false
   };
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.enableEdit === false) {
       this.setState({ editFaceEntity: false });
     }

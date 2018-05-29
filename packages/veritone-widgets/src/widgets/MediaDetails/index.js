@@ -38,36 +38,41 @@ import {
 } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
+import { withPropsOnChange } from 'recompose';
+import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
+@withPropsOnChange([], ({ id }) => ({
+  id: id || guid()
+}))
 @connect(
-  (state, { _widgetId }) => ({
-    engineCategories: mediaDetailsModule.getEngineCategories(state, _widgetId),
-    tdo: mediaDetailsModule.getTdo(state, _widgetId),
+  (state, { id }) => ({
+    engineCategories: mediaDetailsModule.getEngineCategories(state, id),
+    tdo: mediaDetailsModule.getTdo(state, id),
     engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
       state,
-      _widgetId
+      id
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
-      _widgetId
+      id
     ),
-    selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, _widgetId),
-    contentTemplates: mediaDetailsModule.getContentTemplates(state, _widgetId),
+    selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, id),
+    contentTemplates: mediaDetailsModule.getContentTemplates(state, id),
     tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(
       state,
-      _widgetId
+      id
     ),
-    isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, _widgetId),
-    isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, _widgetId),
-    isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, _widgetId),
-    libraries: mediaDetailsModule.getLibraries(state, _widgetId),
-    entities: mediaDetailsModule.getEntities(state, _widgetId),
-    schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
+    isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
+    isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
+    isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
+    libraries: mediaDetailsModule.getLibraries(state, id),
+    entities: mediaDetailsModule.getEntities(state, id),
+    schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -88,7 +93,7 @@ import widget from '../../shared/widget';
 )
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
-    _widgetId: string.isRequired,
+    id: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
     fetchApplications: func.isRequired,
@@ -241,12 +246,13 @@ class MediaDetailsWidget extends React.Component {
     hasPendingChanges: false
   };
 
-  componentWillMount() {
-    this.props.initializeWidget(this.props._widgetId);
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
+    this.props.initializeWidget(this.props.id);
   }
 
   componentDidMount() {
-    this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
+    this.props.loadTdoRequest(this.props.id, this.props.mediaId);
     this.props.fetchApplications();
   }
 
@@ -267,7 +273,7 @@ class MediaDetailsWidget extends React.Component {
       category => category.id === selectedCategoryId
     );
     // Set the new engine category and set engine id to the first engine in the list.
-    this.props.selectEngineCategory(this.props._widgetId, selectedCategory);
+    this.props.selectEngineCategory(this.props.id, selectedCategory);
   };
 
   getSelectedCategoryMessage = () => {
@@ -302,19 +308,41 @@ class MediaDetailsWidget extends React.Component {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
     }
-    if (get(this.props, 'selectedEngineCategory.categoryType') === 'transcript') {
-      const isPublicMedia = get(this.props, 'tdo.security.global', false);
-      return !isPublicMedia;
+    return !this.isMediaPublic() && this.isOwnMedia();
+  };
+
+  isMediaPublic = () => {
+    if (!get(this.props, 'tdo.security.global', false)) {
+      return false;
+    }
+    // check flag explicitly set to false
+    if (get(this.props, 'tdo.isPublic') === false) {
+      return false;
     }
     return true;
   };
 
+  isOwnMedia = () => {
+    if (get(this.props, 'tdo.isOwn') === true) {
+      return true;
+    }
+    const applicationIds = get(this.props.kvp, 'applicationIds', []);
+    const tdoApplicationId = get(this.props, 'tdo.applicationId');
+    if (
+      tdoApplicationId &&
+      applicationIds.includes(tdoApplicationId)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   toggleEditMode = () => {
-    this.props.toggleEditMode(this.props._widgetId);
+    this.props.toggleEditMode(this.props.id);
   };
 
   toggleExpandedMode = () => {
-    this.props.toggleExpandedMode(this.props._widgetId);
+    this.props.toggleExpandedMode(this.props.id);
   };
 
   onSaveEdit = () => {
@@ -331,16 +359,16 @@ class MediaDetailsWidget extends React.Component {
   };
 
   toggleInfoPanel = () => {
-    this.props.toggleInfoPanel(this.props._widgetId);
+    this.props.toggleInfoPanel(this.props.id);
   };
 
   handleSelectEngine = engineId => {
-    this.props.setEngineId(this.props._widgetId, engineId);
+    this.props.setEngineId(this.props.id, engineId);
   };
 
   handleTabChange = (evt, selectedTabValue) => {
     if (selectedTabValue === 'contentTemplates') {
-      this.props.loadContentTemplates(this.props._widgetId);
+      this.props.loadContentTemplates(this.props.id);
     }
     this.setState({ selectedTabValue });
   };
@@ -350,7 +378,7 @@ class MediaDetailsWidget extends React.Component {
       return;
     }
     this.props.updateTdoRequest(
-      this.props._widgetId,
+      this.props.id,
       this.props.mediaId,
       tdoData
     );
@@ -386,7 +414,7 @@ class MediaDetailsWidget extends React.Component {
       }
     });
     this.props.updateTdoContentTemplates(
-      this.props._widgetId,
+      this.props.id,
       contentTemplatesToDelete,
       contentTemplatesToCreate
     );
@@ -487,9 +515,9 @@ class MediaDetailsWidget extends React.Component {
               <Tabs
                 value={this.state.selectedTabValue}
                 onChange={this.handleTabChange}
-                indicatorColor="#f9a02c"
                 classes={{
-                  flexContainer: styles.mediaDetailsPageTabSelector
+                  flexContainer: styles.mediaDetailsPageTabSelector,
+                  indicator: styles.tabIndicator
                 }}
               >
                 <Tab

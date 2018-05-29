@@ -75,6 +75,10 @@ export default class TranslationEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
+  UNSAFE_componentWillMount() {
+    this.setLanguageOptions();
+  }
+
   setLanguageOptions() {
     const { contents, defaultLanguage } = this.props;
 
@@ -150,10 +154,6 @@ export default class TranslationEngineOutput extends Component {
     });
 
     return selectedContent;
-  }
-
-  UNSAFE_componentWillMount() {
-    this.setLanguageOptions();
   }
 
   handleLanguageChanged = event => {

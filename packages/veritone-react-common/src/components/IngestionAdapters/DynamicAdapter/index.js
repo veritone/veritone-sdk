@@ -36,7 +36,8 @@ class DynamicAdapter extends React.Component {
     closeCreateSource: func.isRequired
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {};
     if (

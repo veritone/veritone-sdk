@@ -70,7 +70,8 @@ const withUIState = (
       clearStateForKey: noop
     };
 
-    componentWillMount() {
+    // eslint-disable-next-line react/sort-comp
+    UNSAFE_componentWillMount() {
       this.isMounting = true;
 
       if (persist) {
