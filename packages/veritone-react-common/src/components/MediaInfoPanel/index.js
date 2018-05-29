@@ -11,20 +11,65 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
-import { isString } from 'lodash';
-import { objectOf, func, arrayOf, any, shape, string } from 'prop-types';
+import { func, arrayOf, shape, string, bool } from 'prop-types';
 import EditMetadataDialog from './EditMetadataDialog';
 import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
   static propTypes = {
-    tdo: objectOf(any),
-    engineCategories: arrayOf(any),
+    tdo: shape({
+      applicationId: string,
+      details: shape({
+        veritoneProgram: shape({
+          programLiveImage: string,
+          programImage: string
+        }),
+        veritoneFile: shape({
+          filename: string
+        }),
+        veritoneCustom: shape({
+          source: string
+        })
+      }),
+      id: string,
+      primaryAsset: shape({
+        id: string,
+        uri: string
+      }),
+      security: shape({
+        global: bool
+      }),
+      startDateTime: string,
+      stopDateTime: string
+    }).isRequired,
+    engineCategories: arrayOf(
+      shape({
+        id: string,
+        editable: bool,
+        engines: arrayOf(
+          shape({
+            category: shape({
+              id: string,
+              editable: bool,
+              iconClass: string,
+              categoryType: string,
+              name: string
+            }),
+            name: string,
+            id: string,
+            status: string
+          })
+        )
+      })
+    ).isRequired,
     kvp: shape({
-      features: objectOf(any),
+      features: shape({
+        downloadMedia: string,
+        downloadPublicMedia: string
+      }),
       applicationIds: arrayOf(string)
-    }),
+    }).isRequired,
     contextMenuExtensions: shape({
       mentions: arrayOf(
         shape({
@@ -57,46 +102,7 @@ class MediaInfoPanel extends Component {
     if (!metadataToSave) {
       return;
     }
-    const detailsParams = [];
-    if (metadataToSave.veritoneFile && metadataToSave.veritoneFile.filename) {
-      detailsParams.push(
-        `veritoneFile: { filename: "${metadataToSave.veritoneFile.filename}" }`
-      );
-    }
-    if (
-      metadataToSave.veritoneCustom &&
-      isString(metadataToSave.veritoneCustom.source)
-    ) {
-      detailsParams.push(
-        `veritoneCustom: { source: "${metadataToSave.veritoneCustom.source}" }`
-      );
-    }
-    if (
-      metadataToSave.veritoneProgram &&
-      (isString(metadataToSave.veritoneProgram.signedProgramLiveImage) ||
-        isString(metadataToSave.veritoneProgram.programImage))
-    ) {
-      let programData = '';
-      if (isString(metadataToSave.veritoneProgram.signedProgramLiveImage)) {
-        // intentionally store new uri as unsigned one
-        programData += `programLiveImage: "${
-          metadataToSave.veritoneProgram.signedProgramLiveImage
-        }"`;
-      }
-      if (isString(metadataToSave.veritoneProgram.programImage)) {
-        programData += ` programImage: "${
-          metadataToSave.veritoneProgram.programImage
-        }"`;
-      }
-      if (programData.length) {
-        detailsParams.push(`veritoneProgram: { ${programData} }`);
-      }
-    }
-    if (!detailsParams.length) {
-      return;
-    }
-    const detailsToSave = `details: { ${detailsParams.join(' ')} }`;
-    this.props.onSaveMetadata(detailsToSave);
+    this.props.onSaveMetadata(metadataToSave);
   };
 
   toggleIsEditMetadataOpen = () => {
@@ -112,10 +118,7 @@ class MediaInfoPanel extends Component {
     if (!tagsToSave || !tagsToSave.length) {
       return;
     }
-    const tagsObjects = [];
-    tagsToSave.forEach(tag => tagsObjects.push(`{ value: "${tag.value}" }`));
-    const detailsToSave = `details: { tags: [ ${tagsObjects.join(', ')} ] }`;
-    this.props.onSaveMetadata(detailsToSave);
+    this.props.onSaveMetadata({ tags: tagsToSave });
   };
 
   toggleIsEditTagsOpen = () => {
@@ -260,6 +263,19 @@ class MediaInfoPanel extends Component {
       isEditTagsOpen
     } = this.state;
 
+    const { tdo } = this.props;
+
+    const metadata = {
+      ...tdo.details,
+      veritoneProgram: {
+        ...tdo.details.veritoneProgram,
+        programImage:
+          tdo.sourceImageUrl || tdo.details.veritoneProgram.programImage,
+        programLiveImage:
+          tdo.thumbnailUrl || tdo.details.veritoneProgram.programLiveImage
+      }
+    };
+
     const contentElement = (
       <div className={styles.mediaInfoPanel}>
         <div>
@@ -343,24 +359,24 @@ class MediaInfoPanel extends Component {
             <div className={styles.infoField}>
               <div className={styles.infoFieldLabel}>Filename</div>
               <div className={styles.infoFieldData}>
-                {get(this.props.tdo, 'details.veritoneFile.filename', 'No Filename')}
+                {get(tdo, 'details.veritoneFile.filename', 'No Filename')}
               </div>
             </div>
-            {this.props.tdo.details.date && (
+            {tdo.details.date && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Date Created</div>
                 <div className={styles.infoFieldData}>
-                  {this.toFormattedDate(get(this.props.tdo, 'details.date'))}
+                  {this.toFormattedDate(get(tdo, 'details.date'))}
                 </div>
               </div>
             )}
-            {this.props.tdo.startDateTime && this.props.tdo.stopDateTime &&
+            {tdo.startDateTime && tdo.stopDateTime &&
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Duration</div>
                 <div className={styles.infoFieldData}>
                   {this.differenceToHhMmSs(
-                    this.props.tdo.startDateTime,
-                    this.props.tdo.stopDateTime
+                    tdo.startDateTime,
+                    tdo.stopDateTime
                   )}
                 </div>
               </div>}
@@ -384,83 +400,54 @@ class MediaInfoPanel extends Component {
                   </div>
                 </div>
               )}
-            {get(this.props.tdo, 'details.tags.length', 0) > 0 && (
+            {get(tdo, 'details.tags.length', 0) > 0 && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Tags</div>
                 <div className={styles.infoFieldData}>
-                  {this.props.tdo.details.tags.map(tag => tag.value).join(', ')}
+                  {tdo.details.tags.map(tag => tag.value).join(', ')}
                 </div>
               </div>
             )}
             <div className={styles.programImagesSection}>
               <div>
                 Program Live Image
-                {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.signedProgramLiveImage.length',
-                  0
-                ) > 0 && (
-                  <img
-                    className={styles.programLiveImage}
-                    src={
-                      this.props.tdo.details.veritoneProgram
-                        .signedProgramLiveImage
-                    }
-                  />
-                )}
-                {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.signedProgramLiveImage.length',
-                  0
-                ) === 0 && (
-                  <img
-                    className={styles.programLiveImage}
-                    src="//static.veritone.com/veritone-ui/default-nullstate.svg"
-                  />
-                )}
+                <img
+                  className={styles.programLiveImage}
+                  src={
+                    tdo.thumbnailUrl ||
+                    '//static.veritone.com/veritone-ui/default-nullstate.svg'
+                  }
+                />
               </div>
               <div>
                 Program Image
-                {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.programImage.length',
-                  0
-                ) > 0 && (
-                  <img
-                    className={styles.programImage}
-                    src={this.props.tdo.details.veritoneProgram.programImage}
-                  />
-                )}
-                {get(
-                  this.props.tdo,
-                  'details.veritoneProgram.programImage.length',
-                  0
-                ) === 0 && (
-                  <img
-                    className={styles.programImage}
-                    src="//static.veritone.com/veritone-ui/program_image_null.svg"
-                  />
-                )}
+                <img
+                  className={styles.programImage}
+                  src={
+                    tdo.sourceImageUrl ||
+                    '//static.veritone.com/veritone-ui/program_image_null.svg'
+                  }
+                />
               </div>
             </div>
           </Paper>
         </div>
-        {this.props.tdo &&
-          this.props.tdo.details &&
+        {tdo &&
+          tdo.details &&
           isEditMetadataOpen && (
             <EditMetadataDialog
               isOpen={isEditMetadataOpen}
-              metadata={this.props.tdo.details}
+              metadata={metadata}
               onClose={this.toggleIsEditMetadataOpen}
               onSave={this.onSaveMetadata}
             />
           )}
-        {this.props.tdo &&
-          this.props.tdo.details &&
+        {tdo &&
+          tdo.details &&
           isEditTagsOpen && (
             <EditTagsDialog
               isOpen={isEditTagsOpen}
-              tags={this.props.tdo.details.tags}
+              tags={tdo.details.tags}
               onClose={this.toggleIsEditTagsOpen}
               onSave={this.onSaveTags}
             />

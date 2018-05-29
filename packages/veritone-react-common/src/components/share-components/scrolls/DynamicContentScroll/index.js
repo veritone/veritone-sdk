@@ -29,7 +29,8 @@ export default class DynamicContentScroll extends Component {
     neglectableSize: 0
   };
 
-  componentWillReceiveProps(newProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.currentValue !== this.props.currentValue) {
       this.scrollTo(newProps.currentValue);
     }

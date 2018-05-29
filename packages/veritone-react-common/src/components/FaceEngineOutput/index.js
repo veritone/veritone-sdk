@@ -98,7 +98,8 @@ class FaceEngineOutput extends Component {
     viewMode: 'summary'
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.processFaces(
       this.props.data,
       this.props.libraries,
@@ -106,7 +107,8 @@ class FaceEngineOutput extends Component {
     );
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.entities || nextProps.libraries || nextProps.data) {
       this.processFaces(
         nextProps.data,

@@ -28,7 +28,8 @@ export default class SourceConfiguration extends React.Component {
     thumbnailUrl: ''
   };
 
-  componentWillMount = () => {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount = () => {
     const { sourceTypes, source } = this.props;
     const newState = {};
 
@@ -47,7 +48,8 @@ export default class SourceConfiguration extends React.Component {
     this.setState(newState);
   };
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.source.sourceTypeId !== this.props.source.sourceTypeId) {
       // if editing a source, initialize the defaults
       const sourceTypeIndex = nextProps.sourceTypes.findIndex(

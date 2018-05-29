@@ -59,7 +59,8 @@ export default class SourceManagementForm extends React.Component {
     openDialog: true
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     const { sourceTypes } = this.props;
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }

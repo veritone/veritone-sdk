@@ -20,7 +20,8 @@ class ContentTemplateWidget extends React.Component {
     contentTemplates: {}
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
     };
