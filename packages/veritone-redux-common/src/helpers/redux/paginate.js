@@ -10,6 +10,7 @@ import {
 
 import { createReducer, fetchingStatus } from 'helpers/redux';
 
+// Example usage:
 // const reducer = reduceReducers(
 //   paginate({
 //     types: [LIST, LIST_SUCCESS, LIST_FAILURE],
