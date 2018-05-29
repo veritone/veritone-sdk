@@ -1,0 +1,33 @@
+import React from 'react';
+import { mount } from 'enzyme';
+
+import Image from './';
+
+describe('Image', () => {
+  const TEST_IMG = 'https://pp.userapi.com/c624631/v624631866/38602/miSZV1RlzEY.jpg';
+  
+  it('Image should render in a div tag', () => {
+    const wrapper = mount(<Image src={TEST_IMG} />);
+    expect(wrapper.find('div')).toHaveLength(1);
+    expect(wrapper.props().src).toBe(TEST_IMG);
+    expect(wrapper.children().props().style.backgroundImage).toBe(`url(${TEST_IMG})`);
+  });
+
+  it('Height/Width have defaults', () => {
+    const wrapper = mount(<Image src={TEST_IMG} />);
+    expect(wrapper.children().props().style.height).toBeDefined();
+    expect(wrapper.children().props().style.width).toBeDefined();
+  });
+
+  it('Height/Width can be specified', () => {
+    const HEIGHT = '123px', WIDTH = '321px';
+    const wrapper = mount(<Image src={TEST_IMG} height={HEIGHT} width={WIDTH} />);
+    expect(wrapper.children().props().style.height).toBe(HEIGHT);
+    expect(wrapper.children().props().style.width).toBe(WIDTH);
+  });
+
+  it('Border can be set', () => {
+    const wrapper = mount(<Image src={TEST_IMG} border={true} />);
+    expect(wrapper.children().props().style.border).toBe('1px solid #E4E4E4');
+  })
+});
