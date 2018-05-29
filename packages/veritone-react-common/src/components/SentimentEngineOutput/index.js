@@ -47,7 +47,8 @@ export default class SentimentEngineOutput extends Component {
     sentimentTicks: [100, 80, 60, 40, 20, 0, -20, -40, -60, -80, -100]
   };
 
-  componentWillReceiveProps(newProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.timeWindowStartMs !== this.props.timeWindowStartMs) {
       this.scrollTo(newProps.timeWindowStartMs);
     }

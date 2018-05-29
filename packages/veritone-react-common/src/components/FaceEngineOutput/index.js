@@ -107,7 +107,8 @@ class FaceEngineOutput extends Component {
     );
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.entities || nextProps.libraries || nextProps.data) {
       this.processFaces(
         nextProps.data,

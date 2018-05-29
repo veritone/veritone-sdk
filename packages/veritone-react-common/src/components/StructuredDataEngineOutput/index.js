@@ -64,7 +64,8 @@ class StructuredDataEngineOutput extends Component {
     this.processStructuredData(this.props.data);
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data) {
       this.processStructuredData(nextProps.data);
     }

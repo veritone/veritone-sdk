@@ -38,7 +38,8 @@ class FileListItem extends Component {
     this.readImageFile(this.props.file);
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.file !== this.props.file) {
       this.readImageFile(nextProps.file);
     }
