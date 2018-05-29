@@ -35,7 +35,7 @@ class SourceListWidget extends React.Component {
   }
 
   render() {
-    const viewProps = omit(this.props, ['onCreateSource', 'fetchData']);
+    const viewProps = omit(this.props, ['onCreateSource', 'sources', 'fetchData']);
 
     return !this.state.sources.length ? (
       <SourceNullState onClick={this.props.onCreateSource} />
