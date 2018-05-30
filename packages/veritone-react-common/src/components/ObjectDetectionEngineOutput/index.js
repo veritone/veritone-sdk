@@ -3,7 +3,7 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import ObjectGroup from './ObjectGroup'
+import ObjectGroup from './ObjectGroup';
 
 import styles from './styles.scss';
 
@@ -70,7 +70,9 @@ class ObjectDetectionEngineOutput extends Component {
           {data.map(objectGroup => {
             return (
               <ObjectGroup
-                key={`object-group-${objectGroup.sourceEngineId}-${objectGroup.taskId}-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
+                key={`object-group-${objectGroup.sourceEngineId}-${
+                  objectGroup.taskId
+                }-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
                 objectGroup={objectGroup}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onObjectClick={this.handleObjectClick}
