@@ -3,13 +3,17 @@
 .overviewFragment {
   margin-right: 1ch;
   cursor: pointer;
+  color: $dark-black;
+  font-family: Roboto;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 300;
 
   &:hover {
-    border-bottom: 2px solid $blue-1;
+    color: $blue-1;
   }
 }
 
 .highlight {
-  color: $light-black;
   font-weight: bolder;
 }
