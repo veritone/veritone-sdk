@@ -21,7 +21,6 @@ class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
-    supportedSourceTypes: arrayOf(string),
     sources: arrayOf(objectOf(any)).isRequired,
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
@@ -32,10 +31,7 @@ class DynamicAdapter extends React.Component {
   UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {};
-    if (
-      isArray(this.props.supportedSourceTypes) &&
-      this.props.supportedSourceTypes.length
-    ) {
+    if (get(this.props, 'adapterConfig.supportedSourceTypes.length')) {
       newState.sourceId =
         get(this.props.configuration, 'sourceId') ||
         (get(this.props, 'sources.length') ? this.props.sources[0].id : '');
@@ -79,8 +75,7 @@ class DynamicAdapter extends React.Component {
   render() {
     return (
       <div>
-        {isArray(this.props.supportedSourceTypes) &&
-        this.props.supportedSourceTypes.length ? (
+        {get(this.props, 'adapterConfig.supportedSourceTypes.length') ? (
           <div>
             <SourceDropdownMenu
               sourceId={this.state.sourceId}
