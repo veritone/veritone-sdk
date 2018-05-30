@@ -467,7 +467,7 @@ class MediaDetailsWidget extends React.Component {
                     </div>
                   </Tooltip>
                 )}
-                {get(this.props, 'tdo.id', null) && get(
+                {get(this.props, 'tdo.id') && get(
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
@@ -476,11 +476,11 @@ class MediaDetailsWidget extends React.Component {
                     {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
                 )}
-                {!get(this.props, 'tdo.id', null) && (
+                {!get(this.props, 'tdo.id') && (
                   <div className={styles.pageHeaderTitleLabel} />
                 )}
                 <div className={styles.pageHeaderActionButtons}>
-                  {get(this.props, 'tdo.id', null) &&
+                  {get(this.props, 'tdo.id') &&
                     <Tooltip
                       id="tooltip-run-process"
                       title="Run Process"
@@ -514,7 +514,7 @@ class MediaDetailsWidget extends React.Component {
                         />
                       </IconButton>
                     </Tooltip>}
-                  {(get(this.props, 'tdo.id', null) || get(this.props, 'tdo.details', null)) &&
+                  {(get(this.props, 'tdo.id') || get(this.props, 'tdo.details', null)) &&
                     <div className={styles.pageHeaderActionButtonsSeparator} />}
                   <IconButton
                     className={styles.pageCloseButton}
@@ -528,7 +528,7 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
-              {get(this.props, 'tdo.id', null) &&
+              {get(this.props, 'tdo.id') &&
                 <Tabs
                   value={this.state.selectedTabValue}
                   onChange={this.handleTabChange}
@@ -655,7 +655,7 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
-              {!isExpandedMode && (
+              {!isExpandedMode && get(this.props, 'tdo.id') && (
                 <div className={styles.mediaView}>
                   {isImage ? (
                     <Image
