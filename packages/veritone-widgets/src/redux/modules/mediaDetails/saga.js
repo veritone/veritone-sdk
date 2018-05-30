@@ -7,7 +7,7 @@ import {
   select,
   take
 } from 'redux-saga/effects';
-import { get, uniq, isObject, isEmpty } from 'lodash';
+import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
@@ -924,12 +924,16 @@ function* watchUpdateTdoRequest() {
         ...get(tdoDataToUpdate, 'veritoneCustom')
       };
     }
-    if (!isEmpty(get(tdoDataToUpdate, 'veritoneProgram'))) {
+    if (!every(get(tdoDataToUpdate, 'veritoneProgram'), isUndefined)) {
       detailsToSave.veritoneProgram = {
-        ...get(metaData, 'veritoneProgram'),
-        programImage: get(tdoDataToUpdate, 'veritoneProgram.programImage'),
-        programLiveImage: get(tdoDataToUpdate, 'veritoneProgram.programLiveImage')
+        ...get(metaData, 'veritoneProgram')
       };
+      if (!isUndefined(get(tdoDataToUpdate, 'veritoneProgram.programImage'))) {
+        detailsToSave.veritoneProgram.programImage = get(tdoDataToUpdate, 'veritoneProgram.programImage');
+      }
+      if (!isUndefined(get(tdoDataToUpdate, 'veritoneProgram.programLiveImage'))) {
+        detailsToSave.veritoneProgram.programLiveImage = get(tdoDataToUpdate, 'veritoneProgram.programLiveImage');
+      }
     }
     if (get(tdoDataToUpdate, 'tags.length')) {
       detailsToSave.tags = get(tdoDataToUpdate, 'tags').map(tag => {
