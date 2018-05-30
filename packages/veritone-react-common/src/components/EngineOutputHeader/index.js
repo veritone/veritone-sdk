@@ -20,6 +20,7 @@ class EngineOutputHeader extends Component {
   static propTypes = {
     title: string,
     hideTitle: bool,
+    hideExpandButton: bool,
     engines: arrayOf(
       shape({
         id: string.isRequired,
@@ -47,6 +48,7 @@ class EngineOutputHeader extends Component {
       children,
       title,
       hideTitle,
+      hideExpandButton,
       engines,
       selectedEngineId,
       onExpandClick
@@ -86,8 +88,8 @@ class EngineOutputHeader extends Component {
             </Select>
           )}
         </div>
-        {onExpandClick && <div className={styles.actionIconDivider} />}
-        {onExpandClick && (
+        {onExpandClick && !hideExpandButton && <div className={styles.actionIconDivider} />}
+        {onExpandClick && !hideExpandButton && (
           <IconButton aria-label="Expanded View" onClick={onExpandClick}>
             <ZoomOutMap />
           </IconButton>

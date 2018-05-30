@@ -801,6 +801,7 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
                         onExpandClick={this.toggleExpandedMode}
+                        isExpandedMode={isExpandedMode}
                       />
                     )}
                   {selectedEngineCategory &&

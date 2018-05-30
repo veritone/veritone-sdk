@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   arrayOf,
+  bool,
   shape,
   number,
   string,
@@ -46,7 +47,8 @@ class StructuredDataEngineOutput extends Component {
     selectedEngineId: string,
     onEngineChange: func,
     className: string,
-    onExpandClick: func
+    onExpandClick: func,
+    isExpandedMode: bool
   };
 
   static defaultProps = {
@@ -141,7 +143,8 @@ class StructuredDataEngineOutput extends Component {
       engines,
       schemasById,
       selectedEngineId,
-      onExpandClick
+      onExpandClick,
+      isExpandedMode
     } = this.props;
 
     const {
@@ -158,6 +161,7 @@ class StructuredDataEngineOutput extends Component {
           selectedEngineId={selectedEngineId}
           onEngineChange={this.handleEngineChange}
           onExpandClick={onExpandClick}
+          hideExpandButton={isExpandedMode}
         >
           {schemasById[selectedSchemaId] && (
             <Select
