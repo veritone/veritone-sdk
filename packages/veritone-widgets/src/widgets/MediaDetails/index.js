@@ -595,7 +595,6 @@ class MediaDetailsWidget extends React.Component {
                     className={styles.backButtonEditMode}
                     onClick={this.onCancelEdit}
                     aria-label="Back"
-                    disableRipple
                   >
                     <Icon
                       className="icon-arrow-back"
