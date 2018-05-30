@@ -71,30 +71,26 @@
   .engineActionHeader {
     height: 54px;
     border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
 
-    .engineActionContainer {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      width: 100%;
-      height: 54px;
+    .engineCategorySelector {
+      margin-left: 20px;
+      align-self: flex-end;
+    }
 
-      .engineCategorySelector {
-        margin-left: 20px;
-        align-self: flex-end;
-      }
-
-      .toEditModeButton {
-        align-self: center;
-        text-transform: uppercase;
-        background-color: #2196f3;
-        color: #fff;
-        height: 36px;
-        border-radius: 3px;
-        box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12),
-          0 2px 2px 0 rgba(0, 0, 0, 0.24);
-        margin-right: 20px;
-      }
+    .toEditModeButton {
+      align-self: center;
+      text-transform: uppercase;
+      background-color: #2196f3;
+      color: #fff;
+      height: 36px;
+      border-radius: 3px;
+      box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12),
+        0 2px 2px 0 rgba(0, 0, 0, 0.24);
+      margin-right: 20px;
     }
   }
 
@@ -208,6 +204,11 @@
   .metadataSidePanel {
     width: 360px;
   }
+}
+
+.tooltipPlacementBottom {
+  margin: 5px 0;
+  color: red;
 }
 
 .tabIndicator {

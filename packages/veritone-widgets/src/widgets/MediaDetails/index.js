@@ -456,9 +456,7 @@ class MediaDetailsWidget extends React.Component {
                   <Tooltip
                     id="truncated-file-name-tooltip"
                     title={get(this.props, 'tdo.details.veritoneFile.filename')}
-                    placement="bottom-start"
-                    enterDelay={1000}
-                    leaveDelay={700}
+                    PopperProps={{ style: { pointerEvents: 'none', marginTop: '5px', top: '-10px' } }}
                   >
                     <div className={styles.pageHeaderTitleLabel}>
                       {get(
@@ -469,7 +467,7 @@ class MediaDetailsWidget extends React.Component {
                     </div>
                   </Tooltip>
                 )}
-                {get(
+                {get(this.props, 'tdo.id', null) && get(
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
@@ -478,28 +476,46 @@ class MediaDetailsWidget extends React.Component {
                     {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
                 )}
+                {!get(this.props, 'tdo.id', null) && (
+                  <div className={styles.pageHeaderTitleLabel} />
+                )}
                 <div className={styles.pageHeaderActionButtons}>
-                  <IconButton
-                    className={styles.pageHeaderActionButton}
-                    onClick={this.handleRunProcess}
-                    aria-label="Run process"
-                  >
-                    <Icon
-                      className="icon-run-process"
-                      classes={{ root: styles.iconClass }}
-                    />
-                  </IconButton>
-                  <IconButton
-                    className={styles.pageHeaderActionButton}
-                    onClick={this.toggleInfoPanel}
-                    aria-label="Info Panel"
-                  >
-                    <Icon
-                      className="icon-info-panel"
-                      classes={{ root: styles.iconClass }}
-                    />
-                  </IconButton>
-                  <div className={styles.pageHeaderActionButtonsSeparator} />
+                  {get(this.props, 'tdo.id', null) &&
+                    <Tooltip
+                      id="tooltip-run-process"
+                      title="Run Process"
+                      PopperProps={{ style: { pointerEvents: 'none', marginTop: '5px', top: '-20px' } }}
+                    >
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.handleRunProcess}
+                        aria-label="Run process"
+                      >
+                        <Icon
+                          className="icon-run-process"
+                          classes={{root: styles.iconClass}}
+                        />
+                      </IconButton>
+                    </Tooltip>}
+                  {get(this.props, 'tdo.details', null) &&
+                    <Tooltip
+                      id="tooltip-show-metadata"
+                      title="Show Metadata"
+                      PopperProps={{ style: { pointerEvents: 'none', marginTop: '5px', top: '-20px' } }}
+                    >
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.toggleInfoPanel}
+                        aria-label="Info Panel"
+                      >
+                        <Icon
+                          className="icon-info-panel"
+                          classes={{ root: styles.iconClass }}
+                        />
+                      </IconButton>
+                    </Tooltip>}
+                  {(get(this.props, 'tdo.id', null) || get(this.props, 'tdo.details', null)) &&
+                    <div className={styles.pageHeaderActionButtonsSeparator} />}
                   <IconButton
                     className={styles.pageCloseButton}
                     onClick={this.props.onClose}
@@ -512,40 +528,40 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
-              <Tabs
-                value={this.state.selectedTabValue}
-                onChange={this.handleTabChange}
-                classes={{
-                  flexContainer: styles.mediaDetailsPageTabSelector,
-                  indicator: styles.tabIndicator
-                }}
-              >
-                <Tab
-                  label="Media Details"
-                  classes={{ root: styles.pageTabLabel }}
-                  value="mediaDetails"
-                  style={{
-                    fontWeight:
-                      this.state.selectedTabValue === 'mediaDetails' ? 500 : 400
+              {get(this.props, 'tdo.id', null) &&
+                <Tabs
+                  value={this.state.selectedTabValue}
+                  onChange={this.handleTabChange}
+                  classes={{
+                    flexContainer: styles.mediaDetailsPageTabSelector,
+                    indicator: styles.tabIndicator
                   }}
-                />
-                <Tab
-                  label="Content Templates"
-                  classes={{ root: styles.pageTabLabel }}
-                  value="contentTemplates"
-                  style={{
-                    fontWeight:
-                      this.state.selectedTabValue === 'contentTemplates'
-                        ? 500
-                        : 400
-                  }}
-                />
-              </Tabs>
+                >
+                  <Tab
+                    label="Media Details"
+                    classes={{ root: styles.pageTabLabel }}
+                    value="mediaDetails"
+                    style={{
+                      fontWeight:
+                        this.state.selectedTabValue === 'mediaDetails' ? 500 : 400
+                    }}
+                  />
+                  <Tab
+                    label="Content Templates"
+                    classes={{ root: styles.pageTabLabel }}
+                    value="contentTemplates"
+                    style={{
+                      fontWeight:
+                        this.state.selectedTabValue === 'contentTemplates'
+                          ? 500
+                          : 400
+                    }}
+                  />
+                </Tabs>}
 
               {selectedEngineCategory &&
                 this.state.selectedTabValue === 'mediaDetails' && (
                   <div className={styles.engineActionHeader}>
-                    <div className={styles.engineActionContainer}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={this.props.engineCategories}
@@ -565,7 +581,7 @@ class MediaDetailsWidget extends React.Component {
                           EDIT MODE
                         </Button>
                       )}
-                    </div>
+
                   </div>
                 )}
             </div>
@@ -656,9 +672,10 @@ class MediaDetailsWidget extends React.Component {
                       streams={get(this.props, 'tdo.streams')}
                     />
                   )}
-                  <div className={styles.sourceLabel}>
-                    Source: {this.getMediaSource()}
-                  </div>
+                  {this.getMediaSource() &&
+                    <div className={styles.sourceLabel}>
+                      Source: {this.getMediaSource()}
+                    </div>}
                 </div>
               )}
               {selectedEngineId && (
