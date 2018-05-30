@@ -110,8 +110,8 @@ class DynamicAdapter extends React.Component {
                 <div className={styles.adapterIconContainer}>
                   <Image
                     src={this.props.adapterConfig.iconPath}
-                    width={44}
-                    height={44}
+                    width={'44px'}
+                    height={'44px'}
                     border
                   />
                 </div>
@@ -229,11 +229,11 @@ export default {
   },
   validate: adapterStep => (configuration, cb) => {
     let errors = [];
+    if (get(adapterStep, 'supportedSourceTypes.length') && !configuration.sourceId) {
+      errors.push('Source is required');
+    }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
-        if (adapterStep.sourceRequired && !configuration.sourceId) {
-          errors.push('Source is required');
-        }
         if (field.defaultValue && !configuration[field.name]) {
           errors.push(startCase(toLower(field.name)) + ' is invalid');
         } else if (
