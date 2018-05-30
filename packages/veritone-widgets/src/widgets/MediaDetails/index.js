@@ -452,7 +452,7 @@ class MediaDetailsWidget extends React.Component {
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
-                ) > 120 && (
+                ) > 64 && (
                   <Tooltip
                     id="truncated-file-name-tooltip"
                     title={get(this.props, 'tdo.details.veritoneFile.filename')}
@@ -465,7 +465,7 @@ class MediaDetailsWidget extends React.Component {
                         this.props,
                         'tdo.details.veritoneFile.filename',
                         ''
-                      ).substring(0, 119) + '...'}
+                      ).substring(0, 63) + '...'}
                     </div>
                   </Tooltip>
                 )}
@@ -473,7 +473,7 @@ class MediaDetailsWidget extends React.Component {
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
-                ) <= 120 && (
+                ) <= 64 && (
                   <div className={styles.pageHeaderTitleLabel}>
                     {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
