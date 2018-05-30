@@ -12,10 +12,10 @@ import styles from './styles.scss';
 const ObjectGroup = ({
   objectGroup,
   currentMediaPlayerTime,
-  onObjectClicked
+  onObjectClick
 }) => {
   const handleObjectClick = (startTime, stopTime) => evt =>
-    onObjectClicked(startTime, stopTime);
+    onObjectClick(startTime, stopTime);
   return (
     <span>
       {objectGroup.series &&
@@ -56,7 +56,7 @@ ObjectGroup.propTypes = {
     )
   }),
   currentMediaPlayerTime: number,
-  onObjectClicked: func
+  onObjectClick: func
 };
 
 class ObjectDetectionEngineOutput extends Component {
@@ -125,7 +125,7 @@ class ObjectDetectionEngineOutput extends Component {
                 key={`object-group-${objectGroup.sourceEngineId}-${objectGroup.taskId}-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
                 objectGroup={objectGroup}
                 currentMediaPlayerTime={currentMediaPlayerTime}
-                onObjectClicked={this.handleObjectClick}
+                onObjectClick={this.handleObjectClick}
               />
             );
           })}
