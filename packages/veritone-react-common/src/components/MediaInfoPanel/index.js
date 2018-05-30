@@ -270,9 +270,9 @@ class MediaInfoPanel extends Component {
       veritoneProgram: {
         ...tdo.details.veritoneProgram,
         programImage:
-          tdo.sourceImageUrl || tdo.details.veritoneProgram.programImage,
+          tdo.sourceImageUrl || get(tdo, 'details.veritoneProgram.programImage'),
         programLiveImage:
-          tdo.thumbnailUrl || tdo.details.veritoneProgram.programLiveImage
+          tdo.thumbnailUrl || get(tdo, 'details.veritoneProgram.programLiveImage')
       }
     };
 
