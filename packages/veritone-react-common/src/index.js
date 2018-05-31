@@ -8,6 +8,7 @@ export AppFooter, {
 export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
 export Chip from './components/Chip';
+export DelayedProgress from './components/DelayedProgress';
 export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
