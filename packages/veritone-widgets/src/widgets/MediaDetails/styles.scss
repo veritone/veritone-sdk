@@ -53,6 +53,12 @@
     }
   }
 
+  .tdoLoadingProgress {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+
   .mediaDetailsPageTabSelector {
     background-color: #252c3b;
     height: 55px;

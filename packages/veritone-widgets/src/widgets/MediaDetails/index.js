@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import Tab from '@material-ui/core/Tab';
@@ -53,6 +54,7 @@ import widget from '../../shared/widget';
   (state, { id }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
+    isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
     engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
       state,
       id
@@ -120,6 +122,7 @@ class MediaDetailsWidget extends React.Component {
         )
       })
     ),
+    isLoadingTdo: bool,
     tdo: shape({
       id: string,
       details: shape({
@@ -434,6 +437,7 @@ class MediaDetailsWidget extends React.Component {
       entities,
       contentTemplates,
       tdo,
+      isLoadingTdo,
       tdoContentTemplates,
       schemasById,
       googleMapsApiKey
@@ -477,7 +481,7 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 )}
                 {!get(this.props, 'tdo.id') && (
-                  <div className={styles.pageHeaderTitleLabel} />
+                  <div className={styles.pageHeaderTitleLabel}/>
                 )}
                 <div className={styles.pageHeaderActionButtons}>
                   {get(this.props, 'tdo.id') &&
@@ -528,6 +532,13 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
+              {isLoadingTdo &&
+                <div className={styles.tdoLoadingProgress}>
+                  <CircularProgress
+                    size={100}
+                    color={'primary'}
+                  />
+                </div>}
               {get(this.props, 'tdo.id') &&
                 <Tabs
                   value={this.state.selectedTabValue}
@@ -558,7 +569,6 @@ class MediaDetailsWidget extends React.Component {
                     }}
                   />
                 </Tabs>}
-
               {selectedEngineCategory &&
                 this.state.selectedTabValue === 'mediaDetails' && (
                   <div className={styles.engineActionHeader}>

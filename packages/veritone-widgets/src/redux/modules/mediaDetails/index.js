@@ -57,10 +57,10 @@ const defaultMDPState = {
   engineResultsByEngineId: {},
   engineResultRequestsByEngineId: {}, // A list of engine result request so we don't request already fetched data.
   tdo: null,
+  isLoadingTdo: false,
   selectedEngineCategory: null,
   selectedEngineId: null,
   isEditModeEnabled: false,
-  loadingEngineResults: false,
   isExpandedMode: false,
   libraries: [],
   fetchingLibraries: false,
@@ -270,6 +270,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
+        isLoadingTdo: true,
         success: true,
         error: null,
         tdo: null
@@ -288,6 +289,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
+        isLoadingTdo: false,
         success: true,
         error: null,
         tdo: tdo
@@ -305,6 +307,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
+        isLoadingTdo: false,
         success: false,
         error: error ? errorMessage : null,
         tdo: null
@@ -719,6 +722,8 @@ export const getEngineResultRequestsByEngineId = (state, widgetId, engineId) =>
   get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
   [];
 export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
+export const isLoadingTdo = (state, widgetId) =>
+  get(local(state), [widgetId, 'isLoadingTdo']);
 export const getTdoMetadata = (state, widgetId) =>
   get(local(state), [widgetId, 'tdo', 'details']);
 export const getSelectedEngineCategory = (state, widgetId) =>
