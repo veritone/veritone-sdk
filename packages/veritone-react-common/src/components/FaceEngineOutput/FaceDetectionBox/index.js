@@ -37,7 +37,6 @@ const renderEntitySearchMenu = ({
         />
         <div className={styles.entityInfo}>
           <div className={styles.menuEntityName}>{result.name}</div>
-          {/* <div className={styles.menuLibraryName}>{result.libraryName}</div> */}
           <div className={styles.menuLibraryName}>{result.library.name}</div>
         </div>
       </MenuItem>
@@ -69,7 +68,8 @@ class FaceDetectionBox extends Component {
     onRemoveFaceDetection: func,
     onEditFaceDetection: func,
     onClick: func,
-    onSearchForEntities: func
+    onSearchForEntities: func,
+    isSearchingEntities: bool
   };
 
   state = {

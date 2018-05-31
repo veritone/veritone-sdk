@@ -221,7 +221,6 @@ const reducer = createReducer(defaultState, {
       .reduce((acc, engineResult, engineResultIdx) => {
         const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
 
-        // return (faceIdx > -1) ? [engineResultIdx, 'series', faceIdx] : acc;
         return (faceIdx > -1) ? `[${engineResultIdx}].series[${faceIdx}]` : acc;
       }, []);
 
@@ -252,29 +251,6 @@ const reducer = createReducer(defaultState, {
         [entity.id]: entity
       }
     }
-
-    // const engineResults = [...state.engineResultsByEngineId[selectedEngineId]];
-
-    // set(engineResults, detectedFacePath, {
-    //   ...faceObj,
-    //   object: {
-    //     ...faceObj.object,
-    //     entityId: entity.id,
-    //     libraryId: entity.libraryId
-    //   }
-    // });
-
-    // return {
-    //   ...state,
-    //   engineResultsByEngineId: {
-    //     ...state.engineResultsByEngineId,
-    //     [selectedEngineId]: engineResults
-    //   },
-    //   entities: {
-    //     ...state.entities,
-    //     [entity.id]: entity
-    //   }
-    // }
   },
   [UPDATE_ENGINE_RESULT](state, action) {
     const engineResult = { ...state.engineResultsByEngineId[action.payload.selectedEngineId][0] };
@@ -335,11 +311,8 @@ export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
 export const getFaceDataByEngine = (state, engineId) =>
-get(local(state), ['engineResultsByEngineId', engineId]);
-  // map(
-  //   get(local(state), ['engineResultsByEngineId', engineId]),
-  //   engineResults => ({ series: [...engineResults.series] })
-  // );
+  get(local(state), ['engineResultsByEngineId', engineId]);
+
 export const getUserDetectedFaces = (state, engineId) =>
   get(local(state), ['facesDetectedByUser', engineId])
 
@@ -451,12 +424,10 @@ export const getFaces = createSelector(
   (faceData, userDetectedFaces, entities) => {
     const faceEntities = {
       unrecognizedFaces: [],
-      // recognizedFaces: [],
       recognizedFaces: {},
     };
 
     // flatten data series for currently selected engine
-    // const faceSeries = faceData.reduce((accumulator, faceSeries) => {
     const faceSeries = addUserDetectedFaces(faceData, userDetectedFaces)
     .reduce((accumulator, faceSeries) => {
       if (!isEmpty(faceSeries.series)) {
@@ -472,7 +443,6 @@ export const getFaces = createSelector(
       if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
-        // faceEntities.recognizedFaces.push(faceObj);
         faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
       }
     });
@@ -482,7 +452,6 @@ export const getFaces = createSelector(
 )
 
 export const getFaceEngineAssetData = (state, engineId) => {
-  // const engineResults = local(state).engineResultsByEngineId[engineId];
   const engineResults =  getFaceDataByEngine(state, engineId);
   const userDetectedFaces = getUserDetectedFaces(state, engineId);
 
@@ -491,7 +460,7 @@ export const getFaceEngineAssetData = (state, engineId) => {
     sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
     sourceEngineName: 'User Generated'
   };
-  // const allSeries = engineResults.reduce((accumulator, engineResult) => {
+
   const allSeries = addUserDetectedFaces(engineResults, userDetectedFaces)
   .reduce((accumulator, engineResult) => {
     return [...accumulator, ...engineResult.series];
