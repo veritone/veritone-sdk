@@ -74,7 +74,7 @@ class EngineOutputHeader extends Component {
                 getContentAnchorEl: null
               }}
             >
-              {engines.map((e) => {
+              {engines.map(e => {
                 return (
                   <MenuItem
                     key={`engine-menu-item-${e.id}`}
@@ -90,12 +90,14 @@ class EngineOutputHeader extends Component {
             </Select>
           )}
         </div>
-        {onExpandClick && !hideExpandButton && <div className={styles.actionIconDivider} />}
-        {onExpandClick && !hideExpandButton && (
-          <IconButton aria-label="Expanded View" onClick={onExpandClick}>
-            <ZoomOutMap />
-          </IconButton>
-        )}
+        {onExpandClick &&
+          !hideExpandButton && <div className={styles.actionIconDivider} />}
+        {onExpandClick &&
+          !hideExpandButton && (
+            <IconButton aria-label="Expanded View" onClick={onExpandClick}>
+              <ZoomOutMap />
+            </IconButton>
+          )}
       </div>
     );
   }

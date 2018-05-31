@@ -20,7 +20,7 @@ class ObjectDetectionEngineOutput extends Component {
               confidence: number
             }).isRequired
           })
-        )
+        ).isRequired
       })
     ),
     onObjectOccurrenceClick: func,
