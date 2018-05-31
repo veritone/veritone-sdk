@@ -79,7 +79,9 @@ class EngineOutputHeader extends Component {
                   <MenuItem
                     key={`engine-menu-item-${e.id}`}
                     value={e.id}
-                    className={styles.engine}
+                    classes={{
+                      root: styles.engine
+                    }}
                   >
                     {e.name}
                   </MenuItem>
