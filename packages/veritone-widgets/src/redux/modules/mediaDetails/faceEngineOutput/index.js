@@ -1,5 +1,6 @@
 export const namespace = 'face-engine-output';
 
+export const FETCH_ENGINE_RESULTS = `vtn/${namespace}/FETCH_ENGINE_RESULTS`;
 export const FETCHING_ENGINE_RESULTS = `vtn/${namespace}/FETCHING_ENGINE_RESULTS`;
 export const FETCH_ENGINE_RESULTS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_RESULTS_SUCCESS`;
 export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESULTS_FAILURE`;
@@ -18,10 +19,13 @@ export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
 export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
 
 export const SEARCH_ENTITIES = `vtn/${namespace}/SEARCH_ENTITIES`;
+export const SEARCHING_ENTITIES = `vtn/${namespace}/SEARCHING_ENTITIES`;
 export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS`;
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
 export const UPDATE_ENGINE_RESULT_ENTITY = `vtn/${namespace}/UPDATE_ENGINE_RESULT_ENTITY`;
+
+export const REMOVE_USER_DETECTED_FACES = `vtn/${namespace}/REMOVE_USER_DETECTED_FACES`;
 
 const UPDATE_ENGINE_RESULT = `vtn/${namespace}/UPDATE_ENGINE_RESULT`;
 
@@ -51,7 +55,9 @@ const defaultState = {
   entitySearchResults: [],
   isFetchingEngineResults: false,
   isFetchingEntities: false,
-  isFetchingLibraries: false
+  isFetchingLibraries: false,
+  isSearchingEntities: false,
+  facesDetectedByUser: {}
 };
 
 const reducer = createReducer(defaultState, {
@@ -175,6 +181,12 @@ const reducer = createReducer(defaultState, {
       ...state
     }
   },
+  [SEARCHING_ENTITIES](state, action) {
+    return {
+      ...state,
+      isSearchingEntities: true
+    }
+  },
   [SEARCH_ENTITIES_SUCCESS](state, action) {
     if (action.payload.errors) {
       return this[SEARCH_ENTITIES_FAILURE](state, action);
@@ -191,12 +203,14 @@ const reducer = createReducer(defaultState, {
 
     return {
       ...state,
-      entitySearchResults: flatten(entitySearchResults)
+      entitySearchResults: flatten(entitySearchResults),
+      isSearchingEntities: false
     }
   },
   [SEARCH_ENTITIES_FAILURE](state, action) {
     return {
-      ...state
+      ...state,
+      isSearchingEntities: false
     }
   },
   [UPDATE_ENGINE_RESULT_ENTITY](state, action) {
@@ -207,7 +221,7 @@ const reducer = createReducer(defaultState, {
       .reduce((acc, engineResult, engineResultIdx) => {
         const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
 
-        return (faceIdx > -1) ? [engineResultIdx, 'series', faceIdx] : acc;
+        return (faceIdx > -1) ? `[${engineResultIdx}].series[${faceIdx}]` : acc;
       }, []);
 
     if (!detectedFacePath.length) {
@@ -216,26 +230,21 @@ const reducer = createReducer(defaultState, {
       };
     }
 
-    const engineResults = [...state.engineResultsByEngineId[selectedEngineId]];
-
-    console.log('entity:', entity)
-
-    set(engineResults, detectedFacePath, {
-      ...faceObj,
-      object: {
-        ...faceObj.object,
-        entityId: entity.id,
-        libraryId: entity.libraryId
-      }
-    });
-
-    console.log('get(engineResults, detectedFacePath):', get(engineResults, detectedFacePath));
-
     return {
       ...state,
-      engineResultsByEngineId: {
-        ...state.engineResultsByEngineId,
-        [selectedEngineId]: engineResults
+      facesDetectedByUser: {
+        ...state.facesDetectedByUser,
+        [selectedEngineId]: {
+          ...state.facesDetectedByUser[selectedEngineId],
+          [detectedFacePath]: {
+            ...faceObj,
+            object: {
+              ...faceObj.object,
+              entityId: entity.id,
+              libraryId: entity.libraryId
+            }
+          }
+        }
       },
       entities: {
         ...state.entities,
@@ -254,6 +263,12 @@ const reducer = createReducer(defaultState, {
         [action.payload.selectedEngineId]: [engineResult]
       }
     };
+  },
+  [REMOVE_USER_DETECTED_FACES](state, action) {
+    return {
+      ...state,
+      facesDetectedByUser: {}
+    }
   }
 });
 export default reducer;
@@ -263,11 +278,17 @@ function local(state) {
 }
 
 /* ENGINE RESULTS */
+export const fetchEngineResults = (meta) => ({
+  type: FETCH_ENGINE_RESULTS,
+  meta
+});
 export const fetchingEngineResults = (meta) => ({
   type: FETCHING_ENGINE_RESULTS,
   meta
 });
-export const doneFetchingEngineResults = () => ({ type: DONE_FETCHING_ENGINE_RESULTS });
+export const doneFetchingEngineResults = () => ({
+  type: DONE_FETCHING_ENGINE_RESULTS
+});
 export const fetchEngineResultsSuccess = (payload, meta) => ({
   type: FETCH_ENGINE_RESULTS_SUCCESS,
   payload,
@@ -286,16 +307,14 @@ export const updateEngineResultEntity = (selectedEngineId, faceObj, entity) => (
     entity
   }
 });
-
 export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
-
 export const getFaceDataByEngine = (state, engineId) =>
-  map(
-    get(local(state), ['engineResultsByEngineId', engineId]),
-    engineResults => ({ series: engineResults.series })
-  );
+  get(local(state), ['engineResultsByEngineId', engineId]);
+
+export const getUserDetectedFaces = (state, engineId) =>
+  get(local(state), ['facesDetectedByUser', engineId])
 
 export const fetchedEngineResultByEngineId = (state, engineId) =>
   get(local(state), ['fetchedEngineResults', engineId], [])
@@ -332,6 +351,9 @@ export const createEntityFailure = (payload, meta) => ({
   meta
 });
 
+export const fetchingEntitySearchResults = () => ({
+  type: SEARCHING_ENTITIES
+});
 export const fetchEntitySearchResults = (libraryType, searchText) => ({
   type: SEARCH_ENTITIES,
   payload: {
@@ -353,8 +375,17 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
 }
+
+export function isSearchingEntities(state) {
+  return local(state).isSearchingEntities;
+}
+
 export const getEntities = (state) =>
   Object.values(get(local(state), 'entities', []));
+
+export function getEntitySearchResults(state) {
+  return get(local(state), 'entitySearchResults', []);
+}
 
 
 /* LIBRARIES */
@@ -381,17 +412,24 @@ export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
 
+/* USER DETECTED FACES */
+export const removeUserDetectedFaces = () => ({
+  type: REMOVE_USER_DETECTED_FACES,
+});
+
+
 /* SELECTORS */
 export const getFaces = createSelector(
-  [getFaceDataByEngine, getEntities],
-  (faceData, entities) => {
+  [getFaceDataByEngine, getUserDetectedFaces, getEntities],
+  (faceData, userDetectedFaces, entities) => {
     const faceEntities = {
       unrecognizedFaces: [],
-      recognizedFaces: [],
+      recognizedFaces: {},
     };
 
     // flatten data series for currently selected engine
-    const faceSeries = faceData.reduce((accumulator, faceSeries) => {
+    const faceSeries = addUserDetectedFaces(faceData, userDetectedFaces)
+    .reduce((accumulator, faceSeries) => {
       if (!isEmpty(faceSeries.series)) {
         return [...accumulator, ...faceSeries.series];
       }
@@ -405,7 +443,7 @@ export const getFaces = createSelector(
       if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
-        faceEntities.recognizedFaces.push(faceObj);
+        faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
       }
     });
 
@@ -414,15 +452,20 @@ export const getFaces = createSelector(
 )
 
 export const getFaceEngineAssetData = (state, engineId) => {
-  const engineResults = local(state).engineResultsByEngineId[engineId];
+  const engineResults =  getFaceDataByEngine(state, engineId);
+  const userDetectedFaces = getUserDetectedFaces(state, engineId);
+
   // On the result use engineAliasId for 'user-edited-face-engine-results'
   const userEdited = {
     sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
     sourceEngineName: 'User Generated'
   };
-  const allSeries = engineResults.reduce((accumulator, engineResult) => {
+
+  const allSeries = addUserDetectedFaces(engineResults, userDetectedFaces)
+  .reduce((accumulator, engineResult) => {
     return [...accumulator, ...engineResult.series];
   }, []);
+
   return {
     ...userEdited,
     series: allSeries
@@ -437,6 +480,13 @@ export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({
   }
 });
 
-export function getEntitySearchResults(state) {
-  return get(local(state), 'entitySearchResults', []);
+function addUserDetectedFaces(engineResults, userDetectedFaces) {
+  const updatedFaceData = map(engineResults, data => ({ series: [...data.series] }));
+
+
+  forEach(userDetectedFaces, (faceObj, faceObjPath) => {
+    set(updatedFaceData, faceObjPath, faceObj);
+  });
+
+  return updatedFaceData;
 }

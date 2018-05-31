@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
+import Icon from '@material-ui/core/Icon';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import EntityMetadata from './EntityMetadata';

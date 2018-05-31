@@ -91,9 +91,7 @@ export default class TranslationContent extends Component {
             stopTimeMs={segmentStopTime}
             className={classNames(styles.boxSegment, errorSegmentClassName)}
             onClick={onRerunProcess}
-            key={
-              'translation-error-' + segmentStartTime + '-' + segmentStopTime
-            }
+            key={`translation-error-${segmentStartTime}-${segmentStopTime}`}
           />
         )
       });
@@ -110,9 +108,7 @@ export default class TranslationContent extends Component {
             startTimeMs={segmentStartTime}
             stopTimeMs={segmentStopTime}
             className={classNames(styles.boxSegment, noDataSegmentClassName)}
-            key={
-              'translation-nodata-' + segmentStartTime + '-' + segmentStopTime
-            }
+            key={`translation-nodata-${segmentStartTime}-${segmentStopTime}`}
           />
         )
       });
@@ -251,7 +247,7 @@ export default class TranslationContent extends Component {
                   )
                 }
                 className={classNames(styles.dataSegment, dataSegmentClassName)}
-                key={'translation-data-' + entryStartTime + '-' + entryStopTime}
+                key={`translation-data-${entryStartTime}-${entryStopTime}`}
               />
             );
           }

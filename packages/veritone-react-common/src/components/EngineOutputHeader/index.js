@@ -8,10 +8,11 @@ import {
   shape,
   func
 } from 'prop-types';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import ZoomOutMap from 'material-ui-icons/ZoomOutMap';
-import IconButton from 'material-ui/IconButton';
+import { isEmpty } from 'lodash';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import IconButton from '@material-ui/core/IconButton';
 
 import styles from './styles.scss';
 
@@ -19,15 +20,16 @@ class EngineOutputHeader extends Component {
   static propTypes = {
     title: string,
     hideTitle: bool,
+    hideExpandButton: bool,
     engines: arrayOf(
       shape({
-        id: string,
-        name: string
+        id: string.isRequired,
+        name: string.isRequired
       })
     ),
     selectedEngineId: string,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
     children: oneOfType([arrayOf(node), node])
   };
 
@@ -42,20 +44,21 @@ class EngineOutputHeader extends Component {
   };
 
   render() {
-    let {
+    const {
       children,
       title,
       hideTitle,
+      hideExpandButton,
       engines,
       selectedEngineId,
-      onExpandClicked
+      onExpandClick
     } = this.props;
     return (
       <div className={styles.engineOutputHeader}>
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
         <div className={styles.headerActions}>
           {children}
-          {!!engines.length && (
+          {!isEmpty(engines) && (
             <Select
               value={selectedEngineId || engines[0].id}
               className={styles.engineSelect}
@@ -71,12 +74,14 @@ class EngineOutputHeader extends Component {
                 getContentAnchorEl: null
               }}
             >
-              {engines.map((e, i) => {
+              {engines.map(e => {
                 return (
                   <MenuItem
-                    key={'engine-menu-item-' + e.id}
+                    key={`engine-menu-item-${e.id}`}
                     value={e.id}
-                    className={styles.engine}
+                    classes={{
+                      root: styles.engine
+                    }}
                   >
                     {e.name}
                   </MenuItem>
@@ -85,12 +90,14 @@ class EngineOutputHeader extends Component {
             </Select>
           )}
         </div>
-        {onExpandClicked && <div className={styles.actionIconDivider} />}
-        {onExpandClicked && (
-          <IconButton aria-label="Expanded View" onClick={onExpandClicked}>
-            <ZoomOutMap />
-          </IconButton>
-        )}
+        {onExpandClick &&
+          !hideExpandButton && <div className={styles.actionIconDivider} />}
+        {onExpandClick &&
+          !hideExpandButton && (
+            <IconButton aria-label="Expanded View" onClick={onExpandClick}>
+              <ZoomOutMap />
+            </IconButton>
+          )}
       </div>
     );
   }

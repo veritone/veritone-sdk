@@ -35,13 +35,13 @@ export class TranscriptExample extends Component {
   constructor(props) {
     super(props);
 
-    let initialStartTime = 0;
-    let initialStopTime = 200000;
-    let initialNumDataChunks = 7;
-    let maxSerieSize = 60;
-    let minSerieSize = 1;
-    let type = 'VLF';
-    let badSerieRatio = 0.3;
+    const initialStartTime = 0;
+    const initialStopTime = 200000;
+    const initialNumDataChunks = 7;
+    const maxSerieSize = 60;
+    const minSerieSize = 1;
+    const type = 'VLF';
+    const badSerieRatio = 0.3;
 
     this.selectedEngineId = '1';
     this.engines = [
@@ -50,7 +50,7 @@ export class TranscriptExample extends Component {
       { id: '3', name: 'Engine-Z' }
     ];
 
-    let mockData = genMockData(
+    const mockData = genMockData(
       initialStartTime,
       initialStopTime,
       initialNumDataChunks,
@@ -67,9 +67,9 @@ export class TranscriptExample extends Component {
 
   handleDataRequesting = requestInfo => {
     if (this.props.lazyLoading) {
-      let startTime = requestInfo.start;
-      let stopTime = requestInfo.stop;
-      let additionalData = genMockData(
+      const startTime = requestInfo.start;
+      const stopTime = requestInfo.stop;
+      const additionalData = genMockData(
         startTime,
         stopTime,
         3,
@@ -79,7 +79,7 @@ export class TranscriptExample extends Component {
         0.2
       );
       this.setState(prevState => {
-        let newMockData = { ...prevState }.data.concat(additionalData);
+        const newMockData = { ...prevState }.data.concat(additionalData);
         return {
           data: newMockData
         };
@@ -107,7 +107,7 @@ export class TranscriptExample extends Component {
         engines={this.engines}
         selectedEngineId={this.selectedEngineId}
         onEngineChange={action('engine changed')}
-        onExpandClicked={action('expand view clicked')}
+        onExpandClick={action('expand view clicked')}
       />
     );
   }
@@ -123,15 +123,15 @@ function genMockData(
   badSerieRatio = 0.2,
   enableLazyLoading = true
 ) {
-  let dataChunks = [];
+  const dataChunks = [];
 
   let chunkStartTime = startTime;
-  let timeChunk = (stopTime - startTime) / numDataChunks;
+  const timeChunk = (stopTime - startTime) / numDataChunks;
   for (let chunkIndex = 0; chunkIndex < numDataChunks; chunkIndex++) {
     let chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
 
-    let isBadSerie = Math.random() < badSerieRatio;
-    let series = genMockSerie(
+    const isBadSerie = Math.random() < badSerieRatio;
+    const series = genMockSerie(
       chunkStartTime,
       chunkStoptime,
       maxSerieSize,
@@ -167,18 +167,18 @@ function genMockSerie(
   type = 'TTML',
   badSerie = false
 ) {
-  let mockSeries = [];
+  const mockSeries = [];
   if (badSerie === false) {
-    let serieSize =
+    const serieSize =
       Math.round(Math.random() * (maxSerieSize - minSerieSize)) + minSerieSize;
-    let timeInterval = (stopTimeMs - startTimeMs) / serieSize;
+    const timeInterval = (stopTimeMs - startTimeMs) / serieSize;
 
     let lastStopTime = startTimeMs;
     for (let entryIndex = 0; entryIndex < serieSize; entryIndex++) {
-      let numWords = Math.round(Math.random() * 10);
-      let words = genMockWords(numWords, type);
-      let newStopTime = Math.ceil(lastStopTime + timeInterval);
-      let entry = {
+      const numWords = Math.round(Math.random() * 10);
+      const words = genMockWords(numWords, type);
+      const newStopTime = Math.ceil(lastStopTime + timeInterval);
+      const entry = {
         startTimeMs: lastStopTime,
         stopTimeMs: newStopTime,
         words: words
@@ -200,16 +200,16 @@ function genMockSerie(
 }
 
 function genMockWords(size, type = 'TTML') {
-  let words = [];
+  const words = [];
   if (type === 'TTML') {
-    let sentenceIndex = Math.round(Math.random() * (ttmlSentences.length - 1));
+    const sentenceIndex = Math.round(Math.random() * (ttmlSentences.length - 1));
     words.push({
       word: ttmlSentences[sentenceIndex],
       confidence: 1
     });
   } else {
     for (let index = 0; index < size; index++) {
-      let wordIndex = Math.round(Math.random() * (vlfWords.length - 1));
+      const wordIndex = Math.round(Math.random() * (vlfWords.length - 1));
       words.push({
         word: vlfWords[wordIndex],
         confidence: Math.round(Math.random() * 100) / 100

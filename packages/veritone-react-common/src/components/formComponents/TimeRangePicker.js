@@ -1,6 +1,6 @@
 import React from 'react';
 import { string, func, shape } from 'prop-types';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 
 import styles from './styles/timeRangePicker.scss';
 

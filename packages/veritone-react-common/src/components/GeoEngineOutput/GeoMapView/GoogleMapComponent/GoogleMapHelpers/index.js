@@ -253,8 +253,7 @@ export function findDistanceRatio(lat1, lng1, lat2, lng2) {
     Math.cos(lat1Rad) *
       Math.cos(lat2Rad) *
       Math.pow(Math.sin((lng2Rad - lng1Rad) / 2), 2);
-  const ratio = Math.asin(Math.sqrt(haversine));
-  return ratio;
+  return Math.asin(Math.sqrt(haversine));
 }
 
 export function findDistanceOnEarth(lat1, lng1, lat2, lng2) {

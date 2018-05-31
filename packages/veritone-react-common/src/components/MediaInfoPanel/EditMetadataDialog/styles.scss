@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .editMetadataDialogPaper {
   min-width: 640px;
@@ -32,18 +33,16 @@
   .textInput {
     margin-top: 20px;
     color: $dark-black;
-    line-height: 16px;
 
     input {
+      @include mui-text('body1');
       font-family: Roboto;
-      font-size: 14px;
     }
 
     label {
+      @include mui-text('caption');
       color: $light-black;
       font-family: Roboto;
-      font-size: 12px;
-      font-weight: 400;
       transform: none;
     }
   }
@@ -60,26 +59,73 @@
       align-content: center;
 
       .programImageLabel {
+        @include mui-text('body1');
         text-align: center;
         height: 16px;
         color: $dark-black;
         font-family: Roboto;
-        font-size: 14px;
-        line-height: 16px;
       }
 
-      .programLiveImage {
+      .programLiveImageContainer {
         height: 120px;
         width: 200px;
         margin-top: 20px;
+        position: relative;
+
+        .programLiveImage {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          object-fit: cover;
+        }
+
+        .imageOverlay {
+          height: 32px;
+        }
       }
 
-      .programImage {
+      .programImageContainer {
         height: 120px;
         width: 120px;
         border-radius: 60px;
         margin-top: 20px;
         margin-left: 10px;
+        overflow: hidden;
+        position: relative;
+
+        .programImage {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+        }
+
+        .imageOverlay {
+          height: 36px;
+        }
+      }
+
+      .imageOverlay {
+        position: absolute;
+        width: 100%;
+        background-color: black;
+        opacity: 0.75;
+        bottom: 0;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .editProgramImageIcon {
+          margin: 0 7px;
+          font-size: 20px;
+          opacity: 1;
+        }
+
+        .editProgramLiveImageIcon {
+          margin: 0 10px;
+          font-size: 20px;
+          opacity: 1;
+        }
       }
     }
   }

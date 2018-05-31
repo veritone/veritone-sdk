@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
 
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
-import Radio, { RadioGroup } from 'material-ui/Radio';
-import { FormControlLabel } from 'material-ui/Form';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent, { View, Edit } from './TranscriptContent';
@@ -56,7 +57,7 @@ export default class TranscriptEngineOutput extends Component {
     onClick: func,
     onScroll: func,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -152,13 +153,13 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderHeader() {
-    let {
+    const {
       title,
       engines,
       selectedEngineId,
       editMode,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       headerClassName
     } = this.props;
 
@@ -169,7 +170,7 @@ export default class TranscriptEngineOutput extends Component {
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
-        onExpandClicked={onExpandClicked}
+        onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
         <div className={classNames(styles.controllers)}>
@@ -180,7 +181,7 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderBody() {
-    let {
+    const {
       data,
       onClick,
       onScroll,
@@ -220,7 +221,7 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   render() {
-    let { className } = this.props;
+    const { className } = this.props;
 
     return (
       <div className={classNames(styles.transcriptOutput, className)}>

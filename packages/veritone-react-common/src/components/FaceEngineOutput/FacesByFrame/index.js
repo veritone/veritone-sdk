@@ -55,7 +55,7 @@ class FacesByFrame extends Component {
             ).map((k, i) => {
               return (
                 <FaceFrameContainer
-                  key={'frame-container-' + k}
+                  key={`frame-container-${k}`}
                   faceFrame={
                     framesBySeconds[
                       currentMediaPlayerTime - currentMediaPlayerTime % 1000

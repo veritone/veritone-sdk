@@ -1,9 +1,9 @@
 import React from 'react';
 import { any, objectOf, func } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray } from 'lodash';
-import AddIcon from 'material-ui-icons/Add';
-import ClearIcon from 'material-ui-icons/Clear';
-import IconButton from 'material-ui/IconButton';
+import AddIcon from '@material-ui/icons/Add';
+import ClearIcon from '@material-ui/icons/Clear';
+import IconButton from '@material-ui/core/IconButton';
 
 import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
 import FormCard from '../FormCard';

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape, object } from 'prop-types';
 import classNames from 'classnames';
 
-import Icon from 'material-ui/Icon';
-import Button from 'material-ui/Button';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 
 import FingerprintEntity from '../FingerprintEntity';
 import FingerprintLibraries from '../FingerprintLibraries';
@@ -14,12 +14,12 @@ export default class FingerprintContent extends Component {
     libraries: arrayOf(
       shape({
         name: string,
-        libraryId: string,
+        libraryId: string.isRequired,
         description: string,
         entities: arrayOf(
           shape({
             name: string,
-            entityId: string,
+            entityId: string.isRequired,
             metadata: object,
             profileImageUrl: string,
             matches: arrayOf(

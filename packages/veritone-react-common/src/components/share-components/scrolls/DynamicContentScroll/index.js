@@ -29,7 +29,8 @@ export default class DynamicContentScroll extends Component {
     neglectableSize: 0
   };
 
-  componentWillReceiveProps(newProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.currentValue !== this.props.currentValue) {
       this.scrollTo(newProps.currentValue);
     }
@@ -139,7 +140,7 @@ export default class DynamicContentScroll extends Component {
         const nextStart = currentStart + segmentSize;
         fillers.push(
           <div
-            key={'key-' + currentStart + '-' + nextStart}
+            key={`key-${currentStart}-${nextStart}`}
             name={'filler'}
             anchor={'time-anchor'}
             start={currentStart}
@@ -152,7 +153,7 @@ export default class DynamicContentScroll extends Component {
       } else {
         fillers.push(
           <div
-            key={'key-' + currentStart + '-' + stop}
+            key={`key-${currentStart}-${stop}`}
             name={'filler'}
             anchor={'time-anchor'}
             start={currentStart}
@@ -194,7 +195,7 @@ export default class DynamicContentScroll extends Component {
       // Add Content
       renderItems.push(
         <span
-          key={'anchor-key-' + startVal + '-' + stopVal + '-' + contentIndex}
+          key={`anchor-key-${startVal}-${stopVal}-${contentIndex}`}
           anchor={'time-anchor'}
           start={startVal}
           stop={stopVal}

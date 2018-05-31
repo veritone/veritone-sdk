@@ -1,16 +1,26 @@
-import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
-import { get, uniq, isEmpty } from 'lodash';
+import {
+  fork,
+  all,
+  call,
+  put,
+  takeEvery,
+  select,
+  take
+} from 'redux-saga/effects';
+import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import { getFaceEngineAssetData } from './faceEngineOutput';
 import { getTranscriptEditAssetData } from './transcriptWidget';
+import { getFaceEngineAssetData, removeUserDetectedFaces } from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
+import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   LOAD_ENGINE_RESULTS,
   LOAD_ENGINE_RESULTS_SUCCESS,
   LOAD_TDO,
   UPDATE_TDO,
+  UPDATE_TDO_FAILURE,
   LOAD_CONTENT_TEMPLATES,
   UPDATE_TDO_CONTENT_TEMPLATES,
   UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
@@ -27,6 +37,7 @@ import {
   REQUEST_SCHEMAS_FAILURE,
   SAVE_ASSET_DATA,
   CREATE_FILE_ASSET_SUCCESS,
+  TOGGLE_EDIT_MODE,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadEngineResultsRequest,
@@ -42,6 +53,7 @@ import {
   loadTdoContentTemplatesFailure,
   selectEngineCategory,
   setEngineId,
+  getTdoMetadata,
   getTdo,
   getEngineResultRequestsByEngineId,
   toggleSaveMode,
@@ -49,7 +61,8 @@ import {
   createFileAssetSuccess,
   createFileAssetFailure,
   createBulkEditTranscriptAssetSuccess,
-  createBulkEditTranscriptAssetFailure
+  createBulkEditTranscriptAssetFailure,
+  isEditModeEnabled
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -63,6 +76,8 @@ const tdoInfoQueryClause = `id
     security {
       global
     }
+    thumbnailUrl
+    sourceImageUrl
     primaryAsset(assetType: "media") {
       id
       signedUri
@@ -120,13 +135,11 @@ function* loadTdoSaga(widgetId, tdoId) {
       token
     });
   } catch (error) {
-    return yield* loadTdoFailure(widgetId, { error });
+    return yield put(loadTdoFailure(widgetId, error));
   }
 
-  if (!get(response, 'data.temporalDataObject')) {
-    return yield* loadTdoFailure(widgetId, {
-      error: 'Media not found'
-    });
+  if (!get(response, 'data.temporalDataObject.id')) {
+    return yield put(loadTdoFailure(widgetId, 'Media not found'));
   }
 
   const orderedSupportedCategoryTypes = [
@@ -237,10 +250,10 @@ function* loadTdoSaga(widgetId, tdoId) {
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
-  const updateTdoQuery = `mutation updateTDO($tdoId: ID!){
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
       updateTDO( input: {
         id: $tdoId
-        ${tdoDataToUpdate}
+        details: $details
       })
       {
         ${tdoInfoQueryClause}
@@ -257,7 +270,10 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
     response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: updateTdoQuery,
-      variables: { tdoId },
+      variables: {
+        tdoId,
+        details: !isEmpty(tdoDataToUpdate) ? tdoDataToUpdate : null
+      },
       token
     });
   } catch (error) {
@@ -624,7 +640,6 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
   }
 
   const assetId = get(response, 'data.createAsset.id');
-
   if (assetId) {
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
@@ -633,10 +648,11 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
 }
 
 function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceData, text) {
-  console.log('create bulk edit', widgetId, type, contentType, sourceData, text);
   let createFileAssetResponse;
   try {
-    createFileAssetResponse = yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, text);
+    createFileAssetResponse = yield call(createFileAssetSaga, {
+      widgetId, type, contentType, sourceData, text
+    });
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
@@ -677,23 +693,25 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
     }));
   }
 
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
+  const bulkTextAssetId = get(createFileAssetResponse, 'data.id');
   const originalTranscriptAssetId = get(getPrimaryTranscriptAssetResponse, 'data.temporalDataObject.primaryAsset.id');
 
-  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
+  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!, $originalAssetId: String, $bulkTextAssetId: String){
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
-        engineId: "bulk-edit-transcript",
+        engineId: 'bulk-edit-transcript',
         payload: {
-          originalTranscriptAssetId: "${originalTranscriptAssetId}",
-          temporaryBulkEditAssetId: "${bulkTextAssetId}",
+          originalTranscriptAssetId: $originalAssetId,
+          temporaryBulkEditAssetId: $bulkTextAssetId,
           saveTtmlToVtnStandard: true
         }
-      }, {
-        engineId: "insert-into-index"
-      }, {
-        engineId: "mention-generate"
+      },
+      {
+        engineId: 'insert-into-index'
+      },
+      {
+        engineId: 'mention-generate'
       }]
     }) {
       id
@@ -707,11 +725,10 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
 
   let runBulkEditJobResponse;
   try {
-    console.log(originalTranscriptAssetId, bulkTextAssetId);
     runBulkEditJobResponse = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
-      variables: { tdoId: requestTdo.id},
+      variables: { tdoId: requestTdo.id, originalAssetId: originalTranscriptAssetId, bulkTextAssetId: bulkTextAssetId},
       token
     });
   } catch (error) {
@@ -955,11 +972,150 @@ function* watchLoadTdoRequest() {
   });
 }
 
+function* uploadImage(fileToUpload, widgetId) {
+  const getUrlQuery = `query urls($name: String!){
+    getSignedWritableUrl(key: $name) {
+      url
+      key
+      bucket
+      expiresInSeconds
+      getUrl
+      unsignedUrl
+    }
+  }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  let signedWritableUrlResponse;
+  try {
+    signedWritableUrlResponse = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: getUrlQuery,
+      variables: { name },
+      token
+    });
+  } catch (error) {
+    return yield* put({
+      type: UPDATE_TDO_FAILURE,
+      payload: error,
+      meta: { widgetId }
+    });
+  }
+
+  if (
+    signedWritableUrlResponse.errors &&
+    signedWritableUrlResponse.errors.length
+  ) {
+    throw new Error(
+      `Call to getSignedWritableUrl returned error: ${
+        signedWritableUrlResponse.errors[0].message
+      }`
+    );
+  }
+
+  let resultChan;
+  try {
+    resultChan = yield call(
+      uploadFilesChannel,
+      [signedWritableUrlResponse.data.getSignedWritableUrl],
+      [fileToUpload]
+    );
+  } catch (error) {
+    return yield* put({
+      type: UPDATE_TDO_FAILURE,
+      payload: error,
+      meta: { widgetId }
+    });
+  }
+
+  let uploadingImageToS3 = true;
+  while (uploadingImageToS3) {
+    const {
+      error,
+      success,
+      file,
+      descriptor: { unsignedUrl }
+    } = yield take(resultChan);
+
+    if (success || error) {
+      uploadingImageToS3 = false;
+
+      if (error) {
+        throw new Error(`Error while uploading ${file.filename}`);
+      }
+      return yield unsignedUrl;
+    }
+    continue;
+  }
+}
+
 function* watchUpdateTdoRequest() {
   yield takeEvery(UPDATE_TDO, function*(action) {
     const { tdoId, tdoDataToUpdate } = action.payload;
     const { widgetId } = action.meta;
-    yield call(updateTdoSaga, widgetId, tdoId, tdoDataToUpdate);
+
+    // Check to see if programImage and programLiveImages are file objects and if so upload.
+    try {
+      const programLiveImage = get(
+        tdoDataToUpdate,
+        'veritoneProgram.programLiveImage'
+      );
+      if (isObject(programLiveImage)) {
+        tdoDataToUpdate.veritoneProgram.programLiveImage = yield call(
+          uploadImage,
+          tdoDataToUpdate.veritoneProgram.programLiveImage
+        );
+      }
+      const programImage = get(tdoDataToUpdate, 'veritoneProgram.programImage');
+      if (isObject(programImage)) {
+        tdoDataToUpdate.veritoneProgram.programImage = yield call(
+          uploadImage,
+          tdoDataToUpdate.veritoneProgram.programImage
+        );
+      }
+    } catch (error) {
+      return yield put({
+        type: UPDATE_TDO_FAILURE,
+        payload: error,
+        meta: { widgetId }
+      });
+    }
+
+    const metaData = yield select(getTdoMetadata, widgetId);
+    // Take the new updated metadata and construct the query for graphql
+    const detailsToSave = {};
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneFile'))) {
+      detailsToSave.veritoneFile = {
+        ...get(metaData, 'veritoneFile'),
+        ...get(tdoDataToUpdate, 'veritoneFile')
+      };
+    }
+    if (!isEmpty(get(tdoDataToUpdate, 'veritoneCustom'))) {
+      detailsToSave.veritoneCustom = {
+        ...get(metaData, 'veritoneCustom'),
+        ...get(tdoDataToUpdate, 'veritoneCustom')
+      };
+    }
+    if (!every(get(tdoDataToUpdate, 'veritoneProgram'), isUndefined)) {
+      detailsToSave.veritoneProgram = {
+        ...get(metaData, 'veritoneProgram')
+      };
+      if (!isUndefined(get(tdoDataToUpdate, 'veritoneProgram.programImage'))) {
+        detailsToSave.veritoneProgram.programImage = get(tdoDataToUpdate, 'veritoneProgram.programImage');
+      }
+      if (!isUndefined(get(tdoDataToUpdate, 'veritoneProgram.programLiveImage'))) {
+        detailsToSave.veritoneProgram.programLiveImage = get(tdoDataToUpdate, 'veritoneProgram.programLiveImage');
+      }
+    }
+    if (get(tdoDataToUpdate, 'tags.length')) {
+      detailsToSave.tags = get(tdoDataToUpdate, 'tags').map(tag => {
+        return { value: tag.value };
+      });
+    }
+    yield call(updateTdoSaga, widgetId, tdoId, detailsToSave);
   });
 }
 
@@ -1097,11 +1253,11 @@ function* watchCreateFileAssetSuccess() {
   const oauthToken = yield select(authModule.selectOAuthToken);
   const token = sessionToken || oauthToken;
 
-  const crateJobQuery = `mutation createJob($tdoId: ID!) {
+  const createJobQuery = `mutation createJob($tdoId: ID!) {
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
-        engineId: 'insert-into-index'
+        engineId: "insert-into-index"
       }]
     }) {
       id
@@ -1142,6 +1298,26 @@ function* watchCreateFileAssetSuccess() {
   )
 }
 
+function* watchCancelEdit() {
+  yield takeEvery(
+    action => action.type === TOGGLE_EDIT_MODE,
+    function* (action) {
+      const editModeIsEnabled = yield select(
+        isEditModeEnabled,
+        action.meta.widgetId
+      );
+
+      if (!editModeIsEnabled) {
+        const selectedEngineCategory = action.payload.selectedEngineCategory;
+
+        if (selectedEngineCategory.categoryType === 'face') {
+          yield put(removeUserDetectedFaces())
+        }
+      }
+    }
+  )
+}
+
 export default function* root() {
   yield all([
     fork(watchLoadEngineResultsRequest),
@@ -1155,6 +1331,7 @@ export default function* root() {
     fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate),
     fork(watchSaveAssetData),
-    fork(watchCreateFileAssetSuccess)
+    fork(watchCreateFileAssetSuccess),
+    fork(watchCancelEdit)
   ]);
 }

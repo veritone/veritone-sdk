@@ -10,6 +10,9 @@ export default class VideoSource extends React.Component {
       load: func.isRequired
     }),
     src: string,
+    // Ignoring this because rule doesn't recognize UNSAFE_componentWillRecieveProps as
+    // being the same as componentWillReceiveProps
+    // eslint-disable-next-line react/no-unused-prop-types
     streams: arrayOf(
       shape({
         protocol: string.isRequired,
@@ -22,11 +25,13 @@ export default class VideoSource extends React.Component {
     src: null
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     shaka.polyfill.installAll();
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { video, src, streams } = nextProps;
     const dashUri = this.getStreamUri(streams, 'dash');
     const hlsUri = this.getStreamUri(streams, 'hls');

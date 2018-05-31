@@ -1,7 +1,7 @@
 import React from 'react';
 import { func, arrayOf, bool, shape, object } from 'prop-types';
 import {
-  Table,
+  Table as TableComponent,
   PaginatedTable,
   Column,
   MenuColumn
@@ -9,7 +9,7 @@ import {
 import { omit } from 'lodash';
 import widget from '../../shared/widget';
 
-class TableWidget extends React.Component {
+class Table extends React.Component {
   static propTypes = {
     data: arrayOf(object).isRequired,
     columns: arrayOf(
@@ -31,7 +31,7 @@ class TableWidget extends React.Component {
   };
 
   render() {
-    const TableComp = this.props.paginate ? PaginatedTable : Table;
+    const TableComp = this.props.paginate ? PaginatedTable : TableComponent;
     const tableProps = omit(this.props, ['data', 'columns', 'paginate']);
     const tableColumns = this.props.columns.map(column => {
       if (column.menu) {
@@ -64,4 +64,5 @@ class TableWidget extends React.Component {
   }
 }
 
-export default widget(TableWidget);
+const TableWidget = widget(Table);
+export { TableWidget }

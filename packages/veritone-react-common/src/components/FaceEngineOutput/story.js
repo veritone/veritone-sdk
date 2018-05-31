@@ -7,7 +7,8 @@ import {
   shape,
   arrayOf,
   objectOf,
-  oneOfType
+  oneOfType,
+  object
 } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { withKnobs, boolean, number as knobNumber } from '@storybook/addon-knobs';
@@ -53,7 +54,8 @@ class FaceEngineOutputStory extends Component {
         profileImageUrl: string,
         jsondata: objectOf(oneOfType([string, number]))
       })
-    )
+    ),
+    faceObjects: arrayOf(object)
   };
 
   state = {
@@ -167,7 +169,7 @@ class FaceEngineOutputStory extends Component {
 
     const faceEntities = {
       unrecognizedFaces: [],
-      recognizedFaces: []
+      recognizedFaces: {}
     };
 
     // flatten data series for currently selected engine
@@ -185,24 +187,21 @@ class FaceEngineOutputStory extends Component {
       if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
-        faceEntities.recognizedFaces.push(faceObj);
+        faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
       }
     });
 
     return (
       <FaceEngineOutput
-        // data={this.state.faceEngineOutput}
         {...faceEntities}
         className={styles.outputViewRoot}
-        // libraries={this.state.libraries}
         libraries={this.props.libraries}
-        // entities={this.state.entities}
         entities={this.props.entities}
         currentMediaPlayerTime={mediaPlayerPosition}
         engines={this.state.engines}
         onEngineChange={this.handleSelectEngine}
         selectedEngineId={this.state.selectedEngineId}
-        onExpandClicked={this.toggleExpandedMode}
+        onExpandClick={this.toggleExpandedMode}
         onFaceOccurrenceClicked={onFaceOccurrenceClicked}
         editMode={editMode}
         entitySearchResults={this.state.entitySearchResults}
@@ -237,7 +236,7 @@ storiesOf('FaceEngineOutput', module)
   );
 });
 
-let faceObjects = [
+const faceObjects = [
   {
     series: [
       {
@@ -361,7 +360,7 @@ let faceObjects = [
   }
 ];
 
-let entities = [
+const entities = [
   {
     id: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
     name: 'Paul McCartney',
@@ -430,7 +429,7 @@ let entities = [
   }
 ];
 
-let libraries = [
+const libraries = [
   {
     id: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
     name: 'Beatles'

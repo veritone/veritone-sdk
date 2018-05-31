@@ -67,10 +67,10 @@ const defaultMDPState = {
   engineResultsByEngineId: {},
   engineResultRequestsByEngineId: {}, // A list of engine result request so we don't request already fetched data.
   tdo: null,
+  isLoadingTdo: false,
   selectedEngineCategory: null,
   selectedEngineId: null,
   isEditModeEnabled: false,
-  loadingEngineResults: false,
   isExpandedMode: false,
   libraries: [],
   fetchingLibraries: false,
@@ -79,13 +79,19 @@ const defaultMDPState = {
   contentTemplates: {},
   tdoContentTemplates: {},
   schemasById: {},
-  enableSave: false
+  enableSave: false,
+  error: null,
 };
 
 const defaultState = {};
 
 export default createReducer(defaultState, {
-  [INITIALIZE_WIDGET](state, { meta: { widgetId } }) {
+  [INITIALIZE_WIDGET](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -95,7 +101,10 @@ export default createReducer(defaultState, {
   },
   [LOAD_ENGINE_CATEGORIES_SUCCESS](
     state,
-    { payload, meta: { warn, widgetId } }
+    {
+      payload,
+      meta: { warn, widgetId }
+    }
   ) {
     return {
       ...state,
@@ -108,7 +117,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_CATEGORIES_FAILURE](state, { meta: { warn, error, widgetId } }) {
+  [LOAD_ENGINE_CATEGORIES_FAILURE](
+    state,
+    {
+      meta: { warn, error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -121,7 +135,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_ENGINE_RESULTS](state, { payload, meta: { widgetId } }) {
+  [LOAD_ENGINE_RESULTS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     let resultRequests =
       state[widgetId].engineResultRequestsByEngineId[payload.engineId] || [];
     const requestInsertIndex = findLastIndex(resultRequests, request => {
@@ -171,7 +191,10 @@ export default createReducer(defaultState, {
   },
   [LOAD_ENGINE_RESULTS_SUCCESS](
     state,
-    { payload, meta: { widgetId, startOffsetMs, stopOffsetMs } }
+    {
+      payload,
+      meta: { widgetId, startOffsetMs, stopOffsetMs }
+    }
   ) {
     const previousResultsByEngineId =
       state[widgetId].engineResultsByEngineId || {};
@@ -233,7 +256,9 @@ export default createReducer(defaultState, {
   },
   [LOAD_ENGINE_RESULTS_FAILURE](
     state,
-    { meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId } }
+    {
+      meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
+    }
   ) {
     const errorMessage =
       `Error fetching engine ${engineId} results for offset ${startOffsetMs} - ${stopOffsetMs} :` +
@@ -247,42 +272,67 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO](state, { meta: { widgetId } }) {
+  [LOAD_TDO](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
+        isLoadingTdo: true,
         success: true,
         error: null,
         tdo: null
       }
     };
   },
-  [LOAD_TDO_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [LOAD_TDO_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const tdo = payload;
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
+        isLoadingTdo: false,
         success: true,
         error: null,
         tdo: tdo
       }
     };
   },
-  [LOAD_TDO_FAILURE](state, { meta: { error, widgetId } }) {
+  [LOAD_TDO_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
+    console.log('Failed to loaf tdo. Disable Spinner. Show error.');
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
+        isLoadingTdo: false,
         success: false,
         error: error ? errorMessage : null,
         tdo: null
       }
     };
   },
-  [UPDATE_TDO](state, { meta: { widgetId } }) {
+  [UPDATE_TDO](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -292,7 +342,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [UPDATE_TDO_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -302,7 +358,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_FAILURE](state, { meta: { error, widgetId } }) {
+  [UPDATE_TDO_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -313,7 +374,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_CONTENT_TEMPLATES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [LOAD_TDO_CONTENT_TEMPLATES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const tdoContentTemplates = {};
     if (payload && payload.records) {
       payload.records.forEach(asset => {
@@ -343,7 +410,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_TDO_CONTENT_TEMPLATES_FAILURE](state, { meta: { error, widgetId } }) {
+  [LOAD_TDO_CONTENT_TEMPLATES_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -355,7 +427,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO](state, { meta: { widgetId } }) {
+  [UPDATE_TDO](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -365,7 +442,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_CONTENT_TEMPLATES](state, { meta: { widgetId } }) {
+  [UPDATE_TDO_CONTENT_TEMPLATES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -375,17 +457,28 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](state, { error, meta: { widgetId } }) {
+  [UPDATE_TDO_CONTENT_TEMPLATES_FAILURE](
+    state,
+    {
+      error,
+      meta: { widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        error: error ? errorMessage : null,
+        error: error ? errorMessage : null
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES](state, { meta: { widgetId } }) {
+  [LOAD_CONTENT_TEMPLATES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -395,7 +488,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [LOAD_CONTENT_TEMPLATES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const templateSchemas = {};
     // array of data registries containing an array of schemas
     payload.reduce((schemaStore, registryData) => {
@@ -423,7 +522,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [LOAD_CONTENT_TEMPLATES_FAILURE](state, { meta: { error, widgetId } }) {
+  [LOAD_CONTENT_TEMPLATES_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
@@ -435,7 +539,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SELECT_ENGINE_CATEGORY](state, { payload, meta: { widgetId } }) {
+  [SELECT_ENGINE_CATEGORY](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -446,7 +556,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SET_SELECTED_ENGINE_ID](state, { payload, meta: { widgetId } }) {
+  [SET_SELECTED_ENGINE_ID](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -455,7 +571,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [TOGGLE_EDIT_MODE](state, { meta: { widgetId } }) {
+  [TOGGLE_EDIT_MODE](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -465,7 +586,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [TOGGLE_INFO_PANEL](state, { meta: { widgetId } }) {
+  [TOGGLE_INFO_PANEL](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -474,7 +600,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [TOGGLE_EXPANDED_MODE](state, { meta: { widgetId } }) {
+  [TOGGLE_EXPANDED_MODE](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -483,7 +614,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES](state, { meta: { widgetId } }) {
+  [REQUEST_LIBRARIES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -492,7 +628,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [REQUEST_LIBRARIES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const allLibraries = uniqBy(
       values(payload).concat(state[widgetId].libraries),
       'id'
@@ -507,7 +649,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES_FAILURE](state, { error, meta: { widgetId } }) {
+  [REQUEST_LIBRARIES_FAILURE](
+    state,
+    {
+      error,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -517,7 +665,12 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_ENTITIES](state, { meta: { widgetId } }) {
+  [REQUEST_ENTITIES](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -526,7 +679,13 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_ENTITIES_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [REQUEST_ENTITIES_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     const allEntities = uniqBy(
       values(payload).concat(state[widgetId].entities),
       'id'
@@ -546,7 +705,13 @@ export default createReducer(defaultState, {
       ...state
     };
   },
-  [REQUEST_SCHEMAS_SUCCESS](state, { payload, meta: { widgetId } }) {
+  [REQUEST_SCHEMAS_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
     return {
       ...state,
       [widgetId]: {
@@ -576,6 +741,10 @@ export const getEngineResultRequestsByEngineId = (state, widgetId, engineId) =>
   get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
   [];
 export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
+export const isLoadingTdo = (state, widgetId) =>
+  get(local(state), [widgetId, 'isLoadingTdo']);
+export const getTdoMetadata = (state, widgetId) =>
+  get(local(state), [widgetId, 'tdo', 'details']);
 export const getSelectedEngineCategory = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineCategory']);
 export const getSelectedEngineId = (state, widgetId) =>
@@ -598,6 +767,8 @@ export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
 export const isSaveEnabled = (state) =>
   get(local(state), 'enableSave');
+export const getWidgetError = (state, widgetId) =>
+  get(local(state), [widgetId, 'error']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -658,19 +829,14 @@ export const loadTdoSuccess = (widgetId, result) => ({
   meta: { widgetId }
 });
 
-export const loadTdoFailure = (widgetId, { error }) => ({
+export const loadTdoFailure = (widgetId, error) => ({
   type: LOAD_TDO_FAILURE,
   meta: { error, widgetId }
 });
 
-export const updateTdoRequest = (
-  widgetId,
-  tdoId,
-  tdoDataToUpdate,
-  callback
-) => ({
+export const updateTdoRequest = (widgetId, tdoId, tdoDataToUpdate) => ({
   type: UPDATE_TDO,
-  payload: { tdoId, tdoDataToUpdate, callback },
+  payload: { tdoId, tdoDataToUpdate },
   meta: { widgetId }
 });
 
@@ -734,8 +900,11 @@ export const setEngineId = (widgetId, engineId) => ({
   meta: { widgetId }
 });
 
-export const toggleEditMode = widgetId => ({
+export const toggleEditMode = (widgetId, selectedEngineCategory) => ({
   type: TOGGLE_EDIT_MODE,
+  payload: {
+    selectedEngineCategory
+  },
   meta: { widgetId }
 });
 
@@ -769,7 +938,7 @@ export const saveAssetDataFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createFileAssetSuccess = (assetId, widgetId) => ({
+export const createFileAssetSuccess = (widgetId, assetId) => ({
   type: CREATE_FILE_ASSET_SUCCESS,
   payload: {
     assetId

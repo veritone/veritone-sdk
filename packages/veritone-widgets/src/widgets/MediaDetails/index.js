@@ -1,9 +1,11 @@
 import React from 'react';
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Paper from 'material-ui/Paper';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Paper from '@material-ui/core/Paper';
 import {
   bool,
   func,
@@ -37,37 +39,44 @@ import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
-import Tooltip from 'material-ui/Tooltip';
+import { withPropsOnChange } from 'recompose';
+import { guid } from '../../shared/util';
+import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
+@withPropsOnChange([], ({ id }) => ({
+  id: id || guid()
+}))
 @connect(
-  (state, { _widgetId }) => ({
-    engineCategories: mediaDetailsModule.getEngineCategories(state, _widgetId),
-    tdo: mediaDetailsModule.getTdo(state, _widgetId),
+  (state, { id }) => ({
+    engineCategories: mediaDetailsModule.getEngineCategories(state, id),
+    tdo: mediaDetailsModule.getTdo(state, id),
+    isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
     engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
       state,
-      _widgetId
+      id
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
-      _widgetId
+      id
     ),
-    selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, _widgetId),
-    contentTemplates: mediaDetailsModule.getContentTemplates(state, _widgetId),
+    selectedEngineId: mediaDetailsModule.getSelectedEngineId(state, id),
+    contentTemplates: mediaDetailsModule.getContentTemplates(state, id),
     tdoContentTemplates: mediaDetailsModule.getTdoContentTemplates(
       state,
-      _widgetId
+      id
     ),
-    isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, _widgetId),
-    isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, _widgetId),
-    isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, _widgetId),
-    libraries: mediaDetailsModule.getLibraries(state, _widgetId),
-    entities: mediaDetailsModule.getEntities(state, _widgetId),
-    schemasById: mediaDetailsModule.getSchemasById(state, _widgetId),
+    isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
+    isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
+    isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
+    libraries: mediaDetailsModule.getLibraries(state, id),
+    entities: mediaDetailsModule.getEntities(state, id),
+    schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime,
+    widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
   }),
   {
@@ -89,7 +98,7 @@ import widget from '../../shared/widget';
 )
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
-    _widgetId: string.isRequired,
+    id: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
     fetchApplications: func.isRequired,
@@ -116,6 +125,7 @@ class MediaDetailsWidget extends React.Component {
         )
       })
     ),
+    isLoadingTdo: bool,
     tdo: shape({
       id: string,
       details: shape({
@@ -226,6 +236,7 @@ class MediaDetailsWidget extends React.Component {
       )
     }),
     saveAssetData: func,
+    widgetError: string,
     isSaveEnabled: bool
   };
 
@@ -240,16 +251,28 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
-    selectedTabValue: 'mediaDetails'
+    selectedTabValue: 'mediaDetails',
+    disableEditBtn: false
   };
 
-  componentWillMount() {
-    this.props.initializeWidget(this.props._widgetId);
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
+    this.props.initializeWidget(this.props.id);
   }
 
   componentDidMount() {
-    this.props.loadTdoRequest(this.props._widgetId, this.props.mediaId);
+    this.props.loadTdoRequest(this.props.id, this.props.mediaId);
     this.props.fetchApplications();
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
+      this.handleDisableEditBtn(false);
+    }
+  }
+
+  handleDisableEditBtn = (boolVal) => {
+    this.setState({ disableEditBtn: boolVal });
   }
 
   mediaPlayerRef = ref => {
@@ -269,7 +292,7 @@ class MediaDetailsWidget extends React.Component {
       category => category.id === selectedCategoryId
     );
     // Set the new engine category and set engine id to the first engine in the list.
-    this.props.selectEngineCategory(this.props._widgetId, selectedCategory);
+    this.props.selectEngineCategory(this.props.id, selectedCategory);
   };
 
   getSelectedCategoryMessage = () => {
@@ -300,16 +323,52 @@ class MediaDetailsWidget extends React.Component {
     return get(this.props, 'tdo.primaryAsset.signedUri');
   };
 
+  isEditableEngineResults = () => {
+    if (!get(this.props, 'selectedEngineCategory.editable')) {
+      return false;
+    }
+    return !this.isMediaPublic() && this.isOwnMedia();
+  };
+
+  isMediaPublic = () => {
+    if (!get(this.props, 'tdo.security.global', false)) {
+      return false;
+    }
+    // check flag explicitly set to false
+    if (get(this.props, 'tdo.isPublic') === false) {
+      return false;
+    }
+    return true;
+  };
+
+  isOwnMedia = () => {
+    if (get(this.props, 'tdo.isOwn') === true) {
+      return true;
+    }
+    const applicationIds = get(this.props.kvp, 'applicationIds', []);
+    const tdoApplicationId = get(this.props, 'tdo.applicationId');
+    if (
+      tdoApplicationId &&
+      applicationIds.includes(tdoApplicationId)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   toggleEditMode = () => {
-    this.props.toggleEditMode(this.props._widgetId);
+    this.props.toggleEditMode(
+      this.props.id,
+      this.props.selectedEngineCategory
+    );
   };
 
   toggleExpandedMode = () => {
-    this.props.toggleExpandedMode(this.props._widgetId);
+    this.props.toggleExpandedMode(this.props.id);
   };
 
   onSaveEdit = () => {
-    this.props.saveAssetData(this.props._widgetId,
+    this.props.saveAssetData(this.props.id,
       {
         selectedEngineId: this.props.selectedEngineId,
         selectedEngineCategory: this.props.selectedEngineCategory
@@ -327,16 +386,16 @@ class MediaDetailsWidget extends React.Component {
   };
 
   toggleInfoPanel = () => {
-    this.props.toggleInfoPanel(this.props._widgetId);
+    this.props.toggleInfoPanel(this.props.id);
   };
 
   handleSelectEngine = engineId => {
-    this.props.setEngineId(this.props._widgetId, engineId);
+    this.props.setEngineId(this.props.id, engineId);
   };
 
   handleTabChange = (evt, selectedTabValue) => {
     if (selectedTabValue === 'contentTemplates') {
-      this.props.loadContentTemplates(this.props._widgetId);
+      this.props.loadContentTemplates(this.props.id);
     }
     this.setState({ selectedTabValue });
   };
@@ -346,7 +405,7 @@ class MediaDetailsWidget extends React.Component {
       return;
     }
     this.props.updateTdoRequest(
-      this.props._widgetId,
+      this.props.id,
       this.props.mediaId,
       tdoData
     );
@@ -382,7 +441,7 @@ class MediaDetailsWidget extends React.Component {
       }
     });
     this.props.updateTdoContentTemplates(
-      this.props._widgetId,
+      this.props.id,
       contentTemplatesToDelete,
       contentTemplatesToCreate
     );
@@ -402,9 +461,11 @@ class MediaDetailsWidget extends React.Component {
       entities,
       contentTemplates,
       tdo,
+      isLoadingTdo,
       tdoContentTemplates,
       schemasById,
       googleMapsApiKey,
+      widgetError,
       isSaveEnabled
     } = this.props;
 
@@ -421,54 +482,70 @@ class MediaDetailsWidget extends React.Component {
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
-                ) > 120 && (
+                ) > 64 && (
                   <Tooltip
                     id="truncated-file-name-tooltip"
                     title={get(this.props, 'tdo.details.veritoneFile.filename')}
-                    placement="bottom-start"
-                    enterDelay={1000}
-                    leaveDelay={700}
+                    PopperProps={{ style: { pointerEvents: 'none', marginTop: '5px', top: '-10px' } }}
                   >
                     <div className={styles.pageHeaderTitleLabel}>
                       {get(
                         this.props,
                         'tdo.details.veritoneFile.filename',
                         ''
-                      ).substring(0, 119) + '...'}
+                      ).substring(0, 63) + '...'}
                     </div>
                   </Tooltip>
                 )}
-                {get(
+                {get(this.props, 'tdo.id') && get(
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
-                ) <= 120 && (
+                ) <= 64 && (
                   <div className={styles.pageHeaderTitleLabel}>
-                    {get(this.props, 'tdo.details.veritoneFile.filename', '')}
+                    {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
                 )}
+                {!get(this.props, 'tdo.id') && (
+                  <div className={styles.pageHeaderTitleLabel}>{!isLoadingTdo && ('No Filename')}</div>
+                )}
                 <div className={styles.pageHeaderActionButtons}>
-                  <IconButton
-                    className={styles.pageHeaderActionButton}
-                    onClick={this.handleRunProcess}
-                    aria-label="Run process"
-                  >
-                    <Icon
-                      className="icon-run-process"
-                      classes={{ root: styles.iconClass }}
-                    />
-                  </IconButton>
-                  <IconButton
-                    className={styles.pageHeaderActionButton}
-                    onClick={this.toggleInfoPanel}
-                    aria-label="Info Panel"
-                  >
-                    <Icon
-                      className="icon-info-panel"
-                      classes={{ root: styles.iconClass }}
-                    />
-                  </IconButton>
-                  <div className={styles.pageHeaderActionButtonsSeparator} />
+                  {get(this.props, 'tdo.id') &&
+                    <Tooltip
+                      id="tooltip-run-process"
+                      title="Run Process"
+                      PopperProps={{ style: { pointerEvents: 'none', marginTop: '5px', top: '-20px' } }}
+                    >
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.handleRunProcess}
+                        aria-label="Run process"
+                      >
+                        <Icon
+                          className="icon-run-process"
+                          classes={{root: styles.iconClass}}
+                        />
+                      </IconButton>
+                    </Tooltip>}
+                  {get(this.props, 'tdo.details', null) &&
+                    <Tooltip
+                      id="tooltip-show-metadata"
+                      title="Show Metadata"
+                      PopperProps={{ style: { pointerEvents: 'none', marginTop: '5px', top: '-20px' } }}
+                    >
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.toggleInfoPanel}
+                        aria-label="Info Panel"
+                      >
+                        <Icon
+                          className="icon-info-panel"
+                          classes={{ root: styles.iconClass }}
+                        />
+                      </IconButton>
+                    </Tooltip>}
+                  {(get(this.props, 'tdo.id') || get(this.props, 'tdo.details', null)) &&
+                    <div className={styles.pageHeaderActionButtonsSeparator} />}
                   <IconButton
                     className={styles.pageCloseButton}
                     onClick={this.props.onClose}
@@ -481,40 +558,55 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
-              <Tabs
-                value={this.state.selectedTabValue}
-                onChange={this.handleTabChange}
-                indicatorColor="#f9a02c"
-                classes={{
-                  flexContainer: styles.mediaDetailsPageTabSelector
-                }}
-              >
-                <Tab
-                  label="Media Details"
-                  classes={{ root: styles.pageTabLabel }}
-                  value="mediaDetails"
-                  style={{
-                    fontWeight:
-                      this.state.selectedTabValue === 'mediaDetails' ? 500 : 400
-                  }}
-                />
-                <Tab
-                  label="Content Templates"
-                  classes={{ root: styles.pageTabLabel }}
-                  value="contentTemplates"
-                  style={{
-                    fontWeight:
-                      this.state.selectedTabValue === 'contentTemplates'
-                        ? 500
-                        : 400
-                  }}
-                />
-              </Tabs>
 
+              {isLoadingTdo &&
+                <div className={styles.tdoLoadingProgress}>
+                  <CircularProgress
+                    size={100}
+                    color={'primary'}
+                  />
+                </div>}
+              {!isLoadingTdo && !get(this.props, 'tdo.id') &&
+                <div className={styles.widgetErrorContainer}>
+                  <div className={styles.widgetError}>
+                    <img className={styles.errorImage} src='//static.veritone.com/veritone-ui/warning-icon-lg.svg'/>
+                    <div className={styles.errorMessage}>{widgetError}</div>
+                  </div>
+                </div>}
+
+              {get(this.props, 'tdo.id') &&
+                <Tabs
+                  value={this.state.selectedTabValue}
+                  onChange={this.handleTabChange}
+                  classes={{
+                    flexContainer: styles.mediaDetailsPageTabSelector,
+                    indicator: styles.tabIndicator
+                  }}
+                >
+                  <Tab
+                    label="Media Details"
+                    classes={{ root: styles.pageTabLabel }}
+                    value="mediaDetails"
+                    style={{
+                      fontWeight:
+                        this.state.selectedTabValue === 'mediaDetails' ? 500 : 400
+                    }}
+                  />
+                  <Tab
+                    label="Content Templates"
+                    classes={{ root: styles.pageTabLabel }}
+                    value="contentTemplates"
+                    style={{
+                      fontWeight:
+                        this.state.selectedTabValue === 'contentTemplates'
+                          ? 500
+                          : 400
+                    }}
+                  />
+                </Tabs>}
               {selectedEngineCategory &&
                 this.state.selectedTabValue === 'mediaDetails' && (
                   <div className={styles.engineActionHeader}>
-                    <div className={styles.engineActionContainer}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
                           engineCategories={this.props.engineCategories}
@@ -524,17 +616,18 @@ class MediaDetailsWidget extends React.Component {
                           }
                         />
                       </div>
-                      {selectedEngineCategory.editable && (
+                    {this.isEditableEngineResults() && (
                         <Button
                           variant="raised"
                           color="primary"
                           className={styles.toEditModeButton}
                           onClick={this.toggleEditMode}
+                          disabled={this.state.disableEditBtn}
                         >
                           EDIT MODE
                         </Button>
                       )}
-                    </div>
+
                   </div>
                 )}
             </div>
@@ -548,7 +641,6 @@ class MediaDetailsWidget extends React.Component {
                     className={styles.backButtonEditMode}
                     onClick={this.onCancelEdit}
                     aria-label="Back"
-                    disableRipple
                   >
                     <Icon
                       className="icon-arrow-back"
@@ -608,7 +700,10 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
-              {!isExpandedMode && (
+              {selectedEngineCategory &&
+                selectedEngineCategory.categoryType !== 'transcript' &&
+                selectedEngineCategory.categoryType !== 'correlation' &&
+                (!isExpandedMode || isEditModeEnabled) && (
                 <div className={styles.mediaView}>
                   {isImage ? (
                     <Image
@@ -625,9 +720,10 @@ class MediaDetailsWidget extends React.Component {
                       streams={get(this.props, 'tdo.streams')}
                     />
                   )}
-                  <div className={styles.sourceLabel}>
-                    Source: {this.getMediaSource()}
-                  </div>
+                  {this.getMediaSource() &&
+                    <div className={styles.sourceLabel}>
+                      Source: {this.getMediaSource()}
+                    </div>}
                 </div>
               )}
               {selectedEngineId && (
@@ -655,7 +751,8 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         editMode={isEditModeEnabled}
-                        toggleEditMode={this.props.toggleEditMode}
+                        allowEdit={this.handleDisableEditBtn}
+                        onFaceOccurrenceClicked={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -666,7 +763,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
-                        onObjectOccurrenceClicked={
+                        onObjectOccurrenceClick={
                           this.handleUpdateMediaPlayerTime
                         }
                       />
@@ -705,7 +802,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -718,7 +814,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
                         defaultLanguage={'en-US'}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
@@ -768,7 +863,8 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        onExpandClicked={this.toggleExpandedMode}
+                        onExpandClick={this.toggleExpandedMode}
+                        isExpandedMode={isExpandedMode}
                       />
                     )}
                   {selectedEngineCategory &&

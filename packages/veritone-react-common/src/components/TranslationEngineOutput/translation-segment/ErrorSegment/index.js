@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { number, string, func } from 'prop-types';
 import classNames from 'classnames';
-import Icon from 'material-ui/Icon';
-import Button from 'material-ui/Button';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { msToReadableString } from '../../../../helpers/time';
 

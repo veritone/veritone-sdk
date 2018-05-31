@@ -20,7 +20,7 @@ export default class EntityMetadata extends Component {
           return (
             <div
               className={classNames(styles.entry)}
-              key={'metadata-' + propName + '-' + propVal}
+              key={`metadata-${propName}-${propVal}`}
             >
               <div className={classNames(styles.label)}>{propName}</div>
               <div>{propVal}</div>

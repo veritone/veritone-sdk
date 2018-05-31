@@ -55,7 +55,7 @@ export class TranslationExample extends Component {
           engines={state.engines}
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
-          onExpandClicked={action('expand clicked')}
+          onExpandClick={action('expand clicked')}
           defaultLanguage={'en-US'}
           onLanguageChanged={action('language changed')}
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
@@ -72,7 +72,7 @@ export class TranslationExample extends Component {
           engines={state.engines}
           selectedEngineId={state.selectedEngineId}
           onEngineChange={action('engine changed')}
-          onExpandClicked={action('expand clicked')}
+          onExpandClick={action('expand clicked')}
           defaultLanguage={'en-US'}
           onLanguageChanged={action('language changed')}
           onScroll={this.handleDataRequesting}

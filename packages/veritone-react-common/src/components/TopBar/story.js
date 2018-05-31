@@ -2,15 +2,18 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { boolean } from '@storybook/addon-knobs';
-import IconButton from 'material-ui/IconButton';
-import Drawer from 'material-ui/Drawer';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
-import InboxIcon from 'material-ui-icons/MoveToInbox';
-import LibraryAddIcon from 'material-ui-icons/LibraryAdd';
-import ShareIcon from 'material-ui-icons/Share';
-import FileDownloadIcon from 'material-ui-icons/FileDownload';
-import AssessmentIcon from 'material-ui-icons/Assessment';
-import BuildIcon from 'material-ui-icons/Build';
+import IconButton from '@material-ui/core/IconButton';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
+import ShareIcon from '@material-ui/icons/Share';
+import FileDownloadIcon from '@material-ui/icons/FileDownload';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import BuildIcon from '@material-ui/icons/Build';
 
 import AppBar from '../AppBar';
 import TopBar from './';
@@ -61,7 +64,7 @@ storiesOf('TopBar', module)
           ]}
         />
         <Drawer
-          type="persistent"
+          variant="persistent"
           style={{ width: 240, height: 200 }}
           open={drawerIsOpen}
         >

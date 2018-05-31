@@ -17,21 +17,21 @@ import widget from './widget';
 import graphql from './graphql';
 
 export default {
-	batch,
-	collection,
-	dropbox,
-	engine,
-	faceset,
-	folder,
-	ingestion,
-	job,
-	library,
-	mention,
-	recording,
-	search,
-	tasks,
-	token,
-	user,
-	widget,
-	graphql
+  batch,
+  collection,
+  dropbox,
+  engine,
+  faceset,
+  folder,
+  ingestion,
+  job,
+  library,
+  mention,
+  recording,
+  search,
+  tasks,
+  token,
+  user,
+  widget,
+  graphql
 };

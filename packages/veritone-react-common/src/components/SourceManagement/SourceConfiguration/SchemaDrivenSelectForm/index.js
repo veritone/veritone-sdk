@@ -3,16 +3,14 @@ import { has, includes, pick, get } from 'lodash';
 
 import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
-import TextField from 'material-ui/TextField';
-import { MenuItem } from 'material-ui/Menu';
-import Select from 'material-ui/Select';
-import {
-  FormHelperText,
-  FormControl,
-  FormControlLabel
-} from 'material-ui/Form';
-import { InputLabel } from 'material-ui/Input';
-import Checkbox from 'material-ui/Checkbox';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import { DateTimePicker } from '../../../formComponents';
 
 import styles from './styles.scss';
@@ -36,7 +34,8 @@ export default class DynamicSelect extends React.Component {
     oneSourceType: false
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     if (this.props.sourceTypes.length === 1) {
       this.setState({ oneSourceType: true });
     }

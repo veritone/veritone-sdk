@@ -3,10 +3,10 @@ import {
   withTheme,
   createMuiTheme,
   MuiThemeProvider
-} from 'material-ui/styles';
+} from '@material-ui/core/styles';
 import { oneOf, func, number, string, arrayOf } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
-import blue from 'material-ui/colors/blue';
+import blue from '@material-ui/core//colors/blue';
 import {
   noop,
   pick,
@@ -20,8 +20,8 @@ import {
   includes
 } from 'lodash';
 import { withProps } from 'recompose';
-import { FormControlLabel } from 'material-ui/Form';
-import Radio from 'material-ui/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
 import { subDays } from 'date-fns';
 
 import RadioGroup from '../formComponents/RadioGroup';

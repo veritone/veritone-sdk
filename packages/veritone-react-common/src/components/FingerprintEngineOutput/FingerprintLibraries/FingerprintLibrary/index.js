@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 
-import Icon from 'material-ui/Icon';
+import Icon from '@material-ui/core/Icon';
 import PillButton from '../../../share-components/buttons/PillButton';
 import styles from './styles.scss';
 
@@ -11,10 +11,10 @@ export default class FingerprintLibrary extends Component {
     className: string,
     libraryData: shape({
       name: string,
-      libraryId: string,
+      libraryId: string.isRequired,
       entities: arrayOf(
         shape({
-          name: string,
+          name: string.isRequired,
           entityId: string,
           matches: arrayOf(
             shape({
@@ -78,11 +78,7 @@ export default class FingerprintLibrary extends Component {
             data={entityData}
             onClick={onClick}
             highlight={active}
-            key={
-              'finger-print-entity' +
-              entityData.entityId +
-              entityData.entityName
-            }
+            key={`finger-print-entity-${entityData.entityId}-${entityData.entityName}`}
           />
         );
       });

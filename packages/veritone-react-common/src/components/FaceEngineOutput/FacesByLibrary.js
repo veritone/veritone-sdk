@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
-import Avatar from 'material-ui/Avatar';
-import Chip from 'material-ui/Chip';
-import Icon from 'material-ui/Icon';
+import Avatar from '@material-ui/core//Avatar';
+import Chip from '@material-ui/core//Chip';
+import Icon from '@material-ui/core//Icon';
 import {
   shape,
   string,
@@ -18,6 +18,10 @@ import NoFacesFound from './NoFacesFound';
 import styles from './styles.scss';
 
 const FacesByLibrary = ({ faceEntityLibraries, onSelectEntity }) => {
+  const handleSelectEntity = (faceEntityId) => (e) => {
+    onSelectEntity(faceEntityId);
+  }
+
  return isEmpty(faceEntityLibraries)
     ? <NoFacesFound />
     : (
@@ -52,7 +56,7 @@ const FacesByLibrary = ({ faceEntityLibraries, onSelectEntity }) => {
                       src={face.profileImage || noAvatar}
                     />
                   }
-                  onClick={onSelectEntity(face.entityId)}
+                  onClick={handleSelectEntity(face.entityId)}
                 />
               ))}
             </div>

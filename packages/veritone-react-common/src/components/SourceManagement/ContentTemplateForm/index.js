@@ -1,6 +1,6 @@
 import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
-import Button from 'material-ui/Button';
+import Button from '@material-ui/core/Button';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import ContentTemplates from '../ContentTemplates';
 
@@ -37,7 +37,8 @@ export default class ContentTemplateForm extends React.Component {
     contentTemplates: {}
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
     };

@@ -84,7 +84,7 @@ describe('withUIState', function() {
     );
 
     class TestComponent extends React.Component {
-      componentWillUpdate(nextProps) {
+      UNSAFE_componentWillUpdate(nextProps) {
         if (this.props.set !== nextProps.set) {
           this.props.setUIState({
             id: 'new-state'
@@ -169,7 +169,7 @@ describe('withUIState', function() {
         });
       }
 
-      componentWillUpdate(nextProps) {
+      UNSAFE_componentWillUpdate(nextProps) {
         if (this.props.reset !== nextProps.reset) {
           this.props.resetUIState();
         }

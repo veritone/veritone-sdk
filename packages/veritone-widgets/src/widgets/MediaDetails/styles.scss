@@ -53,6 +53,35 @@
     }
   }
 
+  .tdoLoadingProgress {
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+  }
+
+  .widgetErrorContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+
+    .widgetError {
+      display: flex;
+      flex-direction: column;
+
+      .errorImage {
+        align-self: center;
+        height: 110px;
+        width: 130px;
+      }
+
+      .errorMessage {
+        align-self: center;
+        font-size: 24px;
+        margin-top: 30px;
+      }
+    }
+  }
+
   .mediaDetailsPageTabSelector {
     background-color: #252c3b;
     height: 55px;
@@ -71,30 +100,26 @@
   .engineActionHeader {
     height: 54px;
     border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
 
-    .engineActionContainer {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      width: 100%;
-      height: 54px;
+    .engineCategorySelector {
+      margin-left: 20px;
+      align-self: flex-end;
+    }
 
-      .engineCategorySelector {
-        margin-left: 20px;
-        align-self: flex-end;
-      }
-
-      .toEditModeButton {
-        align-self: center;
-        text-transform: uppercase;
-        background-color: #2196f3;
-        color: #fff;
-        height: 36px;
-        border-radius: 3px;
-        box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12),
-          0 2px 2px 0 rgba(0, 0, 0, 0.24);
-        margin-right: 20px;
-      }
+    .toEditModeButton {
+      align-self: center;
+      text-transform: uppercase;
+      background-color: #2196f3;
+      color: #fff;
+      height: 36px;
+      border-radius: 3px;
+      box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12),
+        0 2px 2px 0 rgba(0, 0, 0, 0.24);
+      margin-right: 20px;
     }
   }
 
@@ -114,10 +139,8 @@
     }
 
     .backButtonEditMode {
-      height: 20px;
-      width: 20px;
       font-size: 24px;
-      margin: 0 30px;
+      margin: 0 15px;
       color: rgba(0, 0, 0, 0.87);
     }
   }
@@ -208,4 +231,13 @@
   .metadataSidePanel {
     width: 360px;
   }
+}
+
+.tooltipPlacementBottom {
+  margin: 5px 0;
+  color: red;
+}
+
+.tabIndicator {
+  background-color: #f9a02c !important;
 }

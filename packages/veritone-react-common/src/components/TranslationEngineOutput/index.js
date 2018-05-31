@@ -3,8 +3,8 @@ import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import LocalCode from 'locale-code';
 
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -56,7 +56,7 @@ export default class TranslationEngineOutput extends Component {
     onScroll: func,
     onRerunProcess: func.isRequired,
     onEngineChange: func.isRequired,
-    onExpandClicked: func,
+    onExpandClick: func,
     onLanguageChanged: func,
 
     mediaLengthMs: number,
@@ -74,6 +74,10 @@ export default class TranslationEngineOutput extends Component {
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 1000
   };
+
+  UNSAFE_componentWillMount() {
+    this.setLanguageOptions();
+  }
 
   setLanguageOptions() {
     const { contents, defaultLanguage } = this.props;
@@ -110,7 +114,7 @@ export default class TranslationEngineOutput extends Component {
           languageName = languageCode;
         }
       }
-      
+
       translatedLanguagesInfo.push({
         language: languageCode,
         name: languageName
@@ -152,10 +156,6 @@ export default class TranslationEngineOutput extends Component {
     return selectedContent;
   }
 
-  UNSAFE_componentWillMount() {
-    this.setLanguageOptions();
-  }
-
   handleLanguageChanged = event => {
     const selectedVal = event.target.value;
     this.setState({ selectedLanguage: selectedVal });
@@ -168,7 +168,7 @@ export default class TranslationEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClicked,
+      onExpandClick,
       headerClassName
     } = this.props;
 
@@ -178,37 +178,38 @@ export default class TranslationEngineOutput extends Component {
         engines={engines}
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
-        onExpandClicked={onExpandClicked}
+        onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
-        <Select
-          autoWidth
-          value={this.state.selectedLanguage}
-          onChange={this.handleLanguageChanged}
-          className={classNames(styles.languages)}
-          MenuProps={{
-            anchorOrigin: {
-              horizontal: 'center',
-              vertical: 'bottom'
-            },
-            transformOrigin: {
-              horizontal: 'center'
-            },
-            getContentAnchorEl: null
-          }}
-        >
-          {this.state.languages.map(languageInfo => {
-            return (
-              <MenuItem
-                value={languageInfo.language}
-                className={classNames(styles.language)}
-                key={'language-' + languageInfo.language}
-              >
-                {languageInfo.name || languageInfo.language}
-              </MenuItem>
-            );
-          })}
-        </Select>
+        {this.state.languages.length > 0 &&
+          <Select
+            autoWidth
+            value={this.state.selectedLanguage}
+            onChange={this.handleLanguageChanged}
+            className={classNames(styles.languages)}
+            MenuProps={{
+              anchorOrigin: {
+                horizontal: 'center',
+                vertical: 'bottom'
+              },
+              transformOrigin: {
+                horizontal: 'center'
+              },
+              getContentAnchorEl: null
+            }}
+          >
+            {this.state.languages.map(languageInfo => {
+              return (
+                <MenuItem
+                  value={languageInfo.language}
+                  className={classNames(styles.language)}
+                  key={`language-${languageInfo.language}`}
+                >
+                  {languageInfo.name || languageInfo.language}
+                </MenuItem>
+              );
+            })}
+          </Select>}
       </EngineOutputHeader>
     );
   }

@@ -1,10 +1,11 @@
 import React from 'react';
 
-import { FormControl } from 'material-ui/Form';
-import Select from 'material-ui/Select';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import { InputLabel } from 'material-ui/Input';
-import CheckIcon from 'material-ui-icons/Done';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import CheckIcon from '@material-ui/icons/Done';
 
 import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import Button from 'material-ui/Button';
+import Button from '@material-ui/core/Button';
 import { func } from 'prop-types';
 
 import NullstateImage from 'images/cms-sources-null.svg';

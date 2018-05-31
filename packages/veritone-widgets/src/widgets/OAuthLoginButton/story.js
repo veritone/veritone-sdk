@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 storiesOf('OAuthLoginButtonWidget', module).add('Base', () => {
   return (
     <p>
-      Please see the other stories in this repo for examples of this widget.
+      Please see BaseStory.js in this repo for examples of this widget.
     </p>
   );
 });

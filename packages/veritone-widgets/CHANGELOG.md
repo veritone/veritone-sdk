@@ -70,3 +70,47 @@
 
 ## 4.2.0
 * Added Table widget
+
+## 5.0.0
+With this release, the package's components have been restructured to provide both framework-agnostic widgets (as before) and React smart components. Apps built with React can now import and use widgets with far less trouble.
+
+In order to make this possible, the exports have been slightly changed:
+
+### Before
+```javascript
+// previously, all imports were widgets.
+import { AppBar, FilePicker } from 'veritone-widgets';
+// ...
+new AppBar(/*...*/)
+```
+
+### After
+```javascript
+// Now, widgets are named <thing>Widget...
+import { AppBarWidget, FilePickerWidget } from 'veritone-widgets';
+
+new AppBarWidget(/*...*/);
+new FilePickerWidget(/*...*/);
+
+
+// ...and smart components keep the old "plain" names
+import { AppBar, FilePicker } from 'veritone-widgets';
+
+const MyPage = () => (
+  <div>
+    <AppBar/>
+    <FilePicker/>
+  </div>
+);
+```
+
+### Other changes:
+* Updated to Material-UI v1.0.0!
+* VeritoneApp.login() no longer requires a token (for internal Veritone apps where a cookie is present). Most users will not be affected by this change.
+* VeritoneApp.login() now returns a promise which will be resolved or rejected when the login flow is complete.
+* Refactored stories in dev to use a common BaseStory component.
+* Script tag builds:
+  * The VeritoneApp singleton is now stored on `window`, which should fix issues with it not being found.
+  * (Breaking) Because of the new export scheme described above, script tag globals are now objects rather than direct widget exports, and must be used as follows:
+    * Before: `const app = VeritoneApp(); const appBar = new AppBar();`
+    * After: `const app = VeritoneApp.default(); const appBar = new AppBar.AppBarWidget()`

@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .engineOutputHeader {
   height: 45px;
@@ -30,23 +31,23 @@
   }
 
   .engineSelect {
+    @include mui-text('body1');
     max-width: 150px;
     margin-left: 20px;
-    font-size: 14px;
   }
 
   .actionIconDivider {
     margin: 0 4px 0 20px;
-    background-color: #e0e0e0;
+    background-color: $grey-4;
     height: 24px;
     width: 1px;
   }
 
   .expandedViewButton {
-    border-left: 1px solid #e0e0e0;
+    border-left: 1px solid $grey-4;
   }
 }
 
 .engine {
-  font-size: 14px !important;
+  @include mui-text('body1');
 }

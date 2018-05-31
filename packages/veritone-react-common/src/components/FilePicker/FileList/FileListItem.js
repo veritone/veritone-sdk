@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import DeleteIcon from 'material-ui-icons/Delete';
-import IconButton from 'material-ui/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
 import { shape, func, number, string } from 'prop-types';
 
 import styles from './styles.scss';
@@ -33,11 +33,13 @@ class FileListItem extends Component {
     dataUrl: ''
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.readImageFile(this.props.file);
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.file !== this.props.file) {
       this.readImageFile(nextProps.file);
     }

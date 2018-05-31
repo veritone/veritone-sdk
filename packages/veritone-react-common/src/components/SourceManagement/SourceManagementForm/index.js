@@ -1,10 +1,11 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
 import { pick, has, get } from 'lodash';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Icon from 'material-ui/Icon';
-import IconButton from 'material-ui/IconButton';
-import Button from 'material-ui/Button';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FullScreenDialog from 'components/FullScreenDialog';
@@ -58,7 +59,8 @@ export default class SourceManagementForm extends React.Component {
     openDialog: true
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     const { sourceTypes } = this.props;
     const newState = {
       contentTemplates: { ...this.props.initialTemplates }
@@ -204,7 +206,7 @@ export default class SourceManagementForm extends React.Component {
               </IconButton>
             ]}
           >
-            <Tabs value={activeTab} onChange={this.handleChangeTab}>
+            <Tabs classes={{ indicator: styles.tabIndicator }} value={activeTab} onChange={this.handleChangeTab}>
               <Tab
                 label="Configuration"
                 classes={{ label: styles['form-tab'] }}

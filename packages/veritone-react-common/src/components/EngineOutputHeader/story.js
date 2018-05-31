@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import EngineOutputHeader from './';
 
@@ -23,7 +23,7 @@ storiesOf('EngineOutputHeader', module)
       <EngineOutputHeader
         title="Test title"
         engines={engines}
-        onExpandClicked={action('onExpandClicked')}
+        onExpandClick={action('onExpandClick')}
         onEngineChange={action('onEngineChange')}
       />
     );
@@ -44,7 +44,7 @@ storiesOf('EngineOutputHeader', module)
       <EngineOutputHeader
         title="Test title"
         engines={engines}
-        onExpandClicked={action('onExpandClicked')}
+        onExpandClick={action('onExpandClick')}
         onEngineChange={action('onEngineChange')}
       >
         <Select value="test1">

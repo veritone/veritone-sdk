@@ -3,10 +3,10 @@ import { shape, string, objectOf, any } from 'prop-types';
 import cx from 'classnames';
 import { formValues, Field, FieldArray } from 'redux-form';
 import { capitalize } from 'lodash';
-import IconButton from 'material-ui/IconButton';
-import ClearIcon from 'material-ui-icons/Clear';
-import AddIcon from 'material-ui-icons/Add';
-import TimeIcon from 'material-ui-icons/AccessTime';
+import IconButton from '@material-ui/core/IconButton';
+import ClearIcon from '@material-ui/icons/Clear';
+import AddIcon from '@material-ui/icons/Add';
+import TimeIcon from '@material-ui/icons/AccessTime';
 
 import Checkbox from '../formComponents/Checkbox';
 import TimeRangePicker from '../formComponents/TimeRangePicker';

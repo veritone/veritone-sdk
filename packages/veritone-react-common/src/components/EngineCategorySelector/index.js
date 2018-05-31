@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import Icon from 'material-ui/Icon';
-import Tabs, { Tab } from 'material-ui/Tabs';
-import Tooltip from 'material-ui/Tooltip';
+import Icon from '@material-ui/core/Icon';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Tooltip from '@material-ui/core/Tooltip';
 import { func, string, arrayOf, any } from 'prop-types';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
@@ -29,7 +30,9 @@ export default class EngineCategorySelector extends Component {
               indicatorColor="primary"
               onChange={this.handleTabChange}
               classes={{
-                flexContainer: styles.engineCategoryTabs
+                flexContainer: styles.engineCategoryTabs,
+                root: styles.engineCategoryTabsRoot,
+                scroller: styles.engineCategoryTabsScroller
               }}
             >
               {this.props.engineCategories.map(function(engineCategory) {
@@ -41,25 +44,19 @@ export default class EngineCategorySelector extends Component {
                       <Tooltip
                         id={engineCategory.name}
                         title={engineCategory.name}
-                        placement="top"
-                        enterDelay={1000}
-                        leaveDelay={700}
                         classes={{
-                          root: styles.categoryTabTooltip
+                          tooltip: styles.categoryTabTooltip
                         }}
                       >
                         <Icon
-                          className={engineCategory.iconClass.replace(
-                            '-engine',
-                            ''
-                          )}
+                          className={engineCategory.iconClass}
                           classes={{ root: styles.categoryIcon }}
                         />
                       </Tooltip>
                     }
                     classes={{
                       root: styles.engineCategoryTab,
-                      textColorInheritSelected:
+                      selected:
                         styles.engineCategoryTabSelectedColor
                     }}
                   />

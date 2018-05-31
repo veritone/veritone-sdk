@@ -52,7 +52,7 @@ export default class OverviewSegment extends Component {
 
       readContents.push(
         <OverviewFragment
-          key={'overview-fragment' + startTime + '-' + stopTime}
+          key={`overview-fragment-${startTime}-${stopTime}`}
           content={fragmentData}
           className={fragmentClassName}
           onClick={this.handleFragmentClicked}

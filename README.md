@@ -2,7 +2,7 @@
 
 this is a monorepo managed by Yarn's workspaces feature (https://yarnpkg.com/blog/2017/08/02/introducing-workspaces/).
 # Documentation
-Heavily WIP docs/examples for the various packages are available at https://veritone.github.io/veritone-sdk
+Documentation for each package can be found in their respective README files.
 
 # Development
 1. if you don't have `yarn`, install it here: https://yarnpkg.com/en/docs/install
@@ -15,7 +15,8 @@ _This is WIP and may change as we find a better process_
 1. Complete your feature and PR it to the master branch.
 2. Once merged, update `package.json` in each affected folder under the `packages` directory
     * Increment the version field using [semver](http://semver.org/)
-3. Update each package's `CHANGELOG` file with your new version.
+3. Update each package's `CHANGELOG` file with your new version
+    * To diff individual packages in git: `git diff <hash of previous release> -- packages/<packagename>`
 4. Commit the `package.json` and `CHANGELOG` changes (only!) to master.
 5. [Tag the commit as a release](https://github.com/veritone/veritone-sdk/releases). Create a release for _each_ package you updated, using the naming scheme:
     * Tag version: version-packagename, ie. `1.0.0-veritone-client-js`

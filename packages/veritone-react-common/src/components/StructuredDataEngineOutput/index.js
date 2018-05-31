@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   arrayOf,
+  bool,
   shape,
   number,
   string,
@@ -10,8 +11,8 @@ import {
 } from 'prop-types';
 import { get } from 'lodash';
 import classNames from 'classnames';
-import Select from 'material-ui/Select';
-import { MenuItem } from 'material-ui/Menu';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import EngineOutputHeader from '../EngineOutputHeader';
 import SDOTable from '../SDOTable';
 import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
@@ -46,7 +47,8 @@ class StructuredDataEngineOutput extends Component {
     selectedEngineId: string,
     onEngineChange: func,
     className: string,
-    onExpandClicked: func
+    onExpandClick: func,
+    isExpandedMode: bool
   };
 
   static defaultProps = {
@@ -59,11 +61,13 @@ class StructuredDataEngineOutput extends Component {
     engineSchemaIds: []
   };
 
-  componentWillMount() {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
     this.processStructuredData(this.props.data);
   }
 
-  componentWillReceiveProps(nextProps) {
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data) {
       this.processStructuredData(nextProps.data);
     }
@@ -139,7 +143,8 @@ class StructuredDataEngineOutput extends Component {
       engines,
       schemasById,
       selectedEngineId,
-      onExpandClicked
+      onExpandClick,
+      isExpandedMode
     } = this.props;
 
     const {
@@ -155,7 +160,8 @@ class StructuredDataEngineOutput extends Component {
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={this.handleEngineChange}
-          onExpandClicked={onExpandClicked}
+          onExpandClick={onExpandClick}
+          hideExpandButton={isExpandedMode}
         >
           {schemasById[selectedSchemaId] && (
             <Select
@@ -176,7 +182,7 @@ class StructuredDataEngineOutput extends Component {
               {engineSchemaIds.map(schemaId => {
                 return (
                   <MenuItem
-                    key={'structured-data-schema-menu-item-' + schemaId}
+                    key={`structured-data-schema-menu-item-${schemaId}`}
                     value={schemaId}
                     className={styles.schemaMenuItem}
                   >

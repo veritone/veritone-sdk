@@ -1,8 +1,8 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import TextField from 'material-ui/TextField';
-import Select from 'material-ui/Select';
-import IconButton from 'material-ui/IconButton';
+import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import IconButton from '@material-ui/core/IconButton';
 
 import EngineOutputHeader from './';
 
@@ -62,7 +62,7 @@ describe('EngineOutputHeader', () => {
   it('should call onExpandClick to be called when the expand button is clicked', () => {
     const expandClicked = jest.fn();
     const wrapper = mount(
-      <EngineOutputHeader title="Test Title" onExpandClicked={expandClicked} />
+      <EngineOutputHeader title="Test Title" onExpandClick={expandClicked} />
     );
     let expandButton = wrapper.find(IconButton);
     expandButton.simulate('click');
