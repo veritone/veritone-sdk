@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import FingerprintLibrary from './FingerprintLibrary';
 
-export default class FingerPrintLibraries extends Component {
+export default class FingerprintLibraries extends Component {
   static propTypes = {
     className: string,
     libraries: arrayOf(
