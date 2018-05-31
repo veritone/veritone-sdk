@@ -38,9 +38,10 @@ class FacesByScene extends Component {
   };
 
   renderRecognizedEntityObjects = () => {
-    let { currentMediaPlayerTime, onSelectEntity } = this.props;
+    const { currentMediaPlayerTime, onSelectEntity } = this.props;
+
     return this.props.recognizedEntityObjects.map(entityObject => {
-      let entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
+      const entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
         return (
           currentMediaPlayerTime >= time.startTimeMs &&
           currentMediaPlayerTime <= time.stopTimeMs
@@ -61,14 +62,40 @@ class FacesByScene extends Component {
   };
 
   render() {
-    let recognizedEntityObjects = this.renderRecognizedEntityObjects();
+    const { currentMediaPlayerTime, onSelectEntity } = this.props;
+
+    const recognizedEntityObjects = this.props.recognizedEntityObjects.reduce((acc, entityObject) => {
+      const entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
+        return (
+          currentMediaPlayerTime >= time.startTimeMs &&
+          currentMediaPlayerTime <= time.stopTimeMs
+        );
+      });
+
+      if (entityCurrentlyInFrame) {
+        acc.push(
+          <RecognizedFaceMatch
+            key={`scene-view-recognized-entity-${entityObject.entityId}`}
+            entity={entityObject}
+            confidence={entityCurrentlyInFrame.confidence}
+            onViewDetailsClick={onSelectEntity}
+          />
+        );
+
+      }
+      return acc;
+    }, []);
+
     return (
       <div className={styles.facesByScene}>
-        {!compact(recognizedEntityObjects).length ? (
-          <NoFacesFound />
-        ) : (
-          recognizedEntityObjects
-        )}
+        {
+          !recognizedEntityObjects.length
+          ? <NoFacesFound />
+          :
+            <div>
+              {recognizedEntityObjects}
+            </div>
+        }
       </div>
     );
   }
