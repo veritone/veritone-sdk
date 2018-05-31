@@ -76,6 +76,7 @@ import widget from '../../shared/widget';
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime,
+    widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
   }),
   {
@@ -235,6 +236,7 @@ class MediaDetailsWidget extends React.Component {
       )
     }),
     saveAssetData: func,
+    widgetError: string,
     isSaveEnabled: bool
   };
 
@@ -463,6 +465,7 @@ class MediaDetailsWidget extends React.Component {
       tdoContentTemplates,
       schemasById,
       googleMapsApiKey,
+      widgetError,
       isSaveEnabled
     } = this.props;
 
@@ -504,7 +507,7 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 )}
                 {!get(this.props, 'tdo.id') && (
-                  <div className={styles.pageHeaderTitleLabel}/>
+                  <div className={styles.pageHeaderTitleLabel}>{!isLoadingTdo && ('No Filename')}</div>
                 )}
                 <div className={styles.pageHeaderActionButtons}>
                   {get(this.props, 'tdo.id') &&
@@ -555,6 +558,7 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
+
               {isLoadingTdo &&
                 <div className={styles.tdoLoadingProgress}>
                   <CircularProgress
@@ -562,6 +566,14 @@ class MediaDetailsWidget extends React.Component {
                     color={'primary'}
                   />
                 </div>}
+              {!isLoadingTdo && !get(this.props, 'tdo.id') &&
+                <div className={styles.widgetErrorContainer}>
+                  <div className={styles.widgetError}>
+                    <img className={styles.errorImage} src='//static.veritone.com/veritone-ui/warning-icon-lg.svg'/>
+                    <div className={styles.errorMessage}>{widgetError}</div>
+                  </div>
+                </div>}
+
               {get(this.props, 'tdo.id') &&
                 <Tabs
                   value={this.state.selectedTabValue}
