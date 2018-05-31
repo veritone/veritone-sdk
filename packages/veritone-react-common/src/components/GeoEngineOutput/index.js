@@ -10,7 +10,7 @@ import { format } from '../../helpers/date';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import GeoTimeView from './GeoTimeView';
-import GeoMapview from './GeoMapView';
+import GeoMapView from './GeoMapView';
 import GoogleMapHelpers from './GeoMapView/GoogleMapComponent/GoogleMapHelpers';
 
 import styles from './styles.scss';
@@ -35,8 +35,8 @@ export default class GeoEngineOutput extends Component {
                 direction: number, // 0-360
                 velocity: number, // in meters
                 altitude: number // in meters
-              })
-            )
+              }).isRequired
+            ).isRequired
           })
         )
       })
@@ -191,7 +191,7 @@ export default class GeoEngineOutput extends Component {
 
     if (this.state.currentView === 'mapView') {
       return (
-        <GeoMapview
+        <GeoMapView
           data={parsedData}
           onClick={onClick}
           apiKey={apiKey}
