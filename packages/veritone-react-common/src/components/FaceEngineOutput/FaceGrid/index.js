@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, bool, func } from 'prop-types';
+import { pick } from 'lodash';
 
 import NoFacesFound from '../NoFacesFound';
 import FaceDetectionBox from '../FaceDetectionBox';
@@ -25,44 +26,54 @@ class FaceGrid extends Component {
         profileImageUrl: string
       })
     ),
-    enableEditMode: bool,
+    editMode: bool,
     onAddNewEntity: func,
     onEditFaceDetection: func,
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
-    onSearchForEntities: func
+    onSearchForEntities: func,
+    isSearchingEntities: bool
   };
 
   handleFaceClick = face => evt => {
-    if (!this.props.enableEditMode) {
+    if (!this.props.editMode) {
       this.props.onFaceOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
     }
   };
 
-  renderFaces(faces) {
-    return faces.map(face => {
-      return (
-        <FaceDetectionBox
-          key={`face-${face.startTimeMs}-${face.stopTimeMs}-${face.object.label}-${face.object.originalImage}`}
-          face={face}
-          enableEdit={this.props.enableEditMode}
-          addNewEntity={this.props.onAddNewEntity}
-          searchResults={this.props.entitySearchResults}
-          onEditFaceDetection={this.props.onEditFaceDetection}
-          onRemoveFaceDetection={this.props.onRemoveFaceDetection}
-          onClick={this.handleFaceClick(face)}
-          onSearchForEntities={this.props.onSearchForEntities}
-        />
-      );
-    });
+  handleAddNewEntity = (faceIdx) => (face, entity) => {
+    this.props.onAddNewEntity(face);
   }
 
   render() {
-    let { faces } = this.props;
+    const { faces } = this.props;
+    const detectionBoxProps = pick(this.props, [
+      'onEditFaceDetection',
+      'onRemoveFaceDetection',
+      'onSearchForEntities',
+      'isSearchingEntities'
+    ])
 
     return (
       <div className={styles.faceGrid}>
-        {!faces.length ? <NoFacesFound /> : this.renderFaces(faces)}
+        {!faces.length
+          ? <NoFacesFound />
+          : faces.map((face, idx) => {
+            return (
+              <FaceDetectionBox
+                key={
+                  `face-${face.startTimeMs}-${face.stopTimeMs}-${face.object.uri}`
+                }
+                face={face}
+                enableEdit={this.props.editMode}
+                addNewEntity={this.handleAddNewEntity(idx)}
+                searchResults={this.props.entitySearchResults}
+                onClick={this.handleFaceClick(face)}
+                {...detectionBoxProps}
+              />
+            );
+          })
+        }
       </div>
     );
   }
