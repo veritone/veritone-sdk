@@ -483,8 +483,8 @@ class MediaDetailsWidget extends React.Component {
                     {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
                 )}
-                {!get(this.props, 'tdo.id') && !isLoadingTdo && (
-                  <div className={styles.pageHeaderTitleLabel}>No Filename</div>
+                {!get(this.props, 'tdo.id') && (
+                  <div className={styles.pageHeaderTitleLabel}>{!isLoadingTdo && ('No Filename')}</div>
                 )}
                 <div className={styles.pageHeaderActionButtons}>
                   {get(this.props, 'tdo.id') &&
