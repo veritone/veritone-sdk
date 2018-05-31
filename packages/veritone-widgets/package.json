@@ -15,6 +15,7 @@
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",
     "redux-thunk": "^2.2.0",
+    "reselect": "^3.0.1",
     "veritone-oauth-helpers": "^2.1.0",
     "veritone-react-common": "^5.0.0",
     "veritone-redux-common": "^3.3.0"

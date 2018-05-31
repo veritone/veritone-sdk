@@ -10,9 +10,9 @@ import {
   oneOfType
 } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { boolean, number as knobNumber } from '@storybook/addon-knobs';
+import { withKnobs, boolean, number as knobNumber } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
-import { isEqual, isEmpty } from 'lodash';
+import { isEqual, isEmpty, find } from 'lodash';
 
 import styles from './story.styles.scss';
 
@@ -20,7 +20,7 @@ import FaceEngineOutput from './';
 
 class FaceEngineOutputStory extends Component {
   static propTypes = {
-    enableEditMode: bool,
+    editMode: bool,
     mediaPlayerPosition: number,
     onAddNewEntity: func,
     onFaceOccurrenceClicked: func,
@@ -141,13 +141,13 @@ class FaceEngineOutputStory extends Component {
   };
 
   searchForEntities = searchQuery => {
-    if (!isEmpty(searchQuery)) {
+    if (searchQuery && searchQuery.length) {
       const searchRegex = new RegExp(searchQuery, 'gi');
-      this.setState({
+      this.setState(currentState => ({
         entitySearchResults: this.props.entities.filter(entity => {
           return entity.name.match(searchRegex);
         })
-      });
+      }));
     } else {
       this.setState({
         entitySearchResults: []
@@ -157,25 +157,56 @@ class FaceEngineOutputStory extends Component {
 
   render() {
     const {
-      enableEditMode,
+      editMode,
       mediaPlayerPosition,
       onAddNewEntity,
-      onFaceOccurrenceClicked
+      onFaceOccurrenceClicked,
+      faceObjects,
+      entities
     } = this.props;
+
+    const faceEntities = {
+      unrecognizedFaces: [],
+      // recognizedFaces: []
+      recognizedFaces: {}
+    };
+
+    // flatten data series for currently selected engine
+    const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
+      if (!isEmpty(faceSeries.series)) {
+        return [...accumulator, ...faceSeries.series];
+      }
+      return accumulator;
+    }, []);
+
+    faceSeries.forEach(faceObj => { // for each face object
+      // locate entity that the face object belongs to
+      const entity = find(entities, { id: faceObj.object.entityId });
+
+      if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
+        faceEntities.unrecognizedFaces.push(faceObj);
+      } else {
+        // faceEntities.recognizedFaces.push(faceObj);
+        faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
+      }
+    });
 
     return (
       <FaceEngineOutput
-        data={this.state.faceEngineOutput}
+        // data={this.state.faceEngineOutput}
+        {...faceEntities}
         className={styles.outputViewRoot}
-        libraries={this.state.libraries}
-        entities={this.state.entities}
+        // libraries={this.state.libraries}
+        libraries={this.props.libraries}
+        // entities={this.state.entities}
+        entities={this.props.entities}
         currentMediaPlayerTime={mediaPlayerPosition}
         engines={this.state.engines}
         onEngineChange={this.handleSelectEngine}
         selectedEngineId={this.state.selectedEngineId}
         onExpandClick={this.toggleExpandedMode}
         onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-        enableEditMode={enableEditMode}
+        editMode={editMode}
         entitySearchResults={this.state.entitySearchResults}
         onAddNewEntity={onAddNewEntity}
         onRemoveFaceDetection={this.handleRemoveFaceDetection}
@@ -186,13 +217,15 @@ class FaceEngineOutputStory extends Component {
   }
 }
 
-storiesOf('FaceEngineOutput', module).add('Base', () => {
+storiesOf('FaceEngineOutput', module)
+.addDecorator(withKnobs)
+.add('Base', () => {
   return (
     <FaceEngineOutputStory
-      faceEngineOutput={faceObjects}
+      faceObjects={faceObjects}
       libraries={libraries}
       entities={entities}
-      enableEditMode={boolean('enableEditMode', false)}
+      editMode={boolean('editMode', false)}
       mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
         range: true,
         min: 0,
@@ -335,7 +368,10 @@ const entities = [
     id: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
     name: 'Paul McCartney',
     libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-    libraryName: 'Beatles',
+    library: {
+      id: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+      name: 'Beatles'
+    },
     profileImageUrl:
       'https://pbs.twimg.com/profile_images/806883889146957824/VbnEycIm_normal.jpg',
     jsondata: {
@@ -351,7 +387,10 @@ const entities = [
     id: '1945a3ba-f0a3-411e-8419-78e31c73150a',
     name: 'Ringo Starr',
     libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-    libraryName: 'Beatles',
+    library: {
+      id: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+      name: 'Beatles'
+    },
     profileImageUrl: null,
     jsondata: {}
   },
@@ -359,7 +398,10 @@ const entities = [
     id: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
     name: 'George Harrison',
     libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-    libraryName: 'Beatles',
+    library: {
+      id: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+      name: 'Beatles'
+    },
     profileImageUrl:
       'https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host',
     jsondata: {
@@ -370,7 +412,10 @@ const entities = [
     id: '13595602-3a7f-48d3-bfde-2d029af479f6',
     name: 'Gomez Addams',
     libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-    libraryName: 'Addams Family',
+    library: {
+      id: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+      name: 'Addams Family'
+    },
     profileImage: null,
     jsondata: {}
   },
@@ -378,7 +423,10 @@ const entities = [
     id: 'c1666e9f-9dc0-40f9-aece-0ec1bfeae29a',
     name: 'James Williams',
     libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-    libraryName: 'Addams Family',
+    library: {
+      id: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
+      name: 'Addams Family'
+    },
     profileImage: null,
     jsondata: {}
   }
