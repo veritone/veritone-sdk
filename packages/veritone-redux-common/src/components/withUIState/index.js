@@ -70,7 +70,7 @@ const withUIState = (
       clearStateForKey: noop
     };
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this.isMounting = true;
 
       if (persist) {

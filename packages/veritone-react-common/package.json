@@ -70,7 +70,7 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-react": "^7.4.0",
+    "eslint-plugin-react": "^7.8.2",
     "http-server": "^0.11.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^21.2.1",
