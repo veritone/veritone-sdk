@@ -29,7 +29,6 @@ import {
   OCREngineOutputView,
   SentimentEngineOutput,
   TranscriptEngineOutput,
-  FaceEngineOutput,
   FingerprintEngineOutput,
   LogoDetectionEngineOutput,
   ContentTemplateForm,
@@ -37,6 +36,7 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput
 } from 'veritone-react-common';
+import FaceEngineOutput from '../FaceEngineOutput';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import { withPropsOnChange } from 'recompose';
@@ -75,7 +75,9 @@ import widget from '../../shared/widget';
     libraries: mediaDetailsModule.getLibraries(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
-    currentMediaPlayerTime: state.player.currentTime
+    currentMediaPlayerTime: state.player.currentTime,
+    widgetError: mediaDetailsModule.getWidgetError(state, id),
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -88,7 +90,8 @@ import widget from '../../shared/widget';
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    fetchApplications: applicationModule.fetchApplications
+    fetchApplications: applicationModule.fetchApplications,
+    saveAssetData: mediaDetailsModule.saveAssetData
   },
   null,
   { withRef: true }
@@ -231,7 +234,10 @@ class MediaDetailsWidget extends React.Component {
           url: string.isRequired
         })
       )
-    })
+    }),
+    saveAssetData: func,
+    widgetError: string,
+    isSaveEnabled: bool
   };
 
   static defaultProps = {
@@ -246,7 +252,7 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     selectedTabValue: 'mediaDetails',
-    hasPendingChanges: false
+    disableEditBtn: false
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -257,6 +263,16 @@ class MediaDetailsWidget extends React.Component {
   componentDidMount() {
     this.props.loadTdoRequest(this.props.id, this.props.mediaId);
     this.props.fetchApplications();
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
+      this.handleDisableEditBtn(false);
+    }
+  }
+
+  handleDisableEditBtn = (boolVal) => {
+    this.setState({ disableEditBtn: boolVal });
   }
 
   mediaPlayerRef = ref => {
@@ -341,7 +357,10 @@ class MediaDetailsWidget extends React.Component {
   };
 
   toggleEditMode = () => {
-    this.props.toggleEditMode(this.props.id);
+    this.props.toggleEditMode(
+      this.props.id,
+      this.props.selectedEngineCategory
+    );
   };
 
   toggleExpandedMode = () => {
@@ -349,6 +368,11 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onSaveEdit = () => {
+    this.props.saveAssetData(this.props.id,
+      {
+        selectedEngineId: this.props.selectedEngineId,
+        selectedEngineCategory: this.props.selectedEngineCategory
+      });
     this.toggleEditMode();
   };
 
@@ -440,7 +464,9 @@ class MediaDetailsWidget extends React.Component {
       isLoadingTdo,
       tdoContentTemplates,
       schemasById,
-      googleMapsApiKey
+      googleMapsApiKey,
+      widgetError,
+      isSaveEnabled
     } = this.props;
 
     let isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
@@ -481,7 +507,7 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 )}
                 {!get(this.props, 'tdo.id') && (
-                  <div className={styles.pageHeaderTitleLabel}/>
+                  <div className={styles.pageHeaderTitleLabel}>{!isLoadingTdo && ('No Filename')}</div>
                 )}
                 <div className={styles.pageHeaderActionButtons}>
                   {get(this.props, 'tdo.id') &&
@@ -532,6 +558,7 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
+
               {isLoadingTdo &&
                 <div className={styles.tdoLoadingProgress}>
                   <CircularProgress
@@ -539,6 +566,14 @@ class MediaDetailsWidget extends React.Component {
                     color={'primary'}
                   />
                 </div>}
+              {!isLoadingTdo && !get(this.props, 'tdo.id') &&
+                <div className={styles.widgetErrorContainer}>
+                  <div className={styles.widgetError}>
+                    <img className={styles.errorImage} src='//static.veritone.com/veritone-ui/warning-icon-lg.svg'/>
+                    <div className={styles.errorMessage}>{widgetError}</div>
+                  </div>
+                </div>}
+
               {get(this.props, 'tdo.id') &&
                 <Tabs
                   value={this.state.selectedTabValue}
@@ -581,12 +616,13 @@ class MediaDetailsWidget extends React.Component {
                           }
                         />
                       </div>
-                      {this.isEditableEngineResults() && (
+                    {this.isEditableEngineResults() && (
                         <Button
                           variant="raised"
                           color="primary"
                           className={styles.toEditModeButton}
                           onClick={this.toggleEditMode}
+                          disabled={this.state.disableEditBtn}
                         >
                           EDIT MODE
                         </Button>
@@ -651,7 +687,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={!this.state.hasPendingChanges}
+                        disabled={!isSaveEnabled}
                         onClick={this.onSaveEdit}
                       >
                         SAVE
@@ -664,7 +700,10 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
-              {!isExpandedMode && get(this.props, 'tdo.id') && (
+              {selectedEngineCategory &&
+                selectedEngineCategory.categoryType !== 'transcript' &&
+                selectedEngineCategory.categoryType !== 'correlation' &&
+                (!isExpandedMode || isEditModeEnabled) && (
                 <div className={styles.mediaView}>
                   {isImage ? (
                     <Image
@@ -706,16 +745,14 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'face' && (
                       <FaceEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
-                        libraries={libraries}
-                        entities={entities}
+                        tdo={tdo}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        onFaceOccurrenceClicked={
-                          this.handleUpdateMediaPlayerTime
-                        }
+                        editMode={isEditModeEnabled}
+                        allowEdit={this.handleDisableEditBtn}
+                        onFaceOccurrenceClicked={this.handleUpdateMediaPlayerTime}
                       />
                     )}
                   {selectedEngineCategory &&

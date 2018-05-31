@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { Manager, Target, Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -18,8 +20,8 @@ const renderEntitySearchMenu = ({
   results,
   getItemProps,
   highlightedIndex
-}) => {
-  return results.map((result, index) => {
+}) => (
+  results.map((result, index) => {
     return (
       <MenuItem
         key={`menu-entity-${result.id}`}
@@ -31,16 +33,15 @@ const renderEntitySearchMenu = ({
         })}
       >
         <Avatar
-          src={result.profileImageUrl ? result.profileImageUrl : noAvatar}
+          src={result.profileImageUrl || noAvatar}
         />
         <div className={styles.entityInfo}>
           <div className={styles.menuEntityName}>{result.name}</div>
-          <div className={styles.menuLibraryName}>{result.libraryName}</div>
+          <div className={styles.menuLibraryName}>{result.library.name}</div>
         </div>
       </MenuItem>
     );
-  });
-};
+  }));
 
 @withMuiThemeProvider
 class FaceDetectionBox extends Component {
@@ -63,10 +64,12 @@ class FaceDetectionBox extends Component {
     enableEdit: bool,
     onUpdateEntity: func,
     addNewEntity: func,
+    onAddNewEntity: func,
     onRemoveFaceDetection: func,
     onEditFaceDetection: func,
     onClick: func,
-    onSearchForEntities: func
+    onSearchForEntities: func,
+    isSearchingEntities: bool
   };
 
   state = {
@@ -115,12 +118,13 @@ class FaceDetectionBox extends Component {
   itemToString = item => (item ? item.entityName : '');
 
   render() {
-    let {
+    const {
       face,
       searchResults,
       enableEdit,
       onClick,
-      onSearchForEntities
+      onSearchForEntities,
+      isSearchingEntities
     } = this.props;
 
     return (
@@ -156,14 +160,13 @@ class FaceDetectionBox extends Component {
           </div>
           <div className={styles.faceInformation}>
             <span className={styles.faceTimeOccurrence}>
-              {msToReadableString(face.startTimeMs)} -{' '}
-              {msToReadableString(face.stopTimeMs)}
+              {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(face.stopTimeMs)}`}
             </span>
             {this.state.editFaceEntity ? (
               <Downshift
-                isOpen={this.state.dropdownOpen}
-                inputValue={styles.entityName}
-                itemToString={this.itemToString}
+                // isOpen={this.state.dropdownOpen}
+                // inputValue={styles.entityName}
+                // itemToString={this.itemToString}
                 onSelect={this.handleEntitySelect}
                 onInputValueChange={onSearchForEntities}
               >
@@ -171,7 +174,7 @@ class FaceDetectionBox extends Component {
                   getInputProps,
                   getItemProps,
                   isOpen,
-                  inputValue,
+                  // inputValue,
                   selectedItem,
                   highlightedIndex
                 }) => (
@@ -179,7 +182,7 @@ class FaceDetectionBox extends Component {
                     <Target>
                       <Input
                         {...getInputProps({
-                          value: inputValue,
+                          // value: inputValue,
                           placeholder: 'Unkown',
                           autoFocus: true,
                           className: styles.entitySearchInput
@@ -191,15 +194,17 @@ class FaceDetectionBox extends Component {
                         <div ref={this.dropdownRef}>
                           <Paper className={styles.autoCompleteDropdown} square>
                             <div className={styles.searchResultsList}>
-                              {searchResults && searchResults.length ? (
-                                renderEntitySearchMenu({
-                                  results: searchResults,
-                                  getItemProps,
-                                  highlightedIndex
-                                })
-                              ) : (
-                                <div>Results Not Found</div>
-                              )}
+                              {isSearchingEntities
+                              ? <CircularProgress />
+                              : (searchResults && searchResults.length)
+                                ?
+                                  renderEntitySearchMenu({
+                                    results: searchResults,
+                                    getItemProps,
+                                    highlightedIndex
+                                  })
+                                :  <div>Results Not Found</div>
+                              }
                             </div>
                             <div className={styles.addNewEntity}>
                               <Button

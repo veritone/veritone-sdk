@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
-import { modules, helpers } from 'veritone-redux-common';
+import { modules, util, helpers } from 'veritone-redux-common';
 const { auth: authModule, config: configModule, user: userModule } = modules;
 const { promiseMiddleware } = helpers;
 const {
@@ -14,6 +14,7 @@ const {
   CALLBACK_ERROR_ARGUMENT
 } = promiseMiddleware;
 
+const Sagas = util.reactReduxSaga.Sagas;
 class _VeritoneApp {
   _store = configureStore();
   _containerEl = null;
@@ -105,6 +106,7 @@ class _VeritoneApp {
 
     ReactDOM.render(
       <Provider store={this._store}>
+        <Sagas middleware={this._store.sagaMiddleware}>
         <div>
           {appModule.widgets(this._store.getState()).map(w => {
             if (!w._elId) {
@@ -130,6 +132,7 @@ class _VeritoneApp {
             }
           })}
         </div>
+        </Sagas>
       </Provider>,
       this._containerEl
     );
