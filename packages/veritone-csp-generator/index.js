@@ -439,19 +439,6 @@ const engineCategoryMetadataMapping = {
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation',
 }
 
-const searchQueryGenerator = csp => {
-  const queryFromCsp = cspToPartialQuery(csp);
-  const querySelect = buildQuerySelect(csp);
-  const baseQuery = {
-    query: {
-      operator: 'and',
-      conditions: queryFromCsp ? [queryFromCsp] : []
-    },
-    select: querySelect
-  };
-  return baseQuery;
-};
-
 const getJoinOperator = query => {
   const operators = Object.keys(query);
   return operators[0];
@@ -487,12 +474,6 @@ const generateQueryCondition = node => {
   }
 };
 
-const buildQuerySelect = csp => {
-  const metadataKeysFromCsp = selectMetadataFromCsp(csp);
-  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(metadataKeysFromCsp);
-  return dedupeArray(metadataKeys);
-};
-
 const dedupeArray = arr => {
   const map = {};
   arr.forEach(x => {
@@ -521,6 +502,24 @@ const selectMetadataFromCsp = csp => {
   return metadataKeys;
 };
 
+const buildQuerySelect = csp => {
+  const metadataKeysFromCsp = selectMetadataFromCsp(csp);
+  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(metadataKeysFromCsp);
+  return dedupeArray(metadataKeys);
+};
+
+const searchQueryGenerator = csp => {
+  const queryFromCsp = cspToPartialQuery(csp);
+  const querySelect = buildQuerySelect(csp);
+  const baseQuery = {
+    query: {
+      operator: 'and',
+      conditions: queryFromCsp ? [queryFromCsp] : []
+    },
+    select: querySelect
+  };
+  return baseQuery;
+};
 
 module.exports = {
   CSPToV3Query: searchQueryGenerator,
