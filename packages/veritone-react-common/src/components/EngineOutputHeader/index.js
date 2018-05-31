@@ -11,7 +11,7 @@ import {
 import { isEmpty } from 'lodash';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
 import styles from './styles.scss';
@@ -95,7 +95,7 @@ class EngineOutputHeader extends Component {
         {onExpandClick &&
           !hideExpandButton && (
             <IconButton aria-label="Expanded View" onClick={onExpandClick}>
-              <ZoomOutMap />
+              <Icon className="icon-max-view" />
             </IconButton>
           )}
       </div>
