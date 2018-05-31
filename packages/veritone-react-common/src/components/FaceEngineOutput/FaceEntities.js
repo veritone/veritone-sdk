@@ -43,13 +43,13 @@ export default class FaceEntities extends Component {
     framesBySeconds: {}
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState(prevState => ({
       ...buildFaceDataPayload(this.props.faces, this.props.entities)
     }));
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.viewMode !== this.props.viewMode) {
       this.setState(prevState => ({
         selectedEntity: null
