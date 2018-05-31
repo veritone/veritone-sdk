@@ -4,7 +4,7 @@ import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 
 import Chip from 'material-ui/Chip';
 import IconButton from 'material-ui/IconButton';
-import CloseIcon from 'material-ui-icons/Close';
+import MoreVert from 'material-ui-icons/MoreVert';
 import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
 import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
 
@@ -267,9 +267,9 @@ class SearchBar extends React.Component {
         ) : null
         }
         {
-          this.props.searchParameters.length > 0 ? (<IconButton onClick={ this.props.resetSearchParameters } classes={ { root: cx(styles['resetButton']) } }>
-            <CloseIcon/>
-          </IconButton>) : null
+          <IconButton onClick={ this.props.openMenuExtraActions } classes={ { root: cx(styles['resetButton']) } }>
+            <MoreVert/>
+          </IconButton>
         }
       </div>
     )

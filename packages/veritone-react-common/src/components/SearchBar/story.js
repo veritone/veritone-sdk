@@ -52,6 +52,7 @@ storiesOf('SearchBar', module)
       onSearch={ onSearch }
       setSearch={ searchCallback => setSearchHandler(searchCallback) }
       toCSP={ toCSPCallback => setToCSPHandler(toCSPCallback) }
+      menuActions={ [ { label: 'Process CSP', onClick: (csp) => console.log('Process CSP', csp) } ]}
       /></div>,
       <button id="searchButton">Search</button>,
       <button id="generateCSPButton">GenerateCSP</button>,

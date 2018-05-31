@@ -400,10 +400,32 @@ class SearchBarContainer extends React.Component {
     });
   }
 
+  openMenuExtraActions = (evt) => {
+    const customMenuActions = this.props.menuActions && this.props.menuActions.map(x => ({
+        label: x.label,
+        onClick: () => {
+          x.onClick(this.props.getCSP());
+          this.handleMenuClose();
+        }
+      })) || {} ;
+
+    const menuActions = [
+      ...customMenuActions,
+      { label: 'Reset Search Bar', onClick: this.resetSearchParameters }
+    ]
+
+    this.setState({
+      menuAnchorEl: evt.nativeEvent.path.find( x => x.type === 'button'),
+      selectedPill: null,
+      menuOptions: menuActions
+    });
+  }
+
   handleMenuClose = () => {
     this.setState({
       menuAnchorEl: null,
-      selectedPill: null
+      selectedPill: null,
+      menuOptions: null
     });
   }
 
@@ -574,6 +596,7 @@ class SearchBarContainer extends React.Component {
     const Modal = openModal && openModal.modal ? openModal.modal : null;
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
+    const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
 
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }}>
@@ -592,13 +615,15 @@ class SearchBarContainer extends React.Component {
             openPill={this.openPill}
             modifyPill={ this.props.addOrModifySearchParameter }
             openMenu={this.handleMenuOpen}
+            openMenuExtraActions={ this.openMenuExtraActions }
             resetSearchParameters={this.resetSearchParameters}
           />
           <Menu
             open={Boolean(this.state.menuAnchorEl)}
             onClose={this.handleMenuClose}
             anchorEl={this.state.menuAnchorEl}
-            anchorOrigin={ { vertical: 'bottom' } }
+            anchorOrigin={ { vertical: 'bottom', ...horizontalAnchorPosition } }
+            transformOrigin={ horizontalAnchorPosition }
             getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
             disableRestoreFocus
           >

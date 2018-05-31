@@ -523,6 +523,10 @@ export class SampleSearchBar extends React.Component {
     }
   }
 
+  getCSP = () => {
+    return this.convertSearchParametersToCSP(this.state.searchParameters);
+  }
+
   CSPToSearchParameters = (cognitiveSearchProfile, parentJoinOperator) => {
     //handle case where csp is just a single term without any join groups
     if(cognitiveSearchProfile.state && cognitiveSearchProfile.engineCategoryId) {
@@ -688,6 +692,8 @@ export class SampleSearchBar extends React.Component {
           insertMultipleSearchParameters={this.insertMultipleSearchParameters}
           removeSearchParameter={this.removeSearchParameter}
           resetSearchParameters={this.resetSearchParameters}
+          getCSP={this.getCSP}
+          menuActions={this.props.menuActions}
         />
       </MuiThemeProvider>
     );
