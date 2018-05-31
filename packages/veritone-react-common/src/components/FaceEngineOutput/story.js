@@ -7,7 +7,8 @@ import {
   shape,
   arrayOf,
   objectOf,
-  oneOfType
+  oneOfType,
+  object
 } from 'prop-types';
 import { storiesOf } from '@storybook/react';
 import { withKnobs, boolean, number as knobNumber } from '@storybook/addon-knobs';
@@ -53,7 +54,8 @@ class FaceEngineOutputStory extends Component {
         profileImageUrl: string,
         jsondata: objectOf(oneOfType([string, number]))
       })
-    )
+    ),
+    faceObjects: arrayOf(object)
   };
 
   state = {
@@ -167,7 +169,6 @@ class FaceEngineOutputStory extends Component {
 
     const faceEntities = {
       unrecognizedFaces: [],
-      // recognizedFaces: []
       recognizedFaces: {}
     };
 
@@ -186,19 +187,15 @@ class FaceEngineOutputStory extends Component {
       if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
-        // faceEntities.recognizedFaces.push(faceObj);
         faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
       }
     });
 
     return (
       <FaceEngineOutput
-        // data={this.state.faceEngineOutput}
         {...faceEntities}
         className={styles.outputViewRoot}
-        // libraries={this.state.libraries}
         libraries={this.props.libraries}
-        // entities={this.state.entities}
         entities={this.props.entities}
         currentMediaPlayerTime={mediaPlayerPosition}
         engines={this.state.engines}

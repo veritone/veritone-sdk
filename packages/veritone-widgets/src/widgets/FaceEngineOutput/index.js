@@ -148,7 +148,11 @@ class FaceEngineOutputContainer extends Component {
     isFetchingEntities: bool,
     isFetchingLibraries: bool,
     isSearchingEntities: bool,
-    allowEdit: func
+    allowEdit: func,
+    fetchEngineResults: func,
+    fetchEntitySearchResults: func,
+    updateEngineResultEntity: func,
+    createEntity: func
   };
 
   state = {
@@ -178,144 +182,6 @@ class FaceEngineOutputContainer extends Component {
       });
     }
 
-    if (!this.props.entities.length && nextProps.entities.length) {
-      const faceObjects = [
-        {
-          series: [
-            {
-              startTimeMs: 0,
-              stopTimeMs: 2000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                boundingPoly: [
-                  {
-                    x: 0.5,
-                    y: 0.2
-                  }
-                ]
-              }
-            },
-            {
-              startTimeMs: 1000,
-              stopTimeMs: 4000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
-                libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-                boundingPoly: [
-                  {
-                    x: 0.1,
-                    y: 0.2
-                  }
-                ],
-                confidence: 0.81
-              }
-            },
-            {
-              startTimeMs: 1000,
-              stopTimeMs: 4000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                entityId: '1945a3ba-f0a3-411e-8419-78e31c73150a',
-                libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-                boundingPoly: [
-                  {
-                    x: 0.4,
-                    y: 0.2
-                  }
-                ],
-                confidence: 0.81
-              }
-            },
-            {
-              startTimeMs: 2000,
-              stopTimeMs: 3000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                entityId: '8e35f28c-34aa-4ee3-8690-f62bf1a704fa',
-                libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-                boundingPoly: [
-                  {
-                    x: 0.2,
-                    y: 0.5
-                  }
-                ],
-                confidence: 0.86
-              }
-            },
-            {
-              startTimeMs: 3000,
-              stopTimeMs: 4000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                entityId: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
-                libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
-                boundingPoly: [
-                  {
-                    x: 0.3,
-                    y: 0.4
-                  }
-                ],
-                confidence: 0.9
-              }
-            }
-          ]
-        },
-        {
-          series: [
-            {
-              startTimeMs: 4000,
-              stopTimeMs: 6000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                boundingPoly: [
-                  {
-                    x: 0.4,
-                    y: 0.3
-                  }
-                ]
-              }
-            },
-            {
-              startTimeMs: 5000,
-              stopTimeMs: 6000,
-              object: {
-                type: 'face',
-                uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
-                entityId: '13595602-3a7f-48d3-bfde-2d029af479f6',
-                libraryId: 'b64ef50a-0a5b-47ff-a403-a9a30f9241a4',
-                boundingPoly: [
-                  {
-                    x: 0.5,
-                    y: 0.2
-                  }
-                ],
-                confidence: 0.94
-              }
-            }
-          ]
-        }
-      ];
-
-      const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
-        if (faceSeries.series.length) {
-          const unrecognizedFaces = faceSeries.series.filter(faceObj => !faceObj.object.entityId);
-          return [...accumulator, ...unrecognizedFaces];
-        }
-        return accumulator;
-      }, []);
-
-      this.props.updateEngineResult(
-        nextProps.selectedEngineId,
-        faceSeries
-      );
-    }
   }
 
   handleSearchEntities = (searchText) => {
@@ -469,7 +335,6 @@ class FaceEngineOutputContainer extends Component {
   }
 
   render() {
-    console.log('this.props.faces:', this.props.faces)
     const faceEngineProps = pick(this.props, [
       'editMode',
       'engines',

@@ -170,7 +170,6 @@ function buildFaceDataPayload(faces, entities) {
     framesBySeconds: {}
   };
 
-  // faces.forEach(faceObj => { // for each face object
   forEach(faces, (faceObj) => { // for each face object
     // locate entity that the face object belongs to
     const entity = find(entities, { id: faceObj.object.entityId });

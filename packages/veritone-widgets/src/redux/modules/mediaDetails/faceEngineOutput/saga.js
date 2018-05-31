@@ -8,9 +8,6 @@ import callGraphQLApi from '../../../../shared/callGraphQLApi';
 
 const { auth: authModule, config: configModule } = modules;
 
-// const token = 'fbc6364d-91d4-4c18-8fbb-b2992e432708';
-// const graphQLUrl = "https://api.aws-dev.veritone.com/v3/graphql";
-
 /* WATCH FUNCTIONS */
 function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
   const config = yield select(configModule.getConfig);

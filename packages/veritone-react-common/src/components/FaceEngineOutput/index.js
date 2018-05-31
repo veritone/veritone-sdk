@@ -11,7 +11,9 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType
+  oneOfType,
+  object,
+  any
 } from 'prop-types';
 import cx from 'classnames';
 
@@ -25,26 +27,6 @@ import styles from './styles.scss';
 @withMuiThemeProvider
 class FaceEngineOutput extends Component {
   static propTypes = {
-    // data: arrayOf(
-    //   shape({
-    //     series: arrayOf(
-    //       shape({
-    //         startTimeMs: number.isRequired,
-    //         stopTimeMs: number.isRequired,
-    //         object: shape({
-    //           label: string,
-    //           uri: string
-    //         })
-    //       })
-    //     )
-    //   })
-    // ).isRequired,
-    // libraries: arrayOf(
-    //   shape({
-    //     id: string,
-    //     name: string
-    //   })
-    // ).isRequired,
     entities: arrayOf(
       shape({
         id: string.isRequired,
@@ -81,7 +63,10 @@ class FaceEngineOutput extends Component {
     onRemoveFaceDetection: func,
     onEditFaceDetection: func,
     onSearchForEntities: func,
-    onExpandClick: func
+    onExpandClick: func,
+    recognizedFaces: objectOf(any).isRequired,
+    unrecognizedFaces: arrayOf(object).isRequired,
+    isSearchingEntities: bool
   };
 
   state = {
@@ -95,18 +80,9 @@ class FaceEngineOutput extends Component {
     }
   };
 
-  // getLibraryById = id => {
-  //   return this.props.libraries.find(library => library.id == id);
-  // };
-
-  // getEntityById = (library, entityId) => {
-  //   return library.entities.find(e => e.entityId === entityId);
-  // };
-
   handleViewModeChange = evt => {
     this.setState({
       viewMode: evt.target.value,
-      // selectedEntity: null
     });
   };
 
