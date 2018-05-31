@@ -56,8 +56,8 @@ function genMockData(numValues, startTime, timeInterval) {
 
   return [
     {
-      startOffsetMs: seriesData[0].startTimeMs,
-      stopOffsetMs: seriesData[seriesData.length - 1].stopTimeMs,
+      startTimeMs: seriesData[0].startTimeMs,
+      stopTimeMs: seriesData[seriesData.length - 1].stopTimeMs,
       series: seriesData
     }
   ];
