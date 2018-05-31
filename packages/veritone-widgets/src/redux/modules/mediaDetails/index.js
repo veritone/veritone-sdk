@@ -68,7 +68,8 @@ const defaultMDPState = {
   fetchingEntities: false,
   contentTemplates: {},
   tdoContentTemplates: {},
-  schemasById: {}
+  schemasById: {},
+  error: null,
 };
 
 const defaultState = {};
@@ -303,6 +304,7 @@ export default createReducer(defaultState, {
     }
   ) {
     const errorMessage = get(error, 'message', error);
+    console.log('Failed to loaf tdo. Disable Spinner. Show error.');
     return {
       ...state,
       [widgetId]: {
@@ -746,6 +748,8 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
+export const getWidgetError = (state, widgetId) =>
+  get(local(state), [widgetId, 'error']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -806,7 +810,7 @@ export const loadTdoSuccess = (widgetId, result) => ({
   meta: { widgetId }
 });
 
-export const loadTdoFailure = (widgetId, { error }) => ({
+export const loadTdoFailure = (widgetId, error) => ({
   type: LOAD_TDO_FAILURE,
   meta: { error, widgetId }
 });

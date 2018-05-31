@@ -75,6 +75,7 @@ import widget from '../../shared/widget';
     libraries: mediaDetailsModule.getLibraries(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
+    widgetError: mediaDetailsModule.getWidgetError(state, id),
     currentMediaPlayerTime: state.player.currentTime
   }),
   {
@@ -231,7 +232,8 @@ class MediaDetailsWidget extends React.Component {
           url: string.isRequired
         })
       )
-    })
+    }),
+    widgetError: string
   };
 
   static defaultProps = {
@@ -440,6 +442,7 @@ class MediaDetailsWidget extends React.Component {
       isLoadingTdo,
       tdoContentTemplates,
       schemasById,
+      widgetError,
       googleMapsApiKey
     } = this.props;
 
@@ -480,8 +483,8 @@ class MediaDetailsWidget extends React.Component {
                     {get(this.props, 'tdo.details.veritoneFile.filename', 'No Filename')}
                   </div>
                 )}
-                {!get(this.props, 'tdo.id') && (
-                  <div className={styles.pageHeaderTitleLabel}/>
+                {!get(this.props, 'tdo.id') && !isLoadingTdo && (
+                  <div className={styles.pageHeaderTitleLabel}>No Filename</div>
                 )}
                 <div className={styles.pageHeaderActionButtons}>
                   {get(this.props, 'tdo.id') &&
@@ -532,6 +535,7 @@ class MediaDetailsWidget extends React.Component {
                   </IconButton>
                 </div>
               </div>
+
               {isLoadingTdo &&
                 <div className={styles.tdoLoadingProgress}>
                   <CircularProgress
@@ -539,6 +543,14 @@ class MediaDetailsWidget extends React.Component {
                     color={'primary'}
                   />
                 </div>}
+              {!isLoadingTdo && !get(this.props, 'tdo.id') &&
+                <div className={styles.widgetErrorContainer}>
+                  <div className={styles.widgetError}>
+                    <img className={styles.errorImage} src='//static.veritone.com/veritone-ui/warning-icon-lg.svg'/>
+                    <div className={styles.errorMessage}>{widgetError}</div>
+                  </div>
+                </div>}
+
               {get(this.props, 'tdo.id') &&
                 <Tabs
                   value={this.state.selectedTabValue}

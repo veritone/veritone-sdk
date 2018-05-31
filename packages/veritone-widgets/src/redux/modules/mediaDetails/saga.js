@@ -120,13 +120,11 @@ function* loadTdoSaga(widgetId, tdoId) {
       token
     });
   } catch (error) {
-    return yield* loadTdoFailure(widgetId, { error });
+    return yield put(loadTdoFailure(widgetId, error));
   }
 
   if (!get(response, 'data.temporalDataObject.id')) {
-    return yield* loadTdoFailure(widgetId, {
-      error: 'Media not found'
-    });
+    return yield put(loadTdoFailure(widgetId, 'Media not found'));
   }
 
   const orderedSupportedCategoryTypes = [
