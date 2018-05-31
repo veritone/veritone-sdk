@@ -123,7 +123,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     return yield* loadTdoFailure(widgetId, { error });
   }
 
-  if (!get(response, 'data.temporalDataObject')) {
+  if (!get(response, 'data.temporalDataObject.id')) {
     return yield* loadTdoFailure(widgetId, {
       error: 'Media not found'
     });
