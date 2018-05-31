@@ -165,7 +165,6 @@ export default class TranslationContent extends Component {
       // Handle error segments
       if (chunkStatus === 'error') {
         segmentStatus === 'nodata' && createNoDataSegment(); //Save previous no data segment if the time gap above doesn't catch it
-
         segmentStatus = chunkStatus;
 
         if (
