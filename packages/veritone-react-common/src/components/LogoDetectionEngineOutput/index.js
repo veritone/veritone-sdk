@@ -81,7 +81,7 @@ export default class LogoDetectionEngineOutput extends Component {
 
     let contents = [];
 
-    data.map((chunk) => {
+    data.map(chunk => {
       let groupStartTime = chunk.startTimeMs;
       let groupStopTime = chunk.stopTimeMs;
 
@@ -122,7 +122,9 @@ export default class LogoDetectionEngineOutput extends Component {
                 className={classNames(styles.item, entryClassName)}
                 labelClassName={classNames(styles.label, entryLabelClassName)}
                 infoClassName={entryInfoClassName}
-                key={`logo-${startTime}-${stopTime}-${itemInfo.object.label}`}
+                key={`logo-${itemInfo.startTimeMs}-${itemInfo.stopTimeMs}-${
+                  itemInfo.object.label
+                }`}
                 onClick={this.handleEntrySelected}
                 data={itemInfo}
                 highlight={
