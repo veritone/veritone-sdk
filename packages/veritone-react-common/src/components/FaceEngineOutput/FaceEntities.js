@@ -23,6 +23,10 @@ export default class FaceEntities extends Component {
         id: string.isRequired,
         name: string.isRequired,
         libraryId: string.isRequired,
+        library: {
+          id: string.isRequired,
+          name: string.isRequired
+        },
         profileImageUrl: string,
         jsondata: objectOf(oneOfType([string, number]))
       })
@@ -30,14 +34,14 @@ export default class FaceEntities extends Component {
     currentMediaPlayerTime: number,
     onSelectEntity: func,
     onFaceOccurrenceClicked: func
-  }
+  };
 
   state = {
     selectedEntity: null,
     faceEntities: {},
     entitiesByLibrary: {},
     framesBySeconds: {}
-  }
+  };
 
   componentWillMount() {
     this.setState(prevState => ({
@@ -51,9 +55,11 @@ export default class FaceEntities extends Component {
         selectedEntity: null
       }));
     }
-    if (nextProps.entities.length !== this.props.entities.length ||
-      Object.keys(nextProps.faces).length !== Object.keys(this.props.faces).length)
-    {
+    if (
+      nextProps.entities.length !== this.props.entities.length ||
+      Object.keys(nextProps.faces).length !==
+        Object.keys(this.props.faces).length
+    ) {
       this.setState(prevState => ({
         ...buildFaceDataPayload(this.props.faces, this.props.entities)
       }));
@@ -81,10 +87,11 @@ export default class FaceEntities extends Component {
     if (selectedEntity) {
       return (
         <EntityInformation
-          {...pick(
-            faceEntities[selectedEntity],
-            ['entity', 'count', 'timeSlots'])
-          }
+          {...pick(faceEntities[selectedEntity], [
+            'entity',
+            'count',
+            'timeSlots'
+          ])}
           onBackClicked={this.removeSelectedEntity}
           onOccurrenceClicked={this.props.onFaceOccurrenceClicked}
         />
@@ -97,7 +104,7 @@ export default class FaceEntities extends Component {
           faceEntityLibraries={this.state.entitiesByLibrary}
           onSelectEntity={this.handleEntitySelect}
         />
-      )
+      );
     } else if (viewMode === 'byFrame') {
       return (
         <FacesByFrame
@@ -106,7 +113,7 @@ export default class FaceEntities extends Component {
           framesBySeconds={this.state.framesBySeconds}
           onSelectEntity={this.handleEntitySelect}
         />
-      )
+      );
     } else if (viewMode === 'byScene') {
       return (
         <FacesByScene
@@ -137,13 +144,13 @@ function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
         ? faceObj.stopTimeMs
         : recognizedEntityObj.stopTimeMs
   };
-};
+}
 
 function getFrameNamespaceForMatch(faceObj) {
   return faceObj.object.boundingPoly
     ? JSON.stringify(faceObj.object.boundingPoly)
-    : null
-};
+    : null;
+}
 
 // Gets list of nearest seconds which the face/entity appears in (MS)
 function getArrayOfSecondSpots(timeSlot) {
@@ -161,7 +168,7 @@ function getArrayOfSecondSpots(timeSlot) {
   }
 
   return secondSpots;
-};
+}
 
 function buildFaceDataPayload(faces, entities) {
   const faceData = {
@@ -170,7 +177,8 @@ function buildFaceDataPayload(faces, entities) {
     framesBySeconds: {}
   };
 
-  forEach(faces, (faceObj) => { // for each face object
+  forEach(faces, faceObj => {
+    // for each face object
     // locate entity that the face object belongs to
     const entity = find(entities, { id: faceObj.object.entityId });
 
@@ -247,9 +255,11 @@ function buildFaceDataPayload(faces, entities) {
           };
 
           faceData.framesBySeconds[second][matchNamespace].entities.push(match);
-          faceData.framesBySeconds[second][matchNamespace].entities.sort((a, b) => {
-            return b.confidence - a.confidence;
-          });
+          faceData.framesBySeconds[second][matchNamespace].entities.sort(
+            (a, b) => {
+              return b.confidence - a.confidence;
+            }
+          );
         });
       }
     }

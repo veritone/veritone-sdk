@@ -41,9 +41,9 @@ class FaceGrid extends Component {
     }
   };
 
-  handleAddNewEntity = (faceIdx) => (face, entity) => {
+  handleAddNewEntity = faceIdx => (face, entity) => {
     this.props.onAddNewEntity(face);
-  }
+  };
 
   render() {
     const { faces } = this.props;
@@ -52,18 +52,19 @@ class FaceGrid extends Component {
       'onRemoveFaceDetection',
       'onSearchForEntities',
       'isSearchingEntities'
-    ])
+    ]);
 
     return (
       <div className={styles.faceGrid}>
-        {!faces.length
-          ? <NoFacesFound />
-          : faces.map((face, idx) => {
+        {!faces.length ? (
+          <NoFacesFound />
+        ) : (
+          faces.map((face, idx) => {
             return (
               <FaceDetectionBox
-                key={
-                  `face-${face.startTimeMs}-${face.stopTimeMs}-${face.object.uri}`
-                }
+                key={`face-${face.startTimeMs}-${face.stopTimeMs}-${
+                  face.object.uri
+                }`}
                 face={face}
                 enableEdit={this.props.editMode}
                 addNewEntity={this.handleAddNewEntity(idx)}
@@ -73,7 +74,7 @@ class FaceGrid extends Component {
               />
             );
           })
-        }
+        )}
       </div>
     );
   }

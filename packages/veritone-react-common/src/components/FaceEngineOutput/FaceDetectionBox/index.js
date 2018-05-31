@@ -16,11 +16,7 @@ import noAvatar from 'images/no-avatar.png';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-const renderEntitySearchMenu = ({
-  results,
-  getItemProps,
-  highlightedIndex
-}) => (
+const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex }) =>
   results.map((result, index) => {
     return (
       <MenuItem
@@ -32,16 +28,14 @@ const renderEntitySearchMenu = ({
           selected: highlightedIndex === index
         })}
       >
-        <Avatar
-          src={result.profileImageUrl || noAvatar}
-        />
+        <Avatar src={result.profileImageUrl || noAvatar} />
         <div className={styles.entityInfo}>
           <div className={styles.menuEntityName}>{result.name}</div>
           <div className={styles.menuLibraryName}>{result.library.name}</div>
         </div>
       </MenuItem>
     );
-  }));
+  });
 
 @withMuiThemeProvider
 class FaceDetectionBox extends Component {
@@ -160,7 +154,9 @@ class FaceDetectionBox extends Component {
           </div>
           <div className={styles.faceInformation}>
             <span className={styles.faceTimeOccurrence}>
-              {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(face.stopTimeMs)}`}
+              {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(
+                face.stopTimeMs
+              )}`}
             </span>
             {this.state.editFaceEntity ? (
               <Downshift
@@ -194,17 +190,17 @@ class FaceDetectionBox extends Component {
                         <div ref={this.dropdownRef}>
                           <Paper className={styles.autoCompleteDropdown} square>
                             <div className={styles.searchResultsList}>
-                              {isSearchingEntities
-                              ? <CircularProgress />
-                              : (searchResults && searchResults.length)
-                                ?
-                                  renderEntitySearchMenu({
-                                    results: searchResults,
-                                    getItemProps,
-                                    highlightedIndex
-                                  })
-                                :  <div>Results Not Found</div>
-                              }
+                              {isSearchingEntities ? (
+                                <CircularProgress />
+                              ) : searchResults && searchResults.length ? (
+                                renderEntitySearchMenu({
+                                  results: searchResults,
+                                  getItemProps,
+                                  highlightedIndex
+                                })
+                              ) : (
+                                <div>Results Not Found</div>
+                              )}
                             </div>
                             <div className={styles.addNewEntity}>
                               <Button
