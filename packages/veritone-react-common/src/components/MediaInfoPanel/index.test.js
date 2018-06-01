@@ -93,9 +93,7 @@ describe('MediaInfoPanel', () => {
     expect(infoFields.at(0).find('.infoFieldLabel').text()).toEqual('Filename');
     expect(infoFields.at(0).find('.infoFieldData').text()).toEqual(TDO.details.veritoneFile.filename);
     expect(infoFields.at(1).find('.infoFieldLabel').text()).toEqual('Date Created');
-    expect(infoFields.at(1).find('.infoFieldData').text()).toContain('Wed');
-    expect(infoFields.at(1).find('.infoFieldData').text()).toContain('17');
-    expect(infoFields.at(1).find('.infoFieldData').text()).toContain('2018');
+    expect(infoFields.at(1).find('.infoFieldData').text()).toBeDefined();
     expect(infoFields.at(2).find('.infoFieldLabel').text()).toEqual('Duration');
     expect(infoFields.at(2).find('.infoFieldData').text()).toEqual('00:00:20');
     expect(infoFields.at(3).find('.infoFieldLabel').text()).toEqual('Engines');
@@ -105,7 +103,6 @@ describe('MediaInfoPanel', () => {
 
     expect(wrapper.find('.programLiveImage').prop('src')).toEqual(TDO.thumbnailUrl);
     expect(wrapper.find('.programImage').prop('src')).toEqual('//static.veritone.com/veritone-ui/program_image_null.svg');
-
 
     expect(wrapper.find('.infoPanelHeader').find('[aria-label="More"]').exists()).toEqual(true);
     wrapper.find('.infoPanelHeader').find('[aria-label="More"]').first().simulate('click');
