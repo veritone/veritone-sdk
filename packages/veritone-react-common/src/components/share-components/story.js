@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { storiesOf,  } from '@storybook/react';
-import { boolean, number } from '@storybook/addon-knobs/react';
+import { boolean } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
 import styles from './styles.scss';

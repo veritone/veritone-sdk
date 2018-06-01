@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy } from 'lodash';
+import { orderBy, reduce } from 'lodash';
 import classNames from 'classnames';
 
 import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
@@ -341,8 +341,7 @@ export default class TranscriptContent extends Component {
     let overalStopTime = 0;
     let overalString = '';
 
-    const overviewSegments = [];
-    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
+    const overviewSegments = reduce(parsedData.overviewSegments, (memo, segmentData, segmentIndex) => {
       const segmentStartTime = segmentData.startTimeMs;
       const segmentStopTime = segmentData.stopTimeMs;
 
@@ -358,7 +357,7 @@ export default class TranscriptContent extends Component {
 
       if (segmentIndex === parsedData.overviewSegments.length - 1) {
         // Reach the last segment
-        overviewSegments.push({
+        memo.push({
           start: overalStartTime,
           stop: overalStopTime,
           content: (
@@ -372,7 +371,8 @@ export default class TranscriptContent extends Component {
           )
         });
       }
-    });
+      return memo;
+    }, []);
 
     return overviewSegments;
   };
