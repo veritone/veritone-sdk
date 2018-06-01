@@ -11,7 +11,11 @@ import {
   object
 } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { withKnobs, boolean, number as knobNumber } from '@storybook/addon-knobs';
+import {
+  withKnobs,
+  boolean,
+  number as knobNumber
+} from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { isEqual, isEmpty, find } from 'lodash';
 
@@ -180,11 +184,17 @@ class FaceEngineOutputStory extends Component {
       return accumulator;
     }, []);
 
-    faceSeries.forEach(faceObj => { // for each face object
+    faceSeries.forEach(faceObj => {
+      // for each face object
       // locate entity that the face object belongs to
       const entity = find(entities, { id: faceObj.object.entityId });
 
-      if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
+      if (
+        !faceObj.object.entityId ||
+        !entities.length ||
+        !entity ||
+        !entity.name
+      ) {
         faceEntities.unrecognizedFaces.push(faceObj);
       } else {
         faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
@@ -215,26 +225,26 @@ class FaceEngineOutputStory extends Component {
 }
 
 storiesOf('FaceEngineOutput', module)
-.addDecorator(withKnobs)
-.add('Base', () => {
-  return (
-    <FaceEngineOutputStory
-      faceObjects={faceObjects}
-      libraries={libraries}
-      entities={entities}
-      editMode={boolean('editMode', false)}
-      mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
-        range: true,
-        min: 0,
-        max: 6000,
-        step: 1000
-      })}
-      onAddNewEntity={action('Pop the add new entity modal')}
-      onFaceOccurrenceClicked={action('Set the media player position')}
-      onRemoveFaceDetection={action('Remove face detection')}
-    />
-  );
-});
+  .addDecorator(withKnobs)
+  .add('Base', () => {
+    return (
+      <FaceEngineOutputStory
+        faceObjects={faceObjects}
+        libraries={libraries}
+        entities={entities}
+        editMode={boolean('editMode', false)}
+        mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
+          range: true,
+          min: 0,
+          max: 6000,
+          step: 1000
+        })}
+        onAddNewEntity={action('Pop the add new entity modal')}
+        onFaceOccurrenceClicked={action('Set the media player position')}
+        onRemoveFaceDetection={action('Remove face detection')}
+      />
+    );
+  });
 
 const faceObjects = [
   {
@@ -400,7 +410,7 @@ const entities = [
       name: 'Beatles'
     },
     profileImageUrl:
-      'https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host',
+      'http://www.slate.com/content/dam/slate/articles/arts/musicbox/2011/10/111004_MUSIC_harrisonFW.jpg.CROP.article250-medium.jpg',
     jsondata: {
       description: ''
     }

@@ -11,9 +11,7 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType,
-  object,
-  any
+  oneOfType
 } from 'prop-types';
 import cx from 'classnames';
 
@@ -64,8 +62,30 @@ class FaceEngineOutput extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClick: func,
-    recognizedFaces: objectOf(any).isRequired,
-    unrecognizedFaces: arrayOf(object).isRequired,
+    recognizedFaces: objectOf(
+      shape({
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
+        object: shape({
+          label: string,
+          uri: string,
+          confidence: number,
+          type: string,
+          entityId: string.isRequired,
+          libraryId: string.isRequired
+        })
+      })
+    ).isRequired,
+    unrecognizedFaces: arrayOf(
+      shape({
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
+        object: shape({
+          label: string,
+          uri: string
+        })
+      })
+    ).isRequired,
     isSearchingEntities: bool
   };
 
@@ -82,7 +102,7 @@ class FaceEngineOutput extends Component {
 
   handleViewModeChange = evt => {
     this.setState({
-      viewMode: evt.target.value,
+      viewMode: evt.target.value
     });
   };
 
