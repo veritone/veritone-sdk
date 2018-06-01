@@ -26,7 +26,7 @@ class OCREngineOutputView extends Component {
               text: string
             })
           })
-        )
+        ).isRequired
       })
     ),
     engines: arrayOf(

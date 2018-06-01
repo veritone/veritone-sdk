@@ -273,7 +273,7 @@ class Story extends React.Component {
 
 const app = VeritoneApp();
 
-storiesOf('Source Management Overview', module).add('Base', () => {
+storiesOf('Source Management Overview', module).add('Overview', () => {
   const sessionToken = text('Api Session Token', '');
 
   return <Story sessionToken={sessionToken} store={app._store} />;

@@ -11,7 +11,7 @@ import {
 import { isEmpty } from 'lodash';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
 import styles from './styles.scss';
@@ -20,6 +20,7 @@ class EngineOutputHeader extends Component {
   static propTypes = {
     title: string,
     hideTitle: bool,
+    hideExpandButton: bool,
     engines: arrayOf(
       shape({
         id: string.isRequired,
@@ -47,6 +48,7 @@ class EngineOutputHeader extends Component {
       children,
       title,
       hideTitle,
+      hideExpandButton,
       engines,
       selectedEngineId,
       onExpandClick
@@ -77,7 +79,9 @@ class EngineOutputHeader extends Component {
                   <MenuItem
                     key={`engine-menu-item-${e.id}`}
                     value={e.id}
-                    className={styles.engine}
+                    classes={{
+                      root: styles.engine
+                    }}
                   >
                     {e.name}
                   </MenuItem>
@@ -86,12 +90,14 @@ class EngineOutputHeader extends Component {
             </Select>
           )}
         </div>
-        {onExpandClick && <div className={styles.actionIconDivider} />}
-        {onExpandClick && (
-          <IconButton aria-label="Expanded View" onClick={onExpandClick}>
-            <ZoomOutMap />
-          </IconButton>
-        )}
+        {onExpandClick &&
+          !hideExpandButton && <div className={styles.actionIconDivider} />}
+        {onExpandClick &&
+          !hideExpandButton && (
+            <IconButton aria-label="Expanded View" onClick={onExpandClick}>
+              <Icon className="icon-max-view" />
+            </IconButton>
+          )}
       </div>
     );
   }
