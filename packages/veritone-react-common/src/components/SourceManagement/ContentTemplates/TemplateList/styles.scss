@@ -40,8 +40,14 @@
     }
 
     .trashIcon {
-      height: 18px;
+      height: auto;
+      width: auto;
+      padding: 4px;
       margin-right: 20px;
+
+      &:hover {
+        background-color: transparent !important;
+      }
     }
 
     &:hover {
