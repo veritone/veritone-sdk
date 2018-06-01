@@ -1,5 +1,9 @@
-import { get, isEqual } from 'lodash';
-import { fromJS } from 'immutable';
+import { get, set, isEqual, cloneDeep } from 'lodash';
+
+// if memory becomes a problem, use immutable js by:
+// 1. uncomment lines that have "// with immutable js"
+// 2. comment out or remove lines that have "// without immutable js"
+// import { fromJS } from 'immutable';  // with immutable js
 
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -15,7 +19,7 @@ export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
 
 const removeableIndex = 1;            // index 0 is reserved for initial value
 const maxBulkHistorySize = 100;       // Only alow user to undo 50 times in bulk edit
-const maxSnippetHistorySize = 1000;   // Only alow user to undo 1000 times in snippet edit
+const maxSnippetHistorySize = 500;   // Only alow user to undo 500 times in snippet edit
 const initialState = {
   data: [],
   past: [],
@@ -26,34 +30,38 @@ const initialState = {
 
 const transcriptReducer = createReducer(initialState, {
   [UNDO](state, action) {
-    const newPast = state.pass || [];
+    const newPast = state.past || [];
     const newFuture = state.future || [];
     let newCurrentData = state.data || [];
     let newPresent;
 
     if (newPast.length > 0) {
       newPresent = newPast.pop();
-      newCurrentData = newPresent.toJS();
+      // newCurrentData = newPresent.toJS();          // with immutable js
+      newCurrentData = cloneDeep(newPresent);         // without immutable js
       state.present && newFuture.push(state.present);
     } else {
-      newPresent = fromJS(state.data);
+      // newPresent = fromJS(state.data);             // with immutable js
+      newPresent = cloneDeep(state.data);             // without immutable js
     }
     
     return {...state, data: newCurrentData, past: newPast, future: newFuture, present: newPresent};
   },
 
   [REDO](state, action) {
-    const newPast = state.pass || [];
+    const newPast = state.past || [];
     const newFuture = state.future || [];
     let newCurrentData = state.data || [];
     let newPresent;
 
     if (newFuture.length > 0) {
       newPresent = newFuture.pop();
-      newCurrentData = newPresent.toJS();
+      // newCurrentData = newPresent.toJS();    // with immutable js
+      newCurrentData = cloneDeep(newPresent);   // without immutable js
       state.present && newPast.push(state.present);
     } else {
-      newPresent = fromJS(state.data);
+      // newPresent = fromJS(state.data);       // with immutable js
+      newPresent = cloneDeep(state.data);       // without immutable js
     }
 
     return {...state, data: newCurrentData, past: newPast, future: newFuture, present: newPresent};
@@ -65,7 +73,8 @@ const transcriptReducer = createReducer(initialState, {
     let initialPresent;
     if (past.length > 0) {
       initialPresent = past[0];
-      initialData = initialPresent.toJS();
+      // initialData = initialPresent.toJS();   // with immutable js
+      initialData = cloneDeep(initialPresent);  // without immutable js
     } else {
       initialData = state.data;
       initialPresent = state.present
@@ -97,11 +106,14 @@ const transcriptReducer = createReducer(initialState, {
   [RECEIVE_DATA](state, action) {
     const past = state.past;
     const { data } = action;
-    const oldData = (past && past.length > 0) ? past[0].toJS() : state.data;
+    // const oldData = (past && past.length > 0) ? past[0].toJS() : state.data;   // without immutable js
+    const oldData = get(past, '[0]', state.data);                                 // none immutable js
+
     if (isEqual(data, oldData)) {
       return { ...state };
     } else {
-      const present = fromJS(data);
+      // const present = fromJS(data);        // with immutable js
+      const present = cloneDeep(data);        // without immutable js
       return { ...state, data: data, past:[], future:[], present: present };
     }
   }
@@ -122,8 +134,10 @@ function handleBulkEdit (state, action) {
   }];
 
   const newPast = state.past || [];
-  const newPresent = fromJS(newData);
-  const prevPresent = state.present;
+  // const newPresent = fromJS(newData);              // with immutable js
+  const newPresent = cloneDeep(newData);              // without immutable js
+  // const prevPresent = state.present;               // with immutable js
+  const prevPresent = cloneDeep(state.present);       // without immutable js
   newPast.push(prevPresent);
   (newPast.length > maxBulkHistorySize) && newPast.splice(removeableIndex, 0);  // remove extra history
   return {...state, data:newData, past: newPast, future: [], present: newPresent, isBulkEdit: true};
@@ -131,7 +145,8 @@ function handleBulkEdit (state, action) {
 
 function handleSnippetEdit (state, action) {
   const newPast = state.past || [];
-  const prevPresent = state.present;
+  // const prevPresent = state.present;               // with immutable js
+  const prevPresent = cloneDeep(state.present);       // without immutable js
   
   const changedData = action.data.newValue;
   const targetData = action.data.originalValue;
@@ -140,11 +155,16 @@ function handleSnippetEdit (state, action) {
   let entryIndex = -1;
   let isNoContent = false;
   const chunkIndex = initialPresent.findIndex(chunk => {
-    const series = chunk.get('series');
+    // const series = chunk.get('series');      // with immutable js
+    const series = get(chunk, 'series');        // without immutable js
     entryIndex = series.findIndex(entry => {
-      const orgStartTime = entry.get('startTimeMs');
-      const orgStopTime = entry.get('stopTimeMs');
-      const orgWords = entry.get('words');
+      // const orgStartTime = entry.get('startTimeMs');   // with immutable js
+      // const orgStopTime = entry.get('stopTimeMs');     // with immutable js
+      // const orgWords = entry.get('words');             // with immutable js
+
+      const orgStartTime = get(entry, 'startTimeMs');     // without immutable js
+      const orgStopTime = get(entry, 'stopTimeMs');       // without immutable js
+      const orgWords = get(entry, 'words', undefined);    // without immutable js
 
       if (targetData.startTimeMs === orgStartTime && targetData.stopTimeMs === orgStopTime) {
         if (!orgWords) {
@@ -152,11 +172,14 @@ function handleSnippetEdit (state, action) {
           return isNoContent;
         } else {
           // sort word options base on confidence
+          
           const sortedWords = orgWords.sort((first, second) => 
-            first.get('confidence') < second.get('confidence')
+            // first.get('confidence') < second.get('confidence')   // with immutable js
+            get(first, 'confidence') < get(second, 'confidence')    // without immutable js
           );
 
-          const orgValues = sortedWords.first().get('word');
+          // const orgValues = sortedWords.first().get('word');     // with immutable js
+          const orgValues = get(sortedWords, '[0].word');           // without immutable js
           return orgValues === targetData.value;
         }
       }
@@ -171,6 +194,7 @@ function handleSnippetEdit (state, action) {
 
     newPast.push(prevPresent);
     let newPresent;
+    newPresent = cloneDeep(prevPresent);                                             // without immutable js
     if (isNoContent) {
       const newSnippet = {
         startTimeMs: changedData.startTimeMs,
@@ -180,16 +204,20 @@ function handleSnippetEdit (state, action) {
           confidence: 1
         }] 
       };
-      newPresent = prevPresent.setIn([chunkIndex, 'series', entryIndex], newSnippet);
+      // newPresent = prevPresent.setIn([chunkIndex, 'series', entryIndex], newSnippet);  // with immutable js
+      const contentPath = `[${chunkIndex}].series[${entryIndex}]`;                        // without immutable js
+      set(newPresent, contentPath, newSnippet);                                           // without immutable js
     } else {
-      // '0' is the word with highest confidence
-      newPresent = prevPresent.setIn([chunkIndex, 'series', entryIndex, 'words'], [{word: changedData.value, confidence: 1}]);    
+      // newPresent = prevPresent.setIn([chunkIndex, 'series', entryIndex, 'words'], [{word: changedData.value, confidence: 1}]);    // with immutable js
+      const contentPath = `[${chunkIndex}].series[${entryIndex}].words`;                  // without immutable js
+      set(newPresent, contentPath, [{word: changedData.value, confidence: 1}]);           // without immutable js
     }
 
-    const newData = newPresent.toJS();
+    // const newData = newPresent.toJS();        // with immutable js
+    const newData = cloneDeep(newPresent);       // without immutable js
     return {...state, data: newData, past: newPast, future: [], present: newPresent, isBulkEdit: false};
   } else {
-    return {...state, isBulkEdit: false};
+    return {...state, past: newPast, isBulkEdit: false};
   }
 }
 
