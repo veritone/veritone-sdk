@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 
 import { get, isArray, cloneDeep, isUndefined, startCase, toLower, includes } from 'lodash';
-import { objectOf, any, func, arrayOf, string } from 'prop-types';
+import { objectOf, any, func, arrayOf } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
