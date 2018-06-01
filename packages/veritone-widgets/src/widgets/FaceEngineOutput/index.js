@@ -48,9 +48,9 @@ const saga = util.reactReduxSaga.saga;
     fetchEngineResults: faceEngineOutput.fetchEngineResults,
     fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
-    updateEngineResultEntity: faceEngineOutput.updateEngineResultEntity,
+    addDetectedFace: faceEngineOutput.addDetectedFace,
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
-    updateEngineResult: faceEngineOutput.updateEngineResult
+    removeDetectedFace: faceEngineOutput.removeDetectedFace
   },
   null,
   { withRef: true }
@@ -59,20 +59,8 @@ class FaceEngineOutputContainer extends Component {
   static propTypes = {
     tdo: shape({
       id: string,
-      details: shape({
-        veritoneProgram: shape({
-          programId: string,
-          programName: string,
-          programImage: string,
-          programLiveImage: string,
-          signedProgramLiveImage: string
-        })
-      }),
       startDateTime: string,
       stopDateTime: string,
-      security: shape({
-        global: bool
-      })
     }).isRequired,
     engines: arrayOf(
       shape({
@@ -82,18 +70,16 @@ class FaceEngineOutputContainer extends Component {
     ).isRequired,
     selectedEngineId: string,
     faces: shape({
-      // recognizedFaces: arrayOf(
       recognizedFaces: shape({
-          startTimeMs: number,
-          stopTimeMs: number,
-          object: shape({
-            label: string,
-            uri: string,
-            entityId: string,
-            libraryId: string,
-          })
-        }),
-      // ),
+        startTimeMs: number,
+        stopTimeMs: number,
+        object: shape({
+          label: string,
+          uri: string,
+          entityId: string,
+          libraryId: string,
+        })
+      }),
       unrecognizedFaces: arrayOf(
         shape({
           startTimeMs: number.isRequired,
@@ -151,7 +137,8 @@ class FaceEngineOutputContainer extends Component {
     allowEdit: func,
     fetchEngineResults: func,
     fetchEntitySearchResults: func,
-    updateEngineResultEntity: func,
+    addDetectedFace: func,
+    removeDetectedFace: func,
     createEntity: func
   };
 
@@ -181,7 +168,6 @@ class FaceEngineOutputContainer extends Component {
         tdo: this.props.tdo
       });
     }
-
   }
 
   handleSearchEntities = (searchText) => {
@@ -189,7 +175,7 @@ class FaceEngineOutputContainer extends Component {
   }
 
   handleFaceDetectionEntitySelect = (currentlyEditedFace, selectedEntity)  => {
-    this.props.updateEngineResultEntity(
+    this.props.addDetectedFace(
       this.props.selectedEngineId,
       currentlyEditedFace,
       selectedEntity
@@ -211,6 +197,13 @@ class FaceEngineOutputContainer extends Component {
 
   handleNewEntityLibraryChange = (e) => {
     this.setNewEntityLibrary(e.target.value);
+  }
+
+  handleRemoveFaceDetection = (faceObj) => {
+    this.props.removeDetectedFace(
+      this.props.selectedEngineId,
+      faceObj
+    );
   }
 
   setNewEntityLibrary = (libraryId) => {
@@ -347,7 +340,9 @@ class FaceEngineOutputContainer extends Component {
       'isSearchingEntities'
     ]);
 
-    if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
+    if (!this.props.entities.length &&
+      (this.props.isFetchingEngineResults || this.props.isFetchingEntities))
+    {
       return (
         <div style={{
           width: '100%',
@@ -361,10 +356,6 @@ class FaceEngineOutputContainer extends Component {
       );
     }
 
-    if (!this.props.entities.length) {
-      return null;
-    }
-
     return (
       <Fragment>
         <FaceEngineOutput
@@ -373,6 +364,7 @@ class FaceEngineOutputContainer extends Component {
           onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={debounce(this.handleSearchEntities, 400)}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
+          onRemoveFaceDetection={this.handleRemoveFaceDetection}
         />
         {this.renderAddNewEntityModal()}
       </Fragment>

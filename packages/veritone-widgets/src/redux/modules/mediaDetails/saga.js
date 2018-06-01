@@ -9,7 +9,7 @@ import {
 } from 'redux-saga/effects';
 import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import { getFaceEngineAssetData, removeUserDetectedFaces } from './faceEngineOutput';
+import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -64,7 +64,7 @@ import {
   isEditModeEnabled
 } from '.';
 
-import { UPDATE_ENGINE_RESULT_ENTITY } from './faceEngineOutput';
+import { ADD_DETECTED_FACE } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
     details
@@ -1198,7 +1198,7 @@ function* watchSelectEngineCategory() {
 
 function* watchFaceEngineEntityUpdate() {
   yield takeEvery(
-    (action) => action.type === UPDATE_ENGINE_RESULT_ENTITY,
+    (action) => action.type === ADD_DETECTED_FACE,
     function* (action) {
       yield put(toggleSaveMode(true));
     }
@@ -1305,7 +1305,7 @@ function* watchCancelEdit() {
         const selectedEngineCategory = action.payload.selectedEngineCategory;
 
         if (selectedEngineCategory.categoryType === 'face') {
-          yield put(removeUserDetectedFaces())
+          yield put(cancelFaceEdits())
         }
       }
     }

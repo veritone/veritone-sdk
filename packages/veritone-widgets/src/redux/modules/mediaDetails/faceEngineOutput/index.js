@@ -23,11 +23,9 @@ export const SEARCHING_ENTITIES = `vtn/${namespace}/SEARCHING_ENTITIES`;
 export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS`;
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
-export const UPDATE_ENGINE_RESULT_ENTITY = `vtn/${namespace}/UPDATE_ENGINE_RESULT_ENTITY`;
-
-export const REMOVE_USER_DETECTED_FACES = `vtn/${namespace}/REMOVE_USER_DETECTED_FACES`;
-
-const UPDATE_ENGINE_RESULT = `vtn/${namespace}/UPDATE_ENGINE_RESULT`;
+export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
+export const REMOVE_DETECTED_FACE = `vtn/${namespace}/REMOVE_DETECTED_FACE`;
+export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 
 import {
   get,
@@ -40,7 +38,8 @@ import {
   isEmpty,
   set,
   pick,
-  flatten
+  flatten,
+  pullAt
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 import { createSelector } from 'reselect'
@@ -57,7 +56,8 @@ const defaultState = {
   isFetchingEntities: false,
   isFetchingLibraries: false,
   isSearchingEntities: false,
-  facesDetectedByUser: {}
+  facesDetectedByUser: {},
+  facesRemovedByUser: {}
 };
 
 const reducer = createReducer(defaultState, {
@@ -174,7 +174,7 @@ const reducer = createReducer(defaultState, {
       entity: action.payload.data.entity
     }
 
-    return this[UPDATE_ENGINE_RESULT_ENTITY](state, { payload });
+    return this[ADD_DETECTED_FACE](state, { payload });
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
@@ -213,7 +213,7 @@ const reducer = createReducer(defaultState, {
       isSearchingEntities: false
     }
   },
-  [UPDATE_ENGINE_RESULT_ENTITY](state, action) {
+  [ADD_DETECTED_FACE](state, action) {
     const { faceObj, selectedEngineId, entity } = action.payload;
     const objectCriteria = pick(faceObj.object, ['uri', 'boundingPoly']);
 
@@ -222,7 +222,7 @@ const reducer = createReducer(defaultState, {
         const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
 
         return (faceIdx > -1) ? `[${engineResultIdx}].series[${faceIdx}]` : acc;
-      }, []);
+      }, '');
 
     if (!detectedFacePath.length) {
       return {
@@ -252,22 +252,40 @@ const reducer = createReducer(defaultState, {
       }
     }
   },
-  [UPDATE_ENGINE_RESULT](state, action) {
-    const engineResult = { ...state.engineResultsByEngineId[action.payload.selectedEngineId][0] };
-    engineResult.series = [...engineResult.series, ...action.payload.unrecognizedFaces];
+  [REMOVE_DETECTED_FACE](state, action) {
+    const { faceObj, selectedEngineId } = action.payload;
+    const objectCriteria = pick(faceObj.object, ['uri', 'boundingPoly']);
+
+    const detectedFacePath = state.engineResultsByEngineId[selectedEngineId]
+      .reduce((acc, engineResult, engineResultIdx) => {
+        const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
+
+        return (faceIdx > -1) ? [engineResultIdx, faceIdx] : acc;
+      }, []);
+
+    if (!detectedFacePath.length) {
+      return {
+        ...state
+      };
+    }
+
+    const removedFaces = state.facesRemovedByUser[selectedEngineId]
+      ? [...state.facesRemovedByUser[selectedEngineId], detectedFacePath]
+      : [detectedFacePath];
 
     return {
       ...state,
-      engineResultsByEngineId: {
-        ...state.engineResultsByEngineId,
-        [action.payload.selectedEngineId]: [engineResult]
+      facesRemovedByUser: {
+        ...state.facesRemovedByUser,
+        [selectedEngineId]: removedFaces
       }
-    };
+    }
   },
-  [REMOVE_USER_DETECTED_FACES](state, action) {
+  [CANCEL_FACE_EDITS](state, action) {
     return {
       ...state,
-      facesDetectedByUser: {}
+      facesDetectedByUser: {},
+      facesRemovedByUser: {}
     }
   }
 });
@@ -299,14 +317,7 @@ export const fetchEngineResultsFailure = (error, meta) => ({
   error,
   meta
 });
-export const updateEngineResultEntity = (selectedEngineId, faceObj, entity) => ({
-  type: UPDATE_ENGINE_RESULT_ENTITY,
-  payload: {
-    selectedEngineId,
-    faceObj,
-    entity
-  }
-});
+
 export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
@@ -314,7 +325,10 @@ export const getFaceDataByEngine = (state, engineId) =>
   get(local(state), ['engineResultsByEngineId', engineId]);
 
 export const getUserDetectedFaces = (state, engineId) =>
-  get(local(state), ['facesDetectedByUser', engineId])
+  get(local(state), ['facesDetectedByUser', engineId]);
+
+export const getUserRemovedFaces = (state, engineId) =>
+  get(local(state), ['facesRemovedByUser', engineId]);
 
 export const fetchedEngineResultByEngineId = (state, engineId) =>
   get(local(state), ['fetchedEngineResults', engineId], [])
@@ -413,22 +427,39 @@ export function getLibraries(state) {
 }
 
 /* USER DETECTED FACES */
-export const removeUserDetectedFaces = () => ({
-  type: REMOVE_USER_DETECTED_FACES,
+export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
+  type: ADD_DETECTED_FACE,
+  payload: {
+    selectedEngineId,
+    faceObj,
+    entity
+  }
+});
+
+export const removeDetectedFace = (selectedEngineId, faceObj) => ({
+  type: REMOVE_DETECTED_FACE,
+  payload: {
+    selectedEngineId,
+    faceObj
+  }
+});
+
+export const cancelFaceEdits = () => ({
+  type: CANCEL_FACE_EDITS,
 });
 
 
 /* SELECTORS */
 export const getFaces = createSelector(
-  [getFaceDataByEngine, getUserDetectedFaces, getEntities],
-  (faceData, userDetectedFaces, entities) => {
+  [getFaceDataByEngine, getUserDetectedFaces, getUserRemovedFaces, getEntities],
+  (faceData, userDetectedFaces, userRemovedFaces, entities) => {
     const faceEntities = {
       unrecognizedFaces: [],
       recognizedFaces: {},
     };
 
     // flatten data series for currently selected engine
-    const faceSeries = addUserDetectedFaces(faceData, userDetectedFaces)
+    const faceSeries = addUserDetectedFaces(faceData, userDetectedFaces, userRemovedFaces)
     .reduce((accumulator, faceSeries) => {
       if (!isEmpty(faceSeries.series)) {
         return [...accumulator, ...faceSeries.series];
@@ -451,9 +482,11 @@ export const getFaces = createSelector(
   }
 )
 
+/* HELPERS */
 export const getFaceEngineAssetData = (state, engineId) => {
   const engineResults =  getFaceDataByEngine(state, engineId);
   const userDetectedFaces = getUserDetectedFaces(state, engineId);
+  const userRemovedFaces = getUserRemovedFaces(state, engineId);
 
   // On the result use engineAliasId for 'user-edited-face-engine-results'
   const userEdited = {
@@ -461,7 +494,7 @@ export const getFaceEngineAssetData = (state, engineId) => {
     sourceEngineName: 'User Generated'
   };
 
-  const allSeries = addUserDetectedFaces(engineResults, userDetectedFaces)
+  const allSeries = addUserDetectedFaces(engineResults, userDetectedFaces, userRemovedFaces)
   .reduce((accumulator, engineResult) => {
     return [...accumulator, ...engineResult.series];
   }, []);
@@ -472,21 +505,32 @@ export const getFaceEngineAssetData = (state, engineId) => {
   }
 }
 
-export const updateEngineResult = (selectedEngineId, unrecognizedFaces) => ({
-  type: UPDATE_ENGINE_RESULT,
-  payload: {
-    selectedEngineId,
-    unrecognizedFaces
-  }
-});
-
-function addUserDetectedFaces(engineResults, userDetectedFaces) {
+function addUserDetectedFaces(engineResults, userDetectedFaces, userRemovedFaces) {
   const updatedFaceData = map(engineResults, data => ({ series: [...data.series] }));
 
+  if (userDetectedFaces) {
+    forEach(userDetectedFaces, (faceObj, faceObjPath) => {
+      set(updatedFaceData, faceObjPath, faceObj);
+    });
+  }
 
-  forEach(userDetectedFaces, (faceObj, faceObjPath) => {
-    set(updatedFaceData, faceObjPath, faceObj);
-  });
+  if (userRemovedFaces) {
+    const facesToRemove = userRemovedFaces.reduce((acc, faceObjPath) => {
+      const [engineResultIdx, faceIdx] = faceObjPath;
+
+      if (!acc[engineResultIdx]) {
+        acc[engineResultIdx] = [faceIdx]
+      } else {
+        acc[engineResultIdx].push(faceIdx)
+      }
+
+      return acc;
+    }, {});
+
+    forEach(facesToRemove, (faces, engineResultIdx) => {
+      pullAt(updatedFaceData[engineResultIdx].series, faces); // eslint-disable-line
+    });
+  }
 
   return updatedFaceData;
 }

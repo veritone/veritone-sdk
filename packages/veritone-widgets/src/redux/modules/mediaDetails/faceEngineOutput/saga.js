@@ -107,19 +107,15 @@ function* createNewEntity(action) {
       token
     });
 
-    console.log('response:', response);
-
     if (response.errors) {
       return faceEngineOutput.createEntityFailure(response);
     }
 
-    yield put(faceEngineOutput.updateEngineResultEntity(
+    yield put(faceEngineOutput.addDetectedFace(
       meta.selectedEngineId,
       meta.faceObj,
       response.data.entity
     ));
-
-    // yield put(faceEngineOutput.createEntitySuccess(response,  meta));
   } catch (error) {
     yield put(faceEngineOutput.createEntityFailure(error, meta));
   }
