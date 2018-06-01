@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .engineOutputHeader {
   height: 45px;
@@ -30,9 +31,9 @@
   }
 
   .engineSelect {
+    @include mui-text('body1');
     max-width: 150px;
     margin-left: 20px;
-    font-size: 14px;
   }
 
   .actionIconDivider {
@@ -48,5 +49,5 @@
 }
 
 .engine {
-  font-size: 14px !important;
+  @include mui-text('body1');
 }

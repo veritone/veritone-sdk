@@ -8,6 +8,15 @@
 
   .engineCategoryTabs {
     min-height: 37px;
+    overflow-y: visible;
+  }
+
+  .engineCategoryTabsRoot {
+    overflow: visible;
+  }
+
+  .engineCategoryTabsScroller {
+    overflow: visible;
   }
 
   .engineCategoryTab {

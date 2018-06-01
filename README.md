@@ -2,7 +2,7 @@
 
 this is a monorepo managed by Yarn's workspaces feature (https://yarnpkg.com/blog/2017/08/02/introducing-workspaces/).
 # Documentation
-Heavily WIP docs/examples for the various packages are available at https://veritone.github.io/veritone-sdk
+Documentation for each package can be found in their respective README files.
 
 # Development
 1. if you don't have `yarn`, install it here: https://yarnpkg.com/en/docs/install

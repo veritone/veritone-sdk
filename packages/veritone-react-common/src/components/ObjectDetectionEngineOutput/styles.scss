@@ -6,18 +6,3 @@
 .objectDetectionContent {
   overflow: scroll;
 }
-
-.objectPill {
-  max-width: 250px;
-  align-items: center;
-  margin: 0 15px 15px 0;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.objectAppearanceTime {
-  overflow: visible !important;
-  text-overflow: initial !important;
-}

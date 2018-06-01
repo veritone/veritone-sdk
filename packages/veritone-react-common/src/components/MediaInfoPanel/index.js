@@ -270,9 +270,9 @@ class MediaInfoPanel extends Component {
       veritoneProgram: {
         ...tdo.details.veritoneProgram,
         programImage:
-          tdo.sourceImageUrl || tdo.details.veritoneProgram.programImage,
+          tdo.sourceImageUrl || get(tdo, 'details.veritoneProgram.programImage'),
         programLiveImage:
-          tdo.thumbnailUrl || tdo.details.veritoneProgram.programLiveImage
+          tdo.thumbnailUrl || get(tdo, 'details.veritoneProgram.programLiveImage')
       }
     };
 
@@ -295,6 +295,7 @@ class MediaInfoPanel extends Component {
                     </IconButton>
                   </div>
                 </Target>
+                {isMenuOpen &&
                 <Popper placement="bottom-end" eventsEnabled={isMenuOpen}>
                   <ClickAwayListener onClickAway={this.onMenuClose}>
                     <Grow
@@ -344,7 +345,7 @@ class MediaInfoPanel extends Component {
                       </Paper>
                     </Grow>
                   </ClickAwayListener>
-                </Popper>
+                </Popper>}
               </Manager>
               <IconButton
                 className={styles.closeButton}

@@ -30,7 +30,9 @@ export default class EngineCategorySelector extends Component {
               indicatorColor="primary"
               onChange={this.handleTabChange}
               classes={{
-                flexContainer: styles.engineCategoryTabs
+                flexContainer: styles.engineCategoryTabs,
+                root: styles.engineCategoryTabsRoot,
+                scroller: styles.engineCategoryTabsScroller
               }}
             >
               {this.props.engineCategories.map(function(engineCategory) {
@@ -42,9 +44,6 @@ export default class EngineCategorySelector extends Component {
                       <Tooltip
                         id={engineCategory.name}
                         title={engineCategory.name}
-                        placement="top"
-                        enterDelay={1000}
-                        leaveDelay={700}
                         classes={{
                           tooltip: styles.categoryTabTooltip
                         }}

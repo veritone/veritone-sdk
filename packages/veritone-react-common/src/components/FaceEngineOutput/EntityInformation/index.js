@@ -51,7 +51,7 @@ class EntityInformation extends Component {
   };
 
   render() {
-    let { entity, count, timeSlots, onBackClicked } = this.props;
+    const { entity, count, timeSlots, onBackClicked } = this.props;
 
     return (
       <div>
@@ -104,7 +104,9 @@ class EntityInformation extends Component {
                       <div
                         onClick={this.handleFaceOccurrenceClicked(timeSlot)}
                         className={styles.faceOccurrence}
-                        key={`face-match-${entity.entityId}-${timeSlot.startTimeMs}-${timeSlot.stopTimeMs}-${timeSlot.originalImage}`}
+                        key={`face-match-${entity.entityId}-${
+                          timeSlot.startTimeMs
+                        }-${timeSlot.stopTimeMs}-${timeSlot.originalImage}`}
                       >
                         <span className={styles.faceOccurrenceTimestamp}>
                           {msToReadableString(timeSlot.startTimeMs)} -{' '}

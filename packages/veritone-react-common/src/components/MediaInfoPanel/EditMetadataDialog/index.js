@@ -86,9 +86,8 @@ class EditMetadataDialog extends Component {
       ...metadataToUpdate,
       veritoneProgram: {
         ...metadataToUpdate.veritoneProgram,
-        programLiveImage:
-          this.state.programLiveImageFile || this.state.programLiveImage,
-        programImage: this.state.programImageFile || this.state.programImage
+        programLiveImage: this.state.programLiveImageFile,
+        programImage: this.state.programImageFile
       }
     };
     this.props.onSave(metadataToUpdate);
@@ -139,7 +138,7 @@ class EditMetadataDialog extends Component {
   handleRemoveImage = imageType => event => {
     this.setState({
       [imageType]: '',
-      [imageType + 'File']: null
+      [imageType + 'File']: ''
     });
   };
 
