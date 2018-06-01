@@ -370,7 +370,7 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            {tdo.startDateTime && tdo.stopDateTime &&
+            {tdo.startDateTime && tdo.stopDateTime && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Duration</div>
                 <div className={styles.infoFieldData}>
@@ -379,7 +379,8 @@ class MediaInfoPanel extends Component {
                     tdo.stopDateTime
                   )}
                 </div>
-              )}
+              </div>
+            )}
             {this.props.engineCategories &&
               this.props.engineCategories.length && (
                 <div className={styles.infoField}>

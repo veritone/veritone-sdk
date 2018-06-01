@@ -23,8 +23,18 @@ class SourceListWidget extends React.Component {
   }
 
   handleFetchData = ({ start, end }) => {
-    if (this.props.fetchData && !this.state.sources[end + 1]) {
-      this.props.fetchData(end - start + 1, end + 1);
+    const perPage = end - start + 1;
+    const sourcesCount = this.state.sources.length;
+
+    if (this.props.fetchData && (!this.state.sources[end + 1] || (sourcesCount - perPage < perPage))) {
+      const limit = !(sourcesCount % perPage)
+        ? perPage
+        : (sourcesCount % perPage);
+
+      this.props.fetchData(
+        limit,
+        sourcesCount
+      );
     }
   }
 
