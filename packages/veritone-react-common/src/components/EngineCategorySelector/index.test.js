@@ -8,7 +8,7 @@ describe('EngineCategorySelector', () => {
   const TRANSCRIPT_ENGINE_CATEGORY = {
     id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
     name: 'Transcription',
-    iconClass: 'icon-engine-transcription',
+    iconClass: 'icon-transcription',
     engines: [],
     editable: true,
     status: 'completed',
@@ -17,7 +17,7 @@ describe('EngineCategorySelector', () => {
   const FACE_ENGINE_CATEGORY = {
     id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
     name: 'Facial Detection',
-    iconClass: 'icon-engine-face',
+    iconClass: 'icon-face',
     engines: [],
     editable: false,
     status: 'failed',
