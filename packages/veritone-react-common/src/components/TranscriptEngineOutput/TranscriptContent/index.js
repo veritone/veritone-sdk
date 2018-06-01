@@ -290,8 +290,8 @@ export default class TranscriptContent extends Component {
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
-    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
+    const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
     const overviewSegments = parsedData.overviewSegments.map((segmentData) => {
       const segmentStartTime = segmentData.startTimeMs;
       const segmentStopTime = segmentData.stopTimeMs;

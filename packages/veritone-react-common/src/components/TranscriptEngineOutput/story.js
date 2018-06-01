@@ -202,7 +202,9 @@ function genMockSerie(
 function genMockWords(size, type = 'TTML') {
   const words = [];
   if (type === 'TTML') {
-    const sentenceIndex = Math.round(Math.random() * (ttmlSentences.length - 1));
+    const sentenceIndex = Math.round(
+      Math.random() * (ttmlSentences.length - 1)
+    );
     words.push({
       word: ttmlSentences[sentenceIndex],
       confidence: 1

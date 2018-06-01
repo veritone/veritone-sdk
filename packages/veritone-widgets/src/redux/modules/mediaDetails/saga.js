@@ -696,22 +696,22 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
   const bulkTextAssetId = get(createFileAssetResponse, 'data.id');
   const originalTranscriptAssetId = get(getPrimaryTranscriptAssetResponse, 'data.temporalDataObject.primaryAsset.id');
 
-  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!, $originalAssetId: String, $bulkTextAssetId: String){
+  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
-        engineId: 'bulk-edit-transcript',
+        engineId: "bulk-edit-transcript",
         payload: {
-          originalTranscriptAssetId: $originalAssetId,
-          temporaryBulkEditAssetId: $bulkTextAssetId,
+          originalTranscriptAssetId: "${originalTranscriptAssetId}",
+          temporaryBulkEditAssetId: "${bulkTextAssetId}",
           saveTtmlToVtnStandard: true
         }
       },
       {
-        engineId: 'insert-into-index'
+        engineId: "insert-into-index"
       },
       {
-        engineId: 'mention-generate'
+        engineId: "mention-generate"
       }]
     }) {
       id
@@ -728,7 +728,7 @@ function* createTranscriptBulkEditAssetSaga(widgetId, type, contentType, sourceD
     runBulkEditJobResponse = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
-      variables: { tdoId: requestTdo.id, originalAssetId: originalTranscriptAssetId, bulkTextAssetId: bulkTextAssetId},
+      variables: { tdoId: requestTdo.id },
       token
     });
   } catch (error) {
