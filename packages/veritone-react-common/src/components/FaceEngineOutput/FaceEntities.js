@@ -17,16 +17,29 @@ import FacesByLibrary from './FacesByLibrary';
 export default class FaceEntities extends Component {
   static propTypes = {
     viewMode: string,
-    faces: shape({}),
+    faces: objectOf(
+      shape({
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
+        object: shape({
+          label: string,
+          uri: string,
+          confidence: number,
+          type: string,
+          entityId: string.isRequired,
+          libraryId: string.isRequired
+        })
+      })
+    ).isRequired,
     entities: arrayOf(
       shape({
         id: string.isRequired,
         name: string.isRequired,
         libraryId: string.isRequired,
-        library: {
+        library: shape({
           id: string.isRequired,
           name: string.isRequired
-        },
+        }),
         profileImageUrl: string,
         jsondata: objectOf(oneOfType([string, number]))
       })
