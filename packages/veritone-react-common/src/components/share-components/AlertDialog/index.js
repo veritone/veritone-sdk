@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { any, bool, string, func, oneOfType} from 'prop-types';
 
+import { omit } from 'lodash';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -40,7 +42,7 @@ export default class AlertDialog extends Component {
   }
 
   handleCancel = (event) => {
-    this.props.onCancel && this.props.onCancel(this.props.cancelValue);
+    this.props.onCancel(this.props.cancelValue);
   }
 
   handleApprove = (event) => {
@@ -50,12 +52,12 @@ export default class AlertDialog extends Component {
   render () {
     const { open, title, content, onCancel, cancelButtonLabel, approveButtonLabel } = this.props;
     const forwardingProps = {...this.props};
-    delete forwardingProps.onCancel;
-    delete forwardingProps.onApprove;
-    delete forwardingProps.cancelValue;
-    delete forwardingProps.approveValue;
-    delete forwardingProps.cancelButtonLabel;
-    delete forwardingProps.approveButtonLabel;
+    omit(forwardingProps, 'onCancel');
+    omit(forwardingProps, 'onApprove');
+    omit(forwardingProps, 'cancelValue');
+    omit(forwardingProps, 'approveValue');
+    omit(forwardingProps, 'cancelButtonLabel');
+    omit(forwardingProps, 'approveButtonLabel');
     return (
       <Dialog
         {...forwardingProps}

@@ -469,9 +469,8 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
-    let isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
-
-    let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
+    const isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
+    const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
         <Paper className={styles.mediaDetailsPageContent}>

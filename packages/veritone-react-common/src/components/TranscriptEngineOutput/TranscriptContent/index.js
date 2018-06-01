@@ -113,9 +113,9 @@ export default class TranscriptContent extends Component {
 
     let lazyLoading = true;
     this.props.data.forEach(chunk => {
-      let groupStartTime = chunk.startTimeMs;
-      let groupStopTime = chunk.stopTimeMs;
-      let groupStatus = chunk.status;
+      const groupStartTime = chunk.startTimeMs;
+      const groupStopTime = chunk.stopTimeMs;
+      const groupStatus = chunk.status;
 
       lazyLoading =
         lazyLoading &&
@@ -123,7 +123,7 @@ export default class TranscriptContent extends Component {
         groupStopTime !== undefined &&
         groupStatus !== undefined;
 
-      let series = chunk.series;
+      const series = chunk.series;
       if (series && series.length > 0) {
         let snippetStatus = undefined;
         let snippetStartTime = groupStartTime;
@@ -131,7 +131,7 @@ export default class TranscriptContent extends Component {
         let snippetParts = [];
         let snippetSentences = '';
 
-        let saveSnippetData = () => {
+        const saveSnippetData = () => {
           //---Save Previous Snippets Data---
           snippetSegments.push({
             startTimeMs: snippetStartTime,
@@ -293,7 +293,7 @@ export default class TranscriptContent extends Component {
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
     const overviewSegments = [];
-    parsedData.overviewSegments.forEach((segmentData, segmentIndex) => {
+    parsedData.overviewSegments.map((segmentData) => {
       const segmentStartTime = segmentData.startTimeMs;
       const segmentStopTime = segmentData.stopTimeMs;
 

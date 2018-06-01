@@ -67,7 +67,7 @@ export default class SnippetSegment extends Component {
   }
 
   renderFragments() {
-    let {
+    const {
       content,
       editMode,
       contentClassName,
@@ -75,10 +75,10 @@ export default class SnippetSegment extends Component {
       stopMediaPlayHeadMs
     } = this.props;
 
-    let contentComponents = [];
+    const contentComponents = [];
     content.fragments.forEach((entry, index) => {
-      let startTime = entry.startTimeMs;
-      let stopTime = entry.stopTimeMs;
+      const startTime = entry.startTimeMs;
+      const stopTime = entry.stopTimeMs;
 
       contentComponents.push(
         <SnippetFragment
@@ -107,7 +107,7 @@ export default class SnippetSegment extends Component {
   }
 
   renderSentence() {
-    let {
+    const {
       content,
       editMode,
       contentClassName,
@@ -115,8 +115,8 @@ export default class SnippetSegment extends Component {
       stopMediaPlayHeadMs
     } = this.props;
 
-    let startTime = content.startTimeMs;
-    let stopTime = content.stopTimeMs;
+    const startTime = content.startTimeMs;
+    const stopTime = content.stopTimeMs;
 
     return (
       <div className={classNames(styles.content, contentClassName)}>
@@ -139,7 +139,7 @@ export default class SnippetSegment extends Component {
   }
 
   render() {
-    let { className, sentenceMode } = this.props;
+    const { className, sentenceMode } = this.props;
 
     return (
       <div className={classNames(styles.transcriptSegment, className)}>

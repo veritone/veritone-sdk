@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import classNames from 'classnames';
 
-
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Radio from '@material-ui/core/Radio';
@@ -13,7 +12,6 @@ import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent, { View, Edit } from './TranscriptContent';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class TranscriptEngineOutput extends Component {
   static propTypes = {
     data: arrayOf(

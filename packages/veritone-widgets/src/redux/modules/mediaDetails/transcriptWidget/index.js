@@ -166,8 +166,6 @@ function handleSnippetEdit (state, action) {
     return entryIndex >= 0;
   });
 
-  console.log(chunkIndex, entryIndex);
-
   if (chunkIndex >= 0 && entryIndex >= 0) {
     (newPast.length > maxSnippetHistorySize) && newPast.splice(removeableIndex, 0);  // remove extra history
 

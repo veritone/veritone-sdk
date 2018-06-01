@@ -98,24 +98,16 @@ export default class TranscriptEngineOutputWidget extends Component {
 
   state = {
     alert: false,
-    editMode: TranscriptEditMode.SNIPPET
+    editMode: TranscriptEditMode.SNIPPET,
+    props: this.props
   };
 
-  // use this when we update to react ^16.3.0
-  /*
   static getDerivedStateFromProps (nextProps, prevState) {
-    const hasNewData = !isEqual(this.props.data, nextProps.data);
-    const hasInitialData = isEqual(this.props.currentData, nextProps.data);
-    (hasNewData || !hasInitialData) && this.receiveData(nextProps.data);
-  }
-  */
-
-  // Use the above function when we update to a later version of react
-  componentWillReceiveProps (nextProps) {
-    const hasNewData = !isEqual(this.props.data, nextProps.data);
-    const missingInitialData = !this.props.currentData || this.props.currentData.length === 0;
-
-    (hasNewData || missingInitialData) && this.props.receiveData(nextProps.data);
+    const prevProps = prevState.props;
+    const hasNewData = !isEqual(prevProps.data, nextProps.data);
+    const hasInitialData = isEqual(prevProps.currentData, nextProps.data);
+    (hasNewData || !hasInitialData) && prevProps.receiveData(nextProps.data);
+    return { ...prevState, props: nextProps };
   }
 
   componentWillUnmount() {
@@ -141,14 +133,11 @@ export default class TranscriptEngineOutputWidget extends Component {
   }
 
   handleAlertConfirm = (value) => {
-    switch (value) {
-      case 'cancel':
+    if (value === 'cancel') {
       this.setState({
         alert: false,
       });
-      break;
-
-      case 'approve':
+    } else {  // value = approve
       this.props.reset();
       this.setState((prevState) => {
         return {
@@ -157,7 +146,6 @@ export default class TranscriptEngineOutputWidget extends Component {
           pendingEditMode: undefined
         }
       });
-      break;
     }
   }
 

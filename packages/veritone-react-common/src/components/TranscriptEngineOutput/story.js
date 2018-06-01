@@ -128,7 +128,7 @@ function genMockData(
   let chunkStartTime = startTime;
   const timeChunk = (stopTime - startTime) / numDataChunks;
   for (let chunkIndex = 0; chunkIndex < numDataChunks; chunkIndex++) {
-    let chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
+    const chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
 
     const isBadSerie = Math.random() < badSerieRatio;
     const series = genMockSerie(
