@@ -10,17 +10,19 @@ import { map, uniq, omit, noop } from 'lodash';
 
 import styles from './styles.scss';
 
-export default class SourceTileView extends React.Component {
+export default class IngestionJobTileView extends React.Component {
   static propTypes = {
     jobs: arrayOf(objectOf(any)).isRequired, // an array of source objects
     onSelectJob: func,
     onSelectMenuItem: func,
-    paginate: bool
+    paginate: bool,
+    onFetchData: func
   };
 
   static defaultProps = {
     onSelectJob: noop,
-    onSelectMenuItem: noop
+    onSelectMenuItem: noop,
+    onFetchData: noop
   };
 
   getIngestionJobData = i => {
@@ -63,9 +65,13 @@ export default class SourceTileView extends React.Component {
 
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
-    const tableProps = omit(this.props, ['jobs', 'paginate']);
+    const tableProps = omit(this.props, ['jobs', 'paginate', 'onFetchData']);
     const ingestionJobKey =
       'ingestionJob.records[0].taskTemplates.records[0].engine';
+
+    if (this.props.paginate) {
+      tableProps.onShowCellRange = this.props.onFetchData;
+    }
 
     return (
       <TableComp
