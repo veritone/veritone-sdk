@@ -340,9 +340,7 @@ class FaceEngineOutputContainer extends Component {
       'isSearchingEntities'
     ]);
 
-    if (!this.props.entities.length &&
-      (this.props.isFetchingEngineResults || this.props.isFetchingEntities))
-    {
+    if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
       return (
         <div style={{
           width: '100%',
@@ -354,6 +352,10 @@ class FaceEngineOutputContainer extends Component {
           <CircularProgress size={75} />
         </div>
       );
+    }
+
+    if (!this.props.entities.length) {
+      return null;
     }
 
     return (
