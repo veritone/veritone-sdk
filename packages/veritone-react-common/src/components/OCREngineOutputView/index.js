@@ -90,7 +90,8 @@ class OCREngineOutputView extends Component {
                             currentMediaPlayerTime >= ocrObject.startTimeMs &&
                             currentMediaPlayerTime <= ocrObject.stopTimeMs
                         })}
-                        onClick={() => // eslint-disable-line
+                        onClick={() =>
+                          // eslint-disable-line
                           this.props.onOcrClicked(
                             ocrObject.startTimeMs,
                             ocrObject.stopTimeMs

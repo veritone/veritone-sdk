@@ -217,7 +217,11 @@ export default class TranscriptContent extends Component {
   }
 
   renderSnippetSegments = parsedData => {
-    const { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const {
+      editMode,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
+    } = this.props;
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
@@ -260,7 +264,11 @@ export default class TranscriptContent extends Component {
   };
 
   renderOverviewSegments = parsedData => {
-    const { editMode, mediaPlayerTimeMs, mediaPlayerTimeIntervalMs } = this.props;
+    const {
+      editMode,
+      mediaPlayerTimeMs,
+      mediaPlayerTimeIntervalMs
+    } = this.props;
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 

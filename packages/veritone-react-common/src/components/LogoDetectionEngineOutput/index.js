@@ -81,7 +81,7 @@ export default class LogoDetectionEngineOutput extends Component {
 
     let contents = [];
 
-    data.map((chunk) => {
+    data.map(chunk => {
       let groupStartTime = chunk.startTimeMs;
       let groupStopTime = chunk.stopTimeMs;
 

@@ -103,8 +103,11 @@ function genMockData(numEntry = 88, startTimeMs = 0, stopTimeMs = 2000000) {
   const maxOptionIndex = labelOptions.length - 1;
   for (let entryIndex = 0; entryIndex < numEntry; entryIndex++) {
     const labelIndex = Math.round(Math.random() * maxOptionIndex);
-    const entryStartTime = startTimeMs + Math.round(Math.random() * timeInterval);
-    const displayTime = Math.round(Math.random() * (stopTimeMs - entryStartTime));
+    const entryStartTime =
+      startTimeMs + Math.round(Math.random() * timeInterval);
+    const displayTime = Math.round(
+      Math.random() * (stopTimeMs - entryStartTime)
+    );
     const entry = {
       startTimeMs: entryStartTime,
       stopTimeMs: entryStartTime + displayTime,
