@@ -30,7 +30,7 @@ export default class SnippetFragment extends Component {
     const newMode = editMode !== this.props.editMode;
     const newHighlight = active !== this.props.active;
     const newClass = className !== this.props.className;
-    const newValue = this.currentValue ? value !== this.currentValue.value : false;
+    const newValue = this.currentValue && value !== this.currentValue.value;
     return newMode || newClass || newValue || newHighlight;
   }
 

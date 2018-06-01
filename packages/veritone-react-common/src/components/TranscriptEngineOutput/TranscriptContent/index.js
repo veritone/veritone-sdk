@@ -292,8 +292,7 @@ export default class TranscriptContent extends Component {
     } = this.props;
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
 
-    const overviewSegments = [];
-    parsedData.overviewSegments.map((segmentData) => {
+    const overviewSegments = parsedData.overviewSegments.map((segmentData) => {
       const segmentStartTime = segmentData.startTimeMs;
       const segmentStopTime = segmentData.stopTimeMs;
 
@@ -327,11 +326,11 @@ export default class TranscriptContent extends Component {
           break;
       }
 
-      overviewSegments.push({
+      return {
         start: segmentStartTime,
         stop: segmentStopTime,
         content: segmentContent
-      });
+      };
     });
 
     return overviewSegments;

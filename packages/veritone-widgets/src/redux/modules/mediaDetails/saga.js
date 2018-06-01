@@ -1279,7 +1279,7 @@ function* watchCreateFileAssetSuccess() {
         const tdo = yield select(getTdo, widgetId);
         const response = yield call(callGraphQLApi, {
           endpoint: graphQLUrl,
-          query: crateJobQuery,
+          query: createJobQuery,
           variables: { tdoId: tdo.id },
           token
         });
