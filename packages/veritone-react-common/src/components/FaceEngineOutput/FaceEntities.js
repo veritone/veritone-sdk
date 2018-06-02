@@ -8,7 +8,7 @@ import {
   objectOf,
   oneOfType
 } from 'prop-types';
-import { find, isObject, get, forEach, pick } from 'lodash';
+import { find, isObject, get, reduce, pick, findIndex } from 'lodash';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
@@ -39,13 +39,13 @@ export default class FaceEntities extends Component {
     framesBySeconds: {}
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState(prevState => ({
       ...buildFaceDataPayload(this.props.faces, this.props.entities)
     }));
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.viewMode !== this.props.viewMode) {
       this.setState(prevState => ({
         selectedEntity: null
@@ -164,62 +164,71 @@ function getArrayOfSecondSpots(timeSlot) {
 };
 
 function buildFaceDataPayload(faces, entities) {
-  const faceData = {
+  const payload = {
     faceEntities: {},
     entitiesByLibrary: {},
     framesBySeconds: {}
   };
 
-  forEach(faces, (faceObj) => { // for each face object
-    // locate entity that the face object belongs to
-    const entity = find(entities, { id: faceObj.object.entityId });
-
-    if (entity) {
-      // try to locate library entity that contains the face object
-      const libraryEntity = find(entities, { libraryId: entity.libraryId });
-      // build object for library entity for "recognized" face
-      const recognizedEntityObj = {
-        entityId: entity.id,
-        libraryId: libraryEntity.libraryId,
-        libraryName: libraryEntity.library.name,
-        fullName: entity.name,
-        entity: {
-          ...entity,
-          libraryId: libraryEntity.libraryId,
-          libraryName: libraryEntity.library.name
-        },
-        profileImage: entity.profileImageUrl,
-        count: 1,
-        timeSlots: [
-          {
-            stopTimeMs: faceObj.stopTimeMs,
-            startTimeMs: faceObj.startTimeMs,
-            originalImage: faceObj.object.uri,
-            confidence: faceObj.object.confidence
-          }
-        ],
-        stopTimeMs: faceObj.stopTimeMs
-      };
-
-      if (faceData.faceEntities[entity.id]) {
-        faceData.faceEntities[entity.id] = setRecognizedEntityObj(
-          faceData.faceEntities[entity.id],
+  const faceData = reduce(faces, (result, faceObjects) => { // for each face object
+    faceObjects.forEach(faceObj => {
+      if (result.faceEntities[faceObj.object.entityId]) {
+        const entityObj = setRecognizedEntityObj(
+          result.faceEntities[faceObj.object.entityId],
           faceObj
         );
+        result.faceEntities[faceObj.object.entityId] = entityObj;
+
+        const entityIdx = findIndex(
+          result.entitiesByLibrary[entityObj.libraryId].faces,
+          { entityId: entityObj.entityId }
+        );
+        result.entitiesByLibrary[entityObj.libraryId].faces[entityIdx] = entityObj;
       } else {
-        faceData.faceEntities[entity.id] = recognizedEntityObj;
-        faceData.entitiesByLibrary[libraryEntity.libraryId] = {
-          libraryId: libraryEntity.libraryId,
-          libraryName: recognizedEntityObj.libraryName,
-          faces: [
-            ...get(
-              faceData.entitiesByLibrary[libraryEntity.libraryId],
-              'faces',
-              []
-            ),
-            recognizedEntityObj
-          ]
-        };
+        // locate entity that the face object belongs to
+        const entity = find(entities, { id: faceObj.object.entityId });
+
+        if (entity) {
+          // try to locate library entity that contains the face object
+          const libraryEntity = find(entities, { libraryId: entity.libraryId });
+          // build object for library entity for "recognized" face
+          const recognizedEntityObj = {
+            entityId: entity.id,
+            libraryId: libraryEntity.libraryId,
+            libraryName: libraryEntity.library.name,
+            fullName: entity.name,
+            entity: {
+              ...entity,
+              libraryId: libraryEntity.libraryId,
+              libraryName: libraryEntity.library.name
+            },
+            profileImage: entity.profileImageUrl,
+            count: 1,
+            timeSlots: [
+              {
+                stopTimeMs: faceObj.stopTimeMs,
+                startTimeMs: faceObj.startTimeMs,
+                originalImage: faceObj.object.uri,
+                confidence: faceObj.object.confidence
+              }
+            ],
+            stopTimeMs: faceObj.stopTimeMs
+          };
+
+          result.faceEntities[entity.id] = recognizedEntityObj;
+          result.entitiesByLibrary[recognizedEntityObj.libraryId] = {
+            libraryId: recognizedEntityObj.libraryId,
+            libraryName: recognizedEntityObj.libraryName,
+            faces: [
+              ...get(
+                result.entitiesByLibrary[recognizedEntityObj.libraryId],
+                'faces',
+                []
+              ),
+              recognizedEntityObj
+            ]
+          };
+        }
       }
 
       const matchNamespace = getFrameNamespaceForMatch(faceObj);
@@ -228,11 +237,11 @@ function buildFaceDataPayload(faces, entities) {
         const secondSpots = getArrayOfSecondSpots(faceObj);
 
         secondSpots.forEach(second => {
-          if (!faceData.framesBySeconds[second]) {
-            faceData.framesBySeconds[second] = {};
+          if (!result.framesBySeconds[second]) {
+            result.framesBySeconds[second] = {};
           }
-          if (!faceData.framesBySeconds[second][matchNamespace]) {
-            faceData.framesBySeconds[second][matchNamespace] = {
+          if (!result.framesBySeconds[second][matchNamespace]) {
+            result.framesBySeconds[second][matchNamespace] = {
               startTimeMs: faceObj.startTimeMs,
               stopTimeMs: faceObj.stopTimeMs,
               originalImage: faceObj.object.uri,
@@ -246,14 +255,16 @@ function buildFaceDataPayload(faces, entities) {
             entityId: faceObj.object.entityId
           };
 
-          faceData.framesBySeconds[second][matchNamespace].entities.push(match);
-          faceData.framesBySeconds[second][matchNamespace].entities.sort((a, b) => {
+          result.framesBySeconds[second][matchNamespace].entities.push(match);
+          result.framesBySeconds[second][matchNamespace].entities.sort((a, b) => {
             return b.confidence - a.confidence;
           });
         });
       }
-    }
-  });
+    });
+
+    return result;
+  }, payload);
 
   return faceData;
 }

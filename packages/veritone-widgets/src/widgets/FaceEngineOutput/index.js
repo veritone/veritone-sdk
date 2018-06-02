@@ -23,9 +23,7 @@ import {
   oneOfType
 } from 'prop-types';
 
-import {
-  FaceEngineOutput
-} from 'veritone-react-common';
+import { FaceEngineOutput } from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
@@ -60,7 +58,7 @@ class FaceEngineOutputContainer extends Component {
     tdo: shape({
       id: string,
       startDateTime: string,
-      stopDateTime: string,
+      stopDateTime: string
     }).isRequired,
     engines: arrayOf(
       shape({
@@ -77,7 +75,7 @@ class FaceEngineOutputContainer extends Component {
           label: string,
           uri: string,
           entityId: string,
-          libraryId: string,
+          libraryId: string
         })
       }),
       unrecognizedFaces: arrayOf(
@@ -152,14 +150,25 @@ class FaceEngineOutputContainer extends Component {
   };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { isFetchingEngineResults, isFetchingEntities, faces, editMode, allowEdit } = nextProps;
+    const {
+      isFetchingEngineResults,
+      isFetchingEntities,
+      faces,
+      editMode,
+      allowEdit
+    } = nextProps;
 
     if (!this.props.libraries.length && nextProps.libraries.length) {
-      this.setNewEntityLibrary(head(nextProps.libraries).id)
+      this.setNewEntityLibrary(head(nextProps.libraries).id);
     }
 
-    if (allowEdit && !editMode && !isFetchingEngineResults && !isFetchingEntities) {
-      allowEdit(!faces.unrecognizedFaces.length)
+    if (
+      allowEdit &&
+      !editMode &&
+      !isFetchingEngineResults &&
+      !isFetchingEntities
+    ) {
+      allowEdit(!faces.unrecognizedFaces.length);
     }
 
     if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
@@ -170,19 +179,19 @@ class FaceEngineOutputContainer extends Component {
     }
   }
 
-  handleSearchEntities = (searchText) => {
+  handleSearchEntities = searchText => {
     this.props.fetchEntitySearchResults('people', searchText);
-  }
+  };
 
-  handleFaceDetectionEntitySelect = (currentlyEditedFace, selectedEntity)  => {
+  handleFaceDetectionEntitySelect = (currentlyEditedFace, selectedEntity) => {
     this.props.addDetectedFace(
       this.props.selectedEngineId,
       currentlyEditedFace,
       selectedEntity
-    )
-  }
+    );
+  };
 
-  handleAddNewEntity = (currentlyEditedFace) => {
+  handleAddNewEntity = currentlyEditedFace => {
     if (!this.props.libraries.length) {
       this.props.fetchLibraries({
         libraryType: 'people'
@@ -192,30 +201,27 @@ class FaceEngineOutputContainer extends Component {
     this.openDialog();
     this.setState({
       currentlyEditedFace
-    })
-  }
+    });
+  };
 
-  handleNewEntityLibraryChange = (e) => {
+  handleNewEntityLibraryChange = e => {
     this.setNewEntityLibrary(e.target.value);
-  }
+  };
 
-  handleRemoveFaceDetection = (faceObj) => {
-    this.props.removeDetectedFace(
-      this.props.selectedEngineId,
-      faceObj
-    );
-  }
+  handleRemoveFaceDetection = faceObj => {
+    this.props.removeDetectedFace(this.props.selectedEngineId, faceObj);
+  };
 
-  setNewEntityLibrary = (libraryId) => {
+  setNewEntityLibrary = libraryId => {
     this.setState(prevState => ({
       newEntity: {
         ...prevState.newEntity,
         libraryId
       }
     }));
-  }
+  };
 
-  setNewEntityName = (e) => {
+  setNewEntityName = e => {
     e.persist();
     this.setState(prevState => ({
       newEntity: {
@@ -223,17 +229,17 @@ class FaceEngineOutputContainer extends Component {
         name: e.target.value
       }
     }));
-  }
+  };
 
   openDialog = () => {
     this.setState({ dialogOpen: true });
-  }
+  };
 
   closeDialog = () => {
     this.setState({
-      dialogOpen: false,
+      dialogOpen: false
     });
-  }
+  };
 
   clearNewEntityForm = () => {
     this.setState(prevState => ({
@@ -242,21 +248,24 @@ class FaceEngineOutputContainer extends Component {
         name: ''
       }
     }));
-  }
+  };
 
   saveNewEntity = () => {
     const entity = {
       ...this.state.newEntity,
-      profileImageUrl: this.state.currentlyEditedFace.object.uri,
+      profileImageUrl: this.state.currentlyEditedFace.object.uri
     };
 
-    this.props.createEntity({ entity }, {
-      selectedEngineId: this.props.selectedEngineId,
-      faceObj: this.state.currentlyEditedFace,
-    });
+    this.props.createEntity(
+      { entity },
+      {
+        selectedEngineId: this.props.selectedEngineId,
+        faceObj: this.state.currentlyEditedFace
+      }
+    );
 
     return this.closeDialog();
-  }
+  };
 
   renderAddNewEntityModal = () => {
     const { isFetchingLibraries, libraries } = this.props;
@@ -271,7 +280,9 @@ class FaceEngineOutputContainer extends Component {
         <DialogTitle id="new-entity-title">Add New</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Identify and help train face recognition engines to find this individual. You can view and add additional images in the Library application.
+            Identify and help train face recognition engines to find this
+            individual. You can view and add additional images in the Library
+            application.
           </DialogContentText>
           <TextField
             autoFocus
@@ -287,7 +298,10 @@ class FaceEngineOutputContainer extends Component {
             id="select-library"
             select
             label="Choose Library"
-            value={this.state.newEntity.libraryId || (libraries.length ? libraries[0].id : 'Loading...')}
+            value={
+              this.state.newEntity.libraryId ||
+              (libraries.length ? libraries[0].id : 'Loading...')
+            }
             onChange={this.handleNewEntityLibraryChange}
             margin="dense"
             fullWidth
@@ -303,16 +317,15 @@ class FaceEngineOutputContainer extends Component {
               }
             }}
           >
-            {isFetchingLibraries
-              ? <MenuItem value={'Loading...'}>
-                  {'Loading...'}
-                </MenuItem>
-              : libraries.map(library => (
+            {isFetchingLibraries ? (
+              <MenuItem value={'Loading...'}>{'Loading...'}</MenuItem>
+            ) : (
+              libraries.map(library => (
                 <MenuItem key={library.id} value={library.id}>
                   {library.name}
                 </MenuItem>
               ))
-            }
+            )}
           </TextField>
         </DialogContent>
         <DialogActions>
@@ -324,8 +337,8 @@ class FaceEngineOutputContainer extends Component {
           </Button>
         </DialogActions>
       </Dialog>
-    )
-  }
+    );
+  };
 
   render() {
     const faceEngineProps = pick(this.props, [
@@ -342,13 +355,15 @@ class FaceEngineOutputContainer extends Component {
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
       return (
-        <div style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
           <CircularProgress size={75} />
         </div>
       );

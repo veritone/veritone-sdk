@@ -42,7 +42,7 @@ import {
   pullAt
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
-import { createSelector } from 'reselect'
+import { createSelector } from 'reselect';
 
 const { createReducer } = helpers;
 
@@ -65,13 +65,13 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       isFetchingEngineResults: true
-    }
+    };
   },
   [DONE_FETCHING_ENGINE_RESULTS](state, action) {
     return {
       ...state,
       isFetchingEngineResults: false
-    }
+    };
   },
   [FETCH_ENGINE_RESULTS_SUCCESS](state, action) {
     if (action.payload.errors) {
@@ -106,13 +106,13 @@ const reducer = createReducer(defaultState, {
   [FETCH_ENGINE_RESULTS_FAILURE](state, { payload, meta }) {
     return {
       ...state
-    }
+    };
   },
   [FETCH_ENTITIES](state, action) {
     return {
       ...state,
       isFetchingEntities: true
-    }
+    };
   },
   [FETCH_ENTITIES_SUCCESS](state, action) {
     if (action.payload.errors) {
@@ -127,20 +127,20 @@ const reducer = createReducer(defaultState, {
         ...state.entities,
         ...entities
       },
-      isFetchingEntities: false,
+      isFetchingEntities: false
     };
   },
   [FETCH_ENTITIES_FAILURE](state, action) {
     return {
       ...state,
       isFetchingEntities: false
-    }
+    };
   },
   [FETCH_LIBRARIES](state, action) {
     return {
       ...state,
       isFetchingLibraries: true
-    }
+    };
   },
   [FETCH_LIBRARIES_SUCCESS](state, action) {
     if (action.payload.errors) {
@@ -162,7 +162,7 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       isFetchingLibraries: false
-    }
+    };
   },
   [CREATE_ENTITY_SUCCESS](state, action) {
     if (action.payload.errors) {
@@ -172,20 +172,20 @@ const reducer = createReducer(defaultState, {
     const payload = {
       ...pick(action.meta, ['faceObj', 'selectedEngineId']),
       entity: action.payload.data.entity
-    }
+    };
 
     return this[ADD_DETECTED_FACE](state, { payload });
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
       ...state
-    }
+    };
   },
   [SEARCHING_ENTITIES](state, action) {
     return {
       ...state,
       isSearchingEntities: true
-    }
+    };
   },
   [SEARCH_ENTITIES_SUCCESS](state, action) {
     if (action.payload.errors) {
@@ -194,35 +194,39 @@ const reducer = createReducer(defaultState, {
 
     const entitySearchResults = [];
 
-    get(action.payload.data, 'libraries.records', [])
-    .forEach(libraryEntities => {
-      if (libraryEntities.entities.records.length) {
-        entitySearchResults.push(libraryEntities.entities.records);
+    get(action.payload.data, 'libraries.records', []).forEach(
+      libraryEntities => {
+        if (libraryEntities.entities.records.length) {
+          entitySearchResults.push(libraryEntities.entities.records);
+        }
       }
-    });
+    );
 
     return {
       ...state,
       entitySearchResults: flatten(entitySearchResults),
       isSearchingEntities: false
-    }
+    };
   },
   [SEARCH_ENTITIES_FAILURE](state, action) {
     return {
       ...state,
       isSearchingEntities: false
-    }
+    };
   },
   [ADD_DETECTED_FACE](state, action) {
     const { faceObj, selectedEngineId, entity } = action.payload;
     const objectCriteria = pick(faceObj.object, ['uri', 'boundingPoly']);
 
-    const detectedFacePath = state.engineResultsByEngineId[selectedEngineId]
-      .reduce((acc, engineResult, engineResultIdx) => {
-        const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
+    const detectedFacePath = state.engineResultsByEngineId[
+      selectedEngineId
+    ].reduce((acc, engineResult, engineResultIdx) => {
+      const faceIdx = findIndex(engineResult.series, {
+        object: objectCriteria
+      });
 
-        return (faceIdx > -1) ? `[${engineResultIdx}].series[${faceIdx}]` : acc;
-      }, '');
+      return faceIdx > -1 ? `[${engineResultIdx}].series[${faceIdx}]` : acc;
+    }, '');
 
     if (!detectedFacePath.length) {
       return {
@@ -250,18 +254,21 @@ const reducer = createReducer(defaultState, {
         ...state.entities,
         [entity.id]: entity
       }
-    }
+    };
   },
   [REMOVE_DETECTED_FACE](state, action) {
     const { faceObj, selectedEngineId } = action.payload;
     const objectCriteria = pick(faceObj.object, ['uri', 'boundingPoly']);
 
-    const detectedFacePath = state.engineResultsByEngineId[selectedEngineId]
-      .reduce((acc, engineResult, engineResultIdx) => {
-        const faceIdx = findIndex(engineResult.series, { object: objectCriteria });
+    const detectedFacePath = state.engineResultsByEngineId[
+      selectedEngineId
+    ].reduce((acc, engineResult, engineResultIdx) => {
+      const faceIdx = findIndex(engineResult.series, {
+        object: objectCriteria
+      });
 
-        return (faceIdx > -1) ? [engineResultIdx, faceIdx] : acc;
-      }, []);
+      return faceIdx > -1 ? [engineResultIdx, faceIdx] : acc;
+    }, []);
 
     if (!detectedFacePath.length) {
       return {
@@ -279,14 +286,14 @@ const reducer = createReducer(defaultState, {
         ...state.facesRemovedByUser,
         [selectedEngineId]: removedFaces
       }
-    }
+    };
   },
   [CANCEL_FACE_EDITS](state, action) {
     return {
       ...state,
       facesDetectedByUser: {},
       facesRemovedByUser: {}
-    }
+    };
   }
 });
 export default reducer;
@@ -296,11 +303,11 @@ function local(state) {
 }
 
 /* ENGINE RESULTS */
-export const fetchEngineResults = (meta) => ({
+export const fetchEngineResults = meta => ({
   type: FETCH_ENGINE_RESULTS,
   meta
 });
-export const fetchingEngineResults = (meta) => ({
+export const fetchingEngineResults = meta => ({
   type: FETCHING_ENGINE_RESULTS,
   meta
 });
@@ -331,11 +338,10 @@ export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
 
 export const fetchedEngineResultByEngineId = (state, engineId) =>
-  get(local(state), ['fetchedEngineResults', engineId], [])
+  get(local(state), ['fetchedEngineResults', engineId], []);
 
-
-  /* ENTITIES */
-export const fetchingEntities = (meta) => ({
+/* ENTITIES */
+export const fetchingEntities = meta => ({
   type: FETCH_ENTITIES,
   meta
 });
@@ -394,16 +400,15 @@ export function isSearchingEntities(state) {
   return local(state).isSearchingEntities;
 }
 
-export const getEntities = (state) =>
+export const getEntities = state =>
   Object.values(get(local(state), 'entities', []));
 
 export function getEntitySearchResults(state) {
   return get(local(state), 'entitySearchResults', []);
 }
 
-
 /* LIBRARIES */
-export const fetchLibraries = (payload) => ({
+export const fetchLibraries = payload => ({
   type: FETCH_LIBRARIES,
   payload
 });
@@ -445,9 +450,8 @@ export const removeDetectedFace = (selectedEngineId, faceObj) => ({
 });
 
 export const cancelFaceEdits = () => ({
-  type: CANCEL_FACE_EDITS,
+  type: CANCEL_FACE_EDITS
 });
-
 
 /* SELECTORS */
 export const getFaces = createSelector(
@@ -455,36 +459,48 @@ export const getFaces = createSelector(
   (faceData, userDetectedFaces, userRemovedFaces, entities) => {
     const faceEntities = {
       unrecognizedFaces: [],
-      recognizedFaces: {},
+      recognizedFaces: {}
     };
 
     // flatten data series for currently selected engine
-    const faceSeries = addUserDetectedFaces(faceData, userDetectedFaces, userRemovedFaces)
-    .reduce((accumulator, faceSeries) => {
+    const faceSeries = addUserDetectedFaces(
+      faceData,
+      userDetectedFaces,
+      userRemovedFaces
+    ).reduce((accumulator, faceSeries) => {
       if (!isEmpty(faceSeries.series)) {
         return [...accumulator, ...faceSeries.series];
       }
       return accumulator;
     }, []);
 
-    faceSeries.forEach(faceObj => { // for each face object
+    faceSeries.forEach(faceObj => {
+      // for each face object
       // locate entity that the face object belongs to
       const entity = find(entities, { id: faceObj.object.entityId });
 
-      if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
+      if (
+        !faceObj.object.entityId ||
+        !entities.length ||
+        !entity ||
+        !entity.name
+      ) {
+        // face not recognized
         faceEntities.unrecognizedFaces.push(faceObj);
+      } else if (faceEntities.recognizedFaces[faceObj.object.entityId]) {
+        faceEntities.recognizedFaces[faceObj.object.entityId].push(faceObj);
       } else {
-        faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
+        faceEntities.recognizedFaces[faceObj.object.entityId] = [faceObj];
       }
     });
 
     return faceEntities;
   }
-)
+);
 
 /* HELPERS */
 export const getFaceEngineAssetData = (state, engineId) => {
-  const engineResults =  getFaceDataByEngine(state, engineId);
+  const engineResults = getFaceDataByEngine(state, engineId);
   const userDetectedFaces = getUserDetectedFaces(state, engineId);
   const userRemovedFaces = getUserRemovedFaces(state, engineId);
 
@@ -494,19 +510,28 @@ export const getFaceEngineAssetData = (state, engineId) => {
     sourceEngineName: 'User Generated'
   };
 
-  const allSeries = addUserDetectedFaces(engineResults, userDetectedFaces, userRemovedFaces)
-  .reduce((accumulator, engineResult) => {
+  const allSeries = addUserDetectedFaces(
+    engineResults,
+    userDetectedFaces,
+    userRemovedFaces
+  ).reduce((accumulator, engineResult) => {
     return [...accumulator, ...engineResult.series];
   }, []);
 
   return {
     ...userEdited,
     series: allSeries
-  }
-}
+  };
+};
 
-function addUserDetectedFaces(engineResults, userDetectedFaces, userRemovedFaces) {
-  const updatedFaceData = map(engineResults, data => ({ series: [...data.series] }));
+function addUserDetectedFaces(
+  engineResults,
+  userDetectedFaces,
+  userRemovedFaces
+) {
+  const updatedFaceData = map(engineResults, data => ({
+    series: [...data.series]
+  }));
 
   if (userDetectedFaces) {
     forEach(userDetectedFaces, (faceObj, faceObjPath) => {
@@ -519,9 +544,9 @@ function addUserDetectedFaces(engineResults, userDetectedFaces, userRemovedFaces
       const [engineResultIdx, faceIdx] = faceObjPath;
 
       if (!acc[engineResultIdx]) {
-        acc[engineResultIdx] = [faceIdx]
+        acc[engineResultIdx] = [faceIdx];
       } else {
-        acc[engineResultIdx].push(faceIdx)
+        acc[engineResultIdx].push(faceIdx);
       }
 
       return acc;

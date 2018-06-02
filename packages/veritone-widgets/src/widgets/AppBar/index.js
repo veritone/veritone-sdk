@@ -31,7 +31,7 @@ class AppBar extends React.Component {
   };
 
   render() {
-    return <LibAppBar {...this.props} onSwitchApp={this.handleSwitchApp}/>;
+    return <LibAppBar {...this.props} onSwitchApp={this.handleSwitchApp} />;
   }
 }
 
@@ -60,4 +60,4 @@ class AppBarWidgetComponent extends React.Component {
 }
 
 const AppBarWidget = widget(AppBarWidgetComponent);
-export { AppBar as default, AppBarWidget }
+export { AppBar as default, AppBarWidget };

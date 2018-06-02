@@ -205,72 +205,74 @@ const entities = [
 ];
 
 const tdo = {
-  "id": "10314032",
-  "details": {
-    "filename": "NFLNetworkPrimetimeProgramming_20160205_0510_edit",
-    "veritoneFile": {
-      "filename": "NFLNetworkPrimetimeProgramming_20160205_0510"
+  id: '10314032',
+  details: {
+    filename: 'NFLNetworkPrimetimeProgramming_20160205_0510_edit',
+    veritoneFile: {
+      filename: 'NFLNetworkPrimetimeProgramming_20160205_0510'
     },
-    "veritoneMediaSource": {
-      "mediaSourceId": "38402",
-      "mediaSourceTypeId": "2"
+    veritoneMediaSource: {
+      mediaSourceId: '38402',
+      mediaSourceTypeId: '2'
     },
-    "veritoneCustom": {},
-    "veritoneProgram": {
-      "programId": "20622",
-      "programName": "NFL Network Primetime Programming",
-      "programImage": "https://s3.amazonaws.com/prod-veritone-ugc/programs/20622/I362KHzOSBO8ySTB5mBQ_ZJzJEcVm_400x400.jpg",
-      "programLiveImage": "https://s3.amazonaws.com/prod-veritone-ugc/cb5e52b4-a986-4e2b-b525-482319df3350%2FbrdProgram%2FBeQ5IMMdTnuMCl25MRon_nfln.jpg"
+    veritoneCustom: {},
+    veritoneProgram: {
+      programId: '20622',
+      programName: 'NFL Network Primetime Programming',
+      programImage:
+        'https://s3.amazonaws.com/prod-veritone-ugc/programs/20622/I362KHzOSBO8ySTB5mBQ_ZJzJEcVm_400x400.jpg',
+      programLiveImage:
+        'https://s3.amazonaws.com/prod-veritone-ugc/cb5e52b4-a986-4e2b-b525-482319df3350%2FbrdProgram%2FBeQ5IMMdTnuMCl25MRon_nfln.jpg'
     }
   },
-  "startDateTime": "2016-02-05T05:10:00.000Z",
-  "stopDateTime": "2016-02-05T05:15:00.000Z",
-  "security": {
-    "global": true
+  startDateTime: '2016-02-05T05:10:00.000Z',
+  stopDateTime: '2016-02-05T05:15:00.000Z',
+  security: {
+    global: true
   }
 };
 
 const engines = [
   {
     // "id": "imagedetection-facerecognition-veritone",
-    "id": "84b513bd-d64d-3a35-9d42-579c8611fdbf",
-    "name": "Semblance"
+    id: '84b513bd-d64d-3a35-9d42-579c8611fdbf',
+    name: 'Semblance'
   }
 ];
 
 storiesOf('FaceEngineOutput', module)
-.addDecorator(withKnobs)
-.addDecorator(story =>(
-  <Provider store={store}>
-    <Sagas middleware={store.sagaMiddleware}>
-      {story()}
-    </Sagas>
-  </Provider>
-))
-.add('Base', () => {
-  const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
-    if (faceSeries.series.length) {
-      const unrecognizedFaces = faceSeries.series.filter(faceObj => !faceObj.object.entityId);
-      return [...accumulator, ...unrecognizedFaces];
-    }
-    return accumulator;
-  }, []);
+  .addDecorator(withKnobs)
+  .addDecorator(story => (
+    <Provider store={store}>
+      <Sagas middleware={store.sagaMiddleware}>{story()}</Sagas>
+    </Provider>
+  ))
+  .add('Base', () => {
+    const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
+      if (faceSeries.series.length) {
+        const unrecognizedFaces = faceSeries.series.filter(
+          faceObj => !faceObj.object.entityId
+        );
+        return [...accumulator, ...unrecognizedFaces];
+      }
+      return accumulator;
+    }, []);
 
-  return (
-    <FaceEngineOutput
-      tdo={tdo}
-      engines={engines}
-      // entities={entities}
-      selectedEngineId={engines[0].id}
-      unrecognizedFaces={faceSeries}
-      editMode
-      baseUrlImagePrefix="https://s3-us-west-1.amazonaws.com/prod-veritone-face"
-      currentMediaPlayerTime={knobNumber('mediaPlayerPosition', 0, {
-        range: true,
-        min: 0,
-        max: 6000,
-        step: 1000
-      })}
-    />
-  )
-});
+    return (
+      <FaceEngineOutput
+        tdo={tdo}
+        engines={engines}
+        // entities={entities}
+        selectedEngineId={engines[0].id}
+        unrecognizedFaces={faceSeries}
+        editMode
+        baseUrlImagePrefix="https://s3-us-west-1.amazonaws.com/prod-veritone-face"
+        currentMediaPlayerTime={knobNumber('mediaPlayerPosition', 0, {
+          range: true,
+          min: 0,
+          max: 6000,
+          step: 1000
+        })}
+      />
+    );
+  });

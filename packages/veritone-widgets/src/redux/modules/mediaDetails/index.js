@@ -80,7 +80,7 @@ const defaultMDPState = {
   tdoContentTemplates: {},
   schemasById: {},
   enableSave: false,
-  error: null,
+  error: null
 };
 
 const defaultState = {};
@@ -765,8 +765,7 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
-export const isSaveEnabled = (state) =>
-  get(local(state), 'enableSave');
+export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
 
@@ -918,7 +917,7 @@ export const toggleExpandedMode = widgetId => ({
   meta: { widgetId }
 });
 
-export const toggleSaveMode = (enableSave) => ({
+export const toggleSaveMode = enableSave => ({
   type: TOGGLE_SAVE_MODE,
   payload: {
     enableSave
@@ -951,7 +950,7 @@ export const createFileAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createBulkEditTranscriptAssetSuccess = (widgetId) => ({
+export const createBulkEditTranscriptAssetSuccess = widgetId => ({
   type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
   meta: { widgetId }
 });
