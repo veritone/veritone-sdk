@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, func, shape, arrayOf } from 'prop-types';
+import { number, string, func, shape, arrayOf, node } from 'prop-types';
 
 import classNames from 'classnames';
 
@@ -65,7 +65,8 @@ export default class GeoEngineOutput extends Component {
     onExpandClick: func,
 
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -184,12 +185,14 @@ export default class GeoEngineOutput extends Component {
       travelMode,
       mapViewClassName,
       timeViewClassName,
-      mediaPlayerTimeMs
+      mediaPlayerTimeMs,
+      outputNullState
     } = this.props;
 
     const parsedData = this.parsePropsData();
-
-    if (this.state.currentView === 'mapView') {
+    if (outputNullState) {
+      return outputNullState;
+    } else if (this.state.currentView === 'mapView') {
       return (
         <GeoMapView
           data={parsedData}

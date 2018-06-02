@@ -49,6 +49,16 @@ export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
 export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
 export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
+export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
+export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
+export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
+export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
+export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
+export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
+  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
+  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -69,7 +79,8 @@ const defaultMDPState = {
   contentTemplates: {},
   tdoContentTemplates: {},
   schemasById: {},
-  error: null,
+  enableSave: false,
+  error: null
 };
 
 const defaultState = {};
@@ -99,7 +110,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         warning: warn || null,
         engineCategories: payload
@@ -117,8 +127,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         warning: warn || null,
         engineCategories: []
       }
@@ -232,7 +241,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         engineResultsByEngineId: {
           ...previousResultsByEngineId
@@ -256,8 +264,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: errorMessage
+        error: errorMessage || 'uknown error'
       }
     };
   },
@@ -272,7 +279,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isLoadingTdo: true,
-        success: true,
         error: null,
         tdo: null
       }
@@ -291,7 +297,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isLoadingTdo: false,
-        success: true,
         error: null,
         tdo: tdo
       }
@@ -310,8 +315,7 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isLoadingTdo: false,
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         tdo: null
       }
     };
@@ -326,7 +330,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null
       }
     };
@@ -342,7 +345,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         tdo: payload
       }
     };
@@ -358,8 +360,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null
+        error: errorMessage || 'unknown error'
       }
     };
   },
@@ -393,7 +394,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         tdoContentTemplates: tdoContentTemplates
       }
@@ -410,8 +410,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         tdoContentTemplates: {}
       }
     };
@@ -426,7 +425,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
         error: null
       }
     };
@@ -441,7 +439,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
         error: null
       }
     };
@@ -472,7 +469,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
         error: null
       }
     };
@@ -505,7 +501,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         contentTemplates: templateSchemas
       }
@@ -522,8 +517,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         contentTemplates: {}
       }
     };
@@ -711,6 +705,12 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [TOGGLE_SAVE_MODE](state, action) {
+    return {
+      ...state,
+      enableSave: action.payload.enableSave
+    };
   }
 });
 
@@ -748,6 +748,7 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
+export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
 
@@ -881,8 +882,11 @@ export const setEngineId = (widgetId, engineId) => ({
   meta: { widgetId }
 });
 
-export const toggleEditMode = widgetId => ({
+export const toggleEditMode = (widgetId, selectedEngineCategory) => ({
   type: TOGGLE_EDIT_MODE,
+  payload: {
+    selectedEngineCategory
+  },
   meta: { widgetId }
 });
 
@@ -894,4 +898,47 @@ export const toggleInfoPanel = widgetId => ({
 export const toggleExpandedMode = widgetId => ({
   type: TOGGLE_EXPANDED_MODE,
   meta: { widgetId }
+});
+
+export const toggleSaveMode = enableSave => ({
+  type: TOGGLE_SAVE_MODE,
+  payload: {
+    enableSave
+  }
+});
+
+export const saveAssetData = (widgetId, payload) => {
+  return {
+    type: SAVE_ASSET_DATA,
+    payload: payload,
+    meta: { widgetId }
+  };
+};
+
+export const saveAssetDataFailure = (widgetId, { error }) => ({
+  type: SAVE_ASSET_DATA_FAILURE,
+  meta: { error, widgetId }
+});
+
+export const createFileAssetSuccess = (widgetId, assetId) => ({
+  type: CREATE_FILE_ASSET_SUCCESS,
+  payload: {
+    assetId
+  },
+  meta: { widgetId }
+});
+
+export const createFileAssetFailure = (widgetId, { error }) => ({
+  type: CREATE_FILE_ASSET_FAILURE,
+  meta: { error, widgetId }
+});
+
+export const createBulkEditTranscriptAssetSuccess = widgetId => ({
+  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
+  meta: { widgetId }
+});
+
+export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
+  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
+  meta: { error, widgetId }
 });

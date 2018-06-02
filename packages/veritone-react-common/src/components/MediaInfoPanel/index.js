@@ -295,6 +295,7 @@ class MediaInfoPanel extends Component {
                     </IconButton>
                   </div>
                 </Target>
+                {isMenuOpen &&
                 <Popper placement="bottom-end" eventsEnabled={isMenuOpen}>
                   <ClickAwayListener onClickAway={this.onMenuClose}>
                     <Grow
@@ -344,7 +345,7 @@ class MediaInfoPanel extends Component {
                       </Paper>
                     </Grow>
                   </ClickAwayListener>
-                </Popper>
+                </Popper>}
               </Manager>
               <IconButton
                 className={styles.closeButton}
@@ -370,7 +371,7 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            {tdo.startDateTime && tdo.stopDateTime &&
+            {tdo.startDateTime && tdo.stopDateTime && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Duration</div>
                 <div className={styles.infoFieldData}>
@@ -379,7 +380,8 @@ class MediaInfoPanel extends Component {
                     tdo.stopDateTime
                   )}
                 </div>
-              </div>}
+              </div>
+            )}
             {this.props.engineCategories &&
               this.props.engineCategories.length && (
                 <div className={styles.infoField}>

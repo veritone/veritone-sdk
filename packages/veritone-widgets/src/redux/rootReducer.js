@@ -13,6 +13,11 @@ import mediaDetailsReducer, {
   namespace as mediaDetailsNamespace
 } from './modules/mediaDetails';
 
+import transcriptReducer, { transcriptNamespace } from './modules/mediaDetails/transcriptWidget';
+import faceEngineOutputReducer, {
+  namespace as faceEngineOutputNamespace
+} from './modules/mediaDetails/faceEngineOutput';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -26,6 +31,8 @@ export default function createReducer(asyncReducers) {
   return combineReducers({
     [filePickerNamespace]: filePickerReducer,
     [mediaDetailsNamespace]: mediaDetailsReducer,
+    [transcriptNamespace]: transcriptReducer,
+    [faceEngineOutputNamespace]: faceEngineOutputReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,

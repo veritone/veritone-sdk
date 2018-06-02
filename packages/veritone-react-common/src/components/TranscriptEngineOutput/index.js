@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
 import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
@@ -9,7 +9,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import TranscriptContent from './TranscriptContent';
+import TranscriptContent, { View, Edit } from './TranscriptContent';
 import styles from './styles.scss';
 
 export default class TranscriptEngineOutput extends Component {
@@ -48,6 +48,9 @@ export default class TranscriptEngineOutput extends Component {
     contentClassName: string,
 
     editMode: bool,
+    onChange: func,
+    editType: string,
+    onEditTypeChange: func,
 
     onClick: func,
     onScroll: func,
@@ -59,12 +62,14 @@ export default class TranscriptEngineOutput extends Component {
     estimatedDisplayTimeMs: number,
 
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+    outputNullState: node
   };
 
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
+    editType: Edit.SNIPPET,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -73,33 +78,45 @@ export default class TranscriptEngineOutput extends Component {
     super(props);
 
     this.state = {
-      overview: false
+      viewType: View.OVERVIEW,
+      editType: Edit.SNIPPET
     };
   }
 
   handleViewChange = event => {
-    event.target.value === 'overview' && this.setState({ overview: true });
-    event.target.value === 'time' && this.setState({ overview: false });
+    this.setState({ viewType: event.target.value });
+  };
+
+  handleEditChange = event => {
+    const onEditChangeCallback = this.props.onEditTypeChange;
+    if (onEditChangeCallback) {
+      onEditChangeCallback({ type: event.target.value });
+    } else {
+      this.setState({ editType: event.target.value });
+    }
   };
 
   renderEditOptions() {
+    const editType = this.props.onEditTypeChange
+      ? this.props.editType
+      : this.state.editType;
     return (
       <RadioGroup
         row
         aria-label="edit_mode"
-        value={this.state.overview ? 'overview' : 'time'}
+        value={editType}
         name="editMode"
         className={classNames(styles.radioButton)}
-        onChange={this.handleViewChange}
+        onChange={this.handleEditChange}
       >
         <FormControlLabel
-          value="time"
+          value={Edit.SNIPPET}
           className={styles.label}
           control={<Radio color="primary" />}
           label="Snippet Edit"
         />
         <FormControlLabel
-          value="overview"
+          value={Edit.BULK}
           className={styles.label}
           control={<Radio color="primary" />}
           label="Bulk Edit"
@@ -112,7 +129,7 @@ export default class TranscriptEngineOutput extends Component {
     return (
       <Select
         autoWidth
-        value={this.state.overview ? 'overview' : 'time'}
+        value={this.state.viewType}
         className={styles.viewDropdown}
         onChange={this.handleViewChange}
         MenuProps={{
@@ -126,10 +143,10 @@ export default class TranscriptEngineOutput extends Component {
           getContentAnchorEl: null
         }}
       >
-        <MenuItem value="time" className={classNames(styles.view)}>
+        <MenuItem value={View.TIME} className={classNames(styles.view)}>
           Time
         </MenuItem>
-        <MenuItem value="overview" className={classNames(styles.view)}>
+        <MenuItem value={View.OVERVIEW} className={classNames(styles.view)}>
           Overview
         </MenuItem>
       </Select>
@@ -170,30 +187,40 @@ export default class TranscriptEngineOutput extends Component {
       onClick,
       onScroll,
       editMode,
+      onChange,
+      editType,
+      onEditTypeChange,
       mediaLengthMs,
       neglectableTimeMs,
       estimatedDisplayTimeMs,
       contentClassName,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      outputNullState
     } = this.props;
 
+    const currentEditType = onEditTypeChange ? editType : this.state.editType;
+
     return (
-      <div className={classNames(styles.content)}>
-        <TranscriptContent
-          data={data}
-          editMode={editMode}
-          overview={this.state.overview}
-          mediaPlayerTimeMs={mediaPlayerTimeMs}
-          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-          estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-          mediaLengthMs={mediaLengthMs}
-          neglectableTimeMs={neglectableTimeMs}
-          onClick={onClick}
-          onScroll={onScroll}
-          className={classNames(contentClassName)}
-        />
-      </div>
+      outputNullState || (
+        <div className={classNames(styles.content)}>
+          <TranscriptContent
+            data={data}
+            editMode={editMode}
+            viewType={this.state.viewType}
+            editType={currentEditType}
+            mediaPlayerTimeMs={mediaPlayerTimeMs}
+            mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+            estimatedDisplayTimeMs={estimatedDisplayTimeMs}
+            mediaLengthMs={mediaLengthMs}
+            neglectableTimeMs={neglectableTimeMs}
+            onClick={onClick}
+            onScroll={onScroll}
+            onChange={onChange}
+            className={classNames(contentClassName)}
+          />
+        </div>
+      )
     );
   }
 

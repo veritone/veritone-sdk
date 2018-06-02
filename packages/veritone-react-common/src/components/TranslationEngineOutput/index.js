@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, number, string, func } from 'prop-types';
+import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
@@ -64,7 +64,8 @@ export default class TranslationEngineOutput extends Component {
     estimatedDisplayTimeMs: number,
 
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -229,26 +230,29 @@ export default class TranslationEngineOutput extends Component {
       estimatedDisplayTimeMs,
 
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      outputNullState
     } = this.props;
 
     const selectedContents = this.getSelectedContent();
 
     return (
-      <div className={classNames(styles.body, bodyClassName)}>
-        <TranslationContent
-          contents={selectedContents}
-          className={contentClassName}
-          onClick={onClick}
-          onScroll={onScroll}
-          onRerunProcess={onRerunProcess}
-          mediaLengthMs={mediaLengthMs}
-          neglectableTimeMs={neglectableTimeMs}
-          estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-          mediaPlayerTimeMs={mediaPlayerTimeMs}
-          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-        />
-      </div>
+      outputNullState || (
+        <div className={classNames(styles.body, bodyClassName)}>
+          <TranslationContent
+            contents={selectedContents}
+            className={contentClassName}
+            onClick={onClick}
+            onScroll={onScroll}
+            onRerunProcess={onRerunProcess}
+            mediaLengthMs={mediaLengthMs}
+            neglectableTimeMs={neglectableTimeMs}
+            estimatedDisplayTimeMs={estimatedDisplayTimeMs}
+            mediaPlayerTimeMs={mediaPlayerTimeMs}
+            mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+          />
+        </div>
+      )
     );
   }
 

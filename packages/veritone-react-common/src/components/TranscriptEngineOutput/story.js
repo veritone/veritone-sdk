@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { bool } from 'prop-types';
+import { bool, func } from 'prop-types';
 
 import { storiesOf } from '@storybook/react';
 import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
@@ -14,11 +16,18 @@ storiesOf('TranscriptEngineOutput', module)
   })
   .add('With Lazy Loading', () => {
     return <TranscriptExample lazyLoading />;
+  })
+  .add('With Lazy Loading Edit Mode Callback', () => {
+    return <TranscriptExample 
+      lazyLoading 
+      onEditTypeChange={action('on edit mode change')} 
+    />;
   });
 
 export class TranscriptExample extends Component {
   static propTypes = {
-    lazyLoading: bool
+    lazyLoading: bool,
+    onEditTypeChange: func
   };
 
   static defaultProps = {
@@ -84,6 +93,8 @@ export class TranscriptExample extends Component {
     return (
       <TranscriptEngineOutput
         editMode={boolean('Edit Mode', false)}
+        onChange={action('on change')}
+        onEditTypeChange={this.props.onEditTypeChange}
         data={this.state.data}
         className={styles.outputViewRoot}
         mediaPlayerTimeMs={1000 * number('media player time', 0)}
@@ -99,6 +110,15 @@ export class TranscriptExample extends Component {
         selectedEngineId={this.selectedEngineId}
         onEngineChange={action('engine changed')}
         onExpandClick={action('expand view clicked')}
+        outputNullState={
+          boolean('showNullState') && (
+            <EngineOutputNullState
+              engineStatus="failed"
+              engineName="fakeEngine"
+              onRunProcess={action('Run Process')}
+            />
+          )
+        }
       />
     );
   }
@@ -119,7 +139,7 @@ function genMockData(
   let chunkStartTime = startTime;
   const timeChunk = (stopTime - startTime) / numDataChunks;
   for (let chunkIndex = 0; chunkIndex < numDataChunks; chunkIndex++) {
-    let chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
+    const chunkStoptime = Math.ceil(chunkStartTime + timeChunk);
 
     const isBadSerie = Math.random() < badSerieRatio;
     const series = genMockSerie(
@@ -193,7 +213,9 @@ function genMockSerie(
 function genMockWords(size, type = 'TTML') {
   const words = [];
   if (type === 'TTML') {
-    const sentenceIndex = Math.round(Math.random() * (ttmlSentences.length - 1));
+    const sentenceIndex = Math.round(
+      Math.random() * (ttmlSentences.length - 1)
+    );
     words.push({
       word: ttmlSentences[sentenceIndex],
       confidence: 1

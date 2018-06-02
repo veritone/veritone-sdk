@@ -30,6 +30,12 @@
   padding-left: 10px;
 }
 
+.noHover {
+  &:hover {
+    background-color: transparent !important;
+  }
+}
+
 .arrayAdd,
 .arrayRemove {
   span {

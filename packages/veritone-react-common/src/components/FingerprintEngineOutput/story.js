@@ -1,7 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import FingerprintEngineOutput from './';
 
@@ -22,6 +24,15 @@ storiesOf('FingerprintEngineOutput', module).add('Base', () => {
       engines={engines}
       onEngineChange={action('engine select')}
       onExpandClick={action('expand view clicked')}
+      outputNullState={
+        boolean('showNullState') && (
+          <EngineOutputNullState
+            engineStatus="failed"
+            engineName="fakeEngines"
+            onRunProcess={action('Run process')}
+          />
+        )
+      }
     />
   );
 });
