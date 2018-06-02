@@ -747,32 +747,30 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
               {selectedEngineCategory &&
-                selectedEngineCategory.categoryType !== 'transcript' &&
-                selectedEngineCategory.categoryType !== 'correlation' &&
-                (!isExpandedMode || isEditModeEnabled) && (
-                  <div className={styles.mediaView}>
-                    {isImage ? (
-                      <Image
-                        src={this.getPrimaryAssetUri()}
-                        width="100%"
-                        height="100%"
-                        type="contain"
-                      />
-                    ) : (
-                      <MediaPlayer
-                        store={this.context.store}
-                        playerRef={this.mediaPlayerRef}
-                        src={this.getPrimaryAssetUri()}
-                        streams={get(this.props, 'tdo.streams')}
-                      />
-                    )}
-                    {this.getMediaSource() && (
-                      <div className={styles.sourceLabel}>
-                        Source: {this.getMediaSource()}
-                      </div>
-                    )}
-                  </div>
-                )}
+                !(selectedEngineCategory.categoryType === 'transcript' && isEditModeEnabled) &&
+                !(selectedEngineCategory.categoryType === 'correlation' && isExpandedMode) && (
+                <div className={styles.mediaView}>
+                  {isImage ? (
+                    <Image
+                      src={this.getPrimaryAssetUri()}
+                      width="100%"
+                      height="100%"
+                      type="contain"
+                    />
+                  ) : (
+                    <MediaPlayer
+                      store={this.context.store}
+                      playerRef={this.mediaPlayerRef}
+                      src={this.getPrimaryAssetUri()}
+                      streams={get(this.props, 'tdo.streams')}
+                    />
+                  )}
+                  {this.getMediaSource() &&
+                    <div className={styles.sourceLabel}>
+                      Source: {this.getMediaSource()}
+                    </div>}
+                </div>
+              )}
               {selectedEngineId && (
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
