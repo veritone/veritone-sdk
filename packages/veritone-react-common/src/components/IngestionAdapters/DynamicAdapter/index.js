@@ -151,12 +151,12 @@ class DynamicAdapter extends React.Component {
   }
 }
 
-function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
-  return (fields || [])
+function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
+  return (fields)
     .map(field => {
-      let inputId = field.name + 'DynamicField';
-      let camelCasedFieldName = startCase(toLower(field.name));
-      let fieldObj = {
+      const inputId = field.name + 'DynamicField';
+      const camelCasedFieldName = startCase(toLower(field.name));
+      const fieldObj = {
         key: inputId
       };
       if (field.type === 'Picklist' || field.type === 'MultiPicklist') {

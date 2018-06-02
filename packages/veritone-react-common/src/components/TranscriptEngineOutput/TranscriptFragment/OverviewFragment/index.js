@@ -4,12 +4,12 @@ import classNames from 'classnames';
 
 import styles from './styles.scss';
 
-export default class OverviewSegment extends Component {
+export default class OverviewFragment extends Component {
   static propTypes = {
     content: shape({
-      startTimeMs: number,
-      stopTimeMs: number,
-      value: string
+      value: string,
+      startTimeMs: number.isRequired,
+      stopTimeMs: number.isRequired
     }),
     active: bool,
     className: string,
