@@ -1,7 +1,6 @@
 @import 'src/styles/modules/variables';
 
 .transcriptSnippet {
-  margin-right: 1px;
   outline: none;
   color: $dark-black;
   font-family: Roboto;
@@ -19,7 +18,7 @@
 }
 
 .edit:focus {
-  border-bottom: 2px solid $blue-1;
+  box-shadow: inset 0 -2px 0 $blue-1;
 }
 
 .highlight {
