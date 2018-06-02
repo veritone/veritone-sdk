@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, any, func, shape, node } from 'prop-types';
+import { number, string, arrayOf, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
 import {
   ResponsiveContainer,
@@ -16,7 +16,24 @@ import styles from './styles.scss';
 
 export default class SentimentEngineOutput extends Component {
   static propTypes = {
-    data: arrayOf(any),
+    data: arrayOf(
+      shape({
+        startTimeMs: number,
+        stopTimeMs: number,
+        series: arrayOf(
+          shape({
+            startTimeMs: number,
+            stopTimeMs: number,
+            sentiment: shape({
+              positiveValue: number,
+              positiveConfidence: number,
+              negativeValue: number,
+              negativeConfidence: number
+            })
+          })
+        )
+      })
+    ),
     engines: arrayOf(
       shape({
         sourceEngineId: string,
@@ -95,7 +112,7 @@ export default class SentimentEngineOutput extends Component {
             isNaN(seriesItem.sentiment.positiveValue) &&
             isNaN(seriesItem.sentiment.negativeValue)
           ) {
-            // No data case - engine results has a no-value series item - set sentiment = 0
+            // No data - engine results has a no-value series item - set sentiment = 0
             allSeries.push({
               startTimeMs: seriesItem.startTimeMs,
               stopTimeMs: seriesItem.stopTimeMs,
@@ -109,10 +126,10 @@ export default class SentimentEngineOutput extends Component {
           }
         });
       } else {
-        // No data case - engine result has no data for the offset range - set sentiment = 0
+        // No data - engine result has no data for the offset range - set sentiment = 0
         allSeries.push({
-          startTimeMs: dataItem.startOffsetMs,
-          stopTimeMs: dataItem.stopOffsetMs,
+          startTimeMs: dataItem.startTimeMs,
+          stopTimeMs: dataItem.stopTimeMs,
           sentiment: {
             positiveConfidence: 1,
             positiveValue: 0

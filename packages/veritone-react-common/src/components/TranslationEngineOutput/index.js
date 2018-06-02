@@ -182,7 +182,7 @@ export default class TranslationEngineOutput extends Component {
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
-        {this.state.languages.length > 0 &&
+        {this.state.languages.length > 0 && (
           <Select
             autoWidth
             value={this.state.selectedLanguage}
@@ -210,7 +210,8 @@ export default class TranslationEngineOutput extends Component {
                 </MenuItem>
               );
             })}
-          </Select>}
+          </Select>
+        )}
       </EngineOutputHeader>
     );
   }
