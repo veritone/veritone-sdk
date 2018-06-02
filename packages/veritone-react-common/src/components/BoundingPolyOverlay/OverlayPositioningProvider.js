@@ -1,7 +1,12 @@
 import React from 'react';
 import { node, number } from 'prop-types';
 
-export const OverlayPositioningContext = React.createContext({});
+export const OverlayPositioningContext = React.createContext({
+  top: 0,
+  left: 0,
+  height: 0,
+  width: 0
+});
 export default class OverlayPositioningProvider extends React.Component {
   static propTypes = {
     contentHeight: number.isRequired,
@@ -15,31 +20,27 @@ export default class OverlayPositioningProvider extends React.Component {
   };
 
   measuredChildRef = null; // eslint-disable-line
+  resizeObserver = null; // eslint-disable-line
   pollingInterval = null;
 
   componentWillUnmount() {
     clearInterval(this.pollingInterval);
+    this.resizeObserver && this.resizeObserver.disconnect();
   }
 
-  calculateOverlayPosition = () => {
-    // figure out what styles need to be applied to the overlay component so that
-    // it aligns with the content (considering letter/pillarboxing)
-    const { height, width } = this.measuredChildRef.getBoundingClientRect();
-
-    return {
-      top: (height - this.props.contentHeight) / 2,
-      left: (width - this.props.contentWidth) / 2,
-      height: this.props.contentHeight,
-      width: this.props.contentWidth
-    };
-  };
-
-  measureChild = () => {
+  measureChild = (element = this.measuredChildRef) => {
     // calculate the actual size of the element we're going to lay on top of
-    const { height, width } = this.measuredChildRef.getBoundingClientRect();
+    const { height, width } = element.getBoundingClientRect();
 
     this.setState({
-      overlayPosition: this.calculateOverlayPosition({ height, width })
+      // figure out what styles need to be applied to the overlay component so that
+      // it aligns with the content (considering letter/pillarboxing)
+      overlayPosition: {
+        top: (height - this.props.contentHeight) / 2,
+        left: (width - this.props.contentWidth) / 2,
+        height: this.props.contentHeight,
+        width: this.props.contentWidth
+      }
     });
   };
 
@@ -49,9 +50,20 @@ export default class OverlayPositioningProvider extends React.Component {
     }
 
     this.measuredChildRef = r;
-    clearInterval(this.pollingInterval);
-    // poll for changes in the measured element's size
-    this.pollingInterval = setInterval(this.measureChild, 500);
+
+    if (!window.ResizeObserver) {
+      clearInterval(this.pollingInterval);
+      // poll for changes in the measured element's size
+      this.pollingInterval = setInterval(this.measureChild, 250);
+      return;
+    }
+
+    // use ResizeObserver if available (Chrome only), to avoid polling
+    this.resizeObserver = new ResizeObserver(([entry]) => {
+      this.measureChild(entry.target);
+    });
+
+    this.resizeObserver.observe(r);
   };
 
   render() {
