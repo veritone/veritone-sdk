@@ -7,7 +7,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 
-import { get, isArray, cloneDeep, isUndefined, startCase, toLower, includes } from 'lodash';
+import {
+  get,
+  isArray,
+  cloneDeep,
+  isUndefined,
+  startCase,
+  toLower,
+  includes
+} from 'lodash';
 import { objectOf, any, func, arrayOf, string } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -47,10 +55,9 @@ class DynamicAdapter extends React.Component {
           if (!isUndefined(propValue)) {
             newState[field.name] = cloneDeep(propValue);
           } else if (field.defaultValue) {
-            newState[field.name] =
-              (!includes(field.defaultValue, ',')
-                ? field.defaultValue
-                : field.defaultValue.split(','));
+            newState[field.name] = !includes(field.defaultValue, ',')
+              ? field.defaultValue
+              : field.defaultValue.split(',');
           } else if (field.defaultValues) {
             newState[field.name] = cloneDeep(field.defaultValues) || [];
           }
@@ -144,12 +151,12 @@ class DynamicAdapter extends React.Component {
   }
 }
 
-function DynamicFieldForm({ fields, configuration, handleFieldChange }) {
-  return (fields || [])
+function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
+  return (fields)
     .map(field => {
-      let inputId = field.name + 'DynamicField';
-      let camelCasedFieldName = startCase(toLower(field.name));
-      let fieldObj = {
+      const inputId = field.name + 'DynamicField';
+      const camelCasedFieldName = startCase(toLower(field.name));
+      const fieldObj = {
         key: inputId
       };
       if (field.type === 'Picklist' || field.type === 'MultiPicklist') {
@@ -270,13 +277,11 @@ export default {
       configuration.sourceId = sourceId;
       let fields = get(adapterStep, 'fields');
       if (fields) {
-        fields.forEach(
-          field => {
-            if (ingestionTask.payload && field.name) {
-              configuration[field.name] = ingestionTask.payload[field.name];
-            }
+        fields.forEach(field => {
+          if (ingestionTask.payload && field.name) {
+            configuration[field.name] = ingestionTask.payload[field.name];
           }
-        );
+        });
       }
     }
 

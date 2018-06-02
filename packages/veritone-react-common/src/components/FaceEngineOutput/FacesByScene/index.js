@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
-import { compact } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import RecognizedFaceMatch from '../RecognizedFaceMatch';
@@ -64,38 +63,37 @@ class FacesByScene extends Component {
   render() {
     const { currentMediaPlayerTime, onSelectEntity } = this.props;
 
-    const recognizedEntityObjects = this.props.recognizedEntityObjects.reduce((acc, entityObject) => {
-      const entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
-        return (
-          currentMediaPlayerTime >= time.startTimeMs &&
-          currentMediaPlayerTime <= time.stopTimeMs
-        );
-      });
+    const recognizedEntityObjects = this.props.recognizedEntityObjects.reduce(
+      (acc, entityObject) => {
+        const entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
+          return (
+            currentMediaPlayerTime >= time.startTimeMs &&
+            currentMediaPlayerTime <= time.stopTimeMs
+          );
+        });
 
-      if (entityCurrentlyInFrame) {
-        acc.push(
-          <RecognizedFaceMatch
-            key={`scene-view-recognized-entity-${entityObject.entityId}`}
-            entity={entityObject}
-            confidence={entityCurrentlyInFrame.confidence}
-            onViewDetailsClick={onSelectEntity}
-          />
-        );
-
-      }
-      return acc;
-    }, []);
+        if (entityCurrentlyInFrame) {
+          acc.push(
+            <RecognizedFaceMatch
+              key={`scene-view-recognized-entity-${entityObject.entityId}`}
+              entity={entityObject}
+              confidence={entityCurrentlyInFrame.confidence}
+              onViewDetailsClick={onSelectEntity}
+            />
+          );
+        }
+        return acc;
+      },
+      []
+    );
 
     return (
       <div className={styles.facesByScene}>
-        {
-          !recognizedEntityObjects.length
-          ? <NoFacesFound />
-          :
-            <div>
-              {recognizedEntityObjects}
-            </div>
-        }
+        {!recognizedEntityObjects.length ? (
+          <NoFacesFound />
+        ) : (
+          <div>{recognizedEntityObjects}</div>
+        )}
       </div>
     );
   }

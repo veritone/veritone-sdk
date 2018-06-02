@@ -65,6 +65,7 @@ import {
 } from '.';
 
 import { ADD_DETECTED_FACE } from './faceEngineOutput';
+import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 
 const tdoInfoQueryClause = `id
     details
@@ -281,19 +282,23 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
       token
     });
   } catch (error) {
-    return yield* updateTdoFailure(widgetId, { error });
+    return yield put(updateTdoFailure(widgetId, { error }));
   }
 
   if (!isEmpty(response.errors)) {
-    return yield* updateTdoFailure(widgetId, {
-      error: 'Error updating media.'
-    });
+    return yield put(
+      updateTdoFailure(widgetId, {
+        error: 'Error updating media.'
+      })
+    );
   }
 
   if (!get(response, 'data.updateTDO')) {
-    return yield* updateTdoFailure(widgetId, {
-      error: 'TemporalDataObject not found after update'
-    });
+    return yield put(
+      updateTdoFailure(widgetId, {
+        error: 'TemporalDataObject not found after update'
+      })
+    );
   }
 
   yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
@@ -752,23 +757,23 @@ function* createTranscriptBulkEditAssetSaga(
     'data.temporalDataObject.primaryAsset.id'
   );
 
-  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!, $originalAssetId: String, $bulkTextAssetId: String){
+  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
     createJob(input: {
       targetId: $tdoId,
       tasks: [{
-        engineId: 'bulk-edit-transcript',
+        engineId: "bulk-edit-transcript",
         payload: {
-          originalTranscriptAssetId: $originalAssetId,
-          temporaryBulkEditAssetId: $bulkTextAssetId,
+          originalTranscriptAssetId: "${originalTranscriptAssetId}",
+          temporaryBulkEditAssetId: "${bulkTextAssetId}",
           saveTtmlToVtnStandard: true
         }
       },
       {
-        engineId: 'insert-into-index'
+        engineId: "insert-into-index"
       },
-			{
-			  engineId: 'mention-generate'
-			}]
+      {
+        engineId: "mention-generate"
+      }]
     }) {
       id
       tasks {
@@ -1274,6 +1279,12 @@ function* watchSelectEngineCategory() {
   });
 }
 
+function* watchTranscriptStatus() {
+  yield takeEvery(UPDATE_EDIT_STATUS, function*(action) {
+    yield put(toggleSaveMode(action.hasChanged));
+  });
+}
+
 function* watchFaceEngineEntityUpdate() {
   yield takeEvery(action => action.type === ADD_DETECTED_FACE, function*(
     action
@@ -1286,9 +1297,10 @@ function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
     let assetData;
     if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
-      // TODO: uncomment below when getTranscriptEditAssetData is redux connected
-      assetData = action.payload.data;
-      // assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
+      assetData = yield select(
+        getTranscriptEditAssetData,
+        action.payload.selectedEngineId
+      );
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
         const type = 'v-bulk-edit-transcript';
@@ -1304,6 +1316,7 @@ function* watchSaveAssetData() {
           assetData.text
         );
       }
+      delete assetData.isBulkEdit;
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(
         getFaceEngineAssetData,
@@ -1327,8 +1340,9 @@ function* watchSaveAssetData() {
     // process vtn-standard asset
     const contentType = 'application/json';
     const type = 'vtn-standard';
-    // const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${assetData.sourceEngineId}" }`;
-    const sourceData = `{ engineId: "${assetData.sourceEngineId}" }`;
+    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${
+      assetData.sourceEngineId
+    }" }`;
     const { widgetId } = action.meta;
     yield call(
       createFileAssetSaga,
@@ -1425,6 +1439,7 @@ export default function* root() {
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
+    fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),

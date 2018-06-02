@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { bool } from 'prop-types';
 
 import { storiesOf } from '@storybook/react';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 import LogoDetectionEngineOutput from './';
@@ -62,6 +64,15 @@ export class LogoDetectionExample extends Component {
           mediaLengthMs={this.props.lazyLoading && 1800000}
           neglectableTimeMs={this.props.lazyLoading && 1000}
           estimatedDisplayTimeMs={this.props.lazyLoading && 240000}
+          outputNullState={
+            boolean('showNullState') && (
+              <EngineOutputNullState
+                engineStatus="failed"
+                engineName="fakeEngine"
+                onRunProcess={action('Run Process')}
+              />
+            )
+          }
         />
       </div>
     );
@@ -103,8 +114,11 @@ function genMockData(numEntry = 88, startTimeMs = 0, stopTimeMs = 2000000) {
   const maxOptionIndex = labelOptions.length - 1;
   for (let entryIndex = 0; entryIndex < numEntry; entryIndex++) {
     const labelIndex = Math.round(Math.random() * maxOptionIndex);
-    const entryStartTime = startTimeMs + Math.round(Math.random() * timeInterval);
-    const displayTime = Math.round(Math.random() * (stopTimeMs - entryStartTime));
+    const entryStartTime =
+      startTimeMs + Math.round(Math.random() * timeInterval);
+    const displayTime = Math.round(
+      Math.random() * (stopTimeMs - entryStartTime)
+    );
     const entry = {
       startTimeMs: entryStartTime,
       stopTimeMs: entryStartTime + displayTime,

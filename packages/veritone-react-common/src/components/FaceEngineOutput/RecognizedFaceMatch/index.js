@@ -13,13 +13,14 @@ class RecognizedFaceMatch extends Component {
 
   render() {
     const { entity, confidence, onViewDetailsClick } = this.props;
-    const confidenceColor = Math.round(confidence * 100) >= 90
-      ? styles.greenBackground
-      : styles.orangeBackground;
+    const confidenceColor =
+      Math.round(confidence * 100) >= 90
+        ? styles.greenBackground
+        : styles.orangeBackground;
 
-    const handleSelectEntity = (faceEntityId) => (e) => {
+    const handleSelectEntity = faceEntityId => e => {
       onViewDetailsClick(faceEntityId);
-    }
+    };
 
     return (
       <div className={styles.recognizedMatchBox}>

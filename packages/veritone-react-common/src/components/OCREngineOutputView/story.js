@@ -1,7 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 
@@ -38,6 +40,15 @@ storiesOf('OCREngineOutputView', module).add('Base', () => {
       onEngineChange={action('onEngineChange')}
       onExpandClick={action('onExpandClick')}
       onOcrClicked={action('onOcrClicked')}
+      outputNullState={
+        boolean('showNullState') && (
+          <EngineOutputNullState
+            engineStatus="failed"
+            engineName="fakeEngine"
+            onRunProcess={action('Run Process')}
+          />
+        )
+      }
     />
   );
 });

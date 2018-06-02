@@ -9,7 +9,7 @@ const gmapsAPIKey = 'AIzaSyDQyglufOtb_uzebFNkVWcB1D8-tBKZarQ';
 
 storiesOf('GeoPicker', module).add('Select a radius based distance', () => {
   return (
-    <div style={{ width: '900px', height: '500px'}}>
+    <div style={{ width: '900px', height: '500px' }}>
       <GeoPicker
         geoType="radius"
         onSelectGeolocation={logLocation}
@@ -21,7 +21,7 @@ storiesOf('GeoPicker', module).add('Select a radius based distance', () => {
 
 storiesOf('GeoPicker', module).add('Select a single point ', () => {
   return (
-    <div style={{ width: '900px', height: '500px'}}>
+    <div style={{ width: '900px', height: '500px' }}>
       <GeoPicker
         geoType="point"
         onSelectGeolocation={logLocation}
@@ -33,7 +33,7 @@ storiesOf('GeoPicker', module).add('Select a single point ', () => {
 
 storiesOf('GeoPicker', module).add('Deserialize a single point ', () => {
   return (
-    <div style={{ width: '900px', height: '500px'}}>
+    <div style={{ width: '900px', height: '500px' }}>
       <GeoPicker
         geoType="point"
         onSelectGeolocation={logLocation}
@@ -49,7 +49,7 @@ storiesOf('GeoPicker', module).add('Deserialize a single point ', () => {
 
 storiesOf('GeoPicker', module).add('Deserialize a radius ', () => {
   return (
-    <div style={{ width: '900px', height: '500px'}}>
+    <div style={{ width: '900px', height: '500px' }}>
       <GeoPicker
         geoType="radius"
         onSelectGeolocation={logLocation}
@@ -67,7 +67,7 @@ storiesOf('GeoPicker', module).add('Deserialize a radius ', () => {
 
 storiesOf('GeoPicker', module).add('Display a read-only radius', () => {
   return (
-    <div style={{ width: '900px', height: '500px'}}>
+    <div style={{ width: '900px', height: '500px' }}>
       <GeoPicker
         geoType="radius"
         location={{
@@ -83,15 +83,14 @@ storiesOf('GeoPicker', module).add('Display a read-only radius', () => {
   );
 });
 
-
 storiesOf('GeoPicker', module).add('Display a read-only point', () => {
   return (
-    <div style={{ width: '900px', height: '500px'}}>
+    <div style={{ width: '900px', height: '500px' }}>
       <GeoPicker
         geoType="point"
         location={{
           latitude: 33.6118,
-          longitude: -117.9144,
+          longitude: -117.9144
         }}
         readOnly
         gmapsAPIKey={text('gmapsAPIKey', gmapsAPIKey)}
@@ -99,4 +98,3 @@ storiesOf('GeoPicker', module).add('Display a read-only point', () => {
     </div>
   );
 });
-

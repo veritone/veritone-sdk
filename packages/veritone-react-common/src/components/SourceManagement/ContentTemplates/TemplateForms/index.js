@@ -2,7 +2,7 @@ import React from 'react';
 import { any, objectOf, func } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray } from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
-import ClearIcon from '@material-ui/icons/Clear';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
 import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
@@ -214,9 +214,11 @@ function BuildFormElements({
           {isArray(value) && value.length > 1 ? (
             <div className={styles.arrayRemove}>
               <IconButton
+                disableRipple
+                className={styles.noHover}
                 onClick={handleArrayElementRemove(schemaId, schemaProp, index)}
               >
-                <ClearIcon />
+                <Icon className={'icon-trash'} />
               </IconButton>
             </div>
           ) : null}
@@ -228,7 +230,7 @@ function BuildFormElements({
         <span>{title}</span>
         {element}
         <div className={styles.arrayAdd}>
-          <IconButton onClick={handleArrayElementAdd(schemaId, schemaProp)}>
+          <IconButton className={styles.noHover} disableRipple onClick={handleArrayElementAdd(schemaId, schemaProp)}>
             <AddIcon />
           </IconButton>
         </div>

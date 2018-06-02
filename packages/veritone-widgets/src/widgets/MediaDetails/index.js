@@ -18,7 +18,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { find, get, some } from 'lodash';
 import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
@@ -28,15 +28,16 @@ import {
   FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
-  TranscriptEngineOutput,
   FingerprintEngineOutput,
   LogoDetectionEngineOutput,
   ContentTemplateForm,
   GeoEngineOutput,
   TranslationEngineOutput,
-  StructuredDataEngineOutput
+  StructuredDataEngineOutput,
+  EngineOutputNullState
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
+import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import { withPropsOnChange } from 'recompose';
@@ -433,6 +434,34 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  buildEngineNullStateComponent = () => {
+    const selectedEngineId = this.props.selectedEngineId;
+    const engines = get(this.props.selectedEngineCategory, 'engines');
+    const selectedEngine = find(engines, {
+      id: selectedEngineId
+    });
+    const engineStatus = get(selectedEngine, 'status');
+    const engineName = get(selectedEngine, 'name');
+    const selectedEngineResults = this.props.engineResultsByEngineId[
+      selectedEngineId
+    ];
+    const selectedEngineHasResults = some(
+      selectedEngineResults,
+      engineResult => {
+        return engineResult && engineResult.series;
+      }
+    );
+    if (!selectedEngineHasResults) {
+      return (
+        <EngineOutputNullState
+          engineStatus={engineStatus}
+          engineName={engineName}
+          onRunProcess={this.handleRunProcess}
+        />
+      );
+    }
+  };
+
   render() {
     let {
       engineCategories,
@@ -455,9 +484,10 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
-    let isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
-
-    let mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
+    const isImage = /^image\/.*/.test(
+      get(tdo, 'details.veritoneFile.mimetype')
+    );
+    const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -749,7 +779,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutput
+                      <TranscriptEngineOutputWidget
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
@@ -759,6 +789,7 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -774,6 +805,7 @@ class MediaDetailsWidget extends React.Component {
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
                         }
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -787,6 +819,7 @@ class MediaDetailsWidget extends React.Component {
                         onObjectOccurrenceClick={
                           this.handleUpdateMediaPlayerTime
                         }
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -799,6 +832,7 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
                         onEntrySelected={this.handleUpdateMediaPlayerTime}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -811,6 +845,7 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         onOcrClicked={this.handleUpdateMediaPlayerTime}
                         currentMediaPlayerTime={mediaPlayerTimeInMs}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -823,6 +858,7 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -838,6 +874,7 @@ class MediaDetailsWidget extends React.Component {
                         defaultLanguage={'en-US'}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -853,6 +890,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         onClick={this.handleUpdateMediaPlayerTime}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -869,6 +907,7 @@ class MediaDetailsWidget extends React.Component {
                         apiKey={googleMapsApiKey}
                         onClick={this.handleUpdateMediaPlayerTime}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -886,6 +925,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         onExpandClick={this.toggleExpandedMode}
                         isExpandedMode={isExpandedMode}
+                        outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
                   {selectedEngineCategory &&

@@ -1,7 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 import SentimentEngineOutput from './';
@@ -29,6 +31,15 @@ storiesOf('SentimentEngineOutput', module).add('Base', () => {
       engines={engines}
       onEngineChange={action('entry clicked')}
       onExpandClick={action('expand button clicked')}
+      outputNullState={
+        boolean('showNullState') && (
+          <EngineOutputNullState
+            engineStatus="failed"
+            engineName="fakeEngine"
+            onRunProcess={action('Run Process')}
+          />
+        )
+      }
     />
   );
 });

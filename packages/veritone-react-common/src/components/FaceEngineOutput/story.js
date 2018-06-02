@@ -11,9 +11,15 @@ import {
   object
 } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { withKnobs, boolean, number as knobNumber } from '@storybook/addon-knobs';
+import {
+  withKnobs,
+  boolean,
+  number as knobNumber
+} from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { isEqual, isEmpty, find } from 'lodash';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 
@@ -26,26 +32,6 @@ class FaceEngineOutputStory extends Component {
     onAddNewEntity: func,
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
-    faceEngineOutput: arrayOf(
-      shape({
-        series: arrayOf(
-          shape({
-            startTimeMs: number,
-            endTimeMs: number,
-            object: shape({
-              label: string,
-              uri: string
-            })
-          })
-        )
-      })
-    ).isRequired,
-    libraries: arrayOf(
-      shape({
-        id: string,
-        name: string
-      })
-    ).isRequired,
     entities: arrayOf(
       shape({
         id: string,
@@ -55,52 +41,69 @@ class FaceEngineOutputStory extends Component {
         jsondata: objectOf(oneOfType([string, number]))
       })
     ),
-    faceObjects: arrayOf(object)
+    faceObjects: arrayOf(object), //eslint-disable-line react/no-unused-prop-types
+    showNullState: boolean.isRequired
   };
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const unrecognizedFaces = [];
+    const recognizedFaces = {};
+    // flatten data series for currently selected engine
+    const faceSeries = nextProps.faceObjects.reduce(
+      (accumulator, faceSeries) => {
+        if (!isEmpty(faceSeries.series)) {
+          return [...accumulator, ...faceSeries.series];
+        }
+        return accumulator;
+      },
+      []
+    );
+
+    faceSeries.forEach(faceObj => {
+      // for each face object
+      // locate entity that the face object belongs to
+      const entity = find(entities, { id: faceObj.object.entityId });
+
+      if (
+        !faceObj.object.entityId ||
+        !entities.length ||
+        !entity ||
+        !entity.name
+      ) {
+        unrecognizedFaces.push(faceObj);
+      } else {
+        recognizedFaces[faceObj.object.entityId] = faceObj;
+      }
+    });
+
+    return {
+      unrecognizedFaces,
+      recognizedFaces
+    };
+  }
+
   state = {
-    faceEngineOutput: this.props.faceEngineOutput,
-    modifiedFaces: [],
+    facesDetectedByUser: {},
     entitySearchResults: [],
     entities: this.props.entities,
-    libraries: this.props.libraries,
+    engineResultsByEngineId: {},
+    fetchedEngineResults: {},
     engines: [
       {
         id: 'f44aa80e-4650-c55c-58e7-49c965019790',
-        name: 'Temporal'
+        name: 'Temporal',
+        status: 'completed'
       }
     ],
     selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'
   };
 
   handleRemoveFaceDetection = face => {
-    this.setState(prevState => {
-      return {
-        faceEngineOutput: prevState.faceEngineOutput.map(output => {
-          if (
-            face.startTimeMs >= output.series[0].startTimeMs &&
-            face.stopTimeMs <=
-              output.series[output.series.length - 1].stopTimeMs
-          ) {
-            console.log('found in this output');
-            return {
-              ...output,
-              series: output.series.filter(faceObj => {
-                console.log(faceObj, face, !isEqual(face, faceObj));
-                return !isEqual(face, faceObj);
-              })
-            };
-          }
-          return {
-            ...output
-          };
-        }),
-        modifiedFaces: [
-          ...prevState.modifiedFaces,
-          { ...face, modification: 'delete' }
-        ]
-      };
-    });
+    this.setState(prevState => ({
+      unrecognizedFaces: prevState.unrecognizedFaces.filter(faceObj => {
+        return !isEqual(face, faceObj);
+      })
+    }));
     this.props.onRemoveFaceDetection(face);
   };
 
@@ -163,39 +166,14 @@ class FaceEngineOutputStory extends Component {
       mediaPlayerPosition,
       onAddNewEntity,
       onFaceOccurrenceClicked,
-      faceObjects,
-      entities
+      showNullState
     } = this.props;
-
-    const faceEntities = {
-      unrecognizedFaces: [],
-      recognizedFaces: {}
-    };
-
-    // flatten data series for currently selected engine
-    const faceSeries = faceObjects.reduce((accumulator, faceSeries) => {
-      if (!isEmpty(faceSeries.series)) {
-        return [...accumulator, ...faceSeries.series];
-      }
-      return accumulator;
-    }, []);
-
-    faceSeries.forEach(faceObj => { // for each face object
-      // locate entity that the face object belongs to
-      const entity = find(entities, { id: faceObj.object.entityId });
-
-      if (!faceObj.object.entityId || !entities.length || !entity || !entity.name) {
-        faceEntities.unrecognizedFaces.push(faceObj);
-      } else {
-        faceEntities.recognizedFaces[faceObj.object.entityId] = faceObj;
-      }
-    });
 
     return (
       <FaceEngineOutput
-        {...faceEntities}
+        unrecognizedFaces={this.state.unrecognizedFaces}
+        recognizedFaces={this.state.recognizedFaces}
         className={styles.outputViewRoot}
-        libraries={this.props.libraries}
         entities={this.props.entities}
         currentMediaPlayerTime={mediaPlayerPosition}
         engines={this.state.engines}
@@ -209,32 +187,42 @@ class FaceEngineOutputStory extends Component {
         onRemoveFaceDetection={this.handleRemoveFaceDetection}
         onEditFaceDetection={this.handleUpdateFace}
         onSearchForEntities={this.searchForEntities}
+        outputNullState={
+          showNullState && (
+            <EngineOutputNullState
+              engineStatus="failed"
+              engineName="fakeEngine"
+              onRunProcess={action('Run process')}
+            />
+          )
+        }
       />
     );
   }
 }
 
 storiesOf('FaceEngineOutput', module)
-.addDecorator(withKnobs)
-.add('Base', () => {
-  return (
-    <FaceEngineOutputStory
-      faceObjects={faceObjects}
-      libraries={libraries}
-      entities={entities}
-      editMode={boolean('editMode', false)}
-      mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
-        range: true,
-        min: 0,
-        max: 6000,
-        step: 1000
-      })}
-      onAddNewEntity={action('Pop the add new entity modal')}
-      onFaceOccurrenceClicked={action('Set the media player position')}
-      onRemoveFaceDetection={action('Remove face detection')}
-    />
-  );
-});
+  .addDecorator(withKnobs)
+  .add('Base', () => {
+    return (
+      <FaceEngineOutputStory
+        faceObjects={faceObjects}
+        libraries={libraries}
+        entities={entities}
+        editMode={boolean('editMode', false)}
+        mediaPlayerPosition={knobNumber('mediaPlayerPosition', 0, {
+          range: true,
+          min: 0,
+          max: 6000,
+          step: 1000
+        })}
+        showNullState={boolean('showNullState', false)}
+        onAddNewEntity={action('Pop the add new entity modal')}
+        onFaceOccurrenceClicked={action('Set the media player position')}
+        onRemoveFaceDetection={action('Remove face detection')}
+      />
+    );
+  });
 
 const faceObjects = [
   {
@@ -285,6 +273,23 @@ const faceObjects = [
             }
           ],
           confidence: 0.81
+        }
+      },
+      {
+        startTimeMs: 1000,
+        stopTimeMs: 2000,
+        object: {
+          type: 'face',
+          uri: 'https://images.radio-online.com/images/logos/Veritonexl.png',
+          entityId: 'c36e8b95-6d46-4a5a-a272-8507319a5a54',
+          libraryId: 'f1297e1c-9c20-48fa-a8fd-46f1e6d62c43',
+          boundingPoly: [
+            {
+              x: 0.3,
+              y: 0.4
+            }
+          ],
+          confidence: 0.9
         }
       },
       {
@@ -400,7 +405,7 @@ const entities = [
       name: 'Beatles'
     },
     profileImageUrl:
-      'https://prod-veritone-library.s3.amazonaws.com/f1297e1c-9c20-48fa-a8fd-46f1e6d62c43/8e35f28c-34aa-4ee3-8690-f62bf1a704fa/profile-1514492325832.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJUCF3BCNMSE5YZEQ%2F20180326%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180326T234640Z&X-Amz-Expires=900&X-Amz-Signature=7222a63cb831c34be639407ce6206df011853a7f01d7b020b101661152efcbb4&X-Amz-SignedHeaders=host',
+      'http://www.slate.com/content/dam/slate/articles/arts/musicbox/2011/10/111004_MUSIC_harrisonFW.jpg.CROP.article250-medium.jpg',
     jsondata: {
       description: ''
     }

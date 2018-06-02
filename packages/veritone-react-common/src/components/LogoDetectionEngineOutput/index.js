@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, number, string, func, shape } from 'prop-types';
+import { arrayOf, number, string, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 
@@ -53,7 +53,8 @@ export default class LogoDetectionEngineOutput extends Component {
     neglectableTimeMs: number,
     estimatedDisplayTimeMs: number,
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -81,7 +82,7 @@ export default class LogoDetectionEngineOutput extends Component {
 
     let contents = [];
 
-    data.map((chunk) => {
+    data.map(chunk => {
       let groupStartTime = chunk.startTimeMs;
       let groupStopTime = chunk.stopTimeMs;
 
@@ -157,7 +158,8 @@ export default class LogoDetectionEngineOutput extends Component {
       onScroll,
       mediaLengthMs,
       neglectableTimeMs,
-      estimatedDisplayTimeMs
+      estimatedDisplayTimeMs,
+      outputNullState
     } = this.props;
 
     const contents = this.renderContents();
@@ -171,14 +173,16 @@ export default class LogoDetectionEngineOutput extends Component {
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
         />
-        <DynamicContentScroll
-          contents={contents}
-          className={styles.scrolableContent}
-          onScroll={onScroll}
-          totalSize={mediaLengthMs}
-          neglectableSize={neglectableTimeMs}
-          estimatedDisplaySize={estimatedDisplayTimeMs}
-        />
+        {outputNullState || (
+          <DynamicContentScroll
+            contents={contents}
+            className={styles.scrolableContent}
+            onScroll={onScroll}
+            totalSize={mediaLengthMs}
+            neglectableSize={neglectableTimeMs}
+            estimatedDisplaySize={estimatedDisplayTimeMs}
+          />
+        )}
       </div>
     );
   }
