@@ -701,9 +701,8 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
               {selectedEngineCategory &&
-                selectedEngineCategory.categoryType !== 'transcript' &&
-                selectedEngineCategory.categoryType !== 'correlation' &&
-                (!isExpandedMode || isEditModeEnabled) && (
+                !(selectedEngineCategory.categoryType === 'transcript' && isEditModeEnabled) &&
+                !(selectedEngineCategory.categoryType === 'correlation' && isExpandedMode) && (
                 <div className={styles.mediaView}>
                   {isImage ? (
                     <Image
