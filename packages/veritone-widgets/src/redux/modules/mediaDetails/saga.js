@@ -9,6 +9,7 @@ import {
 } from 'redux-saga/effects';
 import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
+import { getTranscriptEditAssetData } from './transcriptWidget';
 import { getFaceEngineAssetData, removeUserDetectedFaces } from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
@@ -64,6 +65,7 @@ import {
   isEditModeEnabled
 } from '.';
 
+import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 import { UPDATE_ENGINE_RESULT_ENTITY } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
@@ -621,7 +623,7 @@ function* createFileAssetSaga(widgetId, type, contentType, sourceData, fileData)
       }
     }).then(r => {
       return r.json();
-    })
+    });
   };
 
   let response;
@@ -1196,6 +1198,12 @@ function* watchSelectEngineCategory() {
   });
 }
 
+function* watchTranscriptStatus () {
+  yield takeEvery(UPDATE_EDIT_STATUS, function* (action) {
+    yield put(toggleSaveMode(action.hasChanged))
+  })
+}
+
 function* watchFaceEngineEntityUpdate() {
   yield takeEvery(
     (action) => action.type === UPDATE_ENGINE_RESULT_ENTITY,
@@ -1209,9 +1217,7 @@ function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
     let assetData;
     if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
-      // TODO: uncomment below when getTranscriptEditAssetData is redux connected
-      assetData = action.payload.data;
-      // assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
+      assetData = yield select(getTranscriptEditAssetData, action.payload.selectedEngineId);
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
         const type = 'v-bulk-edit-transcript';
@@ -1220,6 +1226,7 @@ function* watchSaveAssetData() {
         // do save bulk transcript asset and return
         return yield call(createTranscriptBulkEditAssetSaga, widgetId, type, contentType, sourceData, assetData.text);
       }
+      delete assetData.isBulkEdit;
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(getFaceEngineAssetData, action.payload.selectedEngineId);
     }
@@ -1232,8 +1239,7 @@ function* watchSaveAssetData() {
     // process vtn-standard asset
     const contentType = 'application/json';
     const type = 'vtn-standard';
-    // const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${assetData.sourceEngineId}" }`;
-    const sourceData = `{ engineId: "${assetData.sourceEngineId}" }`;
+    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${assetData.sourceEngineId}" }`;
     const { widgetId } = action.meta;
     yield call(createFileAssetSaga, widgetId, type, contentType, sourceData, assetData);
   });
@@ -1322,6 +1328,7 @@ export default function* root() {
     fork(watchSelectEngineCategory),
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
+    fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
