@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, number, string, func } from 'prop-types';
+import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import classNames from 'classnames';
 
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -34,7 +34,8 @@ class ObjectDetectionEngineOutput extends Component {
     onEngineChange: func,
     className: string,
     currentMediaPlayerTime: number,
-    onExpandClick: func
+    onExpandClick: func,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -54,7 +55,8 @@ class ObjectDetectionEngineOutput extends Component {
       engines,
       onEngineChange,
       currentMediaPlayerTime,
-      onExpandClick
+      onExpandClick,
+      outputNullState
     } = this.props;
 
     return (
@@ -66,20 +68,22 @@ class ObjectDetectionEngineOutput extends Component {
           selectedEngineId={selectedEngineId}
           engines={engines}
         />
-        <div className={styles.objectDetectionContent}>
-          {data.map(objectGroup => {
-            return (
-              <ObjectGroup
-                key={`object-group-${objectGroup.sourceEngineId}-${
-                  objectGroup.taskId
-                }-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
-                objectGroup={objectGroup}
-                currentMediaPlayerTime={currentMediaPlayerTime}
-                onObjectClick={this.handleObjectClick}
-              />
-            );
-          })}
-        </div>
+        {outputNullState || (
+          <div className={styles.objectDetectionContent}>
+            {data.map(objectGroup => {
+              return (
+                <ObjectGroup
+                  key={`object-group-${objectGroup.sourceEngineId}-${
+                    objectGroup.taskId
+                  }-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
+                  objectGroup={objectGroup}
+                  currentMediaPlayerTime={currentMediaPlayerTime}
+                  onObjectClick={this.handleObjectClick}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }

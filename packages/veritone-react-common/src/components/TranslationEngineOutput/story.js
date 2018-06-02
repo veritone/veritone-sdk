@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { bool } from 'prop-types';
 import { storiesOf } from '@storybook/react';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 import TranslationEngineOutput from './';
@@ -60,6 +62,15 @@ export class TranslationExample extends Component {
           onLanguageChanged={action('language changed')}
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
           mediaPlayerTimeIntervalMs={1000}
+          outputNullState={
+            boolean('showNullState') && (
+              <EngineOutputNullState
+                engineStatus="failed"
+                engineName="fakeEngine"
+                onRunProcess={action('Run Process')}
+              />
+            )
+          }
         />
       );
     } else {
@@ -81,6 +92,15 @@ export class TranslationExample extends Component {
           estimatedDisplayTimeMs={50000}
           mediaPlayerTimeMs={1000 * number('media player time', -1)}
           mediaPlayerTimeIntervalMs={1000}
+          outputNullState={
+            boolean('showNullState') && (
+              <EngineOutputNullState
+                engineStatus="failed"
+                engineName="fakeEngine"
+                onRunProcess={action('Run Process')}
+              />
+            )
+          }
         />
       );
     }

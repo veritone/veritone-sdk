@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, func, shape } from 'prop-types';
+import { number, string, arrayOf, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
 import { keyBy, sortBy, toArray } from 'lodash';
 
@@ -54,6 +54,7 @@ export default class FingerprintEngineOutput extends Component {
         sourceEngineName: string
       })
     ),
+    outputNullState: node,
     selectedEngineId: string,
     onEngineChange: func,
     onExpandClick: func,
@@ -150,21 +151,24 @@ export default class FingerprintEngineOutput extends Component {
       entityClassName,
       libraryClassName,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      outputNullState
     } = this.props;
 
     const libraryContents = this.formatPropsData();
 
     return (
-      <FingerprintContent
-        libraries={libraryContents}
-        className={contentClassName}
-        entityClassName={entityClassName}
-        libraryClassName={libraryClassName}
-        mediaPlayerTimeMs={mediaPlayerTimeMs}
-        mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-        onClick={onClick}
-      />
+      outputNullState || (
+        <FingerprintContent
+          libraries={libraryContents}
+          className={contentClassName}
+          entityClassName={entityClassName}
+          libraryClassName={libraryClassName}
+          mediaPlayerTimeMs={mediaPlayerTimeMs}
+          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+          onClick={onClick}
+        />
+      )
     );
   }
 

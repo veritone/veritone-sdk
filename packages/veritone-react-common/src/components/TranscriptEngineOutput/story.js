@@ -5,6 +5,8 @@ import { storiesOf } from '@storybook/react';
 import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
 
+import EngineOutputNullState from '../EngineOutputNullState';
+
 import styles from './story.styles.scss';
 import TranscriptEngineOutput from './';
 
@@ -108,6 +110,15 @@ export class TranscriptExample extends Component {
         selectedEngineId={this.selectedEngineId}
         onEngineChange={action('engine changed')}
         onExpandClick={action('expand view clicked')}
+        outputNullState={
+          boolean('showNullState') && (
+            <EngineOutputNullState
+              engineStatus="failed"
+              engineName="fakeEngine"
+              onRunProcess={action('Run Process')}
+            />
+          )
+        }
       />
     );
   }

@@ -11,7 +11,8 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType
+  oneOfType,
+  node
 } from 'prop-types';
 import cx from 'classnames';
 
@@ -54,6 +55,7 @@ class FaceEngineOutput extends Component {
       })
     ),
     editMode: bool,
+    outputNullState: node,
     currentMediaPlayerTime: number,
     onAddNewEntity: func,
     className: string,
@@ -120,7 +122,8 @@ class FaceEngineOutput extends Component {
       engines,
       selectedEngineId,
       onEngineChange,
-      onExpandClick
+      onExpandClick,
+      outputNullState
     } = this.props;
     const { viewMode } = this.state;
 
@@ -172,33 +175,36 @@ class FaceEngineOutput extends Component {
             value="faceDetection"
           />
         </Tabs>
-        {this.state.activeTab === 'faceRecognition' && (
-          <div className={styles.faceTabBody}>
-            <FaceEntities
-              viewMode={viewMode}
-              faces={this.props.recognizedFaces}
-              entities={this.props.entities}
-              currentMediaPlayerTime={currentMediaPlayerTime}
-              onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-            />
-          </div>
-        )}
-        {this.state.activeTab === 'faceDetection' && (
-          <div className={styles.faceTabBody}>
-            <FaceGrid
-              faces={this.props.unrecognizedFaces}
-              editMode={editMode}
-              viewMode={viewMode}
-              onAddNewEntity={onAddNewEntity}
-              entitySearchResults={entitySearchResults}
-              onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-              onRemoveFaceDetection={onRemoveFaceDetection}
-              onEditFaceDetection={onEditFaceDetection}
-              onSearchForEntities={onSearchForEntities}
-              isSearchingEntities={this.props.isSearchingEntities}
-            />
-          </div>
-        )}
+        {outputNullState}
+        {!outputNullState &&
+          this.state.activeTab === 'faceRecognition' && (
+            <div className={styles.faceTabBody}>
+              <FaceEntities
+                viewMode={viewMode}
+                faces={this.props.recognizedFaces}
+                entities={this.props.entities}
+                currentMediaPlayerTime={currentMediaPlayerTime}
+                onFaceOccurrenceClicked={onFaceOccurrenceClicked}
+              />
+            </div>
+          )}
+        {!outputNullState &&
+          this.state.activeTab === 'faceDetection' && (
+            <div className={styles.faceTabBody}>
+              <FaceGrid
+                faces={this.props.unrecognizedFaces}
+                editMode={editMode}
+                viewMode={viewMode}
+                onAddNewEntity={onAddNewEntity}
+                entitySearchResults={entitySearchResults}
+                onFaceOccurrenceClicked={onFaceOccurrenceClicked}
+                onRemoveFaceDetection={onRemoveFaceDetection}
+                onEditFaceDetection={onEditFaceDetection}
+                onSearchForEntities={onSearchForEntities}
+                isSearchingEntities={this.props.isSearchingEntities}
+              />
+            </div>
+          )}
       </div>
     );
   }

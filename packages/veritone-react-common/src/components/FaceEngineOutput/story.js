@@ -19,6 +19,8 @@ import {
 import { action } from '@storybook/addon-actions';
 import { isEqual, isEmpty, find } from 'lodash';
 
+import EngineOutputNullState from '../EngineOutputNullState';
+
 import styles from './story.styles.scss';
 
 import FaceEngineOutput from './';
@@ -39,19 +41,23 @@ class FaceEngineOutputStory extends Component {
         jsondata: objectOf(oneOfType([string, number]))
       })
     ),
-    faceObjects: arrayOf(object) //eslint-disable-line react/no-unused-prop-types
+    faceObjects: arrayOf(object), //eslint-disable-line react/no-unused-prop-types
+    showNullState: boolean.isRequired
   };
 
-  static getDerivedStateFromProps (nextProps, prevState) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     const unrecognizedFaces = [];
     const recognizedFaces = {};
     // flatten data series for currently selected engine
-    const faceSeries = nextProps.faceObjects.reduce((accumulator, faceSeries) => {
-      if (!isEmpty(faceSeries.series)) {
-        return [...accumulator, ...faceSeries.series];
-      }
-      return accumulator;
-    }, []);
+    const faceSeries = nextProps.faceObjects.reduce(
+      (accumulator, faceSeries) => {
+        if (!isEmpty(faceSeries.series)) {
+          return [...accumulator, ...faceSeries.series];
+        }
+        return accumulator;
+      },
+      []
+    );
 
     faceSeries.forEach(faceObj => {
       // for each face object
@@ -74,7 +80,7 @@ class FaceEngineOutputStory extends Component {
       unrecognizedFaces,
       recognizedFaces
     };
-  };
+  }
 
   state = {
     facesDetectedByUser: {},
@@ -85,7 +91,8 @@ class FaceEngineOutputStory extends Component {
     engines: [
       {
         id: 'f44aa80e-4650-c55c-58e7-49c965019790',
-        name: 'Temporal'
+        name: 'Temporal',
+        status: 'completed'
       }
     ],
     selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'
@@ -158,7 +165,8 @@ class FaceEngineOutputStory extends Component {
       editMode,
       mediaPlayerPosition,
       onAddNewEntity,
-      onFaceOccurrenceClicked
+      onFaceOccurrenceClicked,
+      showNullState
     } = this.props;
 
     return (
@@ -179,6 +187,15 @@ class FaceEngineOutputStory extends Component {
         onRemoveFaceDetection={this.handleRemoveFaceDetection}
         onEditFaceDetection={this.handleUpdateFace}
         onSearchForEntities={this.searchForEntities}
+        outputNullState={
+          showNullState && (
+            <EngineOutputNullState
+              engineStatus="failed"
+              engineName="fakeEngine"
+              onRunProcess={action('Run process')}
+            />
+          )
+        }
       />
     );
   }
@@ -199,6 +216,7 @@ storiesOf('FaceEngineOutput', module)
           max: 6000,
           step: 1000
         })}
+        showNullState={boolean('showNullState', false)}
         onAddNewEntity={action('Pop the add new entity modal')}
         onFaceOccurrenceClicked={action('Set the media player position')}
         onRemoveFaceDetection={action('Remove face detection')}

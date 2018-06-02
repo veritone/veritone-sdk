@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { arrayOf, shape, number, string, func } from 'prop-types';
+import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import cx from 'classnames';
 import { msToReadableString } from 'helpers/time';
 import { isEmpty } from 'lodash';
@@ -40,7 +40,8 @@ class OCREngineOutputView extends Component {
     onExpandClick: func,
     onOcrClicked: func,
     className: string,
-    currentMediaPlayerTime: number
+    currentMediaPlayerTime: number,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -55,7 +56,8 @@ class OCREngineOutputView extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      currentMediaPlayerTime
+      currentMediaPlayerTime,
+      outputNullState
     } = this.props;
 
     return (
@@ -67,54 +69,59 @@ class OCREngineOutputView extends Component {
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
         />
-        <div className={styles.ocrContent}>
-          {data.map(dataObject => {
-            return (
-              <Fragment
-                key={`ocr-object-group-${dataObject.sourceEngineId}-${
-                  dataObject.taskId
-                }`}
-              >
-                {dataObject.status === 'FETCHING' && (
-                  <div>Display a progress</div>
-                )}
-                {!isEmpty(dataObject.series) &&
-                  dataObject.series.map(ocrObject => {
-                    return (
-                      <div
-                        key={`ocr-object-${ocrObject.startTimeMs}-${
-                          ocrObject.stopTimeMs
-                        }-${ocrObject.object.text}`}
-                        className={cx(styles.ocrContainer, {
-                          [styles.highlighted]:
-                            currentMediaPlayerTime >= ocrObject.startTimeMs &&
-                            currentMediaPlayerTime <= ocrObject.stopTimeMs
-                        })}
-                        onClick={() => // eslint-disable-line
-                          this.props.onOcrClicked(
-                            ocrObject.startTimeMs,
+        {outputNullState || (
+          <div className={styles.ocrContent}>
+            {data.map(dataObject => {
+              return (
+                <Fragment
+                  key={`ocr-object-group-${dataObject.sourceEngineId}-${
+                    dataObject.taskId
+                  }`}
+                >
+                  {dataObject.status === 'FETCHING' && (
+                    <div>Display a progress</div>
+                  )}
+                  {!isEmpty(dataObject.series) &&
+                    dataObject.series.map(ocrObject => {
+                      return (
+                        <div
+                          key={`ocr-object-${ocrObject.startTimeMs}-${
                             ocrObject.stopTimeMs
-                          )
-                        }
-                      >
-                        <span className={styles.ocrText}>
-                          {ocrObject.object.text}
-                        </span>
-                        {ocrObject.startTimeMs >= 0 &&
-                          ocrObject.stopTimeMs >= 0 && (
-                            <span className={styles.ocrObjectTimestamp}>
-                              {`${msToReadableString(
-                                ocrObject.startTimeMs
-                              )} - ${msToReadableString(ocrObject.stopTimeMs)}`}
-                            </span>
-                          )}
-                      </div>
-                    );
-                  })}
-              </Fragment>
-            );
-          })}
-        </div>
+                          }-${ocrObject.object.text}`}
+                          className={cx(styles.ocrContainer, {
+                            [styles.highlighted]:
+                              currentMediaPlayerTime >= ocrObject.startTimeMs &&
+                              currentMediaPlayerTime <= ocrObject.stopTimeMs
+                          })}
+                          // eslint-disable-next-line
+                          onClick={() =>
+                            this.props.onOcrClicked(
+                              ocrObject.startTimeMs,
+                              ocrObject.stopTimeMs
+                            )
+                          }
+                        >
+                          <span className={styles.ocrText}>
+                            {ocrObject.object.text}
+                          </span>
+                          {ocrObject.startTimeMs >= 0 &&
+                            ocrObject.stopTimeMs >= 0 && (
+                              <span className={styles.ocrObjectTimestamp}>
+                                {`${msToReadableString(
+                                  ocrObject.startTimeMs
+                                )} - ${msToReadableString(
+                                  ocrObject.stopTimeMs
+                                )}`}
+                              </span>
+                            )}
+                        </div>
+                      );
+                    })}
+                </Fragment>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }

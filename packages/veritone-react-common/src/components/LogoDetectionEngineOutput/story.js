@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { bool } from 'prop-types';
 
 import { storiesOf } from '@storybook/react';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
 import { action } from '@storybook/addon-actions';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 import LogoDetectionEngineOutput from './';
@@ -62,6 +64,15 @@ export class LogoDetectionExample extends Component {
           mediaLengthMs={this.props.lazyLoading && 1800000}
           neglectableTimeMs={this.props.lazyLoading && 1000}
           estimatedDisplayTimeMs={this.props.lazyLoading && 240000}
+          outputNullState={
+            boolean('showNullState') && (
+              <EngineOutputNullState
+                engineStatus="failed"
+                engineName="fakeEngine"
+                onRunProcess={action('Run Process')}
+              />
+            )
+          }
         />
       </div>
     );
