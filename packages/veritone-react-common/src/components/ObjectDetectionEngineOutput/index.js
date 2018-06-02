@@ -78,7 +78,7 @@ class ObjectDetectionEngineOutput extends Component {
                   }-${objectGroup.startTimeMs}-${objectGroup.stopTimeMs}`}
                   objectGroup={objectGroup}
                   currentMediaPlayerTime={currentMediaPlayerTime}
-                  onObjectClicked={this.handleObjectClick}
+                  onObjectClick={this.handleObjectClick}
                 />
               );
             })}
