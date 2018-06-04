@@ -23,11 +23,11 @@ const app = VeritoneApp();
 }))
 export default class BaseStory extends React.Component {
   static propTypes = {
-    widget: func.isRequired,
+    widget: func,
     widgetProps: objectOf(any),
     widgetInstanceMethods: objectOf(func),
     componentProps: objectOf(any),
-    componentClass: func.isRequired,
+    componentClass: func,
     store: objectOf(any).isRequired, // redux store
 
     userIsAuthenticated: bool,
@@ -61,6 +61,10 @@ export default class BaseStory extends React.Component {
   }
 
   mountOrDestroyWidgetIfNeeded = () => {
+    if (!this.props.widget) {
+      return;
+    }
+
     if (!this.state.showingWidget) {
       this._widget && this._widget.destroy();
       return;
@@ -94,7 +98,7 @@ export default class BaseStory extends React.Component {
       <div>
         <span id="widget" />
 
-        {this.state.showingWidget && (
+        {this.state.showingWidget && this.props.widget && (
           <div>
             {map(this.props.widgetInstanceMethods, (handler, key) => (
               // eslint-disable-next-line
@@ -105,12 +109,19 @@ export default class BaseStory extends React.Component {
           </div>
         )}
 
-        {!this.state.showingWidget && (
-          <this.props.componentClass
-            store={this.props.store} // eslint-disable-line
-            {...this.props.componentProps}
-          />
-        )}
+        {this.state.showingWidget &&
+          !this.props.widget &&
+          'No widget specified'}
+
+        {!this.state.showingWidget &&
+          (this.props.componentClass ? (
+            <this.props.componentClass
+              store={this.props.store} // eslint-disable-line
+              {...this.props.componentProps}
+            />
+          ) : (
+            'No component class specified'
+          ))}
 
         <AppContainer appBarOffset>
           <p>
