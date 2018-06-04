@@ -92,9 +92,9 @@ describe('Geo Engine Output', () => {
     expect(gpsEntries.at(3).text()).toMatch(/Lat:\s1500Long:\s1500/);
 
     const textButtons = timeView.find('TextButton');
-    expect(textButtons.at(0).text()).toEqual('08:03:45 PM - 08:03:47 PM');
-    expect(textButtons.at(1).text()).toEqual('08:03:47 PM - 08:03:50 PM');
-    expect(textButtons.at(2).text()).toEqual('08:03:50 PM - 08:03:52 PM');
-    expect(textButtons.at(3).text()).toEqual('08:03:52 PM - 08:03:57 PM');
+    expect(textButtons.at(0).text()).toEqual('12:03:45 PM - 12:03:47 PM');
+    expect(textButtons.at(1).text()).toEqual('12:03:47 PM - 12:03:50 PM');
+    expect(textButtons.at(2).text()).toEqual('12:03:50 PM - 12:03:52 PM');
+    expect(textButtons.at(3).text()).toEqual('12:03:52 PM - 12:03:57 PM');
   });
 });
