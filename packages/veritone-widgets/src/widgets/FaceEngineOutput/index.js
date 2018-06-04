@@ -38,7 +38,7 @@ const saga = util.reactReduxSaga.saga;
     libraries: faceEngineOutput.getLibraries(state),
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
     isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
-    isFetchingLibraryEntities: faceEngineOutput.isFetchingEntities(state),
+    isFetchingEntities: faceEngineOutput.isFetchingEntities(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state)
   }),
@@ -132,7 +132,7 @@ class FaceEngineOutputContainer extends Component {
     isFetchingEntities: bool,
     isFetchingLibraries: bool,
     isSearchingEntities: bool,
-    allowEdit: func,
+    disableEdit: func,
     fetchEngineResults: func,
     fetchEntitySearchResults: func,
     addDetectedFace: func,
@@ -151,26 +151,24 @@ class FaceEngineOutputContainer extends Component {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const {
-      isFetchingEngineResults,
-      isFetchingEntities,
-      faces,
-      editMode,
-      allowEdit
+      faces: { unrecognizedFaces }
     } = nextProps;
 
+    // set the first library as default (for `New Entity` form)
     if (!this.props.libraries.length && nextProps.libraries.length) {
       this.setNewEntityLibrary(head(nextProps.libraries).id);
     }
 
+    // disable editing if they are no unrecognized faces
     if (
-      allowEdit &&
-      !editMode &&
-      !isFetchingEngineResults &&
-      !isFetchingEntities
+      this.props.isFetchingEngineResults &&
+      !nextProps.isFetchingEngineResults &&
+      !unrecognizedFaces.length
     ) {
-      allowEdit(!faces.unrecognizedFaces.length);
+      this.props.disableEdit(true);
     }
 
+    // fetch engine results when user changes engine
     if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
       this.props.fetchEngineResults({
         selectedEngineId: nextProps.selectedEngineId,
@@ -367,10 +365,6 @@ class FaceEngineOutputContainer extends Component {
           <CircularProgress size={75} />
         </div>
       );
-    }
-
-    if (!this.props.entities.length) {
-      return null;
     }
 
     return (
