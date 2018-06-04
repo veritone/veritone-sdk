@@ -125,38 +125,34 @@ const mockData = genMockData(
 
 const store = configureStore();
 storiesOf('Transcript Engine Output', module)
-.addDecorator(story =>(
-  <Provider store={store}>
-    <Sagas middleware={store.sagaMiddleware}>
-      {story()}
-    </Sagas>
-  </Provider>
-))
-.add('Widget', () => {
-  return (
-    <div className={styles.transcriptEngineOutputWidget}>
-      <TranscriptEngineOutputWidget 
-        editMode={boolean('Edit Mode', false)}
-        data={mockData}
-        mediaPlayerTimeMs={1000 * number('media player time', 0)}
-        mediaPlayerTimeIntervalMs={
-          1000 * number('media player time Interval', 1)
-        }
-        mediaLengthMs={9000000}
-        neglectableTimeMs={2000}
-        estimatedDisplayTimeMs={1500000}
-        onClick={action('on click')}
-        onChange={action('on change')}
-        engines={engines}
-        selectedEngineId={selectedEngineId}
-        onEngineChange={action('engine changed')}
-        onExpandClicked={action('expand view clicked')}
-      />
-    </div>
-  );
-});
-
-
+  .addDecorator(story => (
+    <Provider store={store}>
+      <Sagas middleware={store.sagaMiddleware}>{story()}</Sagas>
+    </Provider>
+  ))
+  .add('Widget', () => {
+    return (
+      <div className={styles.transcriptEngineOutputWidget}>
+        <TranscriptEngineOutputWidget
+          editMode={boolean('Edit Mode', false)}
+          data={mockData}
+          mediaPlayerTimeMs={1000 * number('media player time', 0)}
+          mediaPlayerTimeIntervalMs={
+            1000 * number('media player time Interval', 1)
+          }
+          mediaLengthMs={9000000}
+          neglectableTimeMs={2000}
+          estimatedDisplayTimeMs={1500000}
+          onClick={action('on click')}
+          onChange={action('on change')}
+          engines={engines}
+          selectedEngineId={selectedEngineId}
+          onEngineChange={action('engine changed')}
+          onExpandClicked={action('expand view clicked')}
+        />
+      </div>
+    );
+  });
 
 function genMockData(
   startTime,
@@ -264,4 +260,3 @@ function genMockWords(size, type = 'TTML') {
 
   return words;
 }
-
