@@ -45,6 +45,22 @@ class FaceEngineOutputStory extends Component {
     showNullState: boolean.isRequired
   };
 
+  state = {
+    facesDetectedByUser: {},
+    entitySearchResults: [],
+    entities: this.props.entities,
+    engineResultsByEngineId: {},
+    fetchedEngineResults: {},
+    engines: [
+      {
+        id: 'f44aa80e-4650-c55c-58e7-49c965019790',
+        name: 'Temporal',
+        status: 'completed'
+      }
+    ],
+    selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'
+  };
+  
   static getDerivedStateFromProps(nextProps, prevState) {
     const unrecognizedFaces = [];
     const recognizedFaces = {};
@@ -81,22 +97,6 @@ class FaceEngineOutputStory extends Component {
       recognizedFaces
     };
   }
-
-  state = {
-    facesDetectedByUser: {},
-    entitySearchResults: [],
-    entities: this.props.entities,
-    engineResultsByEngineId: {},
-    fetchedEngineResults: {},
-    engines: [
-      {
-        id: 'f44aa80e-4650-c55c-58e7-49c965019790',
-        name: 'Temporal',
-        status: 'completed'
-      }
-    ],
-    selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'
-  };
 
   handleRemoveFaceDetection = face => {
     this.setState(prevState => ({

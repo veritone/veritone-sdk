@@ -238,14 +238,14 @@ class MediaDetailsWidget extends React.Component {
     isSaveEnabled: bool
   };
 
+  static contextTypes = {
+    store: object.isRequired // eslint-disable-line
+  };
+
   static defaultProps = {
     libraries: [],
     entities: [],
     schemasById: {}
-  };
-
-  static contextTypes = {
-    store: object.isRequired // eslint-disable-line
   };
 
   state = {
