@@ -59,7 +59,7 @@ class SearchPill extends React.PureComponent {
         >
           {this.props.label}
         </Typography>
-        <div data-attribute="deletePill" onClick={this.handleDelete}>
+        <div style={ {display: 'flex'} } data-attribute="deletePill" onClick={this.handleDelete}>
           <Cancel
             style={{
               visibility:
