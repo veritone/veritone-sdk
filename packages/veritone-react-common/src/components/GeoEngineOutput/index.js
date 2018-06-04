@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, func, shape, arrayOf } from 'prop-types';
+import { number, string, func, shape, arrayOf, node } from 'prop-types';
 
 import classNames from 'classnames';
 
@@ -10,7 +10,7 @@ import { format } from '../../helpers/date';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import GeoTimeView from './GeoTimeView';
-import GeoMapview from './GeoMapView';
+import GeoMapView from './GeoMapView';
 import GoogleMapHelpers from './GeoMapView/GoogleMapComponent/GoogleMapHelpers';
 
 import styles from './styles.scss';
@@ -35,8 +35,8 @@ export default class GeoEngineOutput extends Component {
                 direction: number, // 0-360
                 velocity: number, // in meters
                 altitude: number // in meters
-              })
-            )
+              }).isRequired
+            ).isRequired
           })
         )
       })
@@ -65,7 +65,8 @@ export default class GeoEngineOutput extends Component {
     onExpandClick: func,
 
     mediaPlayerTimeMs: number,
-    mediaPlayerTimeIntervalMs: number
+    mediaPlayerTimeIntervalMs: number,
+    outputNullState: node
   };
 
   static defaultProps = {
@@ -184,14 +185,16 @@ export default class GeoEngineOutput extends Component {
       travelMode,
       mapViewClassName,
       timeViewClassName,
-      mediaPlayerTimeMs
+      mediaPlayerTimeMs,
+      outputNullState
     } = this.props;
 
     const parsedData = this.parsePropsData();
-
-    if (this.state.currentView === 'mapView') {
+    if (outputNullState) {
+      return outputNullState;
+    } else if (this.state.currentView === 'mapView') {
       return (
-        <GeoMapview
+        <GeoMapView
           data={parsedData}
           onClick={onClick}
           apiKey={apiKey}

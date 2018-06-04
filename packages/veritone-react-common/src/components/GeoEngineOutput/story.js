@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
 import { string } from 'prop-types';
-
 import classNames from 'classnames';
+
+import EngineOutputNullState from '../EngineOutputNullState';
+
 import styles from './story.styles.scss';
 
 import GeoEngineOutput from './';
@@ -44,6 +46,15 @@ export class GeoExample extends Component {
           onEngineChange={action('engine change')}
           onExpandClick={action('expand button clicked')}
           mediaPlayerTimeMs={1000 * number('Media Player Time', 0)}
+          outputNullState={
+            boolean('showNullState') && (
+              <EngineOutputNullState
+                engineStatus="failed"
+                engineName="fakeEngine"
+                onRunProcess={action('Run process')}
+              />
+            )
+          }
         />
       </div>
     );

@@ -17,6 +17,11 @@
 
   .content {
     padding: 20px 0;
+
+    .fragment {
+      float: left;
+      margin-right: 1ex;
+    }
   }
 
   border-bottom: 1px solid $faint-black;

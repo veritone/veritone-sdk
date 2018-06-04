@@ -1,7 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { number } from '@storybook/addon-knobs/react';
+import { boolean, number } from '@storybook/addon-knobs/react';
+
+import EngineOutputNullState from '../EngineOutputNullState';
 
 import styles from './story.styles.scss';
 import ObjectDetectionOuput from './';
@@ -106,6 +108,15 @@ storiesOf('ObjectDetectionEngineOutput', module).add('Base', () => {
         step: 100
       })}
       onExpandClick={action('Expand Clicked')}
+      outputNullState={
+        boolean('showNullState') && (
+          <EngineOutputNullState
+            engineStatus="failed"
+            engineName="fakeEngine"
+            onRunProcess={action('Run Process')}
+          />
+        )
+      }
     />
   );
 });

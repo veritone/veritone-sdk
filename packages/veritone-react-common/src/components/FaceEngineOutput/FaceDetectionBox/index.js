@@ -9,7 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { Manager, Target, Popper } from 'react-popper';
+import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
@@ -98,18 +98,13 @@ class FaceDetectionBox extends Component {
     this.props.onEditFaceDetection(this.props.face, entity);
   };
 
-  handleDeleteFaceDetection = face => {
+  handleDeleteFaceDetection = () => {
     this.props.onRemoveFaceDetection(this.props.face);
   };
 
-  dropdownRef = r => {
-    this._dropdown = r;
-  };
+  itemToString = item => (item ? item.name : '');
 
-  /*TODO: come back to this and fix it*/
-  calculatePositionAndHeight = ref => {};
-
-  itemToString = item => (item ? item.entityName : '');
+  inputRef = node => this._inputRef = node;
 
   render() {
     const {
@@ -131,98 +126,90 @@ class FaceDetectionBox extends Component {
         onMouseLeave={this.handleMouseOut}
         onClick={onClick}
       >
-        <Manager>
-          <div className={styles.entityImageContainer}>
-            <img className={styles.entityImage} src={face.object.uri} />
-            {enableEdit &&
-              this.state.hovered && (
-                <div className={styles.imageButtonOverlay}>
-                  <div
-                    className={styles.faceActionIcon}
-                    onClick={this.makeEditable}
-                  >
-                    <i className="icon-mode_edit2" />
+        <div className={styles.entityImageContainer}>
+          <img className={styles.entityImage} src={face.object.uri} />
+          {enableEdit &&
+            this.state.hovered && (
+              <div className={styles.imageButtonOverlay}>
+                <div
+                  className={styles.faceActionIcon}
+                  onClick={this.makeEditable}
+                >
+                  <i className="icon-mode_edit2" />
+                </div>
+                <div
+                  className={styles.faceActionIcon}
+                  onClick={this.handleDeleteFaceDetection}
+                >
+                  <i className="icon-trashcan" />
+                </div>
+              </div>
+            )}
+        </div>
+        <div className={styles.faceInformation}>
+          <span className={styles.faceTimeOccurrence}>
+            {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(
+              face.stopTimeMs
+            )}`}
+          </span>
+          {this.state.editFaceEntity ? (
+            <Downshift
+              itemToString={this.itemToString}
+              onSelect={this.handleEntitySelect}
+              onInputValueChange={onSearchForEntities}
+            >
+              {({
+                getInputProps,
+                getItemProps,
+                isOpen,
+                selectedItem,
+                highlightedIndex
+              }) => (
+                <div>
+                  <div ref={this.inputRef}>
+                    <Input
+                      {...getInputProps({
+                        placeholder: 'Unkown',
+                        autoFocus: true,
+                        className: styles.entitySearchInput
+                      })}
+                    />
                   </div>
-                  <div
-                    className={styles.faceActionIcon}
-                    onClick={this.handleDeleteFaceDetection}
-                  >
-                    <i className="icon-trashcan" />
-                  </div>
+                  {isOpen ? (
+                    <Popper placement="bottom-start" style={{ zIndex: 1 }} target={this._inputRef}>
+                      <Paper className={styles.autoCompleteDropdown} square>
+                        <div className={styles.searchResultsList}>
+                          {isSearchingEntities ? (
+                            <CircularProgress />
+                          ) : searchResults && searchResults.length ? (
+                            renderEntitySearchMenu({
+                              results: searchResults,
+                              getItemProps,
+                              highlightedIndex
+                            })
+                          ) : (
+                            <div>Results Not Found</div>
+                          )}
+                        </div>
+                        <div className={styles.addNewEntity}>
+                          <Button
+                            color="primary"
+                            className={styles.addNewEntityButton}
+                            onClick={this.handleAddNewEntity(face)}
+                          >
+                            ADD NEW
+                          </Button>
+                        </div>
+                      </Paper>
+                    </Popper>
+                  ) : null}
                 </div>
               )}
-          </div>
-          <div className={styles.faceInformation}>
-            <span className={styles.faceTimeOccurrence}>
-              {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(
-                face.stopTimeMs
-              )}`}
-            </span>
-            {this.state.editFaceEntity ? (
-              <Downshift
-                // isOpen={this.state.dropdownOpen}
-                // inputValue={styles.entityName}
-                // itemToString={this.itemToString}
-                onSelect={this.handleEntitySelect}
-                onInputValueChange={onSearchForEntities}
-              >
-                {({
-                  getInputProps,
-                  getItemProps,
-                  isOpen,
-                  // inputValue,
-                  selectedItem,
-                  highlightedIndex
-                }) => (
-                  <div>
-                    <Target>
-                      <Input
-                        {...getInputProps({
-                          // value: inputValue,
-                          placeholder: 'Unkown',
-                          autoFocus: true,
-                          className: styles.entitySearchInput
-                        })}
-                      />
-                    </Target>
-                    {isOpen ? (
-                      <Popper placement="auto-start" style={{ zIndex: 1 }}>
-                        <div ref={this.dropdownRef}>
-                          <Paper className={styles.autoCompleteDropdown} square>
-                            <div className={styles.searchResultsList}>
-                              {isSearchingEntities ? (
-                                <CircularProgress />
-                              ) : searchResults && searchResults.length ? (
-                                renderEntitySearchMenu({
-                                  results: searchResults,
-                                  getItemProps,
-                                  highlightedIndex
-                                })
-                              ) : (
-                                <div>Results Not Found</div>
-                              )}
-                            </div>
-                            <div className={styles.addNewEntity}>
-                              <Button
-                                color="primary"
-                                className={styles.addNewEntityButton}
-                                onClick={this.handleAddNewEntity(face)}
-                              >
-                                ADD NEW
-                              </Button>
-                            </div>
-                          </Paper>
-                        </div>
-                      </Popper>
-                    ) : null}
-                  </div>
-                )}
-              </Downshift>
-            ) : (
-              <div className={styles.unknownEntityText}>Unkown</div>
-            )}
-          </div>
-        </Manager>
+            </Downshift>
+          ) : (
+            <div className={styles.unknownEntityText}>Unkown</div>
+          )}
+        </div>
       </div>
     );
   }

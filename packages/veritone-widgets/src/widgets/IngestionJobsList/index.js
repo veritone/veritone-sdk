@@ -14,16 +14,48 @@ class IngestionJobListWidget extends React.Component {
     onCreateJob: func.isRequired,
     onSelectJob: func,
     onSelectMenuItem: func,
-    paginate: bool
+    paginate: bool,
+    fetchData: func
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      jobs: props.jobs
+    };
+  }
+
+  handleFetchData = ({ start, end }) => {
+    const perPage = end - start + 1;
+    const jobsCount = this.state.jobs.length;
+
+    if (
+      this.props.fetchData &&
+      (!this.state.jobs[end + 1] || jobsCount - perPage < perPage)
+    ) {
+      const limit = !(jobsCount % perPage) ? perPage : jobsCount % perPage;
+
+      this.props.fetchData(limit, jobsCount);
+    }
+  };
+
+  updateJobs = jobs => {
+    this.setState({
+      jobs
+    });
   };
 
   render() {
-    const viewProps = omit(this.props, ['onCreateJob']);
+    const viewProps = omit(this.props, ['onCreateJob', 'jobs', 'fetchData']);
 
-    return !this.props.jobs.length ? (
+    return !this.state.jobs.length ? (
       <IngestionJobNullstate onClick={this.props.onCreateJob} />
     ) : (
-      <IngestionJobTileView {...viewProps} />
+      <IngestionJobTileView
+        {...viewProps}
+        jobs={this.state.jobs}
+        onFetchData={this.handleFetchData}
+      />
     );
   }
 }

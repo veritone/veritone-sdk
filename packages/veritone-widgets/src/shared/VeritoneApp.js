@@ -107,31 +107,31 @@ class _VeritoneApp {
     ReactDOM.render(
       <Provider store={this._store}>
         <Sagas middleware={this._store.sagaMiddleware}>
-        <div>
-          {appModule.widgets(this._store.getState()).map(w => {
-            if (!w._elId) {
-              console.warn(
-                'The widget',
-                w,
-                'needs to specify an elId that references an existing dom node.'
-              );
-              return null;
-            }
+          <div>
+            {appModule.widgets(this._store.getState()).map(w => {
+              if (!w._elId) {
+                console.warn(
+                  'The widget',
+                  w,
+                  'needs to specify an elId that references an existing dom node.'
+                );
+                return null;
+              }
 
-            if (document.getElementById(w._elId)) {
-              return ReactDOM.createPortal(
-                <w.Component
-                  {...w.props}
-                  // bind is OK because this isn't a component -- only renders
-                  // when mount() is called.
-                  // eslint-disable-next-line
-                  ref={this.setWidgetRef.bind(this, w)}
-                />,
-                document.getElementById(w._elId)
-              );
-            }
-          })}
-        </div>
+              if (document.getElementById(w._elId)) {
+                return ReactDOM.createPortal(
+                  <w.Component
+                    {...w.props}
+                    // bind is OK because this isn't a component -- only renders
+                    // when mount() is called.
+                    // eslint-disable-next-line
+                    ref={this.setWidgetRef.bind(this, w)}
+                  />,
+                  document.getElementById(w._elId)
+                );
+              }
+            })}
+          </div>
         </Sagas>
       </Provider>,
       this._containerEl

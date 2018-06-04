@@ -80,7 +80,7 @@ const defaultMDPState = {
   tdoContentTemplates: {},
   schemasById: {},
   enableSave: false,
-  error: null,
+  error: null
 };
 
 const defaultState = {};
@@ -110,7 +110,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         warning: warn || null,
         engineCategories: payload
@@ -128,8 +127,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         warning: warn || null,
         engineCategories: []
       }
@@ -243,7 +241,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         engineResultsByEngineId: {
           ...previousResultsByEngineId
@@ -267,8 +264,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: errorMessage
+        error: errorMessage || 'uknown error'
       }
     };
   },
@@ -283,7 +279,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isLoadingTdo: true,
-        success: true,
         error: null,
         tdo: null
       }
@@ -302,7 +297,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isLoadingTdo: false,
-        success: true,
         error: null,
         tdo: tdo
       }
@@ -321,8 +315,7 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isLoadingTdo: false,
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         tdo: null
       }
     };
@@ -337,7 +330,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null
       }
     };
@@ -353,7 +345,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         tdo: payload
       }
     };
@@ -369,8 +360,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null
+        error: errorMessage || 'unknown error'
       }
     };
   },
@@ -404,7 +394,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         tdoContentTemplates: tdoContentTemplates
       }
@@ -421,8 +410,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         tdoContentTemplates: {}
       }
     };
@@ -437,7 +425,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
         error: null
       }
     };
@@ -452,7 +439,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
         error: null
       }
     };
@@ -483,7 +469,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: null,
         error: null
       }
     };
@@ -516,7 +501,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: true,
         error: null,
         contentTemplates: templateSchemas
       }
@@ -533,8 +517,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        success: false,
-        error: error ? errorMessage : null,
+        error: errorMessage || 'unknown error',
         contentTemplates: {}
       }
     };
@@ -765,8 +748,7 @@ export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
 export const getSchemasById = (state, widgetId) =>
   get(local(state), [widgetId, 'schemasById']);
-export const isSaveEnabled = (state) =>
-  get(local(state), 'enableSave');
+export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
 
@@ -918,7 +900,7 @@ export const toggleExpandedMode = widgetId => ({
   meta: { widgetId }
 });
 
-export const toggleSaveMode = (enableSave) => ({
+export const toggleSaveMode = enableSave => ({
   type: TOGGLE_SAVE_MODE,
   payload: {
     enableSave
@@ -951,7 +933,7 @@ export const createFileAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createBulkEditTranscriptAssetSuccess = (widgetId) => ({
+export const createBulkEditTranscriptAssetSuccess = widgetId => ({
   type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
   meta: { widgetId }
 });

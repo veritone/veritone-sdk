@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 import classNames from 'classnames';
-import { sortBy, isNumber } from 'lodash';
+import { sortBy, orderBy, isNumber } from 'lodash';
 
 import DataSegment from '../translation-segment/DataSegment';
 import ErrorSegment from '../translation-segment/ErrorSegment';
@@ -165,7 +165,6 @@ export default class TranslationContent extends Component {
       // Handle error segments
       if (chunkStatus === 'error') {
         segmentStatus === 'nodata' && createNoDataSegment(); //Save previous no data segment if the time gap above doesn't catch it
-
         segmentStatus = chunkStatus;
 
         if (
@@ -232,7 +231,7 @@ export default class TranslationContent extends Component {
               Math.floor(entryStartTime / 1000) * 1000;
             const ceiledEntryStartTime = Math.ceil(entryStopTime / 1000) * 1000;
 
-            const wordOptions = sortBy(entry.words, 'confidence');
+            const wordOptions = orderBy(entry.words, ['confidence'], ['desc']);
             dataSegmentComponents.push(
               <DataSegment
                 content={wordOptions[0].word}
