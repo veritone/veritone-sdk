@@ -801,7 +801,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         editMode={isEditModeEnabled}
-                        allowEdit={this.handleDisableEditBtn}
+                        disableEdit={this.handleDisableEditBtn}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
                         }

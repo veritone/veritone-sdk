@@ -7,7 +7,7 @@ import {
   takeLatest,
   select
 } from 'redux-saga/effects';
-import { get, isUndefined } from 'lodash';
+import { get, isUndefined, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import * as faceEngineOutput from '.';
 import * as gqlQuery from './queries';
@@ -186,24 +186,28 @@ function* watchFetchEngineResultsSuccess() {
   yield takeEvery(
     action => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS_SUCCESS,
     function*(action) {
-      const entityIds = {};
-
       if (!action.payload.errors) {
+        // const entityIds = {};
         const engineResults = get(action.payload.data, 'engineResults.records');
-        if (engineResults) {
-          engineResults.forEach(engineResult => {
+
+        if (engineResults && engineResults.length) {
+          const entityIds = engineResults.reduce((result, engineResult) => {
             engineResult.jsondata.series.forEach(s => {
               const entityId = get(s, 'object.entityId');
+
               if (entityId) {
-                // entityIds.push(entityId);
-                entityIds[entityId] = true;
+                result[entityId] = true;
               }
             });
+
+            return result;
           });
+
+          if (!isEmpty(entityIds)) {
+            yield call(fetchEntities, Object.keys(entityIds));
+          }
         }
       }
-
-      yield call(fetchEntities, Object.keys(entityIds));
     }
   );
 }
