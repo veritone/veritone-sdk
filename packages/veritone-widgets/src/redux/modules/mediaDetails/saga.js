@@ -9,11 +9,7 @@ import {
 } from 'redux-saga/effects';
 import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import { getTranscriptEditAssetData } from './transcriptWidget';
-import {
-  getFaceEngineAssetData,
-  removeUserDetectedFaces
-} from './faceEngineOutput';
+import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -68,8 +64,8 @@ import {
   isEditModeEnabled
 } from '.';
 
-import { UPDATE_EDIT_STATUS } from './transcriptWidget';
-import { UPDATE_ENGINE_RESULT_ENTITY } from './faceEngineOutput';
+import { ADD_DETECTED_FACE } from './faceEngineOutput';
+import { UPDATE_EDIT_STATUS, getTranscriptEditAssetData } from './transcriptWidget';
 
 const tdoInfoQueryClause = `id
     details
@@ -793,7 +789,11 @@ function* createTranscriptBulkEditAssetSaga(
     runBulkEditJobResponse = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
-      variables: { tdoId: requestTdo.id },
+      variables: {
+        tdoId: requestTdo.id,
+        originalAssetId: originalTranscriptAssetId,
+        bulkTextAssetId: bulkTextAssetId
+      },
       token
     });
   } catch (error) {
@@ -1286,12 +1286,11 @@ function* watchTranscriptStatus() {
 }
 
 function* watchFaceEngineEntityUpdate() {
-  yield takeEvery(
-    action => action.type === UPDATE_ENGINE_RESULT_ENTITY,
-    function*(action) {
-      yield put(toggleSaveMode(true));
-    }
-  );
+  yield takeEvery(action => action.type === ADD_DETECTED_FACE, function*(
+    action
+  ) {
+    yield put(toggleSaveMode(true));
+  });
 }
 
 function* watchSaveAssetData() {
@@ -1424,7 +1423,7 @@ function* watchCancelEdit() {
       const selectedEngineCategory = action.payload.selectedEngineCategory;
 
       if (selectedEngineCategory.categoryType === 'face') {
-        yield put(removeUserDetectedFaces());
+        yield put(cancelFaceEdits());
       }
     }
   });

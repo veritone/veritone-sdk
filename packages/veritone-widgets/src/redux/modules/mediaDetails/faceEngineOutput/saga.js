@@ -1,4 +1,12 @@
-import { fork, all, call, put, takeEvery, takeLatest, select } from 'redux-saga/effects';
+import {
+  fork,
+  all,
+  call,
+  put,
+  takeEvery,
+  takeLatest,
+  select
+} from 'redux-saga/effects';
 import { get, isUndefined } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import * as faceEngineOutput from '.';
@@ -23,7 +31,7 @@ function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
   const meta = {
     engineId,
     startOffsetMs,
-    stopOffsetMs,
+    stopOffsetMs
   };
 
   if (!isUndefined(startOffsetMs)) {
@@ -86,7 +94,9 @@ function* fetchLibraries(action) {
       token
     });
 
-    yield put(faceEngineOutput.fetchLibrariesSuccess(response, { libraryType }));
+    yield put(
+      faceEngineOutput.fetchLibrariesSuccess(response, { libraryType })
+    );
   } catch (error) {
     yield put(faceEngineOutput.fetchLibrariesFailure(error, { libraryType }));
   }
@@ -107,19 +117,17 @@ function* createNewEntity(action) {
       token
     });
 
-    console.log('response:', response);
-
     if (response.errors) {
       return faceEngineOutput.createEntityFailure(response);
     }
 
-    yield put(faceEngineOutput.updateEngineResultEntity(
-      meta.selectedEngineId,
-      meta.faceObj,
-      response.data.entity
-    ));
-
-    // yield put(faceEngineOutput.createEntitySuccess(response,  meta));
+    yield put(
+      faceEngineOutput.addDetectedFace(
+        meta.selectedEngineId,
+        meta.faceObj,
+        response.data.entity
+      )
+    );
   } catch (error) {
     yield put(faceEngineOutput.createEntityFailure(error, meta));
   }
@@ -176,8 +184,8 @@ function* onMount(tdo, selectedEngineId) {
 
 function* watchFetchEngineResultsSuccess() {
   yield takeEvery(
-    (action) => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS_SUCCESS,
-    function* (action) {
+    action => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS_SUCCESS,
+    function*(action) {
       const entityIds = {};
 
       if (!action.payload.errors) {
@@ -197,34 +205,34 @@ function* watchFetchEngineResultsSuccess() {
 
       yield call(fetchEntities, Object.keys(entityIds));
     }
-  )
+  );
 }
 
 function* watchFetchLibraries() {
   yield takeEvery(
-    (action) => action.type === faceEngineOutput.FETCH_LIBRARIES,
+    action => action.type === faceEngineOutput.FETCH_LIBRARIES,
     fetchLibraries
-  )
+  );
 }
 
 function* watchCreateEntity() {
   yield takeEvery(
-    (action) => action.type === faceEngineOutput.CREATE_ENTITY,
+    action => action.type === faceEngineOutput.CREATE_ENTITY,
     createNewEntity
-  )
+  );
 }
 
 function* watchSearchEntities() {
   yield takeLatest(
-    (action) => action.type === faceEngineOutput.SEARCH_ENTITIES,
+    action => action.type === faceEngineOutput.SEARCH_ENTITIES,
     searchForEntities
-  )
+  );
 }
 
 function* watchFetchEngineResults() {
   yield takeEvery(
-    (action) => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS,
-    function* (action) {
+    action => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS,
+    function*(action) {
       const { tdo, selectedEngineId } = action.meta;
       yield call(
         loadEngineResults,
@@ -232,7 +240,7 @@ function* watchFetchEngineResults() {
         selectedEngineId,
         0,
         Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-      )
+      );
     }
   );
 }

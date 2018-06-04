@@ -44,7 +44,7 @@ export function getEntities(entityIds) {
   });
 }
 
-export const getLibrariesByType =`
+export const getLibrariesByType = `
   query libraries($type: String) {
     libraries(type: $type) {
       records {
@@ -68,7 +68,7 @@ export const createEntity = `
   }
 `;
 
-export const searchForEntities =`
+export const searchForEntities = `
   ${entityFieldsFragment}
   query SearchForEntities($type: String, $name: String) {
     libraries(type: $type) {
