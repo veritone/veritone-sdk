@@ -13,7 +13,9 @@ import mediaDetailsReducer, {
   namespace as mediaDetailsNamespace
 } from './modules/mediaDetails';
 
-import transcriptReducer, { transcriptNamespace } from './modules/mediaDetails/transcriptWidget';
+import transcriptReducer, {
+  transcriptNamespace
+} from './modules/mediaDetails/transcriptWidget';
 import faceEngineOutputReducer, {
   namespace as faceEngineOutputNamespace
 } from './modules/mediaDetails/faceEngineOutput';

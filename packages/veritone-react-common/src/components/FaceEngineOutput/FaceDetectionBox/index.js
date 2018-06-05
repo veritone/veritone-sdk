@@ -98,7 +98,7 @@ class FaceDetectionBox extends Component {
     this.props.onEditFaceDetection(this.props.face, entity);
   };
 
-  handleDeleteFaceDetection = face => {
+  handleDeleteFaceDetection = () => {
     this.props.onRemoveFaceDetection(this.props.face);
   };
 
