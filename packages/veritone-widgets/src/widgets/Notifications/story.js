@@ -36,7 +36,6 @@ class Story extends React.Component {
   };
 
   render() {
-    console.log(this.props);
     return (
       <div>
         <Button onClick={this.handleShowSnackBarNotification}>
