@@ -34,7 +34,8 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState
+  EngineOutputNullState,
+  withMuiThemeProvider
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
@@ -95,6 +96,7 @@ import widget from '../../shared/widget';
   null,
   { withRef: true }
 )
+@withMuiThemeProvider
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
     id: string.isRequired,
@@ -770,9 +772,8 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
               {selectedEngineCategory &&
-                selectedEngineCategory.categoryType !== 'transcript' &&
-                selectedEngineCategory.categoryType !== 'correlation' &&
-                (!isExpandedMode || isEditModeEnabled) && (
+                !(selectedEngineCategory.categoryType === 'transcript' && isEditModeEnabled) &&
+                !(selectedEngineCategory.categoryType === 'correlation' && isExpandedMode) && (
                   <div className={styles.mediaView}>
                     {isImage ? (
                       <Image

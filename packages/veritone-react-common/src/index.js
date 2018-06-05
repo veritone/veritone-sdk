@@ -67,3 +67,5 @@ export SDOTable from './components/SDOTable';
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
+
+export withMuiThemeProvider from './helpers/withMuiThemeProvider';

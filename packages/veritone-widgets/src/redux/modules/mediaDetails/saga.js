@@ -787,11 +787,7 @@ function* createTranscriptBulkEditAssetSaga(
     runBulkEditJobResponse = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
-      variables: {
-        tdoId: requestTdo.id,
-        originalAssetId: originalTranscriptAssetId,
-        bulkTextAssetId: bulkTextAssetId
-      },
+      variables: { tdoId: requestTdo.id },
       token
     });
   } catch (error) {
