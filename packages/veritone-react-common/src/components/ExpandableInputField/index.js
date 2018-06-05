@@ -1,9 +1,8 @@
 import React from 'react';
-import { func } from 'prop-types';
+import { func, string, node } from 'prop-types';
 
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 
 import Grow from '@material-ui/core/Grow';
@@ -11,21 +10,25 @@ import Grow from '@material-ui/core/Grow';
 import cx from 'classnames';
 import styles from './styles.scss';
 
-class ExpandableSearchField extends React.Component {
+class ExpandableInputField extends React.Component {
   static propTypes = {
-    onSearch: func
+    onSearch: func,
+    value: string,
+    onChange: func,
+    onReset: func,
+    icon: node.isRequired,
+    onFocus: func,
+    onBlur: func
   };
 
   state = {
-    expanded: false,
-    search: ''
+    expanded: false
   };
 
   resetSearch = evt => {
-    this.setState({
-      search: '',
-      expanded: true
-    });
+    if (this.props.onReset) {
+      this.props.onReset(evt);
+    }
     if (this._inputRef) {
       this._inputRef.focus();
     }
@@ -38,27 +41,22 @@ class ExpandableSearchField extends React.Component {
   };
 
   hideSearchBar = evt => {
-    if (!this.state.search || this.state.search.trim().length === 0) {
+    if (!this.props.value || this.props.value.trim().length === 0) {
       this.setState({
         expanded: false
       });
     }
-  };
-
-  onChange = evt => {
-    this.setState({
-      search: evt.target.value
-    });
+    if (this.props.onBlur) {
+      this.props.onBlur(evt);
+    }
   };
 
   onKeyPress = evt => {
     if (
       evt.key === 'Enter' &&
-      this.props.onSearch &&
-      evt.target.value &&
-      evt.target.value.trim().length > 0
+      this.props.onSearch
     ) {
-      this.props.onSearch(evt.target.value.trim());
+      this.props.onSearch(evt.target.value);
     }
   };
 
@@ -71,14 +69,15 @@ class ExpandableSearchField extends React.Component {
       return (
         <Grow in>
           <TextField
-            value={this.state.search}
+            value={this.props.value}
             autoFocus
             inputProps={{
               onBlur: this.hideSearchBar
             }}
             inputRef={this.setInputRef}
             onKeyPress={this.onKeyPress}
-            onChange={this.onChange}
+            onChange={this.props.onChange}
+            onFocus={this.props.onFocus}
             InputProps={{
               classes: {
                 underline: cx(styles['underline'])
@@ -94,12 +93,10 @@ class ExpandableSearchField extends React.Component {
       );
     } else {
       return (
-        <IconButton onClick={this.showSearchBar}>
-          <SearchIcon />
-        </IconButton>
+        <IconButton onClick={this.showSearchBar}>{this.props.icon}</IconButton>
       );
     }
   }
 }
 
-export default ExpandableSearchField;
+export default ExpandableInputField;
