@@ -44,6 +44,8 @@ export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineOutputNullState from './components/EngineOutputNullState';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
+export EditMetadataDialog from './components/MediaInfoPanel/EditMetadataDialog';
+export EditTagsDialog from './components/MediaInfoPanel/EditTagsDialog';
 export TranslationEngineOutput from './components/TranslationEngineOutput';
 export FingerprintEngineOutput from './components/FingerprintEngineOutput';
 export GeoEngineOutput from './components/GeoEngineOutput';

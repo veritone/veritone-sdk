@@ -2,10 +2,15 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
   bool,
   func,
@@ -19,6 +24,7 @@ import {
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { find, get, some } from 'lodash';
+import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
@@ -34,7 +40,9 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState
+  EngineOutputNullState,
+  EditTagsDialog,
+  EditMetadataDialog
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
@@ -249,6 +257,9 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
+    isMenuOpen: false,
+    isEditMetadataOpen: false,
+    isEditTagsOpen: false,
     selectedTabValue: 'mediaDetails',
     disableEditBtn: false
   };
@@ -462,6 +473,91 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
+  toggleIsMenuOpen = () => {
+    this.setState(prevState => {
+      return {
+        isMenuOpen: !{ ...prevState }.isMenuOpen
+      };
+    });
+  };
+
+  setMenuTarget = node => {
+    this.target1 = node;
+  };
+
+  onMenuClose = event => {
+    if (event && this.target1.contains(event.target)) {
+      return;
+    }
+    this.setState({ isMenuOpen: false });
+  };
+
+  isDownloadAllowed = () => {
+    if (!this.isMediaPublic(this.props.tdo)) {
+      return true;
+    }
+    const publicMediaDownloadEnabled =
+      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
+    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
+      return true;
+    }
+    return false;
+  };
+
+  isDownloadMediaEnabled = () => {
+    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+  };
+
+  downloadFile = () => {
+    const element = document.createElement('a');
+    element.href = get(this.props.tdo, 'primaryAsset.signedUri', '');
+    element.download = get(this.props, 'tdo.details.veritoneFile.filename');
+    element.target = '_blank';
+    element.click();
+  };
+
+  onMetadataOpen = () => {
+    this.onMenuClose();
+    this.toggleIsEditMetadataOpen();
+  };
+
+  onEditTagsOpen = () => {
+    this.onMenuClose();
+    this.toggleIsEditTagsOpen();
+  };
+
+  onSaveMetadata = metadataToSave => {
+    this.toggleIsEditMetadataOpen();
+    if (!metadataToSave) {
+      return;
+    }
+    this.updateTdo(metadataToSave);
+  };
+
+  toggleIsEditMetadataOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
+      };
+    });
+  };
+
+  onSaveTags = tagsToSave => {
+    this.toggleIsEditTagsOpen();
+    if (!tagsToSave || !tagsToSave.length) {
+      return;
+    }
+    this.updateTdo({ tags: tagsToSave });
+  };
+
+  toggleIsEditTagsOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
+      };
+    });
+  };
+
   render() {
     let {
       engineCategories,
@@ -484,8 +580,29 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
+    const { 
+      isMenuOpen,
+      isEditMetadataOpen,
+      isEditTagsOpen
+    } = this.state;
+
     const isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
+
+    let metadata;
+    if (tdo) {
+      metadata = {
+        ...tdo.details,
+        veritoneProgram: {
+          ...tdo.details.veritoneProgram,
+          programImage:
+            tdo.sourceImageUrl || get(tdo, 'details.veritoneProgram.programImage'),
+          programLiveImage:
+            tdo.thumbnailUrl || get(tdo, 'details.veritoneProgram.programLiveImage')
+        }
+      };
+    }
+
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -585,6 +702,88 @@ class MediaDetailsWidget extends React.Component {
                       </IconButton>
                     </Tooltip>
                   )}
+                  <Tooltip
+                    id="tooltip-show-overflow-menu"
+                    title="Show more options"
+                    PopperProps={{
+                      style: {
+                        pointerEvents: 'none',
+                        marginTop: '5px',
+                        top: '-20px'
+                      }
+                    }}
+                  >
+                    <Manager>
+                      <Target>
+                        <div ref={this.setMenuTarget}>
+                          <IconButton
+                            className={styles.pageHeaderActionButton}
+                            aria-label="More"
+                            aria-haspopup="true"
+                            aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                            onClick={this.toggleIsMenuOpen}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        </div>
+                      </Target>
+                      {isMenuOpen &&
+                      <Popper
+                        className={styles.popperContent}
+                        placement="bottom-end"
+                        eventsEnabled={isMenuOpen}
+                      >
+                        <ClickAwayListener onClickAway={this.onMenuClose}>
+                          <Grow
+                            in={isMenuOpen}
+                            id="menu-list-grow"
+                            style={{ transformOrigin: '0 0 0' }}
+                          >
+                            <Paper>
+                              <MenuList role="menu">
+                                <MenuItem
+                                  classes={{ root: styles.headerMenuItem }}
+                                  onClick={this.onMetadataOpen}
+                                >
+                                  Edit Metadata
+                                </MenuItem>
+                                <MenuItem
+                                  classes={{ root: styles.headerMenuItem }}
+                                  onClick={this.onEditTagsOpen}
+                                >
+                                  Edit Tags
+                                </MenuItem>
+                                {this.isDownloadMediaEnabled() && (
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    disabled={!this.isDownloadAllowed()}
+                                    onClick={this.downloadFile}
+                                  >
+                                    Download
+                                  </MenuItem>
+                                )}
+                                {this.props.contextMenuExtensions &&
+                                  this.props.contextMenuExtensions.tdos.map(
+                                    tdoMenu => (
+                                      <MenuItem
+                                        key={tdoMenu.id}
+                                        classes={{ root: styles.headerMenuItem }}
+                                        // eslint-disable-next-line
+                                        onClick={() =>
+                                          this.handleContextMenuClick(tdoMenu)
+                                        }
+                                      >
+                                        {tdoMenu.label}
+                                      </MenuItem>
+                                    )
+                                  )}
+                              </MenuList>
+                            </Paper>
+                          </Grow>
+                        </ClickAwayListener>
+                      </Popper>}
+                    </Manager>
+                  </Tooltip>
                   {(get(this.props, 'tdo.id') ||
                     get(this.props, 'tdo.details', null)) && (
                     <div className={styles.pageHeaderActionButtonsSeparator} />
@@ -953,6 +1152,26 @@ class MediaDetailsWidget extends React.Component {
               />
             )}
         </Paper>
+        {tdo &&
+          tdo.details &&
+          isEditMetadataOpen && (
+            <EditMetadataDialog
+              isOpen={isEditMetadataOpen}
+              metadata={metadata}
+              onClose={this.toggleIsEditMetadataOpen}
+              onSave={this.onSaveMetadata}
+            />
+          )}
+        {tdo &&
+          tdo.details &&
+          isEditTagsOpen && (
+            <EditTagsDialog
+              isOpen={isEditTagsOpen}
+              tags={tdo.details.tags}
+              onClose={this.toggleIsEditTagsOpen}
+              onSave={this.onSaveTags}
+            />
+          )}
       </FullScreenDialog>
     );
   }
