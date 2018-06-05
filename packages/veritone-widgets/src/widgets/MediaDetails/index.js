@@ -446,7 +446,7 @@ class MediaDetailsWidget extends React.Component {
     });
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
-    const engineMode = get(selectedEngine, 'mode', '').toLowerCase();
+    const engineMode = get(selectedEngine, 'mode');
     const selectedEngineResults = this.props.engineResultsByEngineId[
       selectedEngineId
     ];
@@ -462,7 +462,7 @@ class MediaDetailsWidget extends React.Component {
         return engineResult && engineResult.series && engineResult.series.length;
       }
     );
-    const isRealTimeEngine = engineMode === 'stream' || engineMode === 'chunk';
+    const isRealTimeEngine = engineMode && (engineMode.toLowerCase() === 'stream' || engineMode.toLowerCase() === 'chunk');
     if (isFetchingEngineResults) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
