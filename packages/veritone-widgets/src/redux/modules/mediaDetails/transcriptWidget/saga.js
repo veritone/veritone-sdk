@@ -101,7 +101,7 @@ function* watchContentReceiveData() {
         yield call(TranscriptRedux.receiveData);
         yield put({
           type: TranscriptRedux.UPDATE_EDIT_STATUS,
-          hasChanged: false
+          hasChanged: true
         });
       }
     }
