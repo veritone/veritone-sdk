@@ -39,8 +39,7 @@ export default createReducer(defaultState, {
     return {
       ...state,
       isFetching: false,
-      fetchingFailed: true,
-      enginesById: {}
+      fetchingFailed: true
     };
   }
 });
@@ -49,36 +48,26 @@ function local(state) {
   return state[namespace];
 }
 
-export function fetchEngines(searchQuery, filters = {}) {
+export function fetchEngines(
+  { offset, limit, owned },
+  searchQuery,
+  filters = {},
+  builds = {}
+) {
   return async function action(dispatch, getState) {
     dispatch({ type: FETCH_ENGINES });
 
     const query = `
-      query Engines($name: String = "", $filter: EngineFilter) {
-        engines(name: $name, limit: 1000, owned: false, filter: $filter) {
+      ${engineFieldsFragment}
+      ${engineBuildsFieldFragment}
+      query Engines(
+        $name: String = "", $offset: Int, $limit: Int, $owned: Boolean, $filter: EngineFilter,
+        $buildsOffset: Int, $buildsLimit: Int, $buildsStatusStr: [String], $buildsStatus: [BuildStatus!], $buildsId: ID
+      ) {
+        engines(name: $name, offset: $offset, limit: $limit, owned: $owned, filter: $filter) {
           records {
-            id
-            name
-            description
-            logoPath
-            iconPath
-            rating
-            price
-            deploymentModel
-            ownerOrganization {
-              name
-            }
-            category {
-              iconClass
-              name
-              color
-            }
-            builds(status: ["deployed"]) {
-              records {
-                modifiedDateTime
-                manifest
-              }
-            }
+            ...engineFields
+            ${!isEmpty(builds) ? '...engineBuilds' : null}
           }
         }
       }`;
@@ -93,7 +82,15 @@ export function fetchEngines(searchQuery, filters = {}) {
         query,
         variables: {
           name: searchQuery,
-          filter: pickBy(filters, (filter = []) => filter && !!filter.length)
+          offset,
+          limit,
+          owned,
+          filter: pickBy(filters, (filter = []) => filter && !!filter.length),
+          buildsId: builds.id,
+          buildsStatusStr: builds.status,
+          buildsStatus: builds.buildStatus,
+          buildsOffset: builds.offset,
+          buildsLimit: builds.limit
         },
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
@@ -134,3 +131,37 @@ export function isFetchingEngines(state) {
 export function failedToFetchEngines(state) {
   return local(state).fetchingFailed;
 }
+
+const engineFieldsFragment = `
+  fragment engineFields on Engine {
+    id
+    name
+    description
+    logoPath
+    iconPath
+    rating
+    price
+    deploymentModel
+    ownerOrganization {
+      name
+    }
+    category {
+      iconClass
+      name
+      color
+    }
+  }
+`;
+
+const engineBuildsFieldFragment = `
+  fragment engineBuilds on Engine {
+    builds(offset: $buildsOffset, limit: $buildsLimit, status: $buildsStatusStr, buildStatus: $buildsStatus, id: $buildsId) {
+      records {
+        id
+        status
+        modifiedDateTime
+        manifest
+      }
+    }
+  }
+`;

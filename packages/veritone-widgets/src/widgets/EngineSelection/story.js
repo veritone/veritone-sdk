@@ -58,7 +58,10 @@ class Story extends React.Component {
           </div>
         )}
 
-        <span id="engine-selection-widget" />
+        <span
+          id="engine-selection-widget"
+          style={{ display: 'block', height: '710px' }}
+        />
       </span>
     );
   }

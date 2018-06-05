@@ -60,7 +60,7 @@ export default class EngineListView extends React.Component {
     allEnginesChecked: bool.isRequired,
     selectedEngineIds: arrayOf(string).isRequired,
     checkedEngineIds: arrayOf(string).isRequired,
-    preSelectedEngineIds: arrayOf(string),
+    initialSelectedEngineIds: arrayOf(string),
     onViewDetail: func.isRequired,
     searchQuery: string,
     isFetchingEngines: bool.isRequired,
@@ -98,9 +98,9 @@ export default class EngineListView extends React.Component {
     if (
       isEmpty(prevProps.allEngines) &&
       !isEmpty(this.props.allEngines) &&
-      this.props.preSelectedEngineIds
+      this.props.initialSelectedEngineIds
     ) {
-      this.props.selectEngines(this.props.preSelectedEngineIds);
+      this.props.selectEngines(this.props.initialSelectedEngineIds);
     }
   }
 

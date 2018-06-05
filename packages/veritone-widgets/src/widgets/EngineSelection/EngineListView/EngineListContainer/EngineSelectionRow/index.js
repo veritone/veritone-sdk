@@ -79,10 +79,11 @@ export default class EngineSelectionRow extends React.Component {
     return (
       <div className={styles.row}>
         <div className={styles.avatar}>
-          {this.props.engine.iconPath && (
+          {this.props.engine.iconPath ? (
             <img src={this.props.engine.iconPath} />
+          ) : (
+            <i className="icon-engines" />
           )}
-          {!this.props.engine.iconPath && <i className="icon-engines" />}
           <div className={styles.engineSelect}>
             <Checkbox
               color="primary"

@@ -11,7 +11,7 @@ module.exports = {
         loader: 'babel-loader'
       },
       {
-        test: /\.scss$/,
+        test: /\.s?css$/,
         loaders: [
           'style-loader',
           {
@@ -32,10 +32,6 @@ module.exports = {
           limit: 8192,
           name: 'images/[name].[ext]?[hash]'
         }
-      },
-      {
-        test: /\.css$/,
-        loader: 'style-loader!css-loader'
       }
     ]
   }

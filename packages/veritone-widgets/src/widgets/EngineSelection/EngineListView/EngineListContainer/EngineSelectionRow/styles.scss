@@ -1,11 +1,10 @@
-@import 'node_modules/veritone-react-common/src/styles/modules/_muiTypography';
-@import 'node_modules/veritone-react-common/src/styles/modules/_variables';
+@import '~veritone-react-common/src/styles/modules/_muiTypography';
+@import '~veritone-react-common/src/styles/modules/_variables';
 @import '../../../common';
 
 .row {
-  $height: 177px;
   padding-bottom: 20px;
-  max-height: $height;
+  max-height: 177px;
   border-top: 1px solid $grey-4;
   border-bottom: 1px solid $grey-4;
 }

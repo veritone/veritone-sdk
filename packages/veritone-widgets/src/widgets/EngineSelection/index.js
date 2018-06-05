@@ -9,7 +9,7 @@ import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
-const connectWrapper = connect(
+@connect(
   state => ({
     deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(state),
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state)
@@ -21,9 +21,7 @@ const connectWrapper = connect(
   },
   null,
   { withRef: true }
-);
-
-@connectWrapper
+)
 class EngineSelection extends React.Component {
   static propTypes = {
     onSave: func.isRequired,
@@ -39,8 +37,8 @@ class EngineSelection extends React.Component {
     setAllEnginesSelected: func.isRequired,
     setDeselectedEngineIds: func.isRequired,
     allEnginesSelected: bool,
-    preDeselectedEngineIds: arrayOf(string),
-    preSelectedEngineIds: arrayOf(string),
+    initialDeselectedEngineIds: arrayOf(string),
+    initialSelectedEngineIds: arrayOf(string),
     selectedEngineIds: arrayOf(string),
     deselectedEngineIds: arrayOf(string),
     hideActions: bool
@@ -58,7 +56,7 @@ class EngineSelection extends React.Component {
   };
 
   componentDidMount() {
-    this.props.setDeselectedEngineIds(this.props.preDeselectedEngineIds);
+    this.props.setDeselectedEngineIds(this.props.initialDeselectedEngineIds);
     this.props.setAllEnginesSelected(this.props.allEnginesSelected);
     this.props.fetchEngines();
   }
@@ -103,7 +101,7 @@ class EngineSelection extends React.Component {
         actionMenuItems={this.props.actionMenuItems}
         allEnginesSelected={this.props.allEnginesSelected}
         hideActions={this.props.hideActions}
-        preSelectedEngineIds={this.props.preSelectedEngineIds}
+        initialSelectedEngineIds={this.props.initialSelectedEngineIds}
       />
     );
   }

@@ -53,7 +53,7 @@ export default class EngineList extends React.Component {
 
     return (
       <InfiniteLoader
-        isRowLoaded={this.isRowLoaded} // eslint-disable-line
+        isRowLoaded={this.isRowLoaded}
         loadMoreRows={this.handleLoadMoreRows}
         rowCount={rowCount}
       >

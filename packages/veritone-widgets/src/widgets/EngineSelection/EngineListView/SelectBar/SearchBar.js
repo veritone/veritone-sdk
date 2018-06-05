@@ -24,12 +24,10 @@ export default class SearchBar extends React.Component {
     searchQuery: ''
   };
 
-  UNSAFE_componentWillMount(props) {
-    this.forwardChange = debounce(
-      event => this.props.onSearch(event.target.value),
-      300
-    );
-  }
+  forwardChange = debounce(
+    event => this.props.onSearch(event.target.value),
+    300
+  );
 
   handleToggleSearch = () => {
     this.props.onToggleSearch();
@@ -40,7 +38,7 @@ export default class SearchBar extends React.Component {
   };
 
   handleChange = event => {
-    if (!event.target.value || event.target.value === this.props.searchQuery) {
+    if (event.target.value === this.props.searchQuery) {
       return;
     }
 
@@ -49,43 +47,39 @@ export default class SearchBar extends React.Component {
   };
 
   renderOpenedState = () => (
-    <div>
-      <TextField
-        className={styles.searchBar}
-        placeholder="Search by engine name"
-        defaultValue={this.props.searchQuery}
-        onChange={this.handleChange}
-        inputProps={{
-          className: styles.searchBarInput
-        }}
-        InputProps={{
-          classes: {
-            underline: styles.searchBarUnderline
-          },
-          endAdornment: (
-            <InputAdornment className={styles.searchBarIcon} position="end">
-              <IconButton
-                className={styles.searchBarIcon}
-                onClick={this.handleToggleSearch}
-              >
-                <CloseIcon />
-              </IconButton>
-            </InputAdornment>
-          )
-        }}
-      />
-    </div>
+    <TextField
+      className={styles.searchBar}
+      placeholder="Search by engine name"
+      defaultValue={this.props.searchQuery}
+      onChange={this.handleChange}
+      inputProps={{
+        className: styles.searchBarInput
+      }}
+      InputProps={{
+        classes: {
+          underline: styles.searchBarUnderline
+        },
+        endAdornment: (
+          <InputAdornment className={styles.searchBarIcon} position="end">
+            <IconButton
+              className={styles.searchBarIcon}
+              onClick={this.handleToggleSearch}
+            >
+              <CloseIcon />
+            </IconButton>
+          </InputAdornment>
+        )
+      }}
+    />
   );
 
   renderClosedState = () => (
-    <div>
-      <IconButton
-        onClick={this.handleToggleSearch}
-        className={styles.searchBarIcon}
-      >
-        <SearchIcon />
-      </IconButton>
-    </div>
+    <IconButton
+      onClick={this.handleToggleSearch}
+      className={styles.searchBarIcon}
+    >
+      <SearchIcon />
+    </IconButton>
   );
 
   render() {

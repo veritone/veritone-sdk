@@ -1,13 +1,4 @@
-import {
-  get,
-  set,
-  omit,
-  without,
-  union,
-  merge,
-  isArray,
-  difference
-} from 'lodash';
+import { get, set, omit, without, union, merge, difference } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer } = helpers;
 const { engine: engineModule } = modules;
@@ -79,9 +70,8 @@ export default createReducer(defaultState, {
     };
   },
   [CHECK_ALL_ENGINES](state, action) {
-    const engineIds = isArray(action.payload.engines)
-      ? action.payload.engines
-      : Object.keys(action.payload.engines);
+    const engineIds = action.payload.engines;
+
     return {
       ...state,
       checkedEngineIds: engineIds,
@@ -221,7 +211,16 @@ export function refetchEngines() {
   return function action(dispatch, getState) {
     const searchQuery = getSearchQuery(getState());
     const filters = getEngineFilters(getState());
-    dispatch(engineModule.fetchEngines(searchQuery, filters));
+    dispatch(
+      engineModule.fetchEngines(
+        { offset: 0, limit: 1000, owned: false },
+        searchQuery,
+        filters,
+        {
+          status: ['deployed']
+        }
+      )
+    );
   };
 }
 
