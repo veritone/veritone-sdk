@@ -8,6 +8,9 @@ import filePickerReducer, {
 import engineSelectionReducer, {
   namespace as engineSelectionNamespace
 } from './modules/engineSelection';
+import notificationsReducer, {
+  namespace as notificationsNamespace
+} from './modules/notifications';
 
 const {
   user: { reducer: userReducer, namespace: userNamespace },
@@ -22,6 +25,7 @@ export default function createReducer(asyncReducers) {
   return combineReducers({
     [filePickerNamespace]: filePickerReducer,
     [engineSelectionNamespace]: engineSelectionReducer,
+    [notificationsNamespace]: notificationsReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import { map } from 'lodash';
 import { withProps } from 'recompose';
 import { bool, func, objectOf, any } from 'prop-types';
@@ -23,11 +24,11 @@ const app = VeritoneApp();
 }))
 export default class BaseStory extends React.Component {
   static propTypes = {
-    widget: func.isRequired,
+    widget: func,
     widgetProps: objectOf(any),
     widgetInstanceMethods: objectOf(func),
     componentProps: objectOf(any),
-    componentClass: func.isRequired,
+    componentClass: func,
     store: objectOf(any).isRequired, // redux store
 
     userIsAuthenticated: bool,
@@ -61,6 +62,10 @@ export default class BaseStory extends React.Component {
   }
 
   mountOrDestroyWidgetIfNeeded = () => {
+    if (!this.props.widget) {
+      return;
+    }
+
     if (!this.state.showingWidget) {
       this._widget && this._widget.destroy();
       return;
@@ -91,64 +96,74 @@ export default class BaseStory extends React.Component {
 
   render() {
     return (
-      <div>
-        <span id="widget" />
+      <Provider store={this.props.store}>
+        <div>
+          <span id="widget" />
 
-        {this.state.showingWidget && (
-          <div>
-            {map(this.props.widgetInstanceMethods, (handler, key) => (
-              // eslint-disable-next-line
-              <button key={key} onClick={() => handler(this._widget)}>
-                {key}
-              </button>
+          {this.state.showingWidget &&
+            this.props.widget && (
+              <div>
+                {map(this.props.widgetInstanceMethods, (handler, key) => (
+                  // eslint-disable-next-line
+                  <button key={key} onClick={() => handler(this._widget)}>
+                    {key}
+                  </button>
+                ))}
+              </div>
+            )}
+
+          {this.state.showingWidget &&
+            !this.props.widget &&
+            'No widget specified'}
+
+          {!this.state.showingWidget &&
+            (this.props.componentClass ? (
+              <this.props.componentClass
+                store={this.props.store} // eslint-disable-line
+                {...this.props.componentProps}
+              />
+            ) : (
+              'No component class specified'
             ))}
-          </div>
-        )}
 
-        {!this.state.showingWidget && (
-          <this.props.componentClass
-            store={this.props.store} // eslint-disable-line
-            {...this.props.componentProps}
-          />
-        )}
+          <AppContainer appBarOffset>
+            <p>
+              <Switch onChange={this.handleSwitchComponentType} />
+              {this.state.showingWidget ? 'Widget' : 'Component'}
+            </p>
+            {this.props.fetchUserFailed && (
+              <p>failed to log in-- is your token wrong?</p>
+            )}
 
-        <AppContainer appBarOffset>
-          <p>
-            <Switch onChange={this.handleSwitchComponentType} />
-            {this.state.showingWidget ? 'Widget' : 'Component'}
-          </p>
-          {this.props.fetchUserFailed && (
-            <p>failed to log in-- is your token wrong?</p>
-          )}
-
-          {!this.props.userIsAuthenticated && (
-            <div>
-              <p>
-                <input
-                  type="text"
-                  value={this.state.sessionToken}
-                  onChange={this.handleChangeSessionToken}
-                />
-                <button
-                  onClick={this.handleLogin}
-                  disabled={!this.state.sessionToken}
-                >
-                  {this.state.sessionToken
-                    ? 'Log In via session token'
-                    : 'Log In via session token (Please set a token)'}
-                </button>
-              </p>
-              or log in via oauth:
-              <p>
-                implicit:
-                <span id="login-button-widget-implicit" />
-                auth code:
-                <span id="login-button-widget-auth-code" />
-              </p>
-            </div>
-          )}
-        </AppContainer>
-      </div>
+            {!this.props.userIsAuthenticated && (
+              <div>
+                <p>
+                  <input
+                    type="text"
+                    value={this.state.sessionToken}
+                    onChange={this.handleChangeSessionToken}
+                  />
+                  <button
+                    onClick={this.handleLogin}
+                    disabled={!this.state.sessionToken}
+                  >
+                    {this.state.sessionToken
+                      ? 'Log In via session token'
+                      : 'Log In via session token (Please set a token)'}
+                  </button>
+                </p>
+                or log in via oauth:
+                <p>
+                  implicit:
+                  <span id="login-button-widget-implicit" />
+                  auth code:
+                  <span id="login-button-widget-auth-code" />
+                </p>
+              </div>
+            )}
+          </AppContainer>
+        </div>
+      </Provider>
     );
   }
 }

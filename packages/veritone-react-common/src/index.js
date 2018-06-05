@@ -10,6 +10,7 @@ export Avatar from './components/Avatar';
 export Chip from './components/Chip';
 export Lozenge from './components/Lozenge';
 export Truncate from './components/Truncate';
+export DelayedProgress from './components/DelayedProgress';
 export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
