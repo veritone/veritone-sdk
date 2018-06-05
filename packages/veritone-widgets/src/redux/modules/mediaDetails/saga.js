@@ -692,13 +692,13 @@ function* createTranscriptBulkEditAssetSaga(
 ) {
   let createFileAssetResponse;
   try {
-    createFileAssetResponse = yield call(createFileAssetSaga, {
+    createFileAssetResponse = yield call(createFileAssetSaga,
       widgetId,
       type,
       contentType,
       sourceData,
       text
-    });
+    );
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
@@ -750,7 +750,7 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
 
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.id');
+  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
   const originalTranscriptAssetId = get(
     getPrimaryTranscriptAssetResponse,
     'data.temporalDataObject.primaryAsset.id'
@@ -794,7 +794,7 @@ function* createTranscriptBulkEditAssetSaga(
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
-  if (!get(runBulkEditJobResponse, 'data.id')) {
+  if (!get(runBulkEditJobResponse, 'data.createJob.id')) {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
         error:
@@ -803,7 +803,7 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
   if (
-    isEmpty(get(runBulkEditJobResponse, 'data.tasks.records')) ||
+    isEmpty(get(runBulkEditJobResponse, 'data.createJob.tasks.records')) ||
     !get(runBulkEditJobResponse.data.tasks.records[0], 'id')
   ) {
     return yield put(
