@@ -446,6 +446,7 @@ class MediaDetailsWidget extends React.Component {
     });
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
+    const engineMode = get(selectedEngine, 'mode', '').toLowerCase();
     const selectedEngineResults = this.props.engineResultsByEngineId[
       selectedEngineId
     ];
@@ -461,14 +462,18 @@ class MediaDetailsWidget extends React.Component {
         return engineResult && engineResult.series && engineResult.series.length;
       }
     );
+    const isRealTimeEngine = engineMode === 'stream' || engineMode === 'chunk';
     if (isFetchingEngineResults) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
-    } else if (engineStatus === 'complete' && !hasEngineResults) {
+    } else if (!hasEngineResults && engineStatus === 'complete') {
       // show no data only for completed engine w/no results
       engineStatus = 'no_data';
-    } else if ((engineStatus === 'complete' || engineStatus === 'running') && hasEngineResults) {
+    } else if (hasEngineResults && engineStatus === 'complete') {
       // nullstate not needed
+      return;
+    } else if (hasEngineResults && isRealTimeEngine && (engineStatus === 'running' || engineStatus === 'failed')) {
+      // nullstate not needed for RealTime running or failed engine if there are results available
       return;
     }
     let onRunProcessCallback = null;

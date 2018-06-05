@@ -106,6 +106,7 @@ function* loadTdoSaga(widgetId, tdoId) {
             engine {
               id
               name
+              mode
               category {
                 id
                 name
