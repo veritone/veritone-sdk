@@ -42,7 +42,8 @@ import {
   StructuredDataEngineOutput,
   EngineOutputNullState,
   EditTagsDialog,
-  EditMetadataDialog
+  EditMetadataDialog,
+  withMuiThemeProvider
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
@@ -83,7 +84,8 @@ import widget from '../../shared/widget';
     schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
-    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
+    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -102,6 +104,7 @@ import widget from '../../shared/widget';
   null,
   { withRef: true }
 )
+@withMuiThemeProvider
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
     id: string.isRequired,
@@ -116,6 +119,7 @@ class MediaDetailsWidget extends React.Component {
     onClose: func,
     loadTdoRequest: func,
     updateTdoRequest: func,
+    isUserGeneratedEngineId: func,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -451,26 +455,50 @@ class MediaDetailsWidget extends React.Component {
     const selectedEngine = find(engines, {
       id: selectedEngineId
     });
-    const engineStatus = get(selectedEngine, 'status');
+    let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
+    const engineMode = get(selectedEngine, 'mode');
     const selectedEngineResults = this.props.engineResultsByEngineId[
       selectedEngineId
     ];
-    const selectedEngineHasResults = some(
+    const isFetchingEngineResults = some(
       selectedEngineResults,
       engineResult => {
-        return engineResult && engineResult.series;
+        return engineResult && engineResult.status === 'FETCHING';
       }
     );
-    if (!selectedEngineHasResults) {
-      return (
-        <EngineOutputNullState
-          engineStatus={engineStatus}
-          engineName={engineName}
-          onRunProcess={this.handleRunProcess}
-        />
-      );
+    const hasEngineResults = selectedEngineResults && selectedEngineResults.length && some(
+      selectedEngineResults,
+      engineResult => {
+        return engineResult && engineResult.series && engineResult.series.length;
+      }
+    );
+    const isRealTimeEngine = engineMode && (engineMode.toLowerCase() === 'stream' || engineMode.toLowerCase() === 'chunk');
+    if (isFetchingEngineResults) {
+      // show fetching nullstate if fetching engine results
+      engineStatus = 'fetching';
+    } else if (!hasEngineResults && engineStatus === 'complete') {
+      // show no data only for completed engine w/no results
+      engineStatus = 'no_data';
+    } else if (hasEngineResults && engineStatus === 'complete') {
+      // nullstate not needed
+      return;
+    } else if (hasEngineResults && isRealTimeEngine && (engineStatus === 'running' || engineStatus === 'failed')) {
+      // nullstate not needed for RealTime running or failed engine if there are results available
+      return;
     }
+    let onRunProcessCallback = null;
+    if (!this.props.isUserGeneratedEngineId(selectedEngineId)) {
+      // enable rerun for non-user generated engine results
+      onRunProcessCallback = this.handleRunProcess;
+    }
+    return (
+      <EngineOutputNullState
+        engineStatus={engineStatus}
+        engineName={engineName}
+        onRunProcess={onRunProcessCallback}
+      />
+    );
   };
 
   toggleIsMenuOpen = () => {
@@ -586,7 +614,9 @@ class MediaDetailsWidget extends React.Component {
       isEditTagsOpen
     } = this.state;
 
-    const isImage = /^image\/.*/.test(get(tdo, 'details.veritoneFile.mimetype'));
+	const isImage = /^image\/.*/.test(
+      get(tdo, 'details.veritoneFile.mimetype')
+    );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     let metadata;
@@ -803,7 +833,7 @@ class MediaDetailsWidget extends React.Component {
 
               {isLoadingTdo && (
                 <div className={styles.tdoLoadingProgress}>
-                  <CircularProgress size={100} color={'primary'} />
+                  <CircularProgress size={80} color="primary" thickness={1} />
                 </div>
               )}
               {!isLoadingTdo &&
@@ -948,28 +978,29 @@ class MediaDetailsWidget extends React.Component {
               {selectedEngineCategory &&
                 !(selectedEngineCategory.categoryType === 'transcript' && isEditModeEnabled) &&
                 !(selectedEngineCategory.categoryType === 'correlation' && isExpandedMode) && (
-                <div className={styles.mediaView}>
-                  {isImage ? (
-                    <Image
-                      src={this.getPrimaryAssetUri()}
-                      width="100%"
-                      height="100%"
-                      type="contain"
-                    />
-                  ) : (
-                    <MediaPlayer
-                      store={this.context.store}
-                      playerRef={this.mediaPlayerRef}
-                      src={this.getPrimaryAssetUri()}
-                      streams={get(this.props, 'tdo.streams')}
-                    />
-                  )}
-                  {this.getMediaSource() &&
-                    <div className={styles.sourceLabel}>
-                      Source: {this.getMediaSource()}
-                    </div>}
-                </div>
-              )}
+                  <div className={styles.mediaView}>
+                    {isImage ? (
+                      <Image
+                        src={this.getPrimaryAssetUri()}
+                        width="100%"
+                        height="100%"
+                        type="contain"
+                      />
+                    ) : (
+                      <MediaPlayer
+                        store={this.context.store}
+                        playerRef={this.mediaPlayerRef}
+                        src={this.getPrimaryAssetUri()}
+                        streams={get(this.props, 'tdo.streams')}
+                      />
+                    )}
+                    {this.getMediaSource() && (
+                      <div className={styles.sourceLabel}>
+                        Source: {this.getMediaSource()}
+                      </div>
+                    )}
+                  </div>
+                )}
               {selectedEngineId && (
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
@@ -996,7 +1027,7 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         editMode={isEditModeEnabled}
-                        allowEdit={this.handleDisableEditBtn}
+                        disableEdit={this.handleDisableEditBtn}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
                         }

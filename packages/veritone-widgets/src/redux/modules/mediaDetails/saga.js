@@ -9,11 +9,8 @@ import {
 } from 'redux-saga/effects';
 import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
+import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
 import { getTranscriptEditAssetData } from './transcriptWidget';
-import {
-  getFaceEngineAssetData,
-  removeUserDetectedFaces
-} from './faceEngineOutput';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -65,11 +62,13 @@ import {
   createFileAssetFailure,
   createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
-  isEditModeEnabled
+  isEditModeEnabled,
+  isUserGeneratedTranscriptEngineId,
+  isUserGeneratedFaceEngineId
 } from '.';
 
+import { ADD_DETECTED_FACE } from './faceEngineOutput';
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
-import { UPDATE_ENGINE_RESULT_ENTITY } from './faceEngineOutput';
 
 const tdoInfoQueryClause = `id
     details
@@ -107,6 +106,7 @@ function* loadTdoSaga(widgetId, tdoId) {
             engine {
               id
               name
+              mode
               category {
                 id
                 name
@@ -166,10 +166,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     tdo.engineRuns.records
       .map(engineRun => {
         const engineId = get(engineRun, 'engine.id');
-        if (
-          engineId === 'bulk-edit-transcript' ||
-          engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
-        ) {
+        if (isUserGeneratedTranscriptEngineId(engineId)) {
           engineRun.engine.category = {
             id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
             name: 'Transcription',
@@ -177,10 +174,7 @@ function* loadTdoSaga(widgetId, tdoId) {
             categoryType: 'transcript',
             editable: true
           };
-        } else if (
-          engineId === 'user-edited-face-engine-results' ||
-          engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd'
-        ) {
+        } else if (isUserGeneratedFaceEngineId(engineId)) {
           engineRun.engine.category = {
             id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
             name: 'Facial Detection',
@@ -362,6 +356,7 @@ function* loadEngineResultsSaga(
     loadEngineResultsSuccess(response.data.engineResults.records, {
       startOffsetMs,
       stopOffsetMs,
+      engineId,
       widgetId
     })
   );
@@ -697,13 +692,13 @@ function* createTranscriptBulkEditAssetSaga(
 ) {
   let createFileAssetResponse;
   try {
-    createFileAssetResponse = yield call(createFileAssetSaga, {
+    createFileAssetResponse = yield call(createFileAssetSaga,
       widgetId,
       type,
       contentType,
       sourceData,
       text
-    });
+    );
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
@@ -755,7 +750,7 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
 
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.id');
+  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
   const originalTranscriptAssetId = get(
     getPrimaryTranscriptAssetResponse,
     'data.temporalDataObject.primaryAsset.id'
@@ -799,7 +794,7 @@ function* createTranscriptBulkEditAssetSaga(
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
-  if (!get(runBulkEditJobResponse, 'data.id')) {
+  if (!get(runBulkEditJobResponse, 'data.createJob.id')) {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
         error:
@@ -808,7 +803,7 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
   if (
-    isEmpty(get(runBulkEditJobResponse, 'data.tasks.records')) ||
+    isEmpty(get(runBulkEditJobResponse, 'data.createJob.tasks.records')) ||
     !get(runBulkEditJobResponse.data.tasks.records[0], 'id')
   ) {
     return yield put(
@@ -1286,12 +1281,11 @@ function* watchTranscriptStatus() {
 }
 
 function* watchFaceEngineEntityUpdate() {
-  yield takeEvery(
-    action => action.type === UPDATE_ENGINE_RESULT_ENTITY,
-    function*(action) {
-      yield put(toggleSaveMode(true));
-    }
-  );
+  yield takeEvery(action => action.type === ADD_DETECTED_FACE, function*(
+    action
+  ) {
+    yield put(toggleSaveMode(true));
+  });
 }
 
 function* watchSaveAssetData() {
@@ -1424,7 +1418,7 @@ function* watchCancelEdit() {
       const selectedEngineCategory = action.payload.selectedEngineCategory;
 
       if (selectedEngineCategory.categoryType === 'face') {
-        yield put(removeUserDetectedFaces());
+        yield put(cancelFaceEdits());
       }
     }
   });

@@ -1,5 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import { addMilliseconds } from 'date-fns';
+import { format } from 'helpers/date';
 import GeoEngineOutput from './';
 
 const sampleData = [
@@ -58,12 +60,13 @@ const sampleData = [
 ];
 
 describe('Geo Engine Output', () => {
+  const startTime = '2018-01-31T20:03:45.000Z';
   const geoEngineOutput = mount(
     <GeoEngineOutput
       data={sampleData}
       engines={[{ id: '1', name: 'Engine-X' }, { id: '2', name: 'Engine-Y' }]}
       selectedEngineId="1"
-      startTimeStamp="2018-01-31T20:03:45.000Z"
+      startTimeStamp={startTime}
     />
   );
 
@@ -92,9 +95,62 @@ describe('Geo Engine Output', () => {
     expect(gpsEntries.at(3).text()).toMatch(/Lat:\s1500Long:\s1500/);
 
     const textButtons = timeView.find('TextButton');
-    expect(textButtons.at(0).text()).toEqual('12:03:45 PM - 12:03:47 PM');
-    expect(textButtons.at(1).text()).toEqual('12:03:47 PM - 12:03:50 PM');
-    expect(textButtons.at(2).text()).toEqual('12:03:50 PM - 12:03:52 PM');
-    expect(textButtons.at(3).text()).toEqual('12:03:52 PM - 12:03:57 PM');
+    let startTimeString, stopTimeString;
+    startTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[0].series[0].startTimeMs
+    );
+    stopTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[0].series[0].stopTimeMs
+    );
+    expect(textButtons.at(0).text()).toEqual(
+      `${format(startTimeString, 'hh:mm:ss A')} - ${format(
+        stopTimeString,
+        'hh:mm:ss A'
+      )}`
+    );
+    startTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[0].series[1].startTimeMs
+    );
+    stopTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[0].series[1].stopTimeMs
+    );
+    expect(textButtons.at(1).text()).toEqual(
+      `${format(startTimeString, 'hh:mm:ss A')} - ${format(
+        stopTimeString,
+        'hh:mm:ss A'
+      )}`
+    );
+    startTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[1].series[0].startTimeMs
+    );
+    stopTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[1].series[0].stopTimeMs
+    );
+    expect(textButtons.at(2).text()).toEqual(
+      `${format(startTimeString, 'hh:mm:ss A')} - ${format(
+        stopTimeString,
+        'hh:mm:ss A'
+      )}`
+    );
+    startTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[1].series[1].startTimeMs
+    );
+    stopTimeString = addMilliseconds(
+      new Date(startTime),
+      sampleData[1].series[1].stopTimeMs
+    );
+    expect(textButtons.at(3).text()).toEqual(
+      `${format(startTimeString, 'hh:mm:ss A')} - ${format(
+        stopTimeString,
+        'hh:mm:ss A'
+      )}`
+    );
   });
 });

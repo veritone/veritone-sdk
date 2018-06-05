@@ -1,24 +1,29 @@
 import React, { Component, Fragment } from 'react';
-import { number, bool, string, func, shape, arrayOf } from 'prop-types';
+import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
 import { isEqual } from 'lodash';
 
 import { connect } from 'react-redux';
 import { util } from 'veritone-redux-common';
 import * as TranscriptRedux from '../../redux/modules/mediaDetails/transcriptWidget';
-import transcriptSaga, { changeWidthDebounce } from '../../redux/modules/mediaDetails/transcriptWidget/saga';
+import transcriptSaga, {
+  changeWidthDebounce
+} from '../../redux/modules/mediaDetails/transcriptWidget/saga';
 import { AlertDialog } from 'veritone-react-common';
-import { TranscriptEngineOutput, TranscriptEditMode } from 'veritone-react-common';
+import {
+  TranscriptEngineOutput,
+  TranscriptEditMode
+} from 'veritone-react-common';
 
 const saga = util.reactReduxSaga.saga;
 
 @saga(transcriptSaga)
 @connect(
-  (state) => ({
+  state => ({
     hasChanged: TranscriptRedux.hasChanged(state),
     currentData: TranscriptRedux.currentData(state)
   }),
   {
-    //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option 
+    //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
     //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
@@ -54,9 +59,7 @@ export default class TranscriptEngineOutputWidget extends Component {
         startTimeMs: number,
         stopTimeMs: number,
         status: string,
-        series: arrayOf(
-          shape({})
-        )
+        series: arrayOf(shape({}))
       })
     ),
 
@@ -93,8 +96,9 @@ export default class TranscriptEngineOutputWidget extends Component {
     change: func.isRequired,
     clearData: func.isRequired,
     receiveData: func.isRequired,
-    hasChanged: bool
-  }
+    hasChanged: bool,
+    outputNullState: node
+  };
 
   state = {
     alert: false,
@@ -102,7 +106,7 @@ export default class TranscriptEngineOutputWidget extends Component {
     props: this.props
   };
 
-  static getDerivedStateFromProps (nextProps, prevState) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     const prevProps = prevState.props;
     const hasNewData = !isEqual(prevProps.data, nextProps.data);
     const hasInitialData = isEqual(prevProps.currentData, nextProps.data);
@@ -114,11 +118,11 @@ export default class TranscriptEngineOutputWidget extends Component {
     this.props.clearData && this.props.clearData();
   }
 
-  handleContentChanged = (value) => {
+  handleContentChanged = value => {
     this.props.change(value);
-  }
+  };
 
-  handleOnEditModeChange = (value) => {
+  handleOnEditModeChange = value => {
     if (this.props.hasChanged) {
       this.setState({
         alert: true,
@@ -127,29 +131,30 @@ export default class TranscriptEngineOutputWidget extends Component {
     } else {
       this.setState({
         alert: false,
-        editMode: value.type,
+        editMode: value.type
       });
     }
-  }
+  };
 
-  handleAlertConfirm = (value) => {
+  handleAlertConfirm = value => {
     if (value === 'cancel') {
       this.setState({
-        alert: false,
+        alert: false
       });
-    } else {  // value = approve
+    } else {
+      // value = approve
       this.props.reset();
-      this.setState((prevState) => {
+      this.setState(prevState => {
         return {
           alert: false,
           editMode: prevState.pendingEditMode,
           pendingEditMode: undefined
-        }
+        };
       });
     }
-  }
+  };
 
-  render () {
+  render() {
     const {
       title,
       currentData,
@@ -167,10 +172,12 @@ export default class TranscriptEngineOutputWidget extends Component {
       neglectableTimeMs,
       estimatedDisplayTimeMs,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      outputNullState
     } = this.props;
 
-    const alertDescription = 'It looks like you have been editing something. If you leave before saving, your changes will be lost.';
+    const alertDescription =
+      'It looks like you have been editing something. If you leave before saving, your changes will be lost.';
     const cancelButtonLabel = 'Cancel';
     const approveButtonLabel = 'Continue';
 
@@ -178,40 +185,34 @@ export default class TranscriptEngineOutputWidget extends Component {
       <Fragment>
         <TranscriptEngineOutput
           title={title}
-
           data={currentData}
-
           engines={engines}
           selectedEngineId={selectedEngineId}
-          
           className={className}
           headerClassName={headerClassName}
           contentClassName={contentClassName}
-          
           editMode={editMode}
           onChange={this.handleContentChanged}
           editType={this.state.editMode}
           onEditTypeChange={this.handleOnEditModeChange}
-      
           onClick={onClick}
           onScroll={onScroll}
           onEngineChange={onEngineChange}
           onExpandClicked={onExpandClicked}
-      
           mediaLengthMs={mediaLengthMs}
           neglectableTimeMs={neglectableTimeMs}
           estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-      
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+          outputNullState={outputNullState}
         />
-        <AlertDialog 
-          open = {this.state.alert}
-          content = {alertDescription}
-          cancelButtonLabel = {cancelButtonLabel}
-          approveButtonLabel = {approveButtonLabel}
-          onCancel = {this.handleAlertConfirm}
-          onApprove = {this.handleAlertConfirm}
+        <AlertDialog
+          open={this.state.alert}
+          content={alertDescription}
+          cancelButtonLabel={cancelButtonLabel}
+          approveButtonLabel={approveButtonLabel}
+          onCancel={this.handleAlertConfirm}
+          onApprove={this.handleAlertConfirm}
         />
       </Fragment>
     );

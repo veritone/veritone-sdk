@@ -22,30 +22,28 @@ class IngestionJobListWidget extends React.Component {
     super(props);
     this.state = {
       jobs: props.jobs
-    }
+    };
   }
 
   handleFetchData = ({ start, end }) => {
     const perPage = end - start + 1;
     const jobsCount = this.state.jobs.length;
 
-    if (this.props.fetchData && (!this.state.jobs[end + 1] || (jobsCount - perPage < perPage))) {
-      const limit = !(jobsCount % perPage)
-        ? perPage
-        : (jobsCount % perPage);
+    if (
+      this.props.fetchData &&
+      (!this.state.jobs[end + 1] || jobsCount - perPage < perPage)
+    ) {
+      const limit = !(jobsCount % perPage) ? perPage : jobsCount % perPage;
 
-      this.props.fetchData(
-        limit,
-        jobsCount
-      );
+      this.props.fetchData(limit, jobsCount);
     }
-  }
+  };
 
-  updateJobs = (jobs) => {
+  updateJobs = jobs => {
     this.setState({
       jobs
-    })
-  }
+    });
+  };
 
   render() {
     const viewProps = omit(this.props, ['onCreateJob', 'jobs', 'fetchData']);
