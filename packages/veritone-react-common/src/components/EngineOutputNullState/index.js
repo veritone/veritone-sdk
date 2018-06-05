@@ -8,7 +8,8 @@ import { includes } from 'lodash';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-const nullStateImage = '//static.veritone.com/veritone-ui/engine-error-red.svg';
+const errorRunningEngineImage = '//static.veritone.com/veritone-ui/engine-error-red.svg';
+const warningNoOutputDataImage = '//static.veritone.com/veritone-ui/warning-icon-lg.svg';
 
 @withMuiThemeProvider
 export default class EngineOutputNullState extends Component {
@@ -29,13 +30,23 @@ export default class EngineOutputNullState extends Component {
     );
   }
 
+  isFetching(engineStatus) {
+    console.log(engineStatus);
+    return engineStatus === 'fetching';
+  }
+
+  isNoData(engineStatus) {
+    console.log(engineStatus);
+    return engineStatus === 'no_data';
+  }
+
   render() {
     const { engineName, onRunProcess, engineStatus } = this.props;
     return (
       <div className={styles.container}>
         {this.isError(engineStatus) && (
           <div>
-            <img src={nullStateImage} />
+            <img src={errorRunningEngineImage} />
             <p>Error Running {engineName}</p>
             {onRunProcess && (
               <Button onClick={onRunProcess} variant="raised" color="primary">
@@ -52,6 +63,17 @@ export default class EngineOutputNullState extends Component {
           <div>
             <CircularProgress size={80} color="primary" thickness={1} />
             <p>Engine Processing...</p>
+          </div>
+        )}
+        {this.isFetching(engineStatus) && (
+          <div>
+            <CircularProgress size={80} color="primary" thickness={1} />
+          </div>
+        )}
+        {this.isNoData(engineStatus) && (
+          <div>
+            <img src={warningNoOutputDataImage} />
+            <p>No data</p>
           </div>
         )}
       </div>

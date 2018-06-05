@@ -65,7 +65,9 @@ import {
   createFileAssetFailure,
   createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
-  isEditModeEnabled
+  isEditModeEnabled,
+  isUserGeneratedTranscriptEngineId,
+  isUserGeneratedFaceEngineId
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -166,10 +168,7 @@ function* loadTdoSaga(widgetId, tdoId) {
     tdo.engineRuns.records
       .map(engineRun => {
         const engineId = get(engineRun, 'engine.id');
-        if (
-          engineId === 'bulk-edit-transcript' ||
-          engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
-        ) {
+        if (isUserGeneratedTranscriptEngineId(engineId)) {
           engineRun.engine.category = {
             id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
             name: 'Transcription',
@@ -177,10 +176,7 @@ function* loadTdoSaga(widgetId, tdoId) {
             categoryType: 'transcript',
             editable: true
           };
-        } else if (
-          engineId === 'user-edited-face-engine-results' ||
-          engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd'
-        ) {
+        } else if (isUserGeneratedFaceEngineId(engineId)) {
           engineRun.engine.category = {
             id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
             name: 'Facial Detection',
@@ -362,6 +358,7 @@ function* loadEngineResultsSaga(
     loadEngineResultsSuccess(response.data.engineResults.records, {
       startOffsetMs,
       stopOffsetMs,
+      engineId,
       widgetId
     })
   );

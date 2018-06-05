@@ -191,7 +191,7 @@ export default createReducer(defaultState, {
     state,
     {
       payload,
-      meta: { widgetId, startOffsetMs, stopOffsetMs }
+      meta: { widgetId, startOffsetMs, stopOffsetMs, engineId }
     }
   ) {
     const previousResultsByEngineId =
@@ -199,7 +199,20 @@ export default createReducer(defaultState, {
     const engineResultRequestsById =
       state[widgetId].engineResultRequestsByEngineId;
     // It is possible results were requested by
-    const resultsGroupedByEngineId = groupBy(payload, 'engineId');
+    let resultsGroupedByEngineId;
+    if (payload.length) {
+      resultsGroupedByEngineId = groupBy(payload, 'engineId');
+    } else {
+      // handle no results case
+      const tdoId = state[widgetId].tdo.id;
+      resultsGroupedByEngineId = {};
+      resultsGroupedByEngineId[engineId] = {
+        startOffsetMs,
+        stopOffsetMs,
+        tdoId,
+        engineId
+      };
+    }
     forEach(resultsGroupedByEngineId, (results, engineId) => {
       if (!previousResultsByEngineId[engineId]) {
         // Data hasn't been retrieved for this engineId yet
@@ -309,7 +322,7 @@ export default createReducer(defaultState, {
     }
   ) {
     const errorMessage = get(error, 'message', error);
-    console.log('Failed to loaf tdo. Disable Spinner. Show error.');
+    console.log('Failed to load tdo. Disable Spinner. Show error.');
     return {
       ...state,
       [widgetId]: {
@@ -751,6 +764,16 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
+export const isUserGeneratedTranscriptEngineId = (engineId) => {
+  return engineId === 'bulk-edit-transcript' || engineId === 'bde0b023-333d-acb0-e01a-f95c74214607';
+};
+export const isUserGeneratedFaceEngineId = (engineId) => {
+  return engineId === 'user-edited-face-engine-results' || engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd';
+};
+export const isUserGeneratedEngineId = (engineId) => {
+  return isUserGeneratedTranscriptEngineId(engineId) ||
+    isUserGeneratedFaceEngineId(engineId);
+};
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
