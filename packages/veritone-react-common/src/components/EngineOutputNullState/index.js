@@ -31,12 +31,10 @@ export default class EngineOutputNullState extends Component {
   }
 
   isFetching(engineStatus) {
-    console.log(engineStatus);
     return engineStatus === 'fetching';
   }
 
   isNoData(engineStatus) {
-    console.log(engineStatus);
     return engineStatus === 'no_data';
   }
 
@@ -47,7 +45,7 @@ export default class EngineOutputNullState extends Component {
         {this.isError(engineStatus) && (
           <div>
             <img src={errorRunningEngineImage} />
-            <p>Error Running {engineName}</p>
+            <p className={styles.message}>Error Running {engineName}</p>
             {onRunProcess && (
               <Button onClick={onRunProcess} variant="raised" color="primary">
                 <Icon
@@ -62,7 +60,7 @@ export default class EngineOutputNullState extends Component {
         {this.isProcessing(engineStatus) && (
           <div>
             <CircularProgress size={80} color="primary" thickness={1} />
-            <p>Engine Processing...</p>
+            <p className={styles.message}>Engine Processing...</p>
           </div>
         )}
         {this.isFetching(engineStatus) && (
@@ -73,7 +71,7 @@ export default class EngineOutputNullState extends Component {
         {this.isNoData(engineStatus) && (
           <div>
             <img src={warningNoOutputDataImage} />
-            <p>No data</p>
+            <p className={styles.message}>No data</p>
           </div>
         )}
       </div>
