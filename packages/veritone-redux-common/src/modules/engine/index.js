@@ -60,14 +60,34 @@ export function fetchEngines(
     const query = `
       ${engineFieldsFragment}
       query Engines(
-        $name: String = "", $offset: Int, $limit: Int, $owned: Boolean, $filter: EngineFilter,
-        $buildsOffset: Int, $buildsLimit: Int, $buildsStatusStr: [String], $buildsStatus: [BuildStatus!], $buildsId: ID,
+        $name: String = ""
+        $offset: Int
+        $limit: Int
+        $owned: Boolean
+        $filter: EngineFilter
+        $buildsOffset: Int
+        $buildsLimit: Int
+        $buildsStatusStr: [String]
+        $buildsStatus: [BuildStatus!]
+        $buildsId: ID
         $withBuilds: Boolean!
       ) {
-        engines(name: $name, offset: $offset, limit: $limit, owned: $owned, filter: $filter) {
+        engines(
+          name: $name
+          offset: $offset
+          limit: $limit
+          owned: $owned
+          filter: $filter
+        ) {
           records {
             ...engineFields
-            builds(offset: $buildsOffset, limit: $buildsLimit, status: $buildsStatusStr, buildStatus: $buildsStatus, id: $buildsId) @include(if: $withBuilds) {
+            builds(
+              offset: $buildsOffset
+              limit: $buildsLimit
+              status: $buildsStatusStr
+              buildStatus: $buildsStatus
+              id: $buildsId
+            ) @include(if: $withBuilds) {
               records {
                 id
                 status
@@ -77,7 +97,8 @@ export function fetchEngines(
             }
           }
         }
-      }`;
+      }
+    `;
 
     const config = getConfig(getState());
     const { apiRoot, graphQLEndpoint } = config;
