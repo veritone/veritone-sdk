@@ -59,15 +59,22 @@ export function fetchEngines(
 
     const query = `
       ${engineFieldsFragment}
-      ${engineBuildsFieldFragment}
       query Engines(
         $name: String = "", $offset: Int, $limit: Int, $owned: Boolean, $filter: EngineFilter,
-        $buildsOffset: Int, $buildsLimit: Int, $buildsStatusStr: [String], $buildsStatus: [BuildStatus!], $buildsId: ID
+        $buildsOffset: Int, $buildsLimit: Int, $buildsStatusStr: [String], $buildsStatus: [BuildStatus!], $buildsId: ID,
+        $withBuilds: Boolean!
       ) {
         engines(name: $name, offset: $offset, limit: $limit, owned: $owned, filter: $filter) {
           records {
             ...engineFields
-            ${!isEmpty(builds) ? '...engineBuilds' : null}
+            builds(offset: $buildsOffset, limit: $buildsLimit, status: $buildsStatusStr, buildStatus: $buildsStatus, id: $buildsId) @include(if: $withBuilds) {
+              records {
+                id
+                status
+                modifiedDateTime
+                manifest
+              }
+            }
           }
         }
       }`;
@@ -90,7 +97,8 @@ export function fetchEngines(
           buildsStatusStr: builds.status,
           buildsStatus: builds.buildStatus,
           buildsOffset: builds.offset,
-          buildsLimit: builds.limit
+          buildsLimit: builds.limit,
+          withBuilds: !isEmpty(builds)
         },
         token: selectSessionToken(getState()) || selectOAuthToken(getState())
       });
@@ -149,19 +157,6 @@ const engineFieldsFragment = `
       iconClass
       name
       color
-    }
-  }
-`;
-
-const engineBuildsFieldFragment = `
-  fragment engineBuilds on Engine {
-    builds(offset: $buildsOffset, limit: $buildsLimit, status: $buildsStatusStr, buildStatus: $buildsStatus, id: $buildsId) {
-      records {
-        id
-        status
-        modifiedDateTime
-        manifest
-      }
     }
   }
 `;
