@@ -206,14 +206,17 @@ export default createReducer(defaultState, {
       // handle no results case
       const tdoId = state[widgetId].tdo.id;
       resultsGroupedByEngineId = {};
-      resultsGroupedByEngineId[engineId] = {
+      resultsGroupedByEngineId[engineId] = [{
         startOffsetMs,
         stopOffsetMs,
         tdoId,
         engineId
-      };
+      }];
     }
+
     forEach(resultsGroupedByEngineId, (results, engineId) => {
+      // process only results with jsondata
+      results = results.filter(result => !!result && !!result.jsondata);
       if (!previousResultsByEngineId[engineId]) {
         // Data hasn't been retrieved for this engineId yet
         previousResultsByEngineId[engineId] = map(results, 'jsondata');
@@ -232,13 +235,12 @@ export default createReducer(defaultState, {
           ...previousResultsByEngineId[engineId].slice(insertionIndex + 1)
         ];
       }
-
       engineResultRequestsById[engineId] = engineResultRequestsById[
         engineId
-      ].map(request => {
+        ].map(request => {
         if (
           request.startOffsetMs === startOffsetMs &&
-          request.stopOffsetMs == stopOffsetMs &&
+          request.stopOffsetMs === stopOffsetMs &&
           request.status === 'FETCHING'
         ) {
           return {
