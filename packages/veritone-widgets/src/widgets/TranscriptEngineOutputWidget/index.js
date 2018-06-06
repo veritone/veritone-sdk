@@ -176,8 +176,9 @@ export default class TranscriptEngineOutputWidget extends Component {
       outputNullState
     } = this.props;
 
+    const alertTitle = "Unsaved Transcript Changes";
     const alertDescription =
-      'It looks like you have been editing something. If you leave before saving, your changes will be lost.';
+      'This action will reset your changes to the transcript.';
     const cancelButtonLabel = 'Cancel';
     const approveButtonLabel = 'Continue';
 
@@ -208,6 +209,7 @@ export default class TranscriptEngineOutputWidget extends Component {
         />
         <AlertDialog
           open={this.state.alert}
+          title={alertTitle}
           content={alertDescription}
           cancelButtonLabel={cancelButtonLabel}
           approveButtonLabel={approveButtonLabel}
