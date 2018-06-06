@@ -1351,13 +1351,6 @@ function* watchSaveAssetData() {
 }
 
 function* watchCreateFileAssetSuccess() {
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const sessionToken = yield select(authModule.selectSessionToken);
-  const oauthToken = yield select(authModule.selectOAuthToken);
-  const token = sessionToken || oauthToken;
-
   const createJobQuery = `mutation createJob($tdoId: ID!) {
     createJob(input: {
       targetId: $tdoId,
@@ -1379,7 +1372,13 @@ function* watchCreateFileAssetSuccess() {
     action => action.type === CREATE_FILE_ASSET_SUCCESS,
     function* insertIntoIndex(action) {
       const { widgetId } = action.meta;
-
+      const config = yield select(configModule.getConfig);
+      const { apiRoot, graphQLEndpoint } = config;
+      const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+      const sessionToken = yield select(authModule.selectSessionToken);
+      const oauthToken = yield select(authModule.selectOAuthToken);
+      const token = sessionToken || oauthToken;
+      
       try {
         const tdo = yield select(getTdo, widgetId);
         const response = yield call(callGraphQLApi, {
