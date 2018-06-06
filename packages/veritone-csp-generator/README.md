@@ -10,8 +10,7 @@ how to find data across multiple cognitive engines using boolean logic.
 ## Use
 
 For the most part, you will not write CSPs by hand. Instead, we recommend that you use the
-veritone-searchbar (WIP), which is a React component that provides a graphical user interface for every engine category that will progressively generate a
-CSP as you select search criteria across multiple engine categories.
+veritone-searchbar (WIP), which is a React component that provides a graphical user interface for each engine category. It will progressively generate a CSP as you enter search criteria.
 
 Once you have a CSP, you can use the `CSPtoV3Query` function exported by this package, to generate a V3 core-search-query. For convenience, the CSPtoV3Query automatically includes any processing jobs or media processed by Veritone.
 

@@ -1,3 +1,7 @@
+import includes from 'lodash/fp/includes';
+import isString from 'lodash/fp/isString';
+import isFunction from 'lodash/fp/isFunction';
+
 const FaceConditionGenerator = modalState => {
   return {
     operator: 'term',
@@ -5,7 +9,7 @@ const FaceConditionGenerator = modalState => {
       'face-recognition.series.' +
       (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
     value: modalState.id,
-    not: modalState.exclude === true
+    not: modalState.excludeinclud === true
   };
 };
 
@@ -21,50 +25,60 @@ const FingerprintConditionGenerator = modalState => {
 };
 
 const RecognizedTextConditionGenerator = modalState => {
-  const query = V2QueryStringParser('text-recognition.series.ocrtext', modalState.search);
-  query.highlight = "true";
+  const query = V2QueryStringParser(
+    'text-recognition.series.ocrtext',
+    modalState.search
+  );
+  query.highlight = 'true';
 
   return query;
 };
 
 const StructuredDataGenerator = modalState => {
   if (modalState.type === 'string') {
-    if(modalState.operator === 'contains' || modalState.operator === 'not_contains') {
+    if (
+      modalState.operator === 'contains' ||
+      modalState.operator === 'not_contains'
+    ) {
       return {
         operator: 'query_string',
         field: modalState.field + '.fulltext',
         value: `*${modalState.value1.toLowerCase()}*`,
-        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
-      }
+        not: !includes(modalState.operator, 'not') ? true : undefined
+      };
     } else {
       return {
         operator: 'query_string',
         field: modalState.field + '.fulltext',
-        value: `\"${modalState.value1.toLowerCase()}\"`,
-        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
-      }
+        value: `${modalState.value1.toLowerCase()}`,
+        not: !includes(modalState.operator, 'not') ? true : undefined
+      };
     }
-  } else if (modalState.type === 'dateTime' || modalState.type === 'integer' || modalState.type ==='number') {
-    if(modalState.operator === 'is' || modalState.operator === 'is_not') {
+  } else if (
+    modalState.type === 'dateTime' ||
+    modalState.type === 'integer' ||
+    modalState.type === 'number'
+  ) {
+    if (modalState.operator === 'is' || modalState.operator === 'is_not') {
       return {
         operator: 'query_string',
         field: modalState.field,
         value: modalState.value1,
-        not: modalState.operator.indexOf('not') !== -1 ? true : undefined
-      }
-    } else if(modalState.operator === 'range') {
+        not: !includes(modalState.operator, 'not') ? true : undefined
+      };
+    } else if (modalState.operator === 'range') {
       return {
         operator: 'range',
         field: modalState.field,
         gte: modalState.value1,
         lte: modalState.value2
-      }
+      };
     } else {
       return {
         operator: 'range',
         field: modalState.field,
         [modalState.operator]: modalState.value1
-      }
+      };
     }
   } else if (modalState.type === 'geoPoint') {
     return {
@@ -80,9 +94,9 @@ const StructuredDataGenerator = modalState => {
       operator: 'term',
       field: modalState.field,
       value: modalState.value1
-    }
+    };
   }
-}
+};
 
 const LogoConditionGenerator = modalState => {
   if (modalState.type === 'fullText') {
@@ -151,7 +165,7 @@ const TimeConditionGenerator = modalState => {
   const dayPartTimeToMinutes = function(hourMinuteTime) {
     if (
       !hourMinuteTime ||
-      typeof hourMinuteTime !== 'string' ||
+      !isString(hourMinuteTime) ||
       hourMinuteTime.length != 5
     ) {
       return 0;
@@ -236,7 +250,7 @@ const V2QueryStringParser = (field, queryString) => {
   }
 
   function buildQueryStringOperator(field, queryText, highlight, analyzer) {
-    var op = {
+    let op = {
       operator: 'query_string',
       field: field,
       value: queryText
@@ -252,10 +266,10 @@ const V2QueryStringParser = (field, queryString) => {
 
   function buildSpanStringQuery(field, queryString) {
     // cleanup redundant whitespace
-    var queryText = queryString.replace(/\s{2+}/g, ' ');
-    var start, end, distance;
-    var spanConditions = [];
-    var proximityOperatorPos = queryText.indexOf(' w/', start),
+    let queryText = queryString.replace(/\s{2+}/g, ' ');
+    let start, end, distance;
+    let spanConditions = [];
+    let proximityOperatorPos = queryText.indexOf(' w/', start),
       proximityOperatorEnd;
 
     while (
@@ -264,7 +278,7 @@ const V2QueryStringParser = (field, queryString) => {
     ) {
       // parse the span distance
       proximityOperatorEnd = queryText.indexOf(' ', proximityOperatorPos + 1);
-      var val = queryText.charAt(proximityOperatorPos + 3);
+      let val = queryText.charAt(proximityOperatorPos + 3);
       switch (val) {
         case 'p':
           distance = 75;
@@ -333,7 +347,7 @@ const V2QueryStringParser = (field, queryString) => {
       return null;
     }
     // wrap simple queries in quotes
-    if (queryExpression.indexOf(' ') < 0) {
+    if (!includes(queryExpression, ' ')) {
       return buildQueryStringOperator(
         field,
         keepCasing ? queryExpression : queryExpression.toLowerCase(),
@@ -343,21 +357,21 @@ const V2QueryStringParser = (field, queryString) => {
     }
 
     // deffer to query_string to handle the negation
-    var queryText = queryExpression.toLowerCase().replace('_not_', 'NOT');
+    let queryText = queryExpression.toLowerCase().replace('_not_', 'NOT');
 
     // if it is a simple query, i.e. no within
-    if (queryExpression.indexOf(' w/') < 0) {
+    if (!includes(queryExpression, ' w/')) {
       return buildQueryStringOperator(field, queryText, highlight, analyzer);
     }
 
     // build 2 queries - all words query and just and AND-query of all spanning expressions
     // all words query
-    var textSearchQuery = buildQueryStringOperator(
+    let textSearchQuery = buildQueryStringOperator(
       field,
       queryText.replace(/\s+w\/(\d+|[ps])\s+/g, ' ')
     );
     // spanning expressions
-    var spanQueries = buildSpanStringQuery(field, queryText);
+    let spanQueries = buildSpanStringQuery(field, queryText);
 
     // add to the same AND expression as the span expressions
     spanQueries.push(textSearchQuery);
@@ -373,7 +387,7 @@ const V2QueryStringParser = (field, queryString) => {
     analyzer
   ) {
     if (queryExpression.indexOf(',') > 0) {
-      var conditions = queryExpression
+      let conditions = queryExpression
         .split(',')
         .map(function processOrExpression(subExpression) {
           return buildStringQueryAnd(
@@ -396,7 +410,7 @@ const V2QueryStringParser = (field, queryString) => {
     );
   }
   return buildStringQuery(field, queryString);
-}
+};
 
 // most of this logic comes from https://github.com/veritone/core-search-server/blob/develop/model/util/legacy.search.js#L162
 const TranscriptConditionGenerator = modalState => {
@@ -425,7 +439,7 @@ const engineCategoryMapping = {
   'tag-search-id': TagConditionGenerator,
   'time-search-id': TimeConditionGenerator,
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': GeolocationGenerator,
-  'sdo-search-id' : StructuredDataGenerator
+  'sdo-search-id': StructuredDataGenerator
 };
 
 const engineCategoryMetadataMapping = {
@@ -436,8 +450,8 @@ const engineCategoryMetadataMapping = {
   '17d62b84-8b49-465b-a6be-fe3ea3bc8f05': 'fingerprint',
   '5a511c83-2cbd-4f2d-927e-cd03803a8a9c': 'logo-recognition',
   'tag-search-id': 'tags',
-  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation',
-}
+  '203ad7c2-3dbd-45f9-95a6-855f911563d0': 'geolocation'
+};
 
 const getJoinOperator = query => {
   const operators = Object.keys(query);
@@ -449,7 +463,7 @@ const convertJoinOperator = joinOperator => {
 };
 
 const cspToPartialQuery = csp => {
-  if(csp && csp.engineCategoryId) {
+  if (csp && csp.engineCategoryId) {
     return generateQueryCondition(csp);
   } else {
     const joinOperator = getJoinOperator(csp);
@@ -463,11 +477,14 @@ const cspToPartialQuery = csp => {
 };
 
 const generateQueryCondition = node => {
-  if (node
-      && node.engineCategoryId
-      && typeof engineCategoryMapping[node.engineCategoryId] === 'function'
+  if (
+    node &&
+    node.engineCategoryId &&
+    isFunction(engineCategoryMapping[node.engineCategoryId])
   ) {
-    const newCondition = engineCategoryMapping[node.engineCategoryId](node.state);
+    const newCondition = engineCategoryMapping[node.engineCategoryId](
+      node.state
+    );
     return newCondition;
   } else {
     return null;
@@ -484,9 +501,12 @@ const dedupeArray = arr => {
 
 const selectMetadataFromCsp = csp => {
   let metadataKeys = [];
-  if(csp && csp.engineCategoryId) {
-    const metadataKey = csp.engineCategoryId === 'sdo-search-id' ? csp.state.select : engineCategoryMetadataMapping[csp.engineCategoryId];
-    if(metadataKey) {
+  if (csp && csp.engineCategoryId) {
+    const metadataKey =
+      csp.engineCategoryId === 'sdo-search-id'
+        ? csp.state.select
+        : engineCategoryMetadataMapping[csp.engineCategoryId];
+    if (metadataKey) {
       metadataKeys.push(metadataKey);
     }
   } else {
@@ -494,7 +514,7 @@ const selectMetadataFromCsp = csp => {
     const conditions = csp[joinOperator];
     conditions.forEach(condition => {
       const subMetadataKeys = selectMetadataFromCsp(condition);
-      if(Array.isArray(subMetadataKeys)) {
+      if (Array.isArray(subMetadataKeys)) {
         metadataKeys = metadataKeys.concat(subMetadataKeys);
       }
     });
@@ -504,7 +524,9 @@ const selectMetadataFromCsp = csp => {
 
 const buildQuerySelect = csp => {
   const metadataKeysFromCsp = selectMetadataFromCsp(csp);
-  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(metadataKeysFromCsp);
+  const metadataKeys = ['veritone-job', 'veritone-file', 'transcript'].concat(
+    metadataKeysFromCsp
+  );
   return dedupeArray(metadataKeys);
 };
 
@@ -521,7 +543,4 @@ const searchQueryGenerator = csp => {
   return baseQuery;
 };
 
-module.exports = {
-  CSPToV3Query: searchQueryGenerator,
-  engineCategoryMapping: engineCategoryMapping
-};
+export { searchQueryGenerator as CSPToV3Query, engineCategoryMapping };
