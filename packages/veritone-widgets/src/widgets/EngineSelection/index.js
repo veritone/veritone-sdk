@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { func, arrayOf, string, bool, shape } from 'prop-types';
+import { withMuiThemeProvider } from 'veritone-react-common';
 
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
@@ -9,6 +10,7 @@ import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
+@withMuiThemeProvider
 @connect(
   state => ({
     deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(state),

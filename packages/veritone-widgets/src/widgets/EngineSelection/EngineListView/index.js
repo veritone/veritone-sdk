@@ -15,7 +15,6 @@ import { isEmpty } from 'lodash';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
-import { withMuiThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
@@ -52,7 +51,6 @@ import styles from './styles.scss';
     toggleSearch: engineSelectionModule.toggleSearch
   }
 )
-@withMuiThemeProvider
 export default class EngineListView extends React.Component {
   static propTypes = {
     allEngines: objectOf(object),
