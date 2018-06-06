@@ -1378,7 +1378,7 @@ function* watchCreateFileAssetSuccess() {
       const sessionToken = yield select(authModule.selectSessionToken);
       const oauthToken = yield select(authModule.selectOAuthToken);
       const token = sessionToken || oauthToken;
-      
+
       try {
         const tdo = yield select(getTdo, widgetId);
         const response = yield call(callGraphQLApi, {
@@ -1388,11 +1388,11 @@ function* watchCreateFileAssetSuccess() {
           token
         });
 
-        if (!get(response, 'data.id')) {
+        if (!get(response, 'data.createJob.id')) {
           throw new Error('Failed to create insert-into-index task.');
         }
         if (
-          isEmpty(get(response, 'data.tasks.records')) ||
+          isEmpty(get(response, 'data.createJob.tasks.records')) ||
           !get(response.data.tasks.records[0], 'id')
         ) {
           throw new Error('Failed to create insert-into-index task.');
