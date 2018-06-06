@@ -1380,7 +1380,7 @@ function* watchCreateFileAssetSuccess() {
       const sessionToken = yield select(authModule.selectSessionToken);
       const oauthToken = yield select(authModule.selectOAuthToken);
       const token = sessionToken || oauthToken;
-      
+
       try {
         const tdo = yield select(getTdo, widgetId);
         const response = yield call(callGraphQLApi, {
