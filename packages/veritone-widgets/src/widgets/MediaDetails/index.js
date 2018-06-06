@@ -55,6 +55,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
+import { reset } from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 
 @withPropsOnChange([], ({ id }) => ({
@@ -99,7 +100,8 @@ import widget from '../../shared/widget';
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
     fetchApplications: applicationModule.fetchApplications,
-    saveAssetData: mediaDetailsModule.saveAssetData
+    saveAssetData: mediaDetailsModule.saveAssetData,
+    resetTranscript: reset
   },
   null,
   { withRef: true }
@@ -247,7 +249,8 @@ class MediaDetailsWidget extends React.Component {
     }),
     saveAssetData: func,
     widgetError: string,
-    isSaveEnabled: bool
+    isSaveEnabled: bool,
+    resetTranscript: func
   };
 
   static contextTypes = {
@@ -379,7 +382,6 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineId: this.props.selectedEngineId,
       selectedEngineCategory: this.props.selectedEngineCategory
     });
-    this.toggleEditMode();
   };
 
   onCancelEdit = () => {
@@ -389,6 +391,7 @@ class MediaDetailsWidget extends React.Component {
     if (this.props.isEditModeEnabled) {
       this.toggleEditMode();
     }
+    this.props.resetTranscript();
   };
 
   toggleInfoPanel = () => {

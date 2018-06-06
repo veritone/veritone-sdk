@@ -96,13 +96,12 @@ function* watchContentReceiveData() {
   yield takeEvery(
     action => action.type === TranscriptRedux.RECEIVE_DATA,
     function*(action) {
-      const state = getState();
-      const currentData = get(state, 'data');
+      const currentData = yield select(TranscriptRedux.currentData);
       if (!isEqual(currentData, action.data)) {
         yield call(TranscriptRedux.receiveData);
         yield put({
           type: TranscriptRedux.UPDATE_EDIT_STATUS,
-          hasChanged: false
+          hasChanged: true
         });
       }
     }

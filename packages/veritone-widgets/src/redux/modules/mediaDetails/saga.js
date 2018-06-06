@@ -10,7 +10,7 @@ import {
 import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
-import { getTranscriptEditAssetData } from './transcriptWidget';
+import { getTranscriptEditAssetData, RESET as TRANSCRIPT_RESET } from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -64,7 +64,9 @@ import {
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
   isUserGeneratedTranscriptEngineId,
-  isUserGeneratedFaceEngineId
+  isUserGeneratedFaceEngineId,
+  toggleEditMode,
+  getSelectedEngineCategory
 } from '.';
 
 import { ADD_DETECTED_FACE } from './faceEngineOutput';
@@ -1351,13 +1353,6 @@ function* watchSaveAssetData() {
 }
 
 function* watchCreateFileAssetSuccess() {
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const sessionToken = yield select(authModule.selectSessionToken);
-  const oauthToken = yield select(authModule.selectOAuthToken);
-  const token = sessionToken || oauthToken;
-
   const createJobQuery = `mutation createJob($tdoId: ID!) {
     createJob(input: {
       targetId: $tdoId,
@@ -1379,6 +1374,12 @@ function* watchCreateFileAssetSuccess() {
     action => action.type === CREATE_FILE_ASSET_SUCCESS,
     function* insertIntoIndex(action) {
       const { widgetId } = action.meta;
+      const config = yield select(configModule.getConfig);
+      const { apiRoot, graphQLEndpoint } = config;
+      const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+      const sessionToken = yield select(authModule.selectSessionToken);
+      const oauthToken = yield select(authModule.selectOAuthToken);
+      const token = sessionToken || oauthToken;
 
       try {
         const tdo = yield select(getTdo, widgetId);
@@ -1389,15 +1390,19 @@ function* watchCreateFileAssetSuccess() {
           token
         });
 
-        if (!get(response, 'data.id')) {
+        if (!get(response, 'data.createJob.id')) {
           throw new Error('Failed to create insert-into-index task.');
         }
         if (
-          isEmpty(get(response, 'data.tasks.records')) ||
-          !get(response.data.tasks.records[0], 'id')
+          isEmpty(get(response, 'data.createJob.tasks.records')) ||
+          !get(response, 'data.createJob.tasks.records[0].id')
         ) {
           throw new Error('Failed to create insert-into-index task.');
         }
+
+        const selectedEngineCategory = yield select(getSelectedEngineCategory, widgetId);
+        yield put(toggleEditMode(widgetId, selectedEngineCategory));
+        yield put({type: TRANSCRIPT_RESET});
       } catch (error) {
         // return yield put(insertIntoIndexFailure(widgetId, { error }));
       }

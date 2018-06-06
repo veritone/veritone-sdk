@@ -8,7 +8,8 @@ import {
   map,
   values,
   uniqBy,
-  keyBy
+  keyBy,
+  isMatch
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -206,17 +207,20 @@ export default createReducer(defaultState, {
       // handle no results case
       const tdoId = state[widgetId].tdo.id;
       resultsGroupedByEngineId = {};
-      resultsGroupedByEngineId[engineId] = {
+      resultsGroupedByEngineId[engineId] = [{
         startOffsetMs,
         stopOffsetMs,
         tdoId,
         engineId
-      };
+      }];
     }
+
     forEach(resultsGroupedByEngineId, (results, engineId) => {
+      // process only results with jsondata
+      const resultsWithData = results.filter(result => !!result && !!result.jsondata);
       if (!previousResultsByEngineId[engineId]) {
         // Data hasn't been retrieved for this engineId yet
-        previousResultsByEngineId[engineId] = map(results, 'jsondata');
+        previousResultsByEngineId[engineId] = map(resultsWithData, 'jsondata');
       } else {
         // New results need to be merged with previously fetched results
         let insertionIndex = findIndex(previousResultsByEngineId[engineId], {
@@ -228,19 +232,19 @@ export default createReducer(defaultState, {
         // TODO: fitler out any duplicate data that overflows time chunks.
         previousResultsByEngineId[engineId] = [
           ...previousResultsByEngineId[engineId].slice(0, insertionIndex),
-          ...map(results, 'jsondata'),
+          ...map(resultsWithData, 'jsondata'),
           ...previousResultsByEngineId[engineId].slice(insertionIndex + 1)
         ];
       }
-
+      const fetchingOffsetRequest = {
+        startOffsetMs: startOffsetMs,
+        stopOffsetMs: stopOffsetMs,
+        status: 'FETCHING'
+      };
       engineResultRequestsById[engineId] = engineResultRequestsById[
         engineId
-      ].map(request => {
-        if (
-          request.startOffsetMs === startOffsetMs &&
-          request.stopOffsetMs == stopOffsetMs &&
-          request.status === 'FETCHING'
-        ) {
+        ].map(request => {
+        if (isMatch(request, fetchingOffsetRequest)) {
           return {
             ...request,
             status: 'SUCCESS'
