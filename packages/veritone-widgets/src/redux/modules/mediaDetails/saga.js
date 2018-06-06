@@ -10,7 +10,7 @@ import {
 import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
-import { getTranscriptEditAssetData } from './transcriptWidget';
+import { getTranscriptEditAssetData, RESET as TRANSCRIPT_RESET } from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -64,7 +64,9 @@ import {
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
   isUserGeneratedTranscriptEngineId,
-  isUserGeneratedFaceEngineId
+  isUserGeneratedFaceEngineId,
+  toggleEditMode,
+  getSelectedEngineCategory
 } from '.';
 
 import { ADD_DETECTED_FACE } from './faceEngineOutput';
@@ -1393,10 +1395,14 @@ function* watchCreateFileAssetSuccess() {
         }
         if (
           isEmpty(get(response, 'data.createJob.tasks.records')) ||
-          !get(response.data.tasks.records[0], 'id')
+          !get(response, 'data.createJob.tasks.records[0].id')
         ) {
           throw new Error('Failed to create insert-into-index task.');
         }
+
+        const selectedEngineCategory = yield select(getSelectedEngineCategory, widgetId);
+        yield put(toggleEditMode(widgetId, selectedEngineCategory));
+        yield put({type: TRANSCRIPT_RESET});
       } catch (error) {
         // return yield put(insertIntoIndexFailure(widgetId, { error }));
       }
