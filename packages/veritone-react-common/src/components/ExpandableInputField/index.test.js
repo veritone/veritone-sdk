@@ -66,7 +66,7 @@ describe('ExpandableInputField', function() {
     expect(onChange.mock.calls[0][0].target.value).toBe(searchValue);
   });
 
-  it("calls onSearch when the enter key is pressed", function() {
+  it('calls onSearch when the enter key is pressed', function() {
     expandableInputField.find(SearchIcon).simulate('click');
     expandableInputField.find('input').simulate('change', changeValue);
     expandableInputField.find('input').simulate('keypress', enterKey);
