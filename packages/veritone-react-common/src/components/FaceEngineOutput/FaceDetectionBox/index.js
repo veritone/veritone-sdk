@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { debounce } from 'lodash';
 import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -47,10 +46,6 @@ const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex, searc
       </MenuItem>
     );
   });
-
-const renderNoResultFound = () => {
-  return debounce(() => (<div className={styles.notFoundEntityMessage}>Results Not Found</div>), 500)
-};
 
 @withMuiThemeProvider
 class FaceDetectionBox extends Component {
@@ -119,7 +114,9 @@ class FaceDetectionBox extends Component {
   };
 
   onSearchEntityInputChange = text => {
-    this.setState({ searchEntityText: text });
+    setTimeout(() => {
+      this.setState({ searchEntityText: text })
+    }, 1000);
     this.props.onSearchForEntities(text);
   };
 
@@ -208,8 +205,8 @@ class FaceDetectionBox extends Component {
                               highlightedIndex,
                               searchEntityText: this.state.searchEntityText
                             })
-                          ) : (
-                            renderNoResultFound()
+                          ) :  (
+                            <div className={styles.notFoundEntityMessage}>Results Not Found</div>
                           )}
                         </div>
                         <div className={styles.addNewEntity}>

@@ -10,6 +10,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { pick, head, debounce } from 'lodash';
 import {
@@ -22,8 +24,11 @@ import {
   objectOf,
   oneOfType
 } from 'prop-types';
-
-import { FaceEngineOutput } from 'veritone-react-common';
+import styles from './styles.scss';
+import {
+  FaceEngineOutput,
+  withMuiThemeProvider
+} from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
@@ -53,6 +58,7 @@ const saga = util.reactReduxSaga.saga;
   null,
   { withRef: true }
 )
+@withMuiThemeProvider
 class FaceEngineOutputContainer extends Component {
   static propTypes = {
     tdo: shape({
@@ -274,21 +280,47 @@ class FaceEngineOutputContainer extends Component {
         aria-labelledby="new-entity-title"
         disableBackdropClick
         onExited={this.clearNewEntityForm}
+        classes={{
+          paper: styles.editNewEntityDialogPaper
+        }}
       >
-        <DialogTitle id="new-entity-title">Add New</DialogTitle>
+        <DialogTitle
+          id="new-entity-title"
+          classes={{
+            root: styles.dialogTitle
+          }}
+        >
+          <div className={styles.dialogTitleLabel}>Add New</div>
+          <IconButton
+            onClick={this.onCancel}
+            aria-label="Close"
+            classes={{
+              root: styles.closeButton
+            }}
+          >
+            <Icon className="icon-close-exit" />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText
+            classes={{
+              root: styles.dialogHintText
+            }}
+          >
             Identify and help train face recognition engines to find this
             individual. You can view and add additional images in the Library
             application.
           </DialogContentText>
           <TextField
             autoFocus
-            margin="dense"
+            margin="normal"
             id="name"
             label="Name"
             fullWidth
             required
+            classes={{
+              root: styles.inputField
+            }}
             value={this.state.newEntity.name || ''}
             onChange={this.setNewEntityName}
           />
@@ -296,30 +328,50 @@ class FaceEngineOutputContainer extends Component {
             id="select-library"
             select
             label="Choose Library"
+            margin="normal"
+            fullWidth
+            required
+            classes={{
+              root: styles.inputField
+            }}
             value={
               this.state.newEntity.libraryId ||
               (libraries.length ? libraries[0].id : 'Loading...')
             }
             onChange={this.handleNewEntityLibraryChange}
-            margin="dense"
-            fullWidth
-            required
             SelectProps={{
               MenuProps: {
                 /* temporary fix to address scrolling issue discussed here: https://github.com/mui-org/material-ui/issues/10601 */
                 PaperProps: {
                   style: {
-                    transform: 'translate3d(0, 0, 0)'
+                    transform: 'translate3d(0, 0, 0)',
+                    fontSize: '14px'
                   }
                 }
+              },
+              classes: {
+                root: styles.librarySelect
               }
             }}
           >
             {isFetchingLibraries ? (
-              <MenuItem value={'Loading...'}>{'Loading...'}</MenuItem>
+              <MenuItem
+                value={'Loading...'}
+                classes={{
+                  root: styles.librarySelectMenuItem
+                }}
+              >
+                {'Loading...'}
+              </MenuItem>
             ) : (
               libraries.map(library => (
-                <MenuItem key={library.id} value={library.id}>
+                <MenuItem
+                  key={library.id}
+                  value={library.id}
+                  classes={{
+                    root: styles.librarySelectMenuItem
+                  }}
+                >
                   {library.name}
                 </MenuItem>
               ))
@@ -362,7 +414,7 @@ class FaceEngineOutputContainer extends Component {
             alignItems: 'center'
           }}
         >
-          <CircularProgress size={75} />
+          <CircularProgress size={80} color="primary" thickness={1} />
         </div>
       );
     }
