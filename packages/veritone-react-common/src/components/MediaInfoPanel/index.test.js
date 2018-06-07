@@ -104,16 +104,6 @@ describe('MediaInfoPanel', () => {
     expect(wrapper.find('.programLiveImage').prop('src')).toEqual(TDO.thumbnailUrl);
     expect(wrapper.find('.programImage').prop('src')).toEqual('//static.veritone.com/veritone-ui/program_image_null.svg');
 
-    expect(wrapper.find('.infoPanelHeader').find('[aria-label="More"]').exists()).toEqual(true);
-    wrapper.find('.infoPanelHeader').find('[aria-label="More"]').first().simulate('click');
-    expect(wrapper.find('#menu-list-grow').exists()).toEqual(true);
-    const moreMenuItems = wrapper.find('#menu-list-grow').find('li');
-    expect(moreMenuItems.length).toEqual(4);
-    expect(moreMenuItems.at(0).text()).toEqual('Edit Metadata');
-    expect(moreMenuItems.at(1).text()).toEqual('Edit Tags');
-    expect(moreMenuItems.at(2).text()).toEqual('Download');
-    expect(moreMenuItems.at(3).text()).toEqual('TDO on CMS dev');
-
     const closeButton = wrapper
       .find('.infoPanelHeader')
       .find('.headerMenu')
@@ -121,20 +111,5 @@ describe('MediaInfoPanel', () => {
       .first();
     closeButton.simulate('click');
     expect(onClose).toHaveBeenCalled();
-  });
-
-  it('should not show context menu extensions', () => {
-    const wrapper = mount(
-      <MediaInfoPanel
-        tdo={TDO}
-        engineCategories={ENGINE_CATEGORIES}
-        kvp={KVP}
-        onClose={jest.fn()}
-        onSaveMetadata={jest.fn()} />);
-    expect(wrapper.find('.infoPanelHeader').find('[aria-label="More"]').exists()).toEqual(true);
-    wrapper.find('.infoPanelHeader').find('[aria-label="More"]').first().simulate('click');
-    expect(wrapper.find('#menu-list-grow').exists()).toEqual(true);
-    const moreMenuItems = wrapper.find('#menu-list-grow').find('li');
-    expect(moreMenuItems.length).toEqual(3);
   });
 });

@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Manager, Target, Popper } from 'react-popper';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Drawer from '@material-ui/core/Drawer';
 import { get } from 'lodash';
-import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
 import { func, arrayOf, shape, string, bool } from 'prop-types';
-import EditMetadataDialog from './EditMetadataDialog';
-import EditTagsDialog from './EditTagsDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
@@ -70,63 +62,11 @@ class MediaInfoPanel extends Component {
       }),
       applicationIds: arrayOf(string)
     }).isRequired,
-    contextMenuExtensions: shape({
-      mentions: arrayOf(
-        shape({
-          id: string.isRequired,
-          label: string.isRequired,
-          url: string.isRequired
-        })
-      ),
-      tdos: arrayOf(
-        shape({
-          id: string.isRequired,
-          label: string.isRequired,
-          url: string.isRequired
-        })
-      )
-    }),
-    onClose: func,
-    onSaveMetadata: func
+    onClose: func
   };
 
   state = {
-    isOpen: true,
-    isMenuOpen: false,
-    isEditMetadataOpen: false,
-    isEditTagsOpen: false
-  };
-
-  onSaveMetadata = metadataToSave => {
-    this.toggleIsEditMetadataOpen();
-    if (!metadataToSave) {
-      return;
-    }
-    this.props.onSaveMetadata(metadataToSave);
-  };
-
-  toggleIsEditMetadataOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
-      };
-    });
-  };
-
-  onSaveTags = tagsToSave => {
-    this.toggleIsEditTagsOpen();
-    if (!tagsToSave || !tagsToSave.length) {
-      return;
-    }
-    this.props.onSaveMetadata({ tags: tagsToSave });
-  };
-
-  toggleIsEditTagsOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
-      };
-    });
+    isOpen: true
   };
 
   toggleIsOpen = () => {
@@ -136,22 +76,6 @@ class MediaInfoPanel extends Component {
       };
     });
     this.props.onClose();
-  };
-
-  isDownloadMediaEnabled = () => {
-    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
-  };
-
-  isDownloadAllowed = () => {
-    if (!this.isMediaPublic(this.props.tdo)) {
-      return true;
-    }
-    const publicMediaDownloadEnabled =
-      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
-    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
-      return true;
-    }
-    return false;
   };
 
   isMediaPublic = () => {
@@ -177,14 +101,6 @@ class MediaInfoPanel extends Component {
     }
     return false;
   }
-
-  downloadFile = () => {
-    const element = document.createElement('a');
-    element.href = get(this.props.tdo, 'primaryAsset.signedUri', '');
-    element.download = get(this.props, 'tdo.details.veritoneFile.filename');
-    element.target = '_blank';
-    element.click();
-  };
 
   toFormattedDate = dateString => {
     if (!dateString || !dateString.length) {
@@ -222,59 +138,12 @@ class MediaInfoPanel extends Component {
     }`;
   };
 
-  toggleIsMenuOpen = () => {
-    this.setState(prevState => {
-      return {
-        isMenuOpen: !{ ...prevState }.isMenuOpen
-      };
-    });
-  };
-
-  onMenuClose = event => {
-    if (event && this.target1.contains(event.target)) {
-      return;
-    }
-    this.setState({ isMenuOpen: false });
-  };
-
-  onMetadataOpen = () => {
-    this.onMenuClose();
-    this.toggleIsEditMetadataOpen();
-  };
-
-  onEditTagsOpen = () => {
-    this.onMenuClose();
-    this.toggleIsEditTagsOpen();
-  };
-
-  setMenuTarget = node => {
-    this.target1 = node;
-  };
-
-  handleContextMenuClick = cme => {
-    window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
-  };
-
   render() {
     const {
-      isOpen,
-      isMenuOpen,
-      isEditMetadataOpen,
-      isEditTagsOpen
+      isOpen
     } = this.state;
 
     const { tdo } = this.props;
-
-    const metadata = {
-      ...tdo.details,
-      veritoneProgram: {
-        ...tdo.details.veritoneProgram,
-        programImage:
-          tdo.sourceImageUrl || get(tdo, 'details.veritoneProgram.programImage'),
-        programLiveImage:
-          tdo.thumbnailUrl || get(tdo, 'details.veritoneProgram.programLiveImage')
-      }
-    };
 
     const contentElement = (
       <div className={styles.mediaInfoPanel}>
@@ -282,71 +151,6 @@ class MediaInfoPanel extends Component {
           <div className={styles.infoPanelHeader}>
             <span>Metadata</span>
             <div className={styles.headerMenu}>
-              <Manager>
-                <Target>
-                  <div ref={this.setMenuTarget}>
-                    <IconButton
-                      aria-label="More"
-                      aria-haspopup="true"
-                      aria-owns={isMenuOpen ? 'menu-list-grow' : null}
-                      onClick={this.toggleIsMenuOpen}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  </div>
-                </Target>
-                {isMenuOpen &&
-                <Popper placement="bottom-end" eventsEnabled={isMenuOpen}>
-                  <ClickAwayListener onClickAway={this.onMenuClose}>
-                    <Grow
-                      in={isMenuOpen}
-                      id="menu-list-grow"
-                      style={{ transformOrigin: '0 0 0' }}
-                    >
-                      <Paper>
-                        <MenuList role="menu">
-                          <MenuItem
-                            classes={{ root: styles.headerMenuItem }}
-                            onClick={this.onMetadataOpen}
-                          >
-                            Edit Metadata
-                          </MenuItem>
-                          <MenuItem
-                            classes={{ root: styles.headerMenuItem }}
-                            onClick={this.onEditTagsOpen}
-                          >
-                            Edit Tags
-                          </MenuItem>
-                          {this.isDownloadMediaEnabled() && (
-                            <MenuItem
-                              classes={{ root: styles.headerMenuItem }}
-                              disabled={!this.isDownloadAllowed()}
-                              onClick={this.downloadFile}
-                            >
-                              Download
-                            </MenuItem>
-                          )}
-                          {this.props.contextMenuExtensions &&
-                            this.props.contextMenuExtensions.tdos.map(
-                              tdoMenu => (
-                                <MenuItem
-                                  key={tdoMenu.id}
-                                  classes={{ root: styles.headerMenuItem }}
-                                  // eslint-disable-next-line
-                                  onClick={() =>
-                                    this.handleContextMenuClick(tdoMenu)
-                                  }
-                                >
-                                  {tdoMenu.label}
-                                </MenuItem>
-                              )
-                            )}
-                        </MenuList>
-                      </Paper>
-                    </Grow>
-                  </ClickAwayListener>
-                </Popper>}
-              </Manager>
               <IconButton
                 className={styles.closeButton}
                 onClick={this.toggleIsOpen}
@@ -434,26 +238,6 @@ class MediaInfoPanel extends Component {
             </div>
           </Paper>
         </div>
-        {tdo &&
-          tdo.details &&
-          isEditMetadataOpen && (
-            <EditMetadataDialog
-              isOpen={isEditMetadataOpen}
-              metadata={metadata}
-              onClose={this.toggleIsEditMetadataOpen}
-              onSave={this.onSaveMetadata}
-            />
-          )}
-        {tdo &&
-          tdo.details &&
-          isEditTagsOpen && (
-            <EditTagsDialog
-              isOpen={isEditTagsOpen}
-              tags={tdo.details.tags}
-              onClose={this.toggleIsEditTagsOpen}
-              onSave={this.onSaveTags}
-            />
-          )}
       </div>
     );
 
