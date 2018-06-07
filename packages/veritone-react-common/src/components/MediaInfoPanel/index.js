@@ -138,10 +138,6 @@ class MediaInfoPanel extends Component {
     }`;
   };
 
-  handleContextMenuClick = cme => {
-    window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
-  };
-
   render() {
     const {
       isOpen

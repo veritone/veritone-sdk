@@ -598,6 +598,10 @@ class MediaDetailsWidget extends React.Component {
       };
     });
   };
+  
+  handleContextMenuClick = cme => {
+    window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
+  };
 
   render() {
     let {
