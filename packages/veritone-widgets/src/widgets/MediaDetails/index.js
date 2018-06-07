@@ -820,6 +820,7 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
+                        bulkEditEnabled={get(this.props.kvp, 'features.bulkEditTranscript') === 'enabled'}
                       />
                     )}
                   {selectedEngineCategory &&
