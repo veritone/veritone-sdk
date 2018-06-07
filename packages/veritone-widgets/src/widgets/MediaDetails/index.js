@@ -470,13 +470,18 @@ class MediaDetailsWidget extends React.Component {
         return engineResult && engineResult.status === 'FETCHING';
       }
     );
-    const hasEngineResults = selectedEngineResults && selectedEngineResults.length && some(
-      selectedEngineResults,
-      engineResult => {
-        return engineResult && engineResult.series && engineResult.series.length;
-      }
-    );
-    const isRealTimeEngine = engineMode && (engineMode.toLowerCase() === 'stream' || engineMode.toLowerCase() === 'chunk');
+    const hasEngineResults =
+      selectedEngineResults &&
+      selectedEngineResults.length &&
+      some(selectedEngineResults, engineResult => {
+        return (
+          engineResult && engineResult.series && engineResult.series.length
+        );
+      });
+    const isRealTimeEngine =
+      engineMode &&
+      (engineMode.toLowerCase() === 'stream' ||
+        engineMode.toLowerCase() === 'chunk');
     if (isFetchingEngineResults) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
@@ -486,7 +491,11 @@ class MediaDetailsWidget extends React.Component {
     } else if (hasEngineResults && engineStatus === 'complete') {
       // nullstate not needed
       return;
-    } else if (hasEngineResults && isRealTimeEngine && (engineStatus === 'running' || engineStatus === 'failed')) {
+    } else if (
+      hasEngineResults &&
+      isRealTimeEngine &&
+      (engineStatus === 'running' || engineStatus === 'failed')
+    ) {
       // nullstate not needed for RealTime running or failed engine if there are results available
       return;
     }
@@ -979,8 +988,14 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
               {selectedEngineCategory &&
-                !(selectedEngineCategory.categoryType === 'transcript' && isEditModeEnabled) &&
-                !(selectedEngineCategory.categoryType === 'correlation' && isExpandedMode) && (
+                !(
+                  selectedEngineCategory.categoryType === 'transcript' &&
+                  isEditModeEnabled
+                ) &&
+                !(
+                  selectedEngineCategory.categoryType === 'correlation' &&
+                  isExpandedMode
+                ) && (
                   <div className={styles.mediaView}>
                     {isImage ? (
                       <Image
@@ -1019,6 +1034,10 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
+                        bulkEditEnabled={
+                          get(this.props.kvp, 'features.bulkEditTranscript') ===
+                          'enabled'
+                        }
                       />
                     )}
                   {selectedEngineCategory &&
