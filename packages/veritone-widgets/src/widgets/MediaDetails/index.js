@@ -86,7 +86,8 @@ import widget from '../../shared/widget';
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId
+    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
+    contextMenuExtensions: applicationModule.getContextMenuExtensions(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
