@@ -207,17 +207,21 @@ export default createReducer(defaultState, {
       // handle no results case
       const tdoId = state[widgetId].tdo.id;
       resultsGroupedByEngineId = {};
-      resultsGroupedByEngineId[engineId] = [{
-        startOffsetMs,
-        stopOffsetMs,
-        tdoId,
-        engineId
-      }];
+      resultsGroupedByEngineId[engineId] = [
+        {
+          startOffsetMs,
+          stopOffsetMs,
+          tdoId,
+          engineId
+        }
+      ];
     }
 
     forEach(resultsGroupedByEngineId, (results, engineId) => {
       // process only results with jsondata
-      const resultsWithData = results.filter(result => !!result && !!result.jsondata);
+      const resultsWithData = results.filter(
+        result => !!result && !!result.jsondata
+      );
       if (!previousResultsByEngineId[engineId]) {
         // Data hasn't been retrieved for this engineId yet
         previousResultsByEngineId[engineId] = map(resultsWithData, 'jsondata');
@@ -243,7 +247,7 @@ export default createReducer(defaultState, {
       };
       engineResultRequestsById[engineId] = engineResultRequestsById[
         engineId
-        ].map(request => {
+      ].map(request => {
         if (isMatch(request, fetchingOffsetRequest)) {
           return {
             ...request,
@@ -768,15 +772,23 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
-export const isUserGeneratedTranscriptEngineId = (engineId) => {
-  return engineId === 'bulk-edit-transcript' || engineId === 'bde0b023-333d-acb0-e01a-f95c74214607';
+export const isUserGeneratedTranscriptEngineId = engineId => {
+  return (
+    engineId === 'bulk-edit-transcript' ||
+    engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
+  );
 };
-export const isUserGeneratedFaceEngineId = (engineId) => {
-  return engineId === 'user-edited-face-engine-results' || engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd';
+export const isUserGeneratedFaceEngineId = engineId => {
+  return (
+    engineId === 'user-edited-face-engine-results' ||
+    engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd'
+  );
 };
-export const isUserGeneratedEngineId = (engineId) => {
-  return isUserGeneratedTranscriptEngineId(engineId) ||
-    isUserGeneratedFaceEngineId(engineId);
+export const isUserGeneratedEngineId = engineId => {
+  return (
+    isUserGeneratedTranscriptEngineId(engineId) ||
+    isUserGeneratedFaceEngineId(engineId)
+  );
 };
 
 export const initializeWidget = widgetId => ({

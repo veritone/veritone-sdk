@@ -25,10 +25,7 @@ import {
   oneOfType
 } from 'prop-types';
 import styles from './styles.scss';
-import {
-  FaceEngineOutput,
-  withMuiThemeProvider
-} from 'veritone-react-common';
+import { FaceEngineOutput, withMuiThemeProvider } from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';

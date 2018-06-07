@@ -178,7 +178,7 @@ export default class TranscriptEngineOutputWidget extends Component {
       bulkEditEnabled
     } = this.props;
 
-    const alertTitle = "Unsaved Transcript Changes";
+    const alertTitle = 'Unsaved Transcript Changes';
     const alertDescription =
       'This action will reset your changes to the transcript.';
     const cancelButtonLabel = 'Cancel';
