@@ -79,7 +79,7 @@ class FaceDetectionBox extends Component {
   state = {
     editFaceEntity: false,
     hovered: false,
-    searchEntityText: '',
+    searchEntityText: ''
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -119,6 +119,12 @@ class FaceDetectionBox extends Component {
     }, 1000);
     this.props.onSearchForEntities(text);
   };
+
+  handleBlur = event => {
+    this.setState({
+      editFaceEntity: false
+    });
+  }
 
   itemToString = item => (item ? item.name : '');
 
@@ -188,7 +194,8 @@ class FaceDetectionBox extends Component {
                       {...getInputProps({
                         placeholder: 'Unknown',
                         autoFocus: true,
-                        className: styles.entitySearchInput
+                        className: styles.entitySearchInput,
+                        onBlur: this.handleBlur
                       })}
                     />
                   </div>
