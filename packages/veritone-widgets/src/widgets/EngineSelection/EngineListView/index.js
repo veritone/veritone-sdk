@@ -28,17 +28,17 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 import styles from './styles.scss';
 
 @connect(
-  (state, ownProps) => ({
-    allEngines: engineModule.getEngines(state),
-    currentResults: engineSelectionModule.getCurrentResults(state),
-    allEnginesChecked: engineSelectionModule.allEnginesChecked(state),
-    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state),
-    checkedEngineIds: engineSelectionModule.getCheckedEngineIds(state),
-    isFetchingEngines: engineModule.isFetchingEngines(state),
-    failedToFetchEngines: engineModule.failedToFetchEngines(state),
-    searchQuery: engineSelectionModule.getSearchQuery(state),
-    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state),
-    isSearchOpen: engineSelectionModule.isSearchOpen(state)
+  (state, { id }) => ({
+    allEngines: engineModule.getEngines(state, id),
+    currentResults: engineSelectionModule.getCurrentResults(state, id),
+    allEnginesChecked: engineSelectionModule.allEnginesChecked(state, id),
+    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state, id),
+    checkedEngineIds: engineSelectionModule.getCheckedEngineIds(state, id),
+    isFetchingEngines: engineModule.isFetchingEngines(state, id),
+    failedToFetchEngines: engineModule.failedToFetchEngines(state, id),
+    searchQuery: engineSelectionModule.getSearchQuery(state, id),
+    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state, id),
+    isSearchOpen: engineSelectionModule.isSearchOpen(state, id)
   }),
   {
     selectEngines: engineSelectionModule.selectEngines,
@@ -53,6 +53,7 @@ import styles from './styles.scss';
 )
 export default class EngineListView extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     allEngines: objectOf(object),
     currentResults: arrayOf(string),
     allEnginesChecked: bool.isRequired,
@@ -98,7 +99,10 @@ export default class EngineListView extends React.Component {
       !isEmpty(this.props.allEngines) &&
       this.props.initialSelectedEngineIds
     ) {
-      this.props.selectEngines(this.props.initialSelectedEngineIds);
+      this.props.selectEngines(
+        this.props.id,
+        this.props.initialSelectedEngineIds
+      );
     }
   }
 
@@ -108,16 +112,16 @@ export default class EngineListView extends React.Component {
       : this.props.selectedEngineIds;
 
     this.props.allEnginesChecked
-      ? this.props.uncheckAllEngines()
-      : this.props.checkAllEngines(enginesToCheck);
+      ? this.props.uncheckAllEngines(this.props.id)
+      : this.props.checkAllEngines(this.props.id, enginesToCheck);
   };
 
   handleSearch = name => {
-    this.props.searchEngines({ name });
+    this.props.searchEngines(this.props.id, { name });
   };
 
   handleTabChange = (event, tabIndex) => {
-    this.props.changeTab(tabIndex);
+    this.props.changeTab(this.props.id, tabIndex);
   };
 
   handleSave = () => {
@@ -129,10 +133,11 @@ export default class EngineListView extends React.Component {
 
     return (
       <div className={styles.engineSelection}>
-        <EnginesSideBar />
+        <EnginesSideBar id={this.props.id} />
         <div className={styles.engineSelectionContent}>
           {!isEmpty(checkedEngineIds) && (
             <SelectedActionBar
+              id={this.props.id}
               selectedEngines={checkedEngineIds}
               disabledSelectAllMessage={!currentTabIndex}
               currentResultsCount={this.props.currentResults.length}
@@ -161,6 +166,7 @@ export default class EngineListView extends React.Component {
           )}
           <div className={styles.engineListContainer}>
             <SelectBar
+              id={this.props.id}
               onCheckAll={this.handleCheckAll}
               searchQuery={this.props.searchQuery}
               onSearch={this.handleSearch}
@@ -180,6 +186,7 @@ export default class EngineListView extends React.Component {
             />
             <div className={styles.engineList}>
               <EngineListContainer
+                id={this.props.id}
                 currentTabIndex={this.props.currentTabIndex}
                 engineIds={
                   currentTabIndex

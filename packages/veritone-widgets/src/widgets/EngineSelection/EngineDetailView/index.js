@@ -13,7 +13,8 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
       state,
-      ownProps.engine.id
+      ownProps.engine.id,
+      ownProps.id
     )
   }),
   {
@@ -23,6 +24,7 @@ import * as engineSelectionModule from '../../../redux/modules/engineSelection';
 )
 export default class EngineDetailView extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     engine: shape({
       id: string.isRequired,
       name: string.isRequired,
@@ -53,6 +55,7 @@ export default class EngineDetailView extends React.Component {
         </div>
         <div className={styles.content}>
           <InfoSection
+            id={this.props.id}
             engine={this.props.engine}
             onAdd={this.props.selectEngines}
             onRemove={this.props.deselectEngines}

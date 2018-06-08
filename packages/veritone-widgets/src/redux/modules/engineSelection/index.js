@@ -3,6 +3,8 @@ import { helpers, modules } from 'veritone-redux-common';
 const { createReducer } = helpers;
 const { engine: engineModule } = modules;
 
+export const INITIALIZE_WIDGET = 'vtn/engineSelection/INITIALIZE_WIDGET';
+
 export const CHECK_ALL_ENGINES = 'vtn/engineSelection/CHECK_ALL_ENGINES';
 export const UNCHECK_ALL_ENGINES = 'vtn/engineSelection/UNCHECK_ALL_ENGINES';
 
@@ -29,7 +31,7 @@ export const SET_ALL_ENGINES_SELECTED =
 
 export const namespace = 'engineSelection';
 
-const defaultState = {
+const defaultSelectionState = {
   searchResults: {},
   searchQuery: '',
   filters: {
@@ -46,8 +48,22 @@ const defaultState = {
   allEnginesSelected: false
 };
 
+const defaultState = {
+  // populated like:
+  // [pickerId]: { ...defaultPickerState }
+};
+
 export default createReducer(defaultState, {
+  [INITIALIZE_WIDGET](state, action) {
+    return {
+      ...defaultState,
+      [action.meta.id]: {
+        ...defaultSelectionState
+      }
+    };
+  },
   [engineModule.FETCH_ENGINES_SUCCESS](state, action) {
+    const id = action.meta.id;
     const resultsPath = pathFor(action.meta.searchQuery, action.meta.filters);
     const normalizedResults = action.payload.results.map(engine => engine.id);
     const newResults = set({}, resultsPath, normalizedResults);
@@ -57,148 +73,213 @@ export default createReducer(defaultState, {
     * if so then ignore
     * otherwise add to selected
     */
-    const selectedEngineIds = state.allEnginesSelected
-      ? difference(normalizedResults, state.deselectedEngineIds)
+    const selectedEngineIds = state[id].allEnginesSelected
+      ? difference(normalizedResults, state[id].deselectedEngineIds)
       : [];
 
     return {
       ...state,
-      selectedEngineIds: [
-        ...new Set([...state.selectedEngineIds, ...selectedEngineIds])
-      ],
-      searchResults: merge({}, state.searchResults, newResults)
+      [id]: {
+        ...state[id],
+        selectedEngineIds: [
+          ...new Set([...state[id].selectedEngineIds, ...selectedEngineIds])
+        ],
+        searchResults: merge({}, state[id].searchResults, newResults)
+      }
     };
   },
   [CHECK_ALL_ENGINES](state, action) {
+    const id = action.meta.id;
     const engineIds = action.payload.engines;
 
     return {
       ...state,
-      checkedEngineIds: engineIds,
-      allEnginesChecked: true
+      [id]: {
+        ...state[id],
+        checkedEngineIds: engineIds,
+        allEnginesChecked: true
+      }
     };
   },
   [UNCHECK_ALL_ENGINES](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [SELECT_ENGINE](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      selectedEngineIds: union(
-        state.selectedEngineIds,
-        action.payload.engineIds
-      ),
-      deselectedEngineIds: without(
-        state.deselectedEngineIds,
-        ...action.payload.engineIds
-      ),
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        selectedEngineIds: union(
+          state[id].selectedEngineIds,
+          action.payload.engineIds
+        ),
+        deselectedEngineIds: without(
+          state[id].deselectedEngineIds,
+          ...action.payload.engineIds
+        ),
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [DESELECT_ENGINE](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      selectedEngineIds: without(
-        state.selectedEngineIds,
-        ...action.payload.engineIds
-      ),
-      deselectedEngineIds: union(
-        state.deselectedEngineIds,
-        action.payload.engineIds
-      ),
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        selectedEngineIds: without(
+          state[id].selectedEngineIds,
+          ...action.payload.engineIds
+        ),
+        deselectedEngineIds: union(
+          state[id].deselectedEngineIds,
+          action.payload.engineIds
+        ),
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [CHECK_ENGINE](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      checkedEngineIds: union(state.checkedEngineIds, [action.payload.engineId])
+      [id]: {
+        ...state[id],
+        checkedEngineIds: union(state[id].checkedEngineIds, [
+          action.payload.engineId
+        ])
+      }
     };
   },
   [UNCHECK_ENGINE](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      checkedEngineIds: without(
-        state.checkedEngineIds,
-        action.payload.engineId
-      ),
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        checkedEngineIds: without(
+          state[id].checkedEngineIds,
+          action.payload.engineId
+        ),
+        allEnginesChecked: false
+      }
     };
   },
   [ADD_FILTER](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      filters: {
-        ...state.filters,
-        [action.payload.type]: action.payload.value
-      },
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        filters: {
+          ...state[id].filters,
+          [action.payload.type]: action.payload.value
+        },
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [REMOVE_FILTER](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      filters: omit(state.filters, action.payload.type),
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        filters: omit(state[id].filters, action.payload.type),
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [CLEAR_ALL_FILTERS](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      filters: defaultState.filters,
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        filters: defaultSelectionState.filters,
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [SEARCH](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      searchQuery: action.payload.searchQuery,
-      checkedEngineIds: [],
-      allEnginesChecked: false
+      [id]: {
+        ...state[id],
+        searchQuery: action.payload.searchQuery,
+        checkedEngineIds: [],
+        allEnginesChecked: false
+      }
     };
   },
   [CLEAR_SEARCH](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      searchQuery: '',
-      checkedEngineIds: [],
-      allEnginesChecked: false,
-      isSearchOpen: false
+      [id]: {
+        ...state[id],
+        searchQuery: '',
+        checkedEngineIds: [],
+        allEnginesChecked: false,
+        isSearchOpen: false
+      }
     };
   },
   [CHANGE_TAB](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      currentTabIndex: action.payload.tabIndex,
-      searchQuery: '',
-      isSearchOpen: false
+      [id]: {
+        ...state[id],
+        currentTabIndex: action.payload.tabIndex,
+        searchQuery: '',
+        isSearchOpen: false
+      }
     };
   },
   [TOGGLE_SEARCH](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      isSearchOpen: !state.isSearchOpen
+      [id]: {
+        ...state[id],
+        isSearchOpen: !state[id].isSearchOpen
+      }
     };
   },
   [SET_DESELECTED_ENGINES](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      deselectedEngineIds: action.payload.deselectedEngineIds
+      [id]: {
+        ...state[id],
+        deselectedEngineIds: action.payload.deselectedEngineIds
+      }
     };
   },
   [SET_ALL_ENGINES_SELECTED](state, action) {
+    const id = action.meta.id;
     return {
       ...state,
-      allEnginesSelected: action.payload.allEnginesSelected
+      [id]: {
+        ...state[id],
+        allEnginesSelected: action.payload.allEnginesSelected
+      }
     };
   }
 });
@@ -207,10 +288,17 @@ function local(state) {
   return state[namespace];
 }
 
-export function refetchEngines() {
+export function initializeWidget(id) {
+  return {
+    type: INITIALIZE_WIDGET,
+    meta: { id }
+  };
+}
+
+export function refetchEngines(id) {
   return function action(dispatch, getState) {
-    const searchQuery = getSearchQuery(getState());
-    const filters = getEngineFilters(getState());
+    const searchQuery = getSearchQuery(getState(), id);
+    const filters = getEngineFilters(getState(), id);
     dispatch(
       engineModule.fetchEngines(
         { offset: 0, limit: 1000, owned: false },
@@ -218,138 +306,154 @@ export function refetchEngines() {
         filters,
         {
           status: ['deployed']
-        }
+        },
+        id
       )
     );
   };
 }
 
-export function searchEngines({ name }) {
+export function searchEngines(id, { name }) {
   return {
     type: SEARCH,
     payload: {
       searchQuery: name
-    }
+    },
+    meta: { id }
   };
 }
 
-export function addEngineFilter({ type, value }) {
+export function addEngineFilter(id, { type, value }) {
   return {
     type: ADD_FILTER,
     payload: {
       type,
       value
-    }
+    },
+    meta: { id }
   };
 }
 
-export function removeEngineFilter({ type, value }) {
+export function removeEngineFilter(id, { type, value }) {
   return {
     type: REMOVE_FILTER,
     payload: {
       type,
       value
-    }
+    },
+    meta: { id }
   };
 }
 
-export function checkAllEngines(engines) {
+export function checkAllEngines(id, engines) {
   return {
     type: CHECK_ALL_ENGINES,
     payload: {
       engines
-    }
+    },
+    meta: { id }
   };
 }
 
-export function uncheckAllEngines() {
+export function uncheckAllEngines(id) {
   return {
     type: UNCHECK_ALL_ENGINES,
-    payload: {}
+    payload: {},
+    meta: { id }
   };
 }
 
-export function selectEngines(engineIds) {
+export function selectEngines(id, engineIds) {
   return {
     type: SELECT_ENGINE,
     payload: {
       engineIds
-    }
+    },
+    meta: { id }
   };
 }
 
-export function deselectEngines(engineIds) {
+export function deselectEngines(id, engineIds) {
   return {
     type: DESELECT_ENGINE,
     payload: {
       engineIds
-    }
+    },
+    meta: { id }
   };
 }
 
-export function checkEngine(engineId) {
+export function checkEngine(id, engineId) {
   return {
     type: CHECK_ENGINE,
     payload: {
       engineId
-    }
+    },
+    meta: { id }
   };
 }
 
-export function uncheckEngine(engineId) {
+export function uncheckEngine(id, engineId) {
   return {
     type: UNCHECK_ENGINE,
     payload: {
       engineId
-    }
+    },
+    meta: { id }
   };
 }
 
-export function clearSearch() {
+export function clearSearch(id) {
   return {
     type: CLEAR_SEARCH,
-    payload: {}
+    payload: {},
+    meta: { id }
   };
 }
 
-export function clearAllFilters() {
+export function clearAllFilters(id) {
   return {
     type: CLEAR_ALL_FILTERS,
-    payload: {}
+    payload: {},
+    meta: { id }
   };
 }
 
-export function changeTab(tabIndex) {
+export function changeTab(id, tabIndex) {
   return {
     type: CHANGE_TAB,
     payload: {
       tabIndex
-    }
+    },
+    meta: { id }
   };
 }
 
-export function toggleSearch() {
+export function toggleSearch(id) {
   return {
     type: TOGGLE_SEARCH,
-    payload: {}
+    payload: {},
+    meta: { id }
   };
 }
 
-export function setDeselectedEngineIds(deselectedEngineIds) {
+export function setDeselectedEngineIds(id, deselectedEngineIds) {
   return {
     type: SET_DESELECTED_ENGINES,
     payload: {
       deselectedEngineIds
-    }
+    },
+    meta: { id }
   };
 }
 
-export function setAllEnginesSelected(allEnginesSelected) {
+export function setAllEnginesSelected(id, allEnginesSelected) {
   return {
     type: SET_ALL_ENGINES_SELECTED,
     payload: {
       allEnginesSelected
-    }
+    },
+    meta: { id }
   };
 }
 
@@ -357,50 +461,53 @@ export function pathFor(searchQuery, filters) {
   return [searchQuery, JSON.stringify(filters)];
 }
 
-export function getCurrentTabIndex(state) {
-  return local(state).currentTabIndex;
+export function getCurrentTabIndex(state, id) {
+  return get(local(state), [id, 'currentTabIndex']);
 }
 
-export function isSearchOpen(state) {
-  return local(state).isSearchOpen;
+export function isSearchOpen(state, id) {
+  return get(local(state), [id, 'isSearchOpen']);
 }
 
-export function getCurrentResults(state) {
+export function getCurrentResults(state, id) {
   const results = get(
-    local(state).searchResults,
-    pathFor(local(state).searchQuery, local(state).filters)
+    get(local(state), [id, 'searchResults']),
+    pathFor(
+      get(local(state), [id, 'searchQuery']),
+      get(local(state), [id, 'filters'])
+    )
   );
   return results;
 }
 
-export function getSearchQuery(state) {
-  return local(state).searchQuery;
+export function getSearchQuery(state, id) {
+  return get(local(state), [id, 'searchQuery']);
 }
 
-export function getEngineFilters(state) {
-  return local(state).filters;
+export function getEngineFilters(state, id) {
+  return get(local(state), [id, 'filters']);
 }
 
-export function engineIsSelected(state, engineId) {
-  return local(state).selectedEngineIds.includes(engineId);
+export function engineIsSelected(state, engineId, id) {
+  return get(local(state), [id, 'selectedEngineIds']).includes(engineId);
 }
 
-export function engineIsChecked(state, engineId) {
-  return local(state).checkedEngineIds.includes(engineId);
+export function engineIsChecked(state, engineId, id) {
+  return get(local(state), [id, 'checkedEngineIds']).includes(engineId);
 }
 
-export function allEnginesChecked(state) {
-  return local(state).allEnginesChecked;
+export function allEnginesChecked(state, id) {
+  return get(local(state), [id, 'allEnginesChecked']);
 }
 
-export function getSelectedEngineIds(state) {
-  return local(state).selectedEngineIds;
+export function getSelectedEngineIds(state, id) {
+  return get(local(state), [id, 'selectedEngineIds']);
 }
 
-export function getDeselectedEngineIds(state) {
-  return local(state).deselectedEngineIds;
+export function getDeselectedEngineIds(state, id) {
+  return get(local(state), [id, 'deselectedEngineIds']);
 }
 
-export function getCheckedEngineIds(state) {
-  return local(state).checkedEngineIds;
+export function getCheckedEngineIds(state, id) {
+  return get(local(state), [id, 'checkedEngineIds']);
 }

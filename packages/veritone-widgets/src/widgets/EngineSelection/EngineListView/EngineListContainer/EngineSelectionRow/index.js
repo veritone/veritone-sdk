@@ -25,10 +25,15 @@ import styles from './styles.scss';
   (state, ownProps) => ({
     isSelected: engineSelectionModule.engineIsSelected(
       state,
-      ownProps.engineId
+      ownProps.engineId,
+      ownProps.id
     ),
     engine: engineModule.getEngine(state, ownProps.engineId),
-    isChecked: engineSelectionModule.engineIsChecked(state, ownProps.engineId)
+    isChecked: engineSelectionModule.engineIsChecked(
+      state,
+      ownProps.engineId,
+      ownProps.id
+    )
   }),
   {
     selectEngines: engineSelectionModule.selectEngines,
@@ -39,6 +44,7 @@ import styles from './styles.scss';
 )
 export default class EngineSelectionRow extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     engine: shape({
       id: string.isRequired,
       name: string.isRequired,
@@ -58,8 +64,8 @@ export default class EngineSelectionRow extends React.Component {
 
   handleChange = () => {
     this.props.isChecked
-      ? this.props.uncheckEngine(this.props.engine.id)
-      : this.props.checkEngine(this.props.engine.id);
+      ? this.props.uncheckEngine(this.props.id, this.props.engine.id)
+      : this.props.checkEngine(this.props.id, this.props.engine.id);
   };
 
   handleClick = () => {
@@ -127,6 +133,7 @@ export default class EngineSelectionRow extends React.Component {
             </div>
             <div>
               <ToggleButton
+                id={this.props.id}
                 onAdd={this.props.selectEngines}
                 onRemove={this.props.deselectEngines}
                 engineId={this.props.engine.id}

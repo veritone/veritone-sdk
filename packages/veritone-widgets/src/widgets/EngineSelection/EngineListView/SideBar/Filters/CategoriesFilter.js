@@ -7,6 +7,7 @@ import styles from '../styles.scss';
 
 class CategoriesFilter extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     filters: shape({
       category: arrayOf(string).isRequired
     }).isRequired,
@@ -14,14 +15,14 @@ class CategoriesFilter extends React.Component {
   };
 
   addCategory = category => {
-    this.props.filterBy({
+    this.props.filterBy(this.props.id, {
       type: 'category',
       value: [...this.props.filters.category, category]
     });
   };
 
   removeCategory = category => {
-    this.props.filterBy({
+    this.props.filterBy(this.props.id, {
       type: 'category',
       value: without(this.props.filters.category, category)
     });

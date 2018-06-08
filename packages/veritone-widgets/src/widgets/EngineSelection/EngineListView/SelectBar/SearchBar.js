@@ -12,6 +12,7 @@ import styles from './styles.scss';
 
 export default class SearchBar extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     searchQuery: string,
     onToggleSearch: func.isRequired,
     isOpen: bool,
@@ -30,10 +31,10 @@ export default class SearchBar extends React.Component {
   );
 
   handleToggleSearch = () => {
-    this.props.onToggleSearch();
+    this.props.onToggleSearch(this.props.id);
 
     if (this.props.isOpen && this.props.searchQuery) {
-      this.props.onClearSearch();
+      this.props.onClearSearch(this.props.id);
     }
   };
 

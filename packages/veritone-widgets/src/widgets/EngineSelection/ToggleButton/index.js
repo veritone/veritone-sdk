@@ -9,15 +9,17 @@ import styles from './styles.scss';
 
 export default class ToggleButton extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     onAdd: func.isRequired,
     onRemove: func.isRequired,
     engineId: string.isRequired,
     isSelected: bool.isRequired
   };
 
-  handleAdd = () => this.props.onAdd([this.props.engineId]);
+  handleAdd = () => this.props.onAdd(this.props.id, [this.props.engineId]);
 
-  handleRemove = () => this.props.onRemove([this.props.engineId]);
+  handleRemove = () =>
+    this.props.onRemove(this.props.id, [this.props.engineId]);
 
   render() {
     const buttonClasses = cx(styles.default, {

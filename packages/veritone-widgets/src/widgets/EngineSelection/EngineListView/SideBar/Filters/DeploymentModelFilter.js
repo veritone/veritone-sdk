@@ -6,6 +6,7 @@ import styles from '../styles.scss';
 
 class DeploymentModelFilter extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     filters: shape({
       deploymentModel: string
     }).isRequired,
@@ -13,7 +14,10 @@ class DeploymentModelFilter extends React.Component {
   };
 
   handleChange = event => {
-    this.props.filterBy({ type: 'deploymentModel', value: event.target.value });
+    this.props.filterBy(this.props.id, {
+      type: 'deploymentModel',
+      value: event.target.value
+    });
   };
 
   render() {

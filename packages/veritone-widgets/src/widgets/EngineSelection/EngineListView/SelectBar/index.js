@@ -11,6 +11,7 @@ import styles from './styles.scss';
 
 export default class SelectBar extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     onCheckAll: func.isRequired,
     searchQuery: string,
     onSearch: func.isRequired,
@@ -43,6 +44,7 @@ export default class SelectBar extends React.Component {
         {!this.props.hideActionMenuItems && (
           <div className={styles.selectBarIcons}>
             <SearchBar
+              id={this.props.id}
               onSearch={this.props.onSearch}
               onClearSearch={this.props.onClearSearch}
               onToggleSearch={this.props.onToggleSearch}

@@ -10,7 +10,7 @@ import humanReviewLogo from '../images/humanreview_logo.png';
 
 import styles from './styles.scss';
 
-function InfoSection({ engine, onAdd, onRemove, isSelected }) {
+function InfoSection({ id, engine, onAdd, onRemove, isSelected }) {
   const deploymentModelLogo = {
     FullyNetworkIsolated: networkIsolatedLogo,
     MostlyNetworkIsolated: externalAccessLogo,
@@ -50,6 +50,7 @@ function InfoSection({ engine, onAdd, onRemove, isSelected }) {
         <div className={styles.secondary}>
           <div className={styles.button}>
             <ToggleButton
+              id={id}
               onAdd={onAdd}
               onRemove={onRemove}
               engineId={engine.id}
@@ -63,6 +64,7 @@ function InfoSection({ engine, onAdd, onRemove, isSelected }) {
 }
 
 InfoSection.propTypes = {
+  id: string.isRequired,
   engine: shape({
     id: string.isRequired,
     name: string.isRequired,

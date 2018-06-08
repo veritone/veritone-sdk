@@ -8,6 +8,7 @@ import filePickerReducer, {
 import engineSelectionReducer, {
   namespace as engineSelectionNamespace
 } from './modules/engineSelection';
+
 import notificationsReducer, {
   namespace as notificationsNamespace
 } from './modules/notifications';

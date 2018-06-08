@@ -7,6 +7,7 @@ import EngineSelectionRow from './EngineSelectionRow/';
 // see https://github.com/bvaughn/react-virtualized/blob/master/docs/creatingAnInfiniteLoadingList.md
 export default class EngineList extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     hasNextPage: bool.isRequired,
     isNextPageLoading: bool.isRequired,
     list: arrayOf(string).isRequired,
@@ -33,6 +34,7 @@ export default class EngineList extends React.Component {
     } else {
       content = (
         <EngineSelectionRow
+          id={this.props.id}
           engineId={this.props.list[index]}
           onViewDetail={this.props.onViewDetail}
         />

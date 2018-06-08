@@ -1,12 +1,12 @@
 import { fork, put, takeLatest, select } from 'redux-saga/effects';
 import * as engineSelectionModule from './';
 
-function* fetchEngines() {
-  yield put(engineSelectionModule.refetchEngines());
+function* fetchEngines(id) {
+  yield put(engineSelectionModule.refetchEngines(id));
 }
 
-function* getCachedResults() {
-  return yield select(engineSelectionModule.getCurrentResults);
+function* getCachedResults(id) {
+  return yield select(engineSelectionModule.getCurrentResults, id);
 }
 
 function* watchRefetchEngineActions() {
@@ -17,11 +17,13 @@ function* watchRefetchEngineActions() {
     engineSelectionModule.REMOVE_FILTER
   ];
 
-  yield takeLatest(refetchTypes, function* onInvalidateAction() {
-    let cachedResults = yield* getCachedResults();
+  yield takeLatest(refetchTypes, function* onInvalidateAction({
+    meta: { id }
+  }) {
+    let cachedResults = yield* getCachedResults(id);
 
     if (!cachedResults) {
-      yield* fetchEngines();
+      yield* fetchEngines(id);
     }
   });
 }

@@ -52,7 +52,8 @@ export function fetchEngines(
   { offset, limit, owned },
   searchQuery,
   filters = {},
-  builds = {}
+  builds = {},
+  id
 ) {
   return async function action(dispatch, getState) {
     dispatch({ type: FETCH_ENGINES });
@@ -133,7 +134,7 @@ export function fetchEngines(
       dispatch({
         type: FETCH_ENGINES_SUCCESS,
         payload: { results },
-        meta: { searchQuery, filters }
+        meta: { searchQuery, filters, id }
       });
     } catch (err) {
       dispatch({

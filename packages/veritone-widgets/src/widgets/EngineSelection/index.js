@@ -12,11 +12,18 @@ import widget from '../../shared/widget';
 
 @withMuiThemeProvider
 @connect(
-  state => ({
-    deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(state),
-    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state)
+  (state, { _widgetId }) => ({
+    deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(
+      state,
+      _widgetId
+    ),
+    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(
+      state,
+      _widgetId
+    )
   }),
   {
+    initializeWidget: engineSelectionModule.initializeWidget,
     fetchEngines: engineSelectionModule.refetchEngines,
     setDeselectedEngineIds: engineSelectionModule.setDeselectedEngineIds,
     setAllEnginesSelected: engineSelectionModule.setAllEnginesSelected
@@ -26,6 +33,7 @@ import widget from '../../shared/widget';
 )
 class EngineSelection extends React.Component {
   static propTypes = {
+    _widgetId: string.isRequired,
     onSave: func.isRequired,
     onCancel: func.isRequired,
     actionMenuItems: arrayOf(
@@ -38,6 +46,7 @@ class EngineSelection extends React.Component {
     fetchEngines: func.isRequired,
     setAllEnginesSelected: func.isRequired,
     setDeselectedEngineIds: func.isRequired,
+    initializeWidget: func.isRequired,
     allEnginesSelected: bool,
     initialDeselectedEngineIds: arrayOf(string),
     initialSelectedEngineIds: arrayOf(string),
@@ -47,7 +56,8 @@ class EngineSelection extends React.Component {
   };
 
   static defaultProps = {
-    deselectedEngineIds: [],
+    initialSelectedEngineIds: [],
+    initialDeselectedEngineIds: [],
     allEnginesSelected: false,
     hideActions: false
   };
@@ -57,10 +67,20 @@ class EngineSelection extends React.Component {
     engineDetails: null
   };
 
+  UNSAFE_componentWillMount() {
+    this.props.initializeWidget(this.props._widgetId);
+  }
+
   componentDidMount() {
-    this.props.setDeselectedEngineIds(this.props.initialDeselectedEngineIds);
-    this.props.setAllEnginesSelected(this.props.allEnginesSelected);
-    this.props.fetchEngines();
+    this.props.setDeselectedEngineIds(
+      this.props._widgetId,
+      this.props.initialDeselectedEngineIds
+    );
+    this.props.setAllEnginesSelected(
+      this.props._widgetId,
+      this.props.allEnginesSelected
+    );
+    this.props.fetchEngines(this.props._widgetId);
   }
 
   save = () => {
@@ -72,7 +92,7 @@ class EngineSelection extends React.Component {
   };
 
   veritoneAppDidAuthenticate = () => {
-    this.props.fetchEngines();
+    this.props.fetchEngines(this.props._widgetId);
   };
 
   handleViewDetail = engine => {
@@ -92,11 +112,13 @@ class EngineSelection extends React.Component {
   render() {
     return this.state.showDetailView ? (
       <EngineDetailView
+        id={this.props._widgetId}
         onCloseDetailView={this.handleHideDetail}
         engine={this.state.engineDetails}
       />
     ) : (
       <EngineListView
+        id={this.props._widgetId}
         onViewDetail={this.handleViewDetail}
         onSave={this.save}
         onCancel={this.props.onCancel}

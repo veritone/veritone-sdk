@@ -7,6 +7,7 @@ import BackIcon from '@material-ui/icons/KeyboardBackspace';
 import styles from './styles.scss';
 
 function SelectedActionBar({
+  id,
   selectedEngines,
   currentResultsCount,
   allEngines,
@@ -17,17 +18,17 @@ function SelectedActionBar({
   disabledSelectAllMessage
 }) {
   const handleAddSelected = () => {
-    onAddSelected(selectedEngines);
-    onBack();
+    onAddSelected(id, selectedEngines);
+    onBack(id);
   };
   const handleRemoveSelected = () => {
-    onRemoveSelected(selectedEngines);
-    onBack();
+    onRemoveSelected(id, selectedEngines);
+    onBack(id);
   };
 
   const handleSelectAll = e => {
     e.preventDefault();
-    onSelectAll(allEngines);
+    onSelectAll(id, allEngines);
   };
 
   const displaySelectAllMessage = false; // disabled for now
@@ -88,6 +89,7 @@ function SelectedActionBar({
 }
 
 SelectedActionBar.propTypes = {
+  id: string.isRequired,
   selectedEngines: arrayOf(string).isRequired,
   currentResultsCount: number.isRequired,
   allEngines: arrayOf(string).isRequired,

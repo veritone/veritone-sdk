@@ -18,6 +18,7 @@ import * as engineSelectionModule from '../../../../redux/modules/engineSelectio
 })
 export default class EngineListContainer extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     currentTabIndex: number.isRequired,
     engineIds: arrayOf(string),
     onExploreAllEnginesClick: func,
@@ -31,12 +32,16 @@ export default class EngineListContainer extends React.Component {
     this.props.onExploreAllEnginesClick(e, 1);
   };
 
+  handleRefetchEngines = () => {
+    this.props.refetchEngines(this.props.id);
+  };
+
   render() {
     if (this.props.failedToFetchEngines) {
       return (
         <FailureScreen
           message="Failed to fetch engines."
-          onRetry={this.props.refetchEngines}
+          onRetry={this.handleRefetchEngines}
         />
       );
     }
@@ -84,6 +89,7 @@ export default class EngineListContainer extends React.Component {
 
     return (
       <EngineList
+        id={this.props.id}
         hasNextPage={false}
         isNextPageLoading={false}
         loadNextPage={noop}

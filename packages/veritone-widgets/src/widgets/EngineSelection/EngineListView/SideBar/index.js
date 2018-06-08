@@ -12,8 +12,8 @@ import * as Filters from './Filters';
 import * as engineSelectionModule from '../../../../redux/modules/engineSelection';
 
 @connect(
-  (state, ownProps) => ({
-    filters: engineSelectionModule.getEngineFilters(state)
+  (state, { id }) => ({
+    filters: engineSelectionModule.getEngineFilters(state, id)
   }),
   {
     addEngineFilter: engineSelectionModule.addEngineFilter,
@@ -23,6 +23,7 @@ import * as engineSelectionModule from '../../../../redux/modules/engineSelectio
 )
 export default class EnginesSideBar extends React.Component {
   static propTypes = {
+    id: string.isRequired,
     filters: shape({
       category: arrayOf(string)
     }).isRequired,
@@ -75,18 +76,22 @@ export default class EnginesSideBar extends React.Component {
     }
 
     if (isArray(filters[filter])) {
-      this.props.addEngineFilter({
+      this.props.addEngineFilter(this.props.id, {
         type: filter,
         value: without(filters[filter], value)
       });
     }
 
     if (isString(filters[filter])) {
-      this.props.removeEngineFilter({
+      this.props.removeEngineFilter(this.props.id, {
         type: filter,
         value
       });
     }
+  };
+
+  handleClearAllFilters = () => {
+    this.props.clearAllFilters(this.props.id);
   };
 
   render() {
@@ -104,6 +109,7 @@ export default class EnginesSideBar extends React.Component {
         ...acc,
         [id]: (
           <Component
+            id={this.props.id}
             filters={this.props.filters}
             filterBy={this.props.addEngineFilter}
           />
@@ -118,7 +124,7 @@ export default class EnginesSideBar extends React.Component {
           tabs={['Filters']}
           clearAllFilters={false}
           onClearFilter={this.handleClearFilter}
-          onClearAllFilters={this.props.clearAllFilters}
+          onClearAllFilters={this.handleClearAllFilters}
           filtersSections={engineFilters}
           formComponents={formComponents}
           selectedFilters={this.getSelectedFilters(this.props.filters)}
