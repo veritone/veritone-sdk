@@ -7,10 +7,13 @@ import {
   select,
   take
 } from 'redux-saga/effects';
-import { get, uniq, isObject, isEmpty, isUndefined, every } from 'lodash';
+import { get, uniq, isObject, isEmpty, isUndefined, every, find } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
-import { getTranscriptEditAssetData, RESET as TRANSCRIPT_RESET } from './transcriptWidget';
+import {
+  getTranscriptEditAssetData,
+  RESET as TRANSCRIPT_RESET
+} from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
@@ -66,7 +69,10 @@ import {
   isUserGeneratedTranscriptEngineId,
   isUserGeneratedFaceEngineId,
   toggleEditMode,
-  getSelectedEngineCategory
+  getSelectedEngineCategory,
+  refreshEngineRunsSuccess,
+  clearEngineResultsByEngineId,
+  getEngineCategories
 } from '.';
 
 import { ADD_DETECTED_FACE } from './faceEngineOutput';
@@ -91,6 +97,25 @@ const tdoInfoQueryClause = `id
       uri
     }`;
 
+const engineRunsQueryClause = `engineRuns {
+      records {
+        engine {
+          id
+          name
+          mode
+          category {
+            id
+            name
+            categoryType
+            iconClass
+            editable
+          }
+        }
+        status
+      }
+    }
+  `;
+
 function* finishLoadEngineCategories(widgetId, result, { error }) {
   if (error) {
     return yield put(loadEngineCategoriesFailure(widgetId, { error }));
@@ -98,28 +123,103 @@ function* finishLoadEngineCategories(widgetId, result, { error }) {
   return yield put(loadEngineCategoriesSuccess(widgetId, result));
 }
 
+function processEngineRuns(engineRuns) {
+  const orderedSupportedCategoryTypes = [
+    'transcript',
+    'face',
+    'object',
+    'logo',
+    'ocr',
+    'fingerprint',
+    'translate',
+    'sentiment',
+    'geolocation',
+    'correlation'
+  ];
+  const engineCategories = [];
+
+  engineRuns
+    .map(engineRun => {
+      const engineId = get(engineRun, 'engine.id');
+      if (isUserGeneratedTranscriptEngineId(engineId)) {
+        engineRun.engine.category = {
+          id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
+          name: 'Transcription',
+          iconClass: 'icon-transcription',
+          categoryType: 'transcript',
+          editable: true
+        };
+      } else if (isUserGeneratedFaceEngineId(engineId)) {
+        engineRun.engine.category = {
+          id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
+          name: 'Facial Detection',
+          categoryType: 'face',
+          iconClass: 'icon-face',
+          editable: true
+        };
+      }
+      return engineRun;
+    })
+    // filter those that have category, category icon, and are supported categories
+    .filter(
+      engineRun =>
+        get(engineRun, 'engine.category.iconClass.length') &&
+        orderedSupportedCategoryTypes.includes(
+          get(engineRun, 'engine.category.categoryType')
+        )
+    )
+    .forEach(engineRun => {
+      let engineCategory = engineCategories.find(
+        category => category.id === engineRun.engine.category.id
+      );
+      if (!engineCategory) {
+        engineCategory = Object.assign({}, engineRun.engine.category);
+        engineCategory.iconClass = engineCategory.iconClass.replace(
+          '-engine',
+          ''
+        );
+        if (engineCategory.categoryType === 'correlation') {
+          engineCategory.iconClass = 'icon-third-party-data';
+        }
+        engineCategory.engines = [];
+        engineCategories.push(engineCategory);
+      }
+      engineRun.engine.status = engineRun.status;
+      engineCategory.engines.push(engineRun.engine);
+    });
+
+  // order categories: first the most frequently used as defined by product, then the rest - alphabetically
+  engineCategories.sort((category1, category2) => {
+    // sort all alphabetically
+    if (category1.categoryType < category2.categoryType) {
+      return -1;
+    }
+    if (category1.categoryType > category2.categoryType) {
+      return 1;
+    }
+    return 0;
+  });
+  orderedSupportedCategoryTypes.reverse().forEach(orderedCategoryType => {
+    // reverse ordered and add to the result at the front
+    const index = engineCategories.findIndex(
+      category => category.categoryType === orderedCategoryType
+    );
+    if (index >= 0) {
+      const category = engineCategories[index];
+      engineCategories.splice(index, 1);
+      engineCategories.unshift(category);
+    }
+  });
+
+  return engineCategories;
+}
+
 function* loadTdoSaga(widgetId, tdoId) {
   const getTdoQuery = `query temporalDataObject($tdoId: ID!){
       temporalDataObject(id: $tdoId) {
         ${tdoInfoQueryClause}
         # Run engines and categories query clauses
-        engineRuns {
-          records {
-            engine {
-              id
-              name
-              mode
-              category {
-                id
-                name
-                categoryType
-                iconClass
-                editable
-              }
-            }
-            status
-          }
-        }
+        ${engineRunsQueryClause}
       }
     }
   `;
@@ -147,97 +247,13 @@ function* loadTdoSaga(widgetId, tdoId) {
     return yield put(loadTdoFailure(widgetId, 'Media not found'));
   }
 
-  const orderedSupportedCategoryTypes = [
-    'transcript',
-    'face',
-    'object',
-    'logo',
-    'ocr',
-    'fingerprint',
-    'translate',
-    'sentiment',
-    'geolocation',
-    'correlation'
-  ];
-
   const tdo = response.data.temporalDataObject;
   let engineCategories = [];
 
   // Extract EngineCategories data from EngineRuns
   if (get(tdo, 'engineRuns.records', false)) {
-    tdo.engineRuns.records
-      .map(engineRun => {
-        const engineId = get(engineRun, 'engine.id');
-        if (isUserGeneratedTranscriptEngineId(engineId)) {
-          engineRun.engine.category = {
-            id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-            name: 'Transcription',
-            iconClass: 'icon-transcription',
-            categoryType: 'transcript',
-            editable: true
-          };
-        } else if (isUserGeneratedFaceEngineId(engineId)) {
-          engineRun.engine.category = {
-            id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
-            name: 'Facial Detection',
-            categoryType: 'face',
-            iconClass: 'icon-face',
-            editable: true
-          };
-        }
-        return engineRun;
-      })
-      // filter those that have category, category icon, and are supported categories
-      .filter(
-        engineRun =>
-          get(engineRun, 'engine.category.iconClass.length') &&
-          orderedSupportedCategoryTypes.includes(
-            get(engineRun, 'engine.category.categoryType')
-          )
-      )
-      .forEach(engineRun => {
-        let engineCategory = engineCategories.find(
-          category => category.id === engineRun.engine.category.id
-        );
-        if (!engineCategory) {
-          engineCategory = Object.assign({}, engineRun.engine.category);
-          engineCategory.iconClass = engineCategory.iconClass.replace(
-            '-engine',
-            ''
-          );
-          if (engineCategory.categoryType === 'correlation') {
-            engineCategory.iconClass = 'icon-third-party-data';
-          }
-          engineCategory.engines = [];
-          engineCategories.push(engineCategory);
-        }
-        engineRun.engine.status = engineRun.status;
-        engineCategory.engines.push(engineRun.engine);
-      });
+    engineCategories = processEngineRuns(tdo.engineRuns.records);
   }
-
-  // order categories: first the most frequently used as defined by product, then the rest - alphabetically
-  engineCategories.sort((category1, category2) => {
-    // sort all alphabetically
-    if (category1.categoryType < category2.categoryType) {
-      return -1;
-    }
-    if (category1.categoryType > category2.categoryType) {
-      return 1;
-    }
-    return 0;
-  });
-  orderedSupportedCategoryTypes.reverse().forEach(orderedCategoryType => {
-    // reverse ordered and add to the result at the front
-    const index = engineCategories.findIndex(
-      category => category.categoryType === orderedCategoryType
-    );
-    if (index >= 0) {
-      const category = engineCategories[index];
-      engineCategories.splice(index, 1);
-      engineCategories.unshift(category);
-    }
-  });
 
   delete tdo.jobs;
   delete tdo.assets;
@@ -252,6 +268,52 @@ function* loadTdoSaga(widgetId, tdoId) {
   }
   // initiate loading content templates for this tdo
   yield call(loadTdoContentTemplatesSaga, widgetId);
+}
+
+function* refreshEngineRuns(widgetId, tdoId) {
+  const refreshEngineRunsQuery = `query temporalDataObject($tdoId: ID!){
+    temporalDataObject(id: $tdoId) {
+      # Run engines and categories query clauses
+      ${engineRunsQueryClause}
+    }
+  }`;
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
+
+  let response;
+  try {
+    response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: refreshEngineRunsQuery,
+      variables: { tdoId },
+      token
+    });
+  } catch (error) {
+    throw new Error(
+      'refreshEnginesRun failed with the following error: ',
+      error
+    );
+  }
+
+  const engineRuns = get(
+    response,
+    'data.temporalDataObject.engineRuns.records'
+  );
+  let engineCategories = [];
+  if (engineRuns) {
+    engineCategories = processEngineRuns(engineRuns);
+  } else {
+    throw new Error('Could not refresh engineRuns');
+  }
+  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
+  yield* finishLoadEngineCategories(widgetId, engineCategories, {
+    error: false
+  });
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
@@ -694,7 +756,8 @@ function* createTranscriptBulkEditAssetSaga(
 ) {
   let createFileAssetResponse;
   try {
-    createFileAssetResponse = yield call(createFileAssetSaga,
+    createFileAssetResponse = yield call(
+      createFileAssetSaga,
       widgetId,
       type,
       contentType,
@@ -806,7 +869,7 @@ function* createTranscriptBulkEditAssetSaga(
   }
   if (
     isEmpty(get(runBulkEditJobResponse, 'data.createJob.tasks.records')) ||
-    !get(runBulkEditJobResponse.data.tasks.records[0], 'id')
+    !get(get(runBulkEditJobResponse, 'data.createJob.tasks.records')[0], 'id')
   ) {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
@@ -1400,9 +1463,28 @@ function* watchCreateFileAssetSuccess() {
           throw new Error('Failed to create insert-into-index task.');
         }
 
-        const selectedEngineCategory = yield select(getSelectedEngineCategory, widgetId);
+        const selectedEngineCategory = yield select(
+          getSelectedEngineCategory,
+          widgetId
+        );
         yield put(toggleEditMode(widgetId, selectedEngineCategory));
-        yield put({type: TRANSCRIPT_RESET});
+        if (selectedEngineCategory.categoryType === 'transcript') {
+          const userGeneratedEngineId = 'bde0b023-333d-acb0-e01a-f95c74214607';
+          yield put({ type: TRANSCRIPT_RESET });
+          yield call(refreshEngineRuns, widgetId, tdo.id);
+          yield put(
+            clearEngineResultsByEngineId(userGeneratedEngineId, widgetId)
+          );
+          const engineCategories = yield select(getEngineCategories, widgetId);
+          yield put(
+            selectEngineCategory(
+              widgetId,
+              find(engineCategories, {
+                categoryType: selectedEngineCategory.categoryType
+              })
+            )
+          );
+        }
       } catch (error) {
         // return yield put(insertIntoIndexFailure(widgetId, { error }));
       }

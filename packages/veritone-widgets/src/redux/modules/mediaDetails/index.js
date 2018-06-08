@@ -19,6 +19,8 @@ export const LOAD_ENGINE_CATEGORIES_FAILURE = 'LOAD_ENGINE_CATEGORIES_FAILURE';
 export const LOAD_ENGINE_RESULTS = 'LOAD_ENGINE_RESULTS';
 export const LOAD_ENGINE_RESULTS_SUCCESS = 'LOAD_ENGINE_RESULTS_SUCCESS';
 export const LOAD_ENGINE_RESULTS_FAILURE = 'LOAD_ENGINE_RESULTS_FAILURE';
+export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID =
+  'CLEAR_ENGINE_RESULTS_BY_ENGINE_ID';
 export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const LOAD_TDO_FAILURE = 'LOAD_TDO_FAILURE';
@@ -60,6 +62,7 @@ export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
+export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
 
 export const namespace = 'mediaDetails';
 
@@ -207,17 +210,21 @@ export default createReducer(defaultState, {
       // handle no results case
       const tdoId = state[widgetId].tdo.id;
       resultsGroupedByEngineId = {};
-      resultsGroupedByEngineId[engineId] = [{
-        startOffsetMs,
-        stopOffsetMs,
-        tdoId,
-        engineId
-      }];
+      resultsGroupedByEngineId[engineId] = [
+        {
+          startOffsetMs,
+          stopOffsetMs,
+          tdoId,
+          engineId
+        }
+      ];
     }
 
     forEach(resultsGroupedByEngineId, (results, engineId) => {
       // process only results with jsondata
-      const resultsWithData = results.filter(result => !!result && !!result.jsondata);
+      const resultsWithData = results.filter(
+        result => !!result && !!result.jsondata
+      );
       if (!previousResultsByEngineId[engineId]) {
         // Data hasn't been retrieved for this engineId yet
         previousResultsByEngineId[engineId] = map(resultsWithData, 'jsondata');
@@ -243,7 +250,7 @@ export default createReducer(defaultState, {
       };
       engineResultRequestsById[engineId] = engineResultRequestsById[
         engineId
-        ].map(request => {
+      ].map(request => {
         if (isMatch(request, fetchingOffsetRequest)) {
           return {
             ...request,
@@ -282,6 +289,28 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         error: errorMessage || 'uknown error'
+      }
+    };
+  },
+  [CLEAR_ENGINE_RESULTS_BY_ENGINE_ID](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        engineResultsByEngineId: {
+          ...state[widgetId].engineResultsByEngineId,
+          [payload.engineId]: []
+        },
+        engineResultRequestsByEngineId: {
+          ...state[widgetId].engineResultRequestsByEngineId,
+          [payload.engineId]: []
+        }
       }
     };
   },
@@ -728,6 +757,41 @@ export default createReducer(defaultState, {
       ...state,
       enableSave: action.payload.enableSave
     };
+  },
+  [CREATE_FILE_ASSET_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId]
+      }
+    };
+  },
+  [REFRESH_ENGINE_RUNS_SUCCESS](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        tdo: {
+          ...state[widgetId].tdo,
+          engineRuns: {
+            ...state[widgetId].tdo.engineRuns,
+            records: payload.engineRuns
+          }
+        }
+      }
+    };
   }
 });
 
@@ -768,15 +832,23 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
-export const isUserGeneratedTranscriptEngineId = (engineId) => {
-  return engineId === 'bulk-edit-transcript' || engineId === 'bde0b023-333d-acb0-e01a-f95c74214607';
+export const isUserGeneratedTranscriptEngineId = engineId => {
+  return (
+    engineId === 'bulk-edit-transcript' ||
+    engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
+  );
 };
-export const isUserGeneratedFaceEngineId = (engineId) => {
-  return engineId === 'user-edited-face-engine-results' || engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd';
+export const isUserGeneratedFaceEngineId = engineId => {
+  return (
+    engineId === 'user-edited-face-engine-results' ||
+    engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd'
+  );
 };
-export const isUserGeneratedEngineId = (engineId) => {
-  return isUserGeneratedTranscriptEngineId(engineId) ||
-    isUserGeneratedFaceEngineId(engineId);
+export const isUserGeneratedEngineId = engineId => {
+  return (
+    isUserGeneratedTranscriptEngineId(engineId) ||
+    isUserGeneratedFaceEngineId(engineId)
+  );
 };
 
 export const initializeWidget = widgetId => ({
@@ -824,6 +896,12 @@ export const loadEngineResultsFailure = ({
 }) => ({
   type: LOAD_ENGINE_RESULTS_FAILURE,
   meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
+});
+
+export const clearEngineResultsByEngineId = (engineId, widgetId) => ({
+  type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
+  payload: { engineId },
+  meta: { widgetId }
 });
 
 export const loadTdoRequest = (widgetId, tdoId, callback) => ({
@@ -968,4 +1046,12 @@ export const createBulkEditTranscriptAssetSuccess = widgetId => ({
 export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
   type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
   meta: { error, widgetId }
+});
+
+export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
+  type: REFRESH_ENGINE_RUNS_SUCCESS,
+  payload: {
+    engineRuns
+  },
+  meta: { widgetId }
 });
