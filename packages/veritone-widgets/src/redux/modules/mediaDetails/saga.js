@@ -750,9 +750,7 @@ function* createFileAssetSaga(
       const userGeneratedEngineId = 'bde0b023-333d-acb0-e01a-f95c74214607';
       yield put({ type: TRANSCRIPT_RESET });
       yield call(refreshEngineRuns, widgetId, requestTdo.id);
-      yield put(
-        clearEngineResultsByEngineId(userGeneratedEngineId, widgetId)
-      );
+      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
       const engineCategories = yield select(getEngineCategories, widgetId);
       yield put(
         selectEngineCategory(

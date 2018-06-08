@@ -598,7 +598,7 @@ class MediaDetailsWidget extends React.Component {
       };
     });
   };
-  
+
   handleContextMenuClick = cme => {
     window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
   };
@@ -625,13 +625,9 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
-    const { 
-      isMenuOpen,
-      isEditMetadataOpen,
-      isEditTagsOpen
-    } = this.state;
+    const { isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
 
-  const isImage = /^image\/.*/.test(
+    const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
@@ -643,9 +639,11 @@ class MediaDetailsWidget extends React.Component {
         veritoneProgram: {
           ...tdo.details.veritoneProgram,
           programImage:
-            tdo.sourceImageUrl || get(tdo, 'details.veritoneProgram.programImage'),
+            tdo.sourceImageUrl ||
+            get(tdo, 'details.veritoneProgram.programImage'),
           programLiveImage:
-            tdo.thumbnailUrl || get(tdo, 'details.veritoneProgram.programLiveImage')
+            tdo.thumbnailUrl ||
+            get(tdo, 'details.veritoneProgram.programLiveImage')
         }
       };
     }
@@ -774,61 +772,64 @@ class MediaDetailsWidget extends React.Component {
                           </IconButton>
                         </div>
                       </Target>
-                      {isMenuOpen &&
-                      <Popper
-                        className={styles.popperContent}
-                        placement="bottom-end"
-                        eventsEnabled={isMenuOpen}
-                      >
-                        <ClickAwayListener onClickAway={this.onMenuClose}>
-                          <Grow
-                            in={isMenuOpen}
-                            id="menu-list-grow"
-                            style={{ transformOrigin: '0 0 0' }}
-                          >
-                            <Paper>
-                              <MenuList role="menu">
-                                <MenuItem
-                                  classes={{ root: styles.headerMenuItem }}
-                                  onClick={this.onMetadataOpen}
-                                >
-                                  Edit Metadata
-                                </MenuItem>
-                                <MenuItem
-                                  classes={{ root: styles.headerMenuItem }}
-                                  onClick={this.onEditTagsOpen}
-                                >
-                                  Edit Tags
-                                </MenuItem>
-                                {this.isDownloadMediaEnabled() && (
+                      {isMenuOpen && (
+                        <Popper
+                          className={styles.popperContent}
+                          placement="bottom-end"
+                          eventsEnabled={isMenuOpen}
+                        >
+                          <ClickAwayListener onClickAway={this.onMenuClose}>
+                            <Grow
+                              in={isMenuOpen}
+                              id="menu-list-grow"
+                              style={{ transformOrigin: '0 0 0' }}
+                            >
+                              <Paper>
+                                <MenuList role="menu">
                                   <MenuItem
                                     classes={{ root: styles.headerMenuItem }}
-                                    disabled={!this.isDownloadAllowed()}
-                                    onClick={this.downloadFile}
+                                    onClick={this.onMetadataOpen}
                                   >
-                                    Download
+                                    Edit Metadata
                                   </MenuItem>
-                                )}
-                                {this.props.contextMenuExtensions &&
-                                  this.props.contextMenuExtensions.tdos.map(
-                                    tdoMenu => (
-                                      <MenuItem
-                                        key={tdoMenu.id}
-                                        classes={{ root: styles.headerMenuItem }}
-                                        // eslint-disable-next-line
-                                        onClick={() =>
-                                          this.handleContextMenuClick(tdoMenu)
-                                        }
-                                      >
-                                        {tdoMenu.label}
-                                      </MenuItem>
-                                    )
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onEditTagsOpen}
+                                  >
+                                    Edit Tags
+                                  </MenuItem>
+                                  {this.isDownloadMediaEnabled() && (
+                                    <MenuItem
+                                      classes={{ root: styles.headerMenuItem }}
+                                      disabled={!this.isDownloadAllowed()}
+                                      onClick={this.downloadFile}
+                                    >
+                                      Download
+                                    </MenuItem>
                                   )}
-                              </MenuList>
-                            </Paper>
-                          </Grow>
-                        </ClickAwayListener>
-                      </Popper>}
+                                  {this.props.contextMenuExtensions &&
+                                    this.props.contextMenuExtensions.tdos.map(
+                                      tdoMenu => (
+                                        <MenuItem
+                                          key={tdoMenu.id}
+                                          classes={{
+                                            root: styles.headerMenuItem
+                                          }}
+                                          // eslint-disable-next-line
+                                          onClick={() =>
+                                            this.handleContextMenuClick(tdoMenu)
+                                          }
+                                        >
+                                          {tdoMenu.label}
+                                        </MenuItem>
+                                      )
+                                    )}
+                                </MenuList>
+                              </Paper>
+                            </Grow>
+                          </ClickAwayListener>
+                        </Popper>
+                      )}
                     </Manager>
                   </Tooltip>
                   {(get(this.props, 'tdo.id') ||
