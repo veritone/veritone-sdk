@@ -155,8 +155,12 @@ class FaceEngineOutput extends Component {
             <MenuItem value="summary" className={cx(styles.view)}>
               Summary
             </MenuItem>
-            <MenuItem value="byFrame">By Frame</MenuItem>
-            <MenuItem value="byScene">By Scene</MenuItem>
+            <MenuItem value="byFrame" className={cx(styles.view)}>
+              By Frame
+            </MenuItem>
+            <MenuItem value="byScene" className={cx(styles.view)}>
+              By Scene
+            </MenuItem>
           </Select>
         </EngineOutputHeader>
         <Tabs
