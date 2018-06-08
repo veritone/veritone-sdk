@@ -741,6 +741,28 @@ function* createFileAssetSaga(
 
   const assetId = get(response, 'data.createAsset.id');
   if (assetId) {
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
+    yield put(toggleEditMode(widgetId, selectedEngineCategory));
+    if (selectedEngineCategory.categoryType === 'transcript') {
+      const userGeneratedEngineId = 'bde0b023-333d-acb0-e01a-f95c74214607';
+      yield put({ type: TRANSCRIPT_RESET });
+      yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      yield put(
+        clearEngineResultsByEngineId(userGeneratedEngineId, widgetId)
+      );
+      const engineCategories = yield select(getEngineCategories, widgetId);
+      yield put(
+        selectEngineCategory(
+          widgetId,
+          find(engineCategories, {
+            categoryType: selectedEngineCategory.categoryType
+          })
+        )
+      );
+    }
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
 
@@ -752,7 +774,8 @@ function* createTranscriptBulkEditAssetSaga(
   type,
   contentType,
   sourceData,
-  text
+  text,
+  selectedEngineId
 ) {
   let createFileAssetResponse;
   try {
@@ -783,6 +806,10 @@ function* createTranscriptBulkEditAssetSaga(
   const oauthToken = yield select(authModule.selectOAuthToken);
   const token = sessionToken || oauthToken;
 
+  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
+  let originalTranscriptAssetId;
+
+  // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset
   const getPrimaryTranscriptAssetQuery = `query temporalDataObject($tdoId: ID!){
       temporalDataObject(id: $tdoId) {
         primaryAsset(assetType: "transcript") {
@@ -801,26 +828,61 @@ function* createTranscriptBulkEditAssetSaga(
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
   }
+  // if not found 'transcript' ttml asset - try to find original 'vtn-standard' asset for selected transcript engine
   if (
-    !get(
+    get(
       getPrimaryTranscriptAssetResponse,
       'data.temporalDataObject.primaryAsset.id'
     )
   ) {
+    originalTranscriptAssetId = get(
+      getPrimaryTranscriptAssetResponse,
+      'data.temporalDataObject.primaryAsset.id'
+    );
+  } else {
+    const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
+      temporalDataObject(id: $tdoId) {
+        assets (limit: 1000, type: "vtn-standard", orderBy: createdDateTime) {
+          records {
+            id
+            sourceData {
+              engineId
+            }
+          }
+        }
+      }
+    }`;
+    let getVtnStandardAssetsResponse;
+    try {
+      getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
+        endpoint: graphQLUrl,
+        query: getVtnStandardAssetsQuery,
+        variables: { tdoId: requestTdo.id },
+        token
+      });
+    } catch (error) {
+      return yield put(
+        createBulkEditTranscriptAssetFailure(widgetId, { error })
+      );
+    }
+    const transcriptVtnAsset = get(
+      getVtnStandardAssetsResponse,
+      'data.temporalDataObject.assets.records',
+      []
+    ).find(asset => get(asset, 'sourceData.engineId') === selectedEngineId);
+    originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
+  }
+
+  if (!originalTranscriptAssetId) {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
         error:
-          'Primary transcript asset not found. Failed to save bulk transcript edit.'
+          'Original transcript asset not found. Failed to save bulk transcript edit.'
       })
     );
   }
 
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
-  const originalTranscriptAssetId = get(
-    getPrimaryTranscriptAssetResponse,
-    'data.temporalDataObject.primaryAsset.id'
-  );
-
+  // run levenstein engine
   const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
     createJob(input: {
       targetId: $tdoId,
@@ -1373,7 +1435,8 @@ function* watchSaveAssetData() {
           type,
           contentType,
           sourceData,
-          assetData.text
+          assetData.text,
+          action.payload.selectedEngineId
         );
       }
       delete assetData.isBulkEdit;
@@ -1461,29 +1524,6 @@ function* watchCreateFileAssetSuccess() {
           !get(response, 'data.createJob.tasks.records[0].id')
         ) {
           throw new Error('Failed to create insert-into-index task.');
-        }
-
-        const selectedEngineCategory = yield select(
-          getSelectedEngineCategory,
-          widgetId
-        );
-        yield put(toggleEditMode(widgetId, selectedEngineCategory));
-        if (selectedEngineCategory.categoryType === 'transcript') {
-          const userGeneratedEngineId = 'bde0b023-333d-acb0-e01a-f95c74214607';
-          yield put({ type: TRANSCRIPT_RESET });
-          yield call(refreshEngineRuns, widgetId, tdo.id);
-          yield put(
-            clearEngineResultsByEngineId(userGeneratedEngineId, widgetId)
-          );
-          const engineCategories = yield select(getEngineCategories, widgetId);
-          yield put(
-            selectEngineCategory(
-              widgetId,
-              find(engineCategories, {
-                categoryType: selectedEngineCategory.categoryType
-              })
-            )
-          );
         }
       } catch (error) {
         // return yield put(insertIntoIndexFailure(widgetId, { error }));

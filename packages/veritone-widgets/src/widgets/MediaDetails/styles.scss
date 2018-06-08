@@ -1,5 +1,11 @@
+@import '../veritone-react-common/src/styles/modules/variables';
+
 .mdpFullScreenDialog {
   z-index: 50;
+}
+
+.popperContent {
+  z-index: 1;
 }
 
 .mediaDetailsPageContent {
@@ -12,6 +18,30 @@
   flex-direction: column;
   flex: auto;
   z-index: auto;
+
+  .headerMenu {
+    display: flex;
+    flex-flow: row;
+
+    .popperClose {
+      pointer-events: none;
+    }
+
+    .poperOpen {
+      margin-right: 20px;
+    }
+
+    .closeButton {
+      font-size: 24px;
+    }
+
+    .headerMenuItem {
+      color: $dark-black;
+      font-family: Roboto;
+      font-size: 14px;
+      line-height: 16px;
+    }
+  }
 
   .pageHeader {
     display: flex;

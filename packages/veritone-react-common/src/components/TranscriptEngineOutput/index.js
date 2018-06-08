@@ -63,7 +63,8 @@ export default class TranscriptEngineOutput extends Component {
 
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
-    outputNullState: node
+    outputNullState: node,
+    bulkEditEnabled: bool
   };
 
   static defaultProps = {
@@ -115,12 +116,13 @@ export default class TranscriptEngineOutput extends Component {
           control={<Radio color="primary" />}
           label="Snippet Edit"
         />
-        <FormControlLabel
-          value={Edit.BULK}
-          className={styles.label}
-          control={<Radio color="primary" />}
-          label="Bulk Edit"
-        />
+        {this.props.bulkEditEnabled &&
+          <FormControlLabel
+            value={Edit.BULK}
+            className={styles.label}
+            control={<Radio color="primary" />}
+            label="Bulk Edit"
+          />}
       </RadioGroup>
     );
   }

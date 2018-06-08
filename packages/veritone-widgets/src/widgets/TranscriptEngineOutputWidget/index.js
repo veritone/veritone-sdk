@@ -97,7 +97,8 @@ export default class TranscriptEngineOutputWidget extends Component {
     clearData: func.isRequired,
     receiveData: func.isRequired,
     hasChanged: bool,
-    outputNullState: node
+    outputNullState: node,
+    bulkEditEnabled: bool
   };
 
   state = {
@@ -173,7 +174,8 @@ export default class TranscriptEngineOutputWidget extends Component {
       estimatedDisplayTimeMs,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      outputNullState
+      outputNullState,
+      bulkEditEnabled
     } = this.props;
 
     const alertTitle = 'Unsaved Transcript Changes';
@@ -206,6 +208,7 @@ export default class TranscriptEngineOutputWidget extends Component {
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
           outputNullState={outputNullState}
+          bulkEditEnabled={bulkEditEnabled}
         />
         <AlertDialog
           open={this.state.alert}
