@@ -88,7 +88,10 @@ class FaceEngineOutputStory extends Component {
       ) {
         unrecognizedFaces.push(faceObj);
       } else {
-        recognizedFaces[faceObj.object.entityId] = faceObj;
+        if (!recognizedFaces[faceObj.object.entityId]) {
+          recognizedFaces[faceObj.object.entityId] = [];
+        }
+        recognizedFaces[faceObj.object.entityId].push(faceObj);
       }
     });
 

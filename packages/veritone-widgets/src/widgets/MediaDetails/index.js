@@ -2,10 +2,15 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
   bool,
   func,
@@ -19,6 +24,7 @@ import {
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { find, get, some } from 'lodash';
+import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
   ObjectDetectionEngineOutput,
@@ -34,7 +40,10 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState
+  EngineOutputNullState,
+  EditTagsDialog,
+  EditMetadataDialog,
+  withMuiThemeProvider
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
@@ -46,6 +55,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
+import { reset } from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 
 @withPropsOnChange([], ({ id }) => ({
@@ -75,7 +85,9 @@ import widget from '../../shared/widget';
     schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
-    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state)
+    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
+    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
+    contextMenuExtensions: applicationModule.getContextMenuExtensions(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -89,11 +101,13 @@ import widget from '../../shared/widget';
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
     fetchApplications: applicationModule.fetchApplications,
-    saveAssetData: mediaDetailsModule.saveAssetData
+    saveAssetData: mediaDetailsModule.saveAssetData,
+    resetTranscript: reset
   },
   null,
   { withRef: true }
 )
+@withMuiThemeProvider
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
     id: string.isRequired,
@@ -108,6 +122,7 @@ class MediaDetailsWidget extends React.Component {
     onClose: func,
     loadTdoRequest: func,
     updateTdoRequest: func,
+    isUserGeneratedEngineId: func,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -235,7 +250,8 @@ class MediaDetailsWidget extends React.Component {
     }),
     saveAssetData: func,
     widgetError: string,
-    isSaveEnabled: bool
+    isSaveEnabled: bool,
+    resetTranscript: func
   };
 
   static contextTypes = {
@@ -249,6 +265,9 @@ class MediaDetailsWidget extends React.Component {
   };
 
   state = {
+    isMenuOpen: false,
+    isEditMetadataOpen: false,
+    isEditTagsOpen: false,
     selectedTabValue: 'mediaDetails',
     disableEditBtn: false
   };
@@ -364,7 +383,6 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineId: this.props.selectedEngineId,
       selectedEngineCategory: this.props.selectedEngineCategory
     });
-    this.toggleEditMode();
   };
 
   onCancelEdit = () => {
@@ -374,6 +392,7 @@ class MediaDetailsWidget extends React.Component {
     if (this.props.isEditModeEnabled) {
       this.toggleEditMode();
     }
+    this.props.resetTranscript();
   };
 
   toggleInfoPanel = () => {
@@ -440,26 +459,148 @@ class MediaDetailsWidget extends React.Component {
     const selectedEngine = find(engines, {
       id: selectedEngineId
     });
-    const engineStatus = get(selectedEngine, 'status');
+    let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
+    const engineMode = get(selectedEngine, 'mode');
     const selectedEngineResults = this.props.engineResultsByEngineId[
       selectedEngineId
     ];
-    const selectedEngineHasResults = some(
+    const isFetchingEngineResults = some(
       selectedEngineResults,
       engineResult => {
-        return engineResult && engineResult.series;
+        return engineResult && engineResult.status === 'FETCHING';
       }
     );
-    if (!selectedEngineHasResults) {
-      return (
-        <EngineOutputNullState
-          engineStatus={engineStatus}
-          engineName={engineName}
-          onRunProcess={this.handleRunProcess}
-        />
-      );
+    const hasEngineResults =
+      selectedEngineResults &&
+      selectedEngineResults.length &&
+      some(selectedEngineResults, engineResult => {
+        return (
+          engineResult && engineResult.series && engineResult.series.length
+        );
+      });
+    const isRealTimeEngine =
+      engineMode &&
+      (engineMode.toLowerCase() === 'stream' ||
+        engineMode.toLowerCase() === 'chunk');
+    if (isFetchingEngineResults) {
+      // show fetching nullstate if fetching engine results
+      engineStatus = 'fetching';
+    } else if (!hasEngineResults && engineStatus === 'complete') {
+      // show no data only for completed engine w/no results
+      engineStatus = 'no_data';
+    } else if (hasEngineResults && engineStatus === 'complete') {
+      // nullstate not needed
+      return;
+    } else if (
+      hasEngineResults &&
+      isRealTimeEngine &&
+      (engineStatus === 'running' || engineStatus === 'failed')
+    ) {
+      // nullstate not needed for RealTime running or failed engine if there are results available
+      return;
     }
+    let onRunProcessCallback = null;
+    if (!this.props.isUserGeneratedEngineId(selectedEngineId)) {
+      // enable rerun for non-user generated engine results
+      onRunProcessCallback = this.handleRunProcess;
+    }
+    return (
+      <EngineOutputNullState
+        engineStatus={engineStatus}
+        engineName={engineName}
+        onRunProcess={onRunProcessCallback}
+      />
+    );
+  };
+
+  toggleIsMenuOpen = () => {
+    this.setState(prevState => {
+      return {
+        isMenuOpen: !{ ...prevState }.isMenuOpen
+      };
+    });
+  };
+
+  setMenuTarget = node => {
+    this.target1 = node;
+  };
+
+  onMenuClose = event => {
+    if (event && this.target1.contains(event.target)) {
+      return;
+    }
+    this.setState({ isMenuOpen: false });
+  };
+
+  isDownloadAllowed = () => {
+    if (!this.isMediaPublic(this.props.tdo)) {
+      return true;
+    }
+    const publicMediaDownloadEnabled =
+      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
+    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
+      return true;
+    }
+    return false;
+  };
+
+  isDownloadMediaEnabled = () => {
+    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+  };
+
+  downloadFile = () => {
+    const element = document.createElement('a');
+    element.href = get(this.props.tdo, 'primaryAsset.signedUri', '');
+    element.download = get(this.props, 'tdo.details.veritoneFile.filename');
+    element.target = '_blank';
+    element.click();
+  };
+
+  onMetadataOpen = () => {
+    this.onMenuClose();
+    this.toggleIsEditMetadataOpen();
+  };
+
+  onEditTagsOpen = () => {
+    this.onMenuClose();
+    this.toggleIsEditTagsOpen();
+  };
+
+  onSaveMetadata = metadataToSave => {
+    this.toggleIsEditMetadataOpen();
+    if (!metadataToSave) {
+      return;
+    }
+    this.updateTdo(metadataToSave);
+  };
+
+  toggleIsEditMetadataOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
+      };
+    });
+  };
+
+  onSaveTags = tagsToSave => {
+    this.toggleIsEditTagsOpen();
+    if (!tagsToSave || !tagsToSave.length) {
+      return;
+    }
+    this.updateTdo({ tags: tagsToSave });
+  };
+
+  toggleIsEditTagsOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
+      };
+    });
+  };
+
+  handleContextMenuClick = cme => {
+    window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
   };
 
   render() {
@@ -484,10 +625,29 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
+    const { isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
+
     const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
+
+    let metadata;
+    if (tdo) {
+      metadata = {
+        ...tdo.details,
+        veritoneProgram: {
+          ...tdo.details.veritoneProgram,
+          programImage:
+            tdo.sourceImageUrl ||
+            get(tdo, 'details.veritoneProgram.programImage'),
+          programLiveImage:
+            tdo.thumbnailUrl ||
+            get(tdo, 'details.veritoneProgram.programLiveImage')
+        }
+      };
+    }
+
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
         <Paper className={styles.mediaDetailsPageContent}>
@@ -587,6 +747,91 @@ class MediaDetailsWidget extends React.Component {
                       </IconButton>
                     </Tooltip>
                   )}
+                  <Tooltip
+                    id="tooltip-show-overflow-menu"
+                    title="Show more options"
+                    PopperProps={{
+                      style: {
+                        pointerEvents: 'none',
+                        marginTop: '5px',
+                        top: '-20px'
+                      }
+                    }}
+                  >
+                    <Manager>
+                      <Target>
+                        <div ref={this.setMenuTarget}>
+                          <IconButton
+                            className={styles.pageHeaderActionButton}
+                            aria-label="More"
+                            aria-haspopup="true"
+                            aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                            onClick={this.toggleIsMenuOpen}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        </div>
+                      </Target>
+                      {isMenuOpen && (
+                        <Popper
+                          className={styles.popperContent}
+                          placement="bottom-end"
+                          eventsEnabled={isMenuOpen}
+                        >
+                          <ClickAwayListener onClickAway={this.onMenuClose}>
+                            <Grow
+                              in={isMenuOpen}
+                              id="menu-list-grow"
+                              style={{ transformOrigin: '0 0 0' }}
+                            >
+                              <Paper>
+                                <MenuList role="menu">
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onMetadataOpen}
+                                  >
+                                    Edit Metadata
+                                  </MenuItem>
+                                  <MenuItem
+                                    classes={{ root: styles.headerMenuItem }}
+                                    onClick={this.onEditTagsOpen}
+                                  >
+                                    Edit Tags
+                                  </MenuItem>
+                                  {this.isDownloadMediaEnabled() && (
+                                    <MenuItem
+                                      classes={{ root: styles.headerMenuItem }}
+                                      disabled={!this.isDownloadAllowed()}
+                                      onClick={this.downloadFile}
+                                    >
+                                      Download
+                                    </MenuItem>
+                                  )}
+                                  {this.props.contextMenuExtensions &&
+                                    this.props.contextMenuExtensions.tdos.map(
+                                      tdoMenu => (
+                                        <MenuItem
+                                          key={tdoMenu.id}
+                                          classes={{
+                                            root: styles.headerMenuItem
+                                          }}
+                                          // eslint-disable-next-line
+                                          onClick={() =>
+                                            this.handleContextMenuClick(tdoMenu)
+                                          }
+                                        >
+                                          {tdoMenu.label}
+                                        </MenuItem>
+                                      )
+                                    )}
+                                </MenuList>
+                              </Paper>
+                            </Grow>
+                          </ClickAwayListener>
+                        </Popper>
+                      )}
+                    </Manager>
+                  </Tooltip>
                   {(get(this.props, 'tdo.id') ||
                     get(this.props, 'tdo.details', null)) && (
                     <div className={styles.pageHeaderActionButtonsSeparator} />
@@ -606,7 +851,7 @@ class MediaDetailsWidget extends React.Component {
 
               {isLoadingTdo && (
                 <div className={styles.tdoLoadingProgress}>
-                  <CircularProgress size={100} color={'primary'} />
+                  <CircularProgress size={80} color="primary" thickness={1} />
                 </div>
               )}
               {!isLoadingTdo &&
@@ -749,9 +994,14 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
               {selectedEngineCategory &&
-                selectedEngineCategory.categoryType !== 'transcript' &&
-                selectedEngineCategory.categoryType !== 'correlation' &&
-                (!isExpandedMode || isEditModeEnabled) && (
+                !(
+                  selectedEngineCategory.categoryType === 'transcript' &&
+                  isEditModeEnabled
+                ) &&
+                !(
+                  selectedEngineCategory.categoryType === 'correlation' &&
+                  isExpandedMode
+                ) && (
                   <div className={styles.mediaView}>
                     {isImage ? (
                       <Image
@@ -790,6 +1040,10 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
+                        bulkEditEnabled={
+                          get(this.props.kvp, 'features.bulkEditTranscript') ===
+                          'enabled'
+                        }
                       />
                     )}
                   {selectedEngineCategory &&
@@ -957,6 +1211,26 @@ class MediaDetailsWidget extends React.Component {
               />
             )}
         </Paper>
+        {tdo &&
+          tdo.details &&
+          isEditMetadataOpen && (
+            <EditMetadataDialog
+              isOpen={isEditMetadataOpen}
+              metadata={metadata}
+              onClose={this.toggleIsEditMetadataOpen}
+              onSave={this.onSaveMetadata}
+            />
+          )}
+        {tdo &&
+          tdo.details &&
+          isEditTagsOpen && (
+            <EditTagsDialog
+              isOpen={isEditTagsOpen}
+              tags={tdo.details.tags}
+              onClose={this.toggleIsEditTagsOpen}
+              onSave={this.onSaveTags}
+            />
+          )}
       </FullScreenDialog>
     );
   }

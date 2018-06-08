@@ -201,7 +201,7 @@ function* watchFetchEngineResultsSuccess() {
             });
 
             return result;
-          });
+          }, {});
 
           if (!isEmpty(entityIds)) {
             yield call(fetchEntities, Object.keys(entityIds));

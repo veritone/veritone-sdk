@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
+import { get } from 'lodash';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -105,7 +106,10 @@ export default class SentimentEngineOutput extends Component {
     }
     const allSeries = [];
     data.forEach(dataItem => {
-      if (dataItem.series && dataItem.series.length) {
+      if (!dataItem) {
+        return;
+      }
+      if (get(dataItem, 'series.length')) {
         dataItem.series.forEach(seriesItem => {
           if (
             seriesItem.sentiment &&

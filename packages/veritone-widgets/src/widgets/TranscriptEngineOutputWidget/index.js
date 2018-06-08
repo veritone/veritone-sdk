@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { number, bool, string, func, shape, arrayOf } from 'prop-types';
+import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
 import { isEqual } from 'lodash';
 
 import { connect } from 'react-redux';
@@ -96,7 +96,9 @@ export default class TranscriptEngineOutputWidget extends Component {
     change: func.isRequired,
     clearData: func.isRequired,
     receiveData: func.isRequired,
-    hasChanged: bool
+    hasChanged: bool,
+    outputNullState: node,
+    bulkEditEnabled: bool
   };
 
   state = {
@@ -171,11 +173,14 @@ export default class TranscriptEngineOutputWidget extends Component {
       neglectableTimeMs,
       estimatedDisplayTimeMs,
       mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs
+      mediaPlayerTimeIntervalMs,
+      outputNullState,
+      bulkEditEnabled
     } = this.props;
 
+    const alertTitle = 'Unsaved Transcript Changes';
     const alertDescription =
-      'It looks like you have been editing something. If you leave before saving, your changes will be lost.';
+      'This action will reset your changes to the transcript.';
     const cancelButtonLabel = 'Cancel';
     const approveButtonLabel = 'Continue';
 
@@ -202,9 +207,12 @@ export default class TranscriptEngineOutputWidget extends Component {
           estimatedDisplayTimeMs={estimatedDisplayTimeMs}
           mediaPlayerTimeMs={mediaPlayerTimeMs}
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+          outputNullState={outputNullState}
+          bulkEditEnabled={bulkEditEnabled}
         />
         <AlertDialog
           open={this.state.alert}
+          title={alertTitle}
           content={alertDescription}
           cancelButtonLabel={cancelButtonLabel}
           approveButtonLabel={approveButtonLabel}

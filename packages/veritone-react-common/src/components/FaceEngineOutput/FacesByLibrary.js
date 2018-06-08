@@ -18,7 +18,7 @@ const FacesByLibrary = ({ faceEntityLibraries, onSelectEntity }) => {
   return isEmpty(faceEntityLibraries) ? (
     <NoFacesFound />
   ) : (
-    <div>
+    <div className={styles.facesByLibrary}>
       {Object.keys(faceEntityLibraries).map((key, index) => (
         <div key={`faces-by-library-${key}`}>
           <div className={styles.libraryName}>

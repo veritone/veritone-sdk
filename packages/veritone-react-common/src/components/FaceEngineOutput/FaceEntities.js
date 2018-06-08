@@ -18,7 +18,7 @@ export default class FaceEntities extends Component {
   static propTypes = {
     viewMode: string,
     faces: objectOf(
-      shape({
+      arrayOf(shape({
         startTimeMs: number.isRequired,
         stopTimeMs: number.isRequired,
         object: shape({
@@ -29,7 +29,7 @@ export default class FaceEntities extends Component {
           entityId: string.isRequired,
           libraryId: string.isRequired
         })
-      })
+      }))
     ).isRequired,
     entities: arrayOf(
       shape({

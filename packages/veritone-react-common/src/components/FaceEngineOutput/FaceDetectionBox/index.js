@@ -8,7 +8,6 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -16,12 +15,23 @@ import noAvatar from 'images/no-avatar.png';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex }) =>
+const getEntityNameElement = (entityName, searchEntityText) => {
+  const matchIndex = entityName.toLowerCase().indexOf(searchEntityText.toLowerCase());
+  return (
+    <span>
+      {entityName.substr(0, matchIndex)}
+      <span className={styles.menuEntityNameMatch}>{entityName.substr(matchIndex, searchEntityText.length)}</span>
+      {entityName.substr(matchIndex + searchEntityText.length)}
+    </span>);
+};
+
+const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex, searchEntityText }) =>
   results.map((result, index) => {
     return (
       <MenuItem
         key={`menu-entity-${result.id}`}
         component="div"
+        classes={{ root: styles.entityMenuItem }}
         {...getItemProps({
           item: result,
           index: index,
@@ -30,7 +40,7 @@ const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex }) =>
       >
         <Avatar src={result.profileImageUrl || noAvatar} />
         <div className={styles.entityInfo}>
-          <div className={styles.menuEntityName}>{result.name}</div>
+          <div className={styles.menuEntityName}>{getEntityNameElement(result.name, searchEntityText)}</div>
           <div className={styles.menuLibraryName}>{result.library.name}</div>
         </div>
       </MenuItem>
@@ -68,7 +78,8 @@ class FaceDetectionBox extends Component {
 
   state = {
     editFaceEntity: false,
-    hovered: false
+    hovered: false,
+    searchEntityText: ''
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -102,6 +113,19 @@ class FaceDetectionBox extends Component {
     this.props.onRemoveFaceDetection(this.props.face);
   };
 
+  onSearchEntityInputChange = text => {
+    setTimeout(() => {
+      this.setState({ searchEntityText: text })
+    }, 1000);
+    this.props.onSearchForEntities(text);
+  };
+
+  handleBlur = event => {
+    this.setState({
+      editFaceEntity: false
+    });
+  }
+
   itemToString = item => (item ? item.name : '');
 
   inputRef = node => this._inputRef = node;
@@ -112,7 +136,6 @@ class FaceDetectionBox extends Component {
       searchResults,
       enableEdit,
       onClick,
-      onSearchForEntities,
       isSearchingEntities
     } = this.props;
 
@@ -156,7 +179,7 @@ class FaceDetectionBox extends Component {
             <Downshift
               itemToString={this.itemToString}
               onSelect={this.handleEntitySelect}
-              onInputValueChange={onSearchForEntities}
+              onInputValueChange={this.onSearchEntityInputChange}
             >
               {({
                 getInputProps,
@@ -169,9 +192,10 @@ class FaceDetectionBox extends Component {
                   <div ref={this.inputRef}>
                     <Input
                       {...getInputProps({
-                        placeholder: 'Unkown',
+                        placeholder: 'Unknown',
                         autoFocus: true,
-                        className: styles.entitySearchInput
+                        className: styles.entitySearchInput,
+                        onBlur: this.handleBlur
                       })}
                     />
                   </div>
@@ -185,10 +209,11 @@ class FaceDetectionBox extends Component {
                             renderEntitySearchMenu({
                               results: searchResults,
                               getItemProps,
-                              highlightedIndex
+                              highlightedIndex,
+                              searchEntityText: this.state.searchEntityText
                             })
-                          ) : (
-                            <div>Results Not Found</div>
+                          ) :  (
+                            <div className={styles.notFoundEntityMessage}>Results Not Found</div>
                           )}
                         </div>
                         <div className={styles.addNewEntity}>
@@ -207,7 +232,7 @@ class FaceDetectionBox extends Component {
               )}
             </Downshift>
           ) : (
-            <div className={styles.unknownEntityText}>Unkown</div>
+            <div className={styles.unknownEntityText}>Unknown</div>
           )}
         </div>
       </div>

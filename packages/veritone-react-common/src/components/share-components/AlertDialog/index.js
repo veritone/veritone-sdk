@@ -52,15 +52,17 @@ export default class AlertDialog extends Component {
   render () {
     const { open, title, content, onCancel, cancelButtonLabel, approveButtonLabel } = this.props;
     const forwardingProps = {...this.props};
-    omit(forwardingProps, 'onCancel');
-    omit(forwardingProps, 'onApprove');
-    omit(forwardingProps, 'cancelValue');
-    omit(forwardingProps, 'approveValue');
-    omit(forwardingProps, 'cancelButtonLabel');
-    omit(forwardingProps, 'approveButtonLabel');
+    const omittedProps = [
+      'onCancel',
+      'onApprove',
+      'cancelValue',
+      'approveValue',
+      'cancelButtonLabel',
+      'approveButtonLabel'
+    ];
     return (
       <Dialog
-        {...forwardingProps}
+        {...omit(forwardingProps, omittedProps)}
         open={open}
         onClose={this.handleCancel}
         aria-labelledby={labelId}

@@ -65,7 +65,7 @@ class FaceEngineOutput extends Component {
     onSearchForEntities: func,
     onExpandClick: func,
     recognizedFaces: objectOf(
-      shape({
+      arrayOf(shape({
         startTimeMs: number.isRequired,
         stopTimeMs: number.isRequired,
         object: shape({
@@ -76,7 +76,7 @@ class FaceEngineOutput extends Component {
           entityId: string.isRequired,
           libraryId: string.isRequired
         })
-      })
+      }))
     ).isRequired,
     unrecognizedFaces: arrayOf(
       shape({
@@ -127,6 +127,7 @@ class FaceEngineOutput extends Component {
     } = this.props;
     const { viewMode } = this.state;
 
+    console.log(this.props.recognizedFaces);
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
         <EngineOutputHeader
