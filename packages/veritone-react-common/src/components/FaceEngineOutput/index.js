@@ -127,7 +127,6 @@ class FaceEngineOutput extends Component {
     } = this.props;
     const { viewMode } = this.state;
 
-    console.log(this.props.recognizedFaces);
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
         <EngineOutputHeader
