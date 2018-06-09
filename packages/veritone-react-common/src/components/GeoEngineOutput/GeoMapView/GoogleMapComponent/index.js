@@ -40,7 +40,9 @@ export default class GoogleMapComponent extends Component {
         const maps = window.google.maps;
         const mapInstance = (this.map = new maps.Map(
           this.mapContainer.current,
-          {}
+          {
+            fullscreenControl: false
+          }
         ));
 
         this.drawContent();
