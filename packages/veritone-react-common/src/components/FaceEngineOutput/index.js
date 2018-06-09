@@ -137,28 +137,33 @@ class FaceEngineOutput extends Component {
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
         >
-          <Select
-            autoWidth
-            value={viewMode}
-            onChange={this.handleViewModeChange}
-            className={cx(styles.displayOptions)}
-            MenuProps={{
-              anchorOrigin: {
-                horizontal: 'center',
-                vertical: 'bottom'
-              },
-              transformOrigin: {
-                horizontal: 'center'
-              },
-              getContentAnchorEl: null
-            }}
-          >
-            <MenuItem value="summary" className={cx(styles.view)}>
-              Summary
-            </MenuItem>
-            <MenuItem value="byFrame">By Frame</MenuItem>
-            <MenuItem value="byScene">By Scene</MenuItem>
-          </Select>
+          {!editMode &&
+            <Select
+              autoWidth
+              value={viewMode}
+              onChange={this.handleViewModeChange}
+              className={cx(styles.displayOptions)}
+              MenuProps={{
+                anchorOrigin: {
+                  horizontal: 'center',
+                  vertical: 'bottom'
+                },
+                transformOrigin: {
+                  horizontal: 'center'
+                },
+                getContentAnchorEl: null
+              }}
+            >
+              <MenuItem value="summary" className={cx(styles.view)}>
+                Summary
+              </MenuItem>
+              <MenuItem value="byFrame" className={cx(styles.view)}>
+                By Frame
+              </MenuItem>
+              <MenuItem value="byScene" className={cx(styles.view)}>
+                By Scene
+              </MenuItem>
+            </Select>}
         </EngineOutputHeader>
         <Tabs
           value={this.state.activeTab}
