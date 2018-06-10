@@ -74,7 +74,7 @@ export default class FaceEntities extends Component {
         Object.keys(this.props.faces).length
     ) {
       this.setState(prevState => ({
-        ...buildFaceDataPayload(this.props.faces, this.props.entities)
+        ...buildFaceDataPayload(nextProps.faces, nextProps.entities)
       }));
     }
   }
