@@ -60,6 +60,7 @@ class EngineOutputHeader extends Component {
           {children}
           {!isEmpty(engines) && (
             <Select
+              autoWidth
               value={selectedEngineId || engines[0].id}
               className={styles.engineSelect}
               onChange={this.handleEngineChange}
