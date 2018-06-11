@@ -139,9 +139,7 @@ class MediaInfoPanel extends Component {
   };
 
   render() {
-    const {
-      isOpen
-    } = this.state;
+    const { isOpen } = this.state;
 
     const { tdo } = this.props;
 
@@ -175,17 +173,18 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            {tdo.startDateTime && tdo.stopDateTime && (
-              <div className={styles.infoField}>
-                <div className={styles.infoFieldLabel}>Duration</div>
-                <div className={styles.infoFieldData}>
-                  {this.differenceToHhMmSs(
-                    tdo.startDateTime,
-                    tdo.stopDateTime
-                  )}
+            {tdo.startDateTime &&
+              tdo.stopDateTime && (
+                <div className={styles.infoField}>
+                  <div className={styles.infoFieldLabel}>Duration</div>
+                  <div className={styles.infoFieldData}>
+                    {this.differenceToHhMmSs(
+                      tdo.startDateTime,
+                      tdo.stopDateTime
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             {this.props.engineCategories &&
               this.props.engineCategories.length && (
                 <div className={styles.infoField}>
@@ -206,11 +205,37 @@ class MediaInfoPanel extends Component {
                   </div>
                 </div>
               )}
-            {get(tdo, 'details.tags.length', 0) > 0 && (
+            {get(tdo, 'details.tags', []).filter(
+              item => !item.hasOwnProperty('redactionStatus')
+            ).length > 0 && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Tags</div>
                 <div className={styles.infoFieldData}>
-                  {tdo.details.tags.map(tag => tag.value).join(', ')}
+                  {tdo.details.tags
+                    .filter(item => !item.hasOwnProperty('redactionStatus'))
+                    .map(tag => {
+                      if (tag.hasOwnProperty('value')) {
+                        return tag.value;
+                      } else if (Object.keys(tag).length) {
+                        const tagKey = Object.keys(tag)[0];
+                        return `${tagKey}:${tag[tagKey]}`;
+                      }
+                    })
+                    .join(', ')}
+                </div>
+              </div>
+            )}
+            {get(tdo, 'details.tags', []).some(item =>
+              item.hasOwnProperty('redactionStatus')
+            ) && (
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Redaction Status</div>
+                <div className={styles.infoFieldData}>
+                  {
+                    tdo.details.tags.find(item =>
+                      item.hasOwnProperty('redactionStatus')
+                    ).redactionStatus
+                  }
                 </div>
               </div>
             )}

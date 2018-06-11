@@ -201,26 +201,8 @@
         text-transform: uppercase;
       }
 
-      .runProcessButtonEditMode {
-        color: #2196f3;
-        margin-right: 20px;
-
-        .iconClass {
-          font-size: 20px;
-          margin-right: 10px;
-          margin-bottom: 2px;
-        }
-      }
-
       .actionButtonEditMode {
         width: 88px;
-        margin-right: 20px;
-      }
-
-      .actionButtonsSeparatorEditMode {
-        height: 32px;
-        width: 2px;
-        background-color: #e0e0e0;
         margin-right: 20px;
       }
     }
@@ -234,6 +216,7 @@
 
     .mediaView {
       width: 450px;
+      min-width: 450px;
       min-height: 250px;
 
       .sourceLabel {

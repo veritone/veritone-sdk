@@ -585,7 +585,7 @@ class MediaDetailsWidget extends React.Component {
 
   onSaveTags = tagsToSave => {
     this.toggleIsEditTagsOpen();
-    if (!tagsToSave || !tagsToSave.length) {
+    if (!tagsToSave) {
       return;
     }
     this.updateTdo({ tags: tagsToSave });
@@ -956,19 +956,6 @@ class MediaDetailsWidget extends React.Component {
                     {this.getSelectedCategoryMessage()}
                   </div>
                   <div className={styles.actionButtonsEditMode}>
-                    <Button
-                      className={styles.runProcessButtonEditMode}
-                      onClick={this.handleRunProcess}
-                    >
-                      <Icon
-                        className="icon-run-process"
-                        classes={{ root: styles.iconClass }}
-                      />
-                      RUN PROCESS
-                    </Button>
-                    {isEditModeEnabled && (
-                      <div className={styles.actionButtonsSeparatorEditMode} />
-                    )}
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
@@ -993,14 +980,14 @@ class MediaDetailsWidget extends React.Component {
 
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
-              {selectedEngineCategory &&
+              {get(tdo, 'id') &&
                 !(
-                  selectedEngineCategory.categoryType === 'transcript' &&
-                  isEditModeEnabled
+                  get(selectedEngineCategory, 'categoryType') ===
+                    'transcript' && isEditModeEnabled
                 ) &&
                 !(
-                  selectedEngineCategory.categoryType === 'correlation' &&
-                  isExpandedMode
+                  get(selectedEngineCategory, 'categoryType') ===
+                    'correlation' && isExpandedMode
                 ) && (
                   <div className={styles.mediaView}>
                     {isImage ? (
@@ -1125,7 +1112,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
                         onEngineChange={this.handleSelectEngine}
-                        defaultLanguage={'en-US'}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         outputNullState={this.buildEngineNullStateComponent()}
@@ -1165,11 +1151,6 @@ class MediaDetailsWidget extends React.Component {
                       />
                     )}
                   {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType ===
-                      'stationPlayout' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
-                    )}
-                  {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'correlation' && (
                       <StructuredDataEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
@@ -1181,10 +1162,6 @@ class MediaDetailsWidget extends React.Component {
                         isExpandedMode={isExpandedMode}
                         outputNullState={this.buildEngineNullStateComponent()}
                       />
-                    )}
-                  {selectedEngineCategory &&
-                    selectedEngineCategory.categoryType === 'music' && (
-                      <div>No {selectedEngineCategory.categoryType} data</div>
                     )}
                 </div>
               )}

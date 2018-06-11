@@ -7,7 +7,16 @@ import {
   select,
   take
 } from 'redux-saga/effects';
-import { get, uniq, isObject, isEmpty, isUndefined, every, find } from 'lodash';
+import {
+  get,
+  uniq,
+  isObject,
+  isEmpty,
+  isUndefined,
+  isArray,
+  every,
+  find
+} from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
 import {
@@ -745,22 +754,26 @@ function* createFileAssetSaga(
       getSelectedEngineCategory,
       widgetId
     );
-    yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    if (selectedEngineCategory.categoryType === 'transcript') {
-      const userGeneratedEngineId = 'bde0b023-333d-acb0-e01a-f95c74214607';
-      yield put({ type: TRANSCRIPT_RESET });
-      yield call(refreshEngineRuns, widgetId, requestTdo.id);
-      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-      const engineCategories = yield select(getEngineCategories, widgetId);
-      yield put(
-        selectEngineCategory(
-          widgetId,
-          find(engineCategories, {
-            categoryType: selectedEngineCategory.categoryType
-          })
-        )
-      );
+    yield call(refreshEngineRuns, widgetId, requestTdo.id);
+    const engineCategories = yield select(getEngineCategories, widgetId);
+    const updatedCategory = find(engineCategories, {
+      categoryType: selectedEngineCategory.categoryType
+    });
+    // Extract the user edited engine id. It can be a readable string or uuid.
+    const userGeneratedEngine = find(updatedCategory.engines, {
+      name: 'User Edited'
+    });
+    let userGeneratedEngineId;
+    if (userGeneratedEngine) {
+      userGeneratedEngineId = userGeneratedEngine.id;
     }
+    // Reset the the transcipt engine results.
+    if (selectedEngineCategory.categoryType === 'transcript') {
+      yield put({ type: TRANSCRIPT_RESET });
+      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
+    }
+    yield put(toggleEditMode(widgetId, selectedEngineCategory));
+    yield put(selectEngineCategory(widgetId, updatedCategory));
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
 
@@ -1311,10 +1324,8 @@ function* watchUpdateTdoRequest() {
         );
       }
     }
-    if (get(tdoDataToUpdate, 'tags.length')) {
-      detailsToSave.tags = get(tdoDataToUpdate, 'tags').map(tag => {
-        return { value: tag.value };
-      });
+    if (get(tdoDataToUpdate, 'tags') && isArray(get(tdoDataToUpdate, 'tags'))) {
+      detailsToSave.tags = get(tdoDataToUpdate, 'tags');
     }
     yield call(updateTdoSaga, widgetId, tdoId, detailsToSave);
   });
