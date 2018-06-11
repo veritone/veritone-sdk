@@ -2,6 +2,7 @@ import { get, isEqual } from 'lodash';
 import { delay } from 'redux-saga';
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import * as TranscriptRedux from '.';
+import { DISCARD_UNSAVED_CHANGES } from '../index';
 
 const CHANGE_WITH_DEBOUNCE =
   TranscriptRedux.transcriptNamespace + '_CHANGE_WITH_DEBOUNCE';
@@ -108,6 +109,12 @@ function* watchContentReceiveData() {
   );
 }
 
+function* watchDiscardUnsavedChanges() {
+  yield takeEvery(DISCARD_UNSAVED_CHANGES, function*(action) {
+    yield call(TranscriptRedux.reset);
+  });
+}
+
 export const changeWidthDebounce = newData => ({
   data: newData,
   type: CHANGE_WITH_DEBOUNCE
@@ -120,6 +127,7 @@ export default function* transcriptSaga() {
     fork(watchContentReset),
     fork(watchContentChange),
     fork(watchContentClearData),
-    fork(watchContentReceiveData)
+    fork(watchContentReceiveData),
+    fork(watchDiscardUnsavedChanges)
   ]);
 }

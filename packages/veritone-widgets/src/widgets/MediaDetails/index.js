@@ -43,7 +43,8 @@ import {
   EngineOutputNullState,
   EditTagsDialog,
   EditMetadataDialog,
-  withMuiThemeProvider
+  withMuiThemeProvider,
+  AlertDialog
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
@@ -56,6 +57,7 @@ import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import { reset } from '../../redux/modules/mediaDetails/transcriptWidget';
+import * as transcriptWidgetModule from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 
 @withPropsOnChange([], ({ id }) => ({
@@ -87,7 +89,9 @@ import widget from '../../shared/widget';
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
-    contextMenuExtensions: applicationModule.getContextMenuExtensions(state)
+    contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
+    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
+    transcriptHasChanged: transcriptWidgetModule.hasChanged(state)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -102,7 +106,10 @@ import widget from '../../shared/widget';
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
     fetchApplications: applicationModule.fetchApplications,
     saveAssetData: mediaDetailsModule.saveAssetData,
-    resetTranscript: reset
+    resetTranscript: reset,
+    openConfirmModal: mediaDetailsModule.openConfirmModal,
+    closeConfirmModal: mediaDetailsModule.closeConfirmModal,
+    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges
   },
   null,
   { withRef: true }
@@ -251,7 +258,19 @@ class MediaDetailsWidget extends React.Component {
     saveAssetData: func,
     widgetError: string,
     isSaveEnabled: bool,
-    resetTranscript: func
+    resetTranscript: func,
+    alertDialogConfig: shape({
+      show: bool,
+      title: string,
+      description: string,
+      cancelButtonLabel: string,
+      confirmButtonLabel: string,
+      nextAction: func
+    }),
+    openConfirmModal: func,
+    closeConfirmModal: func,
+    discardUnsavedChanges: func,
+    transcriptHasChanged: bool
   };
 
   static contextTypes = {
@@ -383,6 +402,8 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineId: this.props.selectedEngineId,
       selectedEngineCategory: this.props.selectedEngineCategory
     });
+    this.props.closeConfirmModal(this.props.id);
+    this.toggleEditMode();
   };
 
   onCancelEdit = () => {
@@ -393,6 +414,21 @@ class MediaDetailsWidget extends React.Component {
       this.toggleEditMode();
     }
     this.props.resetTranscript();
+  };
+
+  checkSaveSate = () => {
+    // TODO: check for face changes.
+    if (this.props.transcriptHasChanged) {
+      this.props.openConfirmModal(this.onSaveEdit, this.props.id);
+    } else {
+      this.onCancelEdit();
+    }
+  };
+
+  handleCancelSaveDialog = () => {
+    this.props.discardUnsavedChanges();
+    this.props.closeConfirmModal(this.props.id);
+    this.onCancelEdit();
   };
 
   toggleInfoPanel = () => {
@@ -622,7 +658,8 @@ class MediaDetailsWidget extends React.Component {
       schemasById,
       googleMapsApiKey,
       widgetError,
-      isSaveEnabled
+      isSaveEnabled,
+      alertDialogConfig
     } = this.props;
 
     const { isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
@@ -650,6 +687,17 @@ class MediaDetailsWidget extends React.Component {
 
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
+        {alertDialogConfig && (
+          <AlertDialog
+            open={alertDialogConfig.show}
+            title={alertDialogConfig.title}
+            content={alertDialogConfig.description}
+            cancelButtonLabel={alertDialogConfig.cancelButtonLabel}
+            approveButtonLabel={alertDialogConfig.confirmButtonLabel}
+            onCancel={this.handleCancelSaveDialog}
+            onApprove={alertDialogConfig.nextAction}
+          />
+        )}
         <Paper className={styles.mediaDetailsPageContent}>
           {!isExpandedMode && (
             <div>
@@ -932,7 +980,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    onClick={this.onCancelEdit}
+                    onClick={this.checkSaveSate}
                     aria-label="Back"
                   >
                     <Icon
@@ -959,7 +1007,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        onClick={this.onCancelEdit}
+                        onClick={this.checkSaveSate}
                       >
                         CANCEL
                       </Button>
@@ -1031,6 +1079,7 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
+                        onSave={this.onSaveEdit}
                       />
                     )}
                   {selectedEngineCategory &&

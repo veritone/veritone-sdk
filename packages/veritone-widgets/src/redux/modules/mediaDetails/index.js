@@ -9,7 +9,8 @@ import {
   values,
   uniqBy,
   keyBy,
-  isMatch
+  isMatch,
+  noop
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -63,6 +64,9 @@ export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
 export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
+export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
+export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
+export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 
 export const namespace = 'mediaDetails';
 
@@ -84,7 +88,15 @@ const defaultMDPState = {
   tdoContentTemplates: {},
   schemasById: {},
   enableSave: false,
-  error: null
+  error: null,
+  alertDialogConfig: {
+    show: false,
+    title: 'Save Changes?',
+    description: 'Would you like to save the changes?',
+    cancelButtonLabel: 'Discard',
+    confirmButtonLabel: 'Save',
+    nextAction: noop
+  }
 };
 
 const defaultState = {};
@@ -792,6 +804,40 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [SHOW_CONFIRM_DIALOG](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        alertDialogConfig: {
+          ...state[widgetId].alertDialogConfig,
+          ...payload
+        }
+      }
+    };
+  },
+  [CLOSE_CONFIRM_DIALOG](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        alertDialogConfig: {
+          ...defaultMDPState.alertDialogConfig
+        }
+      }
+    };
   }
 });
 
@@ -850,6 +896,8 @@ export const isUserGeneratedEngineId = engineId => {
     isUserGeneratedFaceEngineId(engineId)
   );
 };
+export const getAlertDialogConfig = (state, widgetId) =>
+  get(local(state), [widgetId, 'alertDialogConfig']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1054,4 +1102,21 @@ export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
     engineRuns
   },
   meta: { widgetId }
+});
+export const openConfirmModal = (nextAction, widgetId) => ({
+  type: SHOW_CONFIRM_DIALOG,
+  payload: {
+    show: true,
+    nextAction: nextAction
+  },
+  meta: { widgetId }
+});
+
+export const closeConfirmModal = widgetId => ({
+  type: CLOSE_CONFIRM_DIALOG,
+  meta: { widgetId }
+});
+
+export const discardUnsavedChanges = () => ({
+  type: DISCARD_UNSAVED_CHANGES
 });
