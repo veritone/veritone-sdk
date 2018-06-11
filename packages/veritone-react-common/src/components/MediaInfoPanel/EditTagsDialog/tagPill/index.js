@@ -16,7 +16,6 @@ class TagPill extends Component {
   };
 
   render() {
-    console.log('render pill', this.props.text);
     return (
       <div
         className={
