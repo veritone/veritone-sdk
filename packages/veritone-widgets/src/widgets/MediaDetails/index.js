@@ -403,7 +403,6 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineCategory: this.props.selectedEngineCategory
     });
     this.props.closeConfirmModal(this.props.id);
-    this.toggleEditMode();
   };
 
   onCancelEdit = () => {

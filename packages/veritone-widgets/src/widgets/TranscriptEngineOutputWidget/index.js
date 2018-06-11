@@ -129,7 +129,7 @@ export default class TranscriptEngineOutputWidget extends Component {
       this.setState({
         alert: true,
         alertConfirmAction: () => {
-          this.setState({editMode: value.type});
+          this.setState({ editMode: value.type });
         }
       });
     } else {
@@ -145,13 +145,13 @@ export default class TranscriptEngineOutputWidget extends Component {
       this.setState({
         alert: true,
         alertConfirmAction: () => {
-          this.props.onEngineChange(engineId)
+          this.props.onEngineChange(engineId);
         }
       });
     } else {
       this.props.onEngineChange(engineId);
     }
-  }
+  };
 
   handleAlertConfirm = () => {
     this.props.reset();
@@ -161,13 +161,13 @@ export default class TranscriptEngineOutputWidget extends Component {
       alertConfirmAction: noop
     });
   };
-  
+
   handleAlertCancel = () => {
     this.setState({
       alert: false,
       alertConfirmAction: noop
     });
-  }
+  };
 
   render() {
     const {

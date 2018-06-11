@@ -68,6 +68,7 @@ import {
   isEditModeEnabled,
   isUserGeneratedTranscriptEngineId,
   isUserGeneratedFaceEngineId,
+  toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
   clearEngineResultsByEngineId,
@@ -762,6 +763,7 @@ function* createFileAssetSaga(
       yield put({ type: TRANSCRIPT_RESET });
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
     }
+    yield put(toggleEditMode(widgetId, selectedEngineCategory));
     yield put(selectEngineCategory(widgetId, updatedCategory));
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
