@@ -1,6 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
+import { cloneDeep } from 'lodash';
+
 import DynamicAdapterObj from './';
 const DynamicAdapter = DynamicAdapterObj.adapter;
 
@@ -362,9 +364,21 @@ function closeCreateSource() {
   console.log('closeCreateSource');
 }
 
+function loadNextPage({startIndex, stopIndex}) {
+  console.log('Called loadNextPage');
+  console.log(startIndex + ' ' + stopIndex);
+  isNextPageLoading = true;
+  return new Promise(resolve => setTimeout(() => {
+    hasNextPage
+    isNextPageLoading = false;
+    resolve(cloneDeep(SOURCES));
+  }, 2000));
+}
+
 let configuration = {
   sourceId: SOURCES[0].id
 };
+let hasNextPage = false, isNextPageLoading = false;
 
 storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
   <DynamicAdapter
@@ -376,5 +390,8 @@ storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
     supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
     openCreateSource={openCreateSource}
     closeCreateSource={closeCreateSource}
+    hasNextPage={hasNextPage}
+    isNextPageLoading={isNextPageLoading}
+    loadNextPage={loadNextPage}
   />
 ));

@@ -16,7 +16,7 @@ import {
   toLower,
   includes
 } from 'lodash';
-import { objectOf, any, func, arrayOf, string } from 'prop-types';
+import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
@@ -30,24 +30,18 @@ class DynamicAdapter extends React.Component {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
     supportedSourceTypes: arrayOf(string),
-    sources: arrayOf(objectOf(any)).isRequired,
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
-    closeCreateSource: func.isRequired
+    closeCreateSource: func.isRequired,
+    hasNextPage: bool.isRequired,
+    isNextPageLoading: bool.isRequired,
+    loadNextPage: func.isRequired
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {};
-    if (
-      isArray(this.props.supportedSourceTypes) &&
-      this.props.supportedSourceTypes.length
-    ) {
-      newState.sourceId =
-        get(this.props.configuration, 'sourceId') ||
-        (get(this.props, 'sources.length') ? this.props.sources[0].id : '');
-    }
     if (isArray(fields)) {
       fields.forEach(field => {
         if (field.name) {
@@ -91,10 +85,12 @@ class DynamicAdapter extends React.Component {
           <div>
             <SourceDropdownMenu
               sourceId={this.state.sourceId}
-              sources={this.props.sources}
               handleSourceChange={this.handleSourceChange}
               openCreateSource={this.props.openCreateSource}
               closeCreateSource={this.props.closeCreateSource}
+              hasNextPage={this.props.hasNextPage}
+              isNextPageLoading={this.props.isNextPageLoading}
+              loadNextPage={this.props.loadNextPage}
             />
             <div className={styles.adapterDivider} />
           </div>
