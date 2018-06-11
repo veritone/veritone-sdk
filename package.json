@@ -11,16 +11,21 @@
     "publish-dev": "./publish-dev.sh",
     "lintall": "yarn wsrun lint --fast-exit --exclude-missing",
     "testall": "yarn wsrun test --fast-exit --exclude-missing",
-    "formatall": "yarn wsrun format --exclude-missing"
+    "formatall": "yarn wsrun format --exclude-missing",
+    "prepare": "patch-package"
   },
   "husky": {
     "hooks": {
       "pre-commit": "yarn run lintall && yarn run testall"
     }
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "husky": "^0.15.0-rc.13",
+    "patch-package": "^6.0.0-7",
+    "postinstall-prepare": "^1.0.1",
     "prettier": "1.12.1",
     "wsrun": "^2.0.0"
   }
