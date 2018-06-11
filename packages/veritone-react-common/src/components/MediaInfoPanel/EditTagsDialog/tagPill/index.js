@@ -7,7 +7,7 @@ import styles from './styles.scss';
 
 class TagPill extends Component {
   static propTypes = {
-    text: string,
+    text: string.isRequired,
     onRemove: func
   };
 
@@ -17,7 +17,13 @@ class TagPill extends Component {
 
   render() {
     return (
-      <div className={styles.tagPillContainer}>
+      <div
+        className={
+          this.props.onRemove
+            ? styles.tagPillContainer
+            : styles.tagPillContainerReadonly
+        }
+      >
         {this.props.text &&
           this.props.text.length > 32 && (
             <Tooltip
@@ -36,20 +42,22 @@ class TagPill extends Component {
           this.props.text.length <= 32 && (
             <span className={styles.tagText}>{this.props.text}</span>
           )}
-        <IconButton
-          onClick={this.onRemoveTag}
-          aria-label="Remove"
-          classes={{
-            root: styles.removeButton
-          }}
-        >
-          <Icon
-            className="icon-close-exit"
+        {this.props.onRemove && (
+          <IconButton
+            onClick={this.onRemoveTag}
+            aria-label="Remove"
             classes={{
-              root: styles.removeButtonIcon
+              root: styles.removeButton
             }}
-          />
-        </IconButton>
+          >
+            <Icon
+              className="icon-close-exit"
+              classes={{
+                root: styles.removeButtonIcon
+              }}
+            />
+          </IconButton>
+        )}
       </div>
     );
   }

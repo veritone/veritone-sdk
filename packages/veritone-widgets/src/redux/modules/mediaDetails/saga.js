@@ -7,7 +7,16 @@ import {
   select,
   take
 } from 'redux-saga/effects';
-import { get, uniq, isObject, isEmpty, isUndefined, every, find } from 'lodash';
+import {
+  get,
+  uniq,
+  isObject,
+  isEmpty,
+  isUndefined,
+  isArray,
+  every,
+  find
+} from 'lodash';
 import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
 import {
@@ -1315,10 +1324,8 @@ function* watchUpdateTdoRequest() {
         );
       }
     }
-    if (get(tdoDataToUpdate, 'tags.length')) {
-      detailsToSave.tags = get(tdoDataToUpdate, 'tags').map(tag => {
-        return { value: tag.value };
-      });
+    if (get(tdoDataToUpdate, 'tags') && isArray(get(tdoDataToUpdate, 'tags'))) {
+      detailsToSave.tags = get(tdoDataToUpdate, 'tags');
     }
     yield call(updateTdoSaga, widgetId, tdoId, detailsToSave);
   });

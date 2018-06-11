@@ -585,7 +585,7 @@ class MediaDetailsWidget extends React.Component {
 
   onSaveTags = tagsToSave => {
     this.toggleIsEditTagsOpen();
-    if (!tagsToSave || !tagsToSave.length) {
+    if (!tagsToSave) {
       return;
     }
     this.updateTdo({ tags: tagsToSave });
