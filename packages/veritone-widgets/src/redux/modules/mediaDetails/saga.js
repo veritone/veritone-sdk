@@ -12,7 +12,7 @@ import { modules } from 'veritone-redux-common';
 import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
-  RESET as TRANSCRIPT_RESET
+  reset as resetTranscript
 } from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
@@ -760,7 +760,6 @@ function* createFileAssetSaga(
     }
     // Reset the the transcipt engine results.
     if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put({ type: TRANSCRIPT_RESET });
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
     }
     yield put(toggleEditMode(widgetId, selectedEngineCategory));
@@ -1548,6 +1547,8 @@ function* watchCancelEdit() {
 
       if (selectedEngineCategory.categoryType === 'face') {
         yield put(cancelFaceEdits());
+      } else if (selectedEngineCategory.categoryType === 'transcript') {
+        yield put(resetTranscript());
       }
     }
   });

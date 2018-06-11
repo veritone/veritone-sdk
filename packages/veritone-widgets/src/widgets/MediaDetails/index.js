@@ -56,7 +56,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
-import { reset } from '../../redux/modules/mediaDetails/transcriptWidget';
 import * as transcriptWidgetModule from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 
@@ -106,7 +105,6 @@ import widget from '../../shared/widget';
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
     fetchApplications: applicationModule.fetchApplications,
     saveAssetData: mediaDetailsModule.saveAssetData,
-    resetTranscript: reset,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges
@@ -258,7 +256,6 @@ class MediaDetailsWidget extends React.Component {
     saveAssetData: func,
     widgetError: string,
     isSaveEnabled: bool,
-    resetTranscript: func,
     alertDialogConfig: shape({
       show: bool,
       title: string,
@@ -412,7 +409,6 @@ class MediaDetailsWidget extends React.Component {
     if (this.props.isEditModeEnabled) {
       this.toggleEditMode();
     }
-    this.props.resetTranscript();
   };
 
   checkSaveSate = () => {
