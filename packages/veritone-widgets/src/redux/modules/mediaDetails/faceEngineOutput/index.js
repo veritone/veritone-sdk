@@ -92,10 +92,7 @@ const reducer = createReducer(defaultState, {
     const resultsGroupedByEngineId = groupBy(engineResults, 'engineId');
 
     forEach(resultsGroupedByEngineId, (results, engineId) => {
-      if (!previousResultsByEngineId[engineId]) {
-        // Data hasn't been retrieved for this engineId yet
-        previousResultsByEngineId[engineId] = map(results, 'jsondata');
-      }
+      previousResultsByEngineId[engineId] = map(results, 'jsondata');
     });
 
     return {
