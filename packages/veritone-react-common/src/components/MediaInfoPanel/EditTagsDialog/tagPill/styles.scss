@@ -38,13 +38,13 @@
 }
 
 .removeButton {
-  display: inline-block;
-  vertical-align: middle;
-  height: 16px;
-  width: 16px;
-  margin: 8px;
-  border-radius: 16px;
-  background-color: $grey-5;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  height: 16px !important;
+  width: 16px !important;
+  margin: 8px !important;
+  border-radius: 16px !important;
+  background-color: $grey-5 !important;
 
   .removeButtonIcon {
     font-size: 14px;
