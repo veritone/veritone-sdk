@@ -80,8 +80,7 @@ import {
 } from '.';
 
 import {
-  ADD_DETECTED_FACE,
-  clearFaceEngineResultsByEngineId
+  ADD_DETECTED_FACE
 } from './faceEngineOutput';
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 
@@ -772,8 +771,7 @@ function* createFileAssetSaga(
     // Reset the the transcipt engine results.
     if (selectedEngineCategory.categoryType === 'transcript') {
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    } else if (selectedEngineCategory.categoryType === 'face') {
-      yield put(clearFaceEngineResultsByEngineId(userGeneratedEngineId));
+    } else if (selectedEngineCategory.categoryType === 'face' && userGeneratedEngineId) {
       yield put(
         fetchFaceEngineResults({
           selectedEngineId: userGeneratedEngineId,

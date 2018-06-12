@@ -5,7 +5,6 @@ export const FETCHING_ENGINE_RESULTS = `vtn/${namespace}/FETCHING_ENGINE_RESULTS
 export const FETCH_ENGINE_RESULTS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_RESULTS_SUCCESS`;
 export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESULTS_FAILURE`;
 export const DONE_FETCHING_ENGINE_RESULTS = `vtn/${namespace}/DONE_FETCHING_ENGINE_RESULTS`;
-export const CLEAR_FACE_ENGINE_RESULTS_BY_ENGINE_ID = `vtn/${namespace}/CLEAR_FACE_ENGINE_RESULTS_BY_ENGINE_ID`;
 
 export const FETCH_ENTITIES = `vtn/${namespace}/FETCH_ENTITIES`;
 export const FETCH_ENTITIES_SUCCESS = `vtn/${namespace}/FETCH_ENTITIES_SUCCESS`;
@@ -110,35 +109,6 @@ const reducer = createReducer(defaultState, {
   [FETCH_ENGINE_RESULTS_FAILURE](state, { payload, meta }) {
     return {
       ...state
-    };
-  },
-  [CLEAR_FACE_ENGINE_RESULTS_BY_ENGINE_ID](state, { payload }) {
-    function removeEngineId(myObj, deleteEngineId) {
-      return Object.keys(myObj)
-        .filter(key => key !== deleteEngineId)
-        .reduce((result, current) => {
-          result[current] = myObj[current];
-          return result;
-        }, {});
-    }
-    return {
-      ...state,
-      engineResultsByEngineId: removeEngineId(
-        state.engineResultsByEngineId,
-        payload.engineId
-      ),
-      fetchedEngineResults: removeEngineId(
-        state.fetchedEngineResults,
-        payload.engineId
-      ),
-      facesDetectedByUser: removeEngineId(
-        state.facesDetectedByUser,
-        payload.engineId
-      ),
-      facesRemovedByUser: removeEngineId(
-        state.facesRemovedByUser,
-        payload.engineId
-      )
     };
   },
   [FETCH_ENTITIES](state, action) {
@@ -371,10 +341,6 @@ export const fetchEngineResultsFailure = (error, meta) => ({
   type: FETCH_ENGINE_RESULTS_FAILURE,
   error,
   meta
-});
-export const clearFaceEngineResultsByEngineId = engineId => ({
-  type: CLEAR_FACE_ENGINE_RESULTS_BY_ENGINE_ID,
-  payload: { engineId }
 });
 
 export function isFetchingEngineResults(state) {
