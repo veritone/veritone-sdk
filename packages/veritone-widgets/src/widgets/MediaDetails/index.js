@@ -340,7 +340,7 @@ class MediaDetailsWidget extends React.Component {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
     }
-    return !this.isMediaPublic() && this.isOwnMedia();
+    return this.canEditMedia();
   };
 
   canEditMedia = () => {
