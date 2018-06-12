@@ -7,11 +7,11 @@
   "jsnext:main": "dist/bundle-es.js",
   "scripts": {
     "test": "export NODE_ENV=test && jest ./src/index.test.js",
-    "lint": "eslint --ext .js --max-warnings 0 **.js",
+    "lint": "eslint --ext  src/**/*.js --max-warnings 0 **.js",
     "build": "yarn run build:es && yarn run build:cjs",
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
     "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
-    "format": "prettier --write \"src/**/*.{js,scss}\""
+    "format": "prettier --write \"src/**/*.{js,scss,md}\""
   },
   "author": "Andrew Tung",
   "license": "Apache-2.0",
@@ -22,7 +22,6 @@
     "eslint": "^4.19.1",
     "jest": "^23.1.0",
     "prettier": "1.13.4",
-    "rimraf": "^2.6.2",
     "rollup": "^0.56.3",
     "rollup-plugin-babel": "^3.0.3"
   },

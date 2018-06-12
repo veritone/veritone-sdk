@@ -4,7 +4,7 @@
 
 This package exports functions that help you generate a query to core-search-server from a Cognitive Search Profile. A CSP is a structured JSON document that describes what you are looking for across multiple engine categories.
 
-Every engine category has it's own data structure for describing "what" you are looking for. By joining together the engine category data structures with a CSP, we can describe
+Every engine category has its own data structure for describing "what" you are looking for. By joining together the engine category data structures with a CSP, we can describe
 how to find data across multiple cognitive engines using boolean logic.
 
 ## Use
@@ -42,11 +42,15 @@ Once you have a CSP, you can use the `CSPtoV3Query` function exported by this pa
 }
 ```
 
-This CSP would search any processing jobs or files processed by Veritone where `"Kobe Byrant"` occurs in the text transcription.
+This CSP would search any processing jobs or files processed by Veritone where `"Kobe Bryant"` occurs in the text transcription.
+
+## Build
+
+This modules uses ES6 imports. Run `yarn build` to generate a CommonJS and ES6
 
 # License
 
-Copyright 2017, Veritone Inc.
+Copyright 2018, Veritone Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the

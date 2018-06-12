@@ -1,4 +1,4 @@
-import { engineCategoryMapping } from '../';
+import { engineCategoryMapping } from './';
 
 test('it should generate a basic transcript subquery from a transcript engine category', () => {
   const kobe = { search: '"Kobe Bryant"', language: 'en' };
