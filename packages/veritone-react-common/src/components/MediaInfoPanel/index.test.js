@@ -101,6 +101,10 @@ const KVP = {
   applicationIds: ['ed075985-bc94-406b-8639-44d1da42c3fb']
 };
 
+const CAN_EDIT_MEDIA = () => {
+  return true;
+}
+
 describe('MediaInfoPanel', () => {
   it('should show media info panel', () => {
     const onClose = jest.fn();
@@ -112,6 +116,7 @@ describe('MediaInfoPanel', () => {
         kvp={KVP}
         contextMenuExtensions={CONTEXT_MENU_EXTENTIONS}
         onClose={onClose}
+        canEditMedia={CAN_EDIT_MEDIA}
         onSaveMetadata={jest.fn()}
       />
     );
@@ -208,6 +213,14 @@ describe('MediaInfoPanel', () => {
     expect(wrapper.find('.programImage').prop('src')).toEqual(
       '//static.veritone.com/veritone-ui/program_image_null.svg'
     );
+
+    expect(wrapper.find('.infoPanelHeader').find('[aria-label="Edit"]').exists()).toEqual(true);  
+    wrapper.find('.infoPanelHeader').find('[aria-label="Edit"]').first().simulate('click');  
+    expect(wrapper.find('#menu-list-grow').exists()).toEqual(true);  
+    const moreMenuItems = wrapper.find('#menu-list-grow').find('li');  
+    expect(moreMenuItems.length).toEqual(2); 
+    expect(moreMenuItems.at(0).text()).toEqual('Edit Metadata'); 
+    expect(moreMenuItems.at(1).text()).toEqual('Edit Tags');
 
     const closeButton = wrapper
       .find('.infoPanelHeader')

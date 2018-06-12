@@ -41,8 +41,6 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput,
   EngineOutputNullState,
-  EditTagsDialog,
-  EditMetadataDialog,
   withMuiThemeProvider
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
@@ -266,8 +264,6 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     isMenuOpen: false,
-    isEditMetadataOpen: false,
-    isEditTagsOpen: false,
     selectedTabValue: 'mediaDetails',
     disableEditBtn: false
   };
@@ -344,8 +340,12 @@ class MediaDetailsWidget extends React.Component {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
     }
-    return !this.isMediaPublic() && this.isOwnMedia();
+    return this.canEditMedia();
   };
+
+  canEditMedia = () => {
+    return !this.isMediaPublic() && this.isOwnMedia();
+  }
 
   isMediaPublic = () => {
     if (!get(this.props, 'tdo.security.global', false)) {
@@ -557,48 +557,6 @@ class MediaDetailsWidget extends React.Component {
     element.click();
   };
 
-  onMetadataOpen = () => {
-    this.onMenuClose();
-    this.toggleIsEditMetadataOpen();
-  };
-
-  onEditTagsOpen = () => {
-    this.onMenuClose();
-    this.toggleIsEditTagsOpen();
-  };
-
-  onSaveMetadata = metadataToSave => {
-    this.toggleIsEditMetadataOpen();
-    if (!metadataToSave) {
-      return;
-    }
-    this.updateTdo(metadataToSave);
-  };
-
-  toggleIsEditMetadataOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
-      };
-    });
-  };
-
-  onSaveTags = tagsToSave => {
-    this.toggleIsEditTagsOpen();
-    if (!tagsToSave) {
-      return;
-    }
-    this.updateTdo({ tags: tagsToSave });
-  };
-
-  toggleIsEditTagsOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
-      };
-    });
-  };
-
   handleContextMenuClick = cme => {
     window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
   };
@@ -625,28 +583,12 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled
     } = this.props;
 
-    const { isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
+    const { isMenuOpen } = this.state;
 
     const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
-
-    let metadata;
-    if (tdo) {
-      metadata = {
-        ...tdo.details,
-        veritoneProgram: {
-          ...tdo.details.veritoneProgram,
-          programImage:
-            tdo.sourceImageUrl ||
-            get(tdo, 'details.veritoneProgram.programImage'),
-          programLiveImage:
-            tdo.thumbnailUrl ||
-            get(tdo, 'details.veritoneProgram.programLiveImage')
-        }
-      };
-    }
 
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
@@ -786,18 +728,6 @@ class MediaDetailsWidget extends React.Component {
                             >
                               <Paper>
                                 <MenuList role="menu">
-                                  <MenuItem
-                                    classes={{ root: styles.headerMenuItem }}
-                                    onClick={this.onMetadataOpen}
-                                  >
-                                    Edit Metadata
-                                  </MenuItem>
-                                  <MenuItem
-                                    classes={{ root: styles.headerMenuItem }}
-                                    onClick={this.onEditTagsOpen}
-                                  >
-                                    Edit Tags
-                                  </MenuItem>
                                   {this.isDownloadMediaEnabled() && (
                                     <MenuItem
                                       classes={{ root: styles.headerMenuItem }}
@@ -833,7 +763,9 @@ class MediaDetailsWidget extends React.Component {
                     </Manager>
                   </Tooltip>
                   {(get(this.props, 'tdo.id') ||
-                    get(this.props, 'tdo.details', null)) && (
+                    get(this.props, 'tdo.details', null) ||
+                    this.isDownloadMediaEnabled() ||
+                    get(this.props, 'contextMenuExtensions.tdos.length')) && (
                     <div className={styles.pageHeaderActionButtonsSeparator} />
                   )}
                   <IconButton
@@ -1176,6 +1108,7 @@ class MediaDetailsWidget extends React.Component {
               kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
+              canEditMedia={this.canEditMedia}
             />
           )}
 
@@ -1188,26 +1121,6 @@ class MediaDetailsWidget extends React.Component {
               />
             )}
         </Paper>
-        {tdo &&
-          tdo.details &&
-          isEditMetadataOpen && (
-            <EditMetadataDialog
-              isOpen={isEditMetadataOpen}
-              metadata={metadata}
-              onClose={this.toggleIsEditMetadataOpen}
-              onSave={this.onSaveMetadata}
-            />
-          )}
-        {tdo &&
-          tdo.details &&
-          isEditTagsOpen && (
-            <EditTagsDialog
-              isOpen={isEditTagsOpen}
-              tags={tdo.details.tags}
-              onClose={this.toggleIsEditTagsOpen}
-              onSave={this.onSaveTags}
-            />
-          )}
       </FullScreenDialog>
     );
   }
