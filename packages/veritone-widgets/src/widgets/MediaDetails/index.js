@@ -56,7 +56,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
-import * as transcriptWidgetModule from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 
 @withPropsOnChange([], ({ id }) => ({
@@ -89,8 +88,7 @@ import widget from '../../shared/widget';
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
-    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
-    transcriptHasChanged: transcriptWidgetModule.hasChanged(state)
+    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -266,8 +264,7 @@ class MediaDetailsWidget extends React.Component {
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
-    discardUnsavedChanges: func,
-    transcriptHasChanged: bool
+    discardUnsavedChanges: func
   };
 
   static contextTypes = {
@@ -412,8 +409,7 @@ class MediaDetailsWidget extends React.Component {
   };
 
   checkSaveSate = () => {
-    // TODO: check for face changes.
-    if (this.props.transcriptHasChanged) {
+    if (this.props.isSaveEnabled) {
       this.props.openConfirmModal(this.onSaveEdit, this.props.id);
     } else {
       this.onCancelEdit();

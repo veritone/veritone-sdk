@@ -9,7 +9,11 @@ import {
 } from 'redux-saga/effects';
 import { get, uniq, isObject, isEmpty, isUndefined, every, find } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
+import {
+  getFaceEngineAssetData,
+  cancelFaceEdits,
+  fetchEngineResults as fetchFaceEngineResults
+} from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
   reset as resetTranscript
@@ -75,7 +79,10 @@ import {
   getEngineCategories
 } from '.';
 
-import { ADD_DETECTED_FACE } from './faceEngineOutput';
+import {
+  ADD_DETECTED_FACE,
+  clearFaceEngineResultsByEngineId
+} from './faceEngineOutput';
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 
 const tdoInfoQueryClause = `id
@@ -750,9 +757,13 @@ function* createFileAssetSaga(
     const updatedCategory = find(engineCategories, {
       categoryType: selectedEngineCategory.categoryType
     });
-    // Extract the user edited engine id. It can be a readable string or uuid.
-    const userGeneratedEngine = find(updatedCategory.engines, {
-      name: 'User Edited'
+    const userGeneratedEngine = find(updatedCategory.engines, engine => {
+      return (
+        engine.id === 'user-edited-face-engine-results' ||
+        engine.id === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd' ||
+        engine.id === 'bulk-edit-transcript' ||
+        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
+      );
     });
     let userGeneratedEngineId;
     if (userGeneratedEngine) {
@@ -761,6 +772,14 @@ function* createFileAssetSaga(
     // Reset the the transcipt engine results.
     if (selectedEngineCategory.categoryType === 'transcript') {
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
+    } else if (selectedEngineCategory.categoryType === 'face') {
+      yield put(clearFaceEngineResultsByEngineId(userGeneratedEngineId));
+      yield put(
+        fetchFaceEngineResults({
+          selectedEngineId: userGeneratedEngineId,
+          tdo: requestTdo
+        })
+      );
     }
     yield put(toggleEditMode(widgetId, selectedEngineCategory));
     yield put(selectEngineCategory(widgetId, updatedCategory));
