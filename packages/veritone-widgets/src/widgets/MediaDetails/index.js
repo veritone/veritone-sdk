@@ -343,6 +343,10 @@ class MediaDetailsWidget extends React.Component {
     return !this.isMediaPublic() && this.isOwnMedia();
   };
 
+  canEditMedia = () => {
+    return !this.isMediaPublic() && this.isOwnMedia();
+  }
+
   isMediaPublic = () => {
     if (!get(this.props, 'tdo.security.global', false)) {
       return false;
@@ -1104,7 +1108,7 @@ class MediaDetailsWidget extends React.Component {
               kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
-              isEditModeEnabled={this.props.isEditModeEnabled}
+              canEditMedia={this.canEditMedia}
             />
           )}
 

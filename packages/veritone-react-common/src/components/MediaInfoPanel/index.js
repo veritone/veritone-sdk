@@ -71,7 +71,7 @@ class MediaInfoPanel extends Component {
       }),
       applicationIds: arrayOf(string)
     }).isRequired,
-    isEditModeEnabled: bool,
+    canEditMedia: func.isRequired,
     onSaveMetadata: func.isRequired,
     onClose: func
   };
@@ -237,7 +237,7 @@ class MediaInfoPanel extends Component {
           <div className={styles.infoPanelHeader}>
             <span>Metadata</span>
             <div className={styles.headerMenu}>
-              {this.props.isEditModeEnabled && (
+              {this.props.canEditMedia() && (
                 <Tooltip
                   id="tooltip-show-edit-menu"
                   title="Edit"
@@ -298,7 +298,7 @@ class MediaInfoPanel extends Component {
                   </Manager>
                 </Tooltip>
               )}
-              {this.props.isEditModeEnabled && (
+              {this.props.canEditMedia() && (
                 <div className={styles.pageHeaderActionButtonsSeparator} />
               )}
               <IconButton
