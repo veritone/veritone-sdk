@@ -38,9 +38,6 @@ import {
   UPDATE_TDO_CONTENT_TEMPLATES_FAILURE,
   SET_SELECTED_ENGINE_ID,
   SELECT_ENGINE_CATEGORY,
-  REQUEST_LIBRARIES,
-  REQUEST_LIBRARIES_SUCCESS,
-  REQUEST_LIBRARIES_FAILURE,
   REQUEST_ENTITIES,
   REQUEST_ENTITIES_SUCCESS,
   REQUEST_ENTITIES_FAILURE,
@@ -987,53 +984,6 @@ function* watchLoadEngineResultsRequest() {
   });
 }
 
-function* fetchLibraries(widgetId, libraryIds) {
-  yield put({ type: REQUEST_LIBRARIES, meta: { widgetId } });
-  let libraryQueries = libraryIds.map((id, index) => {
-    return `
-      library${index}: library(id:"${id}") {
-        id
-        name
-        description
-        coverImageUrl
-      }
-    `;
-  });
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-
-  let response;
-  try {
-    response = yield call(callGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: `query{${libraryQueries.join(' ')}}`,
-      token
-    });
-  } catch (error) {
-    yield put({
-      type: REQUEST_LIBRARIES_FAILURE,
-      error: 'Error fetching libraries from server.'
-    });
-  }
-
-  if (response.errors) {
-    yield put({
-      type: REQUEST_LIBRARIES_FAILURE,
-      error: 'Error thrown by GraphQL while fetching libraries',
-      meta: { widgetId }
-    });
-  } else {
-    yield put({
-      type: REQUEST_LIBRARIES_SUCCESS,
-      payload: response.data,
-      meta: { widgetId }
-    });
-  }
-}
-
 function* fetchEntities(widgetId, entityIds) {
   yield put({ type: REQUEST_ENTITIES, meta: { widgetId } });
   let entityQueries = entityIds.map((id, index) => {
@@ -1041,9 +991,16 @@ function* fetchEntities(widgetId, entityIds) {
       entity${index}: entity(id:"${id}") {
         id
         name
-        libraryId
+        description
         profileImageUrl
         jsondata
+        libraryId
+        library {
+          id
+          name
+          description
+          coverImageUrl
+        }
       }
     `;
   });
@@ -1061,25 +1018,25 @@ function* fetchEntities(widgetId, entityIds) {
       token
     });
   } catch (error) {
-    yield put({
+    return yield put({
       type: REQUEST_ENTITIES_FAILURE,
-      error: 'Error fetching entities from server.'
+      error: 'Error fetching entities from server.',
+      meta: { widgetId }
     });
   }
 
   if (response.errors) {
-    yield put({
+    return yield put({
       type: REQUEST_ENTITIES_FAILURE,
       error: 'Error thrown while fetching entities',
       meta: { widgetId }
     });
-  } else {
-    yield put({
-      type: REQUEST_ENTITIES_SUCCESS,
-      payload: response.data,
-      meta: { widgetId }
-    });
   }
+  yield put({
+    type: REQUEST_ENTITIES_SUCCESS,
+    payload: response.data,
+    meta: { widgetId }
+  });
 }
 
 function* fetchSchemas(widgetId, schemaIds) {
@@ -1113,41 +1070,35 @@ function* fetchSchemas(widgetId, schemaIds) {
       token
     });
   } catch (error) {
-    yield put({
+    return yield put({
       type: REQUEST_SCHEMAS_FAILURE,
       error: 'Error fetching schemas from server.'
     });
   }
 
   if (response.errors) {
-    yield put({
+    return yield put({
       type: REQUEST_SCHEMAS_FAILURE,
       error: 'Error thrown while fetching schemas',
       meta: { widgetId }
     });
-  } else {
-    yield put({
+  }
+  return yield put({
       type: REQUEST_SCHEMAS_SUCCESS,
       payload: response.data,
       meta: { widgetId }
     });
-  }
 }
 
 function* watchLoadEngineResultsComplete() {
   yield takeEvery(LOAD_ENGINE_RESULTS_SUCCESS, function*(action) {
-    let libraryIds = [],
-      entityIds = [],
+    let entityIds = [],
       schemaIds = [];
     action.payload.forEach(jsonData => {
       jsonData.jsondata.series.forEach(s => {
         let entityId = get(s, 'object.entityId');
         if (entityId) {
           entityIds.push(entityId);
-        }
-        let libraryId = get(s, 'object.libraryId');
-        if (libraryId) {
-          libraryIds.push(libraryId);
         }
         let structuredData = get(s, 'structuredData');
         if (structuredData) {
@@ -1158,11 +1109,8 @@ function* watchLoadEngineResultsComplete() {
       });
     });
 
-    if (libraryIds.length && entityIds.length) {
-      yield all([
-        call(fetchLibraries, action.meta.widgetId, uniq(libraryIds)),
-        call(fetchEntities, action.meta.widgetId, uniq(entityIds))
-      ]);
+    if (entityIds.length) {
+      yield call(fetchEntities, action.meta.widgetId, uniq(entityIds));
     }
     if (schemaIds.length) {
       yield call(fetchSchemas, action.meta.widgetId, uniq(schemaIds));
