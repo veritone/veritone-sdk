@@ -42,7 +42,7 @@ export default function withMuiThemeProvider(Component) {
   // Give this component a more helpful display name in DevTools.
   // e.g. "ForwardRef(logProps(MyComponent))"
   const name = Component.displayName || Component.name;
-  forwardRef.displayName = `logProps(${name})`;
+  forwardRef.displayName = `WrappedWithMuiTheme(${name})`;
 
   return React.forwardRef(forwardRef);
 }
