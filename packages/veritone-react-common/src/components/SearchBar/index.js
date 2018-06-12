@@ -6,12 +6,12 @@ import { SearchPill } from 'veritone-react-common';
 import cx from 'classnames';
 import styles from './styles.scss';
 
-import { SearchParameterGroups, SearchBarError } from './parser';
+import { getGroupsFromSearchParameters, SearchBarError } from './parser';
 import { engineCategories } from './engineCategoryMappings';
 
 // need to look forward and backwards one search parameter, as well as take into the account the rendering level
 // because we render ((hello) and world ) as (hello) and world)
-const SearchGroupStyling = ({ before, after, level }) => {
+const getGroupStyling = ({ before, after, level }) => {
   return cx({
     [styles['searchGroupNestedLeft']]: before && before !== 'group',
     [styles['searchGroupNestedRight']]: after && after !== 'group',
@@ -20,7 +20,7 @@ const SearchGroupStyling = ({ before, after, level }) => {
 };
 
 const SearchParameters = ({ parameters, level }) => {
-  const groups = SearchParameterGroups(parameters);
+  const groups = getGroupsFromSearchParameters(parameters);
   const searchParameters = [];
   for (let i = 0; i < parameters.length; i++) {
     const searchParameter = parameters[i];
@@ -39,7 +39,7 @@ const SearchParameters = ({ parameters, level }) => {
       const after = group.afterGroup;
 
       searchParameters.push(
-        <span className={SearchGroupStyling({ before, after, level })}>
+        <span className={getGroupStyling({ before, after, level })}>
           <SearchParameters
             key={searchParameter.id}
             level={1 + level}

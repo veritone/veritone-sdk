@@ -1,4 +1,4 @@
-const TranscriptDisplay = modalState => {
+const getTranscriptLabel = modalState => {
   return {
     abbreviation:
       modalState.search && modalState.search.length > 10
@@ -9,4 +9,4 @@ const TranscriptDisplay = modalState => {
   };
 };
 
-export { TranscriptDisplay };
+export { getTranscriptLabel };

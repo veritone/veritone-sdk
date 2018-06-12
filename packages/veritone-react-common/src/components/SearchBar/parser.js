@@ -69,7 +69,7 @@ function CSPToSearchParameters(cognitiveSearchProfile, lastGroup) {
   return searchParameters;
 }
 
-function SearchParameterGroups(searchParameters) {
+function getGroupsFromSearchParameters(searchParameters) {
   const groups = {};
   let startOfGroup = null;
   let treeLevel = 0;
@@ -98,4 +98,4 @@ function SearchParameterGroups(searchParameters) {
   return groups;
 }
 
-export { CSPToSearchParameters, SearchParameterGroups, SearchBarError };
+export { CSPToSearchParameters, getGroupsFromSearchParameters, SearchBarError };

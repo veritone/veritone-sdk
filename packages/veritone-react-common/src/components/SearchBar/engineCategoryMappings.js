@@ -1,9 +1,9 @@
-import { TranscriptDisplay } from './TranscriptModal';
+import { getTranscriptLabel } from './TranscriptModal';
 
 const transcript = {
   name: 'Transcript',
   iconClass: 'icon-transcription',
-  getLabel: TranscriptDisplay
+  getLabel: getTranscriptLabel
 };
 
 const engineCategories = {
