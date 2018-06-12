@@ -25,7 +25,11 @@ import {
   oneOfType
 } from 'prop-types';
 import styles from './styles.scss';
-import { FaceEngineOutput, withMuiThemeProvider } from 'veritone-react-common';
+import {
+  FaceEngineOutput,
+  withMuiThemeProvider,
+  AlertDialog
+} from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
@@ -42,7 +46,10 @@ const saga = util.reactReduxSaga.saga;
     isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
     isFetchingEntities: faceEngineOutput.isFetchingEntities(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
-    isSearchingEntities: faceEngineOutput.isSearchingEntities(state)
+    isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
+    showConfirmationDialog: faceEngineOutput.showConfirmationDialog(state),
+    confirmationAction: faceEngineOutput.confirmationAction(state),
+    pendingUserEdits: faceEngineOutput.pendingUserEdits(state, selectedEngineId)
   }),
   {
     fetchEngineResults: faceEngineOutput.fetchEngineResults,
@@ -50,7 +57,10 @@ const saga = util.reactReduxSaga.saga;
     createEntity: faceEngineOutput.createEntity,
     addDetectedFace: faceEngineOutput.addDetectedFace,
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
-    removeDetectedFace: faceEngineOutput.removeDetectedFace
+    removeDetectedFace: faceEngineOutput.removeDetectedFace,
+    openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
+    closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
+    cancelFaceEdits: faceEngineOutput.cancelFaceEdits
   },
   null,
   { withRef: true }
@@ -140,7 +150,13 @@ class FaceEngineOutputContainer extends Component {
     fetchEntitySearchResults: func,
     addDetectedFace: func,
     removeDetectedFace: func,
-    createEntity: func
+    createEntity: func,
+    showConfirmationDialog: bool,
+    confirmationAction: func,
+    cancelFaceEdits: func,
+    openConfirmationDialog: func,
+    closeConfirmationDialog: func,
+    pendingUserEdits: bool
   };
 
   state = {
@@ -387,6 +403,43 @@ class FaceEngineOutputContainer extends Component {
     );
   };
 
+  handleEngineChange = engineId => {
+    if (this.props.editMode && this.props.pendingUserEdits) {
+      this.props.openConfirmationDialog(() => {
+        this.props.cancelFaceEdits();
+        this.props.onEngineChange(engineId);
+        this.props.closeConfirmationDialog();
+      });
+    } else {
+      this.props.onEngineChange(engineId);
+    }
+  };
+
+  renderConfirmationDialog = () => {
+    const alertTitle = 'Unsaved Changes';
+    const alertDescription = 'This action will reset your changes.';
+    const cancelButtonLabel = 'Cancel';
+    const approveButtonLabel = 'Continue';
+
+    const {
+      showConfirmationDialog,
+      closeConfirmationDialog,
+      confirmationAction
+    } = this.props;
+
+    return (
+      <AlertDialog
+        open={showConfirmationDialog}
+        title={alertTitle}
+        content={alertDescription}
+        cancelButtonLabel={cancelButtonLabel}
+        approveButtonLabel={approveButtonLabel}
+        onCancel={closeConfirmationDialog}
+        onApprove={confirmationAction}
+      />
+    );
+  };
+
   render() {
     const faceEngineProps = pick(this.props, [
       'editMode',
@@ -394,7 +447,6 @@ class FaceEngineOutputContainer extends Component {
       'entities',
       'currentMediaPlayerTime',
       'entitySearchResults',
-      'onEngineChange',
       'selectedEngineId',
       'onFaceOccurrenceClicked',
       'isSearchingEntities'
@@ -421,12 +473,14 @@ class FaceEngineOutputContainer extends Component {
         <FaceEngineOutput
           {...this.props.faces}
           {...faceEngineProps}
+          onEngineChange={this.handleEngineChange}
           onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={debounce(this.handleSearchEntities, 400)}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
         />
         {this.renderAddNewEntityModal()}
+        {this.renderConfirmationDialog()}
       </Fragment>
     );
   }

@@ -28,6 +28,9 @@ export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_DETECTED_FACE = `vtn/${namespace}/REMOVE_DETECTED_FACE`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 
+export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
+export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIALOG`;
+
 import {
   get,
   map,
@@ -40,7 +43,8 @@ import {
   set,
   pick,
   flatten,
-  pullAt
+  pullAt,
+  noop
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -58,7 +62,9 @@ const defaultState = {
   isFetchingLibraries: false,
   isSearchingEntities: false,
   facesDetectedByUser: {},
-  facesRemovedByUser: {}
+  facesRemovedByUser: {},
+  showConfirmationDialog: false,
+  confirmationAction: noop
 };
 
 const reducer = createReducer(defaultState, {
@@ -324,6 +330,21 @@ const reducer = createReducer(defaultState, {
       facesDetectedByUser: {},
       facesRemovedByUser: {}
     };
+  },
+  [OPEN_CONFIRMATION_DIALOG](state, action) {
+    const { confirmationAction } = action.payload;
+    return {
+      ...state,
+      showConfirmationDialog: true,
+      confirmationAction: confirmationAction || noop
+    };
+  },
+  [CLOSE_CONFIRMATION_DIALOG](state, action) {
+    return {
+      ...state,
+      showConfirmationDialog: false,
+      confirmationAction: noop
+    };
   }
 });
 export default reducer;
@@ -370,6 +391,10 @@ export const getUserDetectedFaces = (state, engineId) =>
 
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
+
+export const pendingUserEdits = (state, engineId) =>
+  !isEmpty(getUserDetectedFaces(state, engineId)) ||
+  !isEmpty(getUserRemovedFaces(state, engineId));
 
 export const fetchedEngineResultByEngineId = (state, engineId) =>
   get(local(state), ['fetchedEngineResults', engineId], []);
@@ -486,6 +511,26 @@ export const removeDetectedFace = (selectedEngineId, faceObj) => ({
 export const cancelFaceEdits = () => ({
   type: CANCEL_FACE_EDITS
 });
+
+/* CONFIRMATION DIALOG */
+export const openConfirmationDialog = confirmationAction => {
+  return {
+    type: OPEN_CONFIRMATION_DIALOG,
+    payload: {
+      confirmationAction
+    }
+  };
+};
+
+export const closeConfirmationDialog = () => ({
+  type: CLOSE_CONFIRMATION_DIALOG
+});
+
+export const showConfirmationDialog = state =>
+  get(local(state), 'showConfirmationDialog');
+
+export const confirmationAction = state =>
+  get(local(state), 'confirmationAction');
 
 /* SELECTORS */
 export const getFaces = createSelector(
