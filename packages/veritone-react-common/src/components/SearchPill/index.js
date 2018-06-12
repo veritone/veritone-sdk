@@ -46,7 +46,7 @@ class SearchPill extends React.PureComponent {
           this.getBackgroundColor()
         ])}
         onClick={this.props.onClick}
-        disabled={this.props.disabled}
+        disabled={this.props.disabled || !this.props.onClick}
       >
         <Avatar
           className={cx(this.props.engineCategoryIcon)}
