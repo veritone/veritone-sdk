@@ -31,7 +31,9 @@ export default {
     ...Object.keys(mui.colors).map(name => `material-ui/colors/${name}`),
     'prop-types',
     'veritone-react-common',
-    'veritone-redux-common'
+    'veritone-redux-common',
+    'react-virtualized',
+    'redux-thunk'
   ],
   plugins: [
     replace({

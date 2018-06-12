@@ -7,4 +7,7 @@ export OAuthLoginButton, {
   OAuthLoginButtonWidget
 } from './widgets/OAuthLoginButton';
 export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
+export { EngineSelectionWidget } from './widgets/EngineSelection';
 export { TableWidget } from './widgets/Table';
+export GlobalNotificationDialog from './widgets/Notifications/GlobalNotificationDialog';
+export GlobalSnackBar from './widgets/Notifications/GlobalSnackBar';

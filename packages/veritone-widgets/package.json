@@ -10,9 +10,11 @@
     "react-dom": "^16.3.0",
     "react-redux": "^5.0.6",
     "react-redux-saga": "^1.0.2",
+    "react-virtualized": "^9.18.5",
     "redux": "^3.7.2",
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",
+    "redux-thunk": "^2.2.0",
     "veritone-oauth-helpers": "^2.1.0",
     "veritone-react-common": "^5.0.0",
     "veritone-redux-common": "^3.3.0"
@@ -36,7 +38,8 @@
     "lint": "eslint src/** --ext .js --max-warnings 0",
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
-    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
+    "prepublishOnly": "yarn run test && yarn run lint && yarn run build",
+    "prepare": "cd .. && yarn patch-package"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.9",
@@ -52,7 +55,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "cross-env": "^5.1.1",
-    "enzyme": "^3.1.0",
+    "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.0.2",
     "eslint": "^4.10.0",
     "eslint-config-prettier": "^2.7.0",
@@ -63,6 +66,7 @@
     "faker": "^4.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^22.4.3",
+    "postinstall-prepare": "^1.0.1",
     "raf": "^3.4.0",
     "react-test-renderer": "^16.0.0",
     "redux-devtools": "^3.4.0",

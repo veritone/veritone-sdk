@@ -30,6 +30,12 @@ export const auth = {
   authRootSaga
 };
 
+import engineReducer, * as engineModule from './engine';
+export const engine = {
+  reducer: engineReducer,
+  ...engineModule
+};
+
 import confirmationRootSaga from './confirmation/saga';
 import confirmationReducer, * as confirmationModule from './confirmation';
 
