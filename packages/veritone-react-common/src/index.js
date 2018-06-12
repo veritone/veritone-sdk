@@ -29,3 +29,4 @@ export MenuColumn from './components/DataTable/MenuColumn';
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
+export ExpandableInputField from './components/ExpandableInputField';
