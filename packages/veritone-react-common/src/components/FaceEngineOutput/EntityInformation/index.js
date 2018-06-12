@@ -122,7 +122,8 @@ class EntityInformation extends Component {
           {this.state.activeTab === 'metadata' && (
             <div className={styles.tabContainer}>
               <div className={styles.entityJson}>
-                {!!Object.keys(entity.jsondata).length &&
+                {entity.jsondata &&
+                  !!Object.keys(entity.jsondata).length &&
                   Object.keys(entity.jsondata).map((objKey, index) => {
                     return (
                       <div
