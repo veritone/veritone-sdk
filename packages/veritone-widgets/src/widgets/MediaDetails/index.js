@@ -344,7 +344,7 @@ class MediaDetailsWidget extends React.Component {
 
   canEditMedia = () => {
     return !this.isMediaPublic() && this.isOwnMedia();
-  }
+  };
 
   isMediaPublic = () => {
     if (!get(this.props, 'tdo.security.global', false)) {
@@ -545,7 +545,8 @@ class MediaDetailsWidget extends React.Component {
   };
 
   isDownloadMediaEnabled = () => {
-    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+    return get(this.props.tdo, 'primaryAsset.signedUri.length') &&
+      get(this.props.kvp, 'features.downloadMedia') === 'enabled';
   };
 
   downloadFile = () => {
