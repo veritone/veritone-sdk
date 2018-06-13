@@ -35,10 +35,14 @@
     .libraryName {
       font-size: 14px;
       font-weight: normal;
+      align-items: center;
+      display: inline-flex;
 
       .icon {
-        font-size: 14px;
+        font-size: 16px;
+        padding-right: 5px;
         font-weight: normal;
+        color: $light-black;
       }
     }
   }

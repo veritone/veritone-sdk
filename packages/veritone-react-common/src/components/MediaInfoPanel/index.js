@@ -64,13 +64,6 @@ class MediaInfoPanel extends Component {
         )
       })
     ).isRequired,
-    kvp: shape({
-      features: shape({
-        downloadMedia: string,
-        downloadPublicMedia: string
-      }),
-      applicationIds: arrayOf(string)
-    }).isRequired,
     canEditMedia: func.isRequired,
     onSaveMetadata: func.isRequired,
     onClose: func
@@ -91,30 +84,6 @@ class MediaInfoPanel extends Component {
     });
     this.props.onClose();
   };
-
-  isMediaPublic = () => {
-    if (!get(this.props.tdo, 'security.global', false)) {
-      return false;
-    }
-    if (this.props.tdo.isPublic === false) {
-      return false;
-    }
-    return true;
-  };
-
-  isOwnMedia() {
-    if (this.props.tdo.isOwn === true) {
-      return true;
-    }
-    const applicationIds = get(this.props.kvp, 'applicationIds', []);
-    if (
-      this.props.tdo.applicationId &&
-      applicationIds.includes(this.props.tdo.applicationId)
-    ) {
-      return true;
-    }
-    return false;
-  }
 
   setMenuTarget = node => {
     this.target1 = node;

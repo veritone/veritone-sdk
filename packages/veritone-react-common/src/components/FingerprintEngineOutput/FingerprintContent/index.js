@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { number, string, arrayOf, func, shape, object } from 'prop-types';
+import { number, string, arrayOf, func, shape } from 'prop-types';
 import classNames from 'classnames';
 
 import Icon from '@material-ui/core/Icon';
@@ -13,21 +13,22 @@ export default class FingerprintContent extends Component {
   static propTypes = {
     libraries: arrayOf(
       shape({
-        name: string,
-        libraryId: string.isRequired,
+        name: string.isRequired,
+        id: string.isRequired,
         description: string,
         entities: arrayOf(
           shape({
-            name: string,
-            entityId: string.isRequired,
-            metadata: object,
+            name: string.isRequired,
+            id: string.isRequired,
+            jsondata: shape({}),
             profileImageUrl: string,
+            description: string,
             matches: arrayOf(
               shape({
-                startTimeMs: number,
-                stopTimeMs: number,
+                startTimeMs: number.isRequired,
+                stopTimeMs: number.isRequired,
                 object: shape({
-                  entityId: string,
+                  entityId: string.isRequired,
                   confidence: number
                 })
               })

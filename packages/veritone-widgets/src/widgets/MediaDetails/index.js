@@ -78,7 +78,6 @@ import widget from '../../shared/widget';
     isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
     isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
-    libraries: mediaDetailsModule.getLibraries(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime,
@@ -194,19 +193,20 @@ class MediaDetailsWidget extends React.Component {
     isExpandedMode: bool,
     toggleExpandedMode: func,
     currentMediaPlayerTime: number,
-    libraries: arrayOf(
-      shape({
-        id: string,
-        name: string
-      })
-    ),
     entities: arrayOf(
       shape({
-        id: string,
-        name: string,
-        libraryId: string,
+        id: string.isRequired,
+        name: string.isRequired,
+        description: string,
         profileImageUrl: string,
-        jsondata: objectOf(string)
+        jsondata: objectOf(string),
+        libraryId: string,
+        library: shape({
+          id: string.isRequired,
+          name: string.isRequired,
+          description: string,
+          coverImageUrl: string
+        })
       })
     ),
     loadContentTemplates: func,
@@ -257,7 +257,6 @@ class MediaDetailsWidget extends React.Component {
   };
 
   static defaultProps = {
-    libraries: [],
     entities: [],
     schemasById: {}
   };
@@ -571,7 +570,6 @@ class MediaDetailsWidget extends React.Component {
       isExpandedMode,
       currentMediaPlayerTime,
       isEditModeEnabled,
-      libraries,
       entities,
       contentTemplates,
       tdo,
@@ -1026,7 +1024,6 @@ class MediaDetailsWidget extends React.Component {
                       <FingerprintEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
                         entities={entities}
-                        libraries={libraries}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
@@ -1105,7 +1102,6 @@ class MediaDetailsWidget extends React.Component {
               tdo={this.props.tdo}
               engineCategories={engineCategories}
               contextMenuExtensions={this.props.contextMenuExtensions}
-              kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
               canEditMedia={this.canEditMedia}
