@@ -1,4 +1,4 @@
-# veritone-oauth-helpers changelog
+# veritone-csp-generator changelog
 
 ## 3.3.3
 
