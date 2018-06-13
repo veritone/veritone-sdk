@@ -65,7 +65,7 @@ class SearchPill extends React.PureComponent {
         >
           {this.props.label}
         </Typography>
-        {this.props.onDelete ? (
+        {this.props.onDelete && (
           <div
             data-attribute="deletePill"
             onClick={this.handleDelete}
@@ -82,7 +82,7 @@ class SearchPill extends React.PureComponent {
               className={styles.deleteIcon}
             />
           </div>
-        ) : null}
+        )}
       </div>
     );
   }
