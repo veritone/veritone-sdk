@@ -19,7 +19,7 @@ const saga = util.reactReduxSaga.saga;
 @saga(transcriptSaga)
 @connect(
   state => ({
-    hasChanged: TranscriptRedux.hasChanged(state),
+    hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state)
   }),
   {
@@ -96,7 +96,7 @@ export default class TranscriptEngineOutputWidget extends Component {
     change: func.isRequired,
     clearData: func.isRequired,
     receiveData: func.isRequired,
-    hasChanged: bool,
+    hasUserEdits: bool,
     outputNullState: node,
     bulkEditEnabled: bool
   };
@@ -125,7 +125,7 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   handleOnEditModeChange = value => {
-    if (this.props.editMode && this.props.hasChanged) {
+    if (this.props.editMode && this.props.hasUserEdits) {
       this.setState({
         alert: true,
         alertConfirmAction: () => {
@@ -141,7 +141,7 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   handleEngineChange = engineId => {
-    if (this.props.editMode && this.props.hasChanged) {
+    if (this.props.editMode && this.props.hasUserEdits) {
       this.setState({
         alert: true,
         alertConfirmAction: () => {

@@ -23,7 +23,7 @@ function* watchContentUndo() {
     if (state && past.length === 0) {
       yield put({
         type: TranscriptRedux.UPDATE_EDIT_STATUS,
-        hasChanged: false
+        hasUserEdits: false
       });
     }
   });
@@ -34,7 +34,7 @@ function* watchContentRedo() {
     action
   ) {
     yield call(TranscriptRedux.redo);
-    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasChanged: true });
+    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: true });
   });
 }
 
@@ -43,7 +43,7 @@ function* watchContentReset() {
     action
   ) {
     yield call(TranscriptRedux.reset);
-    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasChanged: false });
+    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: false });
   });
 }
 
@@ -65,7 +65,7 @@ function* watchContentChange() {
   ) {
     yield put({
       type: TranscriptRedux.UPDATE_EDIT_STATUS,
-      hasChanged: true
+      hasUserEdits: true
     });
 
     unsavedData = action.data;
@@ -87,7 +87,7 @@ function* watchContentClearData() {
       yield call(TranscriptRedux.clearData);
       yield put({
         type: TranscriptRedux.UPDATE_EDIT_STATUS,
-        hasChanged: false
+        hasUserEdits: false
       });
     }
   );
@@ -102,7 +102,7 @@ function* watchContentReceiveData() {
         yield call(TranscriptRedux.receiveData);
         yield put({
           type: TranscriptRedux.UPDATE_EDIT_STATUS,
-          hasChanged: true
+          hasUserEdits: true
         });
       }
     }

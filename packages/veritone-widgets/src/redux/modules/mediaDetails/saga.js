@@ -1419,7 +1419,7 @@ function* watchSelectEngineCategory() {
 
 function* watchTranscriptStatus() {
   yield takeEvery(UPDATE_EDIT_STATUS, function*(action) {
-    yield put(toggleSaveMode(action.hasChanged));
+    yield put(toggleSaveMode(action.hasUserEdits));
   });
 }
 
