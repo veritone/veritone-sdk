@@ -140,9 +140,12 @@ class FaceDetectionBox extends Component {
 
   calculatePopperPlacement = () => {
     let shift = 'start';
-    const distancFromTheSide = window.innerWidth -
-      this._inputRef.getBoundingClientRect().right;
-    if (distancFromTheSide < 250 - this._inputRef.getBoundingClientRect().width) {
+    const distancFromTheSide =
+      window.innerWidth - this._inputRef.getBoundingClientRect().right;
+    if (
+      distancFromTheSide <
+      250 - this._inputRef.getBoundingClientRect().width
+    ) {
       shift = 'end';
     }
     return `bottom-${shift}`;

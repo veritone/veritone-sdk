@@ -13,7 +13,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { pick, head, debounce } from 'lodash';
+import { pick, head } from 'lodash';
 import {
   shape,
   number,
@@ -422,7 +422,7 @@ class FaceEngineOutputContainer extends Component {
           {...this.props.faces}
           {...faceEngineProps}
           onAddNewEntity={this.handleAddNewEntity}
-          onSearchForEntities={debounce(this.handleSearchEntities, 400)}
+          onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
         />
