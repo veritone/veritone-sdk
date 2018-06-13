@@ -408,7 +408,7 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
-  checkSaveSate = () => {
+  checkSaveState = () => {
     if (this.props.isSaveEnabled) {
       this.props.openConfirmModal(this.onSaveEdit, this.props.id);
     } else {
@@ -971,7 +971,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    onClick={this.checkSaveSate}
+                    onClick={this.checkSaveState}
                     aria-label="Back"
                   >
                     <Icon
@@ -998,7 +998,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        onClick={this.checkSaveSate}
+                        onClick={this.checkSaveState}
                       >
                         CANCEL
                       </Button>
