@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { string, object, arrayOf, shape, oneOfType, number } from 'prop-types';
 
-import { SearchPill } from 'veritone-react-common';
+import SearchPill from 'components/SearchPill';
 
 import cx from 'classnames';
 import styles from './styles.scss';
@@ -90,7 +90,7 @@ SearchParameters.defaultProps = {
   level: 0
 };
 
-class SearchBarWithError extends React.Component {
+class SearchBar extends React.Component {
   static propTypes = {
     parameters: arrayOf(
       shape({
@@ -118,4 +118,4 @@ class SearchBarWithError extends React.Component {
   }
 }
 
-export default SearchBarWithError;
+export default SearchBar;
