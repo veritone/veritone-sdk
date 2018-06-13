@@ -40,11 +40,11 @@ class SearchPill extends React.PureComponent {
   render() {
     return (
       <div
-        className={cx([
+        className={cx(
           styles.searchPill,
           { [styles.searchPillWithoutDelete]: !this.props.onDelete },
           this.getBackgroundColor()
-        ])}
+        )}
         onClick={this.props.onClick}
         disabled={this.props.disabled || !this.props.onClick}
       >
