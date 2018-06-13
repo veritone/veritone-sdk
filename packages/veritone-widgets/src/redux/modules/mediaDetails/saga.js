@@ -18,10 +18,15 @@ import {
   find
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
-import { getFaceEngineAssetData, cancelFaceEdits } from './faceEngineOutput';
+import {
+  getFaceEngineAssetData,
+  cancelFaceEdits,
+  fetchEngineResults as fetchFaceEngineResults,
+  ADD_DETECTED_FACE
+} from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
-  RESET as TRANSCRIPT_RESET
+  reset as resetTranscript
 } from './transcriptWidget';
 const { auth: authModule, config: configModule } = modules;
 
@@ -81,7 +86,6 @@ import {
   getEngineCategories
 } from '.';
 
-import { ADD_DETECTED_FACE } from './faceEngineOutput';
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 
 const tdoInfoQueryClause = `id
@@ -756,9 +760,13 @@ function* createFileAssetSaga(
     const updatedCategory = find(engineCategories, {
       categoryType: selectedEngineCategory.categoryType
     });
-    // Extract the user edited engine id. It can be a readable string or uuid.
-    const userGeneratedEngine = find(updatedCategory.engines, {
-      name: 'User Edited'
+    const userGeneratedEngine = find(updatedCategory.engines, engine => {
+      return (
+        engine.id === 'user-edited-face-engine-results' ||
+        engine.id === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd' ||
+        engine.id === 'bulk-edit-transcript' ||
+        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
+      );
     });
     let userGeneratedEngineId;
     if (userGeneratedEngine) {
@@ -766,8 +774,14 @@ function* createFileAssetSaga(
     }
     // Reset the the transcipt engine results.
     if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put({ type: TRANSCRIPT_RESET });
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
+    } else if (selectedEngineCategory.categoryType === 'face' && userGeneratedEngineId) {
+      yield put(
+        fetchFaceEngineResults({
+          selectedEngineId: userGeneratedEngineId,
+          tdo: requestTdo
+        })
+      );
     }
     yield put(toggleEditMode(widgetId, selectedEngineCategory));
     yield put(selectEngineCategory(widgetId, updatedCategory));
@@ -1360,7 +1374,7 @@ function* watchSelectEngineCategory() {
 
 function* watchTranscriptStatus() {
   yield takeEvery(UPDATE_EDIT_STATUS, function*(action) {
-    yield put(toggleSaveMode(action.hasChanged));
+    yield put(toggleSaveMode(action.hasUserEdits));
   });
 }
 
@@ -1503,6 +1517,8 @@ function* watchCancelEdit() {
 
       if (selectedEngineCategory.categoryType === 'face') {
         yield put(cancelFaceEdits());
+      } else if (selectedEngineCategory.categoryType === 'transcript') {
+        yield put(resetTranscript());
       }
     }
   });

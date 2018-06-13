@@ -276,10 +276,10 @@ export const clearData = () => ({ type: CLEAR_DATA });
 export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData });
 export const updateEditStatus = state => ({
   type: UPDATE_EDIT_STATUS,
-  hasChanged: this.hasChanged(state)
+  hasUserEdits: this.hasUserEdits(state)
 });
 export const currentData = state => get(state[transcriptNamespace], 'data');
-export const hasChanged = state => {
+export const hasUserEdits = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
 };
