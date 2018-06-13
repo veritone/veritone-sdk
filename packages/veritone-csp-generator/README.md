@@ -15,8 +15,20 @@ veritone-searchbar (WIP), which is a React component that provides a graphical u
 Once you have a CSP, you can use the `CSPtoV3Query` function exported by this package, to generate a V3 core-search-query. For convenience, the CSPtoV3Query automatically includes any processing jobs or media processed by Veritone.
 
 ```
-  const csp = {"and":[{"state":{"language":"en","search":"\"Kobe Bryant\""},"engineCategoryId":"67cd4dd0-2f75-445d-a6f0-2f297d6cd182"}]};
-  console.log(JSON.stringify(CSPtoV3Query( csp )))
+  const csp = {
+    and: [
+      {
+        state: {
+          language: 'en',
+          search: '"Kobe Bryant"'
+        },
+        engineCategoryId: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182'
+      }
+    ]
+  };
+
+  console.log(JSON.stringify(CSPtoV3Query(csp)));
+
 
   > {
    "query":{
@@ -46,7 +58,7 @@ This CSP would search any processing jobs or files processed by Veritone where `
 
 ## Build
 
-This modules uses ES6 imports. Run `yarn build` to generate a CommonJS and ES6
+This modules uses ES6 imports. Run `yarn build` to generate CommonJS and ES6 bundles.
 
 # License
 
