@@ -198,13 +198,14 @@ export default class TranscriptEngineOutput extends Component {
       contentClassName,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      outputNullState
+      outputNullState,
+      selectedEngineId
     } = this.props;
 
     const currentEditType = onEditTypeChange ? editType : this.state.editType;
 
     return (
-      outputNullState || (
+        outputNullState || (
         <div className={classNames(styles.content)}>
           <TranscriptContent
             data={data}
@@ -219,6 +220,7 @@ export default class TranscriptEngineOutput extends Component {
             onClick={onClick}
             onScroll={onScroll}
             onChange={onChange}
+            selectedEngineId={selectedEngineId}
             className={classNames(contentClassName)}
           />
         </div>

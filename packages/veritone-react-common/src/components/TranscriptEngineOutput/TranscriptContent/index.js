@@ -42,6 +42,7 @@ export default class TranscriptContent extends Component {
       })
     ),
     className: string,
+    selectedEngineId: string,
 
     editMode: bool,
     viewType: string,
@@ -235,6 +236,7 @@ export default class TranscriptContent extends Component {
   renderSnippetSegments = parsedData => {
     const {
       editMode,
+      selectedEngineId,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
@@ -259,6 +261,7 @@ export default class TranscriptContent extends Component {
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
+              selectedEngineId={selectedEngineId}
               classNames={classNames(styles.contentSegment)}
             />
           );
@@ -362,11 +365,12 @@ export default class TranscriptContent extends Component {
           stop: overalStopTime,
           content: (
             <TranscriptBulkEdit
-              key={'transcript-bulk-edit' + overalStopTime}
+              key={'transcript-bulk-edit:' + overalStartTime + '-' + overalStopTime}
               content={overalString}
               onChange={this.handleDataChanged}
               startTimeMs={overalStartTime}
               stopTimeMs={overalStopTime}
+              selectedEngineId={this.props.selectedEngineId}
             />
           )
         });
