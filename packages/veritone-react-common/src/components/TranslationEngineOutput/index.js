@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, func, node } from 'prop-types';
 import classNames from 'classnames';
-import { sortBy } from 'lodash';
+import { sortBy, get } from 'lodash';
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -75,6 +75,8 @@ export default class TranslationEngineOutput extends Component {
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 1000
   };
+
+  state = {};
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.contents !== this.props.contents) {
@@ -184,7 +186,7 @@ export default class TranslationEngineOutput extends Component {
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
-        {this.state.languages.length > 0 && (
+        {get(this.state, 'languages.length') > 0 && (
           <Select
             autoWidth
             value={this.state.selectedLanguage}
