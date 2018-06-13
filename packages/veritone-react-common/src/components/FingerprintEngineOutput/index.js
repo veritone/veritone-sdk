@@ -1,61 +1,73 @@
 import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
-import { keyBy, sortBy, toArray } from 'lodash';
+import { keyBy, sortBy, toArray, cloneDeep } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FingerprintContent from './FingerprintContent';
 import styles from './styles.scss';
 
+const UNKNOWN_ENTITY_TMPL = {
+  name: 'Unknown entity',
+  id: '',
+  libraryId: '',
+  description: 'Unknown entity',
+  profileImageUrl: '//static.veritone.com/veritone-ui/default-nullstate.svg',
+  jsondata: {}
+};
+
+const UNKNOWN_LIBRARY_TMPL = {
+  name: 'Unknown library',
+  id: '',
+  description: 'Unknown library'
+};
+
 export default class FingerprintEngineOutput extends Component {
   static propTypes = {
     title: string,
-
     data: arrayOf(
       shape({
         startTimeMs: number,
         stopTimeMs: number,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
             object: shape({
-              entityId: string,
+              entityId: string.isRequired,
+              libraryId: string,
               confidence: number
             })
           })
         )
       })
     ),
-
     entities: arrayOf(
       shape({
-        name: string,
-        entityId: string.isRequired,
-        libraryId: string,
+        id: string.isRequired,
+        name: string.isRequired,
         description: string,
         profileImageUrl: string,
-        jsondata: shape({})
+        jsondata: shape({}),
+        libraryId: string,
+        library: shape({
+          id: string.isRequired,
+          name: string.isRequired,
+          description: string,
+          coverImageUrl: string
+        })
       })
     ),
-
-    libraries: arrayOf(
-      shape({
-        name: string,
-        libraryId: string.isRequired,
-        description: string
-      })
-    ),
-    onClick: func,
-
     engines: arrayOf(
       shape({
-        sourceEngineId: string,
-        sourceEngineName: string
+        id: string,
+        name: string
       })
     ),
     outputNullState: node,
     selectedEngineId: string,
+
+    onClick: func,
     onEngineChange: func,
     onExpandClick: func,
 
@@ -71,17 +83,17 @@ export default class FingerprintEngineOutput extends Component {
   static defaultProps = {
     data: [],
     entities: [],
-    libraries: [],
     title: 'A/V Fingerprinting',
     mediaPlayerTimeMs: -1,
     mediaPlayerTimeIntervalMs: 0
   };
 
   formatPropsData() {
-    const { data, entities, libraries } = this.props;
+    const { data, entities } = this.props;
 
-    const entitiesMap = keyBy(entities, 'entityId');
-    const librariesMap = keyBy(libraries, 'libraryId');
+    const entitiesMap = keyBy(cloneDeep(entities), 'id'); // deep copy entities to avoid changing original
+    const libraries = entities.filter(entity => entity.library && entity.library.id).map(entity => entity.library);
+    const librariesMap = keyBy(libraries, 'id');
 
     sortBy(data, 'startTimeMs', 'endTimeMs');
     data.forEach(dataChunk => {
@@ -91,28 +103,29 @@ export default class FingerprintEngineOutput extends Component {
         series.forEach(entry => {
           if (entry.object && entry.object.entityId) {
             const entityId = entry.object.entityId;
+            if (!entitiesMap[entityId]) {
+              const unknownEntity = Object.assign({}, UNKNOWN_ENTITY_TMPL);
+              unknownEntity.id = entityId;
+              unknownEntity.libraryId = entry.object.libraryId;
+              entitiesMap[entityId] = unknownEntity;
+            }
             const entity = entitiesMap[entityId];
-            if (entity) {
-              // entry match with a valid entity
-              const libraryId = entity.libraryId;
-              const library = librariesMap[libraryId];
-              if (library) {
-                entity.matches
-                  ? entity.matches.push(entry)
-                  : (entity.matches = [entry]); // Add entry to matching entity
-
-                if (!entity.libraryName) {
-                  // Entity hasn't been registered to any library object
-                  library.entities
-                    ? library.entities.push(entity)
-                    : (library.entities = [entity]); // Add entity to matching library
-                  entity.libraryName = library.name;
-                }
-              } else {
-                // Ignore Unknow Library (for now)
-              }
-            } else {
-              // Ignore Unknow Entity (for now)
+            const libraryId = entity.libraryId;
+            if (!librariesMap[libraryId]) {
+              const unknownLibrary = Object.assign({}, UNKNOWN_LIBRARY_TMPL);
+              unknownLibrary.id = libraryId;
+              librariesMap[libraryId] = unknownLibrary;
+            }
+            const library = librariesMap[libraryId];
+            entity.matches
+              ? entity.matches.push(entry)
+              : (entity.matches = [entry]); // Add entry to matching entity
+            if (!entity.libraryName) {
+              // Entity hasn't been registered to any library object
+              library.entities
+                ? library.entities.push(entity)
+                : (library.entities = [entity]); // Add entity to matching library
+              entity.libraryName = library.name;
             }
           }
         });

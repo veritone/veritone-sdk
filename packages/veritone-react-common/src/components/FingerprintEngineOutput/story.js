@@ -105,8 +105,9 @@ function genEntities(numEntities, libraries) {
       name: randomName + '-' + index,
       profileImageUrl: randomLogo,
       description: 'description...',
-      entityId: 'entity-' + index,
-      libraryId: libraries[randomLibIndex].libraryId,
+      id: 'entity-' + index,
+      libraryId: libraries[randomLibIndex].id,
+      library: libraries[randomLibIndex],
       jsondata: {
         advertiser: 'bla bla bla',
         spotType: 'voice',
@@ -138,7 +139,7 @@ function genLibraries(numLibs) {
       const randomName = libNames.splice(randomNameIndex, 1)[0];
       libs.push({
         name: randomName,
-        libraryId: 'lib-' + index,
+        id: 'lib-' + index,
         description: 'Lib Description Goes Here'
       });
     }

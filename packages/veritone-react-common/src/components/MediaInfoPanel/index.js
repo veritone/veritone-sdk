@@ -5,7 +5,16 @@ import { get } from 'lodash';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import { Manager, Target, Popper } from 'react-popper';
 import { func, arrayOf, shape, string, bool } from 'prop-types';
+import EditIcon from '@material-ui/icons/Edit';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import EditTagsDialog from './EditTagsDialog';
+import EditMetadataDialog from './EditMetadataDialog';
 import styles from './styles.scss';
 
 class MediaInfoPanel extends Component {
@@ -55,18 +64,16 @@ class MediaInfoPanel extends Component {
         )
       })
     ).isRequired,
-    kvp: shape({
-      features: shape({
-        downloadMedia: string,
-        downloadPublicMedia: string
-      }),
-      applicationIds: arrayOf(string)
-    }).isRequired,
+    canEditMedia: func.isRequired,
+    onSaveMetadata: func.isRequired,
     onClose: func
   };
 
   state = {
-    isOpen: true
+    isOpen: true,
+    isMenuOpen: false,
+    isEditMetadataOpen: false,
+    isEditTagsOpen: false
   };
 
   toggleIsOpen = () => {
@@ -78,29 +85,9 @@ class MediaInfoPanel extends Component {
     this.props.onClose();
   };
 
-  isMediaPublic = () => {
-    if (!get(this.props.tdo, 'security.global', false)) {
-      return false;
-    }
-    if (this.props.tdo.isPublic === false) {
-      return false;
-    }
-    return true;
+  setMenuTarget = node => {
+    this.target1 = node;
   };
-
-  isOwnMedia() {
-    if (this.props.tdo.isOwn === true) {
-      return true;
-    }
-    const applicationIds = get(this.props.kvp, 'applicationIds', []);
-    if (
-      this.props.tdo.applicationId &&
-      applicationIds.includes(this.props.tdo.applicationId)
-    ) {
-      return true;
-    }
-    return false;
-  }
 
   toFormattedDate = dateString => {
     if (!dateString || !dateString.length) {
@@ -138,12 +125,80 @@ class MediaInfoPanel extends Component {
     }`;
   };
 
+  onEditTagsOpen = () => {
+    this.onMenuClose();
+    this.toggleIsEditTagsOpen();
+  };
+
+  onSaveMetadata = metadataToSave => {
+    this.toggleIsEditMetadataOpen();
+    if (!metadataToSave) {
+      return;
+    }
+    this.props.onSaveMetadata(metadataToSave);
+  };
+
+  toggleIsEditMetadataOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
+      };
+    });
+  };
+
+  onSaveTags = tagsToSave => {
+    this.toggleIsEditTagsOpen();
+    if (!tagsToSave) {
+      return;
+    }
+    this.props.onSaveMetadata({ tags: tagsToSave });
+  };
+
+  toggleIsEditTagsOpen = () => {
+    this.setState(prevState => {
+      return {
+        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
+      };
+    });
+  };
+
+  onMenuClose = event => {
+    if (event && this.target1.contains(event.target)) {
+      return;
+    }
+    this.setState({ isMenuOpen: false });
+  };
+
+  onMetadataOpen = () => {
+    this.onMenuClose();
+    this.toggleIsEditMetadataOpen();
+  };
+
+  toggleIsMenuOpen = () => {
+    this.setState(prevState => {
+      return {
+        isMenuOpen: !{ ...prevState }.isMenuOpen
+      };
+    });
+  };
+
   render() {
-    const {
-      isOpen
-    } = this.state;
+    const { isOpen, isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
 
     const { tdo } = this.props;
+
+    const metadata = {
+      ...tdo.details,
+      veritoneProgram: {
+        ...tdo.details.veritoneProgram,
+        programImage:
+          tdo.sourceImageUrl ||
+          get(tdo, 'details.veritoneProgram.programImage'),
+        programLiveImage:
+          tdo.thumbnailUrl ||
+          get(tdo, 'details.veritoneProgram.programLiveImage')
+      }
+    };
 
     const contentElement = (
       <div className={styles.mediaInfoPanel}>
@@ -151,6 +206,70 @@ class MediaInfoPanel extends Component {
           <div className={styles.infoPanelHeader}>
             <span>Metadata</span>
             <div className={styles.headerMenu}>
+              {this.props.canEditMedia() && (
+                <Tooltip
+                  id="tooltip-show-edit-menu"
+                  title="Edit"
+                  PopperProps={{
+                    style: {
+                      pointerEvents: 'none',
+                      marginTop: '5px',
+                      top: '-20px'
+                    }
+                  }}
+                >
+                  <Manager>
+                    <Target>
+                      <div ref={this.setMenuTarget}>
+                        <IconButton
+                          className={styles.pageHeaderActionButton}
+                          aria-label="Edit"
+                          aria-haspopup="true"
+                          aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                          onClick={this.toggleIsMenuOpen}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </div>
+                    </Target>
+                    {isMenuOpen && (
+                      <Popper
+                        className={styles.popperContent}
+                        placement="bottom-end"
+                        eventsEnabled={isMenuOpen}
+                      >
+                        <ClickAwayListener onClickAway={this.onMenuClose}>
+                          <Grow
+                            in={isMenuOpen}
+                            id="menu-list-grow"
+                            style={{ transformOrigin: '0 0 0' }}
+                          >
+                            <Paper>
+                              <MenuList role="menu">
+                                <MenuItem
+                                  classes={{ root: styles.headerMenuItem }}
+                                  onClick={this.onMetadataOpen}
+                                >
+                                  Edit Metadata
+                                </MenuItem>
+                                <MenuItem
+                                  classes={{ root: styles.headerMenuItem }}
+                                  onClick={this.onEditTagsOpen}
+                                >
+                                  Edit Tags
+                                </MenuItem>
+                              </MenuList>
+                            </Paper>
+                          </Grow>
+                        </ClickAwayListener>
+                      </Popper>
+                    )}
+                  </Manager>
+                </Tooltip>
+              )}
+              {this.props.canEditMedia() && (
+                <div className={styles.pageHeaderActionButtonsSeparator} />
+              )}
               <IconButton
                 className={styles.closeButton}
                 onClick={this.toggleIsOpen}
@@ -175,17 +294,18 @@ class MediaInfoPanel extends Component {
                 </div>
               </div>
             )}
-            {tdo.startDateTime && tdo.stopDateTime && (
-              <div className={styles.infoField}>
-                <div className={styles.infoFieldLabel}>Duration</div>
-                <div className={styles.infoFieldData}>
-                  {this.differenceToHhMmSs(
-                    tdo.startDateTime,
-                    tdo.stopDateTime
-                  )}
+            {tdo.startDateTime &&
+              tdo.stopDateTime && (
+                <div className={styles.infoField}>
+                  <div className={styles.infoFieldLabel}>Duration</div>
+                  <div className={styles.infoFieldData}>
+                    {this.differenceToHhMmSs(
+                      tdo.startDateTime,
+                      tdo.stopDateTime
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             {this.props.engineCategories &&
               this.props.engineCategories.length && (
                 <div className={styles.infoField}>
@@ -206,11 +326,37 @@ class MediaInfoPanel extends Component {
                   </div>
                 </div>
               )}
-            {get(tdo, 'details.tags.length', 0) > 0 && (
+            {get(tdo, 'details.tags', []).filter(
+              item => !item.hasOwnProperty('redactionStatus')
+            ).length > 0 && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Tags</div>
                 <div className={styles.infoFieldData}>
-                  {tdo.details.tags.map(tag => tag.value).join(', ')}
+                  {tdo.details.tags
+                    .filter(item => !item.hasOwnProperty('redactionStatus'))
+                    .map(tag => {
+                      if (tag.hasOwnProperty('value')) {
+                        return tag.value;
+                      } else if (Object.keys(tag).length) {
+                        const tagKey = Object.keys(tag)[0];
+                        return `${tagKey}:${tag[tagKey]}`;
+                      }
+                    })
+                    .join(', ')}
+                </div>
+              </div>
+            )}
+            {get(tdo, 'details.tags', []).some(item =>
+              item.hasOwnProperty('redactionStatus')
+            ) && (
+              <div className={styles.infoField}>
+                <div className={styles.infoFieldLabel}>Redaction Status</div>
+                <div className={styles.infoFieldData}>
+                  {
+                    tdo.details.tags.find(item =>
+                      item.hasOwnProperty('redactionStatus')
+                    ).redactionStatus
+                  }
                 </div>
               </div>
             )}
@@ -238,6 +384,26 @@ class MediaInfoPanel extends Component {
             </div>
           </Paper>
         </div>
+        {tdo &&
+          tdo.details &&
+          isEditMetadataOpen && (
+            <EditMetadataDialog
+              isOpen={isEditMetadataOpen}
+              metadata={metadata}
+              onClose={this.toggleIsEditMetadataOpen}
+              onSave={this.onSaveMetadata}
+            />
+          )}
+        {tdo &&
+          tdo.details &&
+          isEditTagsOpen && (
+            <EditTagsDialog
+              isOpen={isEditTagsOpen}
+              tags={tdo.details.tags}
+              onClose={this.toggleIsEditTagsOpen}
+              onSave={this.onSaveTags}
+            />
+          )}
       </div>
     );
 

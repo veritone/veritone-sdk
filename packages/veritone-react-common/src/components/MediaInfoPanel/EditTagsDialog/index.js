@@ -8,6 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Input from '@material-ui/core/Input';
+import { get } from 'lodash';
 import { string, arrayOf, bool, func, shape } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
@@ -156,15 +157,30 @@ class EditTagsDialog extends Component {
           </DialogContentText>
           <div className={styles.tagsLabel}>Tags</div>
           <div className={styles.tagsSection}>
-            {this.state.tags &&
-              this.state.tags.map(tag => (
-                <TagPill
-                  className={styles.tagPill}
-                  key={tag.value}
-                  text={tag.value}
-                  onRemove={this.onRemoveTag}
-                />
-              ))}
+            {get(this.state, 'tags', []).filter(
+              item => !item.hasOwnProperty('redactionStatus')
+            ).length > 0 &&
+              get(this.state, 'tags', [])
+                .filter(item => !item.hasOwnProperty('redactionStatus'))
+                .map(tag => {
+                  if (tag.hasOwnProperty('value')) {
+                    return (
+                      <TagPill
+                        key={tag.value}
+                        text={tag.value}
+                        onRemove={this.onRemoveTag}
+                      />
+                    );
+                  } else if (Object.keys(tag).length) {
+                    const tagKey = Object.keys(tag)[0];
+                    return (
+                      <TagPill
+                        key={`${tagKey}:${tag[tagKey]}`}
+                        text={`${tagKey}:${tag[tagKey]}`}
+                      />
+                    );
+                  }
+                })}
             {!this.state.newTagTextAreaVisible && (
               <span
                 onClick={this.enableNewTagTextArea}

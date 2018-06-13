@@ -44,9 +44,6 @@ export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
 export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
 export const TOGGLE_EXPANDED_MODE = 'TOGGLE_EXPANDED_MODE';
-export const REQUEST_LIBRARIES = 'REQUEST_LIBRARIES';
-export const REQUEST_LIBRARIES_SUCCESS = 'REQUEST_LIBRARIES_SUCCESS';
-export const REQUEST_LIBRARIES_FAILURE = 'REQUEST_LIBRARIES_FAILURE';
 export const REQUEST_ENTITIES = 'REQUEST_ENTITIES';
 export const REQUEST_ENTITIES_SUCCESS = 'REQUEST_ENTITIES_SUCCESS';
 export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
@@ -80,8 +77,6 @@ const defaultMDPState = {
   selectedEngineId: null,
   isEditModeEnabled: false,
   isExpandedMode: false,
-  libraries: [],
-  fetchingLibraries: false,
   entities: [],
   fetchingEntities: false,
   contentTemplates: {},
@@ -655,57 +650,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES](
-    state,
-    {
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingLibraries: true
-      }
-    };
-  },
-  [REQUEST_LIBRARIES_SUCCESS](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    const allLibraries = uniqBy(
-      values(payload).concat(state[widgetId].libraries),
-      'id'
-    );
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingLibraries: false,
-        fetchLibrariesError: null,
-        libraries: allLibraries
-      }
-    };
-  },
-  [REQUEST_LIBRARIES_FAILURE](
-    state,
-    {
-      error,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchLibrariesError: error,
-        fetchingLibraries: false
-      }
-    };
-  },
   [REQUEST_ENTITIES](
     state,
     {
@@ -716,7 +660,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        fetchingLibraries: true
+        fetchingEntities: true
       }
     };
   },
@@ -735,9 +679,26 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        fetchingLibraries: false,
-        fetchLibrariesError: null,
+        fetchingEntities: false,
+        error: null,
         entities: allEntities
+      }
+    };
+  },
+  [REQUEST_ENTITIES_FAILURE](
+    state,
+    {
+      error,
+      meta: { widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'unknown error',
+        fetchingEntities: false
       }
     };
   },
@@ -865,8 +826,6 @@ export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isExpandedMode']);
-export const getLibraries = (state, widgetId) =>
-  get(local(state), [widgetId, 'libraries']);
 export const getEntities = (state, widgetId) =>
   get(local(state), [widgetId, 'entities']);
 export const getContentTemplates = (state, widgetId) =>
