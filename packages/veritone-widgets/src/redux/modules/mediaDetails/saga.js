@@ -12,7 +12,8 @@ import { modules } from 'veritone-redux-common';
 import {
   getFaceEngineAssetData,
   cancelFaceEdits,
-  fetchEngineResults as fetchFaceEngineResults
+  fetchEngineResults as fetchFaceEngineResults,
+  ADD_DETECTED_FACE
 } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
@@ -79,9 +80,6 @@ import {
   getEngineCategories
 } from '.';
 
-import {
-  ADD_DETECTED_FACE
-} from './faceEngineOutput';
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
 
 const tdoInfoQueryClause = `id
