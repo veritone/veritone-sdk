@@ -9,7 +9,7 @@ const FaceConditionGenerator = modalState => {
       'face-recognition.series.' +
       (modalState.type === 'entity' ? 'entityId' : 'libraryId'),
     value: modalState.id,
-    not: modalState.excludeinclud === true
+    not: modalState.exclude === true
   };
 };
 
