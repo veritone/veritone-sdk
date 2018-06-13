@@ -295,7 +295,7 @@ export default class TranscriptContent extends Component {
     } = this.props;
 
     const stopMediaPlayHeadMs = mediaPlayerTimeMs + mediaPlayerTimeIntervalMs;
-    const overviewSegments = parsedData.overviewSegments.map((segmentData) => {
+    const overviewSegments = parsedData.overviewSegments.map(segmentData => {
       const segmentStartTime = segmentData.startTimeMs;
       const segmentStopTime = segmentData.stopTimeMs;
 
@@ -344,39 +344,48 @@ export default class TranscriptContent extends Component {
     let overalStopTime = 0;
     let overalString = '';
 
-    const overviewSegments = reduce(parsedData.overviewSegments, (memo, segmentData, segmentIndex) => {
-      const segmentStartTime = segmentData.startTimeMs;
-      const segmentStopTime = segmentData.stopTimeMs;
+    const overviewSegments = reduce(
+      parsedData.overviewSegments,
+      (memo, segmentData, segmentIndex) => {
+        const segmentStartTime = segmentData.startTimeMs;
+        const segmentStopTime = segmentData.stopTimeMs;
 
-      overalStartTime > segmentStartTime &&
-        (overalStartTime = segmentStartTime);
-      overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
+        overalStartTime > segmentStartTime &&
+          (overalStartTime = segmentStartTime);
+        overalStopTime < segmentStopTime && (overalStopTime = segmentStopTime);
 
-      if (segmentData.status === 'success') {
-        overalString = overalString + segmentData.sentences;
-      } else {
-        overalString = overalString + '\n\n\n';
-      }
+        if (segmentData.status === 'success') {
+          overalString = overalString + segmentData.sentences;
+        } else {
+          overalString = overalString + '\n\n\n';
+        }
 
-      if (segmentIndex === parsedData.overviewSegments.length - 1) {
-        // Reach the last segment
-        memo.push({
-          start: overalStartTime,
-          stop: overalStopTime,
-          content: (
-            <TranscriptBulkEdit
-              key={'transcript-bulk-edit:' + overalStartTime + '-' + overalStopTime}
-              content={overalString}
-              onChange={this.handleDataChanged}
-              startTimeMs={overalStartTime}
-              stopTimeMs={overalStopTime}
-              selectedEngineId={this.props.selectedEngineId}
-            />
-          )
-        });
-      }
-      return memo;
-    }, []);
+        if (segmentIndex === parsedData.overviewSegments.length - 1) {
+          // Reach the last segment
+          memo.push({
+            start: overalStartTime,
+            stop: overalStopTime,
+            content: (
+              <TranscriptBulkEdit
+                key={
+                  'transcript-bulk-edit:' +
+                  overalStartTime +
+                  '-' +
+                  overalStopTime
+                }
+                content={overalString}
+                onChange={this.handleDataChanged}
+                startTimeMs={overalStartTime}
+                stopTimeMs={overalStopTime}
+                selectedEngineId={this.props.selectedEngineId}
+              />
+            )
+          });
+        }
+        return memo;
+      },
+      []
+    );
 
     return overviewSegments;
   };

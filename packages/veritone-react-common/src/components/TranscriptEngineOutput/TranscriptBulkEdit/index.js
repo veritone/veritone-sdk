@@ -20,19 +20,20 @@ export default class TranscriptBulkEdit extends Component {
   };
 
   state = {
-    content: this.props.content,
+    content: this.props.content
   };
 
-  static getDerivedStateFromProps (nextProps, currentState) {
+  static getDerivedStateFromProps(nextProps, currentState) {
     const newContent = nextProps.content !== currentState.content;
-    const newEngine = nextProps.selectedEngineId !== currentState.selectedEngineId;
+    const newEngine =
+      nextProps.selectedEngineId !== currentState.selectedEngineId;
 
     if (newContent && newEngine) {
       return {
-        ...currentState, 
+        ...currentState,
         content: nextProps.content,
         selectedEngineId: nextProps.selectedEngineId
-      }
+      };
     }
 
     return null;

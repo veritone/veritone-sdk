@@ -54,7 +54,7 @@ export default class SnippetFragment extends Component {
     const { startTimeMs, stopTimeMs } = this.props;
     const newVal = event.target.textContent;
     const newStartTime = startTimeMs; //These 2 are the same for now. We will have options to edit time in the future
-    const newStopTime = stopTimeMs;   //These 2 are the same for now. We will have options to edit time in the future
+    const newStopTime = stopTimeMs; //These 2 are the same for now. We will have options to edit time in the future
     this.triggerOnChange(newVal, newStartTime, newStopTime, true);
   };
 

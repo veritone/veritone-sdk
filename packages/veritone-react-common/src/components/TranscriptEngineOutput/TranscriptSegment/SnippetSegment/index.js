@@ -48,7 +48,7 @@ export default class SnippetSegment extends Component {
     }
   };
 
-  handleSnippetChange = (entryData) => {
+  handleSnippetChange = entryData => {
     const { editMode, onChange } = this.props;
 
     if (editMode && onChange) {
@@ -83,7 +83,9 @@ export default class SnippetSegment extends Component {
 
       return (
         <SnippetFragment
-          key={'snippet::' + selectedEngineId + '-' + startTime + '-' + stopTime}
+          key={
+            'snippet::' + selectedEngineId + '-' + startTime + '-' + stopTime
+          }
           value={entry.value}
           active={
             !(
@@ -141,7 +143,7 @@ export default class SnippetSegment extends Component {
 
   render() {
     const { className, sentenceMode } = this.props;
-  
+
     return (
       <div className={classNames(styles.transcriptSegment, className)}>
         {this.renderTime()}
