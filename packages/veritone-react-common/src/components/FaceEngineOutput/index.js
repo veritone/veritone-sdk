@@ -3,6 +3,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Snackbar from '@material-ui/core/Snackbar';
 import {
   shape,
   number,
@@ -93,7 +94,9 @@ class FaceEngineOutput extends Component {
 
   state = {
     activeTab: 'faceRecognition',
-    viewMode: 'summary'
+    viewMode: 'summary',
+    showFaceDetectionDoneSnack: false,
+    faceDetectionDoneEntity: null,
   };
 
   handleTabChange = (event, activeTab) => {
@@ -108,6 +111,26 @@ class FaceEngineOutput extends Component {
     });
   };
 
+  closeFaceDetectionDoneSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    this.setState({
+      showFaceDetectionDoneSnack: false,
+      faceDetectionDoneEntity: null
+    });
+  };
+
+  handleEditFaceDetection = (face, entity) => {
+    if (this.props.onEditFaceDetection) {
+      this.props.onEditFaceDetection(face, entity);
+    }
+    this.setState({
+      showFaceDetectionDoneSnack: true,
+      faceDetectionDoneEntity: entity
+    });
+  };
+
   render() {
     const {
       editMode,
@@ -117,7 +140,6 @@ class FaceEngineOutput extends Component {
       onFaceOccurrenceClicked,
       currentMediaPlayerTime,
       onRemoveFaceDetection,
-      onEditFaceDetection,
       onSearchForEntities,
       engines,
       selectedEngineId,
@@ -125,7 +147,11 @@ class FaceEngineOutput extends Component {
       onExpandClick,
       outputNullState
     } = this.props;
-    const { viewMode } = this.state;
+    const {
+      viewMode,
+      showFaceDetectionDoneSnack,
+      faceDetectionDoneEntity
+    } = this.state;
 
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -204,9 +230,20 @@ class FaceEngineOutput extends Component {
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
                 onRemoveFaceDetection={onRemoveFaceDetection}
-                onEditFaceDetection={onEditFaceDetection}
+                onEditFaceDetection={this.handleEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
                 isSearchingEntities={this.props.isSearchingEntities}
+              />
+              <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={showFaceDetectionDoneSnack}
+                autoHideDuration={3000}
+                onClose={this.closeFaceDetectionDoneSnack}
+                message={
+                  <span className={styles.faceDetectionDoneSnackbarContentText}>
+                    {`${faceDetectionDoneEntity && faceDetectionDoneEntity.name ? faceDetectionDoneEntity.name : ''} has been added as a person for this file`}
+                  </span>
+                }
               />
             </div>
           )}
