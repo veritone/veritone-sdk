@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, number, string, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
-import { sortBy } from 'lodash';
+import { sortBy, kebabCase, get } from 'lodash';
 
 import { msToReadableString } from '../../helpers/time';
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -115,6 +115,10 @@ export default class LogoDetectionEngineOutput extends Component {
             const stopTime = Math.ceil(itemInfo.stopTimeMs / 1000) * 1000;
             const startTimeString = msToReadableString(itemInfo.startTimeMs);
             const stopTimeString = msToReadableString(itemInfo.stopTimeMs);
+            const timeRangeKeyPart = `${itemInfo.startTimeMs}-${itemInfo.stopTimeMs}`;
+            const boundingPoly = get(itemInfo.object, 'boundingPoly', []);
+            const boundingPolyKeyPart = boundingPoly.length ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}` : '';
+            const pillKey = `logo-pill-${kebabCase(itemInfo.object.label)}-${timeRangeKeyPart}-${itemInfo.confidence}-${boundingPolyKeyPart}`;
             const logoItem = (
               <PillButton
                 value={index}
@@ -123,9 +127,7 @@ export default class LogoDetectionEngineOutput extends Component {
                 className={classNames(styles.item, entryClassName)}
                 labelClassName={classNames(styles.label, entryLabelClassName)}
                 infoClassName={entryInfoClassName}
-                key={`logo-${itemInfo.startTimeMs}-${itemInfo.stopTimeMs}-${
-                  itemInfo.object.label
-                }`}
+                key={pillKey}
                 onClick={this.handleEntrySelected}
                 data={itemInfo}
                 highlight={
