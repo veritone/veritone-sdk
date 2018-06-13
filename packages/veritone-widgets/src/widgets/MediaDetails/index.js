@@ -914,10 +914,6 @@ class MediaDetailsWidget extends React.Component {
               {get(tdo, 'id') &&
                 !(
                   get(selectedEngineCategory, 'categoryType') ===
-                    'transcript' && isEditModeEnabled
-                ) &&
-                !(
-                  get(selectedEngineCategory, 'categoryType') ===
                     'correlation' && isExpandedMode
                 ) && (
                   <div className={styles.mediaView}>
