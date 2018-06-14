@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { isEqual, noop } from 'lodash';
+import { get, isEqual, orderBy, noop } from 'lodash';
 
 import { connect } from 'react-redux';
 import { util } from 'veritone-redux-common';
@@ -108,11 +108,18 @@ export default class TranscriptEngineOutputWidget extends Component {
     alertConfirmAction: noop
   };
 
-  static getDerivedStateFromProps(nextProps, prevState) {
+
+  static getDerivedStateFromProps (nextProps, prevState) {
+    const nextData = get(nextProps, 'data'); 
+    nextData && nextData.map((chunk) => {
+      chunk.series && chunk.series.map((snippet) => {
+        const words = snippet.words;
+        words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
+      });
+    });
+
     const prevProps = prevState.props;
-    const hasNewData = !isEqual(prevProps.data, nextProps.data);
-    const hasInitialData = isEqual(prevProps.currentData, nextProps.data);
-    (hasNewData || !hasInitialData) && prevProps.receiveData(nextProps.data);
+    !isEqual(prevProps.data, nextData) && prevProps.receiveData(nextData);
     return { ...prevState, props: nextProps };
   }
 
