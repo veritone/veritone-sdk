@@ -76,6 +76,8 @@ export default class TranslationEngineOutput extends Component {
     mediaPlayerTimeIntervalMs: 1000
   };
 
+  state = {};
+
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.contents !== this.props.contents) {
       this.setLanguageOptions();

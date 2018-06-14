@@ -72,7 +72,7 @@
 .autoCompleteDropdown {
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  max-height: 350px;
 }
 
 .entitySearchInput {
@@ -92,6 +92,7 @@
   height: 24px;
   font-size: 14px;
   line-height: 24px;
+  margin: 12px 0;
 }
 
 .entityMenuItem {

@@ -7,6 +7,7 @@ import {
   takeLatest,
   select
 } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import { get, isUndefined, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import * as faceEngineOutput from '.';
@@ -153,6 +154,7 @@ function* searchForEntities(action) {
     }
 
     yield put(faceEngineOutput.fetchingEntitySearchResults());
+    yield delay(400);
 
     const response = yield call(callGraphQLApi, {
       endpoint: graphQLUrl,
