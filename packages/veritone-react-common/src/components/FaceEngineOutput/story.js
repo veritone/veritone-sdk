@@ -60,7 +60,7 @@ class FaceEngineOutputStory extends Component {
     ],
     selectedEngineId: 'f44aa80e-4650-c55c-58e7-49c965019790'
   };
-  
+
   static getDerivedStateFromProps(nextProps, prevState) {
     const unrecognizedFaces = [];
     const recognizedFaces = {};

@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
-import { pick, head, debounce, get } from 'lodash';
+import { pick, head, get } from 'lodash';
 import {
   shape,
   number,
@@ -521,7 +521,7 @@ class FaceEngineOutputContainer extends Component {
           {...faceEngineProps}
           onEngineChange={this.handleEngineChange}
           onAddNewEntity={this.handleAddNewEntity}
-          onSearchForEntities={debounce(this.handleSearchEntities, 400)}
+          onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
         />
