@@ -123,10 +123,6 @@ export default class TranscriptEngineOutputWidget extends Component {
     return { ...prevState, props: nextProps };
   }
 
-  componentWillUnmount() {
-    this.props.clearData && this.props.clearData();
-  }
-
   handleContentChanged = value => {
     this.props.change(value);
   };
