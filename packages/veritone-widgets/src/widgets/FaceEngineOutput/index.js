@@ -13,7 +13,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { pick, head, debounce } from 'lodash';
+import Snackbar from '@material-ui/core/Snackbar';
+import { pick, head, debounce, get } from 'lodash';
 import {
   shape,
   number,
@@ -165,7 +166,9 @@ class FaceEngineOutputContainer extends Component {
     newEntity: {
       libraryId: '',
       name: ''
-    }
+    },
+    showFaceDetectionDoneSnack: false,
+    faceDetectionDoneEntity: null
   };
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -206,6 +209,8 @@ class FaceEngineOutputContainer extends Component {
       currentlyEditedFace,
       selectedEntity
     );
+
+    this.showFaceDetectionDoneSnack(selectedEntity);
   };
 
   handleAddNewEntity = currentlyEditedFace => {
@@ -281,7 +286,26 @@ class FaceEngineOutputContainer extends Component {
       }
     );
 
+    this.showFaceDetectionDoneSnack(entity);
+
     return this.closeDialog();
+  };
+
+  showFaceDetectionDoneSnack = (entity) => {
+    this.setState({
+      showFaceDetectionDoneSnack: true,
+      faceDetectionDoneEntity: entity
+    });
+  };
+
+  closeFaceDetectionDoneSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    this.setState({
+      showFaceDetectionDoneSnack: false,
+      faceDetectionDoneEntity: null
+    });
   };
 
   renderAddNewEntityModal = () => {
@@ -440,6 +464,28 @@ class FaceEngineOutputContainer extends Component {
     );
   };
 
+  renderFaceDetectionDoneSnackbar = () => {
+    const {
+      showFaceDetectionDoneSnack,
+      faceDetectionDoneEntity
+    } = this.state;
+    const entityName = get(faceDetectionDoneEntity, 'name', '');
+
+    return (
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={showFaceDetectionDoneSnack}
+        autoHideDuration={3000}
+        onClose={this.closeFaceDetectionDoneSnack}
+        message={
+          <span className={styles.faceDetectionDoneSnackbarContentText}>
+            {`${entityName} has been added as a person for this file`}
+          </span>
+        }
+      />
+    );
+  };
+
   render() {
     const faceEngineProps = pick(this.props, [
       'editMode',
@@ -481,6 +527,7 @@ class FaceEngineOutputContainer extends Component {
         />
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}
+        {this.renderFaceDetectionDoneSnackbar()}
       </Fragment>
     );
   }
