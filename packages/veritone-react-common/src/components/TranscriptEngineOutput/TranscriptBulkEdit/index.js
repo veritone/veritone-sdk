@@ -11,7 +11,8 @@ export default class TranscriptBulkEdit extends Component {
     stopTimeMs: number,
     onChange: func,
     changeOnBlur: bool,
-    className: string
+    className: string,
+    selectedEngineId: string
   };
 
   static defaultProps = {
@@ -21,6 +22,22 @@ export default class TranscriptBulkEdit extends Component {
   state = {
     content: this.props.content
   };
+
+  static getDerivedStateFromProps(nextProps, currentState) {
+    const newContent = nextProps.content !== currentState.content;
+    const newEngine =
+      nextProps.selectedEngineId !== currentState.selectedEngineId;
+
+    if (newContent && newEngine) {
+      return {
+        ...currentState,
+        content: nextProps.content,
+        selectedEngineId: nextProps.selectedEngineId
+      };
+    }
+
+    return null;
+  }
 
   handleOnChange = event => {
     this.setState({

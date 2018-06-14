@@ -116,13 +116,14 @@ export default class TranscriptEngineOutput extends Component {
           control={<Radio color="primary" />}
           label="Snippet Edit"
         />
-        {this.props.bulkEditEnabled &&
+        {this.props.bulkEditEnabled && (
           <FormControlLabel
             value={Edit.BULK}
             className={styles.label}
             control={<Radio color="primary" />}
             label="Bulk Edit"
-          />}
+          />
+        )}
       </RadioGroup>
     );
   }
@@ -198,7 +199,8 @@ export default class TranscriptEngineOutput extends Component {
       contentClassName,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs,
-      outputNullState
+      outputNullState,
+      selectedEngineId
     } = this.props;
 
     const currentEditType = onEditTypeChange ? editType : this.state.editType;
@@ -219,6 +221,7 @@ export default class TranscriptEngineOutput extends Component {
             onClick={onClick}
             onScroll={onScroll}
             onChange={onChange}
+            selectedEngineId={selectedEngineId}
             className={classNames(contentClassName)}
           />
         </div>
