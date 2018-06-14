@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy } from 'lodash';
-
+import { get, isEqual, orderBy, noop } from 'lodash';
 
 import { connect } from 'react-redux';
 import { util } from 'veritone-redux-common';
@@ -20,7 +19,7 @@ const saga = util.reactReduxSaga.saga;
 @saga(transcriptSaga)
 @connect(
   state => ({
-    hasChanged: TranscriptRedux.hasChanged(state),
+    hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state)
   }),
   {
@@ -97,7 +96,7 @@ export default class TranscriptEngineOutputWidget extends Component {
     change: func.isRequired,
     clearData: func.isRequired,
     receiveData: func.isRequired,
-    hasChanged: bool,
+    hasUserEdits: bool,
     outputNullState: node,
     bulkEditEnabled: bool
   };
@@ -105,7 +104,8 @@ export default class TranscriptEngineOutputWidget extends Component {
   state = {
     alert: false,
     editMode: TranscriptEditMode.SNIPPET,
-    props: this.props
+    props: this.props,
+    alertConfirmAction: noop
   };
 
 
@@ -132,10 +132,12 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   handleOnEditModeChange = value => {
-    if (this.props.hasChanged) {
+    if (this.props.editMode && this.props.hasUserEdits) {
       this.setState({
         alert: true,
-        pendingEditMode: value.type
+        alertConfirmAction: () => {
+          this.setState({ editMode: value.type });
+        }
       });
     } else {
       this.setState({
@@ -145,22 +147,33 @@ export default class TranscriptEngineOutputWidget extends Component {
     }
   };
 
-  handleAlertConfirm = value => {
-    if (value === 'cancel') {
+  handleEngineChange = engineId => {
+    if (this.props.editMode && this.props.hasUserEdits) {
       this.setState({
-        alert: false
+        alert: true,
+        alertConfirmAction: () => {
+          this.props.onEngineChange(engineId);
+        }
       });
     } else {
-      // value = approve
-      this.props.reset();
-      this.setState(prevState => {
-        return {
-          alert: false,
-          editMode: prevState.pendingEditMode,
-          pendingEditMode: undefined
-        };
-      });
+      this.props.onEngineChange(engineId);
     }
+  };
+
+  handleAlertConfirm = () => {
+    this.props.reset();
+    this.state.alertConfirmAction();
+    this.setState({
+      alert: false,
+      alertConfirmAction: noop
+    });
+  };
+
+  handleAlertCancel = () => {
+    this.setState({
+      alert: false,
+      alertConfirmAction: noop
+    });
   };
 
   render() {
@@ -175,7 +188,6 @@ export default class TranscriptEngineOutputWidget extends Component {
       editMode,
       onClick,
       onScroll,
-      onEngineChange,
       onExpandClicked,
       mediaLengthMs,
       neglectableTimeMs,
@@ -208,7 +220,7 @@ export default class TranscriptEngineOutputWidget extends Component {
           onEditTypeChange={this.handleOnEditModeChange}
           onClick={onClick}
           onScroll={onScroll}
-          onEngineChange={onEngineChange}
+          onEngineChange={this.handleEngineChange}
           onExpandClicked={onExpandClicked}
           mediaLengthMs={mediaLengthMs}
           neglectableTimeMs={neglectableTimeMs}
@@ -224,7 +236,7 @@ export default class TranscriptEngineOutputWidget extends Component {
           content={alertDescription}
           cancelButtonLabel={cancelButtonLabel}
           approveButtonLabel={approveButtonLabel}
-          onCancel={this.handleAlertConfirm}
+          onCancel={this.handleAlertCancel}
           onApprove={this.handleAlertConfirm}
         />
       </Fragment>

@@ -2,6 +2,7 @@ import { get, isEqual } from 'lodash';
 import { delay } from 'redux-saga';
 import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
 import * as TranscriptRedux from '.';
+import { DISCARD_UNSAVED_CHANGES } from '../index';
 
 const CHANGE_WITH_DEBOUNCE =
   TranscriptRedux.transcriptNamespace + '_CHANGE_WITH_DEBOUNCE';
@@ -22,7 +23,7 @@ function* watchContentUndo() {
     if (state && past.length === 0) {
       yield put({
         type: TranscriptRedux.UPDATE_EDIT_STATUS,
-        hasChanged: false
+        hasUserEdits: false
       });
     }
   });
@@ -33,7 +34,7 @@ function* watchContentRedo() {
     action
   ) {
     yield call(TranscriptRedux.redo);
-    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasChanged: true });
+    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: true });
   });
 }
 
@@ -42,7 +43,7 @@ function* watchContentReset() {
     action
   ) {
     yield call(TranscriptRedux.reset);
-    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasChanged: false });
+    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: false });
   });
 }
 
@@ -64,7 +65,7 @@ function* watchContentChange() {
   ) {
     yield put({
       type: TranscriptRedux.UPDATE_EDIT_STATUS,
-      hasChanged: true
+      hasUserEdits: true
     });
 
     unsavedData = action.data;
@@ -86,7 +87,7 @@ function* watchContentClearData() {
       yield call(TranscriptRedux.clearData);
       yield put({
         type: TranscriptRedux.UPDATE_EDIT_STATUS,
-        hasChanged: false
+        hasUserEdits: false
       });
     }
   );
@@ -101,11 +102,17 @@ function* watchContentReceiveData() {
         yield call(TranscriptRedux.receiveData);
         yield put({
           type: TranscriptRedux.UPDATE_EDIT_STATUS,
-          hasChanged: true
+          hasUserEdits: true
         });
       }
     }
   );
+}
+
+function* watchDiscardUnsavedChanges() {
+  yield takeEvery(DISCARD_UNSAVED_CHANGES, function*(action) {
+    yield call(TranscriptRedux.reset);
+  });
 }
 
 export const changeWidthDebounce = newData => ({
@@ -120,6 +127,7 @@ export default function* transcriptSaga() {
     fork(watchContentReset),
     fork(watchContentChange),
     fork(watchContentClearData),
-    fork(watchContentReceiveData)
+    fork(watchContentReceiveData),
+    fork(watchDiscardUnsavedChanges)
   ]);
 }
