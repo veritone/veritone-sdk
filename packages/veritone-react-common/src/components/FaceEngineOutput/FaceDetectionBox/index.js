@@ -216,11 +216,10 @@ class FaceDetectionBox extends Component {
                             <div className={styles.notFoundEntityMessage}>Results Not Found</div>
                           )}
                         </div>
-                        <div className={styles.addNewEntity}>
+                        <div className={styles.addNewEntity} onClick={this.handleAddNewEntity(face)}>
                           <Button
                             color="primary"
                             className={styles.addNewEntityButton}
-                            onClick={this.handleAddNewEntity(face)}
                           >
                             ADD NEW
                           </Button>
