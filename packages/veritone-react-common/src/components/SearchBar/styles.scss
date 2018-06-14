@@ -1,0 +1,24 @@
+.searchGroup {
+  display: inline-flex;
+  padding: 2px 0.1em;
+  align-items: center;
+  border: 1px dashed;
+  border-radius: 2em;
+  flex-wrap: nowrap;
+}
+
+.searchGroupNestedLeft {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.1em;
+  border-left: 1px dashed;
+  border-radius: 2em;
+}
+
+.searchGroupNestedRight {
+  display: inline-flex;
+  align-items: center;
+  padding-right: 0.1em;
+  border-right: 1px dashed;
+  border-radius: 2em;
+}

@@ -27,13 +27,24 @@
   border-radius: 1em;
   padding: 0.25em;
   display: inline-flex;
-  cursor: pointer;
+
+  &:not([disabled]) {
+    cursor: pointer;
+  }
+}
+
+.searchPillWithoutDelete {
+  padding-right: 1em;
+
+  &:disabled {
+    display: none;
+  }
 }
 
 .searchPillBackgroundColor {
   background-color: $light-blue50;
 
-  &:hover {
+  &:hover:not([disabled]) {
     background-color: $grey-2;
   }
 }
@@ -41,15 +52,19 @@
 .searchPillHighlightedBackgroundColor {
   background-color: $min-black;
 
-  &:hover {
+  &:hover:not([disabled]) {
     background-color: $semi-black;
   }
 }
 
 .searchPillExcludeBackgroundColor {
   background-color: $light-red50;
+}
 
-  &:hover {
+.searchPillExcludeBackgroundColor {
+  background-color: $light-red50;
+
+  &:hover:not([disabled]) {
     background-color: $grey-2;
   }
 }

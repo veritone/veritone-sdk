@@ -7,8 +7,14 @@ export OAuthLoginButton, {
   OAuthLoginButtonWidget
 } from './widgets/OAuthLoginButton';
 export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
-export MediaDetailsPage from './widgets/MediaDetails';
+export { EngineSelectionWidget } from './widgets/EngineSelection';
 export { TableWidget as Table, TableWidget } from './widgets/Table';
+export {
+  GlobalNotificationDialog,
+  GlobalSnackBar
+} from './widgets/Notifications';
+
+export MediaDetailsPage from './widgets/MediaDetails';
 export SourceManagement from './widgets/SourceManagementOverview';
 export SourceList from './widgets/SourceList';
 export SourceManagementForm from './widgets/SourceManagementForm';

@@ -43,7 +43,7 @@ export class Saga extends Component {
     this.runningSaga = this.context.sagas.run(this.props.saga, this.props);
   }
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     // ??
   }
 

@@ -1,0 +1,42 @@
+@import 'src/styles/modules/_muiTypography';
+@import 'src/styles/modules/_variables';
+
+.sideBar {
+  $width: 250px;
+  min-width: $width;
+  max-width: $width;
+}
+
+.inlineFilter {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filterContainer {
+  @include mui-text('body1');
+  padding: 10px 20px;
+  color: $full-black;
+}
+
+.title {
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.checkbox,
+.radio {
+  $dimensions: 24px !important;
+  height: $dimensions;
+  width: $dimensions;
+  margin-right: 8px !important;
+}
+
+.rc-slider-handle {
+  border: 2px solid $blue-1 !important;
+  background-color: $blue-1 !important;
+}
+
+.rc-slider-track {
+  background-color: $blue-1 !important;
+}

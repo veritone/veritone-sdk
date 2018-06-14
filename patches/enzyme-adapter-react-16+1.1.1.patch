@@ -1,0 +1,36 @@
+--- a/node_modules/enzyme-adapter-react-16/build/ReactSixteenAdapter.js
++++ b/node_modules/enzyme-adapter-react-16/build/ReactSixteenAdapter.js
+@@ -56,6 +56,10 @@
+ var HostPortal = 4;
+ var HostComponent = 5;
+ var HostText = 6;
++var Mode = 11;
++var ContextConsumer = 12;
++var ContextProvider = 13;
++var ForwardRef = 14;
+
+ function nodeAndSiblingsArray(nodeWithSibling) {
+   var array = [];
+@@ -111,9 +115,6 @@
+         instance: node.stateNode,
+         rendered: childrenToTree(node.child)
+       };
+-    case Fragment:
+-      // 10
+-      return childrenToTree(node.child);
+     case FunctionalComponent:
+       // 1
+       return {
+@@ -145,6 +146,12 @@
+     case HostText:
+       // 6
+       return node.memoizedProps;
++    case Fragment: // 10
++    case Mode: // 11
++    case ContextProvider: // 13
++    case ContextConsumer: // 12
++    case ForwardRef: // 14
++      return childrenToTree(node.child);
+     default:
+       throw new Error('Enzyme Internal Error: unknown node with tag ' + String(node.tag));
+   }

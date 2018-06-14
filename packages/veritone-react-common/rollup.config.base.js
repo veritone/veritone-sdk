@@ -36,6 +36,7 @@ export default {
     'react-redux',
     'redux',
     'redux-form',
+    'react-dotdotdot',
     'rechart',
     'recharts-scale',
     'video-react',
