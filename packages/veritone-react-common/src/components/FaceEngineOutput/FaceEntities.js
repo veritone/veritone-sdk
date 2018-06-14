@@ -97,7 +97,7 @@ export default class FaceEntities extends Component {
     const { viewMode, currentMediaPlayerTime } = this.props;
     const { faceEntities, selectedEntity } = this.state;
 
-    if (selectedEntity) {
+    if (selectedEntity && faceEntities[selectedEntity]) {
       return (
         <EntityInformation
           {...pick(faceEntities[selectedEntity], [

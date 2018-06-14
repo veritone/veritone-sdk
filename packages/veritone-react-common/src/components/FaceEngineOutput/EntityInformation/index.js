@@ -21,7 +21,7 @@ class EntityInformation extends Component {
       entityName: string,
       libraryId: string,
       profileImage: string
-    }),
+    }).isRequired,
     count: number,
     timeSlots: arrayOf(
       shape({
