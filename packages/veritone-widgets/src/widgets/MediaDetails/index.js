@@ -967,6 +967,9 @@ class MediaDetailsWidget extends React.Component {
                       />
                     ) : (
                       <MediaPlayer
+                        fluid={false}
+                        width={450}
+                        height={250}
                         store={this.context.store}
                         playerRef={this.mediaPlayerRef}
                         src={this.getPrimaryAssetUri()}
