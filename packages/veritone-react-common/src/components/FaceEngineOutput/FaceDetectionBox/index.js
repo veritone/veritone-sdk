@@ -132,10 +132,12 @@ class FaceDetectionBox extends Component {
     this.props.onSearchForEntities(text);
   };
 
-  handleBlur = event => {
-    this.setState({
-      editFaceEntity: false
-    });
+  handleDownshiftStateChange = (changes, stateAndHelpers) => {
+    if (changes.isOpen === false) {
+      this.setState({
+        editFaceEntity: false
+      });
+    }
   };
 
   calculatePopperPlacement = () => {
@@ -205,6 +207,7 @@ class FaceDetectionBox extends Component {
               itemToString={this.itemToString}
               onSelect={this.handleEntitySelect}
               onInputValueChange={this.onSearchEntityInputChange}
+              onStateChange={this.handleDownshiftStateChange}
             >
               {({
                 getInputProps,
@@ -219,8 +222,7 @@ class FaceDetectionBox extends Component {
                       {...getInputProps({
                         placeholder: 'Unknown',
                         autoFocus: true,
-                        className: styles.entitySearchInput,
-                        onBlur: this.handleBlur
+                        className: styles.entitySearchInput
                       })}
                     />
                   </div>
@@ -252,10 +254,11 @@ class FaceDetectionBox extends Component {
                             </div>
                           )}
                         </div>
-                        <div className={styles.addNewEntity} onClick={this.handleAddNewEntity(face)}>
+                        <div className={styles.addNewEntity}>
                           <Button
                             color="primary"
                             className={styles.addNewEntityButton}
+                            onClick={this.handleAddNewEntity(face)}
                           >
                             ADD NEW
                           </Button>
