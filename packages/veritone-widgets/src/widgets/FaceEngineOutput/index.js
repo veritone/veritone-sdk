@@ -329,7 +329,7 @@ class FaceEngineOutputContainer extends Component {
         >
           <div className={styles.dialogTitleLabel}>Add New</div>
           <IconButton
-            onClick={this.onCancel}
+            onClick={this.closeDialog}
             aria-label="Close"
             classes={{
               root: styles.closeButton
