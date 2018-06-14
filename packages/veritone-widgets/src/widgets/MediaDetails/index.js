@@ -56,6 +56,8 @@ import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
+const programLiveImageNullState = '//static.veritone.com/veritone-ui/default-nullstate.svg';
+
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
@@ -969,6 +971,7 @@ class MediaDetailsWidget extends React.Component {
                         playerRef={this.mediaPlayerRef}
                         src={this.getPrimaryAssetUri()}
                         streams={get(this.props, 'tdo.streams')}
+                        poster={tdo.thumbnailUrl || programLiveImageNullState}
                       />
                     )}
                     {this.getMediaSource() && (
