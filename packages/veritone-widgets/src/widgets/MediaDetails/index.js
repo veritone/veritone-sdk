@@ -41,9 +41,8 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput,
   EngineOutputNullState,
-  EditTagsDialog,
-  EditMetadataDialog,
-  withMuiThemeProvider
+  withMuiThemeProvider,
+  AlertDialog
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
@@ -55,7 +54,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
-import { reset } from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 
 @withPropsOnChange([], ({ id }) => ({
@@ -80,14 +78,14 @@ import widget from '../../shared/widget';
     isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
     isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
-    libraries: mediaDetailsModule.getLibraries(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
-    contextMenuExtensions: applicationModule.getContextMenuExtensions(state)
+    contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
+    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -102,7 +100,9 @@ import widget from '../../shared/widget';
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
     fetchApplications: applicationModule.fetchApplications,
     saveAssetData: mediaDetailsModule.saveAssetData,
-    resetTranscript: reset
+    openConfirmModal: mediaDetailsModule.openConfirmModal,
+    closeConfirmModal: mediaDetailsModule.closeConfirmModal,
+    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges
   },
   null,
   { withRef: true }
@@ -196,19 +196,20 @@ class MediaDetailsWidget extends React.Component {
     isExpandedMode: bool,
     toggleExpandedMode: func,
     currentMediaPlayerTime: number,
-    libraries: arrayOf(
-      shape({
-        id: string,
-        name: string
-      })
-    ),
     entities: arrayOf(
       shape({
-        id: string,
-        name: string,
-        libraryId: string,
+        id: string.isRequired,
+        name: string.isRequired,
+        description: string,
         profileImageUrl: string,
-        jsondata: objectOf(string)
+        jsondata: objectOf(string),
+        libraryId: string,
+        library: shape({
+          id: string.isRequired,
+          name: string.isRequired,
+          description: string,
+          coverImageUrl: string
+        })
       })
     ),
     loadContentTemplates: func,
@@ -251,7 +252,17 @@ class MediaDetailsWidget extends React.Component {
     saveAssetData: func,
     widgetError: string,
     isSaveEnabled: bool,
-    resetTranscript: func
+    alertDialogConfig: shape({
+      show: bool,
+      title: string,
+      description: string,
+      cancelButtonLabel: string,
+      confirmButtonLabel: string,
+      nextAction: func
+    }),
+    openConfirmModal: func,
+    closeConfirmModal: func,
+    discardUnsavedChanges: func
   };
 
   static contextTypes = {
@@ -259,15 +270,12 @@ class MediaDetailsWidget extends React.Component {
   };
 
   static defaultProps = {
-    libraries: [],
     entities: [],
     schemasById: {}
   };
 
   state = {
     isMenuOpen: false,
-    isEditMetadataOpen: false,
-    isEditTagsOpen: false,
     selectedTabValue: 'mediaDetails',
     disableEditBtn: false
   };
@@ -344,6 +352,10 @@ class MediaDetailsWidget extends React.Component {
     if (!get(this.props, 'selectedEngineCategory.editable')) {
       return false;
     }
+    return this.canEditMedia();
+  };
+
+  canEditMedia = () => {
     return !this.isMediaPublic() && this.isOwnMedia();
   };
 
@@ -383,6 +395,7 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineId: this.props.selectedEngineId,
       selectedEngineCategory: this.props.selectedEngineCategory
     });
+    this.props.closeConfirmModal(this.props.id);
   };
 
   onCancelEdit = () => {
@@ -392,7 +405,20 @@ class MediaDetailsWidget extends React.Component {
     if (this.props.isEditModeEnabled) {
       this.toggleEditMode();
     }
-    this.props.resetTranscript();
+  };
+
+  checkSaveState = () => {
+    if (this.props.isSaveEnabled) {
+      this.props.openConfirmModal(this.onSaveEdit, this.props.id);
+    } else {
+      this.onCancelEdit();
+    }
+  };
+
+  handleCancelSaveDialog = () => {
+    this.props.discardUnsavedChanges();
+    this.props.closeConfirmModal(this.props.id);
+    this.onCancelEdit();
   };
 
   toggleInfoPanel = () => {
@@ -546,7 +572,8 @@ class MediaDetailsWidget extends React.Component {
   };
 
   isDownloadMediaEnabled = () => {
-    return get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+    return get(this.props.tdo, 'primaryAsset.signedUri.length') &&
+      get(this.props.kvp, 'features.downloadMedia') === 'enabled';
   };
 
   downloadFile = () => {
@@ -555,48 +582,6 @@ class MediaDetailsWidget extends React.Component {
     element.download = get(this.props, 'tdo.details.veritoneFile.filename');
     element.target = '_blank';
     element.click();
-  };
-
-  onMetadataOpen = () => {
-    this.onMenuClose();
-    this.toggleIsEditMetadataOpen();
-  };
-
-  onEditTagsOpen = () => {
-    this.onMenuClose();
-    this.toggleIsEditTagsOpen();
-  };
-
-  onSaveMetadata = metadataToSave => {
-    this.toggleIsEditMetadataOpen();
-    if (!metadataToSave) {
-      return;
-    }
-    this.updateTdo(metadataToSave);
-  };
-
-  toggleIsEditMetadataOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditMetadataOpen: !{ ...prevState }.isEditMetadataOpen
-      };
-    });
-  };
-
-  onSaveTags = tagsToSave => {
-    this.toggleIsEditTagsOpen();
-    if (!tagsToSave) {
-      return;
-    }
-    this.updateTdo({ tags: tagsToSave });
-  };
-
-  toggleIsEditTagsOpen = () => {
-    this.setState(prevState => {
-      return {
-        isEditTagsOpen: !{ ...prevState }.isEditTagsOpen
-      };
-    });
   };
 
   handleContextMenuClick = cme => {
@@ -613,7 +598,6 @@ class MediaDetailsWidget extends React.Component {
       isExpandedMode,
       currentMediaPlayerTime,
       isEditModeEnabled,
-      libraries,
       entities,
       contentTemplates,
       tdo,
@@ -622,34 +606,30 @@ class MediaDetailsWidget extends React.Component {
       schemasById,
       googleMapsApiKey,
       widgetError,
-      isSaveEnabled
+      isSaveEnabled,
+      alertDialogConfig
     } = this.props;
 
-    const { isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
+    const { isMenuOpen } = this.state;
 
     const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
-    let metadata;
-    if (tdo) {
-      metadata = {
-        ...tdo.details,
-        veritoneProgram: {
-          ...tdo.details.veritoneProgram,
-          programImage:
-            tdo.sourceImageUrl ||
-            get(tdo, 'details.veritoneProgram.programImage'),
-          programLiveImage:
-            tdo.thumbnailUrl ||
-            get(tdo, 'details.veritoneProgram.programLiveImage')
-        }
-      };
-    }
-
     return (
       <FullScreenDialog open className={styles.mdpFullScreenDialog}>
+        {alertDialogConfig && (
+          <AlertDialog
+            open={alertDialogConfig.show}
+            title={alertDialogConfig.title}
+            content={alertDialogConfig.description}
+            cancelButtonLabel={alertDialogConfig.cancelButtonLabel}
+            approveButtonLabel={alertDialogConfig.confirmButtonLabel}
+            onCancel={this.handleCancelSaveDialog}
+            onApprove={alertDialogConfig.nextAction}
+          />
+        )}
         <Paper className={styles.mediaDetailsPageContent}>
           {!isExpandedMode && (
             <div>
@@ -786,18 +766,6 @@ class MediaDetailsWidget extends React.Component {
                             >
                               <Paper>
                                 <MenuList role="menu">
-                                  <MenuItem
-                                    classes={{ root: styles.headerMenuItem }}
-                                    onClick={this.onMetadataOpen}
-                                  >
-                                    Edit Metadata
-                                  </MenuItem>
-                                  <MenuItem
-                                    classes={{ root: styles.headerMenuItem }}
-                                    onClick={this.onEditTagsOpen}
-                                  >
-                                    Edit Tags
-                                  </MenuItem>
                                   {this.isDownloadMediaEnabled() && (
                                     <MenuItem
                                       classes={{ root: styles.headerMenuItem }}
@@ -833,7 +801,9 @@ class MediaDetailsWidget extends React.Component {
                     </Manager>
                   </Tooltip>
                   {(get(this.props, 'tdo.id') ||
-                    get(this.props, 'tdo.details', null)) && (
+                    get(this.props, 'tdo.details', null) ||
+                    this.isDownloadMediaEnabled() ||
+                    get(this.props, 'contextMenuExtensions.tdos.length')) && (
                     <div className={styles.pageHeaderActionButtonsSeparator} />
                   )}
                   <IconButton
@@ -932,7 +902,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    onClick={this.onCancelEdit}
+                    onClick={this.checkSaveState}
                     aria-label="Back"
                   >
                     <Icon
@@ -959,7 +929,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        onClick={this.onCancelEdit}
+                        onClick={this.checkSaveState}
                       >
                         CANCEL
                       </Button>
@@ -981,10 +951,6 @@ class MediaDetailsWidget extends React.Component {
           {this.state.selectedTabValue === 'mediaDetails' && (
             <div className={styles.mediaScreen}>
               {get(tdo, 'id') &&
-                !(
-                  get(selectedEngineCategory, 'categoryType') ===
-                    'transcript' && isEditModeEnabled
-                ) &&
                 !(
                   get(selectedEngineCategory, 'categoryType') ===
                     'correlation' && isExpandedMode
@@ -1031,6 +997,7 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
+                        onSave={this.onSaveEdit}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1094,7 +1061,6 @@ class MediaDetailsWidget extends React.Component {
                       <FingerprintEngineOutput
                         data={engineResultsByEngineId[selectedEngineId]}
                         entities={entities}
-                        libraries={libraries}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
@@ -1173,9 +1139,9 @@ class MediaDetailsWidget extends React.Component {
               tdo={this.props.tdo}
               engineCategories={engineCategories}
               contextMenuExtensions={this.props.contextMenuExtensions}
-              kvp={this.props.kvp}
               onClose={this.toggleInfoPanel}
               onSaveMetadata={this.updateTdo}
+              canEditMedia={this.canEditMedia}
             />
           )}
 
@@ -1188,26 +1154,6 @@ class MediaDetailsWidget extends React.Component {
               />
             )}
         </Paper>
-        {tdo &&
-          tdo.details &&
-          isEditMetadataOpen && (
-            <EditMetadataDialog
-              isOpen={isEditMetadataOpen}
-              metadata={metadata}
-              onClose={this.toggleIsEditMetadataOpen}
-              onSave={this.onSaveMetadata}
-            />
-          )}
-        {tdo &&
-          tdo.details &&
-          isEditTagsOpen && (
-            <EditTagsDialog
-              isOpen={isEditTagsOpen}
-              tags={tdo.details.tags}
-              onClose={this.toggleIsEditTagsOpen}
-              onSave={this.onSaveTags}
-            />
-          )}
       </FullScreenDialog>
     );
   }

@@ -49,10 +49,11 @@ export default class OverviewSegment extends Component {
     content.fragments.forEach(fragmentData => {
       const startTime = fragmentData.startTimeMs;
       const stopTime = fragmentData.stopTimeMs;
+      const value = fragmentData.value;
 
       readContents.push(
         <OverviewFragment
-          key={`overview-fragment-${startTime}-${stopTime}`}
+          key={`overview-fragment-${startTime}-${stopTime}-${value ? value.substr(0, 32) : ''}`}
           content={fragmentData}
           className={fragmentClassName}
           onClick={this.handleFragmentClicked}

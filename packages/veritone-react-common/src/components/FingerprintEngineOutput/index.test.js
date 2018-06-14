@@ -37,9 +37,15 @@ const sampleData = [
   }
 ];
 
+const sampleLibrary = {
+  id: 'lib-1',
+  name: 'Rhincodon pygmaeus',
+  description: 'First Library'
+};
+
 const sampleEntities = [
   {
-    entityId: 'entity-1',
+    id: 'entity-1',
     name: 'entity 1',
     profileImageUrl: '',
     description: 'description',
@@ -49,10 +55,11 @@ const sampleEntities = [
       iSCI: '234',
       spotType: 'voice'
     },
-    libraryId: 'lib-1'
+    libraryId: sampleLibrary.id,
+    library: sampleLibrary
   },
   {
-    entityId: 'entity-2',
+    id: 'entity-2',
     name: 'entity 2',
     profileImageUrl: '',
     description: 'description',
@@ -62,15 +69,8 @@ const sampleEntities = [
       iSCI: '234',
       spotType: 'voice'
     },
-    libraryId: 'lib-1'
-  }
-];
-
-const sampleLibraries = [
-  {
-    libraryId: 'lib-1',
-    name: 'Rhincodon pygmaeus',
-    description: 'First Library'
+    libraryId: sampleLibrary.id,
+    library: sampleLibrary
   }
 ];
 
@@ -79,7 +79,6 @@ describe('Fingerprint Engine Output', () => {
     <FingerprintEngineOutput
       data={sampleData}
       entities={sampleEntities}
-      libraries={sampleLibraries}
       engines={[{ id: '1', name: 'Engine-X' }, { id: '2', name: 'Engine-Y' }]}
       selectedEngineId="1"
     />
@@ -143,7 +142,7 @@ describe('Fingerprint Engine Output', () => {
 
 describe('Fingerprint Content', () => {
   let fingerprintContent = mount(
-    <FingerprintContent libraries={sampleLibraries} />
+    <FingerprintContent />
   );
 
   it('Invalid Library View', () => {
@@ -152,9 +151,12 @@ describe('Fingerprint Content', () => {
   });
 
   it('Invalid Entity View', () => {
+    const testEntity = Object.assign({
+      matches: [sampleData[0].series[0]]
+    }, sampleEntities[0]);
     const entityMode = fingerprintContent.setState({
       showLibrary: false,
-      selectedEntity: sampleEntities[0]
+      selectedEntity: testEntity
     });
 
     expect(entityMode.find('.entityInfo')).toHaveLength(1);
@@ -164,8 +166,12 @@ describe('Fingerprint Content', () => {
 });
 
 describe('Fingerprint Entity', () => {
+  const testEntity = Object.assign({
+    matches: [sampleData[0].series[0], sampleData[0].series[2]]
+  }, sampleEntities[0]);
+
   let fingerprintEntity = mount(
-    <FingerprintEntity entity={sampleEntities[0]} />
+    <FingerprintEntity entity={testEntity} />
   );
 
   it('Invalid Stream Data', () => {

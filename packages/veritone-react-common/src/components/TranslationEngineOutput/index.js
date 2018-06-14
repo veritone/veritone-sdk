@@ -141,8 +141,11 @@ export default class TranslationEngineOutput extends Component {
   }
 
   getSelectedContent() {
-    const selectedLanguage = this.state.selectedLanguage;
     const selectedContent = [];
+    if (!get(this.state, 'selectedLanguage')) {
+      return selectedContent;
+    }
+    const selectedLanguage = this.state.selectedLanguage;
     this.props.contents.forEach(chunk => {
       if (!chunk.series) {
         selectedContent.push(chunk); // Error chunks that doesn't have series
@@ -186,7 +189,7 @@ export default class TranslationEngineOutput extends Component {
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
-        {get(this.state, 'languages.length') > 0 && (
+        {get(this.state, 'languages.length', 0) && (
           <Select
             autoWidth
             value={this.state.selectedLanguage}

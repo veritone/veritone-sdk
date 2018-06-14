@@ -11,14 +11,14 @@ export default class EntityStreamData extends Component {
   static propTypes = {
     data: arrayOf(
       shape({
-        startTimeMs: number,
-        stopTimeMs: number,
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
         object: shape({
-          entityId: string,
+          entityId: string.isRequired,
           confidenced: number
         })
       })
-    ).isRequired,
+    ),
     className: string,
     onClick: func,
     mediaPlayerTimeMs: number,

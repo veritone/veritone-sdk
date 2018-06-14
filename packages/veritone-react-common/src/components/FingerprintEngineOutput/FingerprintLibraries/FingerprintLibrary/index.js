@@ -10,18 +10,19 @@ export default class FingerprintLibrary extends Component {
   static propTypes = {
     className: string,
     libraryData: shape({
-      name: string,
-      libraryId: string.isRequired,
+      name: string.isRequired,
+      id: string.isRequired,
       entities: arrayOf(
         shape({
           name: string.isRequired,
-          entityId: string,
+          id: string.isRequired,
+          description: string,
           matches: arrayOf(
             shape({
-              startTimeMs: number,
-              stopTimeMs: number,
+              startTimeMs: number.isRequired,
+              stopTimeMs: number.isRequired,
               object: shape({
-                entityId: string,
+                entityId: string.isRequired,
                 confidence: number
               })
             })
@@ -78,8 +79,8 @@ export default class FingerprintLibrary extends Component {
             data={entityData}
             onClick={onClick}
             highlight={active}
-            key={`finger-print-entity-${entityData.entityId}-${
-              entityData.entityName
+            key={`finger-print-entity-${entityData.id}-${
+              entityData.name
             }`}
           />
         );
@@ -96,7 +97,7 @@ export default class FingerprintLibrary extends Component {
           <Icon className={classNames('icon-library-app', styles.headerText)} />
           <span className={classNames(styles.headerText)}> Library: </span>
           <span className={classNames(styles.headerText, styles.bold)}>
-            {libraryData.name || libraryData.libraryId}
+            {libraryData.name || libraryData.id}
           </span>
         </div>
         <div className={classNames(styles.body)}>{this.renderEntities()}</div>
