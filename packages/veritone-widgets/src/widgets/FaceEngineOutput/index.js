@@ -37,6 +37,7 @@ import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 
 const saga = util.reactReduxSaga.saga;
 
+@withMuiThemeProvider
 @saga(rootSaga)
 @connect(
   (state, { selectedEngineId }) => ({
@@ -66,7 +67,6 @@ const saga = util.reactReduxSaga.saga;
   null,
   { withRef: true }
 )
-@withMuiThemeProvider
 class FaceEngineOutputContainer extends Component {
   static propTypes = {
     tdo: shape({

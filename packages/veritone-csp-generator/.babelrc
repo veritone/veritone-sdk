@@ -1,0 +1,32 @@
+{
+  "env": {
+    "test": {
+      "presets": ["env"],
+      "plugins": [
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash"
+      ]
+    },
+    "production": {
+      "presets": [
+        "external-helpers",
+        [
+          "env",
+          {
+            "modules": false
+          }
+        ]
+      ],
+      "plugins": [[
+        "transform-export-extensions",
+        "transform-decorators-legacy",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "lodash"
+      ]]
+    }
+  }
+}

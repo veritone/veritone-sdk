@@ -58,6 +58,7 @@ import widget from '../../shared/widget';
 
 const programLiveImageNullState = '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
+@withMuiThemeProvider
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
@@ -109,7 +110,6 @@ const programLiveImageNullState = '//static.veritone.com/veritone-ui/default-nul
   null,
   { withRef: true }
 )
-@withMuiThemeProvider
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
     id: string.isRequired,
