@@ -27,7 +27,6 @@ const saga = util.reactReduxSaga.saga;
     //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
-    clearData: TranscriptRedux.clearData,
     receiveData: TranscriptRedux.receiveData
   },
   null,
@@ -94,7 +93,6 @@ export default class TranscriptEngineOutputWidget extends Component {
     //redo: func,     //Uncomment when needed to enable redo option
     reset: func.isRequired,
     change: func.isRequired,
-    clearData: func.isRequired,
     receiveData: func.isRequired,
     hasUserEdits: bool,
     outputNullState: node,
