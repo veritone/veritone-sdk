@@ -189,7 +189,7 @@ export default class TranslationEngineOutput extends Component {
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
-        {get(this.state, 'languages.length', 0) && (
+        {get(this.state, 'languages.length', 0) > 0 && (
           <Select
             autoWidth
             value={this.state.selectedLanguage}
