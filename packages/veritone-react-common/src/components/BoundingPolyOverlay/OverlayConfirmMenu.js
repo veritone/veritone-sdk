@@ -35,10 +35,7 @@ export default class OverlayConfirmMenu extends React.Component {
 
   render() {
     return (
-      <Slide
-        in={this.props.visible}
-        direction="up"
-      >
+      <Slide in={this.props.visible} direction="up">
         <div
           style={{
             position: 'absolute',
@@ -78,10 +75,11 @@ export default class OverlayConfirmMenu extends React.Component {
           >
             {this.props.confirmLabel}
           </Button>
-
-          <IconButton onClick={this.handleOpenMenu}>
-            <MoreVertIcon />
-          </IconButton>
+          {false && (
+            <IconButton onClick={this.handleOpenMenu}>
+              <MoreVertIcon />
+            </IconButton>
+          )}
           <Menu
             id="long-menu"
             anchorEl={this.state.menuAnchorEl}
