@@ -1,7 +1,10 @@
 .translationOutput {
   width: 100%;
-  height: 100%;
   overflow: hidden;
+
+  &.preload {
+    height: 100%;
+  }
 
   .languages {
     font-size: 14px;

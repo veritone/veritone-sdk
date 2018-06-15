@@ -255,7 +255,9 @@ export default class TranslationEngineOutput extends Component {
   render() {
     return (
       <div
-        className={classNames(styles.translationOutput, this.props.className)}
+        className={classNames(styles.translationOutput, this.props.className, {
+          [styles.preload]: !this.props.onScroll
+        })}
       >
         {this.renderHeader()}
         {this.renderBody()}
