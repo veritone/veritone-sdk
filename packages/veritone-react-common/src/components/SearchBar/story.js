@@ -3,9 +3,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { object } from '@storybook/addon-knobs/react';
 
-import { CSPToSearchParameters } from './parser';
-
-import SearchParameters from './';
+import SearchBar from './';
 
 storiesOf('SearchBar', module).add('Base (render only)', () => {
   const csp = {
@@ -32,8 +30,7 @@ storiesOf('SearchBar', module).add('Base (render only)', () => {
       }
     ]
   };
-  const searchParameters = CSPToSearchParameters(object('CSP', csp));
-  return <SearchParameters parameters={searchParameters} />;
+  return <SearchBar csp={object('CSP', csp)} />;
 });
 
 storiesOf('SearchBar', module).add('with groups', () => {
@@ -73,8 +70,7 @@ storiesOf('SearchBar', module).add('with groups', () => {
       }
     ]
   };
-  const searchParameters = CSPToSearchParameters(object('CSP', csp));
-  return <SearchParameters parameters={searchParameters} />;
+  return <SearchBar csp={object('CSP', csp)} />;
 });
 
 storiesOf('SearchBar', module).add('with double nested group', () => {
@@ -122,8 +118,7 @@ storiesOf('SearchBar', module).add('with double nested group', () => {
       }
     ]
   };
-  const searchParameters = CSPToSearchParameters(object('CSP', csp));
-  return <SearchParameters parameters={searchParameters} />;
+  return <SearchBar csp={object('CSP', csp)} />;
 });
 
 storiesOf('SearchBar/EngineCategories', module).add('Transcript', () => {

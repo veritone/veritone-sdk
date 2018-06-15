@@ -25,7 +25,8 @@
 .searchPill {
   transition: background-color 0.1s linear 0.1s;
   border-radius: 1em;
-  padding: 0.25em;
+  margin: 0.1em;
+  padding: 0.1em;
   display: inline-flex;
 
   &:not([disabled]) {
