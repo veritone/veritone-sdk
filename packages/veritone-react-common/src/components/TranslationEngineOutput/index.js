@@ -78,14 +78,8 @@ export default class TranslationEngineOutput extends Component {
 
   state = {};
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.contents !== this.props.contents) {
-      this.setLanguageOptions();
-    }
-  }
-
-  setLanguageOptions() {
-    const { contents, defaultLanguage } = this.props;
+  static getDerivedStateFromProps(props, state) {
+    const { contents, defaultLanguage } = props;
 
     const translatedLanguages = [];
     contents.forEach(dataChunk => {
@@ -127,17 +121,16 @@ export default class TranslationEngineOutput extends Component {
     });
     translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
-    this.setState(prevState => {
-      const selectedLanguage =
-        (prevState && prevState.selectedLanguage) ||
+    const selectedLanguage =
+        (state && state.selectedLanguage) ||
         defaultLanguage ||
         translatedLanguages[0];
 
-      return {
-        languages: translatedLanguagesInfo,
-        selectedLanguage: selectedLanguage
-      };
-    });
+    return {
+      ...state, 
+      languages: translatedLanguagesInfo, 
+      selectedLanguage: selectedLanguage
+    };
   }
 
   getSelectedContent() {
