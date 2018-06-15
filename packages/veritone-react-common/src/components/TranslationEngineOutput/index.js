@@ -234,9 +234,7 @@ export default class TranslationEngineOutput extends Component {
 
     return (
       outputNullState || (
-        <div className={classNames(styles.body, bodyClassName, {
-          [styles.preload]: !onScroll
-        })}>
+        <div className={classNames(styles.body, bodyClassName)}>
           <TranslationContent
             contents={selectedContents}
             className={contentClassName}
@@ -257,7 +255,9 @@ export default class TranslationEngineOutput extends Component {
   render() {
     return (
       <div
-        className={classNames(styles.translationOutput, this.props.className)}
+        className={classNames(styles.translationOutput, this.props.className, {
+          [styles.preload]: !this.props.onScroll
+        })}
       >
         {this.renderHeader()}
         {this.renderBody()}
