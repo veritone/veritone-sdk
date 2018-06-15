@@ -234,7 +234,9 @@ export default class TranslationEngineOutput extends Component {
 
     return (
       outputNullState || (
-        <div className={classNames(styles.body, bodyClassName)}>
+        <div className={classNames(styles.body, bodyClassName, {
+          [styles.preload]: !onScroll
+        })}>
           <TranslationContent
             contents={selectedContents}
             className={contentClassName}
