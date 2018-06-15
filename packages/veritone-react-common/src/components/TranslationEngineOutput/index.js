@@ -94,8 +94,7 @@ export default class TranslationEngineOutput extends Component {
     });
     translatedLanguages.sort();
 
-    let translatedLanguagesInfo = [];
-    translatedLanguages.forEach(languageCode => {
+    let translatedLanguagesInfo = translatedLanguages.map(languageCode => {
       let languageName;
       if (languageCode.length === 2) {
         languageName = LocalCode.getLanguageName(languageCode + '-XX');
@@ -114,10 +113,7 @@ export default class TranslationEngineOutput extends Component {
         }
       }
 
-      translatedLanguagesInfo.push({
-        language: languageCode,
-        name: languageName
-      });
+      return { language: languageCode, name: languageName };
     });
     translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
