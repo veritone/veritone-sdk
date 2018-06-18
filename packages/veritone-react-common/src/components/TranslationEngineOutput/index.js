@@ -78,14 +78,8 @@ export default class TranslationEngineOutput extends Component {
 
   state = {};
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.contents !== this.props.contents) {
-      this.setLanguageOptions();
-    }
-  }
-
-  setLanguageOptions() {
-    const { contents, defaultLanguage } = this.props;
+  static getDerivedStateFromProps(props, state) {
+    const { contents, defaultLanguage } = props;
 
     const translatedLanguages = [];
     contents.forEach(dataChunk => {
@@ -100,8 +94,7 @@ export default class TranslationEngineOutput extends Component {
     });
     translatedLanguages.sort();
 
-    let translatedLanguagesInfo = [];
-    translatedLanguages.forEach(languageCode => {
+    let translatedLanguagesInfo = translatedLanguages.map(languageCode => {
       let languageName;
       if (languageCode.length === 2) {
         languageName = LocalCode.getLanguageName(languageCode + '-XX');
@@ -120,24 +113,20 @@ export default class TranslationEngineOutput extends Component {
         }
       }
 
-      translatedLanguagesInfo.push({
-        language: languageCode,
-        name: languageName
-      });
+      return { language: languageCode, name: languageName };
     });
     translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
-    this.setState(prevState => {
-      const selectedLanguage =
-        (prevState && prevState.selectedLanguage) ||
+    const selectedLanguage =
+        (state && state.selectedLanguage) ||
         defaultLanguage ||
         translatedLanguages[0];
 
-      return {
-        languages: translatedLanguagesInfo,
-        selectedLanguage: selectedLanguage
-      };
-    });
+    return {
+      ...state, 
+      languages: translatedLanguagesInfo, 
+      selectedLanguage: selectedLanguage
+    };
   }
 
   getSelectedContent() {
@@ -189,7 +178,7 @@ export default class TranslationEngineOutput extends Component {
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
       >
-        {get(this.state, 'languages.length', 0) && (
+        {get(this.state, 'languages.length', 0) > 0 && (
           <Select
             autoWidth
             value={this.state.selectedLanguage}
@@ -266,7 +255,9 @@ export default class TranslationEngineOutput extends Component {
   render() {
     return (
       <div
-        className={classNames(styles.translationOutput, this.props.className)}
+        className={classNames(styles.translationOutput, this.props.className, {
+          [styles.preload]: !this.props.onScroll
+        })}
       >
         {this.renderHeader()}
         {this.renderBody()}

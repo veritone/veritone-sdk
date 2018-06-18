@@ -214,7 +214,7 @@ class MediaInfoPanel extends Component {
                     style: {
                       pointerEvents: 'none',
                       marginTop: '5px',
-                      top: '-20px'
+                      top: '-10px'
                     }
                   }}
                 >

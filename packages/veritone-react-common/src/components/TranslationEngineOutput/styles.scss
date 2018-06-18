@@ -2,6 +2,10 @@
   width: 100%;
   overflow: hidden;
 
+  &.preload {
+    height: 100%;
+  }
+
   .languages {
     font-size: 14px;
   }
