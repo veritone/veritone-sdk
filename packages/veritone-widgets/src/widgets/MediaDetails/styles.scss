@@ -19,28 +19,11 @@
   flex: auto;
   z-index: auto;
 
-  .headerMenu {
-    display: flex;
-    flex-flow: row;
-
-    .popperClose {
-      pointer-events: none;
-    }
-
-    .poperOpen {
-      margin-right: 20px;
-    }
-
-    .closeButton {
-      font-size: 24px;
-    }
-
-    .headerMenuItem {
-      color: $dark-black;
-      font-family: Roboto;
-      font-size: 14px;
-      line-height: 16px;
-    }
+  .headerMenuItem {
+    color: $dark-black !important;
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    line-height: 16px !important;
   }
 
   .pageHeader {
