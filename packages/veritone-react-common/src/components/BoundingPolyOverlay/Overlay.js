@@ -1,15 +1,14 @@
 import React from 'react';
 import { isNumber } from 'lodash';
 import { arrayOf, oneOf, string, number, shape, func } from 'prop-types';
-import Rnd from 'react-rnd';
-import cx from 'classnames';
 
 import { getMousePosition } from 'helpers/dom';
 import withContextProps from 'helpers/withContextProps';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { OverlayPositioningContext } from './OverlayPositioningProvider';
 import OverlayConfirmMenu from './OverlayConfirmMenu';
-import styles from './overlay.styles.scss';
+import OverlayActionsMenu from './OverlayActionsMenu';
+import RndBox from './RndBox';
 
 @withContextProps(OverlayPositioningContext.Consumer, context => ({
   overlayPositioningContext: context
@@ -61,6 +60,8 @@ export default class Overlay extends React.Component {
   };
 
   handleResize = (e, direction, ref, delta, position) => {
+    this.removeUnconfirmedBoundingBox();
+
     this.setState(state => {
       const focusedIndex = ref.getAttribute('data-boxindex');
       state.boundingBoxPositions[focusedIndex] = {
@@ -95,7 +96,13 @@ export default class Overlay extends React.Component {
     });
   };
 
-  handleDrag = (e, d) => {
+  handleDragStagedBox = (e, d) => {
+    this.setState({ userActingOnBoundingBox: true });
+  };
+
+  handleDragExistingBox = () => {
+    this.removeUnconfirmedBoundingBox();
+
     this.setState({ userActingOnBoundingBox: true });
   };
 
@@ -127,16 +134,26 @@ export default class Overlay extends React.Component {
 
   handleClickBox = e => {
     e.stopPropagation();
+    this.removeUnconfirmedBoundingBox();
 
     // fixme: try to ignore clicks that are the result of mouseup after resize/drag
-
-    // cancel any unconfirmed
-    this.removeUnconfirmedBoundingBoxes();
-
     const focusedIndex = e.target.getAttribute('data-boxindex');
 
-    this.setState({
-      focusedBoundingBoxIndex: focusedIndex ? Number(focusedIndex) : null
+    this.setState(state => {
+      // clicking a focused box de-focuses it
+      // if (
+      //   focusedIndex &&
+      //   Number(focusedIndex) === state.focusedBoundingBoxIndex
+      // ) {
+      //   return { focusedBoundingBoxIndex: null };
+      // }
+
+      // otherwise focus the clicked box
+      return {
+        focusedBoundingBoxIndex: focusedIndex
+          ? Number(focusedIndex)
+          : state.focusedBoundingBoxIndex
+      };
     });
   };
 
@@ -151,7 +168,7 @@ export default class Overlay extends React.Component {
     // todo: clear stage when new initial set is received
   };
 
-  removeUnconfirmedBoundingBoxes = () => {
+  removeUnconfirmedBoundingBox = () => {
     // delete staged box
     this.setState({
       stagedBoundingBoxPosition: {}
@@ -179,7 +196,7 @@ export default class Overlay extends React.Component {
     );
 
     this.setState({
-      focusedBoundingBoxIndex: null,
+      // focusedBoundingBoxIndex: null,
       drawingInitialBoundingBox: true,
       userActingOnBoundingBox: true,
       stagedBoundingBoxPosition: {
@@ -202,9 +219,10 @@ export default class Overlay extends React.Component {
 
         return {
           stagedBoundingBoxPosition: {
-            // prevent weird behavior when box width is set to a negative value
-            width: width < 0 ? 0 : width,
-            height: height < 0 ? 0 : height,
+            // prevent weird behavior when box width is set to a negative value,
+            // and don't allow boxes too small to interact with (~< 15px)
+            width: width < 15 ? 15 : width,
+            height: height < 15 ? 15 : height,
             x: state.stagedBoundingBoxPosition.x,
             y: state.stagedBoundingBoxPosition.y
           }
@@ -217,9 +235,25 @@ export default class Overlay extends React.Component {
     if (this.state.drawingInitialBoundingBox) {
       this.setState({
         drawingInitialBoundingBox: false,
-        userActingOnBoundingBox: false
+        userActingOnBoundingBox: false,
+        focusedBoundingBoxIndex: null,
+        userMinimizedConfirmMenu: false
       });
     }
+  };
+
+  handleDelete = () => {
+    // todo:
+    // this.props.onBoundingBoxChange(this.toPercentageBasedPoly());
+    console.log(
+      'willd elete at ',
+      this.state.focusedBoundingBoxIndex,
+      this.state.boundingBoxPositions
+    );
+    let result = [...this.state.boundingBoxPositions];
+    result.splice(this.state.focusedBoundingBoxIndex, 1);
+
+    this.props.onBoundingBoxChange(result);
   };
 
   toPercentageBasedPoly = () => {
@@ -276,10 +310,17 @@ export default class Overlay extends React.Component {
 
   render() {
     const { top, left, height, width } = this.props.overlayPositioningContext;
-    const resizeHandleSize = 6;
-    const handleShift = resizeHandleSize / 2;
+    const showingConfirmMenu =
+      this.props.acceptMode === 'confirm' &&
+      this.hasStagedBoundingBox() &&
+      !this.state.userActingOnBoundingBox &&
+      !this.state.userMinimizedConfirmMenu;
 
-    // todo -- wrap RND component with common styles
+    const showingActionsMenu =
+      isNumber(this.state.focusedBoundingBoxIndex) &&
+      !this.state.userActingOnBoundingBox &&
+      !this.state.userMinimizedConfirmMenu;
+
     return (
       <div
         style={{
@@ -292,7 +333,7 @@ export default class Overlay extends React.Component {
         }}
       >
         {this.state.boundingBoxPositions.map(({ x, y, width, height }, i) => (
-          <Rnd
+          <RndBox
             // index is significant since boxes don't have IDs
             // eslint-disable-next-line react/no-array-index-key
             key={i}
@@ -302,35 +343,18 @@ export default class Overlay extends React.Component {
             }}
             style={{
               border: this.props.overlayBorderStyle,
-              backgroundColor: this.props.overlayBackgroundColor,
+              backgroundColor:
+                // i === this.state.focusedBoundingBoxIndex
+                //   ? 'yellow'
+                //   :
+                this.props.overlayBackgroundColor,
               mixBlendMode: this.props.overlayBackgroundBlendMode
-            }}
-            resizeHandleStyles={{
-              topLeft: { left: -handleShift, top: -handleShift },
-              topRight: { right: -handleShift, top: -handleShift },
-              bottomLeft: { left: -handleShift, bottom: -handleShift },
-              bottomRight: { right: -handleShift, bottom: -handleShift },
-              right: { right: -handleShift },
-              left: { left: -handleShift },
-              top: { top: -handleShift },
-              bottom: { bottom: -handleShift }
-            }}
-            resizeHandleClasses={{
-              topLeft: styles.resizeHandle,
-              topRight: styles.resizeHandle,
-              bottomLeft: styles.resizeHandle,
-              bottomRight: styles.resizeHandle,
-              right: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
-              left: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
-              top: cx(styles.resizeHandle, styles.resizeHandleVertical),
-              bottom: cx(styles.resizeHandle, styles.resizeHandleVertical)
             }}
             size={{ width, height }}
             position={{ x, y }}
-            bounds="parent"
             onDragStart={this.handleDragStart}
             onDragStop={this.handleDragExistingBoxStop}
-            onDrag={this.handleDrag}
+            onDrag={this.handleDragExistingBox}
             onResize={this.handleResize}
             onResizeStop={this.handleResizeStop}
             enableResizing={
@@ -341,7 +365,7 @@ export default class Overlay extends React.Component {
         ))}
 
         {this.hasStagedBoundingBox() && (
-          <Rnd
+          <RndBox
             style={{
               border: this.props.overlayBorderStyle,
               backgroundColor: this.props.overlayBackgroundColor,
@@ -351,26 +375,6 @@ export default class Overlay extends React.Component {
                 ? 'none'
                 : 'auto'
             }}
-            resizeHandleStyles={{
-              topLeft: { left: -handleShift, top: -handleShift },
-              topRight: { right: -handleShift, top: -handleShift },
-              bottomLeft: { left: -handleShift, bottom: -handleShift },
-              bottomRight: { right: -handleShift, bottom: -handleShift },
-              right: { right: -handleShift },
-              left: { left: -handleShift },
-              top: { top: -handleShift },
-              bottom: { bottom: -handleShift }
-            }}
-            resizeHandleClasses={{
-              topLeft: styles.resizeHandle,
-              topRight: styles.resizeHandle,
-              bottomLeft: styles.resizeHandle,
-              bottomRight: styles.resizeHandle,
-              right: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
-              left: cx(styles.resizeHandle, styles.resizeHandleHorizontal),
-              top: cx(styles.resizeHandle, styles.resizeHandleVertical),
-              bottom: cx(styles.resizeHandle, styles.resizeHandleVertical)
-            }}
             size={{
               width: this.state.stagedBoundingBoxPosition.width,
               height: this.state.stagedBoundingBoxPosition.height
@@ -379,9 +383,8 @@ export default class Overlay extends React.Component {
               x: this.state.stagedBoundingBoxPosition.x,
               y: this.state.stagedBoundingBoxPosition.y
             }}
-            bounds="parent"
             onDragStop={this.handleDragStagedBoxStop}
-            onDrag={this.handleDrag}
+            onDrag={this.handleDragStagedBox}
             onResize={this.handleResizeStagedBox}
             onResizeStop={this.handleResizeStop}
             enableResizing={
@@ -391,19 +394,29 @@ export default class Overlay extends React.Component {
           />
         )}
 
-        {this.props.acceptMode === 'confirm' &&
-          this.hasStagedBoundingBox() && (
-            <OverlayConfirmMenu
-              visible={
-                !this.state.userActingOnBoundingBox &&
-                !this.state.userMinimizedConfirmMenu
+        {showingConfirmMenu && (
+          <OverlayConfirmMenu
+            visible={showingConfirmMenu}
+            confirmLabel={this.props.confirmLabel}
+            onConfirm={this.confirmStagedBoundingBox}
+            onCancel={this.removeUnconfirmedBoundingBox}
+            onMinimize={this.minimizeConfirmMenu}
+          />
+        )}
+
+        {showingActionsMenu && (
+          <OverlayActionsMenu
+            visible={showingActionsMenu}
+            onMinimize={this.minimizeConfirmMenu}
+            menuItems={[
+              {
+                label: 'test action 1',
+                onClick: () => console.log('clicked')
               }
-              confirmLabel={this.props.confirmLabel}
-              onConfirm={this.confirmStagedBoundingBox}
-              onCancel={this.removeUnconfirmedBoundingBoxes}
-              onMinimize={this.minimizeConfirmMenu}
-            />
-          )}
+            ]}
+            onDelete={this.handleDelete}
+          />
+        )}
 
         <div
           style={{
