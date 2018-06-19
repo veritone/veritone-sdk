@@ -3,6 +3,7 @@
 .facesByScene {
   display: flex;
   flex-flow: row wrap;
+  flex: auto;
 }
 
 .recognizedMatchBox {
