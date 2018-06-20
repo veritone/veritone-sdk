@@ -245,11 +245,6 @@ export default class Overlay extends React.Component {
   handleDelete = () => {
     // todo:
     // this.props.onBoundingBoxChange(this.toPercentageBasedPoly());
-    console.log(
-      'willd elete at ',
-      this.state.focusedBoundingBoxIndex,
-      this.state.boundingBoxPositions
-    );
     let result = [...this.state.boundingBoxPositions];
     result.splice(this.state.focusedBoundingBoxIndex, 1);
 
@@ -348,7 +343,12 @@ export default class Overlay extends React.Component {
                 //   ? 'yellow'
                 //   :
                 this.props.overlayBackgroundColor,
-              mixBlendMode: this.props.overlayBackgroundBlendMode
+              mixBlendMode: this.props.overlayBackgroundBlendMode,
+              // do not let this box interfere with mouse events as we draw out
+              // the initial bounding box
+              pointerEvents: this.state.drawingInitialBoundingBox
+                ? 'none'
+                : 'auto'
             }}
             size={{ width, height }}
             position={{ x, y }}
