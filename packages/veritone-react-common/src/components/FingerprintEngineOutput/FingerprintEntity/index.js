@@ -16,18 +16,19 @@ export default class FingerprintEntity extends Component {
   static propTypes = {
     className: string,
     entity: shape({
-      name: string,
-      entityId: string,
+      id: string.isRequired,
+      name: string.isRequired,
       profileImageUrl: string,
+      description: string,
       libraryId: string,
       libraryName: string,
       jsondata: shape({}),
       matches: arrayOf(
         shape({
-          startTimeMs: number,
-          stopTimeMs: number,
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
           object: shape({
-            entityId: string,
+            entityId: string.isRequired,
             confidenced: number
           })
         })
@@ -54,7 +55,7 @@ export default class FingerprintEntity extends Component {
     return (
       <div className={classNames(styles.entityInfo)}>
         <div className={classNames(styles.logo)}>
-          <img src={entity.profileImageUrl} />
+          <img src={entity.profileImageUrl || '//static.veritone.com/veritone-ui/default-nullstate.svg'} />
         </div>
         <div>
           <div className={classNames(styles.entityName)}>

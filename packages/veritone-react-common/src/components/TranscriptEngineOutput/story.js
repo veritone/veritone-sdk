@@ -18,10 +18,12 @@ storiesOf('TranscriptEngineOutput', module)
     return <TranscriptExample lazyLoading />;
   })
   .add('With Lazy Loading Edit Mode Callback', () => {
-    return <TranscriptExample 
-      lazyLoading 
-      onEditTypeChange={action('on edit mode change')} 
-    />;
+    return (
+      <TranscriptExample
+        lazyLoading
+        onEditTypeChange={action('on edit mode change')}
+      />
+    );
   });
 
 export class TranscriptExample extends Component {

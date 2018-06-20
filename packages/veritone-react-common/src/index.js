@@ -9,10 +9,13 @@ export AppSwitcher from './components/AppSwitcher';
 export Avatar from './components/Avatar';
 export Image from './components/Image';
 export Chip from './components/Chip';
+export Lozenge from './components/Lozenge';
+export Truncate from './components/Truncate';
+export DelayedProgress from './components/DelayedProgress';
 export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
-export DiscoverySidebar, {
+export DiscoverySideBar, {
   sectionsShape as discoverySidebarSectionsShape
 } from './components/DiscoverySideBar';
 export FullScreenDialog from './components/FullScreenDialog';
@@ -33,7 +36,9 @@ export MenuColumn from './components/DataTable/MenuColumn';
 
 export AlertDialog from './components/share-components/AlertDialog';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
-export { Edit as TranscriptEditMode } from './components/TranscriptEngineOutput/TranscriptContent';
+export {
+  Edit as TranscriptEditMode
+} from './components/TranscriptEngineOutput/TranscriptContent';
 export SentimentEngineOutput from './components/SentimentEngineOutput';
 export ObjectDetectionEngineOutput from './components/ObjectDetectionEngineOutput';
 export LogoDetectionEngineOutput from './components/LogoDetectionEngineOutput';
@@ -44,8 +49,6 @@ export EngineOutputHeader from './components/EngineOutputHeader';
 export EngineOutputNullState from './components/EngineOutputNullState';
 export EngineCategorySelector from './components/EngineCategorySelector';
 export MediaInfoPanel from './components/MediaInfoPanel';
-export EditMetadataDialog from './components/MediaInfoPanel/EditMetadataDialog';
-export EditTagsDialog from './components/MediaInfoPanel/EditTagsDialog';
 export TranslationEngineOutput from './components/TranslationEngineOutput';
 export FingerprintEngineOutput from './components/FingerprintEngineOutput';
 export GeoEngineOutput from './components/GeoEngineOutput';
@@ -69,5 +72,8 @@ export SDOTable from './components/SDOTable';
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
+
+export ExpandableInputField from './components/ExpandableInputField';
+export SearchBar from './components/SearchBar';
 
 export withMuiThemeProvider from './helpers/withMuiThemeProvider';

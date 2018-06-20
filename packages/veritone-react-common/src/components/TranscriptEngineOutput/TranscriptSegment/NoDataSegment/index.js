@@ -21,7 +21,7 @@ export default class NoDataSegment extends Component {
     stopMediaPlayHeadMs: number
   };
 
-  handleSnippetChange = (entryData) => {
+  handleSnippetChange = entryData => {
     const { editMode, onChange } = this.props;
 
     if (editMode && onChange) {

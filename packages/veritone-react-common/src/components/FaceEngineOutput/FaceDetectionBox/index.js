@@ -16,16 +16,26 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 const getEntityNameElement = (entityName, searchEntityText) => {
-  const matchIndex = entityName.toLowerCase().indexOf(searchEntityText.toLowerCase());
+  const matchIndex = entityName
+    .toLowerCase()
+    .indexOf(searchEntityText.toLowerCase());
   return (
     <span>
       {entityName.substr(0, matchIndex)}
-      <span className={styles.menuEntityNameMatch}>{entityName.substr(matchIndex, searchEntityText.length)}</span>
+      <span className={styles.menuEntityNameMatch}>
+        {entityName.substr(matchIndex, searchEntityText.length)}
+      </span>
       {entityName.substr(matchIndex + searchEntityText.length)}
-    </span>);
+    </span>
+  );
 };
 
-const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex, searchEntityText }) =>
+const renderEntitySearchMenu = ({
+  results,
+  getItemProps,
+  highlightedIndex,
+  searchEntityText
+}) =>
   results.map((result, index) => {
     return (
       <MenuItem
@@ -40,7 +50,9 @@ const renderEntitySearchMenu = ({ results, getItemProps, highlightedIndex, searc
       >
         <Avatar src={result.profileImageUrl || noAvatar} />
         <div className={styles.entityInfo}>
-          <div className={styles.menuEntityName}>{getEntityNameElement(result.name, searchEntityText)}</div>
+          <div className={styles.menuEntityName}>
+            {getEntityNameElement(result.name, searchEntityText)}
+          </div>
           <div className={styles.menuLibraryName}>{result.library.name}</div>
         </div>
       </MenuItem>
@@ -115,20 +127,35 @@ class FaceDetectionBox extends Component {
 
   onSearchEntityInputChange = text => {
     setTimeout(() => {
-      this.setState({ searchEntityText: text })
+      this.setState({ searchEntityText: text });
     }, 1000);
     this.props.onSearchForEntities(text);
   };
 
-  handleBlur = event => {
-    this.setState({
-      editFaceEntity: false
-    });
+  handleDownshiftStateChange = (changes, stateAndHelpers) => {
+    if (changes.isOpen === false) {
+      this.setState({
+        editFaceEntity: false
+      });
+    }
   }
+
+  calculatePopperPlacement = () => {
+    let shift = 'start';
+    const distancFromTheSide =
+      window.innerWidth - this._inputRef.getBoundingClientRect().right;
+    if (
+      distancFromTheSide <
+      250 - this._inputRef.getBoundingClientRect().width
+    ) {
+      shift = 'end';
+    }
+    return `bottom-${shift}`;
+  };
 
   itemToString = item => (item ? item.name : '');
 
-  inputRef = node => this._inputRef = node;
+  inputRef = node => (this._inputRef = node);
 
   render() {
     const {
@@ -180,6 +207,7 @@ class FaceDetectionBox extends Component {
               itemToString={this.itemToString}
               onSelect={this.handleEntitySelect}
               onInputValueChange={this.onSearchEntityInputChange}
+              onStateChange={this.handleDownshiftStateChange}
             >
               {({
                 getInputProps,
@@ -194,13 +222,21 @@ class FaceDetectionBox extends Component {
                       {...getInputProps({
                         placeholder: 'Unknown',
                         autoFocus: true,
-                        className: styles.entitySearchInput,
-                        onBlur: this.handleBlur
+                        className: styles.entitySearchInput
                       })}
                     />
                   </div>
                   {isOpen ? (
-                    <Popper placement="bottom-start" style={{ zIndex: 1 }} target={this._inputRef}>
+                    <Popper
+                      modifiers={{
+                        preventOverflow: {
+                          enabled: false
+                        }
+                      }}
+                      placement={this.calculatePopperPlacement()}
+                      style={{ zIndex: 1 }}
+                      target={this._inputRef}
+                    >
                       <Paper className={styles.autoCompleteDropdown} square>
                         <div className={styles.searchResultsList}>
                           {isSearchingEntities ? (
@@ -212,8 +248,10 @@ class FaceDetectionBox extends Component {
                               highlightedIndex,
                               searchEntityText: this.state.searchEntityText
                             })
-                          ) :  (
-                            <div className={styles.notFoundEntityMessage}>Results Not Found</div>
+                          ) : (
+                            <div className={styles.notFoundEntityMessage}>
+                              Results Not Found
+                            </div>
                           )}
                         </div>
                         <div className={styles.addNewEntity}>

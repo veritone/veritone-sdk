@@ -24,9 +24,10 @@
   }
 
   .content {
+    flex: auto;
     clear: both;
     width: 100%;
-    flex: auto;
+    height: calc(100% - 75px);
   }
 }
 

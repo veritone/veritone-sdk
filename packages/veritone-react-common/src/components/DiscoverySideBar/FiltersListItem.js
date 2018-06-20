@@ -9,7 +9,7 @@ export default class FiltersListItem extends React.Component {
   static propTypes = {
     id: string.isRequired,
     label: string.isRequired,
-    number: number.isRequired,
+    number: number,
     onClearFilter: func.isRequired
   };
   static defaultProps = {};
@@ -33,7 +33,7 @@ export default class FiltersListItem extends React.Component {
           className={styles.filterItemLink}
           onClick={this.handleClear}
         >
-          {this.props.label} ({this.props.number})
+          {this.props.label} {this.props.number && `(${this.props.number})`}
         </a>
       </div>
     );

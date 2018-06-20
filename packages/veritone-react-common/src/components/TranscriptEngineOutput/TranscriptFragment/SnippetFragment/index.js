@@ -10,13 +10,13 @@ export default class SnippetFragment extends Component {
   static propTypes = {
     value: string,
     active: bool,
-    startTimeMs: number.isRequired,
-    stopTimeMs: number.isRequired,
     editMode: bool,
     onClick: func,
     onChange: func,
     className: string,
-    changeOnBlur: bool
+    changeOnBlur: bool,
+    startTimeMs: number.isRequired,
+    stopTimeMs: number.isRequired
   };
 
   static defaultProps = {
@@ -24,15 +24,6 @@ export default class SnippetFragment extends Component {
     editMode: false,
     changeOnBlur: false
   };
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const { active, value, className, editMode } = nextProps;
-    const newMode = editMode !== this.props.editMode;
-    const newHighlight = active !== this.props.active;
-    const newClass = className !== this.props.className;
-    const newValue = this.currentValue && value !== this.currentValue.value;
-    return newMode || newClass || newValue || newHighlight;
-  }
 
   originalValue = {
     value: this.props.value,
@@ -63,7 +54,7 @@ export default class SnippetFragment extends Component {
     const { startTimeMs, stopTimeMs } = this.props;
     const newVal = event.target.textContent;
     const newStartTime = startTimeMs; //These 2 are the same for now. We will have options to edit time in the future
-    const newStopTime = stopTimeMs;   //These 2 are the same for now. We will have options to edit time in the future
+    const newStopTime = stopTimeMs; //These 2 are the same for now. We will have options to edit time in the future
     this.triggerOnChange(newVal, newStartTime, newStopTime, true);
   };
 

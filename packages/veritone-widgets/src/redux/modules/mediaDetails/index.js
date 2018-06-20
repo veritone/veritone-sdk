@@ -9,7 +9,8 @@ import {
   values,
   uniqBy,
   keyBy,
-  isMatch
+  isMatch,
+  noop
 } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
@@ -43,9 +44,6 @@ export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
 export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
 export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
 export const TOGGLE_EXPANDED_MODE = 'TOGGLE_EXPANDED_MODE';
-export const REQUEST_LIBRARIES = 'REQUEST_LIBRARIES';
-export const REQUEST_LIBRARIES_SUCCESS = 'REQUEST_LIBRARIES_SUCCESS';
-export const REQUEST_LIBRARIES_FAILURE = 'REQUEST_LIBRARIES_FAILURE';
 export const REQUEST_ENTITIES = 'REQUEST_ENTITIES';
 export const REQUEST_ENTITIES_SUCCESS = 'REQUEST_ENTITIES_SUCCESS';
 export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
@@ -63,6 +61,9 @@ export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
 export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
+export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
+export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
+export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 
 export const namespace = 'mediaDetails';
 
@@ -76,15 +77,21 @@ const defaultMDPState = {
   selectedEngineId: null,
   isEditModeEnabled: false,
   isExpandedMode: false,
-  libraries: [],
-  fetchingLibraries: false,
   entities: [],
   fetchingEntities: false,
   contentTemplates: {},
   tdoContentTemplates: {},
   schemasById: {},
   enableSave: false,
-  error: null
+  error: null,
+  alertDialogConfig: {
+    show: false,
+    title: 'Save Changes?',
+    description: 'Would you like to save the changes?',
+    cancelButtonLabel: 'Discard',
+    confirmButtonLabel: 'Save',
+    nextAction: noop
+  }
 };
 
 const defaultState = {};
@@ -643,57 +650,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [REQUEST_LIBRARIES](
-    state,
-    {
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingLibraries: true
-      }
-    };
-  },
-  [REQUEST_LIBRARIES_SUCCESS](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    const allLibraries = uniqBy(
-      values(payload).concat(state[widgetId].libraries),
-      'id'
-    );
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingLibraries: false,
-        fetchLibrariesError: null,
-        libraries: allLibraries
-      }
-    };
-  },
-  [REQUEST_LIBRARIES_FAILURE](
-    state,
-    {
-      error,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchLibrariesError: error,
-        fetchingLibraries: false
-      }
-    };
-  },
   [REQUEST_ENTITIES](
     state,
     {
@@ -704,7 +660,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        fetchingLibraries: true
+        fetchingEntities: true
       }
     };
   },
@@ -723,9 +679,26 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        fetchingLibraries: false,
-        fetchLibrariesError: null,
+        fetchingEntities: false,
+        error: null,
         entities: allEntities
+      }
+    };
+  },
+  [REQUEST_ENTITIES_FAILURE](
+    state,
+    {
+      error,
+      meta: { widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'unknown error',
+        fetchingEntities: false
       }
     };
   },
@@ -792,6 +765,40 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [SHOW_CONFIRM_DIALOG](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        alertDialogConfig: {
+          ...state[widgetId].alertDialogConfig,
+          ...payload
+        }
+      }
+    };
+  },
+  [CLOSE_CONFIRM_DIALOG](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        alertDialogConfig: {
+          ...defaultMDPState.alertDialogConfig
+        }
+      }
+    };
   }
 });
 
@@ -819,8 +826,6 @@ export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isExpandedMode']);
-export const getLibraries = (state, widgetId) =>
-  get(local(state), [widgetId, 'libraries']);
 export const getEntities = (state, widgetId) =>
   get(local(state), [widgetId, 'entities']);
 export const getContentTemplates = (state, widgetId) =>
@@ -850,6 +855,8 @@ export const isUserGeneratedEngineId = engineId => {
     isUserGeneratedFaceEngineId(engineId)
   );
 };
+export const getAlertDialogConfig = (state, widgetId) =>
+  get(local(state), [widgetId, 'alertDialogConfig']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1054,4 +1061,21 @@ export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
     engineRuns
   },
   meta: { widgetId }
+});
+export const openConfirmModal = (nextAction, widgetId) => ({
+  type: SHOW_CONFIRM_DIALOG,
+  payload: {
+    show: true,
+    nextAction: nextAction
+  },
+  meta: { widgetId }
+});
+
+export const closeConfirmModal = widgetId => ({
+  type: CLOSE_CONFIRM_DIALOG,
+  meta: { widgetId }
+});
+
+export const discardUnsavedChanges = () => ({
+  type: DISCARD_UNSAVED_CHANGES
 });

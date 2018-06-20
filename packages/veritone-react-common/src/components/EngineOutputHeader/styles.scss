@@ -31,6 +31,7 @@
   }
 
   .engineSelect {
+    @include mui-text('body1');
     margin-left: 20px;
   }
 
