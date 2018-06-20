@@ -1,17 +1,41 @@
-export function getMousePosition(e) {
-  // https://stackoverflow.com/questions/8389156
-  let el = e.target,
-    x = 0,
-    y = 0;
+// export function getMousePosition(e) {
+//   // https://stackoverflow.com/questions/8389156
+//   let el = e.target,
+//     x = 0,
+//     y = 0;
+//
+//   // fixme -- scroll position seems to not be taken into account
+//   while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+//     console.log(el.scrollTop)
+//     x += el.offsetLeft - el.scrollLeft;
+//     y += el.offsetTop - el.scrollTop;
+//     el = el.offsetParent;
+//   }
+//
+//   x = e.clientX - x;
+//   y = e.clientY - y;
+//
+//   return { x: x, y: y };
+// }
 
-  while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
-    x += el.offsetLeft - el.scrollLeft;
-    y += el.offsetTop - el.scrollTop;
+export function getMousePosition(e) {
+  let el = e.target,
+    el_left = 0,
+    el_top = 0,
+    x,
+    y;
+
+  while (el.offsetParent) {
+    el_left += el.offsetLeft;
+    el_top += el.offsetTop;
     el = el.offsetParent;
   }
 
-  x = e.clientX - x;
-  y = e.clientY - y;
+  x = e.pageX;
+  y = e.pageY;
 
-  return { x: x, y: y };
+  x -= el_left;
+  y -= el_top;
+
+  return { x, y };
 }
