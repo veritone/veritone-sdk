@@ -24,7 +24,9 @@
     "react-redux": "^5.0.6",
     "react-transition-group": "1.x",
     "redux": "^3.7.2",
-    "redux-form": "^7.1.2"
+    "redux-form": "^7.1.2",
+    "shaka-player": "^2.4.1",
+    "video-react": "^0.11.2"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
