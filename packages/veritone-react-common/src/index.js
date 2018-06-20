@@ -34,3 +34,5 @@ export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
+export * as video from './components/video';
+export MediaPlayer from './components/video/MediaPlayer';
