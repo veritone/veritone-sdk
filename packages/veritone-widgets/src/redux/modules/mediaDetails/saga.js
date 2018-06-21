@@ -15,7 +15,8 @@ import {
   isUndefined,
   isArray,
   every,
-  find
+  find,
+  forEach
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import {
@@ -775,7 +776,10 @@ function* createFileAssetSaga(
     // Reset the the transcipt engine results.
     if (selectedEngineCategory.categoryType === 'transcript') {
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    } else if (selectedEngineCategory.categoryType === 'face' && userGeneratedEngineId) {
+    } else if (
+      selectedEngineCategory.categoryType === 'face' &&
+      userGeneratedEngineId
+    ) {
       yield put(
         fetchFaceEngineResults({
           selectedEngineId: userGeneratedEngineId,
@@ -1098,10 +1102,10 @@ function* fetchSchemas(widgetId, schemaIds) {
     });
   }
   return yield put({
-      type: REQUEST_SCHEMAS_SUCCESS,
-      payload: response.data,
-      meta: { widgetId }
-    });
+    type: REQUEST_SCHEMAS_SUCCESS,
+    payload: response.data,
+    meta: { widgetId }
+  });
 }
 
 function* watchLoadEngineResultsComplete() {
@@ -1386,6 +1390,26 @@ function* watchFaceEngineEntityUpdate() {
   });
 }
 
+// Remove AWS prefixed params, keep the rest.
+function removeAwsSignatureParams(uri) {
+  const amzParamKeyRegex = /[x..X]-[a..A][m..M][z..Z]/;
+  if (!uri || !uri.includes('?') || !amzParamKeyRegex.test(uri)) {
+    return uri;
+  }
+  const nakedUri = uri.split('?')[0];
+  const uriParamsStr = uri.split('?')[1];
+  const nonAwsSignatureParams = uriParamsStr
+    .split('&')
+    .filter(
+      uriParam =>
+        uriParam && uriParam.length && !amzParamKeyRegex.test(uriParam)
+    );
+  if (nonAwsSignatureParams.length) {
+    return `${nakedUri}?${nonAwsSignatureParams.join('&')}`;
+  }
+  return nakedUri;
+}
+
 function* watchSaveAssetData() {
   yield takeEvery(SAVE_ASSET_DATA, function*(action) {
     let assetData;
@@ -1430,6 +1454,13 @@ function* watchSaveAssetData() {
           error: 'Source engine id must be set on the engine result'
         })
       );
+    }
+    if (get(assetData, 'series.length')) {
+      forEach(assetData.series, asset => {
+        if (get(asset, 'object.uri')) {
+          asset.object.uri = removeAwsSignatureParams(get(asset, 'object.uri'));
+        }
+      });
     }
     // process vtn-standard asset
     const contentType = 'application/json';
