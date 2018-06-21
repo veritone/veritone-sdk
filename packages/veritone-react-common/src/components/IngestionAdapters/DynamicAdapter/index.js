@@ -16,7 +16,7 @@ import {
   toLower,
   includes
 } from 'lodash';
-import { objectOf, any, func, arrayOf, string } from 'prop-types';
+import { objectOf, any, func, arrayOf } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
@@ -29,7 +29,6 @@ class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
-    supportedSourceTypes: arrayOf(string),
     sources: arrayOf(objectOf(any)).isRequired,
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
@@ -40,10 +39,7 @@ class DynamicAdapter extends React.Component {
   UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {};
-    if (
-      isArray(this.props.supportedSourceTypes) &&
-      this.props.supportedSourceTypes.length
-    ) {
+    if (get(this.props, 'adapterConfig.supportedSourceTypes.length')) {
       newState.sourceId =
         get(this.props.configuration, 'sourceId') ||
         (get(this.props, 'sources.length') ? this.props.sources[0].id : '');
@@ -86,8 +82,7 @@ class DynamicAdapter extends React.Component {
   render() {
     return (
       <div>
-        {isArray(this.props.supportedSourceTypes) &&
-        this.props.supportedSourceTypes.length ? (
+        {get(this.props, 'adapterConfig.supportedSourceTypes.length') ? (
           <div>
             <SourceDropdownMenu
               sourceId={this.state.sourceId}
@@ -117,8 +112,8 @@ class DynamicAdapter extends React.Component {
                 <div className={styles.adapterIconContainer}>
                   <Image
                     src={this.props.adapterConfig.iconPath}
-                    width={44}
-                    height={44}
+                    width={'44px'}
+                    height={'44px'}
                     border
                   />
                 </div>
@@ -236,11 +231,11 @@ export default {
   },
   validate: adapterStep => (configuration, cb) => {
     let errors = [];
+    if (get(adapterStep, 'supportedSourceTypes.length') && !configuration.sourceId) {
+      errors.push('Source is required');
+    }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
-        if (adapterStep.sourceRequired && !configuration.sourceId) {
-          errors.push('Source is required');
-        }
         if (field.defaultValue && !configuration[field.name]) {
           errors.push(startCase(toLower(field.name)) + ' is invalid');
         } else if (
