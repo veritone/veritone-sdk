@@ -2,8 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
-import MediaPlayer from './MediaPlayer';
-import { Player } from './';
+import { Player } from 'video-react';
+import MediaPlayer from './';
 
 
 const multipleStreams = [
