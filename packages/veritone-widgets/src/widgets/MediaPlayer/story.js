@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
 import 'video-react/dist/video-react.css';
+import BaseStory from '../../shared/BaseStory';
 import { MediaPlayer } from './';
 
 const multipleStreams = [
@@ -40,19 +41,50 @@ const demoPosterImage =
 
 storiesOf('MediaPlayer', module)
   .add('MP4', () => (
-    <MediaPlayer streams={multipleStreams} width={500} fluid={false} />
+    <BaseStory
+      componentClass={MediaPlayer}
+      componentProps={{
+        streams: multipleStreams,
+        width: 500,
+        fluid: false
+      }}
+    />
   ))
 
   .add('DASH', () => (
-    <MediaPlayer autoPlay streams={dashStream} width={500} fluid={false} />
+    <BaseStory
+      componentClass={MediaPlayer}
+      componentProps={{
+        autoPlay: true,
+        streams: dashStream,
+        width: 500,
+        fluid: false
+      }}
+    />
   ))
 
   .add('HLS', () => (
-    <MediaPlayer autoPlay streams={hlsStream} width={500} fluid={false} />
+    <BaseStory
+      componentClass={MediaPlayer}
+      componentProps={{
+        autoPlay: true,
+        streams: hlsStream,
+        width: 500,
+        fluid: false
+      }}
+    />
   ))
 
   .add('Multiple Streams', () => (
-    <MediaPlayer autoPlay streams={multipleStreams} width={500} fluid={false} />
+    <BaseStory
+      componentClass={MediaPlayer}
+      componentProps={{
+        autoPlay: true,
+        streams: multipleStreams,
+        width: 500,
+        fluid: false
+      }}
+    />
   ))
 
   .add('Switch Source', () => {
@@ -60,14 +92,26 @@ storiesOf('MediaPlayer', module)
     const options = [demoMp4, alternateDemoMp4];
     const value = select(label, options, options[0]);
 
-    return <MediaPlayer src={value} width={500} fluid={false} />;
+    return (
+      <BaseStory
+        componentClass={MediaPlayer}
+        componentProps={{
+          src: value,
+          width: 500,
+          fluid: false
+        }}
+      />
+    );
   })
 
   .add('Audio only', () => (
-    <MediaPlayer
-      src={demoMp3}
-      width={500}
-      fluid={false}
-      poster={demoPosterImage}
+    <BaseStory
+      componentClass={MediaPlayer}
+      componentProps={{
+        src: demoMp3,
+        width: 500,
+        fluid: false,
+        poster: demoPosterImage
+      }}
     />
   ));
