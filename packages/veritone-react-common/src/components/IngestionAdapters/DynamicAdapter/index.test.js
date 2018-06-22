@@ -40,41 +40,54 @@ describe('DynamicAdapter', () => {
     expect(DynamicAdapterConfig.getHydratedData).toBeDefined();
   });
 
-  it('Validate function should not require sourceId if adapterConfig does not have supportedSourceTypes defined', () => {
+  it('Validate function should not require sourceId if adapterConfig does not have supportedSourceTypes defined', done => {
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(BASE_ADAPTER_CONFIG),
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({}, testFuncs.validateCB);
-    expect(testFuncs.validateCB).toHaveBeenCalledWith(null, {});
+    testFuncs.validate({}).then((result) => {
+      testFuncs.validateCB(result);
+      expect(testFuncs.validateCB).toHaveBeenCalled();
+      done();
+    });
   });
 
-  it('Validate function should only require sourceId if adapterConfig has supportedSourceTypes defined w/ length > 1', () => {
+  it('Validate function should only require sourceId if adapterConfig has supportedSourceTypes defined w/ length > 1', done => {
     const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES });
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(ADAPTER_CONFIG),
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({}, testFuncs.validateCB);
-    expect(testFuncs.validateCB).toHaveBeenCalledWith('Configuration: Source is required');
+    testFuncs.validate({}).catch(err => {
+      testFuncs.validateCB(err);
+      expect(testFuncs.validateCB).toHaveBeenCalledWith('Source is required');
+      done();
+    });
   });
 
-  it('Validate function should only require fields which have default values', () => {
+  it('Validate function should only require fields which have default values', done => {
     const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(ADAPTER_CONFIG),
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({}, testFuncs.validateCB);
-    expect(testFuncs.validateCB).toHaveBeenCalledWith(`Configuration: ${startCase(toLower(FIELDS[0].name))} is invalid`);
+    testFuncs.validate({}).catch(err => {
+      testFuncs.validateCB(err);
+      expect(testFuncs.validateCB).toHaveBeenCalledWith(`${startCase(toLower(FIELDS[0].name))} is invalid`);
 
-    let configuration = {};
-    configuration[FIELDS[0].name] = 'test'
-    testFuncs.validate(configuration, testFuncs.validateCB);
-    expect(testFuncs.validateCB).toHaveBeenCalledWith(null, configuration);
+      let configuration = {};
+      configuration[FIELDS[0].name] = 'test'
+      testFuncs.validate(configuration).then(result => {
+        testFuncs.validateCB(result)
+        expect(testFuncs.validateCB).toHaveBeenCalledWith(configuration);
+        done();
+      });
+    });
+    
+
   });
 
   it('DynamicAdapter should automatically select the first sourceId if supportedSourceTypes is defined works', () => {

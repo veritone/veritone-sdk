@@ -229,7 +229,7 @@ export default {
       setName: true
     }
   },
-  validate: adapterStep => (configuration, cb) => {
+  validate: adapterStep => (configuration) => {
     let errors = [];
     if (get(adapterStep, 'supportedSourceTypes.length') && !configuration.sourceId) {
       errors.push('Source is required');
@@ -251,9 +251,9 @@ export default {
         }
       });
     }
-    errors.length
-      ? cb('Configuration: ' + errors.join(', '))
-      : cb(null, configuration);
+    return errors.length
+      ? Promise.reject(errors.join(', '))
+      : Promise.resolve(configuration);
   },
   getHydratedData: adapterStep => hydrateData => {
     let configuration = {};
