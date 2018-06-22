@@ -60,12 +60,7 @@ class EntityInformation extends Component {
           className={styles.entityBackButton}
           onClick={onBackClicked}
         >
-          <Icon
-            className={classNames(
-              'icon-keyboard_backspace',
-              styles.entityBackIcon
-            )}
-          />
+          <Icon className={classNames(styles.entityBackIcon, 'icon-arrow-back')} />
           <span className={styles.entityBackLabel}>Back</span>
         </Button>
         <div className={styles.selectedEntity}>
@@ -74,11 +69,11 @@ class EntityInformation extends Component {
             src={entity.profileImageUrl || noAvatar}
           />
           <div className={styles.selectedEntityInfo}>
-            <div>
+            <div className={styles.entityNameAndCount}>
               <span>{entity.name} </span>
               <span>({count})</span>
             </div>
-            <div>
+            <div className={styles.libraryName}>
               <i className="icon-library-app" />&nbsp;
               <span>
                 Library: <strong>{entity.libraryName}</strong>
@@ -92,8 +87,8 @@ class EntityInformation extends Component {
             onChange={this.handleTabChange}
             indicatorColor="primary"
           >
-            <Tab label="Matched in this Video" value="faceMatches" />
-            <Tab label="Metadata" value="metadata" />
+            <Tab label="Matched in this Video" value="faceMatches" classes={{root: styles.infoTab}}/>
+            <Tab label="Metadata" value="metadata" classes={{root: styles.infoTab}}/>
           </Tabs>
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>

@@ -3,6 +3,8 @@ import { number, objectOf, shape, string, func, arrayOf } from 'prop-types';
 import NoFacesFound from '../NoFacesFound';
 import FaceFrameContainer from '../FaceFrameContainer';
 
+import styles from './styles.scss';
+
 class FacesByFrame extends Component {
   static propTypes = {
     recognizedEntityObjectMap: objectOf(
@@ -43,7 +45,7 @@ class FacesByFrame extends Component {
     } = this.props;
 
     return (
-      <div>
+      <div className={styles.facesByFrame}>
         {framesBySeconds[
           currentMediaPlayerTime - currentMediaPlayerTime % 1000
         ] ? (

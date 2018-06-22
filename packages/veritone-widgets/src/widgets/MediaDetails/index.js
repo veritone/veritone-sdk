@@ -56,7 +56,8 @@ import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
-const programLiveImageNullState = '//static.veritone.com/veritone-ui/default-nullstate.svg';
+const programLiveImageNullState =
+  '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
 @withMuiThemeProvider
 @withPropsOnChange([], ({ id }) => ({
@@ -574,8 +575,10 @@ class MediaDetailsWidget extends React.Component {
   };
 
   isDownloadMediaEnabled = () => {
-    return get(this.props.tdo, 'primaryAsset.signedUri.length') &&
-      get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+    return (
+      get(this.props.tdo, 'primaryAsset.signedUri.length') &&
+      get(this.props.kvp, 'features.downloadMedia') === 'enabled'
+    );
   };
 
   downloadFile = () => {
@@ -731,20 +734,20 @@ class MediaDetailsWidget extends React.Component {
                   )}
                   {(get(this.props, 'tdo.id') ||
                     get(this.props, 'contextMenuExtensions.tdos.length')) && (
-                    <Tooltip
-                      id="tooltip-show-overflow-menu"
-                      title="Show more options"
-                      PopperProps={{
-                        style: {
-                          pointerEvents: 'none',
-                          marginTop: '5px',
-                          top: '-20px'
-                        }
-                      }}
-                    >
-                      <Manager>
-                        <Target>
-                          <div ref={this.setMenuTarget}>
+                    <Manager>
+                      <Target>
+                        <div ref={this.setMenuTarget}>
+                          <Tooltip
+                            id="tooltip-show-overflow-menu"
+                            title="Show more options"
+                            PopperProps={{
+                              style: {
+                                pointerEvents: 'none',
+                                marginTop: '5px',
+                                top: '-20px'
+                              }
+                            }}
+                          >
                             <IconButton
                               className={styles.pageHeaderActionButton}
                               aria-label="More"
@@ -752,34 +755,37 @@ class MediaDetailsWidget extends React.Component {
                               aria-owns={isMenuOpen ? 'menu-list-grow' : null}
                               onClick={this.toggleIsMenuOpen}
                             >
-                              <MoreVertIcon/>
+                              <MoreVertIcon />
                             </IconButton>
-                          </div>
-                        </Target>
-                        {isMenuOpen && (
-                          <Popper
-                            className={styles.popperContent}
-                            placement="bottom-end"
-                            eventsEnabled={isMenuOpen}
-                          >
-                            <ClickAwayListener onClickAway={this.onMenuClose}>
-                              <Grow
-                                in={isMenuOpen}
-                                id="menu-list-grow"
-                                style={{transformOrigin: '0 0 0'}}
-                              >
-                                <Paper>
-                                  <MenuList role="menu">
-                                    {this.isDownloadMediaEnabled() && (
-                                      <MenuItem
-                                        classes={{root: styles.headerMenuItem}}
-                                        disabled={!this.isDownloadAllowed()}
-                                        onClick={this.downloadFile}
-                                      >
-                                        Download
-                                      </MenuItem>
-                                    )}
-                                    {this.props.contextMenuExtensions &&
+                          </Tooltip>
+                        </div>
+                      </Target>
+                      {isMenuOpen && (
+                        <Popper
+                          className={styles.popperContent}
+                          placement="bottom-end"
+                          eventsEnabled={isMenuOpen}
+                        >
+                          <ClickAwayListener onClickAway={this.onMenuClose}>
+                            <Grow
+                              in={isMenuOpen}
+                              id="menu-list-grow"
+                              style={{ transformOrigin: '0 0 0' }}
+                            >
+                              <Paper>
+                                <MenuList role="menu">
+                                  {this.isDownloadMediaEnabled() && (
+                                    <MenuItem
+                                      classes={{
+                                        root: styles.headerMenuItem
+                                      }}
+                                      disabled={!this.isDownloadAllowed()}
+                                      onClick={this.downloadFile}
+                                    >
+                                      Download
+                                    </MenuItem>
+                                  )}
+                                  {this.props.contextMenuExtensions &&
                                     this.props.contextMenuExtensions.tdos.map(
                                       tdoMenu => (
                                         <MenuItem
@@ -796,14 +802,13 @@ class MediaDetailsWidget extends React.Component {
                                         </MenuItem>
                                       )
                                     )}
-                                  </MenuList>
-                                </Paper>
-                              </Grow>
-                            </ClickAwayListener>
-                          </Popper>
-                        )}
-                      </Manager>
-                    </Tooltip>
+                                </MenuList>
+                              </Paper>
+                            </Grow>
+                          </ClickAwayListener>
+                        </Popper>
+                      )}
+                    </Manager>
                   )}
                   {(get(this.props, 'tdo.id') ||
                     get(this.props, 'tdo.details', null) ||
@@ -964,8 +969,8 @@ class MediaDetailsWidget extends React.Component {
                     {isImage ? (
                       <Image
                         src={this.getPrimaryAssetUri()}
-                        width="100%"
-                        height="100%"
+                        width="450px"
+                        height="250px"
                         type="contain"
                       />
                     ) : (

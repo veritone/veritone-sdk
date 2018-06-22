@@ -84,7 +84,8 @@
 .searchResultsList {
   width: 250px;
   flex: auto;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .notFoundEntityMessage {

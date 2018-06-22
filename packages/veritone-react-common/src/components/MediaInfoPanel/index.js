@@ -207,20 +207,20 @@ class MediaInfoPanel extends Component {
             <span>Metadata</span>
             <div className={styles.headerMenu}>
               {this.props.canEditMedia() && (
-                <Tooltip
-                  id="tooltip-show-edit-menu"
-                  title="Edit"
-                  PopperProps={{
-                    style: {
-                      pointerEvents: 'none',
-                      marginTop: '5px',
-                      top: '-10px'
-                    }
-                  }}
-                >
-                  <Manager>
-                    <Target>
-                      <div ref={this.setMenuTarget}>
+                <Manager>
+                  <Target>
+                    <div ref={this.setMenuTarget}>
+                      <Tooltip
+                        id="tooltip-show-edit-menu"
+                        title="Edit"
+                        PopperProps={{
+                          style: {
+                            pointerEvents: 'none',
+                            marginTop: '5px',
+                            top: '-10px'
+                          }
+                        }}
+                      >
                         <IconButton
                           className={styles.pageHeaderActionButton}
                           aria-label="Edit"
@@ -230,42 +230,42 @@ class MediaInfoPanel extends Component {
                         >
                           <EditIcon />
                         </IconButton>
-                      </div>
-                    </Target>
-                    {isMenuOpen && (
-                      <Popper
-                        className={styles.popperContent}
-                        placement="bottom-end"
-                        eventsEnabled={isMenuOpen}
-                      >
-                        <ClickAwayListener onClickAway={this.onMenuClose}>
-                          <Grow
-                            in={isMenuOpen}
-                            id="menu-list-grow"
-                            style={{ transformOrigin: '0 0 0' }}
-                          >
-                            <Paper>
-                              <MenuList role="menu">
-                                <MenuItem
-                                  classes={{ root: styles.headerMenuItem }}
-                                  onClick={this.onMetadataOpen}
-                                >
-                                  Edit Metadata
-                                </MenuItem>
-                                <MenuItem
-                                  classes={{ root: styles.headerMenuItem }}
-                                  onClick={this.onEditTagsOpen}
-                                >
-                                  Edit Tags
-                                </MenuItem>
-                              </MenuList>
-                            </Paper>
-                          </Grow>
-                        </ClickAwayListener>
-                      </Popper>
-                    )}
-                  </Manager>
-                </Tooltip>
+                      </Tooltip>
+                    </div>
+                  </Target>
+                  {isMenuOpen && (
+                    <Popper
+                      className={styles.popperContent}
+                      placement="bottom-end"
+                      eventsEnabled={isMenuOpen}
+                    >
+                      <ClickAwayListener onClickAway={this.onMenuClose}>
+                        <Grow
+                          in={isMenuOpen}
+                          id="menu-list-grow"
+                          style={{ transformOrigin: '0 0 0' }}
+                        >
+                          <Paper>
+                            <MenuList role="menu">
+                              <MenuItem
+                                classes={{ root: styles.headerMenuItem }}
+                                onClick={this.onMetadataOpen}
+                              >
+                                Edit Metadata
+                              </MenuItem>
+                              <MenuItem
+                                classes={{ root: styles.headerMenuItem }}
+                                onClick={this.onEditTagsOpen}
+                              >
+                                Edit Tags
+                              </MenuItem>
+                            </MenuList>
+                          </Paper>
+                        </Grow>
+                      </ClickAwayListener>
+                    </Popper>
+                  )}
+                </Manager>
               )}
               {this.props.canEditMedia() && (
                 <div className={styles.pageHeaderActionButtonsSeparator} />

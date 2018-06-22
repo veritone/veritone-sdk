@@ -9,7 +9,8 @@
 .ocrContent {
   display: flex;
   flex-flow: row wrap;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ocrContainer {

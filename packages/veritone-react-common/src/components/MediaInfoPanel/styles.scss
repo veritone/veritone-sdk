@@ -38,10 +38,10 @@
       }
 
       .headerMenuItem {
-        color: $dark-black;
-        font-family: Roboto;
-        font-size: 14px;
-        line-height: 16px;
+        color: $dark-black !important;
+        font-family: Roboto !important;
+        font-size: 14px !important;
+        line-height: 16px !important;
       }
     }
   }

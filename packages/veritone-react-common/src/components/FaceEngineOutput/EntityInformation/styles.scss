@@ -1,10 +1,11 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .entityBackButton {
   padding-left: 0 !important;
 
   .entityBackIcon {
-    font-size: 24px;
+    margin-right: 5px;
   }
 
   .entityBackLabel {
@@ -17,6 +18,7 @@
 .selectedEntity {
   display: flex;
   flex-direction: row;
+  margin: 10px 0;
 }
 
 .entityProfileImage {
@@ -27,9 +29,29 @@
 }
 
 .selectedEntityInfo {
-  font-size: 14px;
-  line-height: 16px;
   padding-left: 15px;
+
+  .entityNameAndCount {
+    font-size: 16px;
+    line-height: 19px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .libraryName {
+    font-size: 14px;
+    line-height: 16px;
+  }
+
+  i {
+    font-size: 16px;
+    color: $light-black;
+  }
+}
+
+.infoTab {
+  @include mui-text('button');
+  text-transform: none !important;
 }
 
 .tabContainer {
