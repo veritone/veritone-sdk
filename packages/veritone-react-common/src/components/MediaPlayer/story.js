@@ -3,7 +3,6 @@ import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
 import 'video-react/dist/video-react.css';
-import { Player } from 'video-react';
 import MediaPlayer from './';
 
 const multipleStreams = [
@@ -40,8 +39,6 @@ const demoPosterImage =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
 storiesOf('MediaPlayer', module)
-  .add('Base', () => <Player autoPlay src={demoMp4} />)
-
   .add('MP4', () => (
     <MediaPlayer streams={multipleStreams} width={500} fluid={false} />
   ))
