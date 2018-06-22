@@ -734,20 +734,20 @@ class MediaDetailsWidget extends React.Component {
                   )}
                   {(get(this.props, 'tdo.id') ||
                     get(this.props, 'contextMenuExtensions.tdos.length')) && (
-                    <Tooltip
-                      id="tooltip-show-overflow-menu"
-                      title="Show more options"
-                      PopperProps={{
-                        style: {
-                          pointerEvents: 'none',
-                          marginTop: '5px',
-                          top: '-20px'
-                        }
-                      }}
-                    >
-                      <Manager>
-                        <Target>
-                          <div ref={this.setMenuTarget}>
+                    <Manager>
+                      <Target>
+                        <div ref={this.setMenuTarget}>
+                          <Tooltip
+                            id="tooltip-show-overflow-menu"
+                            title="Show more options"
+                            PopperProps={{
+                              style: {
+                                pointerEvents: 'none',
+                                marginTop: '5px',
+                                top: '-20px'
+                              }
+                            }}
+                          >
                             <IconButton
                               className={styles.pageHeaderActionButton}
                               aria-label="More"
@@ -757,60 +757,58 @@ class MediaDetailsWidget extends React.Component {
                             >
                               <MoreVertIcon />
                             </IconButton>
-                          </div>
-                        </Target>
-                        {isMenuOpen && (
-                          <Popper
-                            className={styles.popperContent}
-                            placement="bottom-end"
-                            eventsEnabled={isMenuOpen}
-                          >
-                            <ClickAwayListener onClickAway={this.onMenuClose}>
-                              <Grow
-                                in={isMenuOpen}
-                                id="menu-list-grow"
-                                style={{ transformOrigin: '0 0 0' }}
-                              >
-                                <Paper>
-                                  <MenuList role="menu">
-                                    {this.isDownloadMediaEnabled() && (
-                                      <MenuItem
-                                        classes={{
-                                          root: styles.headerMenuItem
-                                        }}
-                                        disabled={!this.isDownloadAllowed()}
-                                        onClick={this.downloadFile}
-                                      >
-                                        Download
-                                      </MenuItem>
+                          </Tooltip>
+                        </div>
+                      </Target>
+                      {isMenuOpen && (
+                        <Popper
+                          className={styles.popperContent}
+                          placement="bottom-end"
+                          eventsEnabled={isMenuOpen}
+                        >
+                          <ClickAwayListener onClickAway={this.onMenuClose}>
+                            <Grow
+                              in={isMenuOpen}
+                              id="menu-list-grow"
+                              style={{ transformOrigin: '0 0 0' }}
+                            >
+                              <Paper>
+                                <MenuList role="menu">
+                                  {this.isDownloadMediaEnabled() && (
+                                    <MenuItem
+                                      classes={{
+                                        root: styles.headerMenuItem
+                                      }}
+                                      disabled={!this.isDownloadAllowed()}
+                                      onClick={this.downloadFile}
+                                    >
+                                      Download
+                                    </MenuItem>
+                                  )}
+                                  {this.props.contextMenuExtensions &&
+                                    this.props.contextMenuExtensions.tdos.map(
+                                      tdoMenu => (
+                                        <MenuItem
+                                          key={tdoMenu.id}
+                                          classes={{
+                                            root: styles.headerMenuItem
+                                          }}
+                                          // eslint-disable-next-line
+                                          onClick={() =>
+                                            this.handleContextMenuClick(tdoMenu)
+                                          }
+                                        >
+                                          {tdoMenu.label}
+                                        </MenuItem>
+                                      )
                                     )}
-                                    {this.props.contextMenuExtensions &&
-                                      this.props.contextMenuExtensions.tdos.map(
-                                        tdoMenu => (
-                                          <MenuItem
-                                            key={tdoMenu.id}
-                                            classes={{
-                                              root: styles.headerMenuItem
-                                            }}
-                                            // eslint-disable-next-line
-                                            onClick={() =>
-                                              this.handleContextMenuClick(
-                                                tdoMenu
-                                              )
-                                            }
-                                          >
-                                            {tdoMenu.label}
-                                          </MenuItem>
-                                        )
-                                      )}
-                                  </MenuList>
-                                </Paper>
-                              </Grow>
-                            </ClickAwayListener>
-                          </Popper>
-                        )}
-                      </Manager>
-                    </Tooltip>
+                                </MenuList>
+                              </Paper>
+                            </Grow>
+                          </ClickAwayListener>
+                        </Popper>
+                      )}
+                    </Manager>
                   )}
                   {(get(this.props, 'tdo.id') ||
                     get(this.props, 'tdo.details', null) ||
