@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
 import 'video-react/dist/video-react.css';
-import MediaPlayer from './';
+import { MediaPlayer } from './';
 
 const multipleStreams = [
   {
