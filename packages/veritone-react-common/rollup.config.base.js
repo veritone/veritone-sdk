@@ -36,7 +36,9 @@ export default {
     'react-redux',
     'redux',
     'redux-form',
-    'react-dotdotdot'
+    'react-dotdotdot',
+    'video-react',
+    'shaka-player'
   ],
   plugins: [
     replace({

@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { CSSTransitionGroup } from 'react-transition-group';
+import CSSTransitionGroup from 'react-addons-css-transition-group';
 import { omit, noop, range, isFunction, isNumber, get } from 'lodash';
 import MuiTable from '@material-ui/core/Table';
 import MuiTableBody from '@material-ui/core/TableBody';

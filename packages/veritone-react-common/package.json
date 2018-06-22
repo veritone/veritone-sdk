@@ -15,6 +15,7 @@
     "pluralize": "^7.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.3.0",
+    "react-addons-css-transition-group": "^15.6.2",
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-test-backend": "^2.5.4",
@@ -23,9 +24,10 @@
     "react-infinite-calendar": "^2.3.1",
     "react-redux": "^5.0.6",
     "react-rnd": "^7.4.0",
-    "react-transition-group": "1.x",
+    "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
-    "redux-form": "^7.1.2"
+    "redux-form": "^7.1.2",
+    "shaka-player": "^2.4.1"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
@@ -98,7 +100,8 @@
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
     "url-loader": "^0.6.2",
-    "veritone-dev-env": "^2.0.0"
+    "veritone-dev-env": "^2.0.0",
+    "video-react": "^0.11.2"
   },
   "license": "Apache-2.0",
   "jest": {
@@ -120,5 +123,8 @@
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
     ]
+  },
+  "peerDependencies": {
+    "video-react": "^0.11.2"
   }
 }
