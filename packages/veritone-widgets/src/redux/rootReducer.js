@@ -1,3 +1,5 @@
+import { playerReducer, operationReducer } from 'video-react';
+
 import { combineReducers } from 'redux';
 import { modules } from 'veritone-redux-common';
 
@@ -32,6 +34,8 @@ export default function createReducer(asyncReducers) {
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
+    player: playerReducer,
+    operation: operationReducer,
     ...asyncReducers
   });
 }
