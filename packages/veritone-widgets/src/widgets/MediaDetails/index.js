@@ -56,7 +56,8 @@ import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 
-const programLiveImageNullState = '//static.veritone.com/veritone-ui/default-nullstate.svg';
+const programLiveImageNullState =
+  '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
 @withMuiThemeProvider
 @withPropsOnChange([], ({ id }) => ({
@@ -574,8 +575,10 @@ class MediaDetailsWidget extends React.Component {
   };
 
   isDownloadMediaEnabled = () => {
-    return get(this.props.tdo, 'primaryAsset.signedUri.length') &&
-      get(this.props.kvp, 'features.downloadMedia') === 'enabled';
+    return (
+      get(this.props.tdo, 'primaryAsset.signedUri.length') &&
+      get(this.props.kvp, 'features.downloadMedia') === 'enabled'
+    );
   };
 
   downloadFile = () => {
@@ -752,7 +755,7 @@ class MediaDetailsWidget extends React.Component {
                               aria-owns={isMenuOpen ? 'menu-list-grow' : null}
                               onClick={this.toggleIsMenuOpen}
                             >
-                              <MoreVertIcon/>
+                              <MoreVertIcon />
                             </IconButton>
                           </div>
                         </Target>
@@ -766,13 +769,15 @@ class MediaDetailsWidget extends React.Component {
                               <Grow
                                 in={isMenuOpen}
                                 id="menu-list-grow"
-                                style={{transformOrigin: '0 0 0'}}
+                                style={{ transformOrigin: '0 0 0' }}
                               >
                                 <Paper>
                                   <MenuList role="menu">
                                     {this.isDownloadMediaEnabled() && (
                                       <MenuItem
-                                        classes={{root: styles.headerMenuItem}}
+                                        classes={{
+                                          root: styles.headerMenuItem
+                                        }}
                                         disabled={!this.isDownloadAllowed()}
                                         onClick={this.downloadFile}
                                       >
@@ -780,22 +785,24 @@ class MediaDetailsWidget extends React.Component {
                                       </MenuItem>
                                     )}
                                     {this.props.contextMenuExtensions &&
-                                    this.props.contextMenuExtensions.tdos.map(
-                                      tdoMenu => (
-                                        <MenuItem
-                                          key={tdoMenu.id}
-                                          classes={{
-                                            root: styles.headerMenuItem
-                                          }}
-                                          // eslint-disable-next-line
-                                          onClick={() =>
-                                            this.handleContextMenuClick(tdoMenu)
-                                          }
-                                        >
-                                          {tdoMenu.label}
-                                        </MenuItem>
-                                      )
-                                    )}
+                                      this.props.contextMenuExtensions.tdos.map(
+                                        tdoMenu => (
+                                          <MenuItem
+                                            key={tdoMenu.id}
+                                            classes={{
+                                              root: styles.headerMenuItem
+                                            }}
+                                            // eslint-disable-next-line
+                                            onClick={() =>
+                                              this.handleContextMenuClick(
+                                                tdoMenu
+                                              )
+                                            }
+                                          >
+                                            {tdoMenu.label}
+                                          </MenuItem>
+                                        )
+                                      )}
                                   </MenuList>
                                 </Paper>
                               </Grow>
@@ -964,8 +971,8 @@ class MediaDetailsWidget extends React.Component {
                     {isImage ? (
                       <Image
                         src={this.getPrimaryAssetUri()}
-                        width="100%"
-                        height="100%"
+                        width="450px"
+                        height="250px"
                         type="contain"
                       />
                     ) : (

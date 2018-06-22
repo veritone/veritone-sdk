@@ -1,6 +1,7 @@
 .logoDetection {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 
   .scrolableContent {
     height: calc(100% - 45px);

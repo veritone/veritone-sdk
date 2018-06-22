@@ -198,9 +198,7 @@
     flex: auto;
 
     .mediaView {
-      width: 450px;
-      min-width: 450px;
-      min-height: 250px;
+      flex: auto;
 
       .sourceLabel {
         color: rgba(0, 0, 0, 0.54);
