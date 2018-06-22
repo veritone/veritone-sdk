@@ -26,8 +26,7 @@
     "react-rnd": "^7.4.0",
     "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
-    "redux-form": "^7.1.2",
-    "shaka-player": "^2.4.1"
+    "redux-form": "^7.1.2"
   },
   "scripts": {
     "start": "NODE_ENV=test start-storybook -p 9001 -c .storybook",
@@ -100,8 +99,7 @@
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
     "url-loader": "^0.6.2",
-    "veritone-dev-env": "^2.0.0",
-    "video-react": "^0.11.2"
+    "veritone-dev-env": "^2.0.0"
   },
   "license": "Apache-2.0",
   "jest": {
@@ -124,7 +122,5 @@
       "<rootDir>/test/configureEnzyme.js"
     ]
   },
-  "peerDependencies": {
-    "video-react": "^0.11.2"
-  }
+  "peerDependencies": {}
 }

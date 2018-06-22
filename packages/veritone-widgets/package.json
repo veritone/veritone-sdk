@@ -15,6 +15,7 @@
     "redux-api-middleware-fixed": "^2.0.0",
     "redux-saga": "^0.15.6",
     "redux-thunk": "^2.2.0",
+    "shaka-player": "^2.4.1",
     "veritone-oauth-helpers": "^2.1.0",
     "veritone-react-common": "^5.1.0",
     "veritone-redux-common": "^3.4.0"
@@ -29,17 +30,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "format": "prettier --write \"./src/**/*.{js,scss}\"",
-    "build":
-      "yarn run build:es && yarn run build:cjs && yarn run build:script-tag",
-    "build:es":
-      "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
-    "build:cjs":
-      "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
-    "build:script-tag":
-      "cross-env NODE_ENV=production BABEL_ENV=production-cjs webpack --config webpack.config.script-tag.js",
+    "build": "yarn run build:es && yarn run build:cjs && yarn run build:script-tag",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=production-es rollup -c rollup.config.es.js",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=production-cjs rollup -c rollup.config.cjs.js",
+    "build:script-tag": "cross-env NODE_ENV=production BABEL_ENV=production-cjs webpack --config webpack.config.script-tag.js",
     "build:watch": "cross-env NODE_ENV=production rollup -c --watch",
-    "build:storybook":
-      "NODE_ENV=production build-storybook -c .storybook -o docs-static",
+    "build:storybook": "NODE_ENV=production build-storybook -c .storybook -o docs-static",
     "lint": "eslint src/** --ext .js --max-warnings 0",
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
@@ -91,21 +87,29 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-url": "^1.3.0",
     "veritone-dev-env": "^2.0.0",
+    "video-react": "^0.11.2",
     "webpack": "^4.0.1",
     "webpack-cli": "^2.0.9"
   },
   "license": "Apache-2.0",
   "jest": {
-    "moduleFileExtensions": ["js", "jsx"],
-    "moduleDirectories": ["node_modules"],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-        "<rootDir>/test/__mocks__/fileMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
       "\\.(css|scss)$": "identity-obj-proxy"
     },
     "setupFiles": [
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
     ]
+  },
+  "peerDependencies": {
+    "video-react": "^0.11.2"
   }
 }
