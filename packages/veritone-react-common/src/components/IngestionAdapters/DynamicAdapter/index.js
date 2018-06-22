@@ -16,7 +16,7 @@ import {
   toLower,
   includes
 } from 'lodash';
-import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
+import { objectOf, any, func } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';

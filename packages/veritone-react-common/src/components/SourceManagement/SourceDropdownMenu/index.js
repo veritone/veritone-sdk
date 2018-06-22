@@ -10,8 +10,8 @@ import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
 import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
-import { objectOf, any, func, arrayOf, string, bool } from 'prop-types';
-import { get, cloneDeep } from 'lodash';
+import { objectOf, any, func, arrayOf, string, bool, number } from 'prop-types';
+import { get, cloneDeep, noop } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -48,6 +48,7 @@ export default class SourceDropdownMenu extends React.Component {
         this.props.handleSourceChange(newState.sources[0].id);
       }
       this.setState(newState);
+      return sourcePage;
     });
   }
 
@@ -116,64 +117,66 @@ class SourceContainer extends React.Component {
     this.setState({ isCreateSourceOpen: false, anchorEl: null });
   };
 
+  isRowLoaded = ({ index }) => get(this.props.sources, index);
+
+  rowRenderer = ({ index, key, style }) => {
+    let source;
+    if (!this.isRowLoaded({ index })) {
+      source = {
+        name: 'Loading...'
+      };
+    } else {
+      source = this.props.sources[index];
+    }
+
+    const version =
+    source.sourceType && source.sourceType.sourceSchema
+      ? source.sourceType.sourceSchema.majorVersion +
+        '.' +
+        source.sourceType.sourceSchema.minorVersion
+      : undefined;
+
+    const handleItemClick = source => () => {
+      this.props.handleSourceChange(source.id);
+      this.handleMenuClose();
+    }
+
+    return (
+      <div
+        key={key}
+        style={style}
+      >
+        <MenuItem
+          key={source.id}
+          value={source.id}
+          selected={source.id === this.props.initialValue}
+          onClick={handleItemClick(source)}
+        >
+          {source.id === this.props.initialValue ? (
+            <span className={styles.menuIconSpacer}>
+              <CheckIcon />
+            </span>
+          ) : (
+            <span className={styles.menuIconSpacer} />
+          )}
+          <span className={styles.sourceMenuItemName}>{source.name}</span>
+          {version && !version.includes('undefined') ? (
+            <span className={styles.sourceMenuItemVersion}>
+              Version {version}
+            </span>
+          ) : null}
+        </MenuItem>
+      </div>
+    );
+  };
+
   render() {
     const rowCount = this.props.hasNextPage
       ? this.props.sources.length + 1
       : this.props.sources.length;
     const loadMoreRows = this.props.isNextPageLoading
-      ? () => {}
+      ? noop
       : this.props.loadNextPage;
-    const isRowLoaded = ({ index }) => get(this.props.sources, index);
-    const rowRenderer = ({ index, key, style }) => {
-      let source;
-      if (!isRowLoaded({ index })) {
-        source = {
-          name: 'Loading...'
-        };
-      } else {
-        source = this.props.sources[index];
-      }
-
-      const version =
-      source.sourceType && source.sourceType.sourceSchema
-        ? source.sourceType.sourceSchema.majorVersion +
-          '.' +
-          source.sourceType.sourceSchema.majorVersion
-        : undefined;
-
-      const handleItemClick = source => () => {
-        this.props.handleSourceChange(source.id);
-        this.handleMenuClose();
-      }
-
-      return (
-        <div
-          key={key}
-          style={style}
-        >
-          <MenuItem
-            key={source.id}
-            value={source.id}
-            selected={source.id === this.props.initialValue}
-            onClick={handleItemClick(source)}
-          >
-            {source.id === this.props.initialValue ? (
-              <span className={styles.menuIconSpacer}>
-                <CheckIcon />
-              </span>
-            ) : (
-              <span className={styles.menuIconSpacer} />
-            )}
-            <span className={styles.sourceMenuItemName}>{source.name}</span>
-            {version && !version.includes('undefined') ? (
-              <span className={styles.sourceMenuItemVersion}>
-                Version {version}
-              </span>
-            ) : null}
-          </MenuItem>
-        </div>
-      );
-    };
 
     return (
       <SourceSelector
@@ -189,8 +192,8 @@ class SourceContainer extends React.Component {
         closeCreateSource={this.closeCreateSource}
         rowCount={rowCount}
         loadMoreRows={loadMoreRows}
-        isRowLoaded={isRowLoaded}
-        rowRenderer={rowRenderer}
+        isRowLoaded={this.isRowLoaded}
+        rowRenderer={this.rowRenderer}
       />
     );
   }
@@ -301,5 +304,9 @@ SourceSelector.propTypes = {
   anchorEl: objectOf(any),
   openCreateSource: func.isRequired,
   isCreateSourceOpen: bool,
-  closeCreateSource: func.isRequired
+  closeCreateSource: func.isRequired,
+  rowCount: number,
+  loadMoreRows: func,
+  isRowLoaded: func,
+  rowRenderer: func
 };

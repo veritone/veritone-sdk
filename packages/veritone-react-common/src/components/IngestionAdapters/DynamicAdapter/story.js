@@ -315,41 +315,6 @@ const SOURCES = [
   }
 ];
 
-const SOURCE_TYPES = [
-  {
-    id: '3',
-    name: 'YouTube',
-    isPublic: true,
-    organizationId: '7682',
-    sourceSchema: {
-      id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
-      definition: {
-        type: 'object',
-        definitions: {},
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        properties: {
-          youtubeChannelUrl: {
-            $id: '/properties/youtubeChannelUrl',
-            type: 'string',
-            title: 'YouTube Channel URL'
-          },
-          youtubeChannelId: {
-            $id: '/properties/youtubeChannelId',
-            type: 'string',
-            title: 'YouTube Channel ID'
-          }
-        },
-        required: ['youtubeChannelUrl']
-      },
-      status: 'published',
-      majorVersion: 1,
-      minorVersion: 0,
-      validActions: ['view', 'edit', 'deactivate', 'delete'],
-      dataRegistryId: '7adfa472-2bad-4961-bd7d-2ec0ae8f4dab'
-    }
-  }
-];
-
 function updateConfiguration(config) {
   console.log('updateConfiguration', config);
   Object.keys(config).forEach(key => (configuration[key] = config[key]));
