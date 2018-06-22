@@ -9,7 +9,6 @@ import {
   PlayToggle,
   BigPlayButton
 } from 'video-react';
-import 'video-react/dist/video-react.css';
 
 import VideoSource from './VideoSource';
 import RestartMediaButton from './RestartMediaButton';
