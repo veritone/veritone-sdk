@@ -6,7 +6,8 @@
   flex: auto;
 
   .displayOptions {
-    font-size: 14px;
+    @include mui-text('body1');
+    margin-left: 20px;
   }
 }
 

@@ -1,3 +1,5 @@
+@import 'src/styles/modules/muiTypography';
+
 .translationOutput {
   width: 100%;
   overflow: hidden;
@@ -7,7 +9,8 @@
   }
 
   .languages {
-    font-size: 14px;
+    @include mui-text('body1');
+    margin-left: 20px;
   }
 
   .body {
