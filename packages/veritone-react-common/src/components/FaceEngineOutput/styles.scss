@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .faceEngineOutput {
   display: flex;
@@ -32,10 +33,8 @@
 }
 
 .faceTab {
+  @include mui-text('button');
   text-transform: none !important;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16px;
 }
 
 .faceTabBody {
