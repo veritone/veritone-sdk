@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 
+import 'video-react/dist/video-react.css';
 import { Player } from 'video-react';
 import MediaPlayer from './';
 
