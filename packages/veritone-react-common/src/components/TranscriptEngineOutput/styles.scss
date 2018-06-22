@@ -1,4 +1,5 @@
 @import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
 
 .transcriptOutput {
   width: 100%;
@@ -18,8 +19,9 @@
     }
 
     .viewDropdown {
+      @include mui-text('body1');
+      margin-left: 20px;
       float: right;
-      font-size: 14px; // reset to 14px to override default MUI theme s
     }
   }
 
