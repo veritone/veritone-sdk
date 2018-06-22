@@ -4,7 +4,6 @@ import { storiesOf } from '@storybook/react';
 import DynamicAdapterObj from './';
 const DynamicAdapter = DynamicAdapterObj.adapter;
 
-const SUPPORTED_SOURCE_TYPES = ['3'];
 const ADAPTER_CONFIG = {
   adapterId: 'react-adapter',
   name: 'Open Weather Adapter',
@@ -21,6 +20,7 @@ const ADAPTER_CONFIG = {
   },
   namespace: 'configuration',
   title: 'Configuration',
+  supportedSourceTypes: ['3'],
   fields: [
     {
       name: 'target',
@@ -372,8 +372,6 @@ storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
     configuration={configuration}
     adapterConfig={ADAPTER_CONFIG}
     updateConfiguration={updateConfiguration}
-    sourceTypes={SOURCE_TYPES}
-    supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
     openCreateSource={openCreateSource}
     closeCreateSource={closeCreateSource}
   />
