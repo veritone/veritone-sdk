@@ -29,7 +29,6 @@ class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
     configuration: objectOf(any).isRequired,
-    supportedSourceTypes: arrayOf(string),
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
@@ -80,8 +79,7 @@ class DynamicAdapter extends React.Component {
   render() {
     return (
       <div>
-        {isArray(this.props.supportedSourceTypes) &&
-        this.props.supportedSourceTypes.length ? (
+        {get(this.props, 'adapterConfig.supportedSourceTypes.length') ? (
           <div>
             <SourceDropdownMenu
               sourceId={this.state.sourceId}
@@ -113,8 +111,8 @@ class DynamicAdapter extends React.Component {
                 <div className={styles.adapterIconContainer}>
                   <Image
                     src={this.props.adapterConfig.iconPath}
-                    width={44}
-                    height={44}
+                    width={'44px'}
+                    height={'44px'}
                     border
                   />
                 </div>
@@ -230,13 +228,13 @@ export default {
       setName: true
     }
   },
-  validate: adapterStep => (configuration, cb) => {
+  validate: adapterStep => (configuration) => {
     let errors = [];
+    if (get(adapterStep, 'supportedSourceTypes.length') && !configuration.sourceId) {
+      errors.push('Source is required');
+    }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
-        if (adapterStep.sourceRequired && !configuration.sourceId) {
-          errors.push('Source is required');
-        }
         if (field.defaultValue && !configuration[field.name]) {
           errors.push(startCase(toLower(field.name)) + ' is invalid');
         } else if (
@@ -252,9 +250,9 @@ export default {
         }
       });
     }
-    errors.length
-      ? cb('Configuration: ' + errors.join(', '))
-      : cb(null, configuration);
+    return errors.length
+      ? Promise.reject(errors.join(', '))
+      : Promise.resolve(configuration);
   },
   getHydratedData: adapterStep => hydrateData => {
     let configuration = {};
