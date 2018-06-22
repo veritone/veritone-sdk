@@ -32,8 +32,6 @@ class DynamicAdapter extends React.Component {
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
-    hasNextPage: bool.isRequired,
-    isNextPageLoading: bool.isRequired,
     loadNextPage: func.isRequired
   };
 
@@ -86,8 +84,6 @@ class DynamicAdapter extends React.Component {
               handleSourceChange={this.handleSourceChange}
               openCreateSource={this.props.openCreateSource}
               closeCreateSource={this.props.closeCreateSource}
-              hasNextPage={this.props.hasNextPage}
-              isNextPageLoading={this.props.isNextPageLoading}
               loadNextPage={this.props.loadNextPage}
             />
             <div className={styles.adapterDivider} />

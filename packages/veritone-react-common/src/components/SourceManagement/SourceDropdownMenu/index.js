@@ -23,8 +23,6 @@ export default class SourceDropdownMenu extends React.Component {
     handleSourceChange: func.isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
-    hasNextPage: bool.isRequired,
-    isNextPageLoading: bool.isRequired,
     loadNextPage: func.isRequired
   };
 
@@ -42,7 +40,7 @@ export default class SourceDropdownMenu extends React.Component {
     this.setState({ isNextPageLoading: true });
     return this.props.loadNextPage({startIndex, stopIndex}).then(sourcePage => {
       const newState = {
-        hasNextPage: true,
+        hasNextPage: !!get(sourcePage, 'length'),
         isNextPageLoading: false,
         sources: cloneDeep(this.state.sources).concat(sourcePage)
       }
@@ -70,8 +68,8 @@ export default class SourceDropdownMenu extends React.Component {
             openCreateSource={this.props.openCreateSource}
             closeCreateSource={this.props.closeCreateSource}
             selectLabel="Select a Source*"
-            hasNextPage={this.props.hasNextPage}
-            isNextPageLoading={this.props.isNextPageLoading}
+            hasNextPage={this.state.hasNextPage}
+            isNextPageLoading={this.state.isNextPageLoading}
             loadNextPage={this.loadMoreRows}
           />
         </div>
@@ -266,7 +264,7 @@ const SourceSelector = ({
                 {({ width }) => (
                   <List
                     width={width}
-                    height={96}
+                    height={144}
                     rowCount={rowCount}
                     rowHeight={48}
                     ref={registerChild}

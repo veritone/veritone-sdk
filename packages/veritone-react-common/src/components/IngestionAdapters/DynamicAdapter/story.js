@@ -367,10 +367,7 @@ function closeCreateSource() {
 function loadNextPage({startIndex, stopIndex}) {
   console.log('Called loadNextPage');
   console.log(startIndex + ' ' + stopIndex);
-  isNextPageLoading = true;
   return new Promise(resolve => setTimeout(() => {
-    hasNextPage
-    isNextPageLoading = false;
     resolve(cloneDeep(SOURCES));
   }, 2000));
 }
@@ -378,7 +375,6 @@ function loadNextPage({startIndex, stopIndex}) {
 let configuration = {
   sourceId: SOURCES[0].id
 };
-let hasNextPage = false, isNextPageLoading = false;
 
 storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
   <DynamicAdapter
@@ -388,8 +384,6 @@ storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
     updateConfiguration={updateConfiguration}
     openCreateSource={openCreateSource}
     closeCreateSource={closeCreateSource}
-    hasNextPage={hasNextPage}
-    isNextPageLoading={isNextPageLoading}
     loadNextPage={loadNextPage}
   />
 ));
