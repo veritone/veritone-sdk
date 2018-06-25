@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, arrayOf, string, bool, shape } from 'prop-types';
+import { func, arrayOf, string, bool, shape, objectOf, object } from 'prop-types';
+import { isEmpty } from 'lodash';
 import { withMuiThemeProvider } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
+const { engine: engineModule } = modules;
 
 import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
@@ -13,6 +16,7 @@ import widget from '../../shared/widget';
 @withMuiThemeProvider
 @connect(
   (state, { _widgetId }) => ({
+    allEngines: engineModule.getEngines(state, _widgetId),
     deselectedEngineIds: engineSelectionModule.getDeselectedEngineIds(
       state,
       _widgetId
@@ -25,6 +29,7 @@ import widget from '../../shared/widget';
   {
     initializeWidget: engineSelectionModule.initializeWidget,
     fetchEngines: engineSelectionModule.refetchEngines,
+    selectEngines: engineSelectionModule.selectEngines,
     setDeselectedEngineIds: engineSelectionModule.setDeselectedEngineIds,
     setAllEnginesSelected: engineSelectionModule.setAllEnginesSelected
   },
@@ -52,10 +57,14 @@ class EngineSelection extends React.Component {
     initialSelectedEngineIds: arrayOf(string),
     selectedEngineIds: arrayOf(string),
     deselectedEngineIds: arrayOf(string),
+    allEngines: objectOf(object),
+    selectEngines: func.isRequired,
     hideActions: bool
   };
 
   static defaultProps = {
+    allEngines: {},
+    selectedEngineIds: [],
     initialSelectedEngineIds: [],
     initialDeselectedEngineIds: [],
     allEnginesSelected: false,
@@ -80,7 +89,12 @@ class EngineSelection extends React.Component {
       this.props._widgetId,
       this.props.allEnginesSelected
     );
-    this.props.fetchEngines(this.props._widgetId);
+
+    if (isEmpty(this.props.allEngines)) {
+      this.props.fetchEngines(this.props._widgetId);
+    } else {
+      this.props.selectEngines(this.props._widgetId, this.props.initialSelectedEngineIds)
+    }
   }
 
   save = () => {
@@ -123,7 +137,9 @@ class EngineSelection extends React.Component {
         onSave={this.save}
         onCancel={this.props.onCancel}
         actionMenuItems={this.props.actionMenuItems}
+        allEngines={this.props.allEngines}
         allEnginesSelected={this.props.allEnginesSelected}
+        selectedEngineIds={this.props.selectedEngineIds}
         hideActions={this.props.hideActions}
         initialSelectedEngineIds={this.props.initialSelectedEngineIds}
       />
