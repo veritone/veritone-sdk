@@ -8,8 +8,14 @@ import rootSaga from './rootSaga';
 // Redux devtools browser extension hook
 // this has no effect unless the user has the chrome devtools extension installed.
 // https://medium.com/@zalmoxis/using-redux-devtools-in-production-4c5b56c5600f
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+      stateSanitizer: state => ({
+        ...state,
+        veritoneApp: '(omitted)'
+      })
+    })
+  : compose;
 const sagaMiddleware = createSagaMiddleware();
 
 const enhancer = composeEnhancers(
