@@ -32,7 +32,6 @@ export const SET_ALL_ENGINES_SELECTED =
 export const namespace = 'engineSelection';
 
 const defaultSelectionState = {
-  searchResults: {},
   searchQuery: '',
   filters: {
     category: [],
@@ -47,7 +46,6 @@ const defaultSelectionState = {
   deselectedEngineIds: [],
   allEnginesSelected: false
 };
-
 const defaultState = {
   // populated like:
   // [pickerId]: { ...defaultPickerState }
@@ -57,6 +55,7 @@ export default createReducer(defaultState, {
   [INITIALIZE_WIDGET](state, action) {
     return {
       ...defaultState,
+      searchResults: state.searchResults || {},
       [action.meta.id]: {
         ...defaultSelectionState
       }
@@ -79,12 +78,12 @@ export default createReducer(defaultState, {
 
     return {
       ...state,
+      searchResults: merge({}, state.searchResults, newResults),
       [id]: {
         ...state[id],
         selectedEngineIds: [
           ...new Set([...state[id].selectedEngineIds, ...selectedEngineIds])
-        ],
-        searchResults: merge({}, state[id].searchResults, newResults)
+        ]
       }
     };
   },
@@ -471,7 +470,7 @@ export function isSearchOpen(state, id) {
 
 export function getCurrentResults(state, id) {
   const results = get(
-    get(local(state), [id, 'searchResults']),
+    get(local(state), 'searchResults'),
     pathFor(
       get(local(state), [id, 'searchQuery']),
       get(local(state), [id, 'filters'])
