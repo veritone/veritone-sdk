@@ -106,7 +106,8 @@ export default function callApiFactory(doRequest) {
           cb => {
             doRequest(
               {
-                path: `${baseUrl}/v${options.version}/${path}`,
+                // path: `${baseUrl}/v${options.version}/${path}`,
+                path: `${baseUrl}/${path}`,
                 method,
                 data,
                 query,
