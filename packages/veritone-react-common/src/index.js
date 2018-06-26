@@ -34,3 +34,5 @@ export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
+export Overlay from './components/BoundingPolyOverlay/Overlay';
+export OverlayPositioningProvider from './components/BoundingPolyOverlay/OverlayPositioningProvider';
