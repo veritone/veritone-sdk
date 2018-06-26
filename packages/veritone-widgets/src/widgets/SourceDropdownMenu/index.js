@@ -10,7 +10,8 @@ class SourceDropdownMenuWidget extends React.Component {
     sources: arrayOf(objectOf(any)).isRequired,
     handleSourceChange: func.isRequired,
     openCreateSource: func.isRequired,
-    closeCreateSource: func.isRequired
+    closeCreateSource: func.isRequired,
+    loadNextPage: func.isRequired
   };
 
   state = {
@@ -38,6 +39,7 @@ class SourceDropdownMenuWidget extends React.Component {
         handleSourceChange={this.handleSourceChange}
         openCreateSource={this.openCreateSource}
         closeCreateSource={this.props.closeCreateSource}
+        loadNextPage={this.props.loadNextPage}
       />
     );
   }
