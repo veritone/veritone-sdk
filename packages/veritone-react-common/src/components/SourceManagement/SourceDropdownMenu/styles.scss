@@ -38,9 +38,7 @@
   &:focus {
     outline: none;
   }
-  max-height: 336px;
-  overflow-y: auto;
-
+  
   & > li {
     color: rgba(0, 0, 0, 0.87) !important;
     font-size: 16px !important;

@@ -50,6 +50,7 @@ describe('DynamicAdapter', () => {
       testFuncs.validateCB(result);
       expect(testFuncs.validateCB).toHaveBeenCalled();
       done();
+      return result;
     });
   });
 
@@ -78,36 +79,46 @@ describe('DynamicAdapter', () => {
       testFuncs.validateCB(err);
       expect(testFuncs.validateCB).toHaveBeenCalledWith(`${startCase(toLower(FIELDS[0].name))} is invalid`);
 
+      testSuccess();
+    });
+    
+    function testSuccess () {
       let configuration = {};
       configuration[FIELDS[0].name] = 'test'
       testFuncs.validate(configuration).then(result => {
         testFuncs.validateCB(result)
         expect(testFuncs.validateCB).toHaveBeenCalledWith(configuration);
         done();
+        return result;
       });
-    });
-    
-
+    }
   });
 
-  it('DynamicAdapter should automatically select the first sourceId if supportedSourceTypes is defined works', () => {
+  it('DynamicAdapter should automatically get the first page of sources', done => {
     const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES });
     const CONFIGURATION = {};
     const DynamicAdapter = DynamicAdapterConfig.adapter;
     const UPDATE_CONFIGURATION = jest.fn();
     const OPEN_CREATE_SOURCE = jest.fn();
     const CLOSE_CREATE_SOURCE = jest.fn();
+    const testFuncs = {
+      loadNextPage: () => {
+        done();
+        return Promise.resolve(SOURCES);
+      }
+    };
+    jest.spyOn(testFuncs, 'loadNextPage');
     mount(
       <DynamicAdapter
         adapterConfig={ADAPTER_CONFIG}
-        sources={SOURCES}
         configuration={CONFIGURATION}
         updateConfiguration={UPDATE_CONFIGURATION}
         supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
         openCreateSource={OPEN_CREATE_SOURCE}
-        closeCreateSource={CLOSE_CREATE_SOURCE} />
+        closeCreateSource={CLOSE_CREATE_SOURCE}
+        loadNextPage={testFuncs.loadNextPage} />
       );
-    expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith({ sourceId: SOURCES[0].id });
+    expect(testFuncs.loadNextPage).toHaveBeenCalledWith({ startIndex: 0, stopIndex: 30});
   });
 
   it('DynamicAdapter should set default values for any adapter input fields', () => {
@@ -117,6 +128,11 @@ describe('DynamicAdapter', () => {
     const UPDATE_CONFIGURATION = jest.fn();
     const OPEN_CREATE_SOURCE = jest.fn();
     const CLOSE_CREATE_SOURCE = jest.fn();
+    const testFuncs = {
+      loadNextPage: () => {
+        return Promise.resolve(SOURCES);
+      }
+    };
     mount(
       <DynamicAdapter
         adapterConfig={ADAPTER_CONFIG}
@@ -124,7 +140,8 @@ describe('DynamicAdapter', () => {
         configuration={CONFIGURATION}
         updateConfiguration={UPDATE_CONFIGURATION}
         openCreateSource={OPEN_CREATE_SOURCE}
-        closeCreateSource={CLOSE_CREATE_SOURCE} />
+        closeCreateSource={CLOSE_CREATE_SOURCE}
+        loadNextPage={testFuncs.loadNextPage} />
       );
     let expectedConfiguration = {};
     expectedConfiguration[FIELDS[0].name] = FIELDS[0].defaultValue;
@@ -140,6 +157,11 @@ describe('DynamicAdapter', () => {
     const UPDATE_CONFIGURATION = jest.fn();
     const OPEN_CREATE_SOURCE = jest.fn();
     const CLOSE_CREATE_SOURCE = jest.fn();
+    const testFuncs = {
+      loadNextPage: () => {
+        return Promise.resolve(SOURCES);
+      }
+    };
     mount(
       <DynamicAdapter
         adapterConfig={ADAPTER_CONFIG}
@@ -148,11 +170,10 @@ describe('DynamicAdapter', () => {
         updateConfiguration={UPDATE_CONFIGURATION}
         supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
         openCreateSource={OPEN_CREATE_SOURCE}
-        closeCreateSource={CLOSE_CREATE_SOURCE} />
+        closeCreateSource={CLOSE_CREATE_SOURCE}
+        loadNextPage={testFuncs.loadNextPage} />
       );
-    let expectedConfiguration = {
-      sourceId: SOURCES[0].id
-    };
+    let expectedConfiguration = {};
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
   });
