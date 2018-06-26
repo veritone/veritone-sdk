@@ -13,6 +13,7 @@ export {
   GlobalNotificationDialog,
   GlobalSnackBar
 } from './widgets/Notifications';
+export { MediaPlayer } from './widgets/MediaPlayer';
 
 export MediaDetailsPage from './widgets/MediaDetails';
 export SourceManagement from './widgets/SourceManagementOverview';

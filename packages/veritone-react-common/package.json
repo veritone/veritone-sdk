@@ -17,7 +17,8 @@
     "pluralize": "^7.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.3.0",
-    "react-contenteditable": "^2.0.7",
+    "react-addons-css-transition-group": "^15.6.2",
+	"react-contenteditable": "^2.0.7",
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-test-backend": "^2.5.4",
@@ -26,7 +27,7 @@
     "react-infinite-calendar": "^2.3.1",
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
-    "react-transition-group": "1.x",
+    "react-transition-group": "^2.2.1",
     "react-virtualized": "^9.19.1",
     "recharts": "^1.0.0-beta.10",
     "recompose": "^0.26.0",
@@ -128,5 +129,6 @@
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
     ]
-  }
+  },
+  "peerDependencies": {}
 }
