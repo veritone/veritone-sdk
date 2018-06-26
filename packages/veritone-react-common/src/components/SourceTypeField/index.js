@@ -26,9 +26,9 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
 
   if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
     return (
-      <div
-        className={styles.unsupportedMsg}
-      >{`Unsupported Type: ${type} for ${title}`}</div>
+      <div className={styles.unsupportedMsg}>
+        {`Unsupported Type: ${type} for ${title}`}
+      </div>
     );
   }
 
