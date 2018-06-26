@@ -1,6 +1,7 @@
 import React from 'react';
 import { isNumber } from 'lodash';
 import { arrayOf, oneOf, string, number, shape, func } from 'prop-types';
+import { branch, renderNothing } from 'recompose';
 
 import { getMousePosition } from 'helpers/dom';
 import withContextProps from 'helpers/withContextProps';
@@ -9,10 +10,20 @@ import { OverlayPositioningContext } from './OverlayPositioningProvider';
 import OverlayConfirmMenu from './OverlayConfirmMenu';
 import OverlayActionsMenu from './OverlayActionsMenu';
 import RndBox from './RndBox';
+import { percentagePolyToPixelXYWidthHeight } from './helpers';
 
 @withContextProps(OverlayPositioningContext.Consumer, context => ({
   overlayPositioningContext: context
 }))
+@branch(
+  // do not render if we don't have a workable overlayPositioningContext
+  props =>
+    !(
+      props.overlayPositioningContext.width &&
+      props.overlayPositioningContext.height
+    ),
+  renderNothing
+)
 @withMuiThemeProvider
 export default class Overlay extends React.Component {
   static propTypes = {
@@ -29,14 +40,13 @@ export default class Overlay extends React.Component {
     overlayBorderStyle: string,
     overlayBackgroundBlendMode: string,
     onBoundingBoxChange: func.isRequired,
-    initialBoundingBoxPositions: arrayOf(
-      shape({
-        // fixme -- this should take percentage-corners, translated via getDerivedStateFromProps
-        x: number.isRequired,
-        y: number.isRequired,
-        width: number.isRequired,
-        height: number.isRequired
-      })
+    initialBoundingBoxPolys: arrayOf(
+      arrayOf(
+        shape({
+          x: number.isRequired,
+          y: number.isRequired
+        })
+      )
     )
   };
 
@@ -44,20 +54,30 @@ export default class Overlay extends React.Component {
     acceptMode: 'confirm',
     confirmLabel: 'Add',
     // readOnly: false,
-    initialBoundingBoxPositions: [],
+    initialBoundingBoxPolys: [],
     overlayBackgroundColor: '#FF6464',
     overlayBackgroundBlendMode: 'hard-light',
     overlayBorderStyle: '1px solid #fff'
   };
 
   state = {
-    boundingBoxPositions: this.props.initialBoundingBoxPositions,
+    boundingBoxPositions: this.props.initialBoundingBoxPolys.map(poly =>
+      percentagePolyToPixelXYWidthHeight(
+        poly,
+        this.props.overlayPositioningContext.width,
+        this.props.overlayPositioningContext.height
+      )
+    ),
     focusedBoundingBoxIndex: null,
     stagedBoundingBoxPosition: {},
     userMinimizedConfirmMenu: false,
     userActingOnBoundingBox: false,
     drawingInitialBoundingBox: false
   };
+  //
+  // static getDerivedStateFromProps(props) {
+  //   return
+  // }
 
   handleResize = (e, direction, ref, delta, position) => {
     this.removeUnconfirmedBoundingBox();
@@ -159,13 +179,14 @@ export default class Overlay extends React.Component {
 
   confirmStagedBoundingBox = () => {
     // todo
-    // this.props.onBoundingBoxChange(this.toPercentageBasedPoly());
-    this.props.onBoundingBoxChange([
-      ...this.state.boundingBoxPositions,
-      this.state.stagedBoundingBoxPosition
-    ]);
+    this.props.onBoundingBoxChange(
+      this.toPercentageBasedPoly([
+        ...this.state.boundingBoxPositions,
+        this.state.stagedBoundingBoxPosition
+      ])
+    );
 
-    // todo: clear stage when new initial set is received
+    // todo: clear stage when new initial set is received?
   };
 
   removeUnconfirmedBoundingBox = () => {
@@ -244,23 +265,19 @@ export default class Overlay extends React.Component {
 
   handleDelete = () => {
     // todo:
-    // this.props.onBoundingBoxChange(this.toPercentageBasedPoly());
     let result = [...this.state.boundingBoxPositions];
     result.splice(this.state.focusedBoundingBoxIndex, 1);
 
-    this.props.onBoundingBoxChange(result);
+    this.props.onBoundingBoxChange(this.toPercentageBasedPoly(result));
   };
 
-  toPercentageBasedPoly = () => {
-    // fixme for multiple
+  toPercentageBasedPoly = positions => {
     const {
       width: containerWidth,
       height: containerHeight
     } = this.props.overlayPositioningContext;
 
-    const { x, y, width, height } = this.state;
-
-    return [
+    return positions.map(({ x, y, width, height }) => [
       // top-left
       {
         x: x / containerWidth,
@@ -281,17 +298,7 @@ export default class Overlay extends React.Component {
         x: x / containerWidth,
         y: (y + height) / containerHeight
       }
-    ];
-  };
-
-  fromPercentageBasedPoly = ([topLeft, topRight, bottomRight, bottomLeft]) => {
-    // todo
-    return {
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0
-    };
+    ]);
   };
 
   hasStagedBoundingBox = () => {
@@ -304,6 +311,7 @@ export default class Overlay extends React.Component {
   };
 
   render() {
+    console.log(this.state.boundingBoxPositions);
     const { top, left, height, width } = this.props.overlayPositioningContext;
     const showingConfirmMenu =
       this.props.acceptMode === 'confirm' &&

@@ -10,18 +10,42 @@ class Story extends React.Component {
 
   state = {
     boundingBoxes: [
-      {
-        x: 50,
-        y: 50,
-        width: 100,
-        height: 100
-      },
-      {
-        x: 100,
-        y: 25,
-        width: 50,
-        height: 50
-      }
+      [
+        {
+          x: 0.775,
+          y: 0.28888888888888886
+        },
+        {
+          x: 0.775,
+          y: 0.4361111111111111
+        },
+        {
+          x: 0.84765625,
+          y: 0.4361111111111111
+        },
+        {
+          x: 0.84765625,
+          y: 0.28888888888888886
+        }
+      ],
+      [
+        {
+          x: 0.1,
+          y: 0.05
+        },
+        {
+          x: 0.1,
+          y: 0.7416666666666667
+        },
+        {
+          x: 0.45546875,
+          y: 0.7416666666666667
+        },
+        {
+          x: 0.45546875,
+          y: 0.05
+        }
+      ]
     ]
   };
 
@@ -41,7 +65,7 @@ class Story extends React.Component {
             overlayBackgroundColor={this.props.overlayBackgroundColor}
             overlayBorderStyle={this.props.overlayBorderStyle}
             overlayBackgroundBlendMode={this.props.overlayBackgroundBlendMode}
-            initialBoundingBoxPositions={this.state.boundingBoxes}
+            initialBoundingBoxPolys={this.state.boundingBoxes}
             key={JSON.stringify(this.state.boundingBoxes)}
           />
           <div
