@@ -1,61 +1,54 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select, number, text } from '@storybook/addon-knobs';
+import Slider from '@material-ui/lab/Slider';
+import faker from 'faker';
 
 import OverlayPositioningProvider from './OverlayPositioningProvider';
 import Overlay from './Overlay';
+
+function randomPolyBox() {
+  const rand = faker.random.number;
+  const options = { min: 0, max: 1, precision: 0.0001 };
+
+  return Array(4)
+    .fill()
+    .map(() => ({
+      x: rand(options),
+      y: rand(options)
+    }));
+}
+
+const frames = Array(10)
+  .fill()
+  .map(() => [randomPolyBox(), randomPolyBox()]);
 
 class Story extends React.Component {
   /* eslint-disable react/prop-types */
 
   state = {
-    boundingBoxes: [
-      [
-        {
-          x: 0.775,
-          y: 0.28888888888888886
-        },
-        {
-          x: 0.775,
-          y: 0.4361111111111111
-        },
-        {
-          x: 0.84765625,
-          y: 0.4361111111111111
-        },
-        {
-          x: 0.84765625,
-          y: 0.28888888888888886
-        }
-      ],
-      [
-        {
-          x: 0.1,
-          y: 0.05
-        },
-        {
-          x: 0.1,
-          y: 0.7416666666666667
-        },
-        {
-          x: 0.45546875,
-          y: 0.7416666666666667
-        },
-        {
-          x: 0.45546875,
-          y: 0.05
-        }
-      ]
-    ]
+    boundingBoxes: frames[0],
+    frame: 0
   };
 
   handleAddBoundingBox = boundingBoxes => {
     this.setState({ boundingBoxes });
   };
 
+  handleChangeFrame = (e, frame) => {
+    this.setState({ frame, boundingBoxes: frames[frame] });
+  };
+
   render() {
     return (
       <div>
+        <Slider
+          value={this.state.frame}
+          min={0}
+          max={9}
+          step={1}
+          onChange={this.handleChangeFrame}
+        />
         <OverlayPositioningProvider
           contentHeight={this.props.contentHeight}
           contentWidth={this.props.contentWidth}

@@ -49,6 +49,7 @@
     "prepare": "cd .. && yarn patch-package"
   },
   "devDependencies": {
+    "@material-ui/lab": "^1.0.0-alpha.5",
     "@storybook/addon-knobs": "3.3.9",
     "@storybook/react": "v3.3.9",
     "babel-eslint": "^8.0.1",

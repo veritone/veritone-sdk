@@ -152,6 +152,10 @@
   dependencies:
     recompose "^0.26.0 || ^0.27.0"
 
+"@material-ui/lab@^1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-1.0.0-alpha.5.tgz#2f53a76c4b53aca044c91392ad5e4b47f9a4b241"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

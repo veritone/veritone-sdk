@@ -311,7 +311,6 @@ export default class Overlay extends React.Component {
   };
 
   render() {
-    console.log(this.state.boundingBoxPositions);
     const { top, left, height, width } = this.props.overlayPositioningContext;
     const showingConfirmMenu =
       this.props.acceptMode === 'confirm' &&
