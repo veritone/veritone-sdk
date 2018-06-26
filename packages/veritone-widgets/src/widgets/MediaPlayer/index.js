@@ -42,4 +42,4 @@ MediaPlayer.propTypes = {
   playerRef: func
 };
 
-export default MediaPlayer;
+export { MediaPlayer };
