@@ -401,13 +401,24 @@ class SearchBarContainer extends React.Component {
   }
 
   openMenuExtraActions = (evt) => {
-    const customMenuActions = this.props.menuActions && this.props.menuActions.map(x => ({
+    let customMenuActions = this.props.menuActions && this.props.menuActions.map(x => ({
         label: x.label,
         onClick: () => {
           x.onClick(this.props.getCSP());
           this.handleMenuClose();
         }
       })) || {} ;
+
+    if(!this.props.searchParameters || this.props.searchParameters.length === 0) {
+      customMenuActions = {};
+    } else {
+      customMenuActions = [
+        ...customMenuActions,
+        { label: 'Save Search', onClick: this.props.showSavedSearch },
+        { label: 'Load Saved Search', onClick: this.props.showLoadSavedSearch },
+        { divider: true }
+      ]
+    }
 
     const menuActions = [
       ...customMenuActions,

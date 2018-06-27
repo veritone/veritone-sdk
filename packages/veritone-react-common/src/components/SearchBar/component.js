@@ -1,6 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import Dialog from 'material-ui/Dialog';
 
 import {
   TranscriptSearchModal,
@@ -58,6 +59,8 @@ import {
 } from '../GeolocationModal';
 
 import SearchBarContainer from './SearchBarContainer';
+import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSearch';
+import VeritoneApp from '../SavedSearch/VeritoneApp';
 import { SearchBar } from '.';
 
 // a lot of this information should come from this endpoint
@@ -152,6 +155,8 @@ const geolocation = {
   showPill: true
 }
 
+console.log("what the shit");
+
 const appBarColor = '#ff2200';
 const enabledEngineCategories = [transcript, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
 
@@ -244,13 +249,35 @@ export const guid = () => {
 };
 
 export class SampleSearchBar extends React.Component {
-  async componentDidMount() {
+  componentWillUnmount() {
+    this.cleanupLoadSavedSearch();
+    this.cleanupSavedSearch();
+  }
 
+  cleanupLoadSavedSearch = () => {
+    if(this.loadSavedSearchWidget) {
+      this.loadSavedSearchWidget.destroy();
+      this.loadSavedSearchWidget = undefined;
+    }
+  }
+
+  cleanupSavedSearch = () => {
+    if(this.savedSearchWidget) {
+      this.savedSearchWidget.destroy();
+      this.savedSearchWidget = undefined;
+    }
+  }
+
+  async componentDidMount() {
     let auth = null;
     let libraries = [];
     let getEntity = null;
     try {
       auth = this.props.auth ? this.props.auth : await this.getAuth();
+      this._veritoneApp = new VeritoneApp();
+      this._veritoneApp.login({sessionToken: auth });
+      this._veritoneApp._store.dispatch({type: 'vtn/config/SET_CONFIG', payload: {apiRoot: this.props.api && this.props.api.replace(/\/$/, "") } })
+      window._veritoneApp = this._veritoneApp;
       getEntity = this.getEntityFetch(auth);
       libraries = await this.getLibraries(auth);
     } catch (e) {
@@ -367,7 +394,9 @@ export class SampleSearchBar extends React.Component {
   }
 
   state = {
-    searchParameters: this.props.searchParameters || []
+    searchParameters: this.props.searchParameters || [],
+    showSavedSearch: false,
+    showLoadSavedSearch: false
   };
 
   //Pratt parsing algorithm adapted from https://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing
@@ -571,6 +600,12 @@ export class SampleSearchBar extends React.Component {
     return searchParameters;
   }
 
+  loadCSP = (csp) => {
+    this.setState({
+      searchParameters: this.CSPToSearchParameters(csp)
+    });
+  }
+
   addOrModifySearchParameter = (parameter, index) => {
     const existing = this.state.searchParameters.findIndex(
       searchParameter => searchParameter.id === parameter.id
@@ -610,6 +645,18 @@ export class SampleSearchBar extends React.Component {
       return [...this.state.searchParameters, newSearchParameter];
     }
   };
+
+  mountLoadSavedSearch = ref => {
+    if(!this.loadSavedSearchWidget) {
+      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP, onClose: this.hideLoadSavedSearch});
+    }
+  }
+
+  mountSavedSearch = ref => {
+    if(!this.savedSearchWidget) {
+      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp: this.convertSearchParametersToCSP(this.state.searchParameters), onClose: this.hideSavedSearch});
+    }
+  }
 
   insertMultipleSearchParameters = (parametersToAdd) => {
     const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, {parameter, index}) => {
@@ -675,6 +722,22 @@ export class SampleSearchBar extends React.Component {
     return theme;
   }
 
+  showLoadSavedSearch = (e) => {
+    this.setState({ showLoadSavedSearch: true });
+  }
+
+  hideLoadSavedSearch = (e) => {
+    this.setState({ showLoadSavedSearch: false }, this.cleanupLoadSavedSearch );
+  }
+
+  showSavedSearch = (e) => {
+    this.setState({ showSavedSearch: true });
+  }
+
+  hideSavedSearch = (e) => {
+    this.setState({ showSavedSearch: false }, this.cleanupSavedSearch );
+  }
+
   render() {
     return (
       <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
@@ -694,7 +757,13 @@ export class SampleSearchBar extends React.Component {
           resetSearchParameters={this.resetSearchParameters}
           getCSP={this.getCSP}
           menuActions={this.props.menuActions}
+          showLoadSavedSearch={ this.showLoadSavedSearch }
+          showSavedSearch={ this.showSavedSearch }
         />
+        <Dialog open={this.state.showLoadSavedSearch || this.state.showSavedSearch } fullWidth maxWidth={false} PaperProps={{ style: { width: '100%', minHeight: '65vh', maxWidth: '75%'} } }>
+          { this.state.showLoadSavedSearch && (<div id="LoadSavedSearch" ref={ this.mountLoadSavedSearch }> </div>)}
+          { this.state.showSavedSearch && (<div id="SaveSearch" ref={ this.mountSavedSearch }> </div>)}
+        </Dialog>
       </MuiThemeProvider>
     );
   }
