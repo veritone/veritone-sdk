@@ -1,13 +1,13 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import IconButton from '@material-ui/core/IconButton';
 import {
   templateData,
   initialTemplates
-} from 'components/SourceManagement/sample-data';
-import IconButton from '@material-ui/core/IconButton';
-import TemplateList from './ContentTemplates/TemplateList';
-import TemplateForms from './ContentTemplates/TemplateForms';
-import FormCard from './ContentTemplates/FormCard';
+} from './sample-data';
+import TemplateList from './TemplateList';
+import TemplateForms from './TemplateForms';
+import FormCard from './FormCard';
 import ContentTemplateForm from './ContentTemplateForm';
 
 describe('Content Templates', () => {

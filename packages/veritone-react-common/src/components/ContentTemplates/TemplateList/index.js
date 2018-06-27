@@ -1,5 +1,5 @@
 import React from 'react';
-import { any, objectOf, func } from 'prop-types';
+import { string, shape, objectOf, func } from 'prop-types';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -7,10 +7,23 @@ import styles from './styles.scss';
 
 export default class TemplateList extends React.Component {
   static propTypes = {
-    templates: objectOf(any).isRequired,
-    selectedTemplates: objectOf(any), // an array of content template objects that had already been added to the source
+    templates: objectOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired,
+      })
+    ).isRequired,
+    selectedTemplates: objectOf( // an array of content template objects that had already been added to the source
+      shape({
+        id: string
+      })
+    ),
     addOrRemoveTemplate: func.isRequired
   };
+
+  static defaultProps = {
+    selectedTemplates: {}
+  }
 
   addTemplate = schemaId => () => {
     this.props.addOrRemoveTemplate(schemaId);

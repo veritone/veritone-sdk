@@ -1,0 +1,11 @@
+.btn-container {
+  position: absolute;
+  width: 96%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -50px;
+}
+
+.formHeight {
+  height: calc(100% - 110px); // Account for header height
+}

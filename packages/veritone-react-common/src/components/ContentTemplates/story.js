@@ -1,8 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { has } from 'lodash';
+import { has, noop } from 'lodash';
 import NullState from './NullState';
-import ContentTemplateForm from './';
+import TemplateList from './TemplateList';
+import TemplateForms from './TemplateForms';
+import ContentTemplateForm from './ContentTemplateForm';
 
 // CONTENT TEMPLATES SETUP
 const templateSource = {
@@ -191,9 +193,22 @@ function logFormData(formData) {
   console.log(formData);
 }
 
-storiesOf('Content Templates', module)
-  .add('Nullstate', () => <NullState />)
-  .add('ContentTemplate Form', () => (
+storiesOf('Content Template Form', module)
+  .add('Null State', () => <NullState />)
+  .add('Template List', () => (
+    <TemplateList
+      templates={templateData}
+      addOrRemoveTemplate={noop}
+    />
+  ))
+  .add('Form Cards', () => (
+    <TemplateForms
+      templates={initialTemplates}
+      onTemplateDetailsChange={noop}
+      onRemoveTemplate={noop}
+    />
+  ))
+  .add('Form', () => (
     <ContentTemplateForm
       templateData={templateData}
       initialTemplates={initialTemplates}

@@ -1,17 +1,24 @@
 import React from 'react';
-import { any, objectOf, func } from 'prop-types';
+import { string, shape, any, objectOf, func } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray } from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
-import { SourceTypeField } from 'components/SourceManagement/SourceConfiguration/SchemaDrivenSelectForm';
+import SourceTypeField from 'components/SourceTypeField';
 import FormCard from '../FormCard';
 import styles from './styles.scss';
 
 export default class TemplateForms extends React.Component {
   static propTypes = {
-    templates: objectOf(any).isRequired,
+    templates: objectOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired,
+        definition: objectOf(any),
+        data: objectOf(any)
+      })
+    ).isRequired,
     onTemplateDetailsChange: func.isRequired,
     onRemoveTemplate: func.isRequired
   };

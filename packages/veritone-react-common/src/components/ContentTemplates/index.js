@@ -4,7 +4,7 @@ import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
-import ContentTemplatesNullstate from './Nullstate';
+import ContentTemplatesNullState from './NullState';
 import styles from './styles.scss';
 
 @withMuiThemeProvider
@@ -49,7 +49,7 @@ export default class ContentTemplates extends React.Component {
         </div>
         <div className={styles['content-templates']}>
           {showNullstate ? (
-            <ContentTemplatesNullstate />
+            <ContentTemplatesNullState />
           ) : (
               <TemplateForms
                 templates={selectedTemplateSchemas}
