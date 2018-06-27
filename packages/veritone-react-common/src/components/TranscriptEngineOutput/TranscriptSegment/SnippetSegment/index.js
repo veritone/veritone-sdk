@@ -97,7 +97,6 @@ export default class SnippetSegment extends Component {
           editMode={editMode}
           onClick={this.handleSnippetClick}
           onChange={this.handleSnippetChange}
-          className={classNames(styles.fragment)}
         />
       );
     });

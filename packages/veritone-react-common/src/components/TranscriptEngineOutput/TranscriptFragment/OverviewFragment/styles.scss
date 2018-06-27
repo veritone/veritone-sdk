@@ -1,7 +1,6 @@
 @import 'src/styles/modules/variables';
 
 .overviewFragment {
-  margin-right: 1ch;
   cursor: pointer;
   color: $dark-black;
   font-family: Roboto;
@@ -11,6 +10,10 @@
 
   &:hover {
     color: $blue-1;
+  }
+
+  &:after {
+    content: " ";
   }
 }
 
