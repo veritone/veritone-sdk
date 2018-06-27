@@ -28,12 +28,17 @@ import faceEngineOutputReducer, {
   namespace as faceEngineOutputNamespace
 } from './modules/mediaDetails/faceEngineOutput';
 
+import savedSearchReducer, {
+  namespace as savedSearchNamespace
+} from './modules/savedSearch';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
   auth: { reducer: authReducer, namespace: authNamespace },
   engine: { reducer: engineReducer, namespace: engineNamespace },
-  application: { reducer: applicationReducer, namespace: applicationNamespace }
+  application: { reducer: applicationReducer, namespace: applicationNamespace },
+  savedSearch: { reducer: savedSearchReducer, namespace: savedSearchNamespace }
 } = modules;
 
 import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
@@ -52,6 +57,7 @@ export default function createReducer(asyncReducers) {
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
     [applicationNamespace]: applicationReducer,
+    [savedSearchNamespace]: savedSearchReducer,
     form: formReducer,
     player: playerReducer,
     operation: operationReducer,
