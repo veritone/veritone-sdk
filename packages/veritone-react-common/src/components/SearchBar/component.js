@@ -654,7 +654,8 @@ export class SampleSearchBar extends React.Component {
 
   mountSavedSearch = ref => {
     if(!this.savedSearchWidget) {
-      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp: this.convertSearchParametersToCSP(this.state.searchParameters), onClose: this.hideSavedSearch});
+      const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
+      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp, onClose: this.hideSavedSearch});
     }
   }
 
@@ -760,7 +761,7 @@ export class SampleSearchBar extends React.Component {
           showLoadSavedSearch={ this.showLoadSavedSearch }
           showSavedSearch={ this.showSavedSearch }
         />
-        <Dialog open={this.state.showLoadSavedSearch || this.state.showSavedSearch } fullWidth maxWidth={false} PaperProps={{ style: { width: '100%', minHeight: '65vh', maxWidth: '75%'} } }>
+        <Dialog open={this.state.showLoadSavedSearch || this.state.showSavedSearch } fullWidth maxWidth={false} PaperProps={{ style: { width: '100%', maxWidth: '75%'} } }>
           { this.state.showLoadSavedSearch && (<div id="LoadSavedSearch" ref={ this.mountLoadSavedSearch }> </div>)}
           { this.state.showSavedSearch && (<div id="SaveSearch" ref={ this.mountSavedSearch }> </div>)}
         </Dialog>
