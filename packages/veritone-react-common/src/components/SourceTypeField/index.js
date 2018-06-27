@@ -7,6 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import { string,  bool, func } from 'prop-types';
 import { pick } from 'lodash';
+import DateTimePicker from 'components/formComponents/DateTimePicker';
 
 import styles from './styles.scss';
 
@@ -41,7 +42,7 @@ export default function SourceTypeField({ id, type, required, title, ...rest }) 
         >
           {title}
         </InputLabel>
-        {/* <DateTimePicker
+        <DateTimePicker
           id={id}
           showIcon
           showTimezone
@@ -50,7 +51,7 @@ export default function SourceTypeField({ id, type, required, title, ...rest }) 
             onChange: rest.onChange
           }}
           {...rest}
-        /> */}
+        />
       </FormControl>
     );
   }

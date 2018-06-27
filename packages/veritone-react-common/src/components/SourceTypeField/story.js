@@ -31,14 +31,14 @@ const sourceSchema = {
         type: 'geoPoint',
         title: 'Geo Location'
       },
+      endDate: {
+        type: 'dateTime',
+        title: 'End Date'
+      },
       unsupported: {
         type: 'enum',
         title: 'Enum'
-      }
-      // datetimeEnd: {
-      //   type: 'dateTime',
-      //   title: 'datetimeEnd'
-      // }
+      },
     },
     required: ['url', 'username', 'password']
   }
@@ -53,6 +53,7 @@ const fieldTypes = {
   days: 10,
   location: ['-101.0', '11.0'],
   active: true,
+  endDate: new Date()
 };
 
 
@@ -64,6 +65,14 @@ class SourceTypeFields extends React.Component {
   }
 
   handleChange = (fld, def) => (e) => {
+    if (def.type === 'dateTime') {
+      const date = e;
+
+      return this.setState(prevState => ({
+        [fld]: date
+      }));
+    }
+
     e.persist();
 
     this.setState(prevState => ({
