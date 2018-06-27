@@ -89,3 +89,7 @@
 * Bumped React and React DOM to 16.3.0
 * Updated to Material-UI v1.0.0!
 
+## 5.1.0
+* Added Lozenge component
+* Added Truncate component
+* Added ExpandableInputField component

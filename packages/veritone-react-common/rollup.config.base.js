@@ -35,7 +35,10 @@ export default {
     'react-infinite-calendar',
     'react-redux',
     'redux',
-    'redux-form'
+    'redux-form',
+    'react-dotdotdot',
+    'video-react',
+    'shaka-player'
   ],
   plugins: [
     replace({

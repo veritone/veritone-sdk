@@ -114,3 +114,6 @@ const MyPage = () => (
   * (Breaking) Because of the new export scheme described above, script tag globals are now objects rather than direct widget exports, and must be used as follows:
     * Before: `const app = VeritoneApp(); const appBar = new AppBar();`
     * After: `const app = VeritoneApp.default(); const appBar = new AppBar.AppBarWidget()`
+
+## 5.1.0
+* Added Engine Selection widget

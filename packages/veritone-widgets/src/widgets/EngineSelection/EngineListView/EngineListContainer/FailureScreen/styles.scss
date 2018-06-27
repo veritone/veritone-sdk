@@ -1,0 +1,16 @@
+@import 'src/styles/modules/_muiTypography';
+@import 'src/styles/modules/_variables';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.headline {
+  @include mui-text('headline');
+  font-weight: 200 !important;
+  color: $light-black;
+}

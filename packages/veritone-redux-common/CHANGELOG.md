@@ -54,3 +54,9 @@ This allows redux-common to use more than one version of the API.
 ## 3.3.0
 * Bumped React and React DOM to 16.3.0
 * Add `promiseMiddleware`, a middleware for promisifying Redux actions.
+
+## 3.4.0
+* Added engine module
+
+## 3.5.0
+* Added regeneratorRuntime to the bundle to prevent build errors.

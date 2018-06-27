@@ -11,7 +11,7 @@ export default class AllFiltersList extends React.Component {
     filters: arrayOf(
       shape({
         label: string.isRequired,
-        number: number.isRequired,
+        number: number,
         id: string.isRequired
       })
     )
@@ -21,6 +21,11 @@ export default class AllFiltersList extends React.Component {
     filters: []
   };
 
+  handleClearAllFilters = e => {
+    e.preventDefault();
+    this.props.onClearAllFilters();
+  };
+
   render() {
     return (
       <div className={styles.container}>
@@ -28,7 +33,7 @@ export default class AllFiltersList extends React.Component {
           <span className={styles.header}>Your Selections</span>
           <a
             className={styles.clearLink}
-            onClick={this.props.onClearAllFilters}
+            onClick={this.handleClearAllFilters}
             href="#"
           >
             Clear all

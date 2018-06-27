@@ -16,7 +16,8 @@ class SearchPill extends React.PureComponent {
     label: string.isRequired,
     highlighted: bool,
     selected: bool,
-    exclude: bool
+    exclude: bool,
+    disabled: bool
   };
 
   handleDelete = e => {
@@ -39,8 +40,13 @@ class SearchPill extends React.PureComponent {
   render() {
     return (
       <div
-        className={cx([styles.searchPill, this.getBackgroundColor()])}
+        className={cx(
+          styles.searchPill,
+          { [styles.searchPillWithoutDelete]: !this.props.onDelete },
+          this.getBackgroundColor()
+        )}
         onClick={this.props.onClick}
+        disabled={this.props.disabled || !this.props.onClick}
       >
         <Avatar
           className={cx(this.props.engineCategoryIcon)}
@@ -59,16 +65,24 @@ class SearchPill extends React.PureComponent {
         >
           {this.props.label}
         </Typography>
-        <div data-attribute="deletePill" onClick={this.handleDelete}>
-          <Cancel
-            style={{
-              visibility:
-                this.props.highlighted && !this.props.selected ? 'hidden' : null
-            }}
-            disabled={this.props.selected}
-            className={styles.deleteIcon}
-          />
-        </div>
+        {this.props.onDelete && (
+          <div
+            data-attribute="deletePill"
+            onClick={this.handleDelete}
+            style={{ display: 'flex' }}
+          >
+            <Cancel
+              style={{
+                visibility:
+                  this.props.highlighted && !this.props.selected
+                    ? 'hidden'
+                    : null
+              }}
+              disabled={this.props.selected || this.props.disabled}
+              className={styles.deleteIcon}
+            />
+          </div>
+        )}
       </div>
     );
   }
