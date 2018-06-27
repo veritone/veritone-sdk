@@ -12,7 +12,7 @@ import styles from './styles.scss';
 
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
-export function SourceTypeField({ id, type, required, title, ...rest }) {
+export default function SourceTypeField({ id, type, required, title, ...rest }) {
   const supportedTypes = [
     'object',
     'string',
@@ -27,7 +27,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
   if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
     return (
       <div className={styles.unsupportedMsg}>
-        {`Unsupported Type: ${type} for ${title}`}
+        {`Unsupported Type: ${type}${title ? ` for ${title}` : ''}`}
       </div>
     );
   }
@@ -41,7 +41,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
         >
           {title}
         </InputLabel>
-        <DateTimePicker
+        {/* <DateTimePicker
           id={id}
           showIcon
           showTimezone
@@ -50,7 +50,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
             onChange: rest.onChange
           }}
           {...rest}
-        />
+        /> */}
       </FormControl>
     );
   }
@@ -61,6 +61,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
         label={title}
         control={
           <Checkbox
+            id={id}
             {...pick(rest, ['onChange'])}
             checked={rest.value}
             color="primary"
@@ -104,8 +105,8 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
 }
 
 SourceTypeField.propTypes = {
-  id: string,
-  type: string,
+  id: string.isRequired,
+  type: string.isRequired,
   required: bool,
   onChange: func,
   title: string
