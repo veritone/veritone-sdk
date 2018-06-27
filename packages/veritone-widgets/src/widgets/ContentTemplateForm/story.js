@@ -1,13 +1,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { has, noop } from 'lodash';
-import NullState from './NullState';
-import TemplateList from './TemplateList';
-import TemplateForms from './TemplateForms';
-import ContentTemplateForm from './ContentTemplateForm';
+import { text } from '@storybook/addon-knobs';
+
+import VeritoneApp from '../../shared/VeritoneApp';
+import ContentTemplateFormWidget from './';
+import { has } from 'lodash';
 
 // CONTENT TEMPLATES SETUP
-const templateSource = {
+const source = {
   data: {
     source: {
       id: '666',
@@ -25,7 +25,8 @@ const templateSource = {
   }
 };
 
-const dataSchemas = {
+//// FORM CARDS LIST SETUP
+const result = {
   data: {
     dataRegistries: {
       records: [
@@ -44,44 +45,6 @@ const dataSchemas = {
                     },
                     username: {
                       type: 'string'
-                    },
-                    testArray: {
-                      type: 'array',
-                      title: 'Array Test',
-                      items: {
-                        type: 'number',
-                        title: 'item title'
-                      }
-                    },
-                    testObject: {
-                      type: 'object',
-                      title: 'Object Test',
-                      properties: {
-                        objectString: {
-                          type: 'string',
-                          title: 'Object String'
-                        },
-                        objectNumber: {
-                          type: 'number',
-                          title: 'Object Number'
-                        }
-                      }
-                    },
-                    number: {
-                      type: 'number',
-                      title: 'Number'
-                    },
-                    geoLocation: {
-                      type: 'geoPoint',
-                      title: 'geoLocation'
-                    },
-                    trueOrFalse: {
-                      type: 'boolean',
-                      title: 'Boolean'
-                    },
-                    datetimeEnd: {
-                      type: 'dateTime',
-                      title: 'datetimeEnd'
                     }
                   }
                 }
@@ -166,7 +129,7 @@ function createInitialTemplates(templateSources) {
   const selectedTemplateSchemas = {};
 
   const templateSchemas = createTemplateData(
-    dataSchemas.data.dataRegistries.records
+    result.data.dataRegistries.records
   );
   templateSources.forEach(template => {
     if (has(templateSchemas, template.schemaId)) {
@@ -182,36 +145,41 @@ function createInitialTemplates(templateSources) {
   return selectedTemplateSchemas;
 }
 
-const templateData = createTemplateData(
-  dataSchemas.data.dataRegistries.records
-);
+const templateData = createTemplateData(result.data.dataRegistries.records);
 const initialTemplates = createInitialTemplates(
-  templateSource.data.source.contentTemplates
+  source.data.source.contentTemplates
 );
 
-function logFormData(formData) {
-  console.log(formData);
+class Story extends React.Component {
+  componentDidMount() {
+    this._ctFormWidget = new ContentTemplateFormWidget({
+      elId: 'ct-form-widget',
+      title: 'Content Template Form Widget',
+      templateData,
+      initialTemplates,
+      onSubmit: function (data) {
+        console.log('data:', data);
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this._ctFormWidget.destroy();
+  }
+
+  render() {
+    return (
+      <div>
+        <span id="ct-form-widget" />
+      </div>
+    );
+  }
 }
 
-storiesOf('Content Templates', module)
-  .add('Null State', () => <NullState />)
-  .add('Template List', () => (
-    <TemplateList
-      templates={templateData}
-      addOrRemoveTemplate={noop}
-    />
-  ))
-  .add('Form Cards', () => (
-    <TemplateForms
-      templates={initialTemplates}
-      onTemplateDetailsChange={noop}
-      onRemoveTemplate={noop}
-    />
-  ))
-  .add('Form', () => (
-    <ContentTemplateForm
-      templateData={templateData}
-      initialTemplates={initialTemplates}
-      onSubmit={logFormData}
-    />
-  ));
+const app = VeritoneApp();
+
+storiesOf('Content Template Form', module).add('Form', () => {
+  const sessionToken = text('Api Session Token', '');
+
+  return <Story sessionToken={sessionToken} store={app._store} />;
+});

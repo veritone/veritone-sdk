@@ -35,3 +35,5 @@ export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
 export MediaPlayer from './components/MediaPlayer';
+export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
+export ContentTemplate from './components/ContentTemplates';

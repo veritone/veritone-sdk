@@ -13,3 +13,5 @@ export {
   GlobalNotificationDialog,
   GlobalSnackBar
 } from './widgets/Notifications';
+export ContentTemplate from './widgets/ContentTemplate';
+export ContentTemplateForm from './widgets/ContentTemplateForm';
