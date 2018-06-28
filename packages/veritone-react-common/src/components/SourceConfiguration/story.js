@@ -54,18 +54,16 @@ const sourceTypes = {
   }
 };
 
-const sourceDetails = {
-  url: 'twitter.com',
-  username: 'trump',
-  password: 'password'
-};
-
 class SourceConfigWrapper extends React.Component {
   state = {
     sourceTypeId: sourceTypes.data.records[0].id,
     name: '',
     thumbnailUrl: '',
-    details: { ... sourceDetails },
+    details: {
+      url: '',
+      username: '',
+      password: ''
+    },
     thumbnailFile: null
   }
 
