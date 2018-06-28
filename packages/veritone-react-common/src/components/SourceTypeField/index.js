@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import { string,  bool, func } from 'prop-types';
 import { pick } from 'lodash';
-import DateTimePicker from 'components/formComponents/DateTimePicker';
+import { DateTimePicker } from 'components/formComponents';
 
 import styles from './styles.scss';
 
