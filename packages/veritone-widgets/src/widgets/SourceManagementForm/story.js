@@ -4,7 +4,7 @@ import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import SourceManagementFormWidget from './';
-import { has } from 'lodash';
+import { has, noop } from 'lodash';
 
 const sourceTypes = {
   sourceTypes: {
@@ -254,7 +254,9 @@ class Story extends React.Component {
       sourceTypes: sourceTypes.sourceTypes.records,
       sources,
       templateData,
-      initialTemplates
+      initialTemplates,
+      onSubmit: noop,
+      onClose: noop
     });
   }
 
