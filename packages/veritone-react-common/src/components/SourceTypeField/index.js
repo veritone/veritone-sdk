@@ -5,7 +5,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
-import { string,  bool, func } from 'prop-types';
+import { string, bool, func } from 'prop-types';
 import { pick } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
@@ -13,7 +13,13 @@ import styles from './styles.scss';
 
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
-export default function SourceTypeField({ id, type, required, title, ...rest }) {
+export default function SourceTypeField({
+  id,
+  type,
+  required,
+  title,
+  ...rest
+}) {
   const supportedTypes = [
     'object',
     'string',
