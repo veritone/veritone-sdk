@@ -13,3 +13,4 @@ export {
   GlobalNotificationDialog,
   GlobalSnackBar
 } from './widgets/Notifications';
+export IngestionJobsList from './widgets/IngestionJobsList';

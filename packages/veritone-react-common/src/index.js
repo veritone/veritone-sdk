@@ -35,3 +35,4 @@ export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
 export MediaPlayer from './components/MediaPlayer';
+export * as IngestionJobs from './components/IngestionJobs';
