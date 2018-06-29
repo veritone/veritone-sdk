@@ -29,10 +29,8 @@ import styles from './styles.scss';
 
 @connect(
   (state, { id }) => ({
-    allEngines: engineModule.getEngines(state, id),
     currentResults: engineSelectionModule.getCurrentResults(state, id),
     allEnginesChecked: engineSelectionModule.allEnginesChecked(state, id),
-    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state, id),
     checkedEngineIds: engineSelectionModule.getCheckedEngineIds(state, id),
     isFetchingEngines: engineModule.isFetchingEngines(state, id),
     failedToFetchEngines: engineModule.failedToFetchEngines(state, id),
@@ -87,7 +85,6 @@ export default class EngineListView extends React.Component {
   };
 
   static defaultProps = {
-    allEngines: {},
     currentResults: []
   };
 
