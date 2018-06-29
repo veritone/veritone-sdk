@@ -82,6 +82,7 @@ import {
   isUserGeneratedFaceEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
+  getSelectedEngineId,
   refreshEngineRunsSuccess,
   clearEngineResultsByEngineId,
   getEngineCategories
@@ -148,6 +149,7 @@ function processEngineRuns(engineRuns) {
     'correlation'
   ];
   const engineCategories = [];
+  console.log(engineRuns);
 
   engineRuns
     .map(engineRun => {
@@ -197,6 +199,8 @@ function processEngineRuns(engineRuns) {
       }
       engineRun.engine.status = engineRun.status;
       engineCategory.engines.push(engineRun.engine);
+      console.log('engineRun', engineRun);
+      console.log('engineCategory', engineCategory);
     });
 
   // order categories: first the most frequently used as defined by product, then the rest - alphabetically
@@ -679,23 +683,38 @@ function* createFileAssetSaga(
   sourceData,
   fileData
 ) {
+  if (sourceData.sourceEngineId) {
+    return yield put(
+      saveAssetDataFailure(widgetId, {
+        error: 'Source engine id must be set on the engine result'
+      })
+    );
+  }
   const requestTdo = yield select(getTdo, widgetId);
-  const createAssetQuery = `mutation createAsset($tdoId: ID!, $type: String, $contentType: String, $file: UploadedFile){
+  const createAssetQuery = `mutation createAsset(
+    $tdoId: ID!,
+    $type: String,
+    $contentType: String,
+    $file: UploadedFile,
+    $sourceData: SetAssetSourceData
+  ){
     createAsset( input: {
       containerId: $tdoId,
       type: $type,
       contentType: $contentType,
-      sourceData: ${sourceData},
-      file: $file
+      sourceData: $sourceData,
+      file: $file,
+      isUserEdited: true
     })
     { id }
   }`;
 
   const variables = {
     tdoId: requestTdo.id,
-    type: type,
-    contentType: contentType,
-    file: fileData
+    type,
+    contentType,
+    file: fileData,
+    sourceData
   };
 
   const config = yield select(configModule.getConfig);
@@ -776,13 +795,11 @@ function* createFileAssetSaga(
     // Reset the the transcipt engine results.
     if (selectedEngineCategory.categoryType === 'transcript') {
       yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    } else if (
-      selectedEngineCategory.categoryType === 'face' &&
-      userGeneratedEngineId
-    ) {
+    } else if (selectedEngineCategory.categoryType === 'face') {
+      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
       yield put(
         fetchFaceEngineResults({
-          selectedEngineId: userGeneratedEngineId,
+          selectedEngineId,
           tdo: requestTdo
         })
       );
@@ -1435,6 +1452,7 @@ function* watchSaveAssetData() {
         );
       }
       delete assetData.isBulkEdit;
+      assetData = [assetData];
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(
         getFaceEngineAssetData,
@@ -1448,35 +1466,39 @@ function* watchSaveAssetData() {
         })
       );
     }
-    if (!assetData.sourceEngineId) {
-      return yield put(
-        saveAssetDataFailure(action.meta.widgetId, {
-          error: 'Source engine id must be set on the engine result'
-        })
+    const createAssetCalls = [];
+    forEach(assetData, jsonData => {
+      if (get(jsonData, 'series.length')) {
+        forEach(jsonData.series, asset => {
+          if (get(asset, 'object.uri')) {
+            asset.object.uri = removeAwsSignatureParams(
+              get(asset, 'object.uri')
+            );
+          }
+        });
+      }
+      // process vtn-standard asset
+      const contentType = 'application/json';
+      const type = 'vtn-standard';
+      const sourceData = {
+        name: jsonData.sourceEngineName,
+        engineId: jsonData.sourceEngineId,
+        assetId: jsonData.assetId,
+        taskId: jsonData.taskId
+      };
+      const { widgetId } = action.meta;
+      createAssetCalls.push(
+        call(
+          createFileAssetSaga,
+          widgetId,
+          type,
+          contentType,
+          sourceData,
+          jsonData
+        )
       );
-    }
-    if (get(assetData, 'series.length')) {
-      forEach(assetData.series, asset => {
-        if (get(asset, 'object.uri')) {
-          asset.object.uri = removeAwsSignatureParams(get(asset, 'object.uri'));
-        }
-      });
-    }
-    // process vtn-standard asset
-    const contentType = 'application/json';
-    const type = 'vtn-standard';
-    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${
-      assetData.sourceEngineId
-    }" }`;
-    const { widgetId } = action.meta;
-    yield call(
-      createFileAssetSaga,
-      widgetId,
-      type,
-      contentType,
-      sourceData,
-      assetData
-    );
+    });
+    return yield all(createAssetCalls);
   });
 }
 

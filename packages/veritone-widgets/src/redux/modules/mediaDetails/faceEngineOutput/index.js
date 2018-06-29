@@ -548,22 +548,25 @@ export const getFaceEngineAssetData = (state, engineId) => {
 
   // On the result use engineAliasId for 'user-edited-face-engine-results'
   const userEdited = {
-    sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
+    sourceEngineId: engineId,
     sourceEngineName: 'User Edited'
   };
 
-  const allSeries = addUserDetectedFaces(
+  const allJsonData = addUserDetectedFaces(
     engineResults,
     userDetectedFaces,
     userRemovedFaces
   ).reduce((accumulator, engineResult) => {
-    return [...accumulator, ...engineResult.series];
+    return [
+      ...accumulator,
+      {
+        ...userEdited,
+        ...engineResult
+      }
+    ];
   }, []);
 
-  return {
-    ...userEdited,
-    series: allSeries
-  };
+  return allJsonData;
 };
 
 function addUserDetectedFaces(
@@ -572,6 +575,8 @@ function addUserDetectedFaces(
   userRemovedFaces
 ) {
   const updatedFaceData = map(engineResults, data => ({
+    taskId: data.taskId,
+    assetId: data.assetId,
     series: [...data.series]
   }));
 
