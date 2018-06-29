@@ -33,7 +33,9 @@ export default {
     'veritone-react-common',
     'veritone-redux-common',
     'react-virtualized',
-    'redux-thunk'
+    'redux-thunk',
+    'video-react',
+    'shaka-player'
   ],
   plugins: [
     replace({
