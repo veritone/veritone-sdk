@@ -106,15 +106,16 @@ export default class TranscriptEngineOutputWidget extends Component {
     alertConfirmAction: noop
   };
 
-
-  static getDerivedStateFromProps (nextProps, prevState) {
-    const nextData = get(nextProps, 'data'); 
-    nextData && nextData.map((chunk) => {
-      chunk.series && chunk.series.map((snippet) => {
-        const words = snippet.words;
-        words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const nextData = get(nextProps, 'data');
+    nextData &&
+      nextData.map(chunk => {
+        chunk.series &&
+          chunk.series.map(snippet => {
+            const words = snippet.words;
+            words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
+          });
       });
-    });
 
     const prevProps = prevState.props;
     !isEqual(prevProps.data, nextData) && prevProps.receiveData(nextData);

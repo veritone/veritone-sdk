@@ -291,7 +291,7 @@ class FaceEngineOutputContainer extends Component {
     return this.closeDialog();
   };
 
-  showFaceDetectionDoneSnack = (entity) => {
+  showFaceDetectionDoneSnack = entity => {
     this.setState({
       showFaceDetectionDoneSnack: true,
       faceDetectionDoneEntity: entity
@@ -465,10 +465,7 @@ class FaceEngineOutputContainer extends Component {
   };
 
   renderFaceDetectionDoneSnackbar = () => {
-    const {
-      showFaceDetectionDoneSnack,
-      faceDetectionDoneEntity
-    } = this.state;
+    const { showFaceDetectionDoneSnack, faceDetectionDoneEntity } = this.state;
     const entityName = get(faceDetectionDoneEntity, 'name', '');
 
     return (

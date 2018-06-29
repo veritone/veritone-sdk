@@ -10,7 +10,12 @@ import engineSelectionRootSaga from './modules/engineSelection/saga';
 import mediaDetailsSaga from './modules/mediaDetails/saga';
 
 export default function* root() {
-  yield all([fork(authRootSaga), fork(filePickerRootSaga), fork(appRootSaga), fork(engineSelectionRootSaga)]);
+  yield all([
+    fork(authRootSaga),
+    fork(filePickerRootSaga),
+    fork(appRootSaga),
+    fork(engineSelectionRootSaga)
+  ]);
   yield all([
     fork(authRootSaga),
     fork(filePickerRootSaga),
