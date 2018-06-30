@@ -3,8 +3,8 @@ import { mount } from 'enzyme';
 
 import SourceTypeField from './';
 
-describe('RaisedTextField', function () {
-  it('render\'s field for supported type', () => {
+describe('SourceTypeField', function () {
+  it('renders field for supported type', () => {
     const wrapper = mount(
       <SourceTypeField
         id="username"

@@ -64,7 +64,7 @@ class SourceTypeFields extends React.Component {
     this.state = fieldTypes;
   }
 
-  handleChange = (fld, def) => (e) => {
+  handleChange = (e, fld, def) => {
     if (def.type === 'dateTime') {
       const date = e;
 
@@ -91,11 +91,12 @@ class SourceTypeFields extends React.Component {
       <form onSubmit={this.handleSubmit}>
         {map(sourceSchema.definition.properties, (def, field) => (
           <SourceTypeField
+            key={field}
             id={field}
             type={def.type}
             title={def.title}
             value={this.state[field]}
-            onChange={this.handleChange(field, def)}
+            onChange={this.handleChange}
             required={sourceSchema.definition.required.includes(field)}
           />
         ))}
