@@ -20,12 +20,21 @@ export const GET_SEARCH_PROFILES_COUNT = 'vtn/savedSearch/GET_SEARCH_PROFILES_CO
 export const GET_SEARCH_PROFILES_COUNT_SUCCESS = 'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT_SUCCESS';
 export const GET_SEARCH_PROFILES_COUNT_FAILURE = 'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT_FAILURE';
 
-const defaultState = {
+export const DELETE_SEARCH_PROFILE = 'vtn/savedSearch/DELETE_SEARCH_PROFILE';
+export const DELETE_SEARCH_PROFILE_SUCCESS = 'vtn/savedSearch/DELETE_SEARCH_PROFILE_SUCCESS';
+export const DELETE_SEARCH_PROFILE_FAILURE = 'vtn/savedSearch/DELETE_SEARCH_PROFILE_FAILURE';
+
+export const RESET_SEARCH_PROFILES = 'vtn/savedSearch/RESET_SEARCH_PROFILES';
+
+const getDefaultState = () => ({
   isSaving: false,
   isDuplicate: false,
   savingFailed: false,
+
   duplicateProfileName: '',
   duplicateProfileId: '',
+  duplicateProfileShared: false,
+
   mySearchProfiles: [],
   loadedMySearchProfiles: new Set(),
   mySearchProfilesCount: null,
@@ -43,7 +52,7 @@ const defaultState = {
   orgSearchProfilesFilterByName: null,
   orgSearchProfilesSortBy: 'createdDate',
   orgSearchProfilesSortDirection: 'desc'
-};
+});
 
 const resetMySearchProfiles = state => ({
   ...state,
@@ -69,7 +78,7 @@ const resetOrgSearchProfiles = state => ({
   orgSearchProfilesSortDirection: 'desc'
 });
 
-const reducer = createReducer(defaultState, {
+const reducer = createReducer(getDefaultState(), {
   [SAVE_SEARCH_PROFILE](state, action) {
     return {
       ...state,
@@ -77,6 +86,7 @@ const reducer = createReducer(defaultState, {
       isDuplicate: false,
       duplicateProfileName: undefined,
       duplicateProfileId: undefined,
+      duplicateProfileShared: undefined,
       savingFailed: false
     };
   },
@@ -95,7 +105,8 @@ const reducer = createReducer(defaultState, {
       isSaving: false,
       isDuplicate: isDuplicate,
       duplicateProfileName: isDuplicate && action.meta.variables.input.name,
-      duplicateProfileId: action.payload[0].data.createSavedSearch.id,
+      duplicateProfileId: action.payload[0].data.validationErrors[0].duplicateId,
+      duplicateProfileShared: isDuplicate && action.meta.variables.input.shared,
       savingFailed: true
     };
   },
@@ -112,6 +123,9 @@ const reducer = createReducer(defaultState, {
       ...state,
       isSaving: false,
       isDuplicate: false,
+      duplicateProfileName: undefined,
+      duplicateProfileId: undefined,
+      duplicateProfileShared: false,
       savingFailed: false
     };
   },
@@ -119,7 +133,7 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       isSaving: false,
-      isDuplicate: false,
+      isDuplicate: true,
       savingFailed: true
     };
   },
@@ -248,6 +262,28 @@ const reducer = createReducer(defaultState, {
       }
     }
   },
+  [DELETE_SEARCH_PROFILE_SUCCESS](state, action) {
+    const deletedId = get(action.payload, 'deleteSavedSearch.id');
+    const orgSearchProfiles = state.orgSearchProfiles.filter( x => x.id !== deletedId);
+    const mySearchProfiles = state.mySearchProfiles.filter( x => x.id !== deletedId);
+    const loadedOrgSearchProfiles = new Set();
+    const loadedMySearchProfiles = new Set();
+
+    orgSearchProfiles.forEach( record => loadedOrgSearchProfiles.add(record.id) );
+    mySearchProfiles.forEach( record => loadedMySearchProfiles.add(record.id) );
+    return {
+      ...state,
+      orgSearchProfiles,
+      orgSearchProfilesCount: state.orgSearchProfilesCount--,
+      loadedOrgSearchProfiles,
+      mySearchProfiles,
+      mySearchProfilesCount: state.mySearchProfilesCount--,
+      loadedMySearchProfiles,
+    }
+  },
+  [RESET_SEARCH_PROFILES](state, action) {
+    return getDefaultState();
+  }
 });
 
 export default reducer;
@@ -256,6 +292,11 @@ function local(state) {
   return state[namespace];
 }
 
+export const resetSearchProfiles = () => (
+  { type: RESET_SEARCH_PROFILES }
+)
+
+// duplicate profile
 export const isDuplicate = (state) => {
   return local(state).isDuplicate;
 }
@@ -266,6 +307,10 @@ export const duplicateProfileName = (state) => {
 
 export const duplicateProfileId = (state) => {
   return local(state).duplicateProfileId;
+}
+
+export const duplicateProfileShared = (state) => {
+  return local(state).duplicateProfileShared;
 }
 
 // my search profiles
@@ -328,7 +373,7 @@ export const orgSearchProfilesFilterByName = (state) => {
 export const getSearchProfilesCount = ({ sortBy='createdDateTime', sortDirection='desc', searchByProfileName="", shared=false} = {}) => async (dispatch, getState) => {
   const query = `
     query($shared: Boolean, $searchByProfileName: String) {
-      savedSearches(includeShared: $shared, filterByName: $searchByProfileName) {
+      savedSearches(includeShared: $shared, filterByName: $searchByProfileName, limit: 999) {
         count
       }
     }`
@@ -345,6 +390,29 @@ export const getSearchProfilesCount = ({ sortBy='createdDateTime', sortDirection
   });
 
   return response;
+}
+
+export const deleteSearchProfile = ( {id} ) => async (dispatch, getState) => {
+  const query = `
+    mutation DeleteSavedSearch($id: ID!) {
+      deleteSavedSearch(id: $id) {
+        id,
+        message
+      }
+    }
+  `;
+  const response = await callGraphQL({
+    actionTypes: [DELETE_SEARCH_PROFILE, DELETE_SEARCH_PROFILE_SUCCESS, DELETE_SEARCH_PROFILE_FAILURE] ,
+    query,
+    variables: {
+      id
+    },
+    dispatch,
+    getState
+  });
+
+  // no message is a success
+  return !response.message;
 }
 
 export const loadSearchProfiles = ({ sortBy='createdDateTime', sortDirection='desc', searchByProfileName="", limit=20, offset=0, shared=false} = {}) => async (dispatch, getState) => {
@@ -414,7 +482,6 @@ export const saveSearchProfile = ( {csp, name, sharedWithOrganization} ) => asyn
 
   return !!response.createSavedSearch;
 }
-
 
 export const replaceSearchProfile = ( {id, csp, name, sharedWithOrganization} ) => async (dispatch, getState) => {
   const query = `
