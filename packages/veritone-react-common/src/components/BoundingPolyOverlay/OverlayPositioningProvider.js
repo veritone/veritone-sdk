@@ -30,16 +30,28 @@ export default class OverlayPositioningProvider extends React.Component {
 
   measureChild = (element = this.measuredChildRef) => {
     // calculate the actual size of the element we're going to lay on top of
-    const { height, width } = element.getBoundingClientRect();
+    const {
+      height: screenHeight,
+      width: screenWidth
+    } = element.getBoundingClientRect();
+    const { contentWidth, contentHeight } = this.props;
+
+    const ratioScreen = screenWidth / screenHeight;
+    const ratioContent = contentWidth / contentHeight;
+
+    const [width, height] =
+      ratioScreen > ratioContent
+        ? [(contentWidth * screenHeight) / contentHeight, screenHeight]
+        : [screenWidth, (contentHeight * screenWidth) / contentWidth];
 
     this.setState({
       // figure out what styles need to be applied to the overlay component so that
       // it aligns with the content (considering letter/pillarboxing)
       overlayPosition: {
-        top: (height - this.props.contentHeight) / 2,
-        left: (width - this.props.contentWidth) / 2,
-        height: this.props.contentHeight,
-        width: this.props.contentWidth
+        top: (screenHeight - height) / 2,
+        left: (screenWidth - width) / 2,
+        height,
+        width
       }
     });
   };
