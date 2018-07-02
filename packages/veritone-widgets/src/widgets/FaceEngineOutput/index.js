@@ -51,7 +51,14 @@ const saga = util.reactReduxSaga.saga;
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
     showConfirmationDialog: faceEngineOutput.showConfirmationDialog(state),
     confirmationAction: faceEngineOutput.confirmationAction(state),
-    pendingUserEdits: faceEngineOutput.pendingUserEdits(state, selectedEngineId)
+    pendingUserEdits: faceEngineOutput.pendingUserEdits(
+      state,
+      selectedEngineId
+    ),
+    isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+      state,
+      selectedEngineId
+    )
   }),
   {
     fetchEngineResults: faceEngineOutput.fetchEngineResults,
@@ -157,7 +164,8 @@ class FaceEngineOutputContainer extends Component {
     cancelFaceEdits: func,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
-    pendingUserEdits: bool
+    pendingUserEdits: bool,
+    isDisplayingUserEditedOutput: bool
   };
 
   state = {
@@ -305,6 +313,14 @@ class FaceEngineOutputContainer extends Component {
     this.setState({
       showFaceDetectionDoneSnack: false,
       faceDetectionDoneEntity: null
+    });
+  };
+
+  handleToggleEditedOutput = showUserEdited => {
+    this.props.fetchEngineResults({
+      selectedEngineId: this.props.selectedEngineId,
+      tdo: this.props.tdo,
+      ignoreUserEdited: !showUserEdited
     });
   };
 
@@ -521,6 +537,8 @@ class FaceEngineOutputContainer extends Component {
           onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
+          showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}

@@ -63,7 +63,8 @@ const defaultState = {
   facesDetectedByUser: {},
   facesRemovedByUser: {},
   showConfirmationDialog: false,
-  confirmationAction: noop
+  confirmationAction: noop,
+  displayUserEdited: false
 };
 
 const reducer = createReducer(defaultState, {
@@ -85,7 +86,7 @@ const reducer = createReducer(defaultState, {
     }
 
     const engineResults = action.payload.data.engineResults.records;
-    const { startOffsetMs, stopOffsetMs } = action.meta;
+    const { startOffsetMs, stopOffsetMs, ignoreUserEdited } = action.meta;
 
     const previousResultsByEngineId = state.engineResultsByEngineId || {};
     const resultsGroupedByEngineId = groupBy(engineResults, 'engineId');
@@ -103,12 +104,14 @@ const reducer = createReducer(defaultState, {
         [action.meta.engineId]: {
           [`${startOffsetMs}-${stopOffsetMs}`]: true
         }
-      }
+      },
+      displayUserEdited: !ignoreUserEdited
     };
   },
   [FETCH_ENGINE_RESULTS_FAILURE](state, { payload, meta }) {
     return {
-      ...state
+      ...state,
+      displayUserEdited: false
     };
   },
   [FETCH_ENTITIES](state, action) {
@@ -346,6 +349,13 @@ export const fetchEngineResultsFailure = (error, meta) => ({
 export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
+
+export const isDisplayingUserEditedOutput = (state, engineId) => {
+  const engineResults = getFaceDataByEngine(state, engineId);
+  console.log(!!find(engineResults, { userEdited: true }));
+  return !!find(engineResults, { userEdited: true });
+};
+
 export const getFaceDataByEngine = (state, engineId) =>
   get(local(state), ['engineResultsByEngineId', engineId]);
 

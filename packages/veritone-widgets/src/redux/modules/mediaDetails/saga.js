@@ -124,6 +124,7 @@ const engineRunsQueryClause = `engineRuns {
           }
         }
         status
+        hasUserEdits
       }
     }
   `;
@@ -149,7 +150,6 @@ function processEngineRuns(engineRuns) {
     'correlation'
   ];
   const engineCategories = [];
-  console.log(engineRuns);
 
   engineRuns
     .map(engineRun => {
@@ -198,9 +198,8 @@ function processEngineRuns(engineRuns) {
         engineCategories.push(engineCategory);
       }
       engineRun.engine.status = engineRun.status;
+      engineRun.engine.hasUserEdits = engineRun.hasUserEdits;
       engineCategory.engines.push(engineRun.engine);
-      console.log('engineRun', engineRun);
-      console.log('engineCategory', engineCategory);
     });
 
   // order categories: first the most frequently used as defined by product, then the rest - alphabetically
