@@ -1,6 +1,15 @@
 import React from 'react';
 import { isNumber } from 'lodash';
-import { arrayOf, oneOf, string, number, shape, func } from 'prop-types';
+import {
+  arrayOf,
+  oneOf,
+  string,
+  number,
+  shape,
+  func,
+  objectOf,
+  any
+} from 'prop-types';
 import { branch, renderNothing } from 'recompose';
 
 import { getMousePosition } from 'helpers/dom';
@@ -36,6 +45,8 @@ export default class Overlay extends React.Component {
       width: number.isRequired,
       height: number.isRequired
     }).isRequired,
+    wrapperStyles: objectOf(any),
+    toolBarOffset: number,
     overlayBackgroundColor: string,
     overlayBorderStyle: string,
     overlayBackgroundBlendMode: string,
@@ -55,6 +66,7 @@ export default class Overlay extends React.Component {
     confirmLabel: 'Add',
     // readOnly: false,
     initialBoundingBoxPolys: [],
+    toolBarOffset: 0,
     overlayBackgroundColor: '#FF6464',
     overlayBackgroundBlendMode: 'hard-light',
     overlayBorderStyle: '1px solid #fff'
@@ -74,10 +86,6 @@ export default class Overlay extends React.Component {
     userActingOnBoundingBox: false,
     drawingInitialBoundingBox: false
   };
-  //
-  // static getDerivedStateFromProps(props) {
-  //   return
-  // }
 
   handleResize = (e, direction, ref, delta, position) => {
     this.removeUnconfirmedBoundingBox();
@@ -331,7 +339,8 @@ export default class Overlay extends React.Component {
           top,
           left,
           height,
-          width
+          width,
+          ...this.props.wrapperStyles
         }}
       >
         {this.state.boundingBoxPositions.map(({ x, y, width, height }, i) => (
@@ -408,6 +417,7 @@ export default class Overlay extends React.Component {
             onConfirm={this.confirmStagedBoundingBox}
             onCancel={this.removeUnconfirmedBoundingBox}
             onMinimize={this.minimizeConfirmMenu}
+            bottomOffset={this.props.toolBarOffset}
           />
         )}
 
@@ -422,6 +432,7 @@ export default class Overlay extends React.Component {
               }
             ]}
             onDelete={this.handleDelete}
+            bottomOffset={this.props.toolBarOffset}
           />
         )}
 

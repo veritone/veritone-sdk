@@ -1,5 +1,5 @@
 import React from 'react';
-import { bool, string, func } from 'prop-types';
+import { number, bool, string, func } from 'prop-types';
 import Button from '@material-ui/core/Button';
 import OverlayToolBar from './OverlayToolBar';
 
@@ -9,7 +9,8 @@ export default class OverlayConfirmMenu extends React.Component {
     visible: bool,
     onConfirm: func.isRequired,
     onCancel: func.isRequired,
-    onMinimize: func.isRequired
+    onMinimize: func.isRequired,
+    bottomOffset: number
   };
 
   static defaultProps = {};
@@ -18,12 +19,12 @@ export default class OverlayConfirmMenu extends React.Component {
     menuAnchorEl: null
   };
 
-
   render() {
     return (
       <OverlayToolBar
         visible={this.props.visible}
         onMinimize={this.props.onMinimize}
+        bottomOffset={this.props.bottomOffset}
       >
         <Button
           size="small"

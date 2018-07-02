@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { node, bool, func, string, arrayOf, shape } from 'prop-types';
+import { number, node, bool, func, string, arrayOf, shape } from 'prop-types';
 import Slide from '@material-ui/core/Slide';
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,11 +18,13 @@ export default class OverlayToolBar extends React.Component {
         label: string.isRequired,
         onClick: func.isRequired
       })
-    )
+    ),
+    bottomOffset: number
   };
 
   static defaultProps = {
-    menuItems: []
+    menuItems: [],
+    bottomOffset: 0
   };
 
   state = {
@@ -33,7 +35,7 @@ export default class OverlayToolBar extends React.Component {
     this.setState({ menuAnchorEl: event.currentTarget });
   };
 
-  handleCloseMenu = (e) => {
+  handleCloseMenu = e => {
     const itemIndex = e.target.getAttribute('data-itemindex');
 
     if (itemIndex) {
@@ -54,7 +56,7 @@ export default class OverlayToolBar extends React.Component {
             justifyContent: 'flex-end',
             alignItems: 'center',
             padding: 4,
-            bottom: 0,
+            bottom: this.props.bottomOffset,
             width: '100%'
           }}
         >
@@ -91,10 +93,11 @@ export default class OverlayToolBar extends React.Component {
                 }}
               >
                 {this.props.menuItems.map((option, i) => (
-                  <MenuItem key={option.label}
-                            data-itemindex={i}
-                            onClick={this.handleCloseMenu}
-                    >
+                  <MenuItem
+                    key={option.label}
+                    data-itemindex={i}
+                    onClick={this.handleCloseMenu}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}

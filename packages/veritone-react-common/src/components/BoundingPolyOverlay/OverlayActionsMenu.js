@@ -1,6 +1,6 @@
 import React from 'react';
 // import {} from 'lodash';
-import { bool, func, arrayOf, string, shape } from 'prop-types';
+import { number, bool, func, arrayOf, string, shape } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -16,7 +16,8 @@ export default class OverlayActionsMenu extends React.Component {
         label: string.isRequired,
         onClick: func.isRequired
       })
-    )
+    ),
+    bottomOffset: number
   };
 
   static defaultProps = {};
@@ -27,6 +28,7 @@ export default class OverlayActionsMenu extends React.Component {
         visible={this.props.visible}
         onMinimize={this.props.onMinimize}
         menuItems={this.props.menuItems}
+        bottomOffset={this.props.bottomOffset}
       >
         <IconButton onClick={this.props.onDelete}>
           <DeleteIcon />
