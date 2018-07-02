@@ -15,7 +15,7 @@ export const getDevOnlyMiddlewares = () => {
         require('redux-logger').createLogger({
           collapsed: true,
           // video-react fires a lot of actions; ignore them
-          predicate: (getState, action) => !action.type.startsWith('video-react')
+          // predicate: (getState, action) => !action.type.startsWith('video-react')
         })
       ]
     : [];

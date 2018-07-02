@@ -1,8 +1,100 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
+import faker from 'faker';
 
-import 'video-react/dist/video-react.css';
+function randomPolyBox() {
+  const rand = faker.random.number;
+  const options = { min: 0, max: 1, precision: 0.0001 };
+
+  return Array(4)
+    .fill()
+    .map(() => ({
+      x: rand(options),
+      y: rand(options)
+    }));
+}
+
+const timeSeries = [
+  {
+    startTimeMs: 0,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 5000
+  },
+  {
+    startTimeMs: 2000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 8000
+  },
+  {
+    startTimeMs: 8000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 12000
+  },
+  {
+    startTimeMs: 9000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 14000
+  },
+  {
+    startTimeMs: 10000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 14000
+  },
+  {
+    startTimeMs: 17000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 19000
+  },
+  {
+    startTimeMs: 20000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 25000
+  },
+  {
+    startTimeMs: 21000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 24000
+  },
+  {
+    startTimeMs: 21000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 25000
+  },
+  {
+    startTimeMs: 25000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 30000
+  },
+  {
+    startTimeMs: 28000,
+    object: {
+      boundingPoly: randomPolyBox()
+    },
+    stopTimeMs: 30000
+  }
+];
+
 import BaseStory from '../../shared/BaseStory';
 import { MediaPlayer } from './';
 
@@ -46,7 +138,8 @@ storiesOf('MediaPlayer', module)
       componentProps={{
         streams: multipleStreams,
         width: 500,
-        fluid: false
+        fluid: false,
+        boundingPolySeries: timeSeries
       }}
     />
   ))

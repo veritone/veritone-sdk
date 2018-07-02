@@ -59,7 +59,7 @@ class Story extends React.Component {
             overlayBorderStyle={this.props.overlayBorderStyle}
             overlayBackgroundBlendMode={this.props.overlayBackgroundBlendMode}
             initialBoundingBoxPolys={this.state.boundingBoxes}
-            key={JSON.stringify(this.state.boundingBoxes)}
+            key={this.state.frame}
           />
           <div
             style={{
