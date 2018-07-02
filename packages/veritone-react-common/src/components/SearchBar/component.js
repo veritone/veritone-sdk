@@ -63,6 +63,7 @@ import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSea
 import VeritoneApp from '../SavedSearch/VeritoneApp';
 import { SearchBar } from '.';
 
+
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
 // hardcoded for now to help setup storybook.
@@ -154,8 +155,6 @@ const geolocation = {
   enablePill: true,
   showPill: true
 }
-
-console.log("what the shit");
 
 const appBarColor = '#ff2200';
 const enabledEngineCategories = [transcript, face, obj, logo, recognizedText, fingerprint, sentiment, geolocation, tag, structured, time];
@@ -603,7 +602,7 @@ export class SampleSearchBar extends React.Component {
   loadCSP = (csp) => {
     this.setState({
       searchParameters: this.CSPToSearchParameters(csp)
-    });
+    }, this.onSearch);
   }
 
   addOrModifySearchParameter = (parameter, index) => {
@@ -645,19 +644,6 @@ export class SampleSearchBar extends React.Component {
       return [...this.state.searchParameters, newSearchParameter];
     }
   };
-
-  mountLoadSavedSearch = ref => {
-    if(!this.loadSavedSearchWidget) {
-      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP, onClose: this.hideLoadSavedSearch});
-    }
-  }
-
-  mountSavedSearch = ref => {
-    if(!this.savedSearchWidget) {
-      const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp, onClose: this.hideSavedSearch});
-    }
-  }
 
   insertMultipleSearchParameters = (parametersToAdd) => {
     const newSearchParameters = parametersToAdd.reduce((latestSearchParameters, {parameter, index}) => {
@@ -724,19 +710,28 @@ export class SampleSearchBar extends React.Component {
   }
 
   showLoadSavedSearch = (e) => {
-    this.setState({ showLoadSavedSearch: true });
+    if(!this.loadSavedSearchWidget) {
+      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP, onClose: this.hideLoadSavedSearch});
+    }
+
+    this.loadSavedSearchWidget.open();
   }
 
   hideLoadSavedSearch = (e) => {
-    this.setState({ showLoadSavedSearch: false }, this.cleanupLoadSavedSearch );
+    this.cleanupLoadSavedSearch();
   }
 
   showSavedSearch = (e) => {
-    this.setState({ showSavedSearch: true });
+    if(!this.savedSearchWidget) {
+      const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
+      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp, onClose: this.hideSavedSearch});
+    }
+
+    this.savedSearchWidget.open();
   }
 
   hideSavedSearch = (e) => {
-    this.setState({ showSavedSearch: false }, this.cleanupSavedSearch );
+    this.cleanupSavedSearch();
   }
 
   render() {
@@ -761,10 +756,8 @@ export class SampleSearchBar extends React.Component {
           showLoadSavedSearch={ this.showLoadSavedSearch }
           showSavedSearch={ this.showSavedSearch }
         />
-        <Dialog open={this.state.showLoadSavedSearch || this.state.showSavedSearch } fullWidth maxWidth={false} PaperProps={{ style: { width: '100%', maxWidth: '75%'} } }>
-          { this.state.showLoadSavedSearch && (<div id="LoadSavedSearch" ref={ this.mountLoadSavedSearch }> </div>)}
-          { this.state.showSavedSearch && (<div id="SaveSearch" ref={ this.mountSavedSearch }> </div>)}
-        </Dialog>
+        <div id="LoadSavedSearch"> </div>
+        <div id="SaveSearch"> </div>
       </MuiThemeProvider>
     );
   }
