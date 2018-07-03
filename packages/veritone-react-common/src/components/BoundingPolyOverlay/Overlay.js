@@ -2,7 +2,7 @@ import React from 'react';
 import { isNumber } from 'lodash';
 import {
   arrayOf,
-  oneOf,
+  bool,
   string,
   number,
   shape,
@@ -36,9 +36,8 @@ import { percentagePolyToPixelXYWidthHeight } from './helpers';
 @withMuiThemeProvider
 export default class Overlay extends React.Component {
   static propTypes = {
-    acceptMode: oneOf(['auto', 'confirm']),
     confirmLabel: string,
-    // readOnly: bool,
+    readOnly: bool,
     overlayPositioningContext: shape({
       top: number.isRequired,
       left: number.isRequired,
@@ -62,9 +61,8 @@ export default class Overlay extends React.Component {
   };
 
   static defaultProps = {
-    acceptMode: 'confirm',
     confirmLabel: 'Add',
-    // readOnly: false,
+    readOnly: false,
     initialBoundingBoxPolys: [],
     toolBarOffset: 0,
     overlayBackgroundColor: '#FF6464',
@@ -191,7 +189,9 @@ export default class Overlay extends React.Component {
       this.toPercentageBasedPoly([
         ...this.state.boundingBoxPositions,
         this.state.stagedBoundingBoxPosition
-      ])
+      ]),
+      // second arg is just the added box
+      this.toPercentageBasedPoly([this.state.stagedBoundingBoxPosition])[0]
     );
 
     // todo: clear stage when new initial set is received?
@@ -209,6 +209,10 @@ export default class Overlay extends React.Component {
   };
 
   handleBackgroundMouseDown = e => {
+    if (this.props.readOnly) {
+      return;
+    }
+
     if (this.state.drawingInitialBoundingBox) {
       // click while drawing; finish drawing
       // fixme -- separate logic
@@ -321,7 +325,6 @@ export default class Overlay extends React.Component {
   render() {
     const { top, left, height, width } = this.props.overlayPositioningContext;
     const showingConfirmMenu =
-      this.props.acceptMode === 'confirm' &&
       this.hasStagedBoundingBox() &&
       !this.state.userActingOnBoundingBox &&
       !this.state.userMinimizedConfirmMenu;
@@ -362,9 +365,10 @@ export default class Overlay extends React.Component {
               mixBlendMode: this.props.overlayBackgroundBlendMode,
               // do not let this box interfere with mouse events as we draw out
               // the initial bounding box
-              pointerEvents: this.state.drawingInitialBoundingBox
-                ? 'none'
-                : 'auto'
+              pointerEvents:
+                this.props.readOnly || this.state.drawingInitialBoundingBox
+                  ? 'none'
+                  : 'auto'
             }}
             size={{ width, height }}
             position={{ x, y }}
@@ -374,73 +378,79 @@ export default class Overlay extends React.Component {
             onResize={this.handleResize}
             onResizeStop={this.handleResizeStop}
             enableResizing={
-              this.state.focusedBoundingBoxIndex === i ? undefined : false
+              !this.props.readOnly && this.state.focusedBoundingBoxIndex === i
+                ? undefined
+                : false
             }
+            // disableDragging={this.props.readOnly}
             // disableDragging={this.state.focusedBoundingBoxIndex !== i}
           />
         ))}
 
-        {this.hasStagedBoundingBox() && (
-          <RndBox
-            style={{
-              border: this.props.overlayBorderStyle,
-              backgroundColor: this.props.overlayBackgroundColor,
-              mixBlendMode: this.props.overlayBackgroundBlendMode,
-              // do not let this box interfere with mouse events as we draw it out
-              pointerEvents: this.state.drawingInitialBoundingBox
-                ? 'none'
-                : 'auto'
-            }}
-            size={{
-              width: this.state.stagedBoundingBoxPosition.width,
-              height: this.state.stagedBoundingBoxPosition.height
-            }}
-            position={{
-              x: this.state.stagedBoundingBoxPosition.x,
-              y: this.state.stagedBoundingBoxPosition.y
-            }}
-            onDragStop={this.handleDragStagedBoxStop}
-            onDrag={this.handleDragStagedBox}
-            onResize={this.handleResizeStagedBox}
-            onResizeStop={this.handleResizeStop}
-            enableResizing={
-              // don't show handles during initial drag placement
-              this.state.drawingInitialBoundingBox ? false : undefined
-            }
-          />
-        )}
-
-        {showingConfirmMenu && (
-          <OverlayConfirmMenu
-            visible={showingConfirmMenu}
-            confirmLabel={this.props.confirmLabel}
-            onConfirm={this.confirmStagedBoundingBox}
-            onCancel={this.removeUnconfirmedBoundingBox}
-            onMinimize={this.minimizeConfirmMenu}
-            bottomOffset={this.props.toolBarOffset}
-          />
-        )}
-
-        {showingActionsMenu && (
-          <OverlayActionsMenu
-            visible={showingActionsMenu}
-            onMinimize={this.minimizeConfirmMenu}
-            menuItems={[
-              {
-                label: 'test action 1',
-                onClick: () => console.log('clicked')
+        {this.hasStagedBoundingBox() &&
+          !this.props.readOnly && (
+            <RndBox
+              style={{
+                border: this.props.overlayBorderStyle,
+                backgroundColor: this.props.overlayBackgroundColor,
+                mixBlendMode: this.props.overlayBackgroundBlendMode,
+                // do not let this box interfere with mouse events as we draw it out
+                pointerEvents: this.state.drawingInitialBoundingBox
+                  ? 'none'
+                  : 'auto'
+              }}
+              size={{
+                width: this.state.stagedBoundingBoxPosition.width,
+                height: this.state.stagedBoundingBoxPosition.height
+              }}
+              position={{
+                x: this.state.stagedBoundingBoxPosition.x,
+                y: this.state.stagedBoundingBoxPosition.y
+              }}
+              onDragStop={this.handleDragStagedBoxStop}
+              onDrag={this.handleDragStagedBox}
+              onResize={this.handleResizeStagedBox}
+              onResizeStop={this.handleResizeStop}
+              enableResizing={
+                // don't show handles during initial drag placement
+                this.state.drawingInitialBoundingBox ? false : undefined
               }
-            ]}
-            onDelete={this.handleDelete}
-            bottomOffset={this.props.toolBarOffset}
-          />
-        )}
+            />
+          )}
+
+        {showingConfirmMenu &&
+          !this.props.readOnly && (
+            <OverlayConfirmMenu
+              visible={showingConfirmMenu}
+              confirmLabel={this.props.confirmLabel}
+              onConfirm={this.confirmStagedBoundingBox}
+              onCancel={this.removeUnconfirmedBoundingBox}
+              onMinimize={this.minimizeConfirmMenu}
+              bottomOffset={this.props.toolBarOffset}
+            />
+          )}
+
+        {showingActionsMenu &&
+          !this.props.readOnly && (
+            <OverlayActionsMenu
+              visible={showingActionsMenu}
+              onMinimize={this.minimizeConfirmMenu}
+              menuItems={[
+                {
+                  label: 'test action 1',
+                  onClick: () => console.log('clicked')
+                }
+              ]}
+              onDelete={this.handleDelete}
+              bottomOffset={this.props.toolBarOffset}
+            />
+          )}
 
         <div
           style={{
             width: '100%',
             height: '100%',
-            cursor: 'crosshair'
+            cursor: this.props.readOnly ? 'auto' : 'crosshair'
           }}
           onMouseDown={this.handleBackgroundMouseDown}
           onMouseUp={this.handleBackgroundMouseUp}

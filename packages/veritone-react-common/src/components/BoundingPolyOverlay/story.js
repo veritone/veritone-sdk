@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select, number, text } from '@storybook/addon-knobs';
+import { select, number, text, boolean } from '@storybook/addon-knobs';
 import Slider from '@material-ui/lab/Slider';
 import faker from 'faker';
 
@@ -60,6 +60,7 @@ class Story extends React.Component {
             overlayBackgroundBlendMode={this.props.overlayBackgroundBlendMode}
             initialBoundingBoxPolys={this.state.boundingBoxes}
             key={this.state.frame}
+            readOnly={this.props.readOnly}
           />
           <div
             style={{
@@ -105,6 +106,7 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
     'Overlay background blend mode',
     'hard-light'
   );
+  const readOnly = boolean('Read only mode', false);
 
   return (
     <div>
@@ -119,6 +121,7 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
         overlayBackgroundColor={overlayBackgroundColor}
         overlayBorderStyle={overlayBorderStyle}
         overlayBackgroundBlendMode={overlayBackgroundBlendMode}
+        readOnly={readOnly}
       />
     </div>
   );
