@@ -25,7 +25,8 @@ import styles from './styles.scss';
   videoHeight: state.player.videoHeight,
   videoWidth: state.player.videoWidth,
   hasStarted: state.player.hasStarted,
-  currentTime: state.player.currentTime
+  currentTime: state.player.currentTime,
+  paused: state.player.paused,
 }))
 class MediaPlayer extends React.Component {
   static propTypes = {
@@ -52,11 +53,12 @@ class MediaPlayer extends React.Component {
     videoHeight: number,
     videoWidth: number,
     hasStarted: bool,
+    paused: bool,
     currentTime: number
   };
 
-  handleAddBoundingBox = () => {
-    // todo
+  handleAddBoundingBox = (allPolys, newPoly) => {
+    console.log(newPoly)
   };
 
   playerRef = React.createRef();
@@ -70,8 +72,6 @@ class MediaPlayer extends React.Component {
       actions = manager.getActions();
       store = manager.store;
     }
-
-    // todo: disable editing unless paused
 
     return (
       <div style={{ width: this.props.width, height: this.props.height }}>
@@ -91,6 +91,7 @@ class MediaPlayer extends React.Component {
                 this.props.boundingPolySeries,
                 this.props.currentTime * 1000
               )}
+              readOnly={!this.props.paused}
               key={this.props.currentTime}
             />
           )}
