@@ -46,7 +46,7 @@ import {
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
-import { modules } from 'veritone-redux-common';
+import { modules, util } from 'veritone-redux-common';
 const { application: applicationModule } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
@@ -54,7 +54,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
+import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import widget from '../../shared/widget';
+import rootSaga from '../../redux/modules/mediaDetails/saga';
+
+const saga = util.reactReduxSaga.saga;
 
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
@@ -63,6 +67,7 @@ const programLiveImageNullState =
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
+@saga(rootSaga)
 @connect(
   (state, { id }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
@@ -89,11 +94,15 @@ const programLiveImageNullState =
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
-    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id)
+    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
+    isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+      state,
+      mediaDetailsModule.getSelectedEngineId(state, id)
+    ),
+    editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
@@ -102,11 +111,11 @@ const programLiveImageNullState =
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    fetchApplications: applicationModule.fetchApplications,
     saveAssetData: mediaDetailsModule.saveAssetData,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
-    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges
+    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
+    setEditButtonState: mediaDetailsModule.setEditButtonState
   },
   null,
   { withRef: true }
@@ -116,14 +125,12 @@ class MediaDetailsWidget extends React.Component {
     id: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
-    fetchApplications: func.isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
     }),
     onRunProcess: func,
     onClose: func,
-    loadTdoRequest: func,
     updateTdoRequest: func,
     isUserGeneratedEngineId: func,
     engineCategories: arrayOf(
@@ -265,7 +272,10 @@ class MediaDetailsWidget extends React.Component {
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
-    discardUnsavedChanges: func
+    discardUnsavedChanges: func,
+    isDisplayingUserEditedOutput: bool,
+    setEditButtonState: func,
+    editButtonDisabled: bool
   };
 
   static contextTypes = {
@@ -279,18 +289,12 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     isMenuOpen: false,
-    selectedTabValue: 'mediaDetails',
-    disableEditBtn: false
+    selectedTabValue: 'mediaDetails'
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
-  }
-
-  componentDidMount() {
-    this.props.loadTdoRequest(this.props.id, this.props.mediaId);
-    this.props.fetchApplications();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -300,7 +304,7 @@ class MediaDetailsWidget extends React.Component {
   }
 
   handleDisableEditBtn = boolVal => {
-    this.setState({ disableEditBtn: boolVal });
+    this.props.setEditButtonState(this.props.id, boolVal);
   };
 
   mediaPlayerRef = ref => {
@@ -591,6 +595,22 @@ class MediaDetailsWidget extends React.Component {
 
   handleContextMenuClick = cme => {
     window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
+  };
+
+  showEditButton = () => {
+    if (!this.isEditableEngineResults()) {
+      return false;
+    }
+    if (get(this.props.selectedEngineCategory, 'categoryType') === 'face') {
+      const selectedEngine = find(this.props.selectedEngineCategory.engines, {
+        id: this.props.selectedEngineId
+      });
+      return (
+        selectedEngine.hasUserEdits && this.props.isDisplayingUserEditedOutput
+      );
+    }
+
+    return true;
   };
 
   render() {
@@ -890,13 +910,13 @@ class MediaDetailsWidget extends React.Component {
                         onSelectEngineCategory={this.handleEngineCategoryChange}
                       />
                     </div>
-                    {this.isEditableEngineResults() && (
+                    {this.showEditButton() && (
                       <Button
                         variant="raised"
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
-                        disabled={this.state.disableEditBtn}
+                        disabled={this.props.editButtonDisabled}
                       >
                         EDIT MODE
                       </Button>

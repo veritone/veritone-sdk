@@ -64,6 +64,7 @@ export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
 export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
+export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
 
 export const namespace = 'mediaDetails';
 
@@ -91,7 +92,8 @@ const defaultMDPState = {
     cancelButtonLabel: 'Discard',
     confirmButtonLabel: 'Save',
     nextAction: noop
-  }
+  },
+  editButtonDisabled: false
 };
 
 const defaultState = {};
@@ -799,6 +801,21 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [SET_EDIT_BUTTON_STATE](
+    state,
+    {
+      editButtonDisabled,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editButtonDisabled
+      }
+    };
   }
 });
 
@@ -857,6 +874,8 @@ export const isUserGeneratedEngineId = engineId => {
 };
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
+export const editButtonDisabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'editButtonDisabled']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1078,4 +1097,10 @@ export const closeConfirmModal = widgetId => ({
 
 export const discardUnsavedChanges = () => ({
   type: DISCARD_UNSAVED_CHANGES
+});
+
+export const setEditButtonState = (widgetId, editButtonDisabled) => ({
+  type: SET_EDIT_BUTTON_STATE,
+  editButtonDisabled,
+  meta: { widgetId }
 });

@@ -352,7 +352,6 @@ export function isFetchingEngineResults(state) {
 
 export const isDisplayingUserEditedOutput = (state, engineId) => {
   const engineResults = getFaceDataByEngine(state, engineId);
-  console.log(!!find(engineResults, { userEdited: true }));
   return !!find(engineResults, { userEdited: true });
 };
 

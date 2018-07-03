@@ -5,7 +5,8 @@ import {
   put,
   takeEvery,
   select,
-  take
+  take,
+  takeLatest
 } from 'redux-saga/effects';
 import {
   get,
@@ -23,19 +24,27 @@ import {
   getFaceEngineAssetData,
   cancelFaceEdits,
   fetchEngineResults as fetchFaceEngineResults,
-  ADD_DETECTED_FACE
+  FETCH_ENGINE_RESULTS,
+  ADD_DETECTED_FACE,
+  FETCH_ENGINE_RESULTS_SUCCESS,
+  FETCH_ENGINE_RESULTS_FAILURE
 } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
   reset as resetTranscript
 } from './transcriptWidget';
-const { auth: authModule, config: configModule } = modules;
+const {
+  auth: authModule,
+  config: configModule,
+  application: applicationModule
+} = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   LOAD_ENGINE_RESULTS,
   LOAD_ENGINE_RESULTS_SUCCESS,
+  LOAD_ENGINE_RESULTS_FAILURE,
   LOAD_TDO,
   UPDATE_TDO,
   UPDATE_TDO_FAILURE,
@@ -58,6 +67,7 @@ import {
   loadEngineResultsRequest,
   loadEngineResultsSuccess,
   loadEngineResultsFailure,
+  loadTdoRequest,
   loadTdoSuccess,
   loadTdoFailure,
   updateTdoSuccess,
@@ -85,7 +95,8 @@ import {
   getSelectedEngineId,
   refreshEngineRunsSuccess,
   clearEngineResultsByEngineId,
-  getEngineCategories
+  getEngineCategories,
+  setEditButtonState
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -1576,7 +1587,32 @@ function* watchCancelEdit() {
   });
 }
 
-export default function* root() {
+function* watchLatestFetchEngineResultsStart(widgetId) {
+  yield takeLatest([LOAD_ENGINE_RESULTS, FETCH_ENGINE_RESULTS], function*() {
+    yield put(setEditButtonState(widgetId, true));
+  });
+}
+
+function* watchLatestFetchEngineResultsEnd(widgetId) {
+  yield takeLatest(
+    [
+      LOAD_ENGINE_RESULTS_SUCCESS,
+      LOAD_ENGINE_RESULTS_FAILURE,
+      FETCH_ENGINE_RESULTS_SUCCESS,
+      FETCH_ENGINE_RESULTS_FAILURE
+    ],
+    function*() {
+      yield put(setEditButtonState(widgetId, false));
+    }
+  );
+}
+
+function* onMount(id, mediaId) {
+  yield put(loadTdoRequest(id, mediaId));
+  yield put(applicationModule.fetchApplications());
+}
+
+export default function* root({ id, mediaId }) {
   yield all([
     fork(watchLoadEngineResultsRequest),
     fork(watchLoadEngineResultsComplete),
@@ -1590,6 +1626,9 @@ export default function* root() {
     fork(watchFaceEngineEntityUpdate),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
-    fork(watchCancelEdit)
+    fork(watchCancelEdit),
+    fork(watchLatestFetchEngineResultsStart, id),
+    fork(watchLatestFetchEngineResultsEnd, id),
+    fork(onMount, id, mediaId)
   ]);
 }
