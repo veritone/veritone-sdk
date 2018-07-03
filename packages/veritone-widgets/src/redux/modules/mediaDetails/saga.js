@@ -933,6 +933,7 @@ function* createTranscriptBulkEditAssetSaga(
         payload: {
           originalTranscriptAssetId: "${originalTranscriptAssetId}",
           temporaryBulkEditAssetId: "${bulkTextAssetId}",
+          originalEngineId: "${selectedEngineId}",
           saveTtmlToVtnStandard: true
         }
       },
