@@ -184,7 +184,6 @@ export default class Overlay extends React.Component {
   };
 
   confirmStagedBoundingBox = () => {
-    // todo
     this.props.onBoundingBoxChange(
       this.toPercentageBasedPoly([
         ...this.state.boundingBoxPositions,
@@ -193,8 +192,6 @@ export default class Overlay extends React.Component {
       // second arg is just the added box
       this.toPercentageBasedPoly([this.state.stagedBoundingBoxPosition])[0]
     );
-
-    // todo: clear stage when new initial set is received?
   };
 
   removeUnconfirmedBoundingBox = () => {

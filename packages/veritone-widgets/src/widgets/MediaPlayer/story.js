@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 import faker from 'faker';
+import 'video-react/dist/video-react.css';
 
 function randomPolyBox() {
   const rand = faker.random.number;
@@ -97,6 +98,7 @@ const timeSeries = [
 
 import BaseStory from '../../shared/BaseStory';
 import { MediaPlayer } from './';
+import DefaultControlBar from './DefaultControlBar';
 
 const multipleStreams = [
   {
@@ -131,10 +133,23 @@ const demoMp3 = 'https://www.sample-videos.com/audio/mp3/wave.mp3';
 const demoPosterImage =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
+class Story extends React.Component {
+  playerRef = React.createRef();
+
+  render() {
+    return (
+      <div style={{ width: 500 }}>
+        <MediaPlayer {...this.props} ref={this.playerRef}/>
+        <DefaultControlBar playerRef={this.playerRef}/>
+      </div>
+    );
+  }
+}
+
 storiesOf('MediaPlayer', module)
   .add('MP4', () => (
     <BaseStory
-      componentClass={MediaPlayer}
+      componentClass={Story}
       componentProps={{
         streams: multipleStreams,
         width: 500,
@@ -146,7 +161,7 @@ storiesOf('MediaPlayer', module)
 
   .add('DASH', () => (
     <BaseStory
-      componentClass={MediaPlayer}
+      componentClass={Story}
       componentProps={{
         autoPlay: true,
         streams: dashStream,
@@ -158,7 +173,7 @@ storiesOf('MediaPlayer', module)
 
   .add('HLS', () => (
     <BaseStory
-      componentClass={MediaPlayer}
+      componentClass={Story}
       componentProps={{
         autoPlay: true,
         streams: hlsStream,
@@ -170,7 +185,7 @@ storiesOf('MediaPlayer', module)
 
   .add('Multiple Streams', () => (
     <BaseStory
-      componentClass={MediaPlayer}
+      componentClass={Story}
       componentProps={{
         autoPlay: true,
         streams: multipleStreams,
@@ -187,7 +202,7 @@ storiesOf('MediaPlayer', module)
 
     return (
       <BaseStory
-        componentClass={MediaPlayer}
+        componentClass={Story}
         componentProps={{
           src: value,
           width: 500,
@@ -199,7 +214,7 @@ storiesOf('MediaPlayer', module)
 
   .add('Audio only', () => (
     <BaseStory
-      componentClass={MediaPlayer}
+      componentClass={Story}
       componentProps={{
         src: demoMp3,
         width: 500,
@@ -208,3 +223,16 @@ storiesOf('MediaPlayer', module)
       }}
     />
   ));
+
+// function testSyntax() {
+//   return (
+//     <MediaPlayerWrapper>
+//       {({ playerRef }) => (
+//         <div>
+//           <MediaPlayer ref={playerRef} />
+//           <CustomControlBar playerRef={playerRef}/>
+//         </div>
+//       )}
+//     </MediaPlayerWrapper>
+//   );
+// }

@@ -22,8 +22,9 @@ export default class RestartMediaButton extends Component {
         className={classNames(
           this.props.className,
           'video-react-control',
-          // 'video-react-button',
-          'icon-skip_previous'
+          'video-react-button',
+          'video-react-icon',
+          'video-react-icon-skip-previous'
         )}
         onClick={this.handleClick}
       />

@@ -1,49 +1,40 @@
-$control-bar-height: 36px;
-
 .mediaPlayer {
   font-size: 12px !important;
-  font-family: Roboto !important;
+  font-family: Roboto, sans-serif;
   outline: none !important;
-  //margin-bottom: $control-bar-height; // space for shifted-down controlbar
-}
-//
-.mediaPlayButton {
-  //height: 1.5em;
-  //width: 1.5em;
-  border-radius: 1em !important;
-  border: none !important;
 }
 
-:global {
-  .video-react-control-bar {
-    bottom: -$control-bar-height !important; // shift control bar below video
-    display: flex !important; // control bar always visible
-  }
+.mediaPlayButton {
+  border-radius: 1em !important;
+  border: none !important;
 }
 
 .hiddenDummyControls {
   display: none !important;
 }
 
-.mediaPlayerControls {
-  :global {
-    .video-react-control {
-      width: 3em;
-    }
-    .video-react-time-control {
-      padding-left: 0.5em;
-      padding-right: 0.5em;
-    }
+:global {
+  .video-react-control-bar {
+    top: unset !important;
+    bottom: unset !important;
+    position: static !important;
+  }
+  .video-react-control {
+    width: 3em;
+  }
+  .video-react-time-control {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
 
-    .video-react-control-text,
-    .video-react-mouse-display,
-    .video-react-play-progress::after {
-      font-family: Roboto !important;
-    }
+  .video-react-control-text,
+  .video-react-mouse-display,
+  .video-react-play-progress::after {
+    font-family: Roboto, sans-serif !important;
+  }
 
-    .video-react-slider:focus {
-      text-shadow: none;
-      box-shadow: none;
-    }
+  .video-react-slider:focus {
+    text-shadow: none;
+    box-shadow: none;
   }
 }

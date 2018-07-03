@@ -83,8 +83,9 @@ export default class OverlayPositioningProvider extends React.Component {
       <OverlayPositioningContext.Provider value={this.state.overlayPosition}>
         <div
           style={{
-            display: 'inline-block',
-            position: 'relative'
+            display: 'inline-flex',
+            position: 'relative',
+            verticalAlign: 'bottom'
           }}
           ref={this.setMeasuredChildRef}
         >
