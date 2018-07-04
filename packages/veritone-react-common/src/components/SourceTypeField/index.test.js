@@ -3,14 +3,10 @@ import { mount } from 'enzyme';
 
 import SourceTypeField from './';
 
-describe('SourceTypeField', function () {
+describe('SourceTypeField', function() {
   it('renders field for supported type', () => {
     const wrapper = mount(
-      <SourceTypeField
-        id="username"
-        type="string"
-        title="User Name"
-      />
+      <SourceTypeField id="username" type="string" title="User Name" />
     );
 
     expect(wrapper.find("input[id='username']")).toHaveLength(1);
@@ -18,11 +14,7 @@ describe('SourceTypeField', function () {
 
   it("doesn't render field for unsupported types", () => {
     const wrapper = mount(
-      <SourceTypeField
-        id="username"
-        type="enum"
-        title="User Name"
-      />
+      <SourceTypeField id="username" type="enum" title="User Name" />
     );
 
     expect(wrapper.find("input[id='username']")).toHaveLength(0);

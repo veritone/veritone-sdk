@@ -38,17 +38,16 @@ const sourceSchema = {
       unsupported: {
         type: 'enum',
         title: 'Enum'
-      },
+      }
     },
     required: ['url', 'username', 'password']
   }
 };
 
-
 const fieldTypes = {
   url: 'http://www.google.com',
   username: 'vtn1',
-  password:'top-secret',
+  password: 'top-secret',
   price: '1.50',
   days: 10,
   location: ['-101.0', '11.0'],
@@ -77,13 +76,13 @@ class SourceTypeFields extends React.Component {
     this.setState(prevState => ({
       [fld]: def.type !== 'boolean' ? e.target.value : !prevState[fld]
     }));
-  }
+  };
 
   handleSubmit = (e, formValues) => {
     e.preventDefault();
 
-    console.log('Form Values:', this.state)
-  }
+    console.log('Form Values:', this.state);
+  };
 
   render() {
     return (
@@ -101,9 +100,8 @@ class SourceTypeFields extends React.Component {
         ))}
         <button type="submit">Submit</button>
       </form>
-    )
+    );
   }
 }
 
-storiesOf('SourceTypeField', module)
-  .add('Fields', () => <SourceTypeFields />)
+storiesOf('SourceTypeField', module).add('Fields', () => <SourceTypeFields />);
