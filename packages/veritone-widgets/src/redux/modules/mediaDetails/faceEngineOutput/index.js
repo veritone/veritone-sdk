@@ -555,7 +555,6 @@ export const getFaceEngineAssetData = (state, engineId) => {
   const userDetectedFaces = getUserDetectedFaces(state, engineId);
   const userRemovedFaces = getUserRemovedFaces(state, engineId);
 
-  // On the result use engineAliasId for 'user-edited-face-engine-results'
   const userEdited = {
     sourceEngineId: engineId,
     sourceEngineName: 'User Edited'
