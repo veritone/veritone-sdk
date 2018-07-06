@@ -854,12 +854,6 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
-export const isUserGeneratedTranscriptEngineId = engineId => {
-  return (
-    engineId === 'bulk-edit-transcript' ||
-    engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
-  );
-};
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const editButtonDisabled = (state, widgetId) =>

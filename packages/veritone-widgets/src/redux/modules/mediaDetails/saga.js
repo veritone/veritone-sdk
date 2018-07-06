@@ -88,7 +88,6 @@ import {
   createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
-  isUserGeneratedTranscriptEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
   getSelectedEngineId,
@@ -162,19 +161,6 @@ function processEngineRuns(engineRuns) {
   const engineCategories = [];
 
   engineRuns
-    .map(engineRun => {
-      const engineId = get(engineRun, 'engine.id');
-      if (isUserGeneratedTranscriptEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-          name: 'Transcription',
-          iconClass: 'icon-transcription',
-          categoryType: 'transcript',
-          editable: true
-        };
-      }
-      return engineRun;
-    })
     // filter those that have category, category icon, and are supported categories
     .filter(
       engineRun =>
