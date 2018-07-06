@@ -92,7 +92,7 @@ const programLiveImageNullState =
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
+    isUserGeneratedTranscriptEngineId: mediaDetailsModule.isUserGeneratedTranscriptEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
@@ -132,7 +132,7 @@ class MediaDetailsWidget extends React.Component {
     onRunProcess: func,
     onClose: func,
     updateTdoRequest: func,
-    isUserGeneratedEngineId: func,
+    isUserGeneratedTranscriptEngineId: func,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -534,7 +534,7 @@ class MediaDetailsWidget extends React.Component {
       return;
     }
     let onRunProcessCallback = null;
-    if (!this.props.isUserGeneratedEngineId(selectedEngineId)) {
+    if (!this.props.isUserGeneratedTranscriptEngineId(selectedEngineId)) {
       // enable rerun for non-user generated engine results
       onRunProcessCallback = this.handleRunProcess;
     }

@@ -89,7 +89,6 @@ import {
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
   isUserGeneratedTranscriptEngineId,
-  isUserGeneratedFaceEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
   getSelectedEngineId,
@@ -171,14 +170,6 @@ function processEngineRuns(engineRuns) {
           name: 'Transcription',
           iconClass: 'icon-transcription',
           categoryType: 'transcript',
-          editable: true
-        };
-      } else if (isUserGeneratedFaceEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
-          name: 'Facial Detection',
-          categoryType: 'face',
-          iconClass: 'icon-face',
           editable: true
         };
       }
@@ -792,8 +783,6 @@ function* createFileAssetSaga(
     });
     const userGeneratedEngine = find(updatedCategory.engines, engine => {
       return (
-        engine.id === 'user-edited-face-engine-results' ||
-        engine.id === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd' ||
         engine.id === 'bulk-edit-transcript' ||
         engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
       );

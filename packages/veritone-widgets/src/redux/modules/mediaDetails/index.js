@@ -860,18 +860,6 @@ export const isUserGeneratedTranscriptEngineId = engineId => {
     engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
   );
 };
-export const isUserGeneratedFaceEngineId = engineId => {
-  return (
-    engineId === 'user-edited-face-engine-results' ||
-    engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd'
-  );
-};
-export const isUserGeneratedEngineId = engineId => {
-  return (
-    isUserGeneratedTranscriptEngineId(engineId) ||
-    isUserGeneratedFaceEngineId(engineId)
-  );
-};
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const editButtonDisabled = (state, widgetId) =>
