@@ -606,7 +606,7 @@ class MediaDetailsWidget extends React.Component {
         id: this.props.selectedEngineId
       });
       return (
-        selectedEngine.hasUserEdits && this.props.isDisplayingUserEditedOutput
+        !selectedEngine.hasUserEdits || this.props.isDisplayingUserEditedOutput
       );
     }
 
