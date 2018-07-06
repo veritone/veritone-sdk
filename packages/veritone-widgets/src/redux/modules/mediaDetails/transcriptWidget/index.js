@@ -284,13 +284,13 @@ export const hasUserEdits = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
 };
-export const getTranscriptEditAssetData = state => {
+export const getTranscriptEditAssetData = (state, engineId) => {
   const { isBulkEdit, data } = state[transcriptNamespace];
 
   const changedData = {
     isBulkEdit: isBulkEdit,
-    sourceEngineId: 'bde0b023-333d-acb0-e01a-f95c74214607',
-    sourceEngineName: 'User Generated'
+    sourceEngineId: engineId,
+    sourceEngineName: 'User Edited'
   };
 
   if (isBulkEdit) {

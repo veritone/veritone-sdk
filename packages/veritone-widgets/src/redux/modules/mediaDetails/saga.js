@@ -386,10 +386,11 @@ function* loadEngineResultsSaga(
   widgetId,
   engineId,
   startOffsetMs,
-  stopOffsetMs
+  stopOffsetMs,
+  ignoreUserEdited = false
 ) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
-      engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
+      engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs, ignoreUserEdited: $ignoreUserEdited) {
         records {
           tdoId
           engineId
@@ -405,7 +406,7 @@ function* loadEngineResultsSaga(
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
   const requestTdo = yield select(getTdo, widgetId);
-  const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
+  const variables = { tdoId: requestTdo.id, engineIds: [engineId], ignoreUserEdited };
   if (startOffsetMs) {
     variables.startOffsetMs = startOffsetMs;
   }
@@ -781,21 +782,11 @@ function* createFileAssetSaga(
     const updatedCategory = find(engineCategories, {
       categoryType: selectedEngineCategory.categoryType
     });
-    const userGeneratedEngine = find(updatedCategory.engines, engine => {
-      return (
-        engine.id === 'bulk-edit-transcript' ||
-        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
-      );
-    });
-    let userGeneratedEngineId;
-    if (userGeneratedEngine) {
-      userGeneratedEngineId = userGeneratedEngine.id;
-    }
-    // Reset the the transcipt engine results.
+    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
     if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
+      // Reset the transcript engine results.
+      yield put(clearEngineResultsByEngineId(selectedEngineId, widgetId));
     } else if (selectedEngineCategory.categoryType === 'face') {
-      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
       yield put(
         fetchFaceEngineResults({
           selectedEngineId,
@@ -1005,8 +996,7 @@ function* watchUpdateTdoContentTemplates() {
 
 function* watchLoadEngineResultsRequest() {
   yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const { engineId } = action.payload;
-    let { startOffsetMs, stopOffsetMs } = action.payload;
+    const { engineId, startOffsetMs, stopOffsetMs, ignoreUserEdited } = action.payload;
     const { widgetId } = action.meta;
 
     yield call(
@@ -1014,7 +1004,8 @@ function* watchLoadEngineResultsRequest() {
       widgetId,
       engineId,
       startOffsetMs,
-      stopOffsetMs
+      stopOffsetMs,
+      ignoreUserEdited
     );
   });
 }
