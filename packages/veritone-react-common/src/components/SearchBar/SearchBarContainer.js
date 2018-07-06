@@ -426,7 +426,6 @@ class SearchBarContainer extends React.Component {
       { label: 'Reset Search Bar', onClick: this.resetSearchParameters }
     ]
 
-    console.log(evt.nativeEvent.path);
     this.setState({
       menuAnchorEl: evt.nativeEvent.path.find( x => x.type === 'button'),
       selectedPill: null,

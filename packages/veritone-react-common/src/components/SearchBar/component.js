@@ -58,8 +58,8 @@ import {
 } from '../GeolocationModal';
 
 import SearchBarContainer from './SearchBarContainer';
-//import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSearch';
-//import { VeritoneApp, LoadSavedSearch, SaveSearch } from '../SavedSearch/bundle-es.js';
+import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSearch';
+import VeritoneApp from '../SavedSearch/VeritoneApp';
 import { SearchBar } from '.';
 
 //console.log("Load", LoadSavedSearch);
@@ -274,12 +274,10 @@ export class SampleSearchBar extends React.Component {
     let getEntity = null;
     try {
       auth = this.props.auth ? this.props.auth : await this.getAuth();
-      /*
       this._veritoneApp = new VeritoneApp();
       this._veritoneApp.login({sessionToken: auth });
       this._veritoneApp._store.dispatch({type: 'vtn/config/SET_CONFIG', payload: {apiRoot: this.props.api && this.props.api.replace(/\/$/, "") } })
       window._veritoneApp = this._veritoneApp;
-      */
       getEntity = this.getEntityFetch(auth);
       libraries = await this.getLibraries(auth);
     } catch (e) {
@@ -712,10 +710,9 @@ export class SampleSearchBar extends React.Component {
     return theme;
   }
 
-  /*
   showLoadSavedSearch = (e) => {
     if(!this.loadSavedSearchWidget) {
-      //this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP, onClose: this.hideLoadSavedSearch});
+      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP, onClose: this.hideLoadSavedSearch});
     }
 
     this.loadSavedSearchWidget.open();
@@ -728,7 +725,7 @@ export class SampleSearchBar extends React.Component {
   showSavedSearch = (e) => {
     if(!this.savedSearchWidget) {
       const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-      //this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp, onClose: this.hideSavedSearch});
+      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp, onClose: this.hideSavedSearch});
     }
 
     this.savedSearchWidget.open();
@@ -737,7 +734,6 @@ export class SampleSearchBar extends React.Component {
   hideSavedSearch = (e) => {
     this.cleanupSavedSearch();
   }
-  */
 
   render() {
     return (
@@ -758,8 +754,8 @@ export class SampleSearchBar extends React.Component {
           resetSearchParameters={this.resetSearchParameters}
           getCSP={this.getCSP}
           menuActions={this.props.menuActions}
-          //showLoadSavedSearch={ this.showLoadSavedSearch }
-          //showSavedSearch={ this.showSavedSearch }
+          showLoadSavedSearch={ this.showLoadSavedSearch }
+          showSavedSearch={ this.showSavedSearch }
         />
         <div id="LoadSavedSearch"> </div>
         <div id="SaveSearch"> </div>
