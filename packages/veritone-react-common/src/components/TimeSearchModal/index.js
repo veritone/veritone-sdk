@@ -1,22 +1,22 @@
 import React from 'react';
 import cx from 'classnames';
-import Button from 'material-ui/Button';
-import Checkbox from 'material-ui/Checkbox';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle
-} from 'material-ui/Dialog';
-import { FormControlLabel, FormHelperText } from 'material-ui/Form';
-import Switch from 'material-ui/Switch';
+} from '@material-ui/core';
+import { FormControlLabel, FormHelperText } from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 import moment from 'moment';
 import styles from './styles.scss';
 import { arrayOf, bool, func, string, date, shape } from 'prop-types';
 
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 
 import ModalSubtitle from '../ModalSubtitle';
-import Typography from 'material-ui/Typography';
+import Typography from '@material-ui/core/Typography';
 
 export default class TimeSearchModal extends React.Component {
   static propTypes = {

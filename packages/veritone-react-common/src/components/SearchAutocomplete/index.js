@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Button, Chip, Paper, TextField } from 'material-ui';
+import { Avatar, Button, Chip, Paper, TextField } from '@material-ui/core';
 import Downshift from 'downshift';
 import { isArray } from 'lodash';
 import cx from 'classnames';
@@ -13,8 +13,8 @@ import "rxjs/add/operator/takeUntil";
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 
-import Typography from 'material-ui/Typography';
-import List, { ListItem, ListItemText } from 'material-ui/List';
+import Typography from '@material-ui/core/Typography';
+import { List, ListItem, ListItemText } from '@material-ui/core';
 
 const autocompletePillLabelClass = cx(styles['autocompletePillLabel']);
 const autocompletePillClass = cx(styles['autocompletePill']);

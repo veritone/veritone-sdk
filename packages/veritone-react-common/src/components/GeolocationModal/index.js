@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Button from 'material-ui/Button';
-import TextField from 'material-ui/TextField';
-import { FormHelperText } from 'material-ui/Form';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import FormHelperText  from '@material-ui/core/FormHelperText';
 import { Map, tileLayer, marker, featureGroup, Control, circle } from 'leaflet';
 import  { Draw } from 'leaflet-draw';
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -14,12 +14,12 @@ import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle
-} from 'material-ui/Dialog';
+} from '@material-ui/core/Dialog';
 
 import { bool, func, string, shape } from 'prop-types';
 
 import ModalSubtitle from '../ModalSubtitle';
-import { withTheme } from 'material-ui/styles'
+import { withTheme } from '@material-ui/core/styles'
 
 class GeolocationModal extends React.Component {
   static propTypes = {

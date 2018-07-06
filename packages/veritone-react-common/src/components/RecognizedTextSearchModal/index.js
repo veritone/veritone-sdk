@@ -1,7 +1,7 @@
 import React from 'react';
-import Button from 'material-ui/Button';
-import TextField from 'material-ui/TextField';
-import { FormHelperText } from 'material-ui/Form';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import ModalSubtitle from '../ModalSubtitle';
 
@@ -9,7 +9,7 @@ import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle
-} from 'material-ui/Dialog';
+} from '@material-ui/core/Dialog';
 
 import { bool, func, string, shape } from 'prop-types';
 

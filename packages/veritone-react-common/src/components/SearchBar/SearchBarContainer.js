@@ -1,9 +1,10 @@
 import React from 'react';
 import { arrayOf, func, object, string } from 'prop-types';
 import { SearchBar } from '.';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import Popover from 'material-ui/Popover';
-import Paper from 'material-ui/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
+import Popover from '@material-ui/core/Popover';
+import Paper from '@material-ui/core/Paper';
 import EngineCategoryButton from './EngineCategoryButton';
 
 import cx from 'classnames';
@@ -15,16 +16,16 @@ import "rxjs/add/operator/takeWhile";
 import { last, map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 
-import { withTheme } from 'material-ui/styles'
+import { withTheme } from '@material-ui/core/styles'
 import { guid } from './component';
 
-import Card, { CardHeader, CardMedia, CardContent, CardActions } from 'material-ui/Card';
-import Button from 'material-ui/Button';
-import Collapse from 'material-ui/transitions/Collapse';
-import Divider from 'material-ui/Divider';
-import Avatar from 'material-ui/Avatar';
-import IconButton from 'material-ui/IconButton';
-import Typography from 'material-ui/Typography';
+import { Card, CardHeader, CardMedia, CardContent, CardActions } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import Divider from '@material-ui/core/Divider';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import Icon from './Icon';
 
 const supportedCategoriesClass = cx(styles['supportedCategories']);
@@ -414,17 +415,18 @@ class SearchBarContainer extends React.Component {
     } else {
       customMenuActions = [
         ...customMenuActions,
-        //{ label: 'Save Search', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } } ,
+        { label: 'Save Search', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } } ,
       ]
     }
 
     const menuActions = [
       ...customMenuActions,
-      //{ label: 'Load Saved Search', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
+      { label: 'Load Saved Search', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
       { divider: true },
       { label: 'Reset Search Bar', onClick: this.resetSearchParameters }
     ]
 
+    console.log(evt.nativeEvent.path);
     this.setState({
       menuAnchorEl: evt.nativeEvent.path.find( x => x.type === 'button'),
       selectedPill: null,
@@ -608,7 +610,8 @@ class SearchBarContainer extends React.Component {
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
-
+    const menuOpen = Boolean(this.state.menuAnchorEl);
+    console.log(menuOpen);
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }}>
           <SearchBar
@@ -630,13 +633,12 @@ class SearchBarContainer extends React.Component {
             resetSearchParameters={this.resetSearchParameters}
           />
           <Menu
-            open={Boolean(this.state.menuAnchorEl)}
+            open={ Boolean(this.state.menuAnchorEl) }
             onClose={this.handleMenuClose}
-            anchorEl={this.state.menuAnchorEl}
+            anchorEl={ this.state.menuAnchorEl }
             anchorOrigin={ { vertical: 'bottom', ...horizontalAnchorPosition } }
             transformOrigin={ horizontalAnchorPosition }
             getContentAnchorEl={null} //required to be able to set anchorOrigin and anchorEl
-            disableRestoreFocus
           >
             {
               this.state.menuOptions && this.state.menuOptions.map(menuOption =>

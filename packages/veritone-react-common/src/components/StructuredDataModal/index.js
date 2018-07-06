@@ -4,20 +4,20 @@ import { bool, func, string, shape, object } from 'prop-types';
 import {
   CardActions,
   CardContent,
-} from 'material-ui/Card';
-import Button from 'material-ui/Button';
-import TextField from 'material-ui/TextField';
-import { FormHelperText } from 'material-ui/Form';
-import { FormControl, FormControlLabel } from 'material-ui/Form';
-import Radio, { RadioGroup } from 'material-ui/Radio';
-import { InputLabel } from 'material-ui/Input';
-import Select from 'material-ui/Select';
-import { MenuList, MenuItem } from 'material-ui/Menu';
-import { ListItemText } from 'material-ui/List';
-import Grid from 'material-ui/Grid';
-import { withTheme } from 'material-ui/styles';
-import Typography from 'material-ui/Typography';
-import Dialog, { DialogActions, DialogContent, DialogTitle } from 'material-ui/Dialog';
+} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import { FormControl, FormControlLabel } from '@material-ui/core';
+import { Radio, RadioGroup } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import { MenuList, MenuItem } from '@material-ui/core';
+import ListItemText from '@material-ui/core/ListItemText';
+import Grid from '@material-ui/core/Grid';
+import { withTheme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 
 import Rx from 'rxjs/Rx';
 import {Observable} from "rxjs/Observable";

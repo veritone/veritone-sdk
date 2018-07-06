@@ -1,6 +1,6 @@
 import React from 'react';
-import { withTheme } from 'material-ui/styles';
-import Typography  from 'material-ui/Typography';
+import { withTheme } from '@material-ui/core/styles';
+import Typography  from '@material-ui/core/Typography';
 
 export default withTheme()(( {value, theme, marginLeft, marginRight} ) => (
   <Typography

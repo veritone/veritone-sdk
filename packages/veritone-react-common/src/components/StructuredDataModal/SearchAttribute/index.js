@@ -2,12 +2,12 @@ import React from 'react';
 
 import Downshift from 'downshift';
 
-import { LinearProgress } from 'material-ui/Progress';
-import TextField from 'material-ui/TextField';
-import Paper from 'material-ui/Paper';
-import { MenuItem } from 'material-ui/Menu';
-import { List, ListItem, ListItemText } from 'material-ui/List';
-import Typography from 'material-ui/Typography';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import TextField from '@material-ui/core/TextField';
+import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import { List, ListItem, ListItemText } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 const renderInput = (inputProps) => {
   const { value, onFocus, open, ref, onChange, ...other } = inputProps;
@@ -63,14 +63,16 @@ const renderSections = ({results, getItemProps, highlightedIndex}) => {
         </ListItem>
         {section.attributes.map((field, fieldIndex) => {
           const index = result.itemIndex++;
-          return (
-            <ListItem dense style={{ backgroundColor: highlightedIndex === index ? '#eeeeee' : null }} {...getItemProps({item: field, index})} key={`"${field.field}"`}>
-              <ListItemText
-                style={{ paddingLeft: "1em" }}
-                primary={ `${ field.displayName || field.field }`}
-              />
-            </ListItem>
-          )
+          if(field && field.field) {
+            return (
+              <ListItem dense style={{ backgroundColor: highlightedIndex === index ? '#eeeeee' : null }} {...getItemProps({item: field, index})} key={`"${field.field}"`}>
+                <ListItemText
+                  style={{ paddingLeft: "1em" }}
+                  primary={ `${ field.displayName || field.field }`}
+                />
+              </ListItem>
+            )
+          }
         })}
       </div>
     )

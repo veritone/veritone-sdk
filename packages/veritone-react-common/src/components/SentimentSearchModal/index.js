@@ -1,7 +1,7 @@
 import React from 'react';
-import Button from 'material-ui/Button';
-import Select from 'material-ui/Select';
-import { FormHelperText } from 'material-ui/Form';
+import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import ModalSubtitle from '../ModalSubtitle';
 
@@ -9,7 +9,7 @@ import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle
-} from 'material-ui/Dialog';
+} from '@material-ui/core/Dialog';
 
 import { bool, func, string, shape } from 'prop-types';
 import styles from './styles.scss';

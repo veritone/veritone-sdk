@@ -2,21 +2,22 @@ import React from 'react';
 import cx from 'classnames';
 import { string, bool, arrayOf, shape, func, object } from 'prop-types';
 
-import Chip from 'material-ui/Chip';
-import IconButton from 'material-ui/IconButton';
-import MoreVert from 'material-ui-icons/MoreVert';
-import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
-import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import Chip from '@material-ui/core/Chip';
+
+import IconButton from '@material-ui/core/IconButton';
+import MoreVert from '@material-ui/icons/MoreVert';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 
 import Icon from './Icon';
 import SearchPill from './SearchPill';
 
 import styles from './styles.scss';
-import Select from 'material-ui/Select';
-import Typography from 'material-ui/Typography';
+import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 
-import { MenuItem } from 'material-ui/Menu';
-import { withTheme } from 'material-ui/styles';
+import { MenuItem } from '@material-ui/core/Menu';
+import { withTheme } from '@material-ui/core/styles';
 
 import {Observable} from "rxjs/Observable";
 import { interval } from 'rxjs/observable/interval';
@@ -32,7 +33,7 @@ const supportedCategoriesClass = cx(styles['supportedCategories']);
 
 const GhostInput = ({showGhost, onFocus}) => (
   <span onClick={onFocus} maxLength="0" className={ cx(styles['afterCursor'])} type="textbox" size="1">
-    { showGhost ? <Typography color="textSecondary" variant="headline">Search</Typography> : null }
+    { showGhost ? <Typography color="textSecondary" variant="subheading">Search</Typography> : null }
   </span>
 )
 

@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { StructuredDataModal } from './';
 
 import { boolean, object } from '@storybook/addon-knobs';
-import Paper from 'material-ui/Paper';
+import Paper from '@material-ui/core/Paper';
 
 storiesOf('StructuredDataModal', module).add('withOpenDialogAndDefaultValue', () => {
   const logFilter = value => console.log('filter value', value);

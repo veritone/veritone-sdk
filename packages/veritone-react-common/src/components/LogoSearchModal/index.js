@@ -1,19 +1,19 @@
 import React from 'react';
-import { Button, TextField } from 'material-ui';
-import { FormHelperText, FormGroup, FormControlLabel } from 'material-ui/Form';
-import Grid from 'material-ui/Grid';
-import Checkbox from 'material-ui/Checkbox';
+import { Button, TextField } from '@material-ui/core';
+import { FormHelperText, FormGroup, FormControlLabel } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Checkbox from '@material-ui/core/Checkbox';
 import SearchAutocompleteContainer from '../SearchAutocomplete';
 import attachAutocomplete from '../SearchAutocomplete/helper.js';
 
 import ModalSubtitle from '../ModalSubtitle';
-import { LinearProgress } from 'material-ui/Progress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
-import Dialog, {
+import {Dialog,
   DialogActions,
   DialogContent,
   DialogTitle
-} from 'material-ui/Dialog';
+} from '@material-ui/core';
 
 import { bool, func, string, shape, arrayOf } from 'prop-types';
 import update from 'immutability-helper';

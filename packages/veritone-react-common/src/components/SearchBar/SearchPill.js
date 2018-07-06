@@ -1,11 +1,11 @@
 import React from 'react';
-import Chip from 'material-ui/Chip';
+import Chip from '@material-ui/core/Chip';
 
 import cx from 'classnames';
 import { string, func } from 'prop-types';
 import styles from './styles.scss';
 
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import Icon from './Icon';
 

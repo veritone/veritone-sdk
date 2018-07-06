@@ -2,7 +2,7 @@ import supportedEngineCategoryType from '.';
 import { shape, func, string } from 'prop-types';
 import React from 'react';
 
-import Tooltip from 'material-ui/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip';
 import Icon from './Icon';
 
 import styles from './styles.scss';
