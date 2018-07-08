@@ -609,8 +609,6 @@ class SearchBarContainer extends React.Component {
     const libraryIds = this.props.libraries && this.props.libraries.map(library => library.id);
     const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
-    const menuOpen = Boolean(this.state.menuAnchorEl);
-    console.log(menuOpen);
     return (
       <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }}>
           <SearchBar
