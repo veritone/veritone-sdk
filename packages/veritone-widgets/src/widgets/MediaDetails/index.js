@@ -55,6 +55,7 @@ import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
+import * as transcriptEngineOutput from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
 
@@ -94,7 +95,11 @@ const programLiveImageNullState =
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
-    isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+    isDisplayingUserEditedFaceOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+      state,
+      mediaDetailsModule.getSelectedEngineId(state, id)
+    ),
+    isDisplayingUserEditedTranscriptOutput: transcriptEngineOutput.isDisplayingUserEditedOutput(
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
@@ -271,7 +276,8 @@ class MediaDetailsWidget extends React.Component {
     openConfirmModal: func,
     closeConfirmModal: func,
     discardUnsavedChanges: func,
-    isDisplayingUserEditedOutput: bool,
+    isDisplayingUserEditedFaceOutput: bool,
+    isDisplayingUserEditedTranscriptOutput: bool,
     setEditButtonState: func,
     editButtonDisabled: bool
   };
@@ -594,15 +600,12 @@ class MediaDetailsWidget extends React.Component {
     if (!this.isEditableEngineResults()) {
       return false;
     }
-    if (get(this.props.selectedEngineCategory, 'categoryType') === 'face') {
-      const selectedEngine = find(this.props.selectedEngineCategory.engines, {
-        id: this.props.selectedEngineId
-      });
-      return (
-        selectedEngine.hasUserEdits && this.props.isDisplayingUserEditedOutput
-      );
+    const selectedCategoryType = get(this.props.selectedEngineCategory, 'categoryType');
+    if (selectedCategoryType === 'face' || selectedCategoryType === 'transcript') {
+      const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
+      return selectedEngine && selectedEngine.hasUserEdits &&
+        (this.props.isDisplayingUserEditedFaceOutput || this.props.isDisplayingUserEditedTranscriptOutput);
     }
-
     return true;
   };
 
@@ -1010,6 +1013,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutputWidget
+                        tdo={tdo}
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}

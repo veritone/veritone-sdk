@@ -669,22 +669,17 @@ function* createFileAssetSaga(
   type,
   contentType,
   sourceData,
-  fileData
+  fileData,
+  isUserEdited
 ) {
-  if (sourceData.sourceEngineId) {
-    return yield put(
-      saveAssetDataFailure(widgetId, {
-        error: 'Source engine id must be set on the engine result'
-      })
-    );
-  }
   const requestTdo = yield select(getTdo, widgetId);
   const createAssetQuery = `mutation createAsset(
     $tdoId: ID!,
     $type: String,
     $contentType: String,
     $file: UploadedFile,
-    $sourceData: SetAssetSourceData
+    $sourceData: SetAssetSourceData,
+    $isUserEdited: Boolean
   ){
     createAsset( input: {
       containerId: $tdoId,
@@ -692,7 +687,7 @@ function* createFileAssetSaga(
       contentType: $contentType,
       sourceData: $sourceData,
       file: $file,
-      isUserEdited: true
+      isUserEdited: $isUserEdited
     })
     { id }
   }`;
@@ -702,7 +697,8 @@ function* createFileAssetSaga(
     type,
     contentType,
     file: fileData,
-    sourceData
+    sourceData,
+    isUserEdited
   };
 
   const config = yield select(configModule.getConfig);
@@ -804,7 +800,8 @@ function* createTranscriptBulkEditAssetSaga(
       type,
       contentType,
       sourceData,
-      text
+      text,
+      false
     );
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
@@ -1414,9 +1411,10 @@ function* watchSaveAssetData() {
       );
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
-        const type = 'v-bulk-edit-transcript';
-        const sourceData = '{}';
+        // TODO(VTN-8770): make type 'v-bulk-edit-transcript' to hide this asset
+        const type = 'bulk-edit-transcript';
         const { widgetId } = action.meta;
+        const sourceData = {};
         // do save bulk transcript asset and return
         return yield call(
           createTranscriptBulkEditAssetSaga,
@@ -1471,7 +1469,8 @@ function* watchSaveAssetData() {
           type,
           contentType,
           sourceData,
-          jsonData
+          jsonData,
+          true
         )
       );
     });

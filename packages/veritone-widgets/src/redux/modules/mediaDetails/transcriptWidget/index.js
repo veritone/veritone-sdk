@@ -1,4 +1,4 @@
-import { get, set, isEqual, cloneDeep } from 'lodash';
+import { find, get, set, isEqual, cloneDeep } from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
@@ -16,6 +16,7 @@ export const CHANGE = transcriptNamespace + '_CHANGE';
 export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
 export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
+export const TEMP_HANDLER_FETCH_ENGINE_RESULTS = 'TEMP_HANDLER_FETCH_ENGINE_RESULTS';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -135,6 +136,11 @@ const transcriptReducer = createReducer(initialState, {
       const present = cloneDeep(data); // without immutable js
       return { ...state, data: data, past: [], future: [], present: present };
     }
+  },
+
+  [TEMP_HANDLER_FETCH_ENGINE_RESULTS](state, action) {
+    // TODO: this has to initiate fetching new engine results userEdited/not from the common shared redux
+    // const { tdoId, selectedEngineId, showUserEdited } = action.meta;
   }
 });
 
@@ -284,24 +290,40 @@ export const hasUserEdits = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
 };
-export const getTranscriptEditAssetData = (state, engineId) => {
+export const getTranscriptEditAssetData = (state) => {
   const { isBulkEdit, data } = state[transcriptNamespace];
 
   const changedData = {
-    isBulkEdit: isBulkEdit,
-    sourceEngineId: engineId,
-    sourceEngineName: 'User Edited'
+    isBulkEdit: isBulkEdit
   };
 
   if (isBulkEdit) {
     changedData.text = get(data, '[0].series[0].words[0].word', '');
   } else {
     let series = [];
-    data.forEach(chunk => {
-      series = series.concat(chunk.series);
-    });
+    if (data.length) {
+      data.forEach(chunk => {
+        series = series.concat(chunk.series);
+      });
+      // use GUID engine id from the data chunk
+      changedData.sourceEngineId = data[0].sourceEngineId;
+      if (data[0].sourceEngineName) {
+        changedData.sourceEngineName = data[0].sourceEngineName;
+      }
+    }
     changedData.series = series;
   }
 
   return changedData;
 };
+
+export const isDisplayingUserEditedOutput = (state) => {
+  // TODO: has to access EngineResult items, but not json data chunks
+  const { data } = state[transcriptNamespace];
+  return !!find(data, { userEdited: true });
+};
+
+export const fetchEngineResults = meta => ({
+  type: TEMP_HANDLER_FETCH_ENGINE_RESULTS,
+  meta
+});

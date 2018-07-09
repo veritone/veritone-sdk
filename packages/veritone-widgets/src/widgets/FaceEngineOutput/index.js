@@ -55,7 +55,7 @@ const saga = util.reactReduxSaga.saga;
       state,
       selectedEngineId
     ),
-    isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+    isDisplayingUserEditedFaceOutput: faceEngineOutput.isDisplayingUserEditedFaceOutput(
       state,
       selectedEngineId
     )
@@ -165,7 +165,7 @@ class FaceEngineOutputContainer extends Component {
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
     pendingUserEdits: bool,
-    isDisplayingUserEditedOutput: bool
+    isDisplayingUserEditedFaceOutput: bool
   };
 
   state = {
@@ -537,7 +537,7 @@ class FaceEngineOutputContainer extends Component {
           onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
-          showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          showingUserEditedOutput={this.props.isDisplayingUserEditedFaceOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
         {this.renderAddNewEntityModal()}
