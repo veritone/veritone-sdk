@@ -601,10 +601,12 @@ class MediaDetailsWidget extends React.Component {
       return false;
     }
     const selectedCategoryType = get(this.props.selectedEngineCategory, 'categoryType');
-    if (selectedCategoryType === 'face' || selectedCategoryType === 'transcript') {
-      const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
-      return selectedEngine && selectedEngine.hasUserEdits &&
-        (this.props.isDisplayingUserEditedFaceOutput || this.props.isDisplayingUserEditedTranscriptOutput);
+    const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
+    if (selectedCategoryType === 'face' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedFaceOutput) {
+      return false;
+    }
+    if (selectedCategoryType === 'transcript' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedTranscriptOutput) {
+      return false;
     }
     return true;
   };
