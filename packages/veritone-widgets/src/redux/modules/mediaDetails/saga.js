@@ -16,7 +16,6 @@ import {
   isUndefined,
   isArray,
   every,
-  find,
   forEach
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
@@ -85,8 +84,6 @@ import {
   toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
-  clearEngineResultsByEngineId,
-  getEngineCategories,
   setEditButtonState,
   getSelectedEngineId
 } from '.';
@@ -710,26 +707,17 @@ function* createFileAssetSaga(
       widgetId
     );
     yield call(refreshEngineRuns, widgetId, requestTdo.id);
-    const engineCategories = yield select(getEngineCategories, widgetId);
-    const updatedCategory = find(engineCategories, {
-      categoryType: selectedEngineCategory.categoryType
-    });
-    const userGeneratedEngine = find(updatedCategory.engines, engine => {
-      return (
-        engine.id === 'bulk-edit-transcript' ||
-        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
-      );
-    });
-    let userGeneratedEngineId;
-    if (userGeneratedEngine) {
-      userGeneratedEngineId = userGeneratedEngine.id;
-    }
-    // Reset the the transcipt engine results.
-    if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    }
+    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+    yield put(
+      engineResultsModule.fetchEngineResults({
+        tdo: requestTdo,
+        engineId: selectedEngineId,
+        startOffsetMs: 0,
+        stopOffsetMs: Date.parse(requestTdo.stopDateTime) - Date.parse(requestTdo.startDateTime),
+        ignoreUserEdited: false
+      })
+    );
     yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    yield put(selectEngineCategory(widgetId, updatedCategory));
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
 
@@ -1372,7 +1360,6 @@ function* watchSaveAssetData() {
               get(asset, 'object.uri')
             );
           }
-          console.log(asset);
           delete asset.guid;
         });
       }
