@@ -38,7 +38,10 @@ class EngineOutputHeader extends Component {
   };
 
   handleEngineChange = evt => {
-    if (this.props.onEngineChange) {
+    if (
+      this.props.onEngineChange &&
+      this.props.selectedEngineId !== evt.target.value
+    ) {
       this.props.onEngineChange(evt.target.value);
     }
   };
