@@ -56,7 +56,7 @@ describe('confirmation sagas', function() {
 
       next = gen.next();
       next = gen.next({ cancel: module.cancelConfirmAction('123') });
-      expect(next.value).toBe(undefined)
+      expect(next.value).toBe(undefined);
     });
   });
 });

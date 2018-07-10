@@ -106,34 +106,42 @@ const SCHEMA_BY_ID = {
 };
 
 const ENGINES = [
-  {id: 'time-correlated-weather', name: 'Weather'},
-  {id: 'time-correlated-fb-feed', name: 'Facebook feeds'}];
+  { id: 'time-correlated-weather', name: 'Weather' },
+  { id: 'time-correlated-fb-feed', name: 'Facebook feeds' }
+];
 
 describe('StructuredDataEngineOutput', () => {
   it('should show structured data array results', () => {
-    const structuredData = [{
-      sourceEngineId: ENGINES[0].id,
-      sourceEngineName: ENGINES[0].name,
-      series: [{
-        startTimeMs: 0,
-        stopTimeMs: 300000,
-        structuredData: {
-          '8a8bbd66-d160-480e-b3fb-7a935ac4e8dd': [{
-            geoLocation: '34.05, -118.24',
-            temperature: 69.71,
-            pressure: 1015,
-            humidity: 56,
-            temperatureMin: 62.6,
-            temperatureMax: 77,
-            visibility: 16093,
-            windSpeed: 3.36,
-            windDegree: 0,
-            datetimeStart: '2018-02-21T21:30:00.000Z',
-            datetimeEnd: '2018-02-21T22:30:00.000Z',
-            locationName: 'Los Angeles'
-          }]
-        }
-      }]}];
+    const structuredData = [
+      {
+        sourceEngineId: ENGINES[0].id,
+        sourceEngineName: ENGINES[0].name,
+        series: [
+          {
+            startTimeMs: 0,
+            stopTimeMs: 300000,
+            structuredData: {
+              '8a8bbd66-d160-480e-b3fb-7a935ac4e8dd': [
+                {
+                  geoLocation: '34.05, -118.24',
+                  temperature: 69.71,
+                  pressure: 1015,
+                  humidity: 56,
+                  temperatureMin: 62.6,
+                  temperatureMax: 77,
+                  visibility: 16093,
+                  windSpeed: 3.36,
+                  windDegree: 0,
+                  datetimeStart: '2018-02-21T21:30:00.000Z',
+                  datetimeEnd: '2018-02-21T22:30:00.000Z',
+                  locationName: 'Los Angeles'
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ];
 
     const onEngineChange = jest.fn();
     const onExpandClick = jest.fn();
@@ -146,34 +154,47 @@ describe('StructuredDataEngineOutput', () => {
         selectedEngineId={ENGINES[0].id}
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
-    />);
+      />
+    );
 
     expect(wrapper.find('.headerTitle').text()).toEqual('Structured Data');
     expect(wrapper.find('.schemaMenu').exists()).toEqual(true);
-    const engineSelector = wrapper.find('.headerActions').find('.engineSelect').first();
+    const engineSelector = wrapper
+      .find('.headerActions')
+      .find('.engineSelect')
+      .first();
     expect(engineSelector.find('input').prop('value')).toEqual(ENGINES[0].id);
     expect(wrapper.find('[aria-label="Expanded View"]').exists()).toEqual(true);
     expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find('table').find('tbody').find('tr')).toHaveLength(1);
+    expect(
+      wrapper
+        .find('table')
+        .find('tbody')
+        .find('tr')
+    ).toHaveLength(1);
   });
 
   it('should show structured data object result', () => {
-    const structuredDataAsArray = [{
-      sourceEngineId: ENGINES[1].id,
-      sourceEngineName: ENGINES[1].name,
-      series: [{
-        startTimeMs: 0,
-        stopTimeMs: 300000,
-        structuredData: {
-          'c46e4675-73a0-44ce-adca-b6ebab897c21': {
-            id: 1234567,
-            about: 'about fb feed',
-            website: 'veritone.com',
-            fan_count: 987654321
+    const structuredDataAsArray = [
+      {
+        sourceEngineId: ENGINES[1].id,
+        sourceEngineName: ENGINES[1].name,
+        series: [
+          {
+            startTimeMs: 0,
+            stopTimeMs: 300000,
+            structuredData: {
+              'c46e4675-73a0-44ce-adca-b6ebab897c21': {
+                id: 1234567,
+                about: 'about fb feed',
+                website: 'veritone.com',
+                fan_count: 987654321
+              }
+            }
           }
-        }
-      }]
-    }];
+        ]
+      }
+    ];
 
     const onEngineChange = jest.fn();
     const onExpandClick = jest.fn();
@@ -186,59 +207,81 @@ describe('StructuredDataEngineOutput', () => {
         selectedEngineId={ENGINES[1].id}
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
-      />);
+      />
+    );
 
     expect(wrapper.find('.headerTitle').text()).toEqual('Structured Data');
     expect(wrapper.find('.schemaMenu').exists()).toEqual(true);
-    const engineSelector = wrapper.find('.headerActions').find('.engineSelect').first();
+    const engineSelector = wrapper
+      .find('.headerActions')
+      .find('.engineSelect')
+      .first();
     expect(engineSelector.find('input').prop('value')).toEqual(ENGINES[1].id);
     expect(wrapper.find('[aria-label="Expanded View"]').exists()).toEqual(true);
     expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find('table').find('tbody').find('tr')).toHaveLength(1);
+    expect(
+      wrapper
+        .find('table')
+        .find('tbody')
+        .find('tr')
+    ).toHaveLength(1);
   });
 
   it('should hide engine selection when no engines passed', () => {
-    const structuredDataAsObject = [{
-      series: [{
-        startTimeMs: 0,
-        stopTimeMs: 300000,
-        structuredData: {
-          'c46e4675-73a0-44ce-adca-b6ebab897c21': {
-            id: 1234567,
-            about: 'about fb feed',
-            website: 'veritone.com',
-            fan_count: 987654321
+    const structuredDataAsObject = [
+      {
+        series: [
+          {
+            startTimeMs: 0,
+            stopTimeMs: 300000,
+            structuredData: {
+              'c46e4675-73a0-44ce-adca-b6ebab897c21': {
+                id: 1234567,
+                about: 'about fb feed',
+                website: 'veritone.com',
+                fan_count: 987654321
+              }
+            }
           }
-        }
-      }]
-    }];
+        ]
+      }
+    ];
 
     const wrapper = mount(
       <StructuredDataEngineOutput
         data={structuredDataAsObject}
         schemasById={SCHEMA_BY_ID}
-      />);
+      />
+    );
 
     expect(wrapper.find('.headerTitle').text()).toEqual('Structured Data');
     expect(wrapper.find('.schemaMenu').exists()).toEqual(true);
     expect(wrapper.find('.engineSelect').exists()).toEqual(false);
     expect(wrapper.find('[ariaLabel="Expanded View"]').exists()).toEqual(false);
     expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find('table').find('tbody').find('tr')).toHaveLength(1);
+    expect(
+      wrapper
+        .find('table')
+        .find('tbody')
+        .find('tr')
+    ).toHaveLength(1);
   });
 
   it('should show header and no data table when no data passed in', () => {
     const wrapper = mount(
-      <StructuredDataEngineOutput
-        data={[]}
-        schemasById={{}}
-      />);
+      <StructuredDataEngineOutput data={[]} schemasById={{}} />
+    );
 
     expect(wrapper.find('.headerTitle').text()).toEqual('Structured Data');
     expect(wrapper.find('.schemaMenu').exists()).toEqual(false);
     expect(wrapper.find('.engineSelect').exists()).toEqual(false);
     expect(wrapper.find('[ariaLabel="Expanded View"]').exists()).toEqual(false);
     expect(wrapper.find('table')).toHaveLength(0);
-    expect(wrapper.find('table').find('tbody').find('tr')).toHaveLength(0);
+    expect(
+      wrapper
+        .find('table')
+        .find('tbody')
+        .find('tr')
+    ).toHaveLength(0);
   });
 });

@@ -555,16 +555,15 @@ export const getFaceEngineAssetData = (state, engineId) => {
   const userDetectedFaces = getUserDetectedFaces(state, engineId);
   const userRemovedFaces = getUserRemovedFaces(state, engineId);
 
-  const userEdited = {
-    sourceEngineId: engineId,
-    sourceEngineName: 'User Edited'
-  };
-
   const allJsonData = addUserDetectedFaces(
     engineResults,
     userDetectedFaces,
     userRemovedFaces
   ).reduce((accumulator, engineResult) => {
+    const userEdited = {};
+    if (engineResult.sourceEngineName) {
+      userEdited.sourceEngineName = engineResult.sourceEngineName;
+    }
     return [
       ...accumulator,
       {
@@ -585,6 +584,7 @@ function addUserDetectedFaces(
   const updatedFaceData = map(engineResults, data => ({
     taskId: data.taskId,
     assetId: data.assetId,
+    sourceEngineId: data.sourceEngineId,
     series: [...data.series]
   }));
 
