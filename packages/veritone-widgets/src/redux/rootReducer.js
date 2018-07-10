@@ -37,7 +37,11 @@ const {
   config: { reducer: configReducer, namespace: configNamespace },
   auth: { reducer: authReducer, namespace: authNamespace },
   engine: { reducer: engineReducer, namespace: engineNamespace },
-  application: { reducer: applicationReducer, namespace: applicationNamespace }
+  application: { reducer: applicationReducer, namespace: applicationNamespace },
+  engineResults: {
+    reducer: engineResultsReducer,
+    namespace: engineResultsNamespace
+  }
 } = modules;
 
 import appReducer, { namespace as appNamespace } from './modules/veritoneApp';
@@ -57,6 +61,7 @@ export default function createReducer(asyncReducers) {
     [engineNamespace]: engineReducer,
     [applicationNamespace]: applicationReducer,
     [savedSearchNamespace]: savedSearchReducer,
+    [engineResultsNamespace]: engineResultsReducer,
     form: formReducer,
     player: playerReducer,
     operation: operationReducer,

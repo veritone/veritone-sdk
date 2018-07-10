@@ -43,7 +43,10 @@ function* watchContentReset() {
     action
   ) {
     yield call(TranscriptRedux.reset);
-    yield put({ type: TranscriptRedux.UPDATE_EDIT_STATUS, hasUserEdits: false });
+    yield put({
+      type: TranscriptRedux.UPDATE_EDIT_STATUS,
+      hasUserEdits: false
+    });
   });
 }
 

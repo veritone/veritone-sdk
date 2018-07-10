@@ -18,7 +18,13 @@ import callGraphQLApi from '../../../../shared/callGraphQLApi';
 const { auth: authModule, config: configModule } = modules;
 
 /* WATCH FUNCTIONS */
-function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
+function* loadEngineResults(
+  tdo,
+  engineId,
+  startOffsetMs,
+  stopOffsetMs,
+  ignoreUserEdited = false
+) {
   const config = yield select(configModule.getConfig);
   const token = yield select(authModule.selectSessionToken);
 
@@ -26,7 +32,8 @@ function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const variables = {
     tdoId: tdo.id,
-    engineIds: [engineId]
+    engineIds: [engineId],
+    ignoreUserEdited
   };
 
   const meta = {
@@ -239,13 +246,14 @@ function* watchFetchEngineResults() {
   yield takeEvery(
     action => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS,
     function*(action) {
-      const { tdo, selectedEngineId } = action.meta;
+      const { tdo, selectedEngineId, ignoreUserEdited } = action.meta;
       yield call(
         loadEngineResults,
         tdo,
         selectedEngineId,
         0,
-        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        ignoreUserEdited
       );
     }
   );

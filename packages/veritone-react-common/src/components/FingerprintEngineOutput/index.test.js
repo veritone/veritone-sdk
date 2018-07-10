@@ -141,9 +141,7 @@ describe('Fingerprint Engine Output', () => {
 });
 
 describe('Fingerprint Content', () => {
-  let fingerprintContent = mount(
-    <FingerprintContent />
-  );
+  let fingerprintContent = mount(<FingerprintContent />);
 
   it('Invalid Library View', () => {
     expect(fingerprintContent.find('FingerprintEntity')).toHaveLength(0);
@@ -151,9 +149,12 @@ describe('Fingerprint Content', () => {
   });
 
   it('Invalid Entity View', () => {
-    const testEntity = Object.assign({
-      matches: [sampleData[0].series[0]]
-    }, sampleEntities[0]);
+    const testEntity = Object.assign(
+      {
+        matches: [sampleData[0].series[0]]
+      },
+      sampleEntities[0]
+    );
     const entityMode = fingerprintContent.setState({
       showLibrary: false,
       selectedEntity: testEntity
@@ -166,13 +167,14 @@ describe('Fingerprint Content', () => {
 });
 
 describe('Fingerprint Entity', () => {
-  const testEntity = Object.assign({
-    matches: [sampleData[0].series[0], sampleData[0].series[2]]
-  }, sampleEntities[0]);
-
-  let fingerprintEntity = mount(
-    <FingerprintEntity entity={testEntity} />
+  const testEntity = Object.assign(
+    {
+      matches: [sampleData[0].series[0], sampleData[0].series[2]]
+    },
+    sampleEntities[0]
   );
+
+  let fingerprintEntity = mount(<FingerprintEntity entity={testEntity} />);
 
   it('Invalid Stream Data', () => {
     expect(fingerprintEntity.find('EntityMetadata')).toHaveLength(0);

@@ -1,4 +1,6 @@
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
+import { getConfig } from 'modules/config';
+import { isFunction, constant } from 'lodash';
 
 export function commonHeaders(state) {
   const OAuthToken = selectOAuthToken(state);
@@ -47,7 +49,7 @@ export async function callGraphQL({
   getState
 }) {
   if (!isFunction(dispatch) || !isFunction(getState)) {
-    throw new Error('callGraphQLApi requires dispatch and getState functions')
+    throw new Error('callGraphQLApi requires dispatch and getState functions');
   }
 
   const state = getState();

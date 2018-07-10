@@ -18,22 +18,29 @@ const saga = util.reactReduxSaga.saga;
 
 @saga(transcriptSaga)
 @connect(
-  state => ({
+  (state, { selectedEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
-    currentData: TranscriptRedux.currentData(state)
+    currentData: TranscriptRedux.currentData(state),
+    isDisplayingUserEditedOutput: TranscriptRedux.isDisplayingUserEditedOutput(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
     //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
-    receiveData: TranscriptRedux.receiveData
+    receiveData: TranscriptRedux.receiveData,
+    fetchEngineResults: TranscriptRedux.fetchEngineResults
   },
   null,
   { withRef: true }
 )
 export default class TranscriptEngineOutputWidget extends Component {
   static propTypes = {
+    tdo: shape({
+      id: string,
+      startDateTime: string,
+      stopDateTime: string
+    }).isRequired,
     data: arrayOf(
       shape({
         startTimeMs: number,
@@ -96,7 +103,10 @@ export default class TranscriptEngineOutputWidget extends Component {
     receiveData: func.isRequired,
     hasUserEdits: bool,
     outputNullState: node,
-    bulkEditEnabled: bool
+    bulkEditEnabled: bool,
+
+    fetchEngineResults: func,
+    isDisplayingUserEditedOutput: bool
   };
 
   state = {
@@ -106,15 +116,16 @@ export default class TranscriptEngineOutputWidget extends Component {
     alertConfirmAction: noop
   };
 
-
-  static getDerivedStateFromProps (nextProps, prevState) {
-    const nextData = get(nextProps, 'data'); 
-    nextData && nextData.map((chunk) => {
-      chunk.series && chunk.series.map((snippet) => {
-        const words = snippet.words;
-        words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const nextData = get(nextProps, 'data');
+    nextData &&
+      nextData.map(chunk => {
+        chunk.series &&
+          chunk.series.map(snippet => {
+            const words = snippet.words;
+            words && (snippet.words = orderBy(words, ['confidence'], ['desc']));
+          });
       });
-    });
 
     const prevProps = prevState.props;
     !isEqual(prevProps.data, nextData) && prevProps.receiveData(nextData);
@@ -152,6 +163,10 @@ export default class TranscriptEngineOutputWidget extends Component {
     } else {
       this.props.onEngineChange(engineId);
     }
+  };
+
+  handleToggleEditedOutput = showUserEdited => {
+    this.props.fetchEngineResults({ tdoId: this.props.tdo.id, selectedEngineId: this.props.selectedEngineId, showUserEdited });
   };
 
   handleAlertConfirm = () => {
@@ -223,6 +238,8 @@ export default class TranscriptEngineOutputWidget extends Component {
           mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
           outputNullState={outputNullState}
           bulkEditEnabled={bulkEditEnabled}
+          showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
         <AlertDialog
           open={this.state.alert}

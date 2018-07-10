@@ -64,6 +64,7 @@ export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
 export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
+export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
 
 export const namespace = 'mediaDetails';
 
@@ -91,7 +92,8 @@ const defaultMDPState = {
     cancelButtonLabel: 'Discard',
     confirmButtonLabel: 'Save',
     nextAction: noop
-  }
+  },
+  editButtonDisabled: false
 };
 
 const defaultState = {};
@@ -799,6 +801,21 @@ export default createReducer(defaultState, {
         }
       }
     };
+  },
+  [SET_EDIT_BUTTON_STATE](
+    state,
+    {
+      editButtonDisabled,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        editButtonDisabled
+      }
+    };
   }
 });
 
@@ -837,26 +854,10 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
-export const isUserGeneratedTranscriptEngineId = engineId => {
-  return (
-    engineId === 'bulk-edit-transcript' ||
-    engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
-  );
-};
-export const isUserGeneratedFaceEngineId = engineId => {
-  return (
-    engineId === 'user-edited-face-engine-results' ||
-    engineId === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd'
-  );
-};
-export const isUserGeneratedEngineId = engineId => {
-  return (
-    isUserGeneratedTranscriptEngineId(engineId) ||
-    isUserGeneratedFaceEngineId(engineId)
-  );
-};
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
+export const editButtonDisabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'editButtonDisabled']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1078,4 +1079,10 @@ export const closeConfirmModal = widgetId => ({
 
 export const discardUnsavedChanges = () => ({
   type: DISCARD_UNSAVED_CHANGES
+});
+
+export const setEditButtonState = (widgetId, editButtonDisabled) => ({
+  type: SET_EDIT_BUTTON_STATE,
+  editButtonDisabled,
+  meta: { widgetId }
 });

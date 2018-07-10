@@ -1,6 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, arrayOf, string, bool, shape, objectOf, object } from 'prop-types';
+import {
+  func,
+  arrayOf,
+  string,
+  bool,
+  shape,
+  objectOf,
+  object
+} from 'prop-types';
 import { isEmpty } from 'lodash';
 import { withMuiThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
@@ -93,7 +101,10 @@ class EngineSelection extends React.Component {
     if (isEmpty(this.props.allEngines)) {
       this.props.fetchEngines(this.props._widgetId);
     } else {
-      this.props.selectEngines(this.props._widgetId, this.props.initialSelectedEngineIds)
+      this.props.selectEngines(
+        this.props._widgetId,
+        this.props.initialSelectedEngineIds
+      );
     }
   }
 

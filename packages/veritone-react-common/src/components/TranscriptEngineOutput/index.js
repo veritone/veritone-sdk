@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
+import { find } from 'lodash';
 import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
@@ -64,7 +65,9 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
     outputNullState: node,
-    bulkEditEnabled: bool
+    bulkEditEnabled: bool,
+    showingUserEditedOutput: bool,
+    onToggleUserEditedOutput: func
   };
 
   static defaultProps = {
@@ -83,6 +86,11 @@ export default class TranscriptEngineOutput extends Component {
       editType: Edit.SNIPPET
     };
   }
+
+  handleUserEditChange = evt => {
+    this.props.onToggleUserEditedOutput &&
+    this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+  };
 
   handleViewChange = event => {
     this.setState({ viewType: event.target.value });
@@ -128,6 +136,43 @@ export default class TranscriptEngineOutput extends Component {
     );
   }
 
+  renderResultOptions() {
+    const {
+      showingUserEditedOutput
+    } = this.props;
+    return (
+        <Select
+          autoWidth
+          value={showingUserEditedOutput ? 'userEdited' : 'original'}
+          onChange={this.handleUserEditChange}
+          className={styles.viewDropdown}
+          MenuProps={{
+            anchorOrigin: {
+              horizontal: 'center',
+              vertical: 'bottom'
+            },
+            transformOrigin: {
+              horizontal: 'center'
+            },
+            getContentAnchorEl: null
+          }}
+        >
+          <MenuItem
+            value="userEdited"
+            className={classNames(styles.view)}
+          >
+            User Edited
+          </MenuItem>
+          <MenuItem
+            value="original"
+            className={classNames(styles.view)}
+          >
+            Original
+          </MenuItem>
+        </Select>
+    );
+  }
+
   renderViewOptions() {
     return (
       <Select
@@ -166,7 +211,7 @@ export default class TranscriptEngineOutput extends Component {
       onExpandClick,
       headerClassName
     } = this.props;
-
+    const selectedEngine = find(engines, { id: selectedEngineId });
     return (
       <EngineOutputHeader
         title={title}
@@ -178,7 +223,9 @@ export default class TranscriptEngineOutput extends Component {
         className={classNames(headerClassName)}
       >
         <div className={classNames(styles.controllers)}>
-          {editMode ? this.renderEditOptions() : this.renderViewOptions()}
+          {editMode && (this.renderEditOptions())}
+          {!editMode && selectedEngine && selectedEngine.hasUserEdits && (this.renderResultOptions())}
+          {!editMode && (this.renderViewOptions())}
         </div>
       </EngineOutputHeader>
     );

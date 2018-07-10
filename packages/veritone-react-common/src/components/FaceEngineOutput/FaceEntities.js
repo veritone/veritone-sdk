@@ -18,18 +18,20 @@ export default class FaceEntities extends Component {
   static propTypes = {
     viewMode: string,
     faces: objectOf(
-      arrayOf(shape({
-        startTimeMs: number.isRequired,
-        stopTimeMs: number.isRequired,
-        object: shape({
-          label: string,
-          uri: string,
-          confidence: number,
-          type: string,
-          entityId: string.isRequired,
-          libraryId: string.isRequired
+      arrayOf(
+        shape({
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
+          object: shape({
+            label: string,
+            uri: string,
+            confidence: number,
+            type: string,
+            entityId: string.isRequired,
+            libraryId: string.isRequired
+          })
         })
-      }))
+      )
     ).isRequired,
     entities: arrayOf(
       shape({
@@ -190,101 +192,112 @@ function buildFaceDataPayload(faces, entities) {
     framesBySeconds: {}
   };
 
-  const faceData = reduce(faces, (result, faceObjects) => { // for each face object
-    faceObjects.forEach(faceObj => {
-      if (result.faceEntities[faceObj.object.entityId]) {
-        const entityObj = setRecognizedEntityObj(
-          result.faceEntities[faceObj.object.entityId],
-          faceObj
-        );
-        result.faceEntities[faceObj.object.entityId] = entityObj;
+  const faceData = reduce(
+    faces,
+    (result, faceObjects) => {
+      // for each face object
+      faceObjects.forEach(faceObj => {
+        if (result.faceEntities[faceObj.object.entityId]) {
+          const entityObj = setRecognizedEntityObj(
+            result.faceEntities[faceObj.object.entityId],
+            faceObj
+          );
+          result.faceEntities[faceObj.object.entityId] = entityObj;
 
-        const entityIdx = findIndex(
-          result.entitiesByLibrary[entityObj.libraryId].faces,
-          { entityId: entityObj.entityId }
-        );
-        result.entitiesByLibrary[entityObj.libraryId].faces[entityIdx] = entityObj;
-      } else {
-        // locate entity that the face object belongs to
-        const entity = find(entities, { id: faceObj.object.entityId });
+          const entityIdx = findIndex(
+            result.entitiesByLibrary[entityObj.libraryId].faces,
+            { entityId: entityObj.entityId }
+          );
+          result.entitiesByLibrary[entityObj.libraryId].faces[
+            entityIdx
+          ] = entityObj;
+        } else {
+          // locate entity that the face object belongs to
+          const entity = find(entities, { id: faceObj.object.entityId });
 
-        if (entity) {
-          // try to locate library entity that contains the face object
-          const libraryEntity = find(entities, { libraryId: entity.libraryId });
-          // build object for library entity for "recognized" face
-          const recognizedEntityObj = {
-            entityId: entity.id,
-            libraryId: libraryEntity.libraryId,
-            libraryName: libraryEntity.library.name,
-            fullName: entity.name,
-            entity: {
-              ...entity,
+          if (entity) {
+            // try to locate library entity that contains the face object
+            const libraryEntity = find(entities, {
+              libraryId: entity.libraryId
+            });
+            // build object for library entity for "recognized" face
+            const recognizedEntityObj = {
+              entityId: entity.id,
               libraryId: libraryEntity.libraryId,
-              libraryName: libraryEntity.library.name
-            },
-            profileImage: entity.profileImageUrl,
-            count: 1,
-            timeSlots: [
-              {
-                stopTimeMs: faceObj.stopTimeMs,
-                startTimeMs: faceObj.startTimeMs,
-                originalImage: faceObj.object.uri,
-                confidence: faceObj.object.confidence
-              }
-            ],
-            stopTimeMs: faceObj.stopTimeMs
-          };
+              libraryName: libraryEntity.library.name,
+              fullName: entity.name,
+              entity: {
+                ...entity,
+                libraryId: libraryEntity.libraryId,
+                libraryName: libraryEntity.library.name
+              },
+              profileImage: entity.profileImageUrl,
+              count: 1,
+              timeSlots: [
+                {
+                  stopTimeMs: faceObj.stopTimeMs,
+                  startTimeMs: faceObj.startTimeMs,
+                  originalImage: faceObj.object.uri,
+                  confidence: faceObj.object.confidence
+                }
+              ],
+              stopTimeMs: faceObj.stopTimeMs
+            };
 
-          result.faceEntities[entity.id] = recognizedEntityObj;
-          result.entitiesByLibrary[recognizedEntityObj.libraryId] = {
-            libraryId: recognizedEntityObj.libraryId,
-            libraryName: recognizedEntityObj.libraryName,
-            faces: [
-              ...get(
-                result.entitiesByLibrary[recognizedEntityObj.libraryId],
-                'faces',
-                []
-              ),
-              recognizedEntityObj
-            ]
-          };
-        }
-      }
-
-      const matchNamespace = getFrameNamespaceForMatch(faceObj);
-
-      if (matchNamespace) {
-        const secondSpots = getArrayOfSecondSpots(faceObj);
-
-        secondSpots.forEach(second => {
-          if (!result.framesBySeconds[second]) {
-            result.framesBySeconds[second] = {};
-          }
-          if (!result.framesBySeconds[second][matchNamespace]) {
-            result.framesBySeconds[second][matchNamespace] = {
-              startTimeMs: faceObj.startTimeMs,
-              stopTimeMs: faceObj.stopTimeMs,
-              originalImage: faceObj.object.uri,
-              entities: [],
-              boundingPoly: faceObj.object.boundingPoly
+            result.faceEntities[entity.id] = recognizedEntityObj;
+            result.entitiesByLibrary[recognizedEntityObj.libraryId] = {
+              libraryId: recognizedEntityObj.libraryId,
+              libraryName: recognizedEntityObj.libraryName,
+              faces: [
+                ...get(
+                  result.entitiesByLibrary[recognizedEntityObj.libraryId],
+                  'faces',
+                  []
+                ),
+                recognizedEntityObj
+              ]
             };
           }
+        }
 
-          const match = {
-            confidence: faceObj.object.confidence,
-            entityId: faceObj.object.entityId
-          };
+        const matchNamespace = getFrameNamespaceForMatch(faceObj);
 
-          result.framesBySeconds[second][matchNamespace].entities.push(match);
-          result.framesBySeconds[second][matchNamespace].entities.sort((a, b) => {
-            return b.confidence - a.confidence;
+        if (matchNamespace) {
+          const secondSpots = getArrayOfSecondSpots(faceObj);
+
+          secondSpots.forEach(second => {
+            if (!result.framesBySeconds[second]) {
+              result.framesBySeconds[second] = {};
+            }
+            if (!result.framesBySeconds[second][matchNamespace]) {
+              result.framesBySeconds[second][matchNamespace] = {
+                startTimeMs: faceObj.startTimeMs,
+                stopTimeMs: faceObj.stopTimeMs,
+                originalImage: faceObj.object.uri,
+                entities: [],
+                boundingPoly: faceObj.object.boundingPoly
+              };
+            }
+
+            const match = {
+              confidence: faceObj.object.confidence,
+              entityId: faceObj.object.entityId
+            };
+
+            result.framesBySeconds[second][matchNamespace].entities.push(match);
+            result.framesBySeconds[second][matchNamespace].entities.sort(
+              (a, b) => {
+                return b.confidence - a.confidence;
+              }
+            );
           });
-        });
-      }
-    });
+        }
+      });
 
-    return result;
-  }, payload);
+      return result;
+    },
+    payload
+  );
 
   return faceData;
 }

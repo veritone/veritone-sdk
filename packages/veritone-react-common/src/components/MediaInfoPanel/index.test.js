@@ -202,8 +202,17 @@ describe('MediaInfoPanel', () => {
       '//static.veritone.com/veritone-ui/program_image_null.svg'
     );
 
-    expect(wrapper.find('.infoPanelHeader').find('[aria-label="Edit"]').exists()).toEqual(true);
-    wrapper.find('.infoPanelHeader').find('[aria-label="Edit"]').first().simulate('click');
+    expect(
+      wrapper
+        .find('.infoPanelHeader')
+        .find('[aria-label="Edit"]')
+        .exists()
+    ).toEqual(true);
+    wrapper
+      .find('.infoPanelHeader')
+      .find('[aria-label="Edit"]')
+      .first()
+      .simulate('click');
     expect(wrapper.find('#menu-list-grow').exists()).toEqual(true);
     const moreMenuItems = wrapper.find('#menu-list-grow').find('li');
     expect(moreMenuItems.length).toEqual(2);

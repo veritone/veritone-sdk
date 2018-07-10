@@ -63,7 +63,8 @@ const defaultState = {
   facesDetectedByUser: {},
   facesRemovedByUser: {},
   showConfirmationDialog: false,
-  confirmationAction: noop
+  confirmationAction: noop,
+  displayUserEdited: false
 };
 
 const reducer = createReducer(defaultState, {
@@ -85,7 +86,7 @@ const reducer = createReducer(defaultState, {
     }
 
     const engineResults = action.payload.data.engineResults.records;
-    const { startOffsetMs, stopOffsetMs } = action.meta;
+    const { startOffsetMs, stopOffsetMs, ignoreUserEdited } = action.meta;
 
     const previousResultsByEngineId = state.engineResultsByEngineId || {};
     const resultsGroupedByEngineId = groupBy(engineResults, 'engineId');
@@ -103,12 +104,14 @@ const reducer = createReducer(defaultState, {
         [action.meta.engineId]: {
           [`${startOffsetMs}-${stopOffsetMs}`]: true
         }
-      }
+      },
+      displayUserEdited: !ignoreUserEdited
     };
   },
   [FETCH_ENGINE_RESULTS_FAILURE](state, { payload, meta }) {
     return {
-      ...state
+      ...state,
+      displayUserEdited: false
     };
   },
   [FETCH_ENTITIES](state, action) {
@@ -346,6 +349,12 @@ export const fetchEngineResultsFailure = (error, meta) => ({
 export function isFetchingEngineResults(state) {
   return local(state).isFetchingEngineResults;
 }
+
+export const isDisplayingUserEditedOutput = (state, engineId) => {
+  const engineResults = getFaceDataByEngine(state, engineId);
+  return !!find(engineResults, { userEdited: true });
+};
+
 export const getFaceDataByEngine = (state, engineId) =>
   get(local(state), ['engineResultsByEngineId', engineId]);
 
@@ -546,24 +555,25 @@ export const getFaceEngineAssetData = (state, engineId) => {
   const userDetectedFaces = getUserDetectedFaces(state, engineId);
   const userRemovedFaces = getUserRemovedFaces(state, engineId);
 
-  // On the result use engineAliasId for 'user-edited-face-engine-results'
-  const userEdited = {
-    sourceEngineId: '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd',
-    sourceEngineName: 'User Edited'
-  };
-
-  const allSeries = addUserDetectedFaces(
+  const allJsonData = addUserDetectedFaces(
     engineResults,
     userDetectedFaces,
     userRemovedFaces
   ).reduce((accumulator, engineResult) => {
-    return [...accumulator, ...engineResult.series];
+    const userEdited = {};
+    if (engineResult.sourceEngineName) {
+      userEdited.sourceEngineName = engineResult.sourceEngineName;
+    }
+    return [
+      ...accumulator,
+      {
+        ...userEdited,
+        ...engineResult
+      }
+    ];
   }, []);
 
-  return {
-    ...userEdited,
-    series: allSeries
-  };
+  return allJsonData;
 };
 
 function addUserDetectedFaces(
@@ -572,6 +582,9 @@ function addUserDetectedFaces(
   userRemovedFaces
 ) {
   const updatedFaceData = map(engineResults, data => ({
+    taskId: data.taskId,
+    assetId: data.assetId,
+    sourceEngineId: data.sourceEngineId,
     series: [...data.series]
   }));
 

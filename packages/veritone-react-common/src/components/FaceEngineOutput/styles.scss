@@ -6,9 +6,13 @@
   flex-direction: column;
   flex: auto;
 
-  .displayOptions {
+  .outputHeaderSelect {
     @include mui-text('body1');
     margin-left: 20px;
+
+    .selectMenuItem {
+      font-size: 14px !important;
+    }
   }
 }
 
@@ -92,6 +96,6 @@
   width: 40px !important;
 }
 
-.view {
+.selectMenuItem {
   font-size: 14px !important;
 }

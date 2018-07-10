@@ -46,15 +46,20 @@ import {
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
-import { modules } from 'veritone-redux-common';
-const { application: applicationModule } = modules;
+import { modules, util } from 'veritone-redux-common';
+const { application: applicationModule, engineResults: engineResultsModule } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
+import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
+import * as transcriptEngineOutput from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
+import rootSaga from '../../redux/modules/mediaDetails/saga';
+
+const saga = util.reactReduxSaga.saga;
 
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
@@ -63,14 +68,15 @@ const programLiveImageNullState =
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
+@saga(rootSaga)
 @connect(
   (state, { id }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
-    engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
+    selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
-      id
+      mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
@@ -87,13 +93,20 @@ const programLiveImageNullState =
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
-    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id)
+    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
+    isDisplayingUserEditedFaceOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+      state,
+      mediaDetailsModule.getSelectedEngineId(state, id)
+    ),
+    isDisplayingUserEditedTranscriptOutput: transcriptEngineOutput.isDisplayingUserEditedOutput(
+      state,
+      mediaDetailsModule.getSelectedEngineId(state, id)
+    ),
+    editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
@@ -102,11 +115,11 @@ const programLiveImageNullState =
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    fetchApplications: applicationModule.fetchApplications,
     saveAssetData: mediaDetailsModule.saveAssetData,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
-    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges
+    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
+    setEditButtonState: mediaDetailsModule.setEditButtonState
   },
   null,
   { withRef: true }
@@ -116,16 +129,13 @@ class MediaDetailsWidget extends React.Component {
     id: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
-    fetchApplications: func.isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
     }),
     onRunProcess: func,
     onClose: func,
-    loadTdoRequest: func,
     updateTdoRequest: func,
-    isUserGeneratedEngineId: func,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -172,9 +182,17 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    engineResultsByEngineId: shape({
-      engineId: arrayOf(any)
-    }),
+    selectedEngineResults: arrayOf(shape({
+      sourceEngineId: string.isRequired,
+      series: arrayOf(shape({
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
+        words: arrayOf(shape({
+          word: string.isRequired,
+          confidence: number.isRequired
+        }))
+      }))
+    })),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
@@ -265,7 +283,11 @@ class MediaDetailsWidget extends React.Component {
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
-    discardUnsavedChanges: func
+    discardUnsavedChanges: func,
+    isDisplayingUserEditedFaceOutput: bool,
+    isDisplayingUserEditedTranscriptOutput: bool,
+    setEditButtonState: func,
+    editButtonDisabled: bool
   };
 
   static contextTypes = {
@@ -279,18 +301,12 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     isMenuOpen: false,
-    selectedTabValue: 'mediaDetails',
-    disableEditBtn: false
+    selectedTabValue: 'mediaDetails'
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
-  }
-
-  componentDidMount() {
-    this.props.loadTdoRequest(this.props.id, this.props.mediaId);
-    this.props.fetchApplications();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -300,7 +316,7 @@ class MediaDetailsWidget extends React.Component {
   }
 
   handleDisableEditBtn = boolVal => {
-    this.setState({ disableEditBtn: boolVal });
+    this.props.setEditButtonState(this.props.id, boolVal);
   };
 
   mediaPlayerRef = ref => {
@@ -491,9 +507,7 @@ class MediaDetailsWidget extends React.Component {
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
     const engineMode = get(selectedEngine, 'mode');
-    const selectedEngineResults = this.props.engineResultsByEngineId[
-      selectedEngineId
-    ];
+    const selectedEngineResults = this.props.selectedEngineResults;
     const isFetchingEngineResults = some(
       selectedEngineResults,
       engineResult => {
@@ -529,16 +543,11 @@ class MediaDetailsWidget extends React.Component {
       // nullstate not needed for RealTime running or failed engine if there are results available
       return;
     }
-    let onRunProcessCallback = null;
-    if (!this.props.isUserGeneratedEngineId(selectedEngineId)) {
-      // enable rerun for non-user generated engine results
-      onRunProcessCallback = this.handleRunProcess;
-    }
     return (
       <EngineOutputNullState
         engineStatus={engineStatus}
         engineName={engineName}
-        onRunProcess={onRunProcessCallback}
+        onRunProcess={this.handleRunProcess}
       />
     );
   };
@@ -593,12 +602,27 @@ class MediaDetailsWidget extends React.Component {
     window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
   };
 
+  showEditButton = () => {
+    if (!this.isEditableEngineResults()) {
+      return false;
+    }
+    const selectedCategoryType = get(this.props.selectedEngineCategory, 'categoryType');
+    const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
+    if (selectedCategoryType === 'face' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedFaceOutput) {
+      return false;
+    }
+    if (selectedCategoryType === 'transcript' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedTranscriptOutput) {
+      return false;
+    }
+    return true;
+  };
+
   render() {
     let {
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
-      engineResultsByEngineId,
+      selectedEngineResults,
       isInfoPanelOpen,
       isExpandedMode,
       currentMediaPlayerTime,
@@ -890,13 +914,13 @@ class MediaDetailsWidget extends React.Component {
                         onSelectEngineCategory={this.handleEngineCategoryChange}
                       />
                     </div>
-                    {this.isEditableEngineResults() && (
+                    {this.showEditButton() && (
                       <Button
                         variant="raised"
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
-                        disabled={this.state.disableEditBtn}
+                        disabled={this.props.editButtonDisabled}
                       >
                         EDIT MODE
                       </Button>
@@ -997,10 +1021,11 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutputWidget
+                        tdo={tdo}
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1033,7 +1058,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'object' && (
                       <ObjectDetectionEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1047,7 +1072,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
@@ -1060,7 +1085,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'ocr' && (
                       <OCREngineOutputView
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
@@ -1073,7 +1098,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
                       <FingerprintEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         entities={entities}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
@@ -1085,7 +1110,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
                       <TranslationEngineOutput
-                        contents={engineResultsByEngineId[selectedEngineId]}
+                        contents={selectedEngineResults}
                         onClick={this.handleUpdateMediaPlayerTime}
                         onRerunProcess={this.handleRunProcess}
                         className={styles.engineOuputContainer}
@@ -1100,7 +1125,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
                       <SentimentEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         className={cx(
                           styles.engineOuputContainer,
                           styles.sentimentChartViewRoot
@@ -1116,7 +1141,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
                       <GeoEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         startTimeStamp={
                           tdo && tdo.startDateTime ? tdo.startDateTime : null
                         }
@@ -1133,7 +1158,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'correlation' && (
                       <StructuredDataEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         schemasById={schemasById}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}

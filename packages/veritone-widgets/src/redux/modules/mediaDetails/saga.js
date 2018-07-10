@@ -5,7 +5,8 @@ import {
   put,
   takeEvery,
   select,
-  take
+  take,
+  takeLatest
 } from 'redux-saga/effects';
 import {
   get,
@@ -23,19 +24,27 @@ import {
   getFaceEngineAssetData,
   cancelFaceEdits,
   fetchEngineResults as fetchFaceEngineResults,
-  ADD_DETECTED_FACE
+  FETCH_ENGINE_RESULTS,
+  ADD_DETECTED_FACE,
+  FETCH_ENGINE_RESULTS_SUCCESS,
+  FETCH_ENGINE_RESULTS_FAILURE
 } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
   reset as resetTranscript
 } from './transcriptWidget';
-const { auth: authModule, config: configModule } = modules;
+const {
+  auth: authModule,
+  config: configModule,
+  application: applicationModule
+} = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   LOAD_ENGINE_RESULTS,
   LOAD_ENGINE_RESULTS_SUCCESS,
+  LOAD_ENGINE_RESULTS_FAILURE,
   LOAD_TDO,
   UPDATE_TDO,
   UPDATE_TDO_FAILURE,
@@ -58,6 +67,7 @@ import {
   loadEngineResultsRequest,
   loadEngineResultsSuccess,
   loadEngineResultsFailure,
+  loadTdoRequest,
   loadTdoSuccess,
   loadTdoFailure,
   updateTdoSuccess,
@@ -78,13 +88,13 @@ import {
   createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
-  isUserGeneratedTranscriptEngineId,
-  isUserGeneratedFaceEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
+  getSelectedEngineId,
   refreshEngineRunsSuccess,
   clearEngineResultsByEngineId,
-  getEngineCategories
+  getEngineCategories,
+  setEditButtonState
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -123,6 +133,7 @@ const engineRunsQueryClause = `engineRuns {
           }
         }
         status
+        hasUserEdits
       }
     }
   `;
@@ -150,27 +161,6 @@ function processEngineRuns(engineRuns) {
   const engineCategories = [];
 
   engineRuns
-    .map(engineRun => {
-      const engineId = get(engineRun, 'engine.id');
-      if (isUserGeneratedTranscriptEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-          name: 'Transcription',
-          iconClass: 'icon-transcription',
-          categoryType: 'transcript',
-          editable: true
-        };
-      } else if (isUserGeneratedFaceEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
-          name: 'Facial Detection',
-          categoryType: 'face',
-          iconClass: 'icon-face',
-          editable: true
-        };
-      }
-      return engineRun;
-    })
     // filter those that have category, category icon, and are supported categories
     .filter(
       engineRun =>
@@ -196,6 +186,7 @@ function processEngineRuns(engineRuns) {
         engineCategories.push(engineCategory);
       }
       engineRun.engine.status = engineRun.status;
+      engineRun.engine.hasUserEdits = engineRun.hasUserEdits;
       engineCategory.engines.push(engineRun.engine);
     });
 
@@ -381,10 +372,11 @@ function* loadEngineResultsSaga(
   widgetId,
   engineId,
   startOffsetMs,
-  stopOffsetMs
+  stopOffsetMs,
+  ignoreUserEdited = false
 ) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
-      engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
+  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
+      engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs, ignoreUserEdited: $ignoreUserEdited) {
         records {
           tdoId
           engineId
@@ -400,7 +392,7 @@ function* loadEngineResultsSaga(
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
   const requestTdo = yield select(getTdo, widgetId);
-  const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
+  const variables = { tdoId: requestTdo.id, engineIds: [engineId], ignoreUserEdited };
   if (startOffsetMs) {
     variables.startOffsetMs = startOffsetMs;
   }
@@ -677,25 +669,36 @@ function* createFileAssetSaga(
   type,
   contentType,
   sourceData,
-  fileData
+  fileData,
+  isUserEdited
 ) {
   const requestTdo = yield select(getTdo, widgetId);
-  const createAssetQuery = `mutation createAsset($tdoId: ID!, $type: String, $contentType: String, $file: UploadedFile){
+  const createAssetQuery = `mutation createAsset(
+    $tdoId: ID!,
+    $type: String,
+    $contentType: String,
+    $file: UploadedFile,
+    $sourceData: SetAssetSourceData,
+    $isUserEdited: Boolean
+  ){
     createAsset( input: {
       containerId: $tdoId,
       type: $type,
       contentType: $contentType,
-      sourceData: ${sourceData},
-      file: $file
+      sourceData: $sourceData,
+      file: $file,
+      isUserEdited: $isUserEdited
     })
     { id }
   }`;
 
   const variables = {
     tdoId: requestTdo.id,
-    type: type,
-    contentType: contentType,
-    file: fileData
+    type,
+    contentType,
+    file: fileData,
+    sourceData,
+    isUserEdited
   };
 
   const config = yield select(configModule.getConfig);
@@ -761,28 +764,14 @@ function* createFileAssetSaga(
     const updatedCategory = find(engineCategories, {
       categoryType: selectedEngineCategory.categoryType
     });
-    const userGeneratedEngine = find(updatedCategory.engines, engine => {
-      return (
-        engine.id === 'user-edited-face-engine-results' ||
-        engine.id === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd' ||
-        engine.id === 'bulk-edit-transcript' ||
-        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
-      );
-    });
-    let userGeneratedEngineId;
-    if (userGeneratedEngine) {
-      userGeneratedEngineId = userGeneratedEngine.id;
-    }
-    // Reset the the transcipt engine results.
+    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
     if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    } else if (
-      selectedEngineCategory.categoryType === 'face' &&
-      userGeneratedEngineId
-    ) {
+      // Reset the transcript engine results.
+      yield put(clearEngineResultsByEngineId(selectedEngineId, widgetId));
+    } else if (selectedEngineCategory.categoryType === 'face') {
       yield put(
         fetchFaceEngineResults({
-          selectedEngineId: userGeneratedEngineId,
+          selectedEngineId,
           tdo: requestTdo
         })
       );
@@ -811,7 +800,8 @@ function* createTranscriptBulkEditAssetSaga(
       type,
       contentType,
       sourceData,
-      text
+      text,
+      false
     );
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
@@ -917,6 +907,7 @@ function* createTranscriptBulkEditAssetSaga(
         payload: {
           originalTranscriptAssetId: "${originalTranscriptAssetId}",
           temporaryBulkEditAssetId: "${bulkTextAssetId}",
+          originalEngineId: "${selectedEngineId}",
           saveTtmlToVtnStandard: true
         }
       },
@@ -988,8 +979,7 @@ function* watchUpdateTdoContentTemplates() {
 
 function* watchLoadEngineResultsRequest() {
   yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const { engineId } = action.payload;
-    let { startOffsetMs, stopOffsetMs } = action.payload;
+    const { engineId, startOffsetMs, stopOffsetMs, ignoreUserEdited } = action.payload;
     const { widgetId } = action.meta;
 
     yield call(
@@ -997,7 +987,8 @@ function* watchLoadEngineResultsRequest() {
       widgetId,
       engineId,
       startOffsetMs,
-      stopOffsetMs
+      stopOffsetMs,
+      ignoreUserEdited
     );
   });
 }
@@ -1420,9 +1411,10 @@ function* watchSaveAssetData() {
       );
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
-        const type = 'v-bulk-edit-transcript';
-        const sourceData = '{}';
+        // TODO(VTN-8770): make type 'v-bulk-edit-transcript' to hide this asset
+        const type = 'bulk-edit-transcript';
         const { widgetId } = action.meta;
+        const sourceData = {};
         // do save bulk transcript asset and return
         return yield call(
           createTranscriptBulkEditAssetSaga,
@@ -1435,6 +1427,7 @@ function* watchSaveAssetData() {
         );
       }
       delete assetData.isBulkEdit;
+      assetData = [assetData];
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(
         getFaceEngineAssetData,
@@ -1448,35 +1441,40 @@ function* watchSaveAssetData() {
         })
       );
     }
-    if (!assetData.sourceEngineId) {
-      return yield put(
-        saveAssetDataFailure(action.meta.widgetId, {
-          error: 'Source engine id must be set on the engine result'
-        })
+    const createAssetCalls = [];
+    forEach(assetData, jsonData => {
+      if (get(jsonData, 'series.length')) {
+        forEach(jsonData.series, asset => {
+          if (get(asset, 'object.uri')) {
+            asset.object.uri = removeAwsSignatureParams(
+              get(asset, 'object.uri')
+            );
+          }
+        });
+      }
+      // process vtn-standard asset
+      const contentType = 'application/json';
+      const type = 'vtn-standard';
+      const sourceData = {
+        name: jsonData.sourceEngineName,
+        engineId: jsonData.sourceEngineId,
+        assetId: jsonData.assetId,
+        taskId: jsonData.taskId
+      };
+      const { widgetId } = action.meta;
+      createAssetCalls.push(
+        call(
+          createFileAssetSaga,
+          widgetId,
+          type,
+          contentType,
+          sourceData,
+          jsonData,
+          true
+        )
       );
-    }
-    if (get(assetData, 'series.length')) {
-      forEach(assetData.series, asset => {
-        if (get(asset, 'object.uri')) {
-          asset.object.uri = removeAwsSignatureParams(get(asset, 'object.uri'));
-        }
-      });
-    }
-    // process vtn-standard asset
-    const contentType = 'application/json';
-    const type = 'vtn-standard';
-    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${
-      assetData.sourceEngineId
-    }" }`;
-    const { widgetId } = action.meta;
-    yield call(
-      createFileAssetSaga,
-      widgetId,
-      type,
-      contentType,
-      sourceData,
-      assetData
-    );
+    });
+    return yield all(createAssetCalls);
   });
 }
 
@@ -1555,7 +1553,32 @@ function* watchCancelEdit() {
   });
 }
 
-export default function* root() {
+function* watchLatestFetchEngineResultsStart(widgetId) {
+  yield takeLatest([LOAD_ENGINE_RESULTS, FETCH_ENGINE_RESULTS], function*() {
+    yield put(setEditButtonState(widgetId, true));
+  });
+}
+
+function* watchLatestFetchEngineResultsEnd(widgetId) {
+  yield takeLatest(
+    [
+      LOAD_ENGINE_RESULTS_SUCCESS,
+      LOAD_ENGINE_RESULTS_FAILURE,
+      FETCH_ENGINE_RESULTS_SUCCESS,
+      FETCH_ENGINE_RESULTS_FAILURE
+    ],
+    function*() {
+      yield put(setEditButtonState(widgetId, false));
+    }
+  );
+}
+
+function* onMount(id, mediaId) {
+  yield put(loadTdoRequest(id, mediaId));
+  yield put(applicationModule.fetchApplications());
+}
+
+export default function* root({ id, mediaId }) {
   yield all([
     fork(watchLoadEngineResultsRequest),
     fork(watchLoadEngineResultsComplete),
@@ -1569,6 +1592,9 @@ export default function* root() {
     fork(watchFaceEngineEntityUpdate),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
-    fork(watchCancelEdit)
+    fork(watchCancelEdit),
+    fork(watchLatestFetchEngineResultsStart, id),
+    fork(watchLatestFetchEngineResultsEnd, id),
+    fork(onMount, id, mediaId)
   ]);
 }
