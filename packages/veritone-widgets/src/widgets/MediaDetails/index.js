@@ -47,7 +47,10 @@ import {
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules, util } from 'veritone-redux-common';
-const { application: applicationModule, engineResults: engineResultsModule } = modules;
+const {
+  application: applicationModule,
+  engineResults: engineResultsModule
+} = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -180,17 +183,23 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    selectedEngineResults: arrayOf(shape({
-      sourceEngineId: string.isRequired,
-      series: arrayOf(shape({
-        startTimeMs: number.isRequired,
-        stopTimeMs: number.isRequired,
-        words: arrayOf(shape({
-          word: string.isRequired,
-          confidence: number.isRequired
-        }))
-      }))
-    })),
+    selectedEngineResults: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number.isRequired
+              })
+            )
+          })
+        )
+      })
+    ),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
