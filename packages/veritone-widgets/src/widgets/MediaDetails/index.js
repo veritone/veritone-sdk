@@ -76,6 +76,7 @@ const programLiveImageNullState =
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
@@ -183,6 +184,7 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
+    isFetchingEngineResults: bool,
     selectedEngineResults: arrayOf(
       shape({
         sourceEngineId: string.isRequired,
@@ -195,7 +197,20 @@ class MediaDetailsWidget extends React.Component {
                 word: string.isRequired,
                 confidence: number.isRequired
               })
-            )
+            ),
+            object: shape({
+              label: string,
+              type: string,
+              uri: string,
+              entityId: string,
+              libraryId: string,
+              confidence: number,
+              text: string
+            }),
+            boundingPoly: arrayOf(shape({
+              x: number,
+              y: number
+            }))
           })
         )
       })
@@ -514,20 +529,10 @@ class MediaDetailsWidget extends React.Component {
     const engineName = get(selectedEngine, 'name');
     const engineMode = get(selectedEngine, 'mode');
     const selectedEngineResults = this.props.selectedEngineResults;
-    const isFetchingEngineResults = some(
-      selectedEngineResults,
-      engineResult => {
-        return engineResult && engineResult.status === 'FETCHING';
-      }
-    );
+    const isFetchingEngineResults = this.props.isFetchingEngineResults;
     const hasEngineResults =
-      selectedEngineResults &&
-      selectedEngineResults.length &&
-      some(selectedEngineResults, engineResult => {
-        return (
-          engineResult && engineResult.series && engineResult.series.length
-        );
-      });
+      get(selectedEngineResults, 'length') &&
+      some(selectedEngineResults, engineResult => get(engineResult, 'series.length'));
     const isRealTimeEngine =
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||
