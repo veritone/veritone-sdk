@@ -1411,7 +1411,6 @@ function* watchSaveAssetData() {
       );
       if (assetData.isBulkEdit) {
         const contentType = 'text/plain';
-        // TODO(VTN-8770): make type 'v-bulk-edit-transcript' to hide this asset
         const type = 'bulk-edit-transcript';
         const { widgetId } = action.meta;
         const sourceData = {};
