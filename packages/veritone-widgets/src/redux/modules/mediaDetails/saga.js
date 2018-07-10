@@ -23,7 +23,10 @@ import { modules } from 'veritone-redux-common';
 import {
   getFaceEngineAssetData,
   cancelFaceEdits,
-  ADD_DETECTED_FACE
+  pendingUserEdits,
+  ADD_DETECTED_FACE,
+  REMOVE_DETECTED_FACE,
+  CANCEL_FACE_EDITS
 } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
@@ -84,7 +87,8 @@ import {
   refreshEngineRunsSuccess,
   clearEngineResultsByEngineId,
   getEngineCategories,
-  setEditButtonState
+  setEditButtonState,
+  getSelectedEngineId
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -1286,12 +1290,18 @@ function* watchTranscriptStatus() {
   });
 }
 
-function* watchFaceEngineEntityUpdate() {
-  yield takeEvery(action => action.type === ADD_DETECTED_FACE, function*(
-    action
-  ) {
-    yield put(toggleSaveMode(true));
-  });
+function* watchFaceEngineEntityUpdate(widgetId) {
+  yield takeEvery(
+    [ADD_DETECTED_FACE, REMOVE_DETECTED_FACE, CANCEL_FACE_EDITS],
+    function*(action) {
+      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+      const hasPendingFaceEdits = yield select(
+        pendingUserEdits,
+        selectedEngineId
+      );
+      yield put(toggleSaveMode(hasPendingFaceEdits));
+    }
+  );
 }
 
 // Remove AWS prefixed params, keep the rest.
@@ -1499,7 +1509,7 @@ export default function* root({ id, mediaId }) {
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
     fork(watchTranscriptStatus),
-    fork(watchFaceEngineEntityUpdate),
+    fork(watchFaceEngineEntityUpdate, id),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
     fork(watchCancelEdit),

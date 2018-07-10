@@ -650,11 +650,6 @@ const local = state => state[namespace];
 
 export const getEngineCategories = (state, widgetId) =>
   get(local(state), [widgetId, 'engineCategories']);
-export const getEngineResultsByEngineId = (state, widgetId) =>
-  get(local(state), [widgetId, 'engineResultsByEngineId']);
-export const getEngineResultRequestsByEngineId = (state, widgetId, engineId) =>
-  get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
-  [];
 export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
 export const isLoadingTdo = (state, widgetId) =>
   get(local(state), [widgetId, 'isLoadingTdo']);
