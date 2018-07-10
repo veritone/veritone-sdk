@@ -80,5 +80,8 @@
       "<rootDir>/test/testSuitePolyfills.js",
       "<rootDir>/test/configureEnzyme.js"
     ]
+  },
+  "peerDependencies": {
+    "redux": "^4.0.0"
   }
 }
