@@ -129,12 +129,7 @@ class SourceContainer extends React.Component {
       source = this.props.sources[index];
     }
 
-    const version =
-    source.sourceType && source.sourceType.sourceSchema
-      ? source.sourceType.sourceSchema.majorVersion +
-        '.' +
-        source.sourceType.sourceSchema.minorVersion
-      : undefined;
+    const sourceTypeDisplay = get(source, 'sourceType.name');
 
     const handleItemClick = source => () => {
       this.props.handleSourceChange(source.id);
@@ -160,11 +155,11 @@ class SourceContainer extends React.Component {
             <span className={styles.menuIconSpacer} />
           )}
           <span className={styles.sourceMenuItemName}>{source.name}</span>
-          {version && !version.includes('undefined') ? (
-            <span className={styles.sourceMenuItemVersion}>
-              Version {version}
+          {sourceTypeDisplay ? (
+            <span className={styles.sourceMenuItemTypeDisplay}>
+              {sourceTypeDisplay}
             </span>
-          ) : null}
+          ) : null }
         </MenuItem>
       </div>
     );
