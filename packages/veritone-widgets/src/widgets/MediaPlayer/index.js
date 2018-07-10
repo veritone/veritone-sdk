@@ -48,6 +48,8 @@ class MediaPlayerComponent extends React.Component {
       })
     ),
     onBoundingBoxChange: func,
+    overlayBorderStyle: string,
+    readOnly: bool,
     width: number,
     height: number,
     videoHeight: number,
@@ -78,14 +80,12 @@ class MediaPlayerComponent extends React.Component {
           contentHeight={this.props.videoHeight}
           contentWidth={this.props.videoWidth}
         >
-          {this.props.hasStarted && this.props.isActive && (
+          {this.props.hasStarted && (
             <Overlay
               wrapperStyles={{ zIndex: 100 }}
-              // toolBarOffset={50}
               onBoundingBoxChange={this.handleBoundingBoxChange}
               overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
-              // overlayBorderStyle={overlayBorderStyle}
-              // overlayBackgroundBlendMode={overlayBackgroundBlendMode}
+              overlayBorderStyle={this.props.overlayBorderStyle}
               initialBoundingBoxPolys={
                 this.props.boundingPolySeries
                   ? getPolysForTime(
@@ -94,7 +94,7 @@ class MediaPlayerComponent extends React.Component {
                     )
                   : undefined
               }
-              readOnly={!this.props.paused}
+              readOnly={this.props.readOnly || !this.props.paused}
               key={this.props.currentTime}
             />
           )}
