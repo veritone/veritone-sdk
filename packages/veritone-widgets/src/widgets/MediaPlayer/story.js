@@ -134,11 +134,12 @@ const demoPosterImage =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
 class Story extends React.Component {
+  /* eslint-disable react/prop-types */
   playerRef = React.createRef();
 
   render() {
     return (
-      <div style={{ width: 500 }}>
+      <div style={{ width: this.props.width }}>
         <MediaPlayer {...this.props} ref={this.playerRef}/>
         <DefaultControlBar playerRef={this.playerRef}/>
       </div>
@@ -152,9 +153,10 @@ storiesOf('MediaPlayer', module)
       componentClass={Story}
       componentProps={{
         streams: multipleStreams,
-        width: 500,
-        fluid: false,
-        boundingPolySeries: timeSeries
+        // width: 500,
+        // fluid: false,
+        boundingPolySeries: timeSeries,
+        readOnly: true
       }}
     />
   ))
