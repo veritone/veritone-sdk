@@ -80,7 +80,6 @@ class MediaPlayerComponent extends React.Component {
     const { src, streams, ...props } = this.props;
 
     return (
-      <div style={{ width: this.props.width, height: this.props.height }}>
         <OverlayPositioningProvider
           contentHeight={this.props.videoHeight}
           contentWidth={this.props.videoWidth}
@@ -119,7 +118,6 @@ class MediaPlayerComponent extends React.Component {
             />
           </Player>
         </OverlayPositioningProvider>
-      </div>
     );
   }
 }
