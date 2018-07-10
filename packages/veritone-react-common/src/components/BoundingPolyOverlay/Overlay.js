@@ -340,6 +340,7 @@ export default class Overlay extends React.Component {
           left,
           height,
           width,
+          pointerEvents: this.props.readOnly ? 'none' : 'auto',
           ...this.props.wrapperStyles
         }}
       >
