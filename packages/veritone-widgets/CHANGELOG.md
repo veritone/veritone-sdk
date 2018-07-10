@@ -124,3 +124,7 @@ const MyPage = () => (
 * Engine Selection widget
   *  Fix initial selected engines not reinitializing across widgets.
   *  Optimized search by sharing search results state across widgets.
+
+## 5.2.1
+* Moved Video-React from a peer dependency to a dependency
+* Bumped Redux to 4.0
