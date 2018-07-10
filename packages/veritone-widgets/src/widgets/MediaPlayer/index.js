@@ -7,7 +7,8 @@ import {
   bool,
   func,
   objectOf,
-  any
+  any,
+  object
 } from 'prop-types';
 import { noop } from 'lodash';
 import { connect } from 'react-redux';
@@ -61,6 +62,10 @@ class MediaPlayerComponent extends React.Component {
     forwardedRef: objectOf(any)
   };
 
+  static contextTypes = {
+    store: object
+  };
+
   static defaultProps = {
     onBoundingBoxChange: noop
   };
@@ -101,6 +106,7 @@ class MediaPlayerComponent extends React.Component {
           <Player
             className={styles.mediaPlayer}
             ref={this.props.forwardedRef}
+            store={this.context.store}
             {...props}
           >
             {/* prevent video-react from adding its own control bar */}

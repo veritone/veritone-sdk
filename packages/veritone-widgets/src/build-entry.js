@@ -14,3 +14,4 @@ export {
   GlobalSnackBar
 } from './widgets/Notifications';
 export { MediaPlayer } from './widgets/MediaPlayer';
+export MediaPlayerControlBar from './widgets/MediaPlayer/DefaultControlBar';
