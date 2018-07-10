@@ -47,7 +47,10 @@ import {
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules, util } from 'veritone-redux-common';
-const { application: applicationModule, engineResults: engineResultsModule } = modules;
+const {
+  application: applicationModule,
+  engineResults: engineResultsModule
+} = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -74,6 +77,7 @@ const programLiveImageNullState =
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
@@ -182,17 +186,37 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    selectedEngineResults: arrayOf(shape({
-      sourceEngineId: string.isRequired,
-      series: arrayOf(shape({
-        startTimeMs: number.isRequired,
-        stopTimeMs: number.isRequired,
-        words: arrayOf(shape({
-          word: string.isRequired,
-          confidence: number.isRequired
-        }))
-      }))
-    })),
+    isFetchingEngineResults: bool,
+    selectedEngineResults: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number.isRequired
+              })
+            ),
+            object: shape({
+              label: string,
+              type: string,
+              uri: string,
+              entityId: string,
+              libraryId: string,
+              confidence: number,
+              text: string
+            }),
+            boundingPoly: arrayOf(shape({
+              x: number,
+              y: number
+            }))
+          })
+        )
+      })
+    ),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
@@ -508,20 +532,10 @@ class MediaDetailsWidget extends React.Component {
     const engineName = get(selectedEngine, 'name');
     const engineMode = get(selectedEngine, 'mode');
     const selectedEngineResults = this.props.selectedEngineResults;
-    const isFetchingEngineResults = some(
-      selectedEngineResults,
-      engineResult => {
-        return engineResult && engineResult.status === 'FETCHING';
-      }
-    );
+    const isFetchingEngineResults = this.props.isFetchingEngineResults;
     const hasEngineResults =
-      selectedEngineResults &&
-      selectedEngineResults.length &&
-      some(selectedEngineResults, engineResult => {
-        return (
-          engineResult && engineResult.series && engineResult.series.length
-        );
-      });
+      get(selectedEngineResults, 'length') &&
+      some(selectedEngineResults, engineResult => get(engineResult, 'series.length'));
     const isRealTimeEngine =
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||

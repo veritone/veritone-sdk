@@ -1,6 +1,7 @@
 import { createReducer } from 'helpers/redux';
 import { callGraphQL } from 'helpers/api';
-import { get, groupBy, find } from 'lodash';
+import { get, groupBy, find, forEach } from 'lodash';
+import { guid } from 'helpers/misc';
 
 export const namespace = 'engineResults';
 
@@ -17,19 +18,20 @@ const defaultState = {
 
 export default createReducer(defaultState, {
   [FETCH_ENGINE_RESULTS](state, action) {
-    console.log('FETCH_ENGINE_RESULTS', state, action);
     return {
       ...state,
       isFetchingEngineResults: true
     };
   },
   [FETCH_ENGINE_RESULTS_SUCCESS](state, action) {
-    console.log('FETCH_ENGINE_RESULTS_SUCCESS', state, action);
     if (action.payload.errors) {
       return this[FETCH_ENGINE_RESULTS_FAILURE](state, action);
     }
 
     const results = get(action, 'payload.engineResults.records').map(result => {
+      forEach(get(result, 'jsondata.series'), seriesItem => {
+        seriesItem.guid = guid();
+      });
       return {
         ...result.jsondata,
         userEdited: result.userEdited,
