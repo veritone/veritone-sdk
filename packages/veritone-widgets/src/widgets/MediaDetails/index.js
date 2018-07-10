@@ -47,7 +47,7 @@ import {
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
 import { modules, util } from 'veritone-redux-common';
-const { application: applicationModule } = modules;
+const { application: applicationModule, engineResults: engineResultsModule } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -73,9 +73,9 @@ const programLiveImageNullState =
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
-    engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
+    selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
-      id
+      mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
@@ -92,7 +92,8 @@ const programLiveImageNullState =
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isUserGeneratedTranscriptEngineId: mediaDetailsModule.isUserGeneratedTranscriptEngineId,
+    isUserGeneratedTranscriptEngineId:
+      mediaDetailsModule.isUserGeneratedTranscriptEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
@@ -179,9 +180,17 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    engineResultsByEngineId: shape({
-      engineId: arrayOf(any)
-    }),
+    selectedEngineResults: arrayOf(shape({
+      sourceEngineId: string.isRequired,
+      series: arrayOf(shape({
+        startTimeMs: number.isRequired,
+        stopTimeMs: number.isRequired,
+        words: arrayOf(shape({
+          word: string.isRequired,
+          confidence: number.isRequired
+        }))
+      }))
+    })),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
@@ -495,9 +504,7 @@ class MediaDetailsWidget extends React.Component {
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
     const engineMode = get(selectedEngine, 'mode');
-    const selectedEngineResults = this.props.engineResultsByEngineId[
-      selectedEngineId
-    ];
+    const selectedEngineResults = this.props.selectedEngineResults;
     const isFetchingEngineResults = some(
       selectedEngineResults,
       engineResult => {
@@ -618,7 +625,7 @@ class MediaDetailsWidget extends React.Component {
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
-      engineResultsByEngineId,
+      selectedEngineResults,
       isInfoPanelOpen,
       isExpandedMode,
       currentMediaPlayerTime,
@@ -1020,7 +1027,7 @@ class MediaDetailsWidget extends React.Component {
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1053,7 +1060,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'object' && (
                       <ObjectDetectionEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1067,7 +1074,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
@@ -1080,7 +1087,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'ocr' && (
                       <OCREngineOutputView
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
@@ -1093,7 +1100,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
                       <FingerprintEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         entities={entities}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
@@ -1105,7 +1112,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
                       <TranslationEngineOutput
-                        contents={engineResultsByEngineId[selectedEngineId]}
+                        contents={selectedEngineResults}
                         onClick={this.handleUpdateMediaPlayerTime}
                         onRerunProcess={this.handleRunProcess}
                         className={styles.engineOuputContainer}
@@ -1120,7 +1127,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
                       <SentimentEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         className={cx(
                           styles.engineOuputContainer,
                           styles.sentimentChartViewRoot
@@ -1136,7 +1143,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
                       <GeoEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         startTimeStamp={
                           tdo && tdo.startDateTime ? tdo.startDateTime : null
                         }
@@ -1153,7 +1160,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'correlation' && (
                       <StructuredDataEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         schemasById={schemasById}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
