@@ -13,22 +13,25 @@ describe('DynamicAdapter', () => {
     supportedSourceTypes: null,
     namespace: 'configuration'
   };
-  const SOURCES = [{
-    id: 'test-source-id-0'
-  }, {
-    id: 'test-source-id-1'
-  }]
+  const SOURCES = [
+    {
+      id: 'test-source-id-0'
+    },
+    {
+      id: 'test-source-id-1'
+    }
+  ];
   const SUPPORTED_SOURCE_TYPES = ['10'];
   const FIELDS = [
     {
-      "name": "location",
-      "options": null,
-      "type": "Text",
-      "max": null,
-      "min": null,
-      "step": null,
-      "info": "location",
-      "defaultValue": "Los Angeles"
+      name: 'location',
+      options: null,
+      type: 'Text',
+      max: null,
+      min: null,
+      step: null,
+      info: 'location',
+      defaultValue: 'Los Angeles'
     }
   ];
 
@@ -46,7 +49,7 @@ describe('DynamicAdapter', () => {
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({}).then((result) => {
+    testFuncs.validate({}).then(result => {
       testFuncs.validateCB(result);
       expect(testFuncs.validateCB).toHaveBeenCalled();
       done();
@@ -55,7 +58,9 @@ describe('DynamicAdapter', () => {
   });
 
   it('Validate function should only require sourceId if adapterConfig has supportedSourceTypes defined w/ length > 1', done => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      supportedSourceTypes: SUPPORTED_SOURCE_TYPES
+    });
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(ADAPTER_CONFIG),
       validateCB: jest.fn()
@@ -69,7 +74,9 @@ describe('DynamicAdapter', () => {
   });
 
   it('Validate function should only require fields which have default values', done => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      fields: FIELDS
+    });
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(ADAPTER_CONFIG),
       validateCB: jest.fn()
@@ -77,16 +84,18 @@ describe('DynamicAdapter', () => {
     jest.spyOn(testFuncs, 'validateCB');
     testFuncs.validate({}).catch(err => {
       testFuncs.validateCB(err);
-      expect(testFuncs.validateCB).toHaveBeenCalledWith(`${startCase(toLower(FIELDS[0].name))} is invalid`);
+      expect(testFuncs.validateCB).toHaveBeenCalledWith(
+        `${startCase(toLower(FIELDS[0].name))} is invalid`
+      );
 
       testSuccess();
     });
-    
-    function testSuccess () {
+
+    function testSuccess() {
       let configuration = {};
-      configuration[FIELDS[0].name] = 'test'
+      configuration[FIELDS[0].name] = 'test';
       testFuncs.validate(configuration).then(result => {
-        testFuncs.validateCB(result)
+        testFuncs.validateCB(result);
         expect(testFuncs.validateCB).toHaveBeenCalledWith(configuration);
         done();
         return result;
@@ -95,7 +104,9 @@ describe('DynamicAdapter', () => {
   });
 
   it('DynamicAdapter should automatically get the first page of sources', done => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      supportedSourceTypes: SUPPORTED_SOURCE_TYPES
+    });
     const CONFIGURATION = {};
     const DynamicAdapter = DynamicAdapterConfig.adapter;
     const UPDATE_CONFIGURATION = jest.fn();
@@ -116,13 +127,19 @@ describe('DynamicAdapter', () => {
         supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
         openCreateSource={OPEN_CREATE_SOURCE}
         closeCreateSource={CLOSE_CREATE_SOURCE}
-        loadNextPage={testFuncs.loadNextPage} />
-      );
-    expect(testFuncs.loadNextPage).toHaveBeenCalledWith({ startIndex: 0, stopIndex: 30});
+        loadNextPage={testFuncs.loadNextPage}
+      />
+    );
+    expect(testFuncs.loadNextPage).toHaveBeenCalledWith({
+      startIndex: 0,
+      stopIndex: 30
+    });
   });
 
   it('DynamicAdapter should set default values for any adapter input fields', () => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      fields: FIELDS
+    });
     const CONFIGURATION = {};
     const DynamicAdapter = DynamicAdapterConfig.adapter;
     const UPDATE_CONFIGURATION = jest.fn();
@@ -141,16 +158,20 @@ describe('DynamicAdapter', () => {
         updateConfiguration={UPDATE_CONFIGURATION}
         openCreateSource={OPEN_CREATE_SOURCE}
         closeCreateSource={CLOSE_CREATE_SOURCE}
-        loadNextPage={testFuncs.loadNextPage} />
-      );
+        loadNextPage={testFuncs.loadNextPage}
+      />
+    );
     let expectedConfiguration = {};
     expectedConfiguration[FIELDS[0].name] = FIELDS[0].defaultValue;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
   });
 
   it('DynamicAdapter should rehydrate its state if the existing configuration matches the adapters fields', () => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES, fields: FIELDS });
-    const TEST_FIELD_VALUE  = 'TEST FIELD VALUE';
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      supportedSourceTypes: SUPPORTED_SOURCE_TYPES,
+      fields: FIELDS
+    });
+    const TEST_FIELD_VALUE = 'TEST FIELD VALUE';
     let configuration = {};
     configuration[FIELDS[0].name] = TEST_FIELD_VALUE;
     const DynamicAdapter = DynamicAdapterConfig.adapter;
@@ -171,11 +192,11 @@ describe('DynamicAdapter', () => {
         supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
         openCreateSource={OPEN_CREATE_SOURCE}
         closeCreateSource={CLOSE_CREATE_SOURCE}
-        loadNextPage={testFuncs.loadNextPage} />
-      );
+        loadNextPage={testFuncs.loadNextPage}
+      />
+    );
     let expectedConfiguration = {};
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
   });
-
 });

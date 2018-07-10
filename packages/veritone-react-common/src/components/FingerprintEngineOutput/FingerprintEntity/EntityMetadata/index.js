@@ -15,7 +15,7 @@ export default class EntityMetadata extends Component {
 
     return (
       <div className={classNames(styles.fingerprintEntityMetadata, className)}>
-        {jsondata && 
+        {jsondata &&
           Object.keys(jsondata).map(propName => {
             const propVal = jsondata[propName];
             return (

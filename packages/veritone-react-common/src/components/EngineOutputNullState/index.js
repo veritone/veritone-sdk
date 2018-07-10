@@ -8,8 +8,10 @@ import { includes } from 'lodash';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-const errorRunningEngineImage = '//static.veritone.com/veritone-ui/engine-error-red.svg';
-const warningNoOutputDataImage = '//static.veritone.com/veritone-ui/warning-icon-lg.svg';
+const errorRunningEngineImage =
+  '//static.veritone.com/veritone-ui/engine-error-red.svg';
+const warningNoOutputDataImage =
+  '//static.veritone.com/veritone-ui/warning-icon-lg.svg';
 
 @withMuiThemeProvider
 export default class EngineOutputNullState extends Component {

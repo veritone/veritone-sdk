@@ -55,13 +55,17 @@ describe('OCREngineOutputView', () => {
   });
 
   it('adds props.className to the root', function() {
-    const wrapper = mount(<OCREngineOutputView data={ocrAssets} className="ocr-class"/>);
+    const wrapper = mount(
+      <OCREngineOutputView data={ocrAssets} className="ocr-class" />
+    );
     expect(wrapper.hasClass('ocr-class')).toBe(true);
   });
 
   it('calls props.onOcrClicked when user clicks an orc pill', () => {
     const handler = jest.fn();
-    const wrapper = mount(<OCREngineOutputView data={ocrAssets} onOcrClicked={handler} />);
+    const wrapper = mount(
+      <OCREngineOutputView data={ocrAssets} onOcrClicked={handler} />
+    );
     wrapper
       .find('.ocrContainer')
       .first()

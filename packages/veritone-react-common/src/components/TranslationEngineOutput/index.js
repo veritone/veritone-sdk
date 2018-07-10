@@ -118,13 +118,13 @@ export default class TranslationEngineOutput extends Component {
     translatedLanguagesInfo = sortBy(translatedLanguagesInfo, 'language');
 
     const selectedLanguage =
-        (state && state.selectedLanguage) ||
-        defaultLanguage ||
-        translatedLanguages[0];
+      (state && state.selectedLanguage) ||
+      defaultLanguage ||
+      translatedLanguages[0];
 
     return {
-      ...state, 
-      languages: translatedLanguagesInfo, 
+      ...state,
+      languages: translatedLanguagesInfo,
       selectedLanguage: selectedLanguage
     };
   }
