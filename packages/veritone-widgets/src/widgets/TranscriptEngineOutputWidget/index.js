@@ -18,7 +18,7 @@ const saga = util.reactReduxSaga.saga;
 
 @saga(transcriptSaga)
 @connect(
-  state => ({
+  (state, { selectedEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
     isDisplayingUserEditedOutput: TranscriptRedux.isDisplayingUserEditedOutput(state)
