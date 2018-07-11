@@ -5,10 +5,9 @@ import { find, get, set, isEqual, cloneDeep } from 'lodash';
 // 2. comment out or remove lines that have "// without immutable js"
 // import { fromJS } from 'immutable';  // with immutable js
 
-import { helpers, modules } from 'veritone-redux-common';
+import { helpers } from 'veritone-redux-common';
 
 const { createReducer } = helpers;
-const { engineResults: engineResultsModule } = modules;
 
 export const transcriptNamespace = 'veritoneTranscriptWidget';
 export const UNDO = transcriptNamespace + '_UNDO';
@@ -311,9 +310,4 @@ export const getTranscriptEditAssetData = (state) => {
   }
 
   return changedData;
-};
-
-export const isDisplayingUserEditedOutput = (state, engineId) => {
-  const engineResults = engineResultsModule.engineResultsByEngineId(state, engineId);
-  return !!find(engineResults, { userEdited: true });
 };

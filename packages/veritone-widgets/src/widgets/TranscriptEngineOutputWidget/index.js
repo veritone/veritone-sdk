@@ -25,7 +25,7 @@ const saga = util.reactReduxSaga.saga;
   (state, { selectedEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
-    isDisplayingUserEditedOutput: TranscriptRedux.isDisplayingUserEditedOutput(
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       selectedEngineId
     ),

@@ -57,8 +57,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
-import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
-import * as transcriptEngineOutput from '../../redux/modules/mediaDetails/transcriptWidget';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
 
@@ -73,7 +71,7 @@ const programLiveImageNullState =
 }))
 @saga(rootSaga)
 @connect(
-  (state, { id }) => ({
+  (state, { id, selectedEngineId }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
@@ -99,13 +97,9 @@ const programLiveImageNullState =
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
-    isDisplayingUserEditedFaceOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
-      mediaDetailsModule.getSelectedEngineId(state, id)
-    ),
-    isDisplayingUserEditedTranscriptOutput: transcriptEngineOutput.isDisplayingUserEditedOutput(
-      state,
-      mediaDetailsModule.getSelectedEngineId(state, id)
+      selectedEngineId
     ),
     editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id)
   }),
@@ -308,8 +302,7 @@ class MediaDetailsWidget extends React.Component {
     openConfirmModal: func,
     closeConfirmModal: func,
     discardUnsavedChanges: func,
-    isDisplayingUserEditedFaceOutput: bool,
-    isDisplayingUserEditedTranscriptOutput: bool,
+    isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
     editButtonDisabled: bool
   };
@@ -622,10 +615,10 @@ class MediaDetailsWidget extends React.Component {
     }
     const selectedCategoryType = get(this.props.selectedEngineCategory, 'categoryType');
     const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
-    if (selectedCategoryType === 'face' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedFaceOutput) {
+    if (selectedCategoryType === 'face' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedOutput) {
       return false;
     }
-    if (selectedCategoryType === 'transcript' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedTranscriptOutput) {
+    if (selectedCategoryType === 'transcript' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedOutput) {
       return false;
     }
     return true;

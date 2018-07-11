@@ -231,11 +231,6 @@ function local(state) {
   return state[namespace];
 }
 
-export const isDisplayingUserEditedOutput = (state, engineId) => {
-  const engineResults = getFaceDataByEngine(state, engineId);
-  return !!find(engineResults, { userEdited: true });
-};
-
 export const getFaceDataByEngine = (state, engineId) => {
   return engineResultsModule.engineResultsByEngineId(state, engineId);
 };
