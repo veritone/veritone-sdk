@@ -1,5 +1,7 @@
 import React from 'react';
-import { node, number } from 'prop-types';
+import { node, number, bool } from 'prop-types';
+import cx from 'classnames';
+import styles from './overlayPositioningProvider.styles.scss';
 
 export const OverlayPositioningContext = React.createContext({
   top: 0,
@@ -11,6 +13,7 @@ export default class OverlayPositioningProvider extends React.Component {
   static propTypes = {
     contentHeight: number.isRequired,
     contentWidth: number.isRequired,
+    fixedWidth: bool,
     children: node
   };
   static defaultProps = {};
@@ -79,17 +82,21 @@ export default class OverlayPositioningProvider extends React.Component {
   };
 
   render() {
+    // clearfix and float are to make sure the "measured child" div sizes
+    // exactly to the size of its child content in fixed/flud width scenarios
     return (
       <OverlayPositioningContext.Provider value={this.state.overlayPosition}>
-        <div
-          style={{
-            // display: 'inline-flex',
-            position: 'relative',
-            verticalAlign: 'bottom'
-          }}
-          ref={this.setMeasuredChildRef}
-        >
-          {this.props.children}
+        <div className={cx({ [styles.clearfix]: this.props.fixedWidth })}>
+          <div
+            style={{
+              float: this.props.fixedWidth ? 'none' : 'left',
+              position: 'relative',
+              verticalAlign: 'bottom'
+            }}
+            ref={this.setMeasuredChildRef}
+          >
+            {this.props.children}
+          </div>
         </div>
       </OverlayPositioningContext.Provider>
     );

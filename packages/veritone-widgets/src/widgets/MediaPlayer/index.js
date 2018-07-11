@@ -83,6 +83,7 @@ class MediaPlayerComponent extends React.Component {
         <OverlayPositioningProvider
           contentHeight={this.props.videoHeight}
           contentWidth={this.props.videoWidth}
+          fixedWidth={!props.fluid}
         >
           {this.props.hasStarted && (
             <Overlay
