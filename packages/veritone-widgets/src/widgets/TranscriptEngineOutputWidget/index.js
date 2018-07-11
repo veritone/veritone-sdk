@@ -3,16 +3,20 @@ import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
 import { get, isEqual, orderBy, noop } from 'lodash';
 
 import { connect } from 'react-redux';
-import { util } from 'veritone-redux-common';
+import { modules, util } from 'veritone-redux-common';
 import * as TranscriptRedux from '../../redux/modules/mediaDetails/transcriptWidget';
 import transcriptSaga, {
   changeWidthDebounce
 } from '../../redux/modules/mediaDetails/transcriptWidget/saga';
-import { AlertDialog } from 'veritone-react-common';
 import {
+  AlertDialog,
   TranscriptEngineOutput,
   TranscriptEditMode
 } from 'veritone-react-common';
+
+const {
+  engineResults: engineResultsModule
+} = modules;
 
 const saga = util.reactReduxSaga.saga;
 
@@ -21,7 +25,14 @@ const saga = util.reactReduxSaga.saga;
   (state, { selectedEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
-    isDisplayingUserEditedOutput: TranscriptRedux.isDisplayingUserEditedOutput(state)
+    isDisplayingUserEditedOutput: TranscriptRedux.isDisplayingUserEditedOutput(
+      state,
+      selectedEngineId
+    ),
+    selectedEngineResults: engineResultsModule.engineResultsByEngineId(
+      state,
+      selectedEngineId
+    ),
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -29,7 +40,7 @@ const saga = util.reactReduxSaga.saga;
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
     receiveData: TranscriptRedux.receiveData,
-    fetchEngineResults: TranscriptRedux.fetchEngineResults
+    fetchEngineResults: engineResultsModule.fetchEngineResults
   },
   null,
   { withRef: true }
@@ -41,21 +52,32 @@ export default class TranscriptEngineOutputWidget extends Component {
       startDateTime: string,
       stopDateTime: string
     }).isRequired,
-    data: arrayOf(
+    selectedEngineResults: arrayOf(
       shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        status: string,
+        sourceEngineId: string.isRequired,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
             words: arrayOf(
               shape({
-                word: string,
-                confidence: number
+                word: string.isRequired,
+                confidence: number.isRequired
               })
-            )
+            ),
+            object: shape({
+              label: string,
+              type: string,
+              uri: string,
+              entityId: string,
+              libraryId: string,
+              confidence: number,
+              text: string
+            }),
+            boundingPoly: arrayOf(shape({
+              x: number,
+              y: number
+            }))
           })
         )
       })
@@ -64,7 +86,6 @@ export default class TranscriptEngineOutputWidget extends Component {
       shape({
         startTimeMs: number,
         stopTimeMs: number,
-        status: string,
         series: arrayOf(shape({}))
       })
     ),
@@ -117,7 +138,7 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const nextData = get(nextProps, 'data');
+    const nextData = get(nextProps, 'selectedEngineResults');
     nextData &&
       nextData.map(chunk => {
         chunk.series &&
@@ -128,7 +149,7 @@ export default class TranscriptEngineOutputWidget extends Component {
       });
 
     const prevProps = prevState.props;
-    !isEqual(prevProps.data, nextData) && prevProps.receiveData(nextData);
+    !isEqual(prevProps.selectedEngineResults, nextData) && prevProps.receiveData(nextData);
     return { ...prevState, props: nextProps };
   }
 
@@ -166,7 +187,16 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   handleToggleEditedOutput = showUserEdited => {
-    this.props.fetchEngineResults({ tdoId: this.props.tdo.id, selectedEngineId: this.props.selectedEngineId, showUserEdited });
+    const tdo = this.props.tdo;
+    this.props.fetchEngineResults({
+      engineId: this.props.selectedEngineId,
+      tdo: tdo,
+      startOffsetMs: 0,
+      stopOffsetMs:
+        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+      ignoreUserEdited: !showUserEdited
+    });
+
   };
 
   handleAlertConfirm = () => {

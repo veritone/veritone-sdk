@@ -28,7 +28,6 @@ export default class SnippetSegment extends Component {
     editMode: bool,
     onClick: func,
     onChange: func,
-    selectedEngineId: string,
     startMediaPlayHeadMs: number,
     stopMediaPlayHeadMs: number
   };
@@ -72,7 +71,6 @@ export default class SnippetSegment extends Component {
       content,
       editMode,
       contentClassName,
-      selectedEngineId,
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
     } = this.props;
@@ -80,12 +78,13 @@ export default class SnippetSegment extends Component {
     const contentComponents = content.fragments.map((entry, index) => {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
+      const fragmentKey = entry.guid ?
+        entry.guid :
+        `snippet-fragment-${startTime}-${stopTime}-${entry.value ? entry.value.substr(0, 32) : ''}`;
 
       return (
         <SnippetFragment
-          key={
-            'snippet::' + selectedEngineId + '-' + startTime + '-' + stopTime
-          }
+          key={fragmentKey}
           value={entry.value}
           active={
             !(

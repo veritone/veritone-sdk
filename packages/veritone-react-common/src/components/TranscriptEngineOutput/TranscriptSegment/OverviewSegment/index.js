@@ -50,12 +50,13 @@ export default class OverviewSegment extends Component {
       const startTime = fragmentData.startTimeMs;
       const stopTime = fragmentData.stopTimeMs;
       const value = fragmentData.value;
+      const fragmentKey = fragmentData.guid ?
+        fragmentData.guid :
+        `overview-fragment-${startTime}-${stopTime}-${value ? value.substr(0, 32) : ''}`;
 
       readContents.push(
         <OverviewFragment
-          key={`overview-fragment-${startTime}-${stopTime}-${
-            value ? value.substr(0, 32) : ''
-          }`}
+          key={fragmentKey}
           content={fragmentData}
           className={fragmentClassName}
           onClick={this.handleFragmentClicked}

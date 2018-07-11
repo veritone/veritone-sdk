@@ -24,6 +24,7 @@ export default class TranscriptEngineOutput extends Component {
           shape({
             startTimeMs: number,
             stopTimeMs: number,
+            guid: string,
             words: arrayOf(
               shape({
                 word: string,

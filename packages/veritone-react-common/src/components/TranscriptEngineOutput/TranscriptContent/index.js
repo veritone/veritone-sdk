@@ -31,6 +31,7 @@ export default class TranscriptContent extends Component {
           shape({
             startTimeMs: number,
             stopTimeMs: number,
+            guid: string,
             words: arrayOf(
               shape({
                 word: string,
@@ -172,21 +173,21 @@ export default class TranscriptContent extends Component {
               ? (selectedWord = words[0].word)
               : (selectedWord = '');
 
+            const snippet = {
+              startTimeMs: entry.startTimeMs,
+              stopTimeMs: entry.stopTimeMs,
+              value: selectedWord
+            };
+            if (entry.guid) {
+              snippet.guid = entry.guid;
+            }
+
             //---Update Snippet Data---
             snippetSentences = snippetSentences + selectedWord + ' ';
-            snippetParts.push({
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
-            });
-
+            snippetParts.push(snippet);
             //---Update Overview Data---
             overviewSentences = overviewSentences + selectedWord + ' ';
-            overviewParts.push({
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
-            });
+            overviewParts.push(snippet);
           } else {
             // No Transcript Data
             snippetStatus !== undefined &&
@@ -236,7 +237,6 @@ export default class TranscriptContent extends Component {
   renderSnippetSegments = parsedData => {
     const {
       editMode,
-      selectedEngineId,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
@@ -261,7 +261,6 @@ export default class TranscriptContent extends Component {
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              selectedEngineId={selectedEngineId}
               classNames={classNames(styles.contentSegment)}
             />
           );

@@ -5,8 +5,10 @@ import { find, get, set, isEqual, cloneDeep } from 'lodash';
 // 2. comment out or remove lines that have "// without immutable js"
 // import { fromJS } from 'immutable';  // with immutable js
 
-import { helpers } from 'veritone-redux-common';
+import { helpers, modules } from 'veritone-redux-common';
+
 const { createReducer } = helpers;
+const { engineResults: engineResultsModule } = modules;
 
 export const transcriptNamespace = 'veritoneTranscriptWidget';
 export const UNDO = transcriptNamespace + '_UNDO';
@@ -16,7 +18,6 @@ export const CHANGE = transcriptNamespace + '_CHANGE';
 export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
 export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
-export const TEMP_HANDLER_FETCH_ENGINE_RESULTS = 'TEMP_HANDLER_FETCH_ENGINE_RESULTS';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -136,11 +137,6 @@ const transcriptReducer = createReducer(initialState, {
       const present = cloneDeep(data); // without immutable js
       return { ...state, data: data, past: [], future: [], present: present };
     }
-  },
-
-  [TEMP_HANDLER_FETCH_ENGINE_RESULTS](state, action) {
-    // TODO: this has to initiate fetching new engine results userEdited/not from the common shared redux
-    // const { tdoId, selectedEngineId, showUserEdited } = action.meta;
   }
 });
 
@@ -317,13 +313,7 @@ export const getTranscriptEditAssetData = (state) => {
   return changedData;
 };
 
-export const isDisplayingUserEditedOutput = (state) => {
-  // TODO: has to access EngineResult items, but not json data chunks
-  const { data } = state[transcriptNamespace];
-  return !!find(data, { userEdited: true });
+export const isDisplayingUserEditedOutput = (state, engineId) => {
+  const engineResults = engineResultsModule.engineResultsByEngineId(state, engineId);
+  return !!find(engineResults, { userEdited: true });
 };
-
-export const fetchEngineResults = meta => ({
-  type: TEMP_HANDLER_FETCH_ENGINE_RESULTS,
-  meta
-});
