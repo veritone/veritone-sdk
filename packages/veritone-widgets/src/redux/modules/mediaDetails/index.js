@@ -93,7 +93,7 @@ const defaultMDPState = {
     confirmButtonLabel: 'Save',
     nextAction: noop
   },
-  editButtonDisabled: false
+  isEditButtonDisabled: false
 };
 
 const defaultState = {};
@@ -805,7 +805,7 @@ export default createReducer(defaultState, {
   [SET_EDIT_BUTTON_STATE](
     state,
     {
-      editButtonDisabled,
+      isEditButtonDisabled,
       meta: { widgetId }
     }
   ) {
@@ -813,7 +813,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        editButtonDisabled
+        isEditButtonDisabled
       }
     };
   }
@@ -862,8 +862,8 @@ export const isUserGeneratedTranscriptEngineId = engineId => {
 };
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
-export const editButtonDisabled = (state, widgetId) =>
-  get(local(state), [widgetId, 'editButtonDisabled']);
+export const isEditButtonDisabled = (state, widgetId) =>
+  get(local(state), [widgetId, 'isEditButtonDisabled']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1087,8 +1087,8 @@ export const discardUnsavedChanges = () => ({
   type: DISCARD_UNSAVED_CHANGES
 });
 
-export const setEditButtonState = (widgetId, editButtonDisabled) => ({
+export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
   type: SET_EDIT_BUTTON_STATE,
-  editButtonDisabled,
+  isEditButtonDisabled,
   meta: { widgetId }
 });
