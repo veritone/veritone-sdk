@@ -53,6 +53,8 @@ class MediaPlayerComponent extends React.Component {
     readOnly: bool,
     width: number,
     height: number,
+    // fluid = 100% width by default, see video-react docs
+    fluid: bool,
     videoHeight: number,
     videoWidth: number,
     hasStarted: bool,
@@ -67,7 +69,8 @@ class MediaPlayerComponent extends React.Component {
   };
 
   static defaultProps = {
-    onBoundingBoxChange: noop
+    onBoundingBoxChange: noop,
+    fluid: true
   };
 
   handleBoundingBoxChange = (allPolys, newPoly) => {

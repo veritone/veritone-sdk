@@ -52,6 +52,7 @@ class Story extends React.Component {
         <OverlayPositioningProvider
           contentHeight={this.props.contentHeight}
           contentWidth={this.props.contentWidth}
+          fixedWidth
         >
           <Overlay
             onBoundingBoxChange={this.handleAddBoundingBox}

@@ -152,9 +152,12 @@ storiesOf('MediaPlayer', module)
     <BaseStory
       componentClass={Story}
       componentProps={{
+        muted: true,
+        autoPlay: true,
         streams: multipleStreams,
         boundingPolySeries: timeSeries,
-        readOnly: true
+        readOnly: true,
+        fluid: true
       }}
     />
   ))
@@ -163,6 +166,7 @@ storiesOf('MediaPlayer', module)
     <BaseStory
       componentClass={Story}
       componentProps={{
+        muted: true,
         autoPlay: true,
         streams: dashStream,
         width: 800,
@@ -178,6 +182,7 @@ storiesOf('MediaPlayer', module)
     <BaseStory
       componentClass={Story}
       componentProps={{
+        muted: true,
         autoPlay: true,
         streams: hlsStream,
         width: 500,
@@ -190,6 +195,7 @@ storiesOf('MediaPlayer', module)
     <BaseStory
       componentClass={Story}
       componentProps={{
+        muted: true,
         autoPlay: true,
         streams: multipleStreams,
         width: 500,
@@ -207,6 +213,7 @@ storiesOf('MediaPlayer', module)
       <BaseStory
         componentClass={Story}
         componentProps={{
+          muted: true,
           src: value,
           width: 500,
           fluid: false
@@ -219,6 +226,7 @@ storiesOf('MediaPlayer', module)
     <BaseStory
       componentClass={Story}
       componentProps={{
+        muted: true,
         src: demoMp3,
         width: 500,
         fluid: false,
