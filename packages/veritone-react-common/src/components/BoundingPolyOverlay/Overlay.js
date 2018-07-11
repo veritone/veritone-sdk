@@ -57,6 +57,12 @@ export default class Overlay extends React.Component {
           y: number.isRequired
         })
       )
+    ),
+    actionMenuItems: arrayOf(
+      shape({
+        label: string.isRequired,
+        onClick: func.isRequired
+      })
     )
   };
 
@@ -433,12 +439,7 @@ export default class Overlay extends React.Component {
             <OverlayActionsMenu
               visible={showingActionsMenu}
               onMinimize={this.minimizeConfirmMenu}
-              menuItems={[
-                {
-                  label: 'test action 1',
-                  onClick: () => console.log('clicked')
-                }
-              ]}
+              menuItems={this.props.actionMenuItems}
               onDelete={this.handleDelete}
               bottomOffset={this.props.toolBarOffset}
             />

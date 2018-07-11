@@ -39,6 +39,7 @@ export default class OverlayToolBar extends React.Component {
     const itemIndex = e.target.getAttribute('data-itemindex');
 
     if (itemIndex) {
+      // fixme -- what should this be called with?
       this.props.menuItems[Number(itemIndex)].onClick();
     }
 
