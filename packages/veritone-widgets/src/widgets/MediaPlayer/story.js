@@ -140,35 +140,36 @@ class Story extends React.Component {
   render() {
     return (
       <div style={{ width: this.props.width }}>
-        <MediaPlayer {...this.props} ref={this.playerRef}/>
-        <DefaultControlBar playerRef={this.playerRef}/>
+        <MediaPlayer {...this.props} ref={this.playerRef} />
+        <DefaultControlBar playerRef={this.playerRef} />
       </div>
     );
   }
 }
 
 storiesOf('MediaPlayer', module)
-  .add('MP4', () => (
+  .add('MP4 (fluid width)', () => (
     <BaseStory
       componentClass={Story}
       componentProps={{
         streams: multipleStreams,
-        // width: 500,
-        // fluid: false,
         boundingPolySeries: timeSeries,
         readOnly: true
       }}
     />
   ))
 
-  .add('DASH', () => (
+  .add('DASH (fixed width, pillarboxed)', () => (
     <BaseStory
       componentClass={Story}
       componentProps={{
         autoPlay: true,
         streams: dashStream,
-        width: 500,
-        fluid: false
+        width: 800,
+        height: 300,
+        fluid: false,
+        boundingPolySeries: timeSeries,
+        readOnly: true
       }}
     />
   ))
@@ -225,16 +226,3 @@ storiesOf('MediaPlayer', module)
       }}
     />
   ));
-
-// function testSyntax() {
-//   return (
-//     <MediaPlayerWrapper>
-//       {({ playerRef }) => (
-//         <div>
-//           <MediaPlayer ref={playerRef} />
-//           <CustomControlBar playerRef={playerRef}/>
-//         </div>
-//       )}
-//     </MediaPlayerWrapper>
-//   );
-// }
