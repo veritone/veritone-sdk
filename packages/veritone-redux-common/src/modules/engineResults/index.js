@@ -78,7 +78,7 @@ export const isDisplayingUserEditedOutput = (state, engineId) => {
   return !!find(results, { userEdited: true });
 };
 
-export const getEngineResultsQuery = `query engineResults($tdoId: I!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
+export const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
   engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs, ignoreUserEdited: $ignoreUserEdited) {
     records {
       tdoId
