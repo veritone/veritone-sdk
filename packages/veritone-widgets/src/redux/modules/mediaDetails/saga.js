@@ -1303,7 +1303,7 @@ function* watchSaveAssetData() {
         getTranscriptEditAssetData,
         action.payload.selectedEngineId
       );
-      if (assetData.isBulkEdit) {
+      if (assetData.text) {
         const contentType = 'text/plain';
         const type = 'bulk-edit-transcript';
         const { widgetId } = action.meta;
@@ -1319,8 +1319,6 @@ function* watchSaveAssetData() {
           action.payload.selectedEngineId
         );
       }
-      delete assetData.isBulkEdit;
-      assetData = [assetData];
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(
         getFaceEngineAssetData,
