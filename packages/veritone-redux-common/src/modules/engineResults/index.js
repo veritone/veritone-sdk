@@ -9,7 +9,7 @@ export const FETCH_ENGINE_RESULTS = `vtn/${namespace}/FETCH_ENGINE_RESULTS`;
 export const FETCH_ENGINE_RESULTS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_RESULTS_SUCCESS`;
 export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESULTS_FAILURE`;
 
-const defaultState = {
+export const defaultState = {
   engineResultsMappedByEngineId: {},
   fetchedEngineResults: {},
   isFetchingEngineResults: false,
@@ -78,6 +78,20 @@ export const isDisplayingUserEditedOutput = (state, engineId) => {
   return !!find(results, { userEdited: true });
 };
 
+export const getEngineResultsQuery = `query engineResults($tdoId: I!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
+  engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs, ignoreUserEdited: $ignoreUserEdited) {
+    records {
+      tdoId
+      engineId
+      startOffsetMs
+      stopOffsetMs
+      jsondata
+      assetId
+      userEdited
+    }
+  }
+}`;
+
 export const fetchEngineResults = ({
   tdo,
   engineId,
@@ -85,20 +99,6 @@ export const fetchEngineResults = ({
   stopOffsetMs,
   ignoreUserEdited = false
 } = {}) => async (dispatch, getState) => {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
-    engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs, ignoreUserEdited: $ignoreUserEdited) {
-      records {
-        tdoId
-        engineId
-        startOffsetMs
-        stopOffsetMs
-        jsondata
-        assetId
-        userEdited
-      }
-    }
-  }`;
-
   const variables = { tdoId: tdo.id, engineIds: [engineId], ignoreUserEdited };
   if (startOffsetMs) {
     variables.startOffsetMs = startOffsetMs;
