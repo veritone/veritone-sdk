@@ -108,7 +108,7 @@ const tdoInfoQueryClause = `id
       uri
     }`;
 
-const engineRunsQueryClause = `engineRuns {
+const engineRunsQueryClause = `engineRuns(limit: 1000) {
       records {
         engine {
           id

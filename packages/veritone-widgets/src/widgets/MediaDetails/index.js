@@ -71,7 +71,7 @@ const programLiveImageNullState =
 }))
 @saga(rootSaga)
 @connect(
-  (state, { id, selectedEngineId }) => ({
+  (state, { id }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
@@ -99,7 +99,7 @@ const programLiveImageNullState =
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
-      selectedEngineId
+      mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id)
   }),

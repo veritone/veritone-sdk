@@ -1,4 +1,4 @@
-import { find, get, set, isEqual, cloneDeep } from 'lodash';
+import { get, set, isEqual, cloneDeep } from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
@@ -285,7 +285,7 @@ export const hasUserEdits = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
 };
-export const getTranscriptEditAssetData = (state) => {
+export const getTranscriptEditAssetData = state => {
   const { isBulkEdit, data } = state[transcriptNamespace];
 
   const changedData = {
