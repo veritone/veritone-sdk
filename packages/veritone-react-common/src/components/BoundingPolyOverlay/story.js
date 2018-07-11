@@ -70,7 +70,6 @@ class Story extends React.Component {
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: 'contain',
-              display: 'block',
               backgroundColor: 'lightBlue',
               height:
                 this.props.matteType === 'letterbox'
@@ -113,6 +112,7 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
       <p>
         Matte type: {options[matteType]} ({matteSize}px)
       </p>
+
       <Story
         contentHeight={contentHeight}
         contentWidth={contentWidth}

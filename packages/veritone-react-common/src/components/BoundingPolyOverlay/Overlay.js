@@ -279,7 +279,6 @@ export default class Overlay extends React.Component {
   };
 
   handleDelete = () => {
-    // todo:
     let result = [...this.state.boundingBoxPositions];
     result.splice(this.state.focusedBoundingBoxIndex, 1);
 
@@ -287,6 +286,8 @@ export default class Overlay extends React.Component {
   };
 
   toPercentageBasedPoly = positions => {
+    // translate from internal (x, y, width, height) format to veritone's
+    // percentage-based vertex format
     const {
       width: containerWidth,
       height: containerHeight
@@ -327,6 +328,7 @@ export default class Overlay extends React.Component {
 
   render() {
     const { top, left, height, width } = this.props.overlayPositioningContext;
+
     const showingConfirmMenu =
       this.hasStagedBoundingBox() &&
       !this.state.userActingOnBoundingBox &&
@@ -361,11 +363,7 @@ export default class Overlay extends React.Component {
             }}
             style={{
               border: this.props.overlayBorderStyle,
-              backgroundColor:
-                // i === this.state.focusedBoundingBoxIndex
-                //   ? 'yellow'
-                //   :
-                this.props.overlayBackgroundColor,
+              backgroundColor: this.props.overlayBackgroundColor,
               mixBlendMode: this.props.overlayBackgroundBlendMode,
               // do not let this box interfere with mouse events as we draw out
               // the initial bounding box
@@ -386,8 +384,6 @@ export default class Overlay extends React.Component {
                 ? undefined
                 : false
             }
-            // disableDragging={this.props.readOnly}
-            // disableDragging={this.state.focusedBoundingBoxIndex !== i}
           />
         ))}
 

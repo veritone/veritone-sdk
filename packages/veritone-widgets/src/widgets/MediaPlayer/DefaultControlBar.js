@@ -20,7 +20,7 @@ import styles from './styles.scss';
 @connect(
   state => ({
     playerState: state.player,
-    hasStarted: state.player.hasStarted,
+    hasStarted: state.player.hasStarted
   }),
   dispatch => ({
     videoReactActions: bindActionCreators(

@@ -80,45 +80,42 @@ class MediaPlayerComponent extends React.Component {
     const { src, streams, ...props } = this.props;
 
     return (
-        <OverlayPositioningProvider
-          contentHeight={this.props.videoHeight}
-          contentWidth={this.props.videoWidth}
-          fixedWidth={!props.fluid}
+      <OverlayPositioningProvider
+        contentHeight={this.props.videoHeight}
+        contentWidth={this.props.videoWidth}
+        fixedWidth={!props.fluid}
+      >
+        {this.props.hasStarted && (
+          <Overlay
+            wrapperStyles={{ zIndex: 100 }}
+            onBoundingBoxChange={this.handleBoundingBoxChange}
+            overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
+            overlayBorderStyle={this.props.overlayBorderStyle}
+            initialBoundingBoxPolys={
+              this.props.boundingPolySeries
+                ? getPolysForTime(
+                    this.props.boundingPolySeries,
+                    this.props.currentTime * 1000
+                  )
+                : undefined
+            }
+            readOnly={this.props.readOnly || !this.props.paused}
+            key={this.props.currentTime}
+          />
+        )}
+        <Player
+          className={styles.mediaPlayer}
+          ref={this.props.forwardedRef}
+          store={this.context.store}
+          {...props}
         >
-          {this.props.hasStarted && (
-            <Overlay
-              wrapperStyles={{ zIndex: 100 }}
-              onBoundingBoxChange={this.handleBoundingBoxChange}
-              overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
-              overlayBorderStyle={this.props.overlayBorderStyle}
-              initialBoundingBoxPolys={
-                this.props.boundingPolySeries
-                  ? getPolysForTime(
-                      this.props.boundingPolySeries,
-                      this.props.currentTime * 1000
-                    )
-                  : undefined
-              }
-              readOnly={this.props.readOnly || !this.props.paused}
-              key={this.props.currentTime}
-            />
-          )}
-          <Player
-            className={styles.mediaPlayer}
-            ref={this.props.forwardedRef}
-            store={this.context.store}
-            {...props}
-          >
-            {/* prevent video-react from adding its own control bar */}
-            <ControlBar autoHide className={styles.hiddenDummyControls} />
+          {/* prevent video-react from adding its own control bar */}
+          <ControlBar autoHide className={styles.hiddenDummyControls} />
 
-            <VideoSource isVideoChild src={src} streams={streams} />
-            <BigPlayButton
-              position="center"
-              className={styles.mediaPlayButton}
-            />
-          </Player>
-        </OverlayPositioningProvider>
+          <VideoSource isVideoChild src={src} streams={streams} />
+          <BigPlayButton position="center" className={styles.mediaPlayButton} />
+        </Player>
+      </OverlayPositioningProvider>
     );
   }
 }

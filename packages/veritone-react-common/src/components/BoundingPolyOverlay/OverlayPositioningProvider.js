@@ -44,8 +44,8 @@ export default class OverlayPositioningProvider extends React.Component {
 
     const [width, height] =
       ratioScreen > ratioContent
-        ? [(contentWidth * screenHeight) / contentHeight, screenHeight]
-        : [screenWidth, (contentHeight * screenWidth) / contentWidth];
+        ? [contentWidth * screenHeight / contentHeight, screenHeight]
+        : [screenWidth, contentHeight * screenWidth / contentWidth];
 
     this.setState({
       // figure out what styles need to be applied to the overlay component so that
