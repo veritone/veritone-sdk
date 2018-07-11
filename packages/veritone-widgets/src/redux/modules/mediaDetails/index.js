@@ -1,4 +1,4 @@
-import { get, has, values, uniqBy, keyBy, noop } from 'lodash';
+import { get, has, find, values, uniqBy, keyBy, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -101,13 +101,19 @@ export default createReducer(defaultState, {
       meta: { warn, widgetId }
     }
   ) {
+    let selectedEngineCategory = state[widgetId].selectedEngineCategory;
+    const selectedEngineCategoryNewValue = find(payload, {id: get(selectedEngineCategory, 'id')});
+    if (selectedEngineCategory && selectedEngineCategoryNewValue) {
+      selectedEngineCategory = selectedEngineCategoryNewValue;
+    }
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
         error: null,
         warning: warn || null,
-        engineCategories: payload
+        engineCategories: payload,
+        selectedEngineCategory: selectedEngineCategory
       }
     };
   },
@@ -415,9 +421,7 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        selectedEngineCategory: {
-          ...payload
-        }
+        selectedEngineCategory: payload
       }
     };
   },
@@ -695,12 +699,6 @@ export const loadEngineCategoriesSuccess = (widgetId, result) => ({
 export const loadEngineCategoriesFailure = (widgetId, { error }) => ({
   type: LOAD_ENGINE_CATEGORIES_FAILURE,
   meta: { error, widgetId }
-});
-
-export const clearEngineResultsByEngineId = (engineId, widgetId) => ({
-  type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
-  payload: { engineId },
-  meta: { widgetId }
 });
 
 export const loadTdoRequest = (widgetId, tdoId, callback) => ({

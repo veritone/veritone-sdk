@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy, noop } from 'lodash';
+import { get, isEqual, orderBy, pick, noop } from 'lodash';
 
 import { connect } from 'react-redux';
 import { modules, util } from 'veritone-redux-common';
@@ -216,26 +216,25 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   render() {
-    const {
-      title,
-      currentData,
-      engines,
-      selectedEngineId,
-      className,
-      headerClassName,
-      contentClassName,
-      editMode,
-      onClick,
-      onScroll,
-      onExpandClicked,
-      mediaLengthMs,
-      neglectableTimeMs,
-      estimatedDisplayTimeMs,
-      mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
-      outputNullState,
-      bulkEditEnabled
-    } = this.props;
+    const transcriptEngineProps = pick(this.props, [
+      'title',
+      'engines',
+      'selectedEngineId',
+      'className',
+      'headerClassName',
+      'contentClassName',
+      'editMode',
+      'onClick',
+      'onScroll',
+      'onExpandClicked',
+      'mediaLengthMs',
+      'neglectableTimeMs',
+      'estimatedDisplayTimeMs',
+      'mediaPlayerTimeMs',
+      'mediaPlayerTimeIntervalMs',
+      'outputNullState',
+      'bulkEditEnabled'
+    ]);
 
     const alertTitle = 'Unsaved Transcript Changes';
     const alertDescription =
@@ -246,28 +245,12 @@ export default class TranscriptEngineOutputWidget extends Component {
     return (
       <Fragment>
         <TranscriptEngineOutput
-          title={title}
-          data={currentData}
-          engines={engines}
-          selectedEngineId={selectedEngineId}
-          className={className}
-          headerClassName={headerClassName}
-          contentClassName={contentClassName}
-          editMode={editMode}
+          data={this.props.currentData}
+          {...transcriptEngineProps}
           onChange={this.handleContentChanged}
           editType={this.state.editMode}
           onEditTypeChange={this.handleOnEditModeChange}
-          onClick={onClick}
-          onScroll={onScroll}
           onEngineChange={this.handleEngineChange}
-          onExpandClicked={onExpandClicked}
-          mediaLengthMs={mediaLengthMs}
-          neglectableTimeMs={neglectableTimeMs}
-          estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-          mediaPlayerTimeMs={mediaPlayerTimeMs}
-          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-          outputNullState={outputNullState}
-          bulkEditEnabled={bulkEditEnabled}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
