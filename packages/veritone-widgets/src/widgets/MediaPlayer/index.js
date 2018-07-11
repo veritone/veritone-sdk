@@ -65,6 +65,8 @@ class MediaPlayerComponent extends React.Component {
   };
 
   static contextTypes = {
+    // need to pass our app's redux store to the Player, or else it will create
+    // its own internal store that we can't integrate with
     store: object
   };
 
