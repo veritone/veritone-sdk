@@ -1,5 +1,6 @@
 import React from 'react';
 import { node, number, bool } from 'prop-types';
+import { isEqual } from 'lodash';
 import cx from 'classnames';
 import styles from './overlayPositioningProvider.styles.scss';
 
@@ -31,6 +32,10 @@ export default class OverlayPositioningProvider extends React.Component {
     this.resizeObserver && this.resizeObserver.disconnect();
   }
 
+  componentDidUpdate() {
+    this.measureChild();
+  }
+
   measureChild = (element = this.measuredChildRef) => {
     // calculate the actual size of the element we're going to lay on top of
     const {
@@ -47,16 +52,20 @@ export default class OverlayPositioningProvider extends React.Component {
         ? [contentWidth * screenHeight / contentHeight, screenHeight]
         : [screenWidth, contentHeight * screenWidth / contentWidth];
 
-    this.setState({
-      // figure out what styles need to be applied to the overlay component so that
-      // it aligns with the content (considering letter/pillarboxing)
-      overlayPosition: {
-        top: (screenHeight - height) / 2,
-        left: (screenWidth - width) / 2,
-        height,
-        width
-      }
-    });
+    // figure out what styles need to be applied to the overlay component so that
+    // it aligns with the content (considering letter/pillarboxing)
+    const measuredOverlayPosition = {
+      top: (screenHeight - height) / 2,
+      left: (screenWidth - width) / 2,
+      height,
+      width
+    };
+
+    if (!isEqual(this.state.overlayPosition, measuredOverlayPosition)) {
+      this.setState({
+        overlayPosition: measuredOverlayPosition
+      });
+    }
   };
 
   setMeasuredChildRef = r => {
@@ -83,13 +92,13 @@ export default class OverlayPositioningProvider extends React.Component {
 
   render() {
     // clearfix and float are to make sure the "measured child" div sizes
-    // exactly to the size of its child content in fixed/flud width scenarios
+    // exactly to the size of its child content in fixed/fluid width scenarios
     return (
       <OverlayPositioningContext.Provider value={this.state.overlayPosition}>
         <div className={cx({ [styles.clearfix]: this.props.fixedWidth })}>
           <div
             style={{
-              float: this.props.fixedWidth ? 'none' : 'left',
+              float: this.props.fixedWidth ? 'left' : 'none',
               position: 'relative',
               verticalAlign: 'bottom'
             }}
