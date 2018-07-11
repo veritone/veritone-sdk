@@ -104,7 +104,7 @@ const programLiveImageNullState =
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
-    editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id)
+    isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -308,7 +308,7 @@ class MediaDetailsWidget extends React.Component {
     discardUnsavedChanges: func,
     isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
-    editButtonDisabled: bool
+    isEditButtonDisabled: bool
   };
 
   static contextTypes = {
@@ -937,7 +937,7 @@ class MediaDetailsWidget extends React.Component {
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
-                        disabled={this.props.editButtonDisabled}
+                        disabled={this.props.isEditButtonDisabled}
                       >
                         EDIT MODE
                       </Button>
