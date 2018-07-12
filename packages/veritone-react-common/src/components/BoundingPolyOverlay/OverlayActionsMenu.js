@@ -3,6 +3,7 @@ import React from 'react';
 import { number, bool, func, arrayOf, string, shape } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 import OverlayToolBar from './OverlayToolBar';
 
@@ -11,6 +12,7 @@ export default class OverlayActionsMenu extends React.Component {
     visible: bool,
     onMinimize: func,
     onDelete: func,
+    onConfirm: func,
     menuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -32,6 +34,9 @@ export default class OverlayActionsMenu extends React.Component {
       >
         <IconButton onClick={this.props.onDelete}>
           <DeleteIcon />
+        </IconButton>
+        <IconButton onClick={this.props.onConfirm}>
+          <CheckCircleIcon />
         </IconButton>
       </OverlayToolBar>
     );

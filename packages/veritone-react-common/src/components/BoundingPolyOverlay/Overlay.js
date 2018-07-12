@@ -191,12 +191,15 @@ export default class Overlay extends React.Component {
 
   confirmStagedBoundingBox = () => {
     this.props.onBoundingBoxChange(
-      this.toPercentageBasedPoly([
-        ...this.state.boundingBoxPositions,
-        this.state.stagedBoundingBoxPosition
-      ]),
-      // second arg is just the added box
-      this.toPercentageBasedPoly([this.state.stagedBoundingBoxPosition])[0]
+      {
+        allPolys: this.toPercentageBasedPoly([
+          ...this.state.boundingBoxPositions,
+          this.state.stagedBoundingBoxPosition
+        ]),
+        newPoly: this.toPercentageBasedPoly([
+          this.state.stagedBoundingBoxPosition
+        ])[0]
+      }
     );
 
     this.removeStagedBoundingBox();
@@ -284,7 +287,10 @@ export default class Overlay extends React.Component {
     let result = [...this.state.boundingBoxPositions];
     result.splice(this.state.focusedBoundingBoxIndex, 1);
 
-    this.props.onBoundingBoxChange(this.toPercentageBasedPoly(result));
+    this.props.onBoundingBoxChange({
+      allPolys: this.toPercentageBasedPoly(result),
+      deletedIndex: this.state.focusedBoundingBoxIndex
+    });
   };
 
   toPercentageBasedPoly = positions => {
@@ -439,6 +445,7 @@ export default class Overlay extends React.Component {
               onMinimize={this.minimizeConfirmMenu}
               menuItems={this.props.actionMenuItems}
               onDelete={this.handleDelete}
+              onConfirm={this.handleConfirmChange}
               bottomOffset={this.props.toolBarOffset}
             />
           )}

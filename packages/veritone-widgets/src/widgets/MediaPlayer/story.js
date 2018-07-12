@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
+import { isNumber } from 'lodash';
 import faker from 'faker';
 import 'video-react/dist/video-react.css';
 
@@ -137,10 +138,83 @@ class Story extends React.Component {
   /* eslint-disable react/prop-types */
   playerRef = React.createRef();
 
+  state = {
+    boundingPolySeries: this.props.boundingPolySeries
+  };
+
+  handleBoundingBoxChange = ({
+    allPolys,
+    newPoly,
+    deletedIndex,
+    currentTime
+  }) => {
+    if (newPoly) {
+      return this.handleAddBoundingBox(newPoly, currentTime * 1000);
+    }
+
+    if (isNumber(deletedIndex)) {
+      return this.handleDeleteBoundingBox(deletedIndex);
+    }
+
+    this.handleChangeBoundingBox(allPolys, currentTime * 1000)
+    // if editing an existing poly, find the matching time series object and edit it
+    // for that whole period
+  };
+
+  handleAddBoundingBox(newPoly, insertAtTime) {
+    // if adding a new poly, add it during the first matching existing window if
+    // available, otherwise make a new one at currentTime +- 1 second
+    const relevantTimeSeriesObjects = this.state.boundingPolySeries.filter(
+      ({ startTimeMs, stopTimeMs }) =>
+        startTimeMs <= insertAtTime && insertAtTime <= stopTimeMs
+    );
+
+    const firstRelevantTimeSeries = relevantTimeSeriesObjects[0];
+
+    this.setState({
+      boundingPolySeries: [
+        {
+          startTimeMs: firstRelevantTimeSeries
+            ? firstRelevantTimeSeries.startTimeMs
+            : insertAtTime - 1000,
+          stopTimeMs: firstRelevantTimeSeries
+            ? firstRelevantTimeSeries.stopTimeMs
+            : insertAtTime + 1000,
+          object: {
+            boundingPoly: newPoly
+          }
+        },
+        ...this.state.boundingPolySeries
+      ]
+    });
+  }
+
+  handleDeleteBoundingBox(deletedIndex) {
+    this.setState({
+      boundingPolySeries: [
+        ...this.state.boundingPolySeries.slice(0, deletedIndex),
+        ...this.state.boundingPolySeries.slice(deletedIndex + 1)
+      ]
+    });
+  }
+
+  handleChangeBoundingBox(allPolys, editedIndex) {
+    this.setState({
+      boundingPolySeries: [
+
+      ]
+    });
+  }
+
   render() {
     return (
       <div style={{ width: this.props.width }}>
-        <MediaPlayer {...this.props} ref={this.playerRef} />
+        <MediaPlayer
+          {...this.props}
+          boundingPolySeries={this.state.boundingPolySeries}
+          onBoundingBoxChange={this.handleBoundingBoxChange}
+          ref={this.playerRef}
+        />
         <DefaultControlBar playerRef={this.playerRef} />
       </div>
     );
@@ -231,6 +305,19 @@ storiesOf('MediaPlayer', module)
         width: 500,
         fluid: false,
         poster: demoPosterImage
+      }}
+    />
+  ))
+  .add('Editable', () => (
+    <BaseStory
+      componentClass={Story}
+      componentProps={{
+        muted: true,
+        autoPlay: true,
+        streams: multipleStreams,
+        boundingPolySeries: timeSeries,
+        fluid: true,
+        readOnly: false
       }}
     />
   ));

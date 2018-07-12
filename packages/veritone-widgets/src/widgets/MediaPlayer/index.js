@@ -75,14 +75,20 @@ class MediaPlayerComponent extends React.Component {
     fluid: true
   };
 
-  handleBoundingBoxChange = (allPolys, newPoly) => {
-    this.props.onBoundingBoxChange(allPolys, newPoly, {
+  handleBoundingBoxChange = (changes) => {
+    this.props.onBoundingBoxChange({
+      ...changes,
       currentTime: this.props.currentTime
     });
   };
 
   render() {
     const { src, streams, ...props } = this.props;
+
+    const currentPolys = getPolysForTime(
+      this.props.boundingPolySeries || [],
+      this.props.currentTime * 1000
+    );
 
     return (
       <OverlayPositioningProvider
@@ -97,15 +103,10 @@ class MediaPlayerComponent extends React.Component {
             overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
             overlayBorderStyle={this.props.overlayBorderStyle}
             initialBoundingBoxPolys={
-              this.props.boundingPolySeries
-                ? getPolysForTime(
-                    this.props.boundingPolySeries,
-                    this.props.currentTime * 1000
-                  )
-                : undefined
+              this.props.boundingPolySeries ? currentPolys : undefined
             }
             readOnly={this.props.readOnly || !this.props.paused}
-            key={this.props.currentTime}
+            key={JSON.stringify(currentPolys)}
           />
         )}
         <Player
