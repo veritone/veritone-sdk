@@ -420,7 +420,9 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        selectedEngineCategory: payload
+        selectedEngineCategory: {
+          ...payload
+        }
       }
     };
   },
