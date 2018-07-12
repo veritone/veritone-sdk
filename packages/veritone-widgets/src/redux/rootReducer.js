@@ -37,8 +37,7 @@ const {
   config: { reducer: configReducer, namespace: configNamespace },
   auth: { reducer: authReducer, namespace: authNamespace },
   engine: { reducer: engineReducer, namespace: engineNamespace },
-  application: { reducer: applicationReducer, namespace: applicationNamespace },
-  savedSearch: { reducer: savedSearchReducer, namespace: savedSearchNamespace }
+  application: { reducer: applicationReducer, namespace: applicationNamespace }
 } = modules;
 
 import appReducer, { namespace as appNamespace } from './modules/veritoneApp';

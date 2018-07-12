@@ -48,14 +48,7 @@ export default class DateTimePicker extends React.Component {
           onChange={this.handleTimeChange}
         />
         {this.props.showTimezone && (
-          <TextField
-            className={styles.dateTimeTZ}
-            value={getTimeZone(this.props.input.value)}
-            InputProps={{
-              disableUnderline: true
-            }}
-            disabled
-          />
+          <TimeZoneField value={getTimeZone(this.props.input.value)} />
         )}
       </div>
     );
@@ -103,8 +96,27 @@ TimeSelector.propTypes = {
   onChange: func.isRequired
 };
 
+const TimeZoneField = ({ value }) => {
+  return value ? (
+    <TextField
+      className={styles.dateTimeTZ}
+      value={value}
+      InputProps={{
+        disableUnderline: true
+      }}
+      disabled
+    />
+  ) : (
+    undefined
+  );
+};
+
+TimeZoneField.propTypes = {
+  value: string.isRequired
+};
+
 function consolidate(dateString, timeString) {
-  return dateFns.parse(dateString + 'T' + timeString + ':00');
+  return dateFns.parse(`${dateString}T${timeString}:00`);
 }
 
 function getDateString(date) {
@@ -121,7 +133,8 @@ function getTimeZone(date) {
     tzDate = new Date();
   }
   if (dateFns.isDate(tzDate)) {
-    let dateString = tzDate.toTimeString();
-    return dateString.slice(-4, -1);
+    const tzMatch = tzDate.toTimeString().match(/\(([^)]+)\)$/);
+
+    return tzMatch ? tzMatch[1] : '';
   }
 }
