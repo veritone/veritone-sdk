@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import update from 'immutability-helper';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { createTheming } from 'react-jss';
+import { JssProvider } from 'react-jss'
 
 import {
   TranscriptSearchModal,
@@ -712,7 +712,11 @@ export class SampleSearchBar extends React.Component {
   }
 
   showLoadSavedSearch = (e) => {
-    this.props.loadSavedSearch.open();
+    if(!this.loadSavedSearchWidget) {
+      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP});
+    }
+
+    this.loadSavedSearchWidget.open();
   }
 
   hideLoadSavedSearch = (e) => {
@@ -724,7 +728,7 @@ export class SampleSearchBar extends React.Component {
   showSavedSearch = (e) => {
     if(!this.savedSearchWidget) {
       const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp, onClose: this.hideSavedSearch});
+      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
     }
 
     this.savedSearchWidget.open();
@@ -737,35 +741,40 @@ export class SampleSearchBar extends React.Component {
   }
 
   render() {
-    const themingA = createTheming('__THEME_A__')
-    const {ThemeProvider: ThemeProviderA} = themingA
-
     return (
-      <ThemeProviderA>
-        <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
-          <SearchBarContainer
-            auth={this.state.auth}
-            color={this.props.color}
-            enabledEngineCategories={this.extendEngineCategories(
-              this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-            )}
-            onSearch={this.onSearch}
-            api={this.props.api}
-            libraries={this.state.libraries}
-            searchParameters={this.state.searchParameters}
-            addOrModifySearchParameter={this.addOrModifySearchParameter}
-            insertMultipleSearchParameters={this.insertMultipleSearchParameters}
-            removeSearchParameter={this.removeSearchParameter}
-            resetSearchParameters={this.resetSearchParameters}
-            getCSP={this.getCSP}
-            menuActions={this.props.menuActions}
-            showLoadSavedSearch={ this.showLoadSavedSearch }
-            showSavedSearch={ this.showSavedSearch }
-          />
+      <Fragment>
+        <JssProvider classNamePrefix="vsdk">
+          <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
+            <SearchBarContainer
+              auth={this.state.auth}
+              color={this.props.color}
+              enabledEngineCategories={this.extendEngineCategories(
+                this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
+              )}
+              onSearch={this.onSearch}
+              api={this.props.api}
+              libraries={this.state.libraries}
+              searchParameters={this.state.searchParameters}
+              addOrModifySearchParameter={this.addOrModifySearchParameter}
+              insertMultipleSearchParameters={this.insertMultipleSearchParameters}
+              removeSearchParameter={this.removeSearchParameter}
+              resetSearchParameters={this.resetSearchParameters}
+              getCSP={this.getCSP}
+              menuActions={this.props.menuActions}
+              showLoadSavedSearch={ this.showLoadSavedSearch }
+              showSavedSearch={ this.showSavedSearch }
+            />
+          </MuiThemeProvider>
+        </JssProvider>
+        <MuiThemeProvider theme={{
+          typography: {
+            htmlFontSize: this.props.relativeSize || 13
+          }
+        }}>
           <div id="LoadSavedSearch"> </div>
           <div id="SaveSearch"> </div>
         </MuiThemeProvider>
-      </ThemeProviderA>
+      </Fragment>
     );
   }
 }
