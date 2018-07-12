@@ -57,7 +57,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
-import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
 
@@ -100,7 +99,7 @@ const programLiveImageNullState =
       mediaDetailsModule.isUserGeneratedTranscriptEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
-    isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
@@ -207,10 +206,12 @@ class MediaDetailsWidget extends React.Component {
               confidence: number,
               text: string
             }),
-            boundingPoly: arrayOf(shape({
-              x: number,
-              y: number
-            }))
+            boundingPoly: arrayOf(
+              shape({
+                x: number,
+                y: number
+              })
+            )
           })
         )
       })
@@ -532,7 +533,9 @@ class MediaDetailsWidget extends React.Component {
     const isFetchingEngineResults = this.props.isFetchingEngineResults;
     const hasEngineResults =
       get(selectedEngineResults, 'length') &&
-      some(selectedEngineResults, engineResult => get(engineResult, 'series.length'));
+      some(selectedEngineResults, engineResult =>
+        get(engineResult, 'series.length')
+      );
     const isRealTimeEngine =
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||
