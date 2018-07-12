@@ -8,7 +8,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 // import {} from 'lodash';
 
-export default class OverlayToolBar extends React.Component {
+export default class OverlayToolBar extends React.PureComponent {
   static propTypes = {
     visible: bool,
     children: node,

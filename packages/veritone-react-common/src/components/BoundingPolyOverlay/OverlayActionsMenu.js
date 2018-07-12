@@ -7,7 +7,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 import OverlayToolBar from './OverlayToolBar';
 
-export default class OverlayActionsMenu extends React.Component {
+export default class OverlayActionsMenu extends React.PureComponent {
   static propTypes = {
     visible: bool,
     onMinimize: func,

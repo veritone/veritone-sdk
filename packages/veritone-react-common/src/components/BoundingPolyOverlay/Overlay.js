@@ -1,5 +1,6 @@
 import React from 'react';
-import { isNumber } from 'lodash';
+import { isNumber, isEqual } from 'lodash';
+import memoize from 'memoize-one';
 import {
   arrayOf,
   bool,
@@ -77,19 +78,33 @@ export default class Overlay extends React.Component {
   };
 
   state = {
-    boundingBoxPositions: this.props.initialBoundingBoxPolys.map(poly =>
-      percentagePolyToPixelXYWidthHeight(
-        poly,
-        this.props.overlayPositioningContext.width,
-        this.props.overlayPositioningContext.height
-      )
-    ),
+    boundingBoxPositions: [], // set in getDerivedStateFromProps
     focusedBoundingBoxIndex: null,
     stagedBoundingBoxPosition: {},
     userMinimizedConfirmMenu: false,
     userActingOnBoundingBox: false,
     drawingInitialBoundingBox: false
   };
+
+  static getDerivedStateFromProps(props) {
+    return {
+      boundingBoxPositions: Overlay.mapPolysToInternalFormat(
+        props.initialBoundingBoxPolys,
+        props.overlayPositioningContext.width,
+        props.overlayPositioningContext.height
+      )
+    };
+  }
+
+  // memoize so we don't update/render on every video frame
+  /* eslint-disable-next-line react/sort-comp */
+  static mapPolysToInternalFormat = memoize(
+    (polys, width, height) =>
+      polys.map(poly =>
+        percentagePolyToPixelXYWidthHeight(poly, width, height)
+      ),
+    isEqual
+  );
 
   handleResize = (e, direction, ref, delta, position) => {
     this.removeStagedBoundingBox();
@@ -190,17 +205,15 @@ export default class Overlay extends React.Component {
   };
 
   confirmStagedBoundingBox = () => {
-    this.props.onBoundingBoxChange(
-      {
-        allPolys: this.toPercentageBasedPoly([
-          ...this.state.boundingBoxPositions,
-          this.state.stagedBoundingBoxPosition
-        ]),
-        newPoly: this.toPercentageBasedPoly([
-          this.state.stagedBoundingBoxPosition
-        ])[0]
-      }
-    );
+    this.props.onBoundingBoxChange({
+      allPolys: this.toPercentageBasedPoly([
+        ...this.state.boundingBoxPositions,
+        this.state.stagedBoundingBoxPosition
+      ]),
+      newPoly: this.toPercentageBasedPoly([
+        this.state.stagedBoundingBoxPosition
+      ])[0]
+    });
 
     this.removeStagedBoundingBox();
   };
@@ -290,6 +303,11 @@ export default class Overlay extends React.Component {
     this.props.onBoundingBoxChange({
       allPolys: this.toPercentageBasedPoly(result),
       deletedIndex: this.state.focusedBoundingBoxIndex
+    });
+
+    this.setState({
+      userActingOnBoundingBox: false,
+      focusedBoundingBoxIndex: null,
     });
   };
 

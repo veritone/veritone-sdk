@@ -106,7 +106,6 @@ class MediaPlayerComponent extends React.Component {
               this.props.boundingPolySeries ? currentPolys : undefined
             }
             readOnly={this.props.readOnly || !this.props.paused}
-            key={JSON.stringify(currentPolys)}
           />
         )}
         <Player
