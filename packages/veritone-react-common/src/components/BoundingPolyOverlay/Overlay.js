@@ -92,7 +92,7 @@ export default class Overlay extends React.Component {
   };
 
   handleResize = (e, direction, ref, delta, position) => {
-    this.removeUnconfirmedBoundingBox();
+    this.removeStagedBoundingBox();
 
     this.setState(state => {
       const focusedIndex = ref.getAttribute('data-boxindex');
@@ -133,7 +133,7 @@ export default class Overlay extends React.Component {
   };
 
   handleDragExistingBox = () => {
-    this.removeUnconfirmedBoundingBox();
+    this.removeStagedBoundingBox();
 
     this.setState({ userActingOnBoundingBox: true });
   };
@@ -166,7 +166,7 @@ export default class Overlay extends React.Component {
 
   handleClickBox = e => {
     e.stopPropagation();
-    this.removeUnconfirmedBoundingBox();
+    this.removeStagedBoundingBox();
 
     // fixme: try to ignore clicks that are the result of mouseup after resize/drag
     const focusedIndex = e.target.getAttribute('data-boxindex');
@@ -198,9 +198,11 @@ export default class Overlay extends React.Component {
       // second arg is just the added box
       this.toPercentageBasedPoly([this.state.stagedBoundingBoxPosition])[0]
     );
+
+    this.removeStagedBoundingBox();
   };
 
-  removeUnconfirmedBoundingBox = () => {
+  removeStagedBoundingBox = () => {
     // delete staged box
     this.setState({
       stagedBoundingBoxPosition: {}
@@ -424,7 +426,7 @@ export default class Overlay extends React.Component {
               visible={showingConfirmMenu}
               confirmLabel={this.props.confirmLabel}
               onConfirm={this.confirmStagedBoundingBox}
-              onCancel={this.removeUnconfirmedBoundingBox}
+              onCancel={this.removeStagedBoundingBox}
               onMinimize={this.minimizeConfirmMenu}
               bottomOffset={this.props.toolBarOffset}
             />
