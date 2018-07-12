@@ -36,12 +36,9 @@ export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
 export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
-export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
 export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
 export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
-export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
-  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
 export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
@@ -49,6 +46,7 @@ export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
+export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 
 export const namespace = 'mediaDetails';
 
@@ -75,7 +73,8 @@ const defaultMDPState = {
     confirmButtonLabel: 'Save',
     nextAction: noop
   },
-  editButtonDisabled: false
+  editButtonDisabled: false,
+  showTranscriptBulkEditSnack: false
 };
 
 const defaultState = {};
@@ -647,7 +646,22 @@ export default createReducer(defaultState, {
         editButtonDisabled
       }
     };
-  }
+  },
+  [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](
+    state,
+    {
+      showTranscriptBulkEditSnack,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        showTranscriptBulkEditSnack
+      }
+    };
+  },
 });
 
 const local = state => state[namespace];
@@ -684,6 +698,8 @@ export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const editButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'editButtonDisabled']);
+export const showTranscriptBulkEditSnack = (state, widgetId) =>
+  get(local(state), [widgetId, 'showTranscriptBulkEditSnack']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -835,11 +851,6 @@ export const createFileAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createBulkEditTranscriptAssetSuccess = widgetId => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
-  meta: { widgetId }
-});
-
 export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
   type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
   meta: { error, widgetId }
@@ -873,5 +884,11 @@ export const discardUnsavedChanges = () => ({
 export const setEditButtonState = (widgetId, editButtonDisabled) => ({
   type: SET_EDIT_BUTTON_STATE,
   editButtonDisabled,
+  meta: { widgetId }
+});
+
+export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulkEditSnack) => ({
+  type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
+  showTranscriptBulkEditSnack,
   meta: { widgetId }
 });

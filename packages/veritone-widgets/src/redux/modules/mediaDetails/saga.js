@@ -77,14 +77,14 @@ import {
   saveAssetDataFailure,
   createFileAssetSuccess,
   createFileAssetFailure,
-  createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
   toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
   setEditButtonState,
-  getSelectedEngineId
+  getSelectedEngineId,
+  setShowTranscriptBulkEditSnackState
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -880,7 +880,7 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
 
-  return yield put(createBulkEditTranscriptAssetSuccess(widgetId));
+  return yield put(setShowTranscriptBulkEditSnackState(widgetId, true));
 }
 
 function* watchUpdateTdoContentTemplates() {

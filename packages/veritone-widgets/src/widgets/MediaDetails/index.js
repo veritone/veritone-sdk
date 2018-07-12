@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
+import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Grow from '@material-ui/core/Grow';
@@ -101,7 +102,8 @@ const programLiveImageNullState =
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
-    editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id)
+    editButtonDisabled: mediaDetailsModule.editButtonDisabled(state, id),
+    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -117,7 +119,8 @@ const programLiveImageNullState =
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
-    setEditButtonState: mediaDetailsModule.setEditButtonState
+    setEditButtonState: mediaDetailsModule.setEditButtonState,
+    setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState
   },
   null,
   { withRef: true }
@@ -304,7 +307,9 @@ class MediaDetailsWidget extends React.Component {
     discardUnsavedChanges: func,
     isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
-    editButtonDisabled: bool
+    editButtonDisabled: bool,
+    setShowTranscriptBulkEditSnackState: func,
+    showTranscriptBulkEditSnack: bool
   };
 
   static contextTypes = {
@@ -622,6 +627,26 @@ class MediaDetailsWidget extends React.Component {
       return false;
     }
     return true;
+  };
+
+  closeTranscriptBulkEditSnack = () => {
+    this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
+  };
+
+  renderTranscriptBulkEditSnack = () => {
+    return (
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={this.props.showTranscriptBulkEditSnack}
+        autoHideDuration={5000}
+        onClose={this.closeTranscriptBulkEditSnack}
+        message={
+          <span className={styles.snackbarMessageText}>
+            {`Bulk edit transcript will run in the background and may take some time to finish.`}
+          </span>
+        }
+      />
+    );
   };
 
   render() {
@@ -1042,7 +1067,6 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
-                        onSave={this.onSaveEdit}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1198,6 +1222,8 @@ class MediaDetailsWidget extends React.Component {
                 onSubmit={this.updateContentTemplates}
               />
             )}
+
+          {this.renderTranscriptBulkEditSnack()}
         </Paper>
       </FullScreenDialog>
     );
