@@ -136,11 +136,11 @@ const demoPosterImage =
 
 class Story extends React.Component {
   /* eslint-disable react/prop-types */
-  playerRef = React.createRef();
-
   state = {
     boundingPolySeries: this.props.boundingPolySeries
   };
+
+  playerRef = React.createRef();
 
   handleBoundingBoxChange = ({
     allPolys,
@@ -156,7 +156,7 @@ class Story extends React.Component {
       return this.handleDeleteBoundingBox(deletedIndex);
     }
 
-    this.handleChangeBoundingBox(allPolys, currentTime * 1000)
+    this.handleChangeBoundingBox(allPolys, currentTime * 1000);
     // if editing an existing poly, find the matching time series object and edit it
     // for that whole period
   };
@@ -171,7 +171,7 @@ class Story extends React.Component {
 
     const firstRelevantTimeSeries = relevantTimeSeriesObjects[0];
 
-    this.setState({
+    this.setState(state => ({
       boundingPolySeries: [
         {
           startTimeMs: firstRelevantTimeSeries
@@ -184,25 +184,28 @@ class Story extends React.Component {
             boundingPoly: newPoly
           }
         },
-        ...this.state.boundingPolySeries
+        ...state.boundingPolySeries
       ]
-    });
+    }));
   }
 
   handleDeleteBoundingBox(deletedIndex) {
-    this.setState({
+    this.setState(state => ({
       boundingPolySeries: [
-        ...this.state.boundingPolySeries.slice(0, deletedIndex),
-        ...this.state.boundingPolySeries.slice(deletedIndex + 1)
+        ...state.boundingPolySeries.slice(0, deletedIndex),
+        ...state.boundingPolySeries.slice(deletedIndex + 1)
       ]
-    });
+    }));
   }
 
-  handleChangeBoundingBox(allPolys, editedIndex) {
-    this.setState({
-      boundingPolySeries: [
+  handleChangeBoundingBox(allPolys, currentTime) {
+    // const relevantTimeSeriesObjects = this.state.boundingPolySeries.filter(
+    //   ({ startTimeMs, stopTimeMs }) =>
+    //     startTimeMs <= currentTime && currentTime <= stopTimeMs
+    // );
 
-      ]
+    this.setState({
+      boundingPolySeries: []
     });
   }
 
