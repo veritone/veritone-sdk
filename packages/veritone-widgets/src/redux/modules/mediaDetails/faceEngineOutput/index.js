@@ -33,7 +33,8 @@ import {
   pick,
   flatten,
   noop,
-  reduce
+  reduce,
+  cloneDeep
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -193,6 +194,7 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       facesRemovedByUser: {
+        ...state.facesRemovedByUser,
         [selectedEngineId]: [
           ...(state.facesRemovedByUser[selectedEngineId] || []),
           {
@@ -425,9 +427,9 @@ export const getFaces = createSelector(
 
 /* HELPERS */
 export const getFaceEngineAssetData = (state, engineId) => {
-  const engineResults = getFaceDataByEngine(state, engineId);
-  const userDetectedFaces = getUserDetectedFaces(state, engineId);
-  const userRemovedFaces = getUserRemovedFaces(state, engineId);
+  const engineResults = cloneDeep(getFaceDataByEngine(state, engineId));
+  const userDetectedFaces = cloneDeep(getUserDetectedFaces(state, engineId)) || [];
+  const userRemovedFaces = cloneDeep(getUserRemovedFaces(state, engineId)) || [];
 
   const allJsonData = addUserDetectedFaces(
     engineResults,
