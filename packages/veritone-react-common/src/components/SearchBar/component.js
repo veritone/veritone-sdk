@@ -1,6 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { createTheming } from 'react-jss';
 
 import {
   TranscriptSearchModal,
@@ -711,15 +712,13 @@ export class SampleSearchBar extends React.Component {
   }
 
   showLoadSavedSearch = (e) => {
-    if(!this.loadSavedSearchWidget) {
-      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP, onClose: this.hideLoadSavedSearch});
-    }
-
-    this.loadSavedSearchWidget.open();
+    this.props.loadSavedSearch.open();
   }
 
   hideLoadSavedSearch = (e) => {
-    this.cleanupLoadSavedSearch();
+    if(this.loadSavedSearchWidget) {
+      this.loadSavedSearchWidget.close();
+    }
   }
 
   showSavedSearch = (e) => {
@@ -732,34 +731,41 @@ export class SampleSearchBar extends React.Component {
   }
 
   hideSavedSearch = (e) => {
-    this.cleanupSavedSearch();
+    if(this.savedSearchWidget) {
+      this.savedSearchWidget.close();
+    }
   }
 
   render() {
+    const themingA = createTheming('__THEME_A__')
+    const {ThemeProvider: ThemeProviderA} = themingA
+
     return (
-      <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
-        <SearchBarContainer
-          auth={this.state.auth}
-          color={this.props.color}
-          enabledEngineCategories={this.extendEngineCategories(
-            this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-          )}
-          onSearch={this.onSearch}
-          api={this.props.api}
-          libraries={this.state.libraries}
-          searchParameters={this.state.searchParameters}
-          addOrModifySearchParameter={this.addOrModifySearchParameter}
-          insertMultipleSearchParameters={this.insertMultipleSearchParameters}
-          removeSearchParameter={this.removeSearchParameter}
-          resetSearchParameters={this.resetSearchParameters}
-          getCSP={this.getCSP}
-          menuActions={this.props.menuActions}
-          showLoadSavedSearch={ this.showLoadSavedSearch }
-          showSavedSearch={ this.showSavedSearch }
-        />
-        <div id="LoadSavedSearch"> </div>
-        <div id="SaveSearch"> </div>
-      </MuiThemeProvider>
+      <ThemeProviderA>
+        <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
+          <SearchBarContainer
+            auth={this.state.auth}
+            color={this.props.color}
+            enabledEngineCategories={this.extendEngineCategories(
+              this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
+            )}
+            onSearch={this.onSearch}
+            api={this.props.api}
+            libraries={this.state.libraries}
+            searchParameters={this.state.searchParameters}
+            addOrModifySearchParameter={this.addOrModifySearchParameter}
+            insertMultipleSearchParameters={this.insertMultipleSearchParameters}
+            removeSearchParameter={this.removeSearchParameter}
+            resetSearchParameters={this.resetSearchParameters}
+            getCSP={this.getCSP}
+            menuActions={this.props.menuActions}
+            showLoadSavedSearch={ this.showLoadSavedSearch }
+            showSavedSearch={ this.showSavedSearch }
+          />
+          <div id="LoadSavedSearch"> </div>
+          <div id="SaveSearch"> </div>
+        </MuiThemeProvider>
+      </ThemeProviderA>
     );
   }
 }

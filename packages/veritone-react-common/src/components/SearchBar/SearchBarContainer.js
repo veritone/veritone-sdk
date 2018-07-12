@@ -414,14 +414,14 @@ class SearchBarContainer extends React.Component {
       customMenuActions = {};
     } else {
       customMenuActions = [
-        ...customMenuActions,
-        { label: 'Save Search', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } } ,
+        { label: 'Save Search Profile', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } } ,
+        ...customMenuActions
       ]
     }
 
     const menuActions = [
+      { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
       ...customMenuActions,
-      { label: 'Load Saved Search', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
       { divider: true },
       { label: 'Reset Search Bar', onClick: this.resetSearchParameters }
     ]
