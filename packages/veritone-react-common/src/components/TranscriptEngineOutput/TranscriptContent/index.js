@@ -237,6 +237,7 @@ export default class TranscriptContent extends Component {
   renderSnippetSegments = parsedData => {
     const {
       editMode,
+      viewType,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
@@ -257,6 +258,7 @@ export default class TranscriptContent extends Component {
               key={'transcript-snippet' + segmentData.startTimeMs}
               content={segmentData}
               editMode={editMode}
+              showSegmentTime={viewType == View.TIME}
               onChange={this.handleDataChanged}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
