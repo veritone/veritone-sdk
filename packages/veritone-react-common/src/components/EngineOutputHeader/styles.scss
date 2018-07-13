@@ -35,6 +35,19 @@
     margin-left: 20px;
   }
 
+  .moreMenuButton {
+    margin-left: 10px;
+    height: 40px;
+    width: 40px;
+  }
+
+  .moreMenuItem {
+    color: $dark-black !important;
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    line-height: 16px !important;
+  }
+
   .actionIconDivider {
     margin: 0 4px 0 20px;
     background-color: $grey-4;

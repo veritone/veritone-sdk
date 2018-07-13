@@ -204,6 +204,10 @@ export default class TranscriptEngineOutput extends Component {
     );
   }
 
+  restoreOriginalTranscript = () => {
+    console.log('restoreOriginalTranscript has been called');
+  };
+
   renderHeader() {
     const {
       title,
@@ -216,6 +220,7 @@ export default class TranscriptEngineOutput extends Component {
       viewTypeSelectionEnabled
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
+    const moreMenuOptions = [{ label: 'Restore Original', action: this.restoreOriginalTranscript }];
     return (
       <EngineOutputHeader
         title={title}
@@ -225,6 +230,8 @@ export default class TranscriptEngineOutput extends Component {
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
+        showMoreMenuButton={!editMode && selectedEngine && selectedEngine.hasUserEdits}
+        moreMenuOptions={moreMenuOptions}
       >
         <div className={classNames(styles.controllers)}>
           {editMode && (this.renderEditOptions())}
