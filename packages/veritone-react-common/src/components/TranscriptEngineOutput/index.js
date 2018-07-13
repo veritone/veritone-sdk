@@ -68,13 +68,15 @@ export default class TranscriptEngineOutput extends Component {
     outputNullState: node,
     bulkEditEnabled: bool,
     showingUserEditedOutput: bool,
-    onToggleUserEditedOutput: func
+    onToggleUserEditedOutput: func,
+    viewTypeSelectionEnabled: bool
   };
 
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
     editType: Edit.SNIPPET,
+    viewTypeSelectionEnabled: false,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -174,6 +176,34 @@ export default class TranscriptEngineOutput extends Component {
     );
   }
 
+  renderViewOptions() {
+    return (
+      <Select
+        autoWidth
+        value={this.state.viewType}
+        className={styles.outputHeaderSelect}
+        onChange={this.handleViewChange}
+        MenuProps={{
+          anchorOrigin: {
+            horizontal: 'center',
+            vertical: 'bottom'
+          },
+          transformOrigin: {
+            horizontal: 'center'
+          },
+          getContentAnchorEl: null
+        }}
+      >
+        <MenuItem value={View.TIME} className={classNames(styles.selectMenuItem)}>
+          Time
+        </MenuItem>
+        <MenuItem value={View.OVERVIEW} className={classNames(styles.selectMenuItem)}>
+          Overview
+        </MenuItem>
+      </Select>
+    );
+  }
+
   renderHeader() {
     const {
       title,
@@ -182,7 +212,8 @@ export default class TranscriptEngineOutput extends Component {
       editMode,
       onEngineChange,
       onExpandClick,
-      headerClassName
+      headerClassName,
+      viewTypeSelectionEnabled
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
     return (
@@ -198,6 +229,7 @@ export default class TranscriptEngineOutput extends Component {
         <div className={classNames(styles.controllers)}>
           {editMode && (this.renderEditOptions())}
           {!editMode && selectedEngine && selectedEngine.hasUserEdits && (this.renderResultOptions())}
+          {!editMode && viewTypeSelectionEnabled && (this.renderViewOptions())}
         </div>
       </EngineOutputHeader>
     );
