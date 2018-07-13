@@ -410,19 +410,41 @@ class SearchBarContainer extends React.Component {
         }
       })) || {} ;
 
+    console.log(this.props);
+
+    // don't show custom menu actions if there are no search parameters
     if(!this.props.searchParameters || this.props.searchParameters.length === 0) {
       customMenuActions = {};
-    } else {
+    }
+    // if there are search parameters and savedSearch is not disabled, add them as extra options
+    if(this.props.disableSavedSearch) {
       customMenuActions = [
-        { label: 'Save Search Profile', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } } ,
-        ...customMenuActions
+        ...customMenuActions,
+      ]
+    } else {
+      if(this.props.searchParameters && this.props.searchParameters.length > 0) {
+        customMenuActions = [
+          { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
+          { label: 'Save Search Profile', onClick: (e) => { this.props.showSavedSearch(e); this.handleMenuClose() } },
+          ...customMenuActions,
+        ]
+      } else {
+        customMenuActions = [
+          { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
+          ...customMenuActions,
+        ]
+      }
+    }
+
+    if(customMenuActions && customMenuActions.length > 0) {
+      customMenuActions = [
+        ...customMenuActions,
+        { divider: true },
       ]
     }
 
     const menuActions = [
-      { label: 'Load Search Profile', onClick: (e) => { this.props.showLoadSavedSearch(e); this.handleMenuClose() } },
       ...customMenuActions,
-      { divider: true },
       { label: 'Reset Search Bar', onClick: this.resetSearchParameters }
     ]
 
@@ -628,6 +650,7 @@ class SearchBarContainer extends React.Component {
             openMenu={this.handleMenuOpen}
             openMenuExtraActions={ this.openMenuExtraActions }
             resetSearchParameters={this.resetSearchParameters}
+            disabledSavedSearch={ this.props.disabledSavedSearch }
           />
           <Menu
             open={ Boolean(this.state.menuAnchorEl) }
