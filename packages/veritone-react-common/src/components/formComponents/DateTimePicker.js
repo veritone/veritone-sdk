@@ -129,12 +129,15 @@ function getTimeString(date) {
 
 function getTimeZone(date) {
   let tzDate = date;
-  if (isString(tzDate)) {
-    tzDate = new Date();
-  }
   if (dateFns.isDate(tzDate)) {
     const tzMatch = tzDate.toTimeString().match(/\(([^)]+)\)$/);
-
-    return tzMatch ? tzMatch[1] : '';
+    if (tzMatch && tzMatch.length > 1) {
+      const tzParts = tzMatch[1].split(' ');
+      if (tzParts.length > 1) {
+        return tzParts.map(part => part[0]).join('');
+      }
+      return tzMatch[1];
+    }
   }
+  return '';
 }
