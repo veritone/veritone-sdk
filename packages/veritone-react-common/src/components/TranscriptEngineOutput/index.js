@@ -22,12 +22,12 @@ export default class TranscriptEngineOutput extends Component {
         status: string,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
             guid: string,
             words: arrayOf(
               shape({
-                word: string,
+                word: string.isRequired,
                 confidence: number
               })
             )
@@ -39,8 +39,8 @@ export default class TranscriptEngineOutput extends Component {
     selectedEngineId: string,
     engines: arrayOf(
       shape({
-        id: string,
-        name: string
+        id: string.isRequired,
+        name: string.isRequired
       })
     ),
     title: string,

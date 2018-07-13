@@ -77,17 +77,18 @@ export default class SnippetSegment extends Component {
       stopMediaPlayHeadMs
     } = this.props;
 
-    const contentComponents = content.fragments.map((entry, index) => {
+    const contentComponents = content.fragments.map(entry => {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
+      const value = entry.value || '';
       const fragmentKey = entry.guid ?
         entry.guid :
-        `snippet-fragment-${startTime}-${stopTime}-${entry.value ? entry.value.substr(0, 32) : ''}`;
+        `snippet-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
 
       return (
         <SnippetFragment
           key={fragmentKey}
-          value={entry.value}
+          value={value}
           active={
             !(
               stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
