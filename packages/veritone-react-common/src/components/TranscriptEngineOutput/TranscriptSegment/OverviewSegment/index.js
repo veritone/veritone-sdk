@@ -45,16 +45,14 @@ export default class OverviewSegment extends Component {
       stopMediaPlayHeadMs
     } = this.props;
 
-    const readContents = [];
-    content.fragments.forEach(entry => {
+    const readContents = content.fragments.map(entry => {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
       const value = entry.value || '';
       const fragmentKey = entry.guid ?
         entry.guid :
         `overview-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
-
-      readContents.push(
+      return (
         <OverviewFragment
           key={fragmentKey}
           content={entry}
