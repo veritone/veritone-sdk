@@ -24,7 +24,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some } from 'lodash';
+import { find, get, some, includes } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -618,12 +618,11 @@ class MediaDetailsWidget extends React.Component {
     if (!this.isEditableEngineResults()) {
       return false;
     }
-    const selectedCategoryType = get(this.props.selectedEngineCategory, 'categoryType');
+    const editableCategoryTypes = ['face', 'transcript'];
     const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
-    if (selectedCategoryType === 'face' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedOutput) {
-      return false;
-    }
-    if (selectedCategoryType === 'transcript' && get(selectedEngine, 'hasUserEdits') && !this.props.isDisplayingUserEditedOutput) {
+    if (includes(editableCategoryTypes, this.props.selectedEngineCategory.categoryType) &&
+      get(selectedEngine, 'hasUserEdits') &&
+      !this.props.isDisplayingUserEditedOutput) {
       return false;
     }
     return true;
