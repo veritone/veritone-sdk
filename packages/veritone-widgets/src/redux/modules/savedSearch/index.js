@@ -5,27 +5,47 @@ import { get } from 'lodash';
 export const namespace = 'savedsearch';
 
 export const SAVE_SEARCH_PROFILE = 'vtn/savedSearch/SAVE_SEARCH_PROFILE';
-export const SAVE_SEARCH_PROFILE_SUCCESS = 'vtn/savedSearch/SAVE_SEARCH_PROFILE_SUCCESS';
-export const SAVE_SEARCH_PROFILE_FAILURE = 'vtn/savedSearch/SAVE_SEARCH_PROFILE_FAILURE';
+export const SAVE_SEARCH_PROFILE_SUCCESS =
+  'vtn/savedSearch/SAVE_SEARCH_PROFILE_SUCCESS';
+export const SAVE_SEARCH_PROFILE_FAILURE =
+  'vtn/savedSearch/SAVE_SEARCH_PROFILE_FAILURE';
 
 export const REPLACE_SEARCH_PROFILE = 'vtn/savedSearch/REPLACE_SEARCH_PROFILE';
-export const REPLACE_SEARCH_PROFILE_SUCCESS = 'vtn/savedSearch/REPLACE_SEARCH_PROFILE_SUCCESS';
-export const REPLACE_SEARCH_PROFILE_FAILURE = 'vtn/savedSearch/REPLACE_SEARCH_PROFILE_FAILURE';
+export const REPLACE_SEARCH_PROFILE_SUCCESS =
+  'vtn/savedSearch/REPLACE_SEARCH_PROFILE_SUCCESS';
+export const REPLACE_SEARCH_PROFILE_FAILURE =
+  'vtn/savedSearch/REPLACE_SEARCH_PROFILE_FAILURE';
 
 export const GET_SEARCH_PROFILES = 'vtn/savedSearch/GET_SEARCH_PROFILES';
-export const GET_SEARCH_PROFILES_SUCCESS = 'vtn/savedSearch/GET_SEARCH_PROFILES_SUCCESS';
-export const GET_SEARCH_PROFILES_FAILURE = 'vtn/savedSearch/GET_SEARCH_PROFILES_FAILURE';
+export const GET_SEARCH_PROFILES_SUCCESS =
+  'vtn/savedSearch/GET_SEARCH_PROFILES_SUCCESS';
+export const GET_SEARCH_PROFILES_FAILURE =
+  'vtn/savedSearch/GET_SEARCH_PROFILES_FAILURE';
 
-export const GET_SEARCH_PROFILES_COUNT = 'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT';
-export const GET_SEARCH_PROFILES_COUNT_SUCCESS = 'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT_SUCCESS';
-export const GET_SEARCH_PROFILES_COUNT_FAILURE = 'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT_FAILURE';
+export const GET_SEARCH_PROFILES_COUNT =
+  'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT';
+export const GET_SEARCH_PROFILES_COUNT_SUCCESS =
+  'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT_SUCCESS';
+export const GET_SEARCH_PROFILES_COUNT_FAILURE =
+  'vtn/savedSearch/GET_SEARCH_PROFILES_COUNT_FAILURE';
 
-const defaultState = {
+export const DELETE_SEARCH_PROFILE = 'vtn/savedSearch/DELETE_SEARCH_PROFILE';
+export const DELETE_SEARCH_PROFILE_SUCCESS =
+  'vtn/savedSearch/DELETE_SEARCH_PROFILE_SUCCESS';
+export const DELETE_SEARCH_PROFILE_FAILURE =
+  'vtn/savedSearch/DELETE_SEARCH_PROFILE_FAILURE';
+
+export const RESET_SEARCH_PROFILES = 'vtn/savedSearch/RESET_SEARCH_PROFILES';
+
+const getDefaultState = () => ({
   isSaving: false,
   isDuplicate: false,
   savingFailed: false,
+
   duplicateProfileName: '',
   duplicateProfileId: '',
+  duplicateProfileShared: false,
+
   mySearchProfiles: [],
   loadedMySearchProfiles: new Set(),
   mySearchProfilesCount: null,
@@ -43,7 +63,7 @@ const defaultState = {
   orgSearchProfilesFilterByName: null,
   orgSearchProfilesSortBy: 'createdDate',
   orgSearchProfilesSortDirection: 'desc'
-};
+});
 
 const resetMySearchProfiles = state => ({
   ...state,
@@ -69,7 +89,7 @@ const resetOrgSearchProfiles = state => ({
   orgSearchProfilesSortDirection: 'desc'
 });
 
-const reducer = createReducer(defaultState, {
+const reducer = createReducer(getDefaultState(), {
   [SAVE_SEARCH_PROFILE](state, action) {
     return {
       ...state,
@@ -77,6 +97,7 @@ const reducer = createReducer(defaultState, {
       isDuplicate: false,
       duplicateProfileName: undefined,
       duplicateProfileId: undefined,
+      duplicateProfileShared: undefined,
       savingFailed: false
     };
   },
@@ -89,13 +110,17 @@ const reducer = createReducer(defaultState, {
     };
   },
   [SAVE_SEARCH_PROFILE_FAILURE](state, action) {
-    const isDuplicate = action.payload[0].data.validationErrors[0].message.includes('saved search with this name already exists');
+    const isDuplicate = action.payload[0].data.validationErrors[0].message.includes(
+      'saved search with this name already exists'
+    );
     return {
       ...state,
       isSaving: false,
       isDuplicate: isDuplicate,
       duplicateProfileName: isDuplicate && action.meta.variables.input.name,
-      duplicateProfileId: action.payload[0].data.createSavedSearch.id,
+      duplicateProfileId:
+        action.payload[0].data.validationErrors[0].duplicateId,
+      duplicateProfileShared: isDuplicate && action.meta.variables.input.shared,
       savingFailed: true
     };
   },
@@ -112,6 +137,9 @@ const reducer = createReducer(defaultState, {
       ...state,
       isSaving: false,
       isDuplicate: false,
+      duplicateProfileName: undefined,
+      duplicateProfileId: undefined,
+      duplicateProfileShared: false,
       savingFailed: false
     };
   },
@@ -119,53 +147,69 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       isSaving: false,
-      isDuplicate: false,
+      isDuplicate: true,
       savingFailed: true
     };
   },
   [GET_SEARCH_PROFILES](state, action) {
-    if(!action.meta.variables.shared) {
+    if (!action.meta.variables.shared) {
       // if the search, or sort changed, reset the search profiles
-      if(state.mySearchProfilesFilterByName !== action.meta.variables.searchByProfileName) {
+      if (
+        state.mySearchProfilesFilterByName !==
+        action.meta.variables.searchByProfileName
+      ) {
         return resetMySearchProfiles(state);
-      } else if (state.mySearchProfilesSortBy !== action.meta.variables.sortBy) {
+      } else if (
+        state.mySearchProfilesSortBy !== action.meta.variables.sortBy
+      ) {
         return resetMySearchProfiles(state);
-      } else if (state.mySearchProfilesSortDirection !== action.meta.variables.sortDirection) {
+      } else if (
+        state.mySearchProfilesSortDirection !==
+        action.meta.variables.sortDirection
+      ) {
         return resetMySearchProfiles(state);
       } else {
         return {
           ...state,
           mySearchProfilesCount: 0,
           loadingMySearchProfiles: true,
-          loadingMySearchProfilesFailed: false,
+          loadingMySearchProfilesFailed: false
         };
       }
     } else {
       // if the search, or sort changed, reset the search profiles
-      if(state.orgSearchProfilesFilterByName !== action.meta.variables.searchByProfileName) {
+      if (
+        state.orgSearchProfilesFilterByName !==
+        action.meta.variables.searchByProfileName
+      ) {
         return resetOrgSearchProfiles(state);
-      } else if (state.orgSearchProfilesSortBy !== action.meta.variables.sortBy) {
+      } else if (
+        state.orgSearchProfilesSortBy !== action.meta.variables.sortBy
+      ) {
         return resetOrgSearchProfiles(state);
-      } else if (state.orgSearchProfilesSortDirection !== action.meta.variables.sortDirection) {
+      } else if (
+        state.orgSearchProfilesSortDirection !==
+        action.meta.variables.sortDirection
+      ) {
         return resetOrgSearchProfiles(state);
       } else {
         return {
           ...state,
           orgSearchProfilesCount: 0,
           loadingOrgSearchProfiles: true,
-          loadingOrgSearchProfilesFailed: false,
+          loadingOrgSearchProfilesFailed: false
         };
       }
     }
   },
-  [GET_SEARCH_PROFILES_SUCCESS](state, action){
-    if(!action.meta.variables.shared) {
+  [GET_SEARCH_PROFILES_SUCCESS](state, action) {
+    if (!action.meta.variables.shared) {
       const mySearchProfiles = state.mySearchProfiles;
       const loadedMySearchProfiles = state.loadedMySearchProfiles;
-      get(action.payload, 'savedSearches.records').map( (record) => {
-        if(!loadedMySearchProfiles.has(record.id)) {
+      get(action.payload, 'savedSearches.records').map(record => {
+        if (!loadedMySearchProfiles.has(record.id)) {
           loadedMySearchProfiles.add(record.id);
-          mySearchProfiles.push(record)
+          mySearchProfiles.push(record);
         }
       });
       return {
@@ -182,10 +226,10 @@ const reducer = createReducer(defaultState, {
     } else {
       const orgSearchProfiles = state.orgSearchProfiles;
       const loadedOrgSearchProfiles = state.loadedOrgSearchProfiles;
-      get(action.payload, 'savedSearches.records').map( (record) => {
-        if(!loadedOrgSearchProfiles.has(record.id)) {
+      get(action.payload, 'savedSearches.records').map(record => {
+        if (!loadedOrgSearchProfiles.has(record.id)) {
           loadedOrgSearchProfiles.add(record.id);
-          orgSearchProfiles.push(record)
+          orgSearchProfiles.push(record);
         }
       });
       return {
@@ -194,7 +238,8 @@ const reducer = createReducer(defaultState, {
         loadingOrgSearchProfiles: false,
         loadingOrgSearchProfilesFailed: false,
         loadedOrgSearchProfiles,
-        orgSearchProfilesFilterByName: action.meta.variables.searchByProfileName,
+        orgSearchProfilesFilterByName:
+          action.meta.variables.searchByProfileName,
         orgSearchProfilesSortBy: action.meta.variables.sortBy,
         orgSearchProfilesSortDirection: action.meta.variables.sortDirection,
         orgSearchProfiles
@@ -203,51 +248,80 @@ const reducer = createReducer(defaultState, {
   },
   [GET_SEARCH_PROFILES_FAILURE](state, action) {
     // need to blow away results when a paginated search fails, because react-virtualized memoizes which rows it has tried to load
-    if(!action.meta.variables.shared) {
+    if (!action.meta.variables.shared) {
       return resetMySearchProfiles(state);
     } else {
       return resetOrgSearchProfiles(state);
     }
   },
   [GET_SEARCH_PROFILES_COUNT](state, action) {
-    if(!action.meta.variables.shared) {
+    if (!action.meta.variables.shared) {
       return {
         ...state,
-        mySearchProfilesCount: 0
-      }
+        mySearchProfilesCount: null
+      };
     } else {
       return {
         ...state,
-        orgSearchProfilesCount: 0
-      }
+        orgSearchProfilesCount: null
+      };
     }
   },
   [GET_SEARCH_PROFILES_COUNT_SUCCESS](state, action) {
-    if(!action.meta.variables.shared) {
+    if (!action.meta.variables.shared) {
       return {
         ...state,
         mySearchProfilesCount: get(action.payload, 'savedSearches.count')
-      }
+      };
     } else {
       return {
         ...state,
         orgSearchProfilesCount: get(action.payload, 'savedSearches.count')
-      }
+      };
     }
   },
   [GET_SEARCH_PROFILES_COUNT_FAILURE](state, action) {
-    if(!action.meta.variables.shared) {
+    if (!action.meta.variables.shared) {
       return {
         ...state,
-        mySearchProfilesCount: 0
-      }
+        mySearchProfilesCount: null
+      };
     } else {
       return {
         ...state,
-        orgSearchProfilesCount: 0
-      }
+        orgSearchProfilesCount: null
+      };
     }
   },
+  [DELETE_SEARCH_PROFILE_SUCCESS](state, action) {
+    const deletedId = get(action.payload, 'deleteSavedSearch.id');
+    const orgSearchProfiles = state.orgSearchProfiles.map(
+      x => {
+        if (x.id === deletedId) {
+          return { ...x, deleted: true };
+        } else {
+          return x;
+        }
+      }
+    );
+    const mySearchProfiles = state.mySearchProfiles.map(
+      x => {
+        if (x.id === deletedId) {
+          return { ...x, deleted: true };
+        } else {
+          return x;
+        }
+      }
+    );
+    return {
+      ...state,
+      orgSearchProfiles,
+      mySearchProfiles,
+    };
+  },
+  [RESET_SEARCH_PROFILES](state, action) {
+    return getDefaultState();
+  }
 });
 
 export default reducer;
@@ -256,98 +330,148 @@ function local(state) {
   return state[namespace];
 }
 
-export const isDuplicate = (state) => {
+export const resetSearchProfiles = () => ({ type: RESET_SEARCH_PROFILES });
+
+// duplicate profile
+export const isDuplicate = state => {
   return local(state).isDuplicate;
-}
+};
 
-export const duplicateProfileName = (state) => {
+export const duplicateProfileName = state => {
   return local(state).duplicateProfileName;
-}
+};
 
-export const duplicateProfileId = (state) => {
+export const duplicateProfileId = state => {
   return local(state).duplicateProfileId;
-}
+};
+
+export const duplicateProfileShared = state => {
+  return local(state).duplicateProfileShared;
+};
 
 // my search profiles
-export const mySearchProfiles = (state) => {
+export const mySearchProfiles = state => {
   return local(state).mySearchProfiles;
-}
+};
 
-export const loadingMySearchProfiles = (state) => {
+export const loadingMySearchProfiles = state => {
   return local(state).loadingMySearchProfiles;
-}
+};
 
-export const loadedMySearchProfiles = (state) => {
+export const loadedMySearchProfiles = state => {
   return local(state).loadedMySearchProfiles;
-}
+};
 
-export const mySearchProfilesCount = (state) => {
+export const mySearchProfilesCount = state => {
   return local(state).mySearchProfilesCount;
-}
+};
 
-export const mySearchProfilesSortBy = (state) => {
+export const mySearchProfilesSortBy = state => {
   return local(state).mySearchProfilesSortBy;
-}
+};
 
-export const mySearchProfilesSortDirection = (state) => {
+export const mySearchProfilesSortDirection = state => {
   return local(state).mySearchProfilesSortDirection;
-}
+};
 
-export const mySearchProfilesFilterByName = (state) => {
+export const mySearchProfilesFilterByName = state => {
   return local(state).mySearchProfilesFilterByName;
-}
+};
 // org search profiles
-export const orgSearchProfiles = (state) => {
+export const orgSearchProfiles = state => {
   return local(state).orgSearchProfiles;
-}
+};
 
-export const loadingOrgSearchProfiles = (state) => {
+export const loadingOrgSearchProfiles = state => {
   return local(state).loadingOrgSearchProfiles;
-}
+};
 
-export const loadedOrgSearchProfiles = (state) => {
+export const loadedOrgSearchProfiles = state => {
   return local(state).loadedOrgSearchProfiles;
-}
+};
 
-export const orgSearchProfilesCount = (state) => {
+export const orgSearchProfilesCount = state => {
   return local(state).orgSearchProfilesCount;
-}
+};
 
-export const orgSearchProfilesSortBy = (state) => {
+export const orgSearchProfilesSortBy = state => {
   return local(state).orgSearchProfilesSortBy;
-}
+};
 
-export const orgSearchProfilesSortDirection = (state) => {
+export const orgSearchProfilesSortDirection = state => {
   return local(state).orgSearchProfilesSortDirection;
-}
+};
 
-export const orgSearchProfilesFilterByName = (state) => {
+export const orgSearchProfilesFilterByName = state => {
   return local(state).orgSearchProfilesFilterByName;
-}
+};
 
-export const getSearchProfilesCount = ({ sortBy='createdDateTime', sortDirection='desc', searchByProfileName="", shared=false} = {}) => async (dispatch, getState) => {
+export const getSearchProfilesCount = ({
+  sortBy = 'createdDateTime',
+  sortDirection = 'desc',
+  searchByProfileName = '',
+  shared = false
+} = {}) => async (dispatch, getState) => {
   const query = `
     query($shared: Boolean, $searchByProfileName: String) {
-      savedSearches(includeShared: $shared, filterByName: $searchByProfileName) {
+      savedSearches(includeShared: $shared, filterByName: $searchByProfileName, limit: 999) {
         count
       }
-    }`
+    }`;
 
   const response = await callGraphQL({
-    actionTypes: [GET_SEARCH_PROFILES_COUNT, GET_SEARCH_PROFILES_COUNT_SUCCESS, GET_SEARCH_PROFILES_COUNT_FAILURE] ,
+    actionTypes: [
+      GET_SEARCH_PROFILES_COUNT,
+      GET_SEARCH_PROFILES_COUNT_SUCCESS,
+      GET_SEARCH_PROFILES_COUNT_FAILURE
+    ],
     query,
     variables: {
       shared,
-      searchByProfileName,
+      searchByProfileName
     },
     dispatch,
     getState
   });
 
   return response;
-}
+};
 
-export const loadSearchProfiles = ({ sortBy='createdDateTime', sortDirection='desc', searchByProfileName="", limit=20, offset=0, shared=false} = {}) => async (dispatch, getState) => {
+export const deleteSearchProfile = ({ id }) => async (dispatch, getState) => {
+  const query = `
+    mutation DeleteSavedSearch($id: ID!) {
+      deleteSavedSearch(id: $id) {
+        id,
+        message
+      }
+    }
+  `;
+  const response = await callGraphQL({
+    actionTypes: [
+      DELETE_SEARCH_PROFILE,
+      DELETE_SEARCH_PROFILE_SUCCESS,
+      DELETE_SEARCH_PROFILE_FAILURE
+    ],
+    query,
+    variables: {
+      id
+    },
+    dispatch,
+    getState
+  });
+
+  // no message is a success
+  return !response.message;
+};
+
+export const loadSearchProfiles = ({
+  sortBy = 'createdDateTime',
+  sortDirection = 'desc',
+  searchByProfileName = '',
+  limit = 20,
+  offset = 0,
+  shared = false
+} = {}) => async (dispatch, getState) => {
   const query = `
   query($shared: Boolean, $sortBy: SavedSearchOrderBy, $sortDirection: OrderDirection, $searchByProfileName: String, $limit: Int, $offset: Int ) {
     totalRecords: savedSearches(includeShared: $shared, orderBy: createdDateTime, filterByName: $searchByProfileName, limit: 999, offset: 0) {
@@ -368,10 +492,14 @@ export const loadSearchProfiles = ({ sortBy='createdDateTime', sortDirection='de
         }
       }
     }
-  }`
+  }`;
 
   const response = await callGraphQL({
-    actionTypes: [GET_SEARCH_PROFILES, GET_SEARCH_PROFILES_SUCCESS, GET_SEARCH_PROFILES_FAILURE] ,
+    actionTypes: [
+      GET_SEARCH_PROFILES,
+      GET_SEARCH_PROFILES_SUCCESS,
+      GET_SEARCH_PROFILES_FAILURE
+    ],
     query,
     variables: {
       shared,
@@ -386,9 +514,13 @@ export const loadSearchProfiles = ({ sortBy='createdDateTime', sortDirection='de
   });
 
   return response;
-}
+};
 
-export const saveSearchProfile = ( {csp, name, sharedWithOrganization} ) => async (dispatch, getState) => {
+export const saveSearchProfile = ({
+  csp,
+  name,
+  sharedWithOrganization
+}) => async (dispatch, getState) => {
   const query = `
     mutation CreateSavedSearch($input: CreateSavedSearch!) {
       createSavedSearch(input: $input) {
@@ -399,7 +531,11 @@ export const saveSearchProfile = ( {csp, name, sharedWithOrganization} ) => asyn
     }
   `;
   const response = await callGraphQL({
-    actionTypes: [SAVE_SEARCH_PROFILE, SAVE_SEARCH_PROFILE_SUCCESS, SAVE_SEARCH_PROFILE_FAILURE] ,
+    actionTypes: [
+      SAVE_SEARCH_PROFILE,
+      SAVE_SEARCH_PROFILE_SUCCESS,
+      SAVE_SEARCH_PROFILE_FAILURE
+    ],
     query,
     variables: {
       input: {
@@ -413,10 +549,14 @@ export const saveSearchProfile = ( {csp, name, sharedWithOrganization} ) => asyn
   });
 
   return !!response.createSavedSearch;
-}
+};
 
-
-export const replaceSearchProfile = ( {id, csp, name, sharedWithOrganization} ) => async (dispatch, getState) => {
+export const replaceSearchProfile = ({
+  id,
+  csp,
+  name,
+  sharedWithOrganization
+}) => async (dispatch, getState) => {
   const query = `
     mutation ReplaceSavedSearch($input: ReplaceSavedSearch!) {
       replaceSavedSearch(input: $input) {
@@ -427,7 +567,11 @@ export const replaceSearchProfile = ( {id, csp, name, sharedWithOrganization} ) 
     }
   `;
   const response = await callGraphQL({
-    actionTypes: [REPLACE_SEARCH_PROFILE, REPLACE_SEARCH_PROFILE_SUCCESS, REPLACE_SEARCH_PROFILE_FAILURE] ,
+    actionTypes: [
+      REPLACE_SEARCH_PROFILE,
+      REPLACE_SEARCH_PROFILE_SUCCESS,
+      REPLACE_SEARCH_PROFILE_FAILURE
+    ],
     query,
     variables: {
       input: {
@@ -442,4 +586,4 @@ export const replaceSearchProfile = ( {id, csp, name, sharedWithOrganization} ) 
   });
 
   return !!response.replaceSavedSearch;
-}
+};
