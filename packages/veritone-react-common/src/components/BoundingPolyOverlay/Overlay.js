@@ -39,6 +39,7 @@ export default class Overlay extends React.Component {
   static propTypes = {
     confirmLabel: string,
     readOnly: bool,
+    addOnly: bool,
     overlayPositioningContext: shape({
       top: number.isRequired,
       left: number.isRequired,
@@ -70,6 +71,7 @@ export default class Overlay extends React.Component {
   static defaultProps = {
     confirmLabel: 'Add',
     readOnly: false,
+    addOnly: false,
     initialBoundingBoxPolys: [],
     toolBarOffset: 0,
     overlayBackgroundColor: '#FF6464',
@@ -181,6 +183,11 @@ export default class Overlay extends React.Component {
 
   handleClickBox = e => {
     e.stopPropagation();
+
+    if (this.props.readOnly || this.props.addOnly) {
+      return;
+    }
+
     this.removeStagedBoundingBox();
 
     // fixme: try to ignore clicks that are the result of mouseup after resize/drag
@@ -394,19 +401,23 @@ export default class Overlay extends React.Component {
               // do not let this box interfere with mouse events as we draw out
               // the initial bounding box
               pointerEvents:
-                this.props.readOnly || this.state.drawingInitialBoundingBox
+                this.props.readOnly ||
+                this.props.addOnly ||
+                this.state.drawingInitialBoundingBox
                   ? 'none'
                   : 'auto'
             }}
             size={{ width, height }}
             position={{ x, y }}
-            onDragStart={this.handleDragStart}
             onDragStop={this.handleDragExistingBoxStop}
             onDrag={this.handleDragExistingBox}
             onResize={this.handleResize}
             onResizeStop={this.handleResizeStop}
+            disableDragging={this.props.readOnly || this.props.addOnly}
             enableResizing={
-              !this.props.readOnly && this.state.focusedBoundingBoxIndex === i
+              !this.props.readOnly &&
+              !this.props.addOnly &&
+              this.state.focusedBoundingBoxIndex === i
                 ? undefined
                 : false
             }
@@ -457,6 +468,7 @@ export default class Overlay extends React.Component {
           )}
 
         {showingActionsMenu &&
+          !this.props.addOnly &&
           !this.props.readOnly && (
             <OverlayActionsMenu
               visible={showingActionsMenu}

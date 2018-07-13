@@ -255,6 +255,22 @@ storiesOf('MediaPlayer', module)
     />
   ))
 
+  .add('Add Only mode', () => (
+    <BaseStory
+      componentClass={Story}
+      componentProps={{
+        muted: true,
+        autoPlay: true,
+        streams: dashStream,
+        width: 800,
+        height: 300,
+        fluid: false,
+        boundingPolySeries: timeSeries,
+        addOnly: true
+      }}
+    />
+  ))
+
   .add('HLS', () => (
     <BaseStory
       componentClass={Story}

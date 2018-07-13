@@ -51,6 +51,7 @@ class MediaPlayerComponent extends React.Component {
     onBoundingBoxChange: func,
     overlayBorderStyle: string,
     readOnly: bool,
+    addOnly: bool,
     width: number,
     height: number,
     // fluid = 100% width by default, see video-react docs
@@ -105,6 +106,7 @@ class MediaPlayerComponent extends React.Component {
             initialBoundingBoxPolys={
               this.props.boundingPolySeries ? currentPolys : undefined
             }
+            addOnly={this.props.addOnly}
             readOnly={this.props.readOnly || !this.props.paused}
           />
         )}
