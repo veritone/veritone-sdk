@@ -38,10 +38,6 @@
       margin-left: 20px;
       float: right;
     }
-
-    .selectMenuItem {
-      font-size: 14px !important;
-    }
   }
 
   .content {
@@ -50,4 +46,8 @@
     width: 100%;
     height: calc(100% - 75px);
   }
+}
+
+.selectMenuItem {
+  font-size: 14px !important;
 }
