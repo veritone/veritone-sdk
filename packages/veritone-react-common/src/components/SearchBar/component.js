@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import update from 'immutability-helper';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { JssProvider } from 'react-jss'
+import JssProvider from 'react-jss/lib/JssProvider';
 
 import {
   TranscriptSearchModal,
@@ -696,7 +696,7 @@ export class SampleSearchBar extends React.Component {
   getTheme = ( { color, relativeSize } ) => {
     const theme = createMuiTheme({
       typography: {
-        htmlFontSize: relativeSize || 13,
+        htmlFontSize: 12,
         subheading: {
           fontSize: "1.2em"
         }
@@ -729,6 +729,10 @@ export class SampleSearchBar extends React.Component {
     if(!this.savedSearchWidget) {
       const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
       this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
+    } else {
+      this.cleanupSavedSearch();
+      const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
+      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
     }
 
     this.savedSearchWidget.open();
@@ -743,8 +747,8 @@ export class SampleSearchBar extends React.Component {
   render() {
     return (
       <Fragment>
-        <JssProvider classNamePrefix="vsdk">
-          <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
+        <JssProvider classNamePrefix="vsdk1">
+          <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: 12 } ) }>
             <SearchBarContainer
               auth={this.state.auth}
               color={this.props.color}
@@ -767,14 +771,8 @@ export class SampleSearchBar extends React.Component {
             />
           </MuiThemeProvider>
         </JssProvider>
-        <MuiThemeProvider theme={{
-          typography: {
-            htmlFontSize: this.props.relativeSize || 13
-          }
-        }}>
-          <div id="LoadSavedSearch"> </div>
-          <div id="SaveSearch"> </div>
-        </MuiThemeProvider>
+        <div id="LoadSavedSearch"> </div>
+        <div id="SaveSearch"> </div>
       </Fragment>
     );
   }
