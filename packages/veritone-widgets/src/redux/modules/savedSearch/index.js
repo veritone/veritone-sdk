@@ -258,12 +258,12 @@ const reducer = createReducer(getDefaultState(), {
     if (!action.meta.variables.shared) {
       return {
         ...state,
-        mySearchProfilesCount: 0
+        mySearchProfilesCount: null
       };
     } else {
       return {
         ...state,
-        orgSearchProfilesCount: 0
+        orgSearchProfilesCount: null
       };
     }
   },
@@ -284,36 +284,39 @@ const reducer = createReducer(getDefaultState(), {
     if (!action.meta.variables.shared) {
       return {
         ...state,
-        mySearchProfilesCount: 0
+        mySearchProfilesCount: null
       };
     } else {
       return {
         ...state,
-        orgSearchProfilesCount: 0
+        orgSearchProfilesCount: null
       };
     }
   },
   [DELETE_SEARCH_PROFILE_SUCCESS](state, action) {
     const deletedId = get(action.payload, 'deleteSavedSearch.id');
-    const orgSearchProfiles = state.orgSearchProfiles.filter(
-      x => x.id !== deletedId
+    const orgSearchProfiles = state.orgSearchProfiles.map(
+      x => {
+        if (x.id === deletedId) {
+          return { ...x, deleted: true };
+        } else {
+          return x;
+        }
+      }
     );
-    const mySearchProfiles = state.mySearchProfiles.filter(
-      x => x.id !== deletedId
+    const mySearchProfiles = state.mySearchProfiles.map(
+      x => {
+        if (x.id === deletedId) {
+          return { ...x, deleted: true };
+        } else {
+          return x;
+        }
+      }
     );
-    const loadedOrgSearchProfiles = new Set();
-    const loadedMySearchProfiles = new Set();
-
-    orgSearchProfiles.forEach(record => loadedOrgSearchProfiles.add(record.id));
-    mySearchProfiles.forEach(record => loadedMySearchProfiles.add(record.id));
     return {
       ...state,
       orgSearchProfiles,
-      orgSearchProfilesCount: state.orgSearchProfilesCount--,
-      loadedOrgSearchProfiles,
       mySearchProfiles,
-      mySearchProfilesCount: state.mySearchProfilesCount--,
-      loadedMySearchProfiles
     };
   },
   [RESET_SEARCH_PROFILES](state, action) {
