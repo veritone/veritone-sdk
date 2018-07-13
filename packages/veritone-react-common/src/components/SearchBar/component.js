@@ -751,6 +751,7 @@ export class SampleSearchBar extends React.Component {
               enabledEngineCategories={this.extendEngineCategories(
                 this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
               )}
+              disableSavedSearch={this.props.disableSavedSearch}
               onSearch={this.onSearch}
               api={this.props.api}
               libraries={this.state.libraries}
