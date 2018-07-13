@@ -148,23 +148,6 @@ const SearchParameters = withTheme()(({theme, searchParameters, level, togglePil
   return output;
 });
 
-/*
-const SearchBar = ({
-  color,
-  searchParameters,
-  enabledEngineCategories,
-  addPill,
-  openPill,
-  removePill,
-  highlightedPills,
-  togglePill,
-  onSearch,
-  libraries,
-  openMenu,
-  resetSearchParameters
-}) => {
-*/
-
 class SearchBar extends React.Component {
 
   state = {
