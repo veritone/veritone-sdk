@@ -7,21 +7,40 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-
   color: $min-black;
 
   .controllers {
     width: 100%;
     font-size: 14px;
 
-    .radioButton {
+    .radioButtonGroup {
+      @include mui-text('body1');
       float: left;
     }
 
-    .viewDropdown {
+    .radioLabel {
+      @include mui-text('body1');
+    }
+
+    .radioLabelRoot {
+      margin-bottom: 0;
+      margin-right: 30px;
+    }
+
+    .radioRoot {
+      svg {
+        font-size: 20px;
+      }
+    }
+
+    .outputHeaderSelect {
       @include mui-text('body1');
       margin-left: 20px;
       float: right;
+    }
+
+    .selectMenuItem {
+      font-size: 14px !important;
     }
   }
 
@@ -31,8 +50,4 @@
     width: 100%;
     height: calc(100% - 75px);
   }
-}
-
-.view {
-  font-size: 14px !important;
 }

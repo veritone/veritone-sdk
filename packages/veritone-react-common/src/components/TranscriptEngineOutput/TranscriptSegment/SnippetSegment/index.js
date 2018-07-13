@@ -24,7 +24,8 @@ export default class SnippetSegment extends Component {
     className: string,
     timeClassName: string,
     contentClassName: string,
-    sentenceMode: bool,
+    isSentenceMode: bool,
+    showSegmentTime: bool,
     editMode: bool,
     onClick: func,
     onChange: func,
@@ -34,7 +35,8 @@ export default class SnippetSegment extends Component {
 
   static defaultProps = {
     editMode: false,
-    sentenceMode: false,
+    isSentenceMode: false,
+    showSegmentTime: false,
     startMediaPlayHeadMs: 0,
     stopMediaPlayHeadMs: 1000
   };
@@ -55,7 +57,7 @@ export default class SnippetSegment extends Component {
     }
   };
 
-  renderTime(startTime) {
+  renderTime() {
     const { content, timeClassName } = this.props;
 
     const formatedTime = msToReadableString(content.startTimeMs, true);
@@ -140,12 +142,12 @@ export default class SnippetSegment extends Component {
   }
 
   render() {
-    const { className, sentenceMode } = this.props;
+    const { className, isSentenceMode, showSegmentTime } = this.props;
 
     return (
       <div className={classNames(styles.transcriptSegment, className)}>
-        {this.renderTime()}
-        {sentenceMode ? this.renderSentence() : this.renderFragments()}
+        {showSegmentTime && this.renderTime()}
+        {isSentenceMode ? this.renderSentence() : this.renderFragments()}
       </div>
     );
   }
