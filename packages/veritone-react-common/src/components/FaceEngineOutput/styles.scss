@@ -88,6 +88,11 @@
 
   &:hover {
     cursor: pointer;
+    background-color: $grey-2 !important;
+  }
+
+  &:active {
+    box-shadow: none !important;
   }
 }
 
