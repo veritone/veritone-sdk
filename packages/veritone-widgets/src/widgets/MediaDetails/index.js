@@ -651,7 +651,6 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleOnRestoreOriginalClick = () => {
-    console.log('handleOnRestoreOriginalClick clicked');
     const { id, tdo, selectedEngineId, selectedEngineResults } = this.props;
     this.props.restoreOriginalEngineResults(id, tdo, selectedEngineId, selectedEngineResults);
   };

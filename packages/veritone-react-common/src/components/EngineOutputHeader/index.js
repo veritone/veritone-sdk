@@ -69,9 +69,9 @@ class EngineOutputHeader extends Component {
     });
   };
 
-  onMoreMenuItemClick = (onMenuItemClickAction) => {
+  onMoreMenuItemClick = (evt) => {
     this.toggleIsMoreMenuOpen();
-    onMenuItemClickAction();
+    this.props.moreMenuOptions[evt.target.value].action();
   };
 
   renderMoreMenu = () => {
@@ -116,7 +116,7 @@ class EngineOutputHeader extends Component {
                         <MenuItem
                           key={`more-menu-item-${option.label}`}
                           classes={{ root: styles.moreMenuItem }}
-                          onClick={() => {this.toggleIsMoreMenuOpen(); option.action()}}
+                          onClick={this.onMoreMenuItemClick}
                         >
                           {option.label}
                         </MenuItem>
