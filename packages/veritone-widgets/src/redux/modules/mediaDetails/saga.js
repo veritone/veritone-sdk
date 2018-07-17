@@ -58,6 +58,7 @@ import {
   SAVE_ASSET_DATA,
   CREATE_FILE_ASSET_SUCCESS,
   TOGGLE_EDIT_MODE,
+  RESTORE_ORIGINAL_ENGINE_RESULTS,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadTdoRequest,
@@ -84,7 +85,8 @@ import {
   refreshEngineRunsSuccess,
   setEditButtonState,
   getSelectedEngineId,
-  setShowTranscriptBulkEditSnackState
+  setShowTranscriptBulkEditSnackState,
+  restoreOriginalEngineResultsFailure
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -356,6 +358,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   }
 
   yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
+  yield call(insertIntoIndexSaga, tdoId);
 }
 
 function* loadContentTemplates(widgetId) {
@@ -1005,6 +1008,46 @@ function* fetchSchemas(widgetId, schemaIds) {
   });
 }
 
+function* watchRestoreOriginalEngineResults() {
+  yield takeEvery(RESTORE_ORIGINAL_ENGINE_RESULTS, function*(action) {
+    const { widgetId } = action.meta;
+    const { tdo } = action.payload;
+
+    const engineResultsToDeleteAssets = get(action.payload, 'engineResults', [])
+      .filter(jsonData => jsonData.userEdited && !!jsonData.assetId);
+    const assetsToDelete = uniq(engineResultsToDeleteAssets.map(jsonData => jsonData.assetId));
+    if (!assetsToDelete.length) {
+      return;
+    }
+
+    const deleteAssetsResponse = yield call(deleteAssetsSaga, uniq(assetsToDelete));
+    if (deleteAssetsResponse.errors) {
+      // report errors and continue refetching engine results and runs
+      yield put(restoreOriginalEngineResultsFailure, { error: 'Errors deleting user edited engine results for selected engine' });
+    }
+
+    yield call(refreshEngineRuns, widgetId, tdo.id);
+
+    const refreshEngineResultCalls = [];
+    uniq(engineResultsToDeleteAssets.map(jsonData => jsonData.sourceEngineId))
+      .forEach(engineId => {
+        refreshEngineResultCalls.push(
+          put(
+            engineResultsModule.fetchEngineResults({
+              tdo,
+              engineId,
+              startOffsetMs: 0,
+              stopOffsetMs: Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+            })
+          )
+        );
+      });
+    yield all(refreshEngineResultCalls);
+
+    yield call(insertIntoIndexSaga, tdo.id);
+  });
+}
+
 function* watchLoadEngineResultsComplete() {
   yield takeEvery(engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS, function*(
     action
@@ -1217,7 +1260,6 @@ function* watchSetEngineId() {
       return;
     }
 
-    // TODO: Currently fetching the entire tdo assets. Will eventually use mediaplayer time etc to fetch the required data
     const currentTdo = yield select(getTdo, widgetId);
     const startOfTdo = new Date(currentTdo.startDateTime).getTime();
     const endOfTdo = new Date(currentTdo.stopDateTime).getTime();
@@ -1371,6 +1413,17 @@ function* watchSaveAssetData() {
 }
 
 function* watchCreateFileAssetSuccess() {
+  yield takeEvery(
+    action => action.type === CREATE_FILE_ASSET_SUCCESS,
+    function* insertIntoIndex(action) {
+      const { widgetId } = action.meta;
+      const tdo = yield select(getTdo, widgetId);
+      return yield call(insertIntoIndexSaga, tdo.id);
+    }
+  );
+}
+
+function* insertIntoIndexSaga(tdoId) {
   const createJobQuery = `mutation createJob($tdoId: ID!) {
     createJob(input: {
       targetId: $tdoId,
@@ -1388,40 +1441,33 @@ function* watchCreateFileAssetSuccess() {
     }
   }`;
 
-  yield takeEvery(
-    action => action.type === CREATE_FILE_ASSET_SUCCESS,
-    function* insertIntoIndex(action) {
-      const { widgetId } = action.meta;
-      const config = yield select(configModule.getConfig);
-      const { apiRoot, graphQLEndpoint } = config;
-      const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-      const sessionToken = yield select(authModule.selectSessionToken);
-      const oauthToken = yield select(authModule.selectOAuthToken);
-      const token = sessionToken || oauthToken;
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
 
-      try {
-        const tdo = yield select(getTdo, widgetId);
-        const response = yield call(callGraphQLApi, {
-          endpoint: graphQLUrl,
-          query: createJobQuery,
-          variables: { tdoId: tdo.id },
-          token
-        });
+  try {
+    const response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: createJobQuery,
+      variables: { tdoId: tdoId },
+      token
+    });
 
-        if (!get(response, 'data.createJob.id')) {
-          throw new Error('Failed to create insert-into-index task.');
-        }
-        if (
-          isEmpty(get(response, 'data.createJob.tasks.records')) ||
-          !get(response, 'data.createJob.tasks.records[0].id')
-        ) {
-          throw new Error('Failed to create insert-into-index task.');
-        }
-      } catch (error) {
-        // return yield put(insertIntoIndexFailure(widgetId, { error }));
-      }
+    if (!get(response, 'data.createJob.id')) {
+      throw new Error('Failed to create insert-into-index task.');
     }
-  );
+    if (
+      isEmpty(get(response, 'data.createJob.tasks.records')) ||
+      !get(response, 'data.createJob.tasks.records[0].id')
+    ) {
+      throw new Error('Failed to create insert-into-index task.');
+    }
+  } catch (error) {
+    // return yield put(insertIntoIndexFailure(widgetId, { error }));
+  }
 }
 
 function* watchCancelEdit() {
@@ -1484,6 +1530,7 @@ export default function* root({ id, mediaId }) {
     fork(watchCancelEdit),
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
+    fork(watchRestoreOriginalEngineResults),
     fork(onMount, id, mediaId)
   ]);
 }

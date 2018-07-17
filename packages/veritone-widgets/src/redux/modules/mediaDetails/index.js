@@ -47,6 +47,8 @@ export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
 export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS = 'RESTORE_ORIGINAL_ENGINE_RESULTS';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE = 'RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -664,6 +666,13 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS](
+    state
+  ) {
+    return {
+      ...state
+    };
+  },
 });
 
 const local = state => state[namespace];
@@ -893,4 +902,19 @@ export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulk
   type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
   showTranscriptBulkEditSnack,
   meta: { widgetId }
+});
+
+export const restoreOriginalEngineResults = (widgetId, tdo, selectedEngineId, engineResults) => ({
+  type: RESTORE_ORIGINAL_ENGINE_RESULTS,
+  payload: {
+    tdo,
+    selectedEngineId,
+    engineResults
+  },
+  meta: { widgetId }
+});
+
+export const restoreOriginalEngineResultsFailure = (widgetId, { error }) => ({
+  type: RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE,
+  meta: { error, widgetId }
 });

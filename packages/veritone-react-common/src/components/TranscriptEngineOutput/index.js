@@ -58,6 +58,7 @@ export default class TranscriptEngineOutput extends Component {
     onScroll: func,
     onEngineChange: func,
     onExpandClick: func,
+    onRestoreOriginalClick: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -204,10 +205,6 @@ export default class TranscriptEngineOutput extends Component {
     );
   }
 
-  restoreOriginalTranscript = () => {
-    console.log('restoreOriginalTranscript has been called');
-  };
-
   renderHeader() {
     const {
       title,
@@ -216,11 +213,12 @@ export default class TranscriptEngineOutput extends Component {
       editMode,
       onEngineChange,
       onExpandClick,
+      onRestoreOriginalClick,
       headerClassName,
       viewTypeSelectionEnabled
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
-    const moreMenuOptions = [{ label: 'Restore Original', action: this.restoreOriginalTranscript }];
+    const moreMenuOptions = [{ label: 'Restore Original', action: onRestoreOriginalClick }];
     return (
       <EngineOutputHeader
         title={title}

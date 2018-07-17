@@ -120,7 +120,8 @@ const programLiveImageNullState =
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
-    setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState
+    setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState,
+    restoreOriginalEngineResults: mediaDetailsModule.restoreOriginalEngineResults
   },
   null,
   { withRef: true }
@@ -309,7 +310,8 @@ class MediaDetailsWidget extends React.Component {
     setEditButtonState: func,
     isEditButtonDisabled: bool,
     setShowTranscriptBulkEditSnackState: func,
-    showTranscriptBulkEditSnack: bool
+    showTranscriptBulkEditSnack: bool,
+    restoreOriginalEngineResults: func
   };
 
   static contextTypes = {
@@ -646,6 +648,12 @@ class MediaDetailsWidget extends React.Component {
         }
       />
     );
+  };
+
+  handleOnRestoreOriginalClick = () => {
+    console.log('handleOnRestoreOriginalClick clicked');
+    const { id, tdo, selectedEngineId, selectedEngineResults } = this.props;
+    this.props.restoreOriginalEngineResults(id, tdo, selectedEngineId, selectedEngineResults);
   };
 
   render() {
@@ -1066,6 +1074,7 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
+                        onRestoreOriginalClick={this.handleOnRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&

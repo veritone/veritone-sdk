@@ -116,7 +116,7 @@ class EngineOutputHeader extends Component {
                         <MenuItem
                           key={`more-menu-item-${option.label}`}
                           classes={{ root: styles.moreMenuItem }}
-                          onClick={option.action}
+                          onClick={() => {this.toggleIsMoreMenuOpen(); option.action()}}
                         >
                           {option.label}
                         </MenuItem>

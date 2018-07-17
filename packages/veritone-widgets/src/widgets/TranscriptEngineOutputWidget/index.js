@@ -108,7 +108,8 @@ export default class TranscriptEngineOutputWidget extends Component {
     onClick: func,
     onScroll: func,
     onEngineChange: func,
-    onExpandClicked: func,
+    onExpandClick: func,
+    onRestoreOriginalClick: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -196,7 +197,6 @@ export default class TranscriptEngineOutputWidget extends Component {
         Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
       ignoreUserEdited: !showUserEdited
     });
-
   };
 
   handleAlertConfirm = () => {
@@ -226,7 +226,8 @@ export default class TranscriptEngineOutputWidget extends Component {
       'editMode',
       'onClick',
       'onScroll',
-      'onExpandClicked',
+      'onExpandClick',
+      'onRestoreOriginalClick',
       'mediaLengthMs',
       'neglectableTimeMs',
       'estimatedDisplayTimeMs',
