@@ -125,6 +125,10 @@ export default class EngineListView extends React.Component {
     this.props.onSave();
   };
 
+  handleOnBack = () => {
+    this.props.uncheckAllEngines(this.props.id);
+  };
+
   render() {
     const { checkedEngineIds, currentTabIndex } = this.props;
 
@@ -138,7 +142,7 @@ export default class EngineListView extends React.Component {
               selectedEngines={checkedEngineIds}
               disabledSelectAllMessage={!currentTabIndex}
               currentResultsCount={this.props.currentResults.length}
-              onBack={this.props.uncheckAllEngines}
+              onBack={this.handleOnBack}
               onAddSelected={this.props.selectEngines}
               onRemoveSelected={this.props.deselectEngines}
               onSelectAll={this.props.checkAllEngines}
@@ -154,7 +158,10 @@ export default class EngineListView extends React.Component {
               textColor="primary"
               fullWidth
             >
-              <Tab classes={{ selected: styles.tab }} label="Your Engines" />
+              <Tab
+                classes={{ selected: styles.tab }}
+                label={`Your Engines (${this.props.selectedEngineIds.length})`}
+              />
               <Tab
                 classes={{ selected: styles.tab }}
                 label="Explore All Engines"
@@ -172,9 +179,8 @@ export default class EngineListView extends React.Component {
               isSearchOpen={this.props.isSearchOpen}
               isChecked={this.props.allEnginesChecked}
               actionMenuItems={this.props.actionMenuItems}
-              hideActionMenuItems={
-                this.props.failedToFetchEngines || !currentTabIndex
-              }
+              hideActionMenuItems={this.props.failedToFetchEngines}
+              currentTabIndex={currentTabIndex}
               count={
                 currentTabIndex
                   ? this.props.currentResults.length

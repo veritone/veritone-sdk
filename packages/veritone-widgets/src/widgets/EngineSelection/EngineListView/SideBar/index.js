@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, arrayOf, string, shape } from 'prop-types';
-import { without } from 'lodash';
-import { DiscoverySideBar as Sidebar } from 'veritone-react-common';
+import { func, arrayOf, string, shape, number } from 'prop-types';
+import { without, noop } from 'lodash';
+import { DiscoverySideBarPure as Sidebar } from 'veritone-react-common';
 import { isArray, isString } from 'lodash';
 
 import styles from './styles.scss';
@@ -13,12 +13,15 @@ import * as engineSelectionModule from '../../../../redux/modules/engineSelectio
 
 @connect(
   (state, { id }) => ({
-    filters: engineSelectionModule.getEngineFilters(state, id)
+    filters: engineSelectionModule.getEngineFilters(state, id),
+    activeSidebarPath: engineSelectionModule.getActiveSidebarPath(state, id),
+    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state, id)
   }),
   {
     addEngineFilter: engineSelectionModule.addEngineFilter,
     removeEngineFilter: engineSelectionModule.removeEngineFilter,
-    clearAllFilters: engineSelectionModule.clearAllFilters
+    clearAllFilters: engineSelectionModule.clearAllFilters,
+    setActiveSidebarPath: engineSelectionModule.setActiveSidebarPath
   }
 )
 export default class EnginesSideBar extends React.Component {
@@ -27,9 +30,42 @@ export default class EnginesSideBar extends React.Component {
     filters: shape({
       category: arrayOf(string)
     }).isRequired,
+    activeSidebarPath: arrayOf(number),
     addEngineFilter: func.isRequired,
     removeEngineFilter: func.isRequired,
-    clearAllFilters: func.isRequired
+    clearAllFilters: func.isRequired,
+    setActiveSidebarPath: func.isRequired
+  };
+
+  handleFiltersNavigate = newPath => {
+    this.props.setActiveSidebarPath(this.props.id, newPath)
+  };
+
+  handleClearFilter = id => {
+    const { filter, value } = JSON.parse(id);
+    const { filters } = this.props;
+
+    if (!filters[filter].length) {
+      return;
+    }
+
+    if (isArray(filters[filter])) {
+      this.props.addEngineFilter(this.props.id, {
+        type: filter,
+        value: without(filters[filter], value)
+      });
+    }
+
+    if (isString(filters[filter])) {
+      this.props.removeEngineFilter(this.props.id, {
+        type: filter,
+        value
+      });
+    }
+  };
+
+  handleClearAllFilters = () => {
+    this.props.clearAllFilters(this.props.id);
   };
 
   getSelectedFilters = filters => {
@@ -67,33 +103,6 @@ export default class EnginesSideBar extends React.Component {
     return selectedFilters;
   };
 
-  handleClearFilter = id => {
-    const { filter, value } = JSON.parse(id);
-    const { filters } = this.props;
-
-    if (!filters[filter].length) {
-      return;
-    }
-
-    if (isArray(filters[filter])) {
-      this.props.addEngineFilter(this.props.id, {
-        type: filter,
-        value: without(filters[filter], value)
-      });
-    }
-
-    if (isString(filters[filter])) {
-      this.props.removeEngineFilter(this.props.id, {
-        type: filter,
-        value
-      });
-    }
-  };
-
-  handleClearAllFilters = () => {
-    this.props.clearAllFilters(this.props.id);
-  };
-
   render() {
     const engineFilters = {
       children: Object.values(Filters).map(({ label, id }) => {
@@ -128,6 +137,10 @@ export default class EnginesSideBar extends React.Component {
           filtersSections={engineFilters}
           formComponents={formComponents}
           selectedFilters={this.getSelectedFilters(this.props.filters)}
+          selectedTab={'Filters'}
+          onSelectTab={noop}
+          filtersActivePath={this.props.activeSidebarPath}
+          onFiltersNavigate={this.handleFiltersNavigate}
         />
       </div>
     );

@@ -29,6 +29,7 @@ import AllFiltersList from './AllFiltersList';
 
 export { sectionsShape } from './SectionTree';
 
+@withMuiThemeProvider
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
@@ -94,7 +95,6 @@ export class DiscoverySideBarContainerPure extends React.Component {
 }
 
 // state provider for top level sidebar state-- selected tabs, sections etc.
-@withMuiThemeProvider
 export default class DiscoverySideBarContainer extends React.Component {
   static propTypes = {
     tabs: arrayOf(string)

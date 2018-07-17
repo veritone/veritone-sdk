@@ -10,10 +10,19 @@ export const FETCH_ENGINES = 'vtn/engine/FETCH_ENGINES';
 export const FETCH_ENGINES_SUCCESS = 'vtn/engine/FETCH_ENGINES_SUCCESS';
 export const FETCH_ENGINES_FAILURE = 'vtn/engine/FETCH_ENGINES_FAILURE';
 
+export const FETCH_ENGINE_CATEGORIES = 'vtn/engine/FETCH_ENGINE_CATEGORIES';
+export const FETCH_ENGINE_CATEGORIES_SUCCESS =
+  'vtn/engine/FETCH_ENGINE_CATEGORIES_SUCCESS';
+export const FETCH_ENGINE_CATEGORIES_FAILURE =
+  'vtn/engine/FETCH_ENGINES_CATEGORIES_FAILURE';
+
 const defaultState = {
   enginesById: {},
   isFetching: false,
-  fetchingFailed: false
+  fetchingFailed: false,
+  engineCategories: [],
+  isFetchingCategories: false,
+  fetchingCategoriesFailed: false
 };
 
 export default createReducer(defaultState, {
@@ -41,6 +50,28 @@ export default createReducer(defaultState, {
       isFetching: false,
       fetchingFailed: true
     };
+  },
+  [FETCH_ENGINE_CATEGORIES](state, action) {
+    return {
+      ...state,
+      isFetchingCategories: true,
+      fetchingCategoriesFailed: false
+    };
+  },
+  [FETCH_ENGINE_CATEGORIES_SUCCESS](state, action) {
+    return {
+      ...state,
+      isFetchingCategories: false,
+      fetchingCategoriesFailed: false,
+      engineCategories: [...action.payload.results]
+    };
+  },
+  [FETCH_ENGINE_CATEGORIES_FAILURE](state, action) {
+    return {
+      ...state,
+      isFetchingCategories: false,
+      fetchingCategoriesFailed: true
+    };
   }
 });
 
@@ -49,7 +80,7 @@ function local(state) {
 }
 
 export function fetchEngines(
-  { offset, limit, owned },
+  { offset, limit, owned } = {},
   searchQuery,
   filters = {},
   builds = {},
@@ -146,6 +177,74 @@ export function fetchEngines(
   };
 }
 
+export function fetchEngineCategories(
+  { offset, limit } = {},
+  searchQuery,
+  type,
+  id
+) {
+  return async function action(dispatch, getState) {
+    dispatch({ type: FETCH_ENGINE_CATEGORIES });
+
+    const query = `
+      ${engineCategoryFieldsFragment}
+      query EngineCategories(
+        $name: String = ""
+        $offset: Int
+        $limit: Int
+        $type: String
+      ) {
+        results: engineCategories(
+          name: $name
+          offset: $offset
+          limit: $limit
+          type: $type
+        ) {
+          records {
+            ...engineCategoryFields
+          }
+        }
+      }
+    `;
+
+    const config = getConfig(getState());
+    const { apiRoot, graphQLEndpoint } = config;
+    const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+
+    try {
+      const response = await callGraphQLApi({
+        endpoint: graphQLUrl,
+        query,
+        variables: {
+          name: searchQuery,
+          offset,
+          limit,
+          type
+        },
+        token: selectSessionToken(getState()) || selectOAuthToken(getState())
+      });
+
+      if (!isEmpty(response.errors) && isEmpty(response.data.results)) {
+        throw response.errors;
+      }
+
+      const results = get(response, 'data.results.records');
+
+      dispatch({
+        type: FETCH_ENGINE_CATEGORIES_SUCCESS,
+        payload: { results },
+        meta: { searchQuery, id }
+      });
+    } catch (err) {
+      dispatch({
+        type: FETCH_ENGINE_CATEGORIES_FAILURE,
+        payload: err,
+        meta: {}
+      });
+    }
+  };
+}
+
 export function getEngines(state) {
   return local(state).enginesById;
 }
@@ -160,6 +259,18 @@ export function isFetchingEngines(state) {
 
 export function failedToFetchEngines(state) {
   return local(state).fetchingFailed;
+}
+
+export function getEngineCategories(state) {
+  return local(state).engineCategories;
+}
+
+export function isFetchingEngineCategories(state) {
+  return local(state).isFetchingCategories;
+}
+
+export function failedToFetchEngineCategories(state) {
+  return local(state).fetchingCategoriesFailed;
 }
 
 const engineFieldsFragment = `
@@ -180,5 +291,20 @@ const engineFieldsFragment = `
       name
       color
     }
+  }
+`;
+
+const engineCategoryFieldsFragment = `
+  fragment engineCategoryFields on EngineCategory{
+    id
+    name
+    description
+    categoryType
+    type {
+      name
+      description
+    }
+    iconClass
+    color
   }
 `;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { bool, func, string } from 'prop-types';
+import { bool, func, string, number } from 'prop-types';
 import { debounce } from 'lodash';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -13,6 +13,7 @@ import styles from './styles.scss';
 export default class SearchBar extends React.Component {
   static propTypes = {
     id: string.isRequired,
+    currentTabIndex: number.isRequired,
     searchQuery: string,
     onToggleSearch: func.isRequired,
     isOpen: bool,
@@ -24,6 +25,24 @@ export default class SearchBar extends React.Component {
     isOpen: false,
     searchQuery: ''
   };
+
+  state = {
+    searchQuery: this.props.searchQuery
+  };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (
+      nextProps.currentTabIndex !== prevState.currentTabIndex || // if tab switch
+      !nextProps.isOpen // if closed
+    ) {
+      return {
+        searchQuery: nextProps.searchQuery,
+        currentTabIndex: nextProps.currentTabIndex
+      };
+    }
+
+    return null;
+  }
 
   forwardChange = debounce(
     event => this.props.onSearch(event.target.value),
@@ -39,9 +58,10 @@ export default class SearchBar extends React.Component {
   };
 
   handleChange = event => {
-    if (event.target.value === this.props.searchQuery) {
-      return;
-    }
+    this.setState({
+      searchQuery: event.target.value,
+      currentTabIndex: this.props.currentTabIndex
+    });
 
     event.persist();
     this.forwardChange(event);
@@ -51,7 +71,7 @@ export default class SearchBar extends React.Component {
     <TextField
       className={styles.searchBar}
       placeholder="Search by engine name"
-      defaultValue={this.props.searchQuery}
+      value={this.state.searchQuery}
       onChange={this.handleChange}
       inputProps={{
         className: styles.searchBarInput

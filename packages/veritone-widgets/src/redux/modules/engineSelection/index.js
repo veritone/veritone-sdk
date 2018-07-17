@@ -1,4 +1,15 @@
-import { get, set, omit, without, union, merge, difference } from 'lodash';
+import {
+  get,
+  set,
+  omit,
+  without,
+  union,
+  merge,
+  difference,
+  isNumber,
+  isEmpty,
+  intersection
+} from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 const { createReducer } = helpers;
 const { engine: engineModule } = modules;
@@ -24,6 +35,9 @@ export const CLEAR_SEARCH = 'vtn/engineSelection/CLEAR_SEARCH';
 export const CHANGE_TAB = 'vtn/engineSelection/CHANGE_TAB';
 export const TOGGLE_SEARCH = 'vtn/engineSelection/TOGGLE_SEARCH';
 
+export const SET_ACTIVE_SIDEBAR_PATH =
+  'vtn/engineSelection/SET_ACTIVE_SIDEBAR_PATH';
+
 export const SET_DESELECTED_ENGINES =
   'vtn/engineSelection/SET_DESELECTED_ENGINES';
 export const SET_ALL_ENGINES_SELECTED =
@@ -31,18 +45,30 @@ export const SET_ALL_ENGINES_SELECTED =
 
 export const namespace = 'engineSelection';
 
+const defaultFilterState = {
+  category: [],
+  rating: []
+};
+
 const defaultSelectionState = {
-  searchQuery: '',
-  filters: {
-    category: [],
-    rating: []
+  tabState: {
+    0: {
+      searchQuery: '',
+      isSearchOpen: false,
+      filters: defaultFilterState
+    },
+    1: {
+      searchQuery: '',
+      isSearchOpen: false,
+      filters: defaultFilterState
+    }
   },
   orderBy: {},
   selectedEngineIds: [],
   checkedEngineIds: [],
   allEnginesChecked: false,
   currentTabIndex: 0,
-  isSearchOpen: false,
+  activeSidebarPath: [],
   deselectedEngineIds: [],
   allEnginesSelected: false
 };
@@ -177,13 +203,20 @@ export default createReducer(defaultState, {
   },
   [ADD_FILTER](state, action) {
     const id = action.meta.id;
+    const currentTab = state[id].currentTabIndex;
     return {
       ...state,
       [id]: {
         ...state[id],
-        filters: {
-          ...state[id].filters,
-          [action.payload.type]: action.payload.value
+        tabState: {
+          ...state[id].tabState,
+          [currentTab]: {
+            ...state[id].tabState[currentTab],
+            filters: {
+              ...state[id].tabState[currentTab].filters,
+              [action.payload.type]: action.payload.value
+            }
+          }
         },
         checkedEngineIds: [],
         allEnginesChecked: false
@@ -192,11 +225,21 @@ export default createReducer(defaultState, {
   },
   [REMOVE_FILTER](state, action) {
     const id = action.meta.id;
+    const currentTab = state[id].currentTabIndex;
     return {
       ...state,
       [id]: {
         ...state[id],
-        filters: omit(state[id].filters, action.payload.type),
+        tabState: {
+          ...state[id].tabState,
+          [currentTab]: {
+            ...state[id].tabState[currentTab],
+            filters: omit(
+              state[id].tabState[currentTab].filters,
+              action.payload.type
+            )
+          }
+        },
         checkedEngineIds: [],
         allEnginesChecked: false
       }
@@ -204,23 +247,47 @@ export default createReducer(defaultState, {
   },
   [CLEAR_ALL_FILTERS](state, action) {
     const id = action.meta.id;
+    const currentTab = state[id].currentTabIndex;
     return {
       ...state,
       [id]: {
         ...state[id],
-        filters: defaultSelectionState.filters,
+        tabState: {
+          ...state[id].tabState,
+          [currentTab]: {
+            ...state[id].tabState[currentTab],
+            filters: defaultFilterState
+          }
+        },
         checkedEngineIds: [],
         allEnginesChecked: false
       }
     };
   },
-  [SEARCH](state, action) {
+  [SET_ACTIVE_SIDEBAR_PATH](state, action) {
     const id = action.meta.id;
     return {
       ...state,
       [id]: {
         ...state[id],
-        searchQuery: action.payload.searchQuery,
+        activeSidebarPath: [...action.payload.path]
+      }
+    };
+  },
+  [SEARCH](state, action) {
+    const id = action.meta.id;
+    const currentTab = state[id].currentTabIndex;
+    return {
+      ...state,
+      [id]: {
+        ...state[id],
+        tabState: {
+          ...state[id].tabState,
+          [currentTab]: {
+            ...state[id].tabState[currentTab],
+            searchQuery: action.payload.searchQuery
+          }
+        },
         checkedEngineIds: [],
         allEnginesChecked: false
       }
@@ -228,14 +295,21 @@ export default createReducer(defaultState, {
   },
   [CLEAR_SEARCH](state, action) {
     const id = action.meta.id;
+    const currentTab = state[id].currentTabIndex;
     return {
       ...state,
       [id]: {
         ...state[id],
-        searchQuery: '',
+        tabState: {
+          ...state[id].tabState,
+          [currentTab]: {
+            ...state[id].tabState[currentTab],
+            searchQuery: '',
+            isSearchOpen: false
+          }
+        },
         checkedEngineIds: [],
-        allEnginesChecked: false,
-        isSearchOpen: false
+        allEnginesChecked: false
       }
     };
   },
@@ -246,18 +320,25 @@ export default createReducer(defaultState, {
       [id]: {
         ...state[id],
         currentTabIndex: action.payload.tabIndex,
-        searchQuery: '',
-        isSearchOpen: false
+        activeSidebarPath: []
       }
     };
   },
   [TOGGLE_SEARCH](state, action) {
     const id = action.meta.id;
+    const currentTab = state[id].currentTabIndex;
     return {
       ...state,
       [id]: {
         ...state[id],
-        isSearchOpen: !state[id].isSearchOpen
+        tabState: {
+          ...state[id].tabState,
+          [currentTab]: {
+            ...state[id].tabState[currentTab],
+            isSearchOpen: !state[id].tabState[currentTab].isSearchOpen,
+            searchQuery: ''
+          }
+        }
       }
     };
   },
@@ -294,7 +375,7 @@ export function initializeWidget(id) {
   };
 }
 
-export function refetchEngines(id) {
+export function refetchEngines(id, currentTabIndex) {
   return function action(dispatch, getState) {
     const searchQuery = getSearchQuery(getState(), id);
     const filters = getEngineFilters(getState(), id);
@@ -456,6 +537,16 @@ export function setAllEnginesSelected(id, allEnginesSelected) {
   };
 }
 
+export function setActiveSidebarPath(id, path) {
+  return {
+    type: SET_ACTIVE_SIDEBAR_PATH,
+    payload: {
+      path
+    },
+    meta: { id }
+  };
+}
+
 export function pathFor(searchQuery, filters) {
   return [searchQuery, JSON.stringify(filters)];
 }
@@ -465,26 +556,51 @@ export function getCurrentTabIndex(state, id) {
 }
 
 export function isSearchOpen(state, id) {
-  return get(local(state), [id, 'isSearchOpen']);
+  return get(local(state), [
+    id,
+    'tabState',
+    getCurrentTabIndex(state, id),
+    'isSearchOpen'
+  ]);
 }
 
 export function getCurrentResults(state, id) {
   const results = get(
     get(local(state), 'searchResults'),
     pathFor(
-      get(local(state), [id, 'searchQuery']),
-      get(local(state), [id, 'filters'])
+      get(local(state), [
+        id,
+        'tabState',
+        getCurrentTabIndex(state, id),
+        'searchQuery'
+      ]),
+      get(local(state), [
+        id,
+        'tabState',
+        getCurrentTabIndex(state, id),
+        'filters'
+      ])
     )
   );
   return results;
 }
 
 export function getSearchQuery(state, id) {
-  return get(local(state), [id, 'searchQuery']);
+  return get(local(state), [
+    id,
+    'tabState',
+    getCurrentTabIndex(state, id),
+    'searchQuery'
+  ]);
 }
 
 export function getEngineFilters(state, id) {
-  return get(local(state), [id, 'filters']);
+  return get(local(state), [
+    id,
+    'tabState',
+    getCurrentTabIndex(state, id),
+    'filters'
+  ]);
 }
 
 export function engineIsSelected(state, engineId, id) {
@@ -509,4 +625,25 @@ export function getDeselectedEngineIds(state, id) {
 
 export function getCheckedEngineIds(state, id) {
   return get(local(state), [id, 'checkedEngineIds']);
+}
+
+export function getActiveSidebarPath(state, id) {
+  return get(local(state), [id, 'activeSidebarPath']);
+}
+
+export function getFilteredSelectedEngineids(state, id) {
+  const selectedEngineIds = getSelectedEngineIds(state, id);
+  const currentResults = getCurrentResults(state, id);
+
+  return intersection(selectedEngineIds, currentResults);
+}
+
+export function hasActiveFilters(state, id) {
+  const filters = getEngineFilters(state, id);
+  const searchQuery = getSearchQuery(state, id);
+
+  return (
+    Object.values(filters).some(val => isNumber(val) || !isEmpty(val)) ||
+    !!searchQuery
+  );
 }

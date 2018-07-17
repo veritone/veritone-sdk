@@ -15,7 +15,8 @@ export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
 export DiscoverySideBar, {
-  sectionsShape as discoverySidebarSectionsShape
+  sectionsShape as discoverySidebarSectionsShape,
+  DiscoverySideBarContainerPure as DiscoverySideBarPure
 } from './components/DiscoverySideBar';
 export FullScreenDialog from './components/FullScreenDialog';
 export ProfileMenu from './components/ProfileMenu';
