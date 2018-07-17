@@ -1,4 +1,6 @@
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
+import { getConfig } from 'modules/config';
+import { constant, isFunction } from 'lodash';
 
 export function commonHeaders(state) {
   const OAuthToken = selectOAuthToken(state);
@@ -21,7 +23,9 @@ export function callGraphQLApi({
   query,
   variables,
   operationName,
-  token
+  token,
+  dispatch,
+  getState
 }) {
   return fetch(endpoint, {
     method: 'post',
