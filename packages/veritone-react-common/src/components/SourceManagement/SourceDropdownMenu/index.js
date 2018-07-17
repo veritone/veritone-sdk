@@ -30,27 +30,29 @@ export default class SourceDropdownMenu extends React.Component {
     hasNextPage: false,
     isNextPageLoading: false,
     sources: []
-  }
+  };
 
   UNSAFE_componentWillMount() {
     this.loadMoreRows({ startIndex: 0, stopIndex: 30 });
   }
 
-  loadMoreRows = ({startIndex, stopIndex}) => {
+  loadMoreRows = ({ startIndex, stopIndex }) => {
     this.setState({ isNextPageLoading: true });
-    return this.props.loadNextPage({startIndex, stopIndex}).then(sourcePage => {
-      const newState = {
-        hasNextPage: !!get(sourcePage, 'length'),
-        isNextPageLoading: false,
-        sources: cloneDeep(this.state.sources).concat(sourcePage)
-      }
-      if (newState.sources.length && !this.props.sourceId) {
-        this.props.handleSourceChange(newState.sources[0].id);
-      }
-      this.setState(newState);
-      return sourcePage;
-    });
-  }
+    return this.props
+      .loadNextPage({ startIndex, stopIndex })
+      .then(sourcePage => {
+        const newState = {
+          hasNextPage: !!get(sourcePage, 'length'),
+          isNextPageLoading: false,
+          sources: cloneDeep(this.state.sources).concat(sourcePage)
+        };
+        if (newState.sources.length && !this.props.sourceId) {
+          this.props.handleSourceChange(newState.sources[0].id);
+        }
+        this.setState(newState);
+        return sourcePage;
+      });
+  };
 
   render() {
     return (
@@ -130,22 +132,19 @@ class SourceContainer extends React.Component {
     }
 
     const version =
-    source.sourceType && source.sourceType.sourceSchema
-      ? source.sourceType.sourceSchema.majorVersion +
-        '.' +
-        source.sourceType.sourceSchema.minorVersion
-      : undefined;
+      source.sourceType && source.sourceType.sourceSchema
+        ? source.sourceType.sourceSchema.majorVersion +
+          '.' +
+          source.sourceType.sourceSchema.minorVersion
+        : undefined;
 
     const handleItemClick = source => () => {
       this.props.handleSourceChange(source.id);
       this.handleMenuClose();
-    }
+    };
 
     return (
-      <div
-        key={key}
-        style={style}
-      >
+      <div key={key} style={style}>
         <MenuItem
           key={source.id}
           value={source.id}

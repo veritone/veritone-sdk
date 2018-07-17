@@ -16,18 +16,16 @@ import {
   isUndefined,
   isArray,
   every,
-  find,
   forEach
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import {
   getFaceEngineAssetData,
   cancelFaceEdits,
-  fetchEngineResults as fetchFaceEngineResults,
-  FETCH_ENGINE_RESULTS,
+  pendingUserEdits,
   ADD_DETECTED_FACE,
-  FETCH_ENGINE_RESULTS_SUCCESS,
-  FETCH_ENGINE_RESULTS_FAILURE
+  REMOVE_DETECTED_FACE,
+  CANCEL_FACE_EDITS
 } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
@@ -36,15 +34,13 @@ import {
 const {
   auth: authModule,
   config: configModule,
-  application: applicationModule
+  application: applicationModule,
+  engineResults: engineResultsModule
 } = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
-  LOAD_ENGINE_RESULTS,
-  LOAD_ENGINE_RESULTS_SUCCESS,
-  LOAD_ENGINE_RESULTS_FAILURE,
   LOAD_TDO,
   UPDATE_TDO,
   UPDATE_TDO_FAILURE,
@@ -64,9 +60,6 @@ import {
   TOGGLE_EDIT_MODE,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
-  loadEngineResultsRequest,
-  loadEngineResultsSuccess,
-  loadEngineResultsFailure,
   loadTdoRequest,
   loadTdoSuccess,
   loadTdoFailure,
@@ -80,7 +73,6 @@ import {
   setEngineId,
   getTdoMetadata,
   getTdo,
-  getEngineResultRequestsByEngineId,
   toggleSaveMode,
   saveAssetDataFailure,
   createFileAssetSuccess,
@@ -91,11 +83,9 @@ import {
   isUserGeneratedTranscriptEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
-  getSelectedEngineId,
   refreshEngineRunsSuccess,
-  clearEngineResultsByEngineId,
-  getEngineCategories,
-  setEditButtonState
+  setEditButtonState,
+  getSelectedEngineId
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -380,66 +370,6 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   }
 
   yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
-}
-
-function* loadEngineResultsSaga(
-  widgetId,
-  engineId,
-  startOffsetMs,
-  stopOffsetMs
-) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
-      engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
-        records {
-          tdoId
-          engineId
-          startOffsetMs
-          stopOffsetMs
-          jsondata
-        }
-      }
-    }`;
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-  const requestTdo = yield select(getTdo, widgetId);
-  const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
-  if (startOffsetMs) {
-    variables.startOffsetMs = startOffsetMs;
-  }
-  if (stopOffsetMs) {
-    variables.stopOffsetMs = stopOffsetMs;
-  }
-  let response;
-  try {
-    response = yield call(callGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: getEngineResultsQuery,
-      variables: variables,
-      token
-    });
-  } catch (error) {
-    return yield put(
-      loadEngineResultsFailure({
-        error,
-        startOffsetMs,
-        stopOffsetMs,
-        engineId,
-        widgetId
-      })
-    );
-  }
-
-  yield put(
-    loadEngineResultsSuccess(response.data.engineResults.records, {
-      startOffsetMs,
-      stopOffsetMs,
-      engineId,
-      widgetId
-    })
-  );
 }
 
 function* loadContentTemplates(widgetId) {
@@ -777,34 +707,19 @@ function* createFileAssetSaga(
       widgetId
     );
     yield call(refreshEngineRuns, widgetId, requestTdo.id);
-    const engineCategories = yield select(getEngineCategories, widgetId);
-    const updatedCategory = find(engineCategories, {
-      categoryType: selectedEngineCategory.categoryType
-    });
-    const userGeneratedEngine = find(updatedCategory.engines, engine => {
-      return (
-        engine.id === 'bulk-edit-transcript' ||
-        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
-      );
-    });
-    let userGeneratedEngineId;
-    if (userGeneratedEngine) {
-      userGeneratedEngineId = userGeneratedEngine.id;
-    }
-    // Reset the the transcipt engine results.
-    if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    } else if (selectedEngineCategory.categoryType === 'face') {
-      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-      yield put(
-        fetchFaceEngineResults({
-          selectedEngineId,
-          tdo: requestTdo
-        })
-      );
-    }
+    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+    yield put(
+      engineResultsModule.fetchEngineResults({
+        tdo: requestTdo,
+        engineId: selectedEngineId,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(requestTdo.stopDateTime) -
+          Date.parse(requestTdo.startDateTime),
+        ignoreUserEdited: false
+      })
+    );
     yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    yield put(selectEngineCategory(widgetId, updatedCategory));
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
 
@@ -1003,22 +918,6 @@ function* watchUpdateTdoContentTemplates() {
   });
 }
 
-function* watchLoadEngineResultsRequest() {
-  yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const { engineId } = action.payload;
-    let { startOffsetMs, stopOffsetMs } = action.payload;
-    const { widgetId } = action.meta;
-
-    yield call(
-      loadEngineResultsSaga,
-      widgetId,
-      engineId,
-      startOffsetMs,
-      stopOffsetMs
-    );
-  });
-}
-
 function* fetchEntities(widgetId, entityIds) {
   yield put({ type: REQUEST_ENTITIES, meta: { widgetId } });
   let entityQueries = entityIds.map((id, index) => {
@@ -1126,11 +1025,13 @@ function* fetchSchemas(widgetId, schemaIds) {
 }
 
 function* watchLoadEngineResultsComplete() {
-  yield takeEvery(LOAD_ENGINE_RESULTS_SUCCESS, function*(action) {
+  yield takeEvery(engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS, function*(
+    action
+  ) {
     let entityIds = [],
       schemaIds = [];
-    action.payload.forEach(jsonData => {
-      jsonData.jsondata.series.forEach(s => {
+    get(action, 'payload.engineResults.records', []).forEach(record => {
+      get(record, 'jsondata.series', []).forEach(s => {
         let entityId = get(s, 'object.entityId');
         if (entityId) {
           entityIds.push(entityId);
@@ -1325,8 +1226,13 @@ function* watchSetEngineId() {
   yield takeEvery(SET_SELECTED_ENGINE_ID, function*(action) {
     const selectedEngineId = action.payload;
     const { widgetId } = action.meta;
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
 
-    if (!selectedEngineId) {
+    // Ignore face engine results because the FaceEngineOutput handles it's own fetching
+    if (!selectedEngineId || selectedEngineCategory.categoryType === 'face') {
       return;
     }
 
@@ -1342,43 +1248,18 @@ function* watchSetEngineId() {
       stopOffsetMs = endOfTdo - startOfTdo;
     }
 
-    let engineResultRequests = yield select(
-      getEngineResultRequestsByEngineId,
-      widgetId,
-      selectedEngineId
-    );
-    let resultsInTimeBounds = engineResultRequests.filter(result => {
-      return (
-        (result.startOffsetMs >= startOffsetMs &&
-          result.startOffsetMs <= stopOffsetMs) ||
-        (result.startOffsetMs >= startOffsetMs &&
-          result.startOffsetMs <= stopOffsetMs)
-      );
-    });
-
-    // TODO: Optimize this to get all gaps not just the first
-    if (resultsInTimeBounds.length === 1) {
-      if (resultsInTimeBounds[0].startOffsetMs > startOffsetMs) {
-        stopOffsetMs = resultsInTimeBounds[0].startOffsetMs - 1;
-      } else {
-        startOffsetMs = resultsInTimeBounds[0].stopOffsetMs + 1;
-      }
-    } else if (resultsInTimeBounds.length > 1) {
-      startOffsetMs = resultsInTimeBounds[0].stopOffsetMs + 1;
-      stopOffsetMs = resultsInTimeBounds[1].startOffsetMs - 1;
-    }
-
     if (startOffsetMs > stopOffsetMs) {
       return;
     }
 
     yield put(
-      loadEngineResultsRequest(
-        widgetId,
-        selectedEngineId,
+      engineResultsModule.fetchEngineResults({
+        tdo: currentTdo,
+        engineId: selectedEngineId,
         startOffsetMs,
-        stopOffsetMs
-      )
+        stopOffsetMs,
+        ignoreUserEdited: false
+      })
     );
   });
 }
@@ -1399,12 +1280,18 @@ function* watchTranscriptStatus() {
   });
 }
 
-function* watchFaceEngineEntityUpdate() {
-  yield takeEvery(action => action.type === ADD_DETECTED_FACE, function*(
-    action
-  ) {
-    yield put(toggleSaveMode(true));
-  });
+function* watchFaceEngineEntityUpdate(widgetId) {
+  yield takeEvery(
+    [ADD_DETECTED_FACE, REMOVE_DETECTED_FACE, CANCEL_FACE_EDITS],
+    function*(action) {
+      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+      const hasPendingFaceEdits = yield select(
+        pendingUserEdits,
+        selectedEngineId
+      );
+      yield put(toggleSaveMode(hasPendingFaceEdits));
+    }
+  );
 }
 
 // Remove AWS prefixed params, keep the rest.
@@ -1475,6 +1362,7 @@ function* watchSaveAssetData() {
               get(asset, 'object.uri')
             );
           }
+          delete asset.guid;
         });
       }
       // process vtn-standard asset
@@ -1578,7 +1466,7 @@ function* watchCancelEdit() {
 }
 
 function* watchLatestFetchEngineResultsStart(widgetId) {
-  yield takeLatest([LOAD_ENGINE_RESULTS, FETCH_ENGINE_RESULTS], function*() {
+  yield takeLatest([engineResultsModule.FETCH_ENGINE_RESULTS], function*() {
     yield put(setEditButtonState(widgetId, true));
   });
 }
@@ -1586,10 +1474,8 @@ function* watchLatestFetchEngineResultsStart(widgetId) {
 function* watchLatestFetchEngineResultsEnd(widgetId) {
   yield takeLatest(
     [
-      LOAD_ENGINE_RESULTS_SUCCESS,
-      LOAD_ENGINE_RESULTS_FAILURE,
-      FETCH_ENGINE_RESULTS_SUCCESS,
-      FETCH_ENGINE_RESULTS_FAILURE
+      engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS,
+      engineResultsModule.FETCH_ENGINE_RESULTS_FAILURE
     ],
     function*() {
       yield put(setEditButtonState(widgetId, false));
@@ -1604,7 +1490,6 @@ function* onMount(id, mediaId) {
 
 export default function* root({ id, mediaId }) {
   yield all([
-    fork(watchLoadEngineResultsRequest),
     fork(watchLoadEngineResultsComplete),
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
@@ -1613,7 +1498,7 @@ export default function* root({ id, mediaId }) {
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
     fork(watchTranscriptStatus),
-    fork(watchFaceEngineEntityUpdate),
+    fork(watchFaceEngineEntityUpdate, id),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
     fork(watchCancelEdit),

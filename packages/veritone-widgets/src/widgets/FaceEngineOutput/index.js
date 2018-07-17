@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { util } from 'veritone-redux-common';
+import { util, modules } from 'veritone-redux-common';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -35,6 +35,8 @@ import {
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 
+const { engineResults: engineResultsModule } = modules;
+
 const saga = util.reactReduxSaga.saga;
 
 @withMuiThemeProvider
@@ -45,7 +47,7 @@ const saga = util.reactReduxSaga.saga;
     entities: faceEngineOutput.getEntities(state),
     libraries: faceEngineOutput.getLibraries(state),
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
-    isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     isFetchingEntities: faceEngineOutput.isFetchingEntities(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
@@ -55,13 +57,13 @@ const saga = util.reactReduxSaga.saga;
       state,
       selectedEngineId
     ),
-    isDisplayingUserEditedOutput: faceEngineOutput.isDisplayingUserEditedOutput(
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       selectedEngineId
     )
   }),
   {
-    fetchEngineResults: faceEngineOutput.fetchEngineResults,
+    fetchEngineResults: engineResultsModule.fetchEngineResults,
     fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
     addDetectedFace: faceEngineOutput.addDetectedFace,
@@ -197,14 +199,6 @@ class FaceEngineOutputContainer extends Component {
     ) {
       this.props.disableEdit(true);
     }
-
-    // fetch engine results when user changes engine
-    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
-      this.props.fetchEngineResults({
-        selectedEngineId: nextProps.selectedEngineId,
-        tdo: this.props.tdo
-      });
-    }
   }
 
   handleSearchEntities = searchText => {
@@ -317,9 +311,13 @@ class FaceEngineOutputContainer extends Component {
   };
 
   handleToggleEditedOutput = showUserEdited => {
+    const tdo = this.props.tdo;
     this.props.fetchEngineResults({
-      selectedEngineId: this.props.selectedEngineId,
-      tdo: this.props.tdo,
+      engineId: this.props.selectedEngineId,
+      tdo: tdo,
+      startOffsetMs: 0,
+      stopOffsetMs:
+        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
       ignoreUserEdited: !showUserEdited
     });
   };

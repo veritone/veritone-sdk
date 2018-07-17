@@ -55,7 +55,12 @@ export default class FingerprintEntity extends Component {
     return (
       <div className={classNames(styles.entityInfo)}>
         <div className={classNames(styles.logo)}>
-          <img src={entity.profileImageUrl || '//static.veritone.com/veritone-ui/default-nullstate.svg'} />
+          <img
+            src={
+              entity.profileImageUrl ||
+              '//static.veritone.com/veritone-ui/default-nullstate.svg'
+            }
+          />
         </div>
         <div>
           <div className={classNames(styles.entityName)}>

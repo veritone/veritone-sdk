@@ -101,6 +101,15 @@ class FaceEngineOutput extends Component {
     viewMode: 'summary'
   };
 
+  static getDerivedStateFromProps(nextProps, state) {
+    if (nextProps.editMode && state.viewMode !== 'summary') {
+      return {
+        viewMode: 'summary'
+      };
+    }
+    return null;
+  }
+
   handleTabChange = (event, activeTab) => {
     if (activeTab !== this.state.activeTab) {
       this.setState({ activeTab });

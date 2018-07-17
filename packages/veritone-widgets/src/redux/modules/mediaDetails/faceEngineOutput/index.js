@@ -1,11 +1,5 @@
 export const namespace = 'face-engine-output';
 
-export const FETCH_ENGINE_RESULTS = `vtn/${namespace}/FETCH_ENGINE_RESULTS`;
-export const FETCHING_ENGINE_RESULTS = `vtn/${namespace}/FETCHING_ENGINE_RESULTS`;
-export const FETCH_ENGINE_RESULTS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_RESULTS_SUCCESS`;
-export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESULTS_FAILURE`;
-export const DONE_FETCHING_ENGINE_RESULTS = `vtn/${namespace}/DONE_FETCHING_ENGINE_RESULTS`;
-
 export const FETCH_ENTITIES = `vtn/${namespace}/FETCH_ENTITIES`;
 export const FETCH_ENTITIES_SUCCESS = `vtn/${namespace}/FETCH_ENTITIES_SUCCESS`;
 export const FETCH_ENTITIES_FAILURE = `vtn/${namespace}/FETCH_ENTITIES_FAILURE`;
@@ -33,30 +27,25 @@ export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIA
 import {
   get,
   map,
-  findIndex,
   find,
-  groupBy,
-  forEach,
   keyBy,
   isEmpty,
-  set,
   pick,
   flatten,
-  pullAt,
-  noop
+  noop,
+  reduce,
+  cloneDeep
 } from 'lodash';
-import { helpers } from 'veritone-redux-common';
+import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
 
 const { createReducer } = helpers;
+const { engineResults: engineResultsModule } = modules;
 
 const defaultState = {
-  engineResultsByEngineId: {},
-  fetchedEngineResults: {},
   entities: {},
   libraries: {},
   entitySearchResults: [],
-  isFetchingEngineResults: false,
   isFetchingEntities: false,
   isFetchingLibraries: false,
   isSearchingEntities: false,
@@ -68,52 +57,6 @@ const defaultState = {
 };
 
 const reducer = createReducer(defaultState, {
-  [FETCHING_ENGINE_RESULTS](state, action) {
-    return {
-      ...state,
-      isFetchingEngineResults: true
-    };
-  },
-  [DONE_FETCHING_ENGINE_RESULTS](state, action) {
-    return {
-      ...state,
-      isFetchingEngineResults: false
-    };
-  },
-  [FETCH_ENGINE_RESULTS_SUCCESS](state, action) {
-    if (action.payload.errors) {
-      return this[FETCH_ENGINE_RESULTS_FAILURE](state, action);
-    }
-
-    const engineResults = action.payload.data.engineResults.records;
-    const { startOffsetMs, stopOffsetMs, ignoreUserEdited } = action.meta;
-
-    const previousResultsByEngineId = state.engineResultsByEngineId || {};
-    const resultsGroupedByEngineId = groupBy(engineResults, 'engineId');
-
-    forEach(resultsGroupedByEngineId, (results, engineId) => {
-      previousResultsByEngineId[engineId] = map(results, 'jsondata');
-    });
-
-    return {
-      ...state,
-      engineResultsByEngineId: {
-        ...previousResultsByEngineId
-      },
-      fetchedEngineResults: {
-        [action.meta.engineId]: {
-          [`${startOffsetMs}-${stopOffsetMs}`]: true
-        }
-      },
-      displayUserEdited: !ignoreUserEdited
-    };
-  },
-  [FETCH_ENGINE_RESULTS_FAILURE](state, { payload, meta }) {
-    return {
-      ...state,
-      displayUserEdited: false
-    };
-  },
   [FETCH_ENTITIES](state, action) {
     return {
       ...state,
@@ -222,31 +165,14 @@ const reducer = createReducer(defaultState, {
   },
   [ADD_DETECTED_FACE](state, action) {
     const { faceObj, selectedEngineId, entity } = action.payload;
-    const objectCriteria = pick(faceObj.object, ['uri', 'boundingPoly']);
-
-    const detectedFacePath = state.engineResultsByEngineId[
-      selectedEngineId
-    ].reduce((acc, engineResult, engineResultIdx) => {
-      const faceIdx = findIndex(engineResult.series, {
-        object: objectCriteria
-      });
-
-      return faceIdx > -1 ? `[${engineResultIdx}].series[${faceIdx}]` : acc;
-    }, '');
-
-    if (!detectedFacePath.length) {
-      return {
-        ...state
-      };
-    }
 
     return {
       ...state,
       facesDetectedByUser: {
         ...state.facesDetectedByUser,
-        [selectedEngineId]: {
-          ...state.facesDetectedByUser[selectedEngineId],
-          [detectedFacePath]: {
+        [selectedEngineId]: [
+          ...(state.facesDetectedByUser[selectedEngineId] || []),
+          {
             ...faceObj,
             object: {
               ...faceObj.object,
@@ -254,7 +180,7 @@ const reducer = createReducer(defaultState, {
               libraryId: entity.libraryId
             }
           }
-        }
+        ]
       },
       entities: {
         ...state.entities,
@@ -264,33 +190,17 @@ const reducer = createReducer(defaultState, {
   },
   [REMOVE_DETECTED_FACE](state, action) {
     const { faceObj, selectedEngineId } = action.payload;
-    const objectCriteria = pick(faceObj.object, ['uri', 'boundingPoly']);
-
-    const detectedFacePath = state.engineResultsByEngineId[
-      selectedEngineId
-    ].reduce((acc, engineResult, engineResultIdx) => {
-      const faceIdx = findIndex(engineResult.series, {
-        object: objectCriteria
-      });
-
-      return faceIdx > -1 ? [engineResultIdx, faceIdx] : acc;
-    }, []);
-
-    if (!detectedFacePath.length) {
-      return {
-        ...state
-      };
-    }
-
-    const removedFaces = state.facesRemovedByUser[selectedEngineId]
-      ? [...state.facesRemovedByUser[selectedEngineId], detectedFacePath]
-      : [detectedFacePath];
 
     return {
       ...state,
       facesRemovedByUser: {
         ...state.facesRemovedByUser,
-        [selectedEngineId]: removedFaces
+        [selectedEngineId]: [
+          ...(state.facesRemovedByUser[selectedEngineId] || []),
+          {
+            ...faceObj
+          }
+        ]
       }
     };
   },
@@ -323,40 +233,9 @@ function local(state) {
   return state[namespace];
 }
 
-/* ENGINE RESULTS */
-export const fetchEngineResults = meta => ({
-  type: FETCH_ENGINE_RESULTS,
-  meta
-});
-export const fetchingEngineResults = meta => ({
-  type: FETCHING_ENGINE_RESULTS,
-  meta
-});
-export const doneFetchingEngineResults = () => ({
-  type: DONE_FETCHING_ENGINE_RESULTS
-});
-export const fetchEngineResultsSuccess = (payload, meta) => ({
-  type: FETCH_ENGINE_RESULTS_SUCCESS,
-  payload,
-  meta
-});
-export const fetchEngineResultsFailure = (error, meta) => ({
-  type: FETCH_ENGINE_RESULTS_FAILURE,
-  error,
-  meta
-});
-
-export function isFetchingEngineResults(state) {
-  return local(state).isFetchingEngineResults;
-}
-
-export const isDisplayingUserEditedOutput = (state, engineId) => {
-  const engineResults = getFaceDataByEngine(state, engineId);
-  return !!find(engineResults, { userEdited: true });
+export const getFaceDataByEngine = (state, engineId) => {
+  return engineResultsModule.engineResultsByEngineId(state, engineId);
 };
-
-export const getFaceDataByEngine = (state, engineId) =>
-  get(local(state), ['engineResultsByEngineId', engineId]);
 
 export const getUserDetectedFaces = (state, engineId) =>
   get(local(state), ['facesDetectedByUser', engineId]);
@@ -367,9 +246,6 @@ export const getUserRemovedFaces = (state, engineId) =>
 export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
-
-export const fetchedEngineResultByEngineId = (state, engineId) =>
-  get(local(state), ['fetchedEngineResults', engineId], []);
 
 /* ENTITIES */
 export const fetchingEntities = meta => ({
@@ -551,9 +427,9 @@ export const getFaces = createSelector(
 
 /* HELPERS */
 export const getFaceEngineAssetData = (state, engineId) => {
-  const engineResults = getFaceDataByEngine(state, engineId);
-  const userDetectedFaces = getUserDetectedFaces(state, engineId);
-  const userRemovedFaces = getUserRemovedFaces(state, engineId);
+  const engineResults = cloneDeep(getFaceDataByEngine(state, engineId));
+  const userDetectedFaces = cloneDeep(getUserDetectedFaces(state, engineId)) || [];
+  const userRemovedFaces = cloneDeep(getUserRemovedFaces(state, engineId)) || [];
 
   const allJsonData = addUserDetectedFaces(
     engineResults,
@@ -581,36 +457,23 @@ function addUserDetectedFaces(
   userDetectedFaces,
   userRemovedFaces
 ) {
-  const updatedFaceData = map(engineResults, data => ({
+  return map(engineResults, data => ({
     taskId: data.taskId,
     assetId: data.assetId,
     sourceEngineId: data.sourceEngineId,
-    series: [...data.series]
+    series: reduce(
+      data.series,
+      (accumulator, originalFaceObj) => {
+        if (find(userRemovedFaces, { guid: originalFaceObj.guid })) {
+          return accumulator;
+        }
+        return [
+          ...accumulator,
+          find(userDetectedFaces, { guid: originalFaceObj.guid }) ||
+            originalFaceObj
+        ];
+      },
+      []
+    )
   }));
-
-  if (userDetectedFaces) {
-    forEach(userDetectedFaces, (faceObj, faceObjPath) => {
-      set(updatedFaceData, faceObjPath, faceObj);
-    });
-  }
-
-  if (userRemovedFaces) {
-    const facesToRemove = userRemovedFaces.reduce((acc, faceObjPath) => {
-      const [engineResultIdx, faceIdx] = faceObjPath;
-
-      if (!acc[engineResultIdx]) {
-        acc[engineResultIdx] = [faceIdx];
-      } else {
-        acc[engineResultIdx].push(faceIdx);
-      }
-
-      return acc;
-    }, {});
-
-    forEach(facesToRemove, (faces, engineResultIdx) => {
-      pullAt(updatedFaceData[engineResultIdx].series, faces); // eslint-disable-line
-    });
-  }
-
-  return updatedFaceData;
 }

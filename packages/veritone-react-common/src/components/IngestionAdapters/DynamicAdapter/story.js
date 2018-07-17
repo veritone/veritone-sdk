@@ -329,12 +329,14 @@ function closeCreateSource() {
   console.log('closeCreateSource');
 }
 
-function loadNextPage({startIndex, stopIndex}) {
+function loadNextPage({ startIndex, stopIndex }) {
   console.log('Called loadNextPage');
   console.log(startIndex + ' ' + stopIndex);
-  return new Promise(resolve => setTimeout(() => {
-    resolve(cloneDeep(SOURCES));
-  }, 2000));
+  return new Promise(resolve =>
+    setTimeout(() => {
+      resolve(cloneDeep(SOURCES));
+    }, 2000)
+  );
 }
 
 let configuration = {

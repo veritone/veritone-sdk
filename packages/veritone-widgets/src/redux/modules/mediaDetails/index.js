@@ -1,25 +1,9 @@
-import {
-  get,
-  has,
-  findLastIndex,
-  findIndex,
-  groupBy,
-  forEach,
-  map,
-  values,
-  uniqBy,
-  keyBy,
-  isMatch,
-  noop
-} from 'lodash';
+import { get, has, values, uniqBy, keyBy, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
 export const LOAD_ENGINE_CATEGORIES_SUCCESS = 'LOAD_ENGINE_CATEGORIES_SUCCESS';
 export const LOAD_ENGINE_CATEGORIES_FAILURE = 'LOAD_ENGINE_CATEGORIES_FAILURE';
-export const LOAD_ENGINE_RESULTS = 'LOAD_ENGINE_RESULTS';
-export const LOAD_ENGINE_RESULTS_SUCCESS = 'LOAD_ENGINE_RESULTS_SUCCESS';
-export const LOAD_ENGINE_RESULTS_FAILURE = 'LOAD_ENGINE_RESULTS_FAILURE';
 export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID =
   'CLEAR_ENGINE_RESULTS_BY_ENGINE_ID';
 export const LOAD_TDO = 'LOAD_TDO';
@@ -70,8 +54,6 @@ export const namespace = 'mediaDetails';
 
 const defaultMDPState = {
   engineCategories: [],
-  engineResultsByEngineId: {},
-  engineResultRequestsByEngineId: {}, // A list of engine result request so we don't request already fetched data.
   tdo: null,
   isLoadingTdo: false,
   selectedEngineCategory: null,
@@ -143,161 +125,6 @@ export default createReducer(defaultState, {
         error: errorMessage || 'unknown error',
         warning: warn || null,
         engineCategories: []
-      }
-    };
-  },
-  [LOAD_ENGINE_RESULTS](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    let resultRequests =
-      state[widgetId].engineResultRequestsByEngineId[payload.engineId] || [];
-    const requestInsertIndex = findLastIndex(resultRequests, request => {
-      return request.stopOffsetMs < payload.startOffsetMs;
-    });
-    resultRequests = [
-      ...resultRequests.slice(0, requestInsertIndex + 1),
-      {
-        startOffsetMs: payload.startOffsetMs,
-        stopOffsetMs: payload.stopOffsetMs,
-        status: 'FETCHING'
-      },
-      ...resultRequests.slice(requestInsertIndex + 1)
-    ];
-
-    let engineResults =
-      state[widgetId].engineResultsByEngineId[payload.engineId] || [];
-    let resultInsertIndex = findLastIndex(engineResults, result => {
-      return (
-        result.series[result.series.length - 1].startTimeMs <=
-        payload.startOffsetMs
-      );
-    });
-
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        engineResultRequestsByEngineId: {
-          ...state[widgetId].engineResultRequestsByEngineId,
-          [payload.engineId]: [...resultRequests]
-        },
-        engineResultsByEngineId: {
-          ...state[widgetId].engineResultsByEngineId,
-          [payload.engineId]: [
-            ...engineResults.slice(0, resultInsertIndex + 1),
-            {
-              startOffsetMs: payload.startOffsetMs,
-              stopOffsetMs: payload.stopOffsetMs,
-              status: 'FETCHING'
-            },
-            ...engineResults.slice(resultInsertIndex + 1)
-          ]
-        }
-      }
-    };
-  },
-  [LOAD_ENGINE_RESULTS_SUCCESS](
-    state,
-    {
-      payload,
-      meta: { widgetId, startOffsetMs, stopOffsetMs, engineId }
-    }
-  ) {
-    const previousResultsByEngineId =
-      state[widgetId].engineResultsByEngineId || {};
-    const engineResultRequestsById =
-      state[widgetId].engineResultRequestsByEngineId;
-    // It is possible results were requested by
-    let resultsGroupedByEngineId;
-    if (payload.length) {
-      resultsGroupedByEngineId = groupBy(payload, 'engineId');
-    } else {
-      // handle no results case
-      const tdoId = state[widgetId].tdo.id;
-      resultsGroupedByEngineId = {};
-      resultsGroupedByEngineId[engineId] = [
-        {
-          startOffsetMs,
-          stopOffsetMs,
-          tdoId,
-          engineId
-        }
-      ];
-    }
-
-    forEach(resultsGroupedByEngineId, (results, engineId) => {
-      // process only results with jsondata
-      const resultsWithData = results.filter(
-        result => !!result && !!result.jsondata
-      );
-      if (!previousResultsByEngineId[engineId]) {
-        // Data hasn't been retrieved for this engineId yet
-        previousResultsByEngineId[engineId] = map(resultsWithData, 'jsondata');
-      } else {
-        // New results need to be merged with previously fetched results
-        let insertionIndex = findIndex(previousResultsByEngineId[engineId], {
-          startOffsetMs,
-          stopOffsetMs,
-          status: 'FETCHING'
-        });
-
-        // TODO: fitler out any duplicate data that overflows time chunks.
-        previousResultsByEngineId[engineId] = [
-          ...previousResultsByEngineId[engineId].slice(0, insertionIndex),
-          ...map(resultsWithData, 'jsondata'),
-          ...previousResultsByEngineId[engineId].slice(insertionIndex + 1)
-        ];
-      }
-      const fetchingOffsetRequest = {
-        startOffsetMs: startOffsetMs,
-        stopOffsetMs: stopOffsetMs,
-        status: 'FETCHING'
-      };
-      engineResultRequestsById[engineId] = engineResultRequestsById[
-        engineId
-      ].map(request => {
-        if (isMatch(request, fetchingOffsetRequest)) {
-          return {
-            ...request,
-            status: 'SUCCESS'
-          };
-        }
-        return request;
-      });
-    });
-
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: null,
-        engineResultsByEngineId: {
-          ...previousResultsByEngineId
-        },
-        engineResultRequestsByEngineId: {
-          ...engineResultRequestsById
-        }
-      }
-    };
-  },
-  [LOAD_ENGINE_RESULTS_FAILURE](
-    state,
-    {
-      meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
-    }
-  ) {
-    const errorMessage =
-      `Error fetching engine ${engineId} results for offset ${startOffsetMs} - ${stopOffsetMs} :` +
-      get(error, 'message', error);
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: errorMessage || 'uknown error'
       }
     };
   },
@@ -823,11 +650,6 @@ const local = state => state[namespace];
 
 export const getEngineCategories = (state, widgetId) =>
   get(local(state), [widgetId, 'engineCategories']);
-export const getEngineResultsByEngineId = (state, widgetId) =>
-  get(local(state), [widgetId, 'engineResultsByEngineId']);
-export const getEngineResultRequestsByEngineId = (state, widgetId, engineId) =>
-  get(local(state), [widgetId, 'engineResultRequestsByEngineId', engineId]) ||
-  [];
 export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
 export const isLoadingTdo = (state, widgetId) =>
   get(local(state), [widgetId, 'isLoadingTdo']);
@@ -879,37 +701,6 @@ export const loadEngineCategoriesSuccess = (widgetId, result) => ({
 export const loadEngineCategoriesFailure = (widgetId, { error }) => ({
   type: LOAD_ENGINE_CATEGORIES_FAILURE,
   meta: { error, widgetId }
-});
-
-export const loadEngineResultsRequest = (
-  widgetId,
-  engineId,
-  startOffsetMs,
-  stopOffsetMs
-) => ({
-  type: LOAD_ENGINE_RESULTS,
-  payload: { engineId, startOffsetMs, stopOffsetMs },
-  meta: { widgetId }
-});
-
-export const loadEngineResultsSuccess = (
-  result,
-  { startOffsetMs, stopOffsetMs, engineId, widgetId }
-) => ({
-  type: LOAD_ENGINE_RESULTS_SUCCESS,
-  payload: result,
-  meta: { widgetId, startOffsetMs, stopOffsetMs, engineId }
-});
-
-export const loadEngineResultsFailure = ({
-  error,
-  startOffsetMs,
-  stopOffsetMs,
-  engineId,
-  widgetId
-}) => ({
-  type: LOAD_ENGINE_RESULTS_FAILURE,
-  meta: { error, startOffsetMs, stopOffsetMs, engineId, widgetId }
 });
 
 export const clearEngineResultsByEngineId = (engineId, widgetId) => ({
