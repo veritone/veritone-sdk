@@ -77,15 +77,14 @@ import {
   saveAssetDataFailure,
   createFileAssetSuccess,
   createFileAssetFailure,
-  createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
   isEditModeEnabled,
-  isUserGeneratedTranscriptEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
   setEditButtonState,
-  getSelectedEngineId
+  getSelectedEngineId,
+  setShowTranscriptBulkEditSnackState
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -109,7 +108,7 @@ const tdoInfoQueryClause = `id
       uri
     }`;
 
-const engineRunsQueryClause = `engineRuns {
+const engineRunsQueryClause = `engineRuns(limit: 1000) {
       records {
         engine {
           id
@@ -152,19 +151,6 @@ function processEngineRuns(engineRuns) {
   const engineCategories = [];
 
   engineRuns
-    .map(engineRun => {
-      const engineId = get(engineRun, 'engine.id');
-      if (isUserGeneratedTranscriptEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-          name: 'Transcription',
-          iconClass: 'icon-transcription',
-          categoryType: 'transcript',
-          editable: true
-        };
-      }
-      return engineRun;
-    })
     // filter those that have category, category icon, and are supported categories
     .filter(
       engineRun =>
@@ -612,22 +598,17 @@ function* createFileAssetSaga(
   type,
   contentType,
   sourceData,
-  fileData
+  fileData,
+  isUserEdited
 ) {
-  if (sourceData.sourceEngineId) {
-    return yield put(
-      saveAssetDataFailure(widgetId, {
-        error: 'Source engine id must be set on the engine result'
-      })
-    );
-  }
   const requestTdo = yield select(getTdo, widgetId);
   const createAssetQuery = `mutation createAsset(
     $tdoId: ID!,
     $type: String,
     $contentType: String,
     $file: UploadedFile,
-    $sourceData: SetAssetSourceData
+    $sourceData: SetAssetSourceData,
+    $isUserEdited: Boolean
   ){
     createAsset( input: {
       containerId: $tdoId,
@@ -635,7 +616,7 @@ function* createFileAssetSaga(
       contentType: $contentType,
       sourceData: $sourceData,
       file: $file,
-      isUserEdited: true
+      isUserEdited: $isUserEdited
     })
     { id }
   }`;
@@ -645,7 +626,8 @@ function* createFileAssetSaga(
     type,
     contentType,
     file: fileData,
-    sourceData
+    sourceData,
+    isUserEdited
   };
 
   const config = yield select(configModule.getConfig);
@@ -742,7 +724,8 @@ function* createTranscriptBulkEditAssetSaga(
       type,
       contentType,
       sourceData,
-      text
+      text,
+      false
     );
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
@@ -899,7 +882,7 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
 
-  return yield put(createBulkEditTranscriptAssetSuccess(widgetId));
+  return yield put(setShowTranscriptBulkEditSnackState(widgetId, true));
 }
 
 function* watchUpdateTdoContentTemplates() {
@@ -1322,11 +1305,11 @@ function* watchSaveAssetData() {
         getTranscriptEditAssetData,
         action.payload.selectedEngineId
       );
-      if (assetData.isBulkEdit) {
+      if (assetData.text) {
         const contentType = 'text/plain';
-        const type = 'v-bulk-edit-transcript';
-        const sourceData = '{}';
+        const type = 'bulk-edit-transcript';
         const { widgetId } = action.meta;
+        const sourceData = {};
         // do save bulk transcript asset and return
         return yield call(
           createTranscriptBulkEditAssetSaga,
@@ -1338,8 +1321,6 @@ function* watchSaveAssetData() {
           action.payload.selectedEngineId
         );
       }
-      delete assetData.isBulkEdit;
-      assetData = [assetData];
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(
         getFaceEngineAssetData,
@@ -1382,7 +1363,8 @@ function* watchSaveAssetData() {
           type,
           contentType,
           sourceData,
-          jsonData
+          jsonData,
+          true
         )
       );
     });

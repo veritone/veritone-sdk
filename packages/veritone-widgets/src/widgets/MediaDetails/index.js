@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
+import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Grow from '@material-ui/core/Grow';
@@ -23,7 +24,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some } from 'lodash';
+import { find, get, some, includes } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -95,15 +96,14 @@ const programLiveImageNullState =
     currentMediaPlayerTime: state.player.currentTime,
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isUserGeneratedTranscriptEngineId:
-      mediaDetailsModule.isUserGeneratedTranscriptEngineId,
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
-    isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id)
+    isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),
+    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -119,7 +119,8 @@ const programLiveImageNullState =
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
-    setEditButtonState: mediaDetailsModule.setEditButtonState
+    setEditButtonState: mediaDetailsModule.setEditButtonState,
+    setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState
   },
   null,
   { withRef: true }
@@ -136,7 +137,6 @@ class MediaDetailsWidget extends React.Component {
     onRunProcess: func,
     onClose: func,
     updateTdoRequest: func,
-    isUserGeneratedTranscriptEngineId: func,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -309,7 +309,9 @@ class MediaDetailsWidget extends React.Component {
     discardUnsavedChanges: func,
     isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
-    isEditButtonDisabled: bool
+    isEditButtonDisabled: bool,
+    setShowTranscriptBulkEditSnackState: func,
+    showTranscriptBulkEditSnack: bool
   };
 
   static contextTypes = {
@@ -557,16 +559,11 @@ class MediaDetailsWidget extends React.Component {
       // nullstate not needed for RealTime running or failed engine if there are results available
       return;
     }
-    let onRunProcessCallback = null;
-    if (!this.props.isUserGeneratedTranscriptEngineId(selectedEngineId)) {
-      // enable rerun for non-user generated engine results
-      onRunProcessCallback = this.handleRunProcess;
-    }
     return (
       <EngineOutputNullState
         engineStatus={engineStatus}
         engineName={engineName}
-        onRunProcess={onRunProcessCallback}
+        onRunProcess={this.handleRunProcess}
       />
     );
   };
@@ -625,16 +622,34 @@ class MediaDetailsWidget extends React.Component {
     if (!this.isEditableEngineResults()) {
       return false;
     }
-    if (get(this.props.selectedEngineCategory, 'categoryType') === 'face') {
-      const selectedEngine = find(this.props.selectedEngineCategory.engines, {
-        id: this.props.selectedEngineId
-      });
-      return (
-        !selectedEngine.hasUserEdits || this.props.isDisplayingUserEditedOutput
-      );
+    const editableCategoryTypes = ['face', 'transcript'];
+    const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
+    if (includes(editableCategoryTypes, this.props.selectedEngineCategory.categoryType) &&
+      get(selectedEngine, 'hasUserEdits') &&
+      !this.props.isDisplayingUserEditedOutput) {
+      return false;
     }
-
     return true;
+  };
+
+  closeTranscriptBulkEditSnack = () => {
+    this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
+  };
+
+  renderTranscriptBulkEditSnack = () => {
+    return (
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={this.props.showTranscriptBulkEditSnack}
+        autoHideDuration={5000}
+        onClose={this.closeTranscriptBulkEditSnack}
+        message={
+          <span className={styles.snackbarMessageText}>
+            {`Bulk edit transcript will run in the background and may take some time to finish.`}
+          </span>
+        }
+      />
+    );
   };
 
   render() {
@@ -1041,10 +1056,10 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutputWidget
+                        tdo={tdo}
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
-                        data={selectedEngineResults}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1055,7 +1070,6 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
-                        onSave={this.onSaveEdit}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1211,6 +1225,8 @@ class MediaDetailsWidget extends React.Component {
                 onSubmit={this.updateContentTemplates}
               />
             )}
+
+          {this.renderTranscriptBulkEditSnack()}
         </Paper>
       </FullScreenDialog>
     );

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
+import { find } from 'lodash';
 import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
@@ -21,11 +22,12 @@ export default class TranscriptEngineOutput extends Component {
         status: string,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            guid: string,
             words: arrayOf(
               shape({
-                word: string,
+                word: string.isRequired,
                 confidence: number
               })
             )
@@ -37,8 +39,8 @@ export default class TranscriptEngineOutput extends Component {
     selectedEngineId: string,
     engines: arrayOf(
       shape({
-        id: string,
-        name: string
+        id: string.isRequired,
+        name: string.isRequired
       })
     ),
     title: string,
@@ -64,13 +66,17 @@ export default class TranscriptEngineOutput extends Component {
     mediaPlayerTimeMs: number,
     mediaPlayerTimeIntervalMs: number,
     outputNullState: node,
-    bulkEditEnabled: bool
+    bulkEditEnabled: bool,
+    showingUserEditedOutput: bool,
+    onToggleUserEditedOutput: func,
+    viewTypeSelectionEnabled: bool
   };
 
   static defaultProps = {
     title: 'Transcription',
     editMode: false,
     editType: Edit.SNIPPET,
+    viewTypeSelectionEnabled: false,
     mediaPlayerTimeMs: 0,
     mediaPlayerTimeIntervalMs: 1000
   };
@@ -83,6 +89,11 @@ export default class TranscriptEngineOutput extends Component {
       editType: Edit.SNIPPET
     };
   }
+
+  handleUserEditChange = evt => {
+    this.props.onToggleUserEditedOutput &&
+    this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+  };
 
   handleViewChange = event => {
     this.setState({ viewType: event.target.value });
@@ -107,24 +118,61 @@ export default class TranscriptEngineOutput extends Component {
         aria-label="edit_mode"
         value={editType}
         name="editMode"
-        className={classNames(styles.radioButton)}
+        className={classNames(styles.radioButtonGroup)}
         onChange={this.handleEditChange}
       >
         <FormControlLabel
           value={Edit.SNIPPET}
-          className={styles.label}
-          control={<Radio color="primary" />}
-          label="Snippet Edit"
+          classes={{label: styles.radioLabel, root: styles.radioLabelRoot}}
+          control={<Radio color="primary" disableRipple classes={{root: styles.radioRoot}}/>}
+          label="Snippet Edit Mode"
         />
         {this.props.bulkEditEnabled && (
           <FormControlLabel
             value={Edit.BULK}
-            className={styles.label}
-            control={<Radio color="primary" />}
-            label="Bulk Edit"
+            classes={{label: styles.radioLabel, root: styles.radioLabelRoot}}
+            control={<Radio color="primary" disableRipple classes={{root: styles.radioRoot}}/>}
+            label="Bulk Edit Mode"
           />
         )}
       </RadioGroup>
+    );
+  }
+
+  renderResultOptions() {
+    const {
+      showingUserEditedOutput
+    } = this.props;
+    return (
+        <Select
+          autoWidth
+          value={showingUserEditedOutput ? 'userEdited' : 'original'}
+          onChange={this.handleUserEditChange}
+          className={styles.outputHeaderSelect}
+          MenuProps={{
+            anchorOrigin: {
+              horizontal: 'center',
+              vertical: 'bottom'
+            },
+            transformOrigin: {
+              horizontal: 'center'
+            },
+            getContentAnchorEl: null
+          }}
+        >
+          <MenuItem
+            value="userEdited"
+            className={classNames(styles.selectMenuItem)}
+          >
+            User Edited
+          </MenuItem>
+          <MenuItem
+            value="original"
+            className={classNames(styles.selectMenuItem)}
+          >
+            Original
+          </MenuItem>
+        </Select>
     );
   }
 
@@ -133,7 +181,7 @@ export default class TranscriptEngineOutput extends Component {
       <Select
         autoWidth
         value={this.state.viewType}
-        className={styles.viewDropdown}
+        className={styles.outputHeaderSelect}
         onChange={this.handleViewChange}
         MenuProps={{
           anchorOrigin: {
@@ -146,10 +194,10 @@ export default class TranscriptEngineOutput extends Component {
           getContentAnchorEl: null
         }}
       >
-        <MenuItem value={View.TIME} className={classNames(styles.view)}>
+        <MenuItem value={View.TIME} className={classNames(styles.selectMenuItem)}>
           Time
         </MenuItem>
-        <MenuItem value={View.OVERVIEW} className={classNames(styles.view)}>
+        <MenuItem value={View.OVERVIEW} className={classNames(styles.selectMenuItem)}>
           Overview
         </MenuItem>
       </Select>
@@ -164,9 +212,10 @@ export default class TranscriptEngineOutput extends Component {
       editMode,
       onEngineChange,
       onExpandClick,
-      headerClassName
+      headerClassName,
+      viewTypeSelectionEnabled
     } = this.props;
-
+    const selectedEngine = find(engines, { id: selectedEngineId });
     return (
       <EngineOutputHeader
         title={title}
@@ -178,7 +227,9 @@ export default class TranscriptEngineOutput extends Component {
         className={classNames(headerClassName)}
       >
         <div className={classNames(styles.controllers)}>
-          {editMode ? this.renderEditOptions() : this.renderViewOptions()}
+          {editMode && (this.renderEditOptions())}
+          {!editMode && selectedEngine && selectedEngine.hasUserEdits && (this.renderResultOptions())}
+          {!editMode && viewTypeSelectionEnabled && (this.renderViewOptions())}
         </div>
       </EngineOutputHeader>
     );

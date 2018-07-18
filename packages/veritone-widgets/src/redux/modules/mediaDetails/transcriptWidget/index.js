@@ -6,6 +6,7 @@ import { get, set, isEqual, cloneDeep } from 'lodash';
 // import { fromJS } from 'immutable';  // with immutable js
 
 import { helpers } from 'veritone-redux-common';
+
 const { createReducer } = helpers;
 
 export const transcriptNamespace = 'veritoneTranscriptWidget';
@@ -275,33 +276,19 @@ export const reset = () => ({ type: RESET });
 export const change = newData => ({ type: CHANGE, data: newData });
 export const clearData = () => ({ type: CLEAR_DATA });
 export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData });
-export const updateEditStatus = state => ({
-  type: UPDATE_EDIT_STATUS,
-  hasUserEdits: this.hasUserEdits(state)
-});
 export const currentData = state => get(state[transcriptNamespace], 'data');
 export const hasUserEdits = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
 };
+
 export const getTranscriptEditAssetData = state => {
   const { isBulkEdit, data } = state[transcriptNamespace];
-
-  const changedData = {
-    isBulkEdit: isBulkEdit,
-    sourceEngineId: 'bde0b023-333d-acb0-e01a-f95c74214607',
-    sourceEngineName: 'User Generated'
-  };
-
   if (isBulkEdit) {
-    changedData.text = get(data, '[0].series[0].words[0].word', '');
-  } else {
-    let series = [];
-    data.forEach(chunk => {
-      series = series.concat(chunk.series);
-    });
-    changedData.series = series;
+    return {
+      text: get(data, '[0].series[0].words[0].word', '')
+    };
   }
-
-  return changedData;
+  // return all chunks
+  return data;
 };

@@ -1,54 +1,83 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy, noop } from 'lodash';
+import { get, isEqual, orderBy, pick, noop } from 'lodash';
 
 import { connect } from 'react-redux';
-import { util } from 'veritone-redux-common';
+import { modules, util } from 'veritone-redux-common';
 import * as TranscriptRedux from '../../redux/modules/mediaDetails/transcriptWidget';
 import transcriptSaga, {
   changeWidthDebounce
 } from '../../redux/modules/mediaDetails/transcriptWidget/saga';
-import { AlertDialog } from 'veritone-react-common';
 import {
+  AlertDialog,
   TranscriptEngineOutput,
   TranscriptEditMode
 } from 'veritone-react-common';
+
+const {
+  engineResults: engineResultsModule
+} = modules;
 
 const saga = util.reactReduxSaga.saga;
 
 @saga(transcriptSaga)
 @connect(
-  state => ({
+  (state, { selectedEngineId }) => ({
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
-    currentData: TranscriptRedux.currentData(state)
+    currentData: TranscriptRedux.currentData(state),
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
+      state,
+      selectedEngineId
+    ),
+    selectedEngineResults: engineResultsModule.engineResultsByEngineId(
+      state,
+      selectedEngineId
+    ),
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
     //redo: TranscriptRedux.redo,           //Uncomment when needed to enable redo option
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
-    receiveData: TranscriptRedux.receiveData
+    receiveData: TranscriptRedux.receiveData,
+    fetchEngineResults: engineResultsModule.fetchEngineResults
   },
   null,
   { withRef: true }
 )
 export default class TranscriptEngineOutputWidget extends Component {
   static propTypes = {
-    data: arrayOf(
+    tdo: shape({
+      id: string,
+      startDateTime: string,
+      stopDateTime: string
+    }).isRequired,
+    selectedEngineResults: arrayOf(
       shape({
-        startTimeMs: number,
-        stopTimeMs: number,
-        status: string,
+        sourceEngineId: string.isRequired,
         series: arrayOf(
           shape({
-            startTimeMs: number,
-            stopTimeMs: number,
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
             words: arrayOf(
               shape({
-                word: string,
-                confidence: number
+                word: string.isRequired,
+                confidence: number.isRequired
               })
-            )
+            ),
+            object: shape({
+              label: string,
+              type: string,
+              uri: string,
+              entityId: string,
+              libraryId: string,
+              confidence: number,
+              text: string
+            }),
+            boundingPoly: arrayOf(shape({
+              x: number,
+              y: number
+            }))
           })
         )
       })
@@ -57,7 +86,6 @@ export default class TranscriptEngineOutputWidget extends Component {
       shape({
         startTimeMs: number,
         stopTimeMs: number,
-        status: string,
         series: arrayOf(shape({}))
       })
     ),
@@ -96,7 +124,10 @@ export default class TranscriptEngineOutputWidget extends Component {
     receiveData: func.isRequired,
     hasUserEdits: bool,
     outputNullState: node,
-    bulkEditEnabled: bool
+    bulkEditEnabled: bool,
+
+    fetchEngineResults: func,
+    isDisplayingUserEditedOutput: bool
   };
 
   state = {
@@ -107,7 +138,7 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const nextData = get(nextProps, 'data');
+    const nextData = get(nextProps, 'selectedEngineResults');
     nextData &&
       nextData.map(chunk => {
         chunk.series &&
@@ -118,7 +149,7 @@ export default class TranscriptEngineOutputWidget extends Component {
       });
 
     const prevProps = prevState.props;
-    !isEqual(prevProps.data, nextData) && prevProps.receiveData(nextData);
+    !isEqual(prevProps.selectedEngineResults, nextData) && prevProps.receiveData(nextData);
     return { ...prevState, props: nextProps };
   }
 
@@ -155,6 +186,19 @@ export default class TranscriptEngineOutputWidget extends Component {
     }
   };
 
+  handleToggleEditedOutput = showUserEdited => {
+    const tdo = this.props.tdo;
+    this.props.fetchEngineResults({
+      engineId: this.props.selectedEngineId,
+      tdo: tdo,
+      startOffsetMs: 0,
+      stopOffsetMs:
+        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+      ignoreUserEdited: !showUserEdited
+    });
+
+  };
+
   handleAlertConfirm = () => {
     this.props.reset();
     this.state.alertConfirmAction();
@@ -172,26 +216,25 @@ export default class TranscriptEngineOutputWidget extends Component {
   };
 
   render() {
-    const {
-      title,
-      currentData,
-      engines,
-      selectedEngineId,
-      className,
-      headerClassName,
-      contentClassName,
-      editMode,
-      onClick,
-      onScroll,
-      onExpandClicked,
-      mediaLengthMs,
-      neglectableTimeMs,
-      estimatedDisplayTimeMs,
-      mediaPlayerTimeMs,
-      mediaPlayerTimeIntervalMs,
-      outputNullState,
-      bulkEditEnabled
-    } = this.props;
+    const transcriptEngineProps = pick(this.props, [
+      'title',
+      'engines',
+      'selectedEngineId',
+      'className',
+      'headerClassName',
+      'contentClassName',
+      'editMode',
+      'onClick',
+      'onScroll',
+      'onExpandClicked',
+      'mediaLengthMs',
+      'neglectableTimeMs',
+      'estimatedDisplayTimeMs',
+      'mediaPlayerTimeMs',
+      'mediaPlayerTimeIntervalMs',
+      'outputNullState',
+      'bulkEditEnabled'
+    ]);
 
     const alertTitle = 'Unsaved Transcript Changes';
     const alertDescription =
@@ -202,28 +245,14 @@ export default class TranscriptEngineOutputWidget extends Component {
     return (
       <Fragment>
         <TranscriptEngineOutput
-          title={title}
-          data={currentData}
-          engines={engines}
-          selectedEngineId={selectedEngineId}
-          className={className}
-          headerClassName={headerClassName}
-          contentClassName={contentClassName}
-          editMode={editMode}
+          data={this.props.currentData}
+          {...transcriptEngineProps}
           onChange={this.handleContentChanged}
           editType={this.state.editMode}
           onEditTypeChange={this.handleOnEditModeChange}
-          onClick={onClick}
-          onScroll={onScroll}
           onEngineChange={this.handleEngineChange}
-          onExpandClicked={onExpandClicked}
-          mediaLengthMs={mediaLengthMs}
-          neglectableTimeMs={neglectableTimeMs}
-          estimatedDisplayTimeMs={estimatedDisplayTimeMs}
-          mediaPlayerTimeMs={mediaPlayerTimeMs}
-          mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
-          outputNullState={outputNullState}
-          bulkEditEnabled={bulkEditEnabled}
+          showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
         <AlertDialog
           open={this.state.alert}

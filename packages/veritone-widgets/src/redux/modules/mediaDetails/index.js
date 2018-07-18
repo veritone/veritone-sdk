@@ -1,4 +1,4 @@
-import { get, has, values, uniqBy, keyBy, noop } from 'lodash';
+import { get, has, find, values, uniqBy, keyBy, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -36,12 +36,9 @@ export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
 export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
-export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
 export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
 export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
-export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
-  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
 export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
@@ -49,6 +46,7 @@ export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
+export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 
 export const namespace = 'mediaDetails';
 
@@ -75,7 +73,8 @@ const defaultMDPState = {
     confirmButtonLabel: 'Save',
     nextAction: noop
   },
-  isEditButtonDisabled: false
+  isEditButtonDisabled: false,
+  showTranscriptBulkEditSnack: false
 };
 
 const defaultState = {};
@@ -101,13 +100,19 @@ export default createReducer(defaultState, {
       meta: { warn, widgetId }
     }
   ) {
+    let selectedEngineCategory = state[widgetId].selectedEngineCategory;
+    const selectedEngineCategoryNewValue = find(payload, {id: get(selectedEngineCategory, 'id')});
+    if (selectedEngineCategory && selectedEngineCategoryNewValue) {
+      selectedEngineCategory = selectedEngineCategoryNewValue;
+    }
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
         error: null,
         warning: warn || null,
-        engineCategories: payload
+        engineCategories: payload,
+        selectedEngineCategory: selectedEngineCategory
       }
     };
   },
@@ -643,7 +648,22 @@ export default createReducer(defaultState, {
         isEditButtonDisabled
       }
     };
-  }
+  },
+  [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](
+    state,
+    {
+      showTranscriptBulkEditSnack,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        showTranscriptBulkEditSnack
+      }
+    };
+  },
 });
 
 const local = state => state[namespace];
@@ -676,16 +696,12 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
-export const isUserGeneratedTranscriptEngineId = engineId => {
-  return (
-    engineId === 'bulk-edit-transcript' ||
-    engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
-  );
-};
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const isEditButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isEditButtonDisabled']);
+export const showTranscriptBulkEditSnack = (state, widgetId) =>
+  get(local(state), [widgetId, 'showTranscriptBulkEditSnack']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -701,12 +717,6 @@ export const loadEngineCategoriesSuccess = (widgetId, result) => ({
 export const loadEngineCategoriesFailure = (widgetId, { error }) => ({
   type: LOAD_ENGINE_CATEGORIES_FAILURE,
   meta: { error, widgetId }
-});
-
-export const clearEngineResultsByEngineId = (engineId, widgetId) => ({
-  type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
-  payload: { engineId },
-  meta: { widgetId }
 });
 
 export const loadTdoRequest = (widgetId, tdoId, callback) => ({
@@ -843,11 +853,6 @@ export const createFileAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createBulkEditTranscriptAssetSuccess = widgetId => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
-  meta: { widgetId }
-});
-
 export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
   type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
   meta: { error, widgetId }
@@ -881,5 +886,11 @@ export const discardUnsavedChanges = () => ({
 export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
   type: SET_EDIT_BUTTON_STATE,
   isEditButtonDisabled,
+  meta: { widgetId }
+});
+
+export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulkEditSnack) => ({
+  type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
+  showTranscriptBulkEditSnack,
   meta: { widgetId }
 });
