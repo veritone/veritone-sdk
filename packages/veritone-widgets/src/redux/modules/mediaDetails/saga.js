@@ -695,7 +695,9 @@ function* createFileAssetSaga(
         tdo: requestTdo,
         engineId: selectedEngineId,
         startOffsetMs: 0,
-        stopOffsetMs: Date.parse(requestTdo.stopDateTime) - Date.parse(requestTdo.startDateTime),
+        stopOffsetMs:
+          Date.parse(requestTdo.stopDateTime) -
+          Date.parse(requestTdo.startDateTime),
         ignoreUserEdited: false
       })
     );

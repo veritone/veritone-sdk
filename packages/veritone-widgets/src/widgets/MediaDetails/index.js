@@ -206,10 +206,12 @@ class MediaDetailsWidget extends React.Component {
               confidence: number,
               text: string
             }),
-            boundingPoly: arrayOf(shape({
-              x: number,
-              y: number
-            }))
+            boundingPoly: arrayOf(
+              shape({
+                x: number,
+                y: number
+              })
+            )
           })
         )
       })
@@ -533,7 +535,9 @@ class MediaDetailsWidget extends React.Component {
     const isFetchingEngineResults = this.props.isFetchingEngineResults;
     const hasEngineResults =
       get(selectedEngineResults, 'length') &&
-      some(selectedEngineResults, engineResult => get(engineResult, 'series.length'));
+      some(selectedEngineResults, engineResult =>
+        get(engineResult, 'series.length')
+      );
     const isRealTimeEngine =
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||
