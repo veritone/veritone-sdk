@@ -46,8 +46,10 @@ export default async function callGraphQLApi({
     });
 
     let error = new Error('API call failed');
+    // wrap this single error for consistency with graphQL errors, which are always
+    // wrapped.
     error.errors = [e];
-    return error;
+    throw error;
   }
 
   if (response.errors && response.errors.length) {
@@ -60,7 +62,7 @@ export default async function callGraphQLApi({
 
     let error = new Error('API response included errors');
     error.errors = response.errors;
-    return error;
+    throw error;
   }
 
   dispatch({
