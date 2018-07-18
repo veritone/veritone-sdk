@@ -13,7 +13,8 @@ import { isArray, noop } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
-import fetchGraphQLApi from '../../../shared/fetchGraphQLApi';
+import { helpers } from 'veritone-redux-common';
+const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
 
