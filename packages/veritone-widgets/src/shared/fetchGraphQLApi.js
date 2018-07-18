@@ -1,4 +1,4 @@
-export default function callGraphQLApi({
+export default function fetchGraphQLApi({
   endpoint,
   query,
   variables,

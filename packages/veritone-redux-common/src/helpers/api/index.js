@@ -16,7 +16,7 @@ export function commonHeaders(state) {
   return headers;
 }
 
-export function callGraphQLApi({
+export function fetchGraphQLApi({
   endpoint = 'https://api.veritone.com/v3/graphql',
   query,
   variables,
