@@ -849,6 +849,7 @@ function* createTranscriptBulkEditAssetSaga(
       }]
     }) {
       id
+      status
       tasks {
         records {
           id
@@ -876,10 +877,7 @@ function* createTranscriptBulkEditAssetSaga(
       })
     );
   }
-  if (
-    isEmpty(get(runBulkEditJobResponse, 'data.createJob.tasks.records')) ||
-    !get(get(runBulkEditJobResponse, 'data.createJob.tasks.records')[0], 'id')
-  ) {
+  if (get(runBulkEditJobResponse, 'data.createJob.tasks.records[0].status') === 'failed') {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
         error:

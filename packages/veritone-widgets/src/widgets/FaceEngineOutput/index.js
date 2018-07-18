@@ -23,7 +23,8 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType
+  oneOfType,
+  node
 } from 'prop-types';
 import styles from './styles.scss';
 import {
@@ -142,6 +143,7 @@ class FaceEngineOutputContainer extends Component {
       })
     ),
     onEngineChange: func,
+    onRestoreOriginalClick: func,
     editMode: bool,
     currentMediaPlayerTime: number,
     className: string,
@@ -150,6 +152,7 @@ class FaceEngineOutputContainer extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClicked: func,
+    outputNullState: node,
     fetchLibraries: func,
     isFetchingEngineResults: bool,
     isFetchingEntities: bool,
@@ -506,7 +509,9 @@ class FaceEngineOutputContainer extends Component {
       'entitySearchResults',
       'selectedEngineId',
       'onFaceOccurrenceClicked',
-      'isSearchingEntities'
+      'isSearchingEntities',
+      'onRestoreOriginalClick',
+      'outputNullState'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {

@@ -1125,6 +1125,7 @@ class MediaDetailsWidget extends React.Component {
                           this.handleUpdateMediaPlayerTime
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
