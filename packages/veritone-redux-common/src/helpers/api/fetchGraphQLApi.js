@@ -13,7 +13,7 @@ export default function fetchGraphQLApi({
       operationName
     }),
     headers: {
-      Authorization: `bearer ${token}`,
+      Authorization: token ? `bearer ${token}` : null,
       'Content-Type': 'application/json'
     }
   }).then(r => r.json());
