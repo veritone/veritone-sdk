@@ -11,6 +11,7 @@ import {
 import {
   get,
   uniq,
+  union,
   isObject,
   isEmpty,
   isUndefined,
@@ -76,17 +77,19 @@ import {
   getTdo,
   toggleSaveMode,
   saveAssetDataFailure,
+  saveAssetDataSuccess,
   createFileAssetSuccess,
   createFileAssetFailure,
   createBulkEditTranscriptAssetFailure,
+  createBulkEditTranscriptAssetSuccess,
   isEditModeEnabled,
   toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
   setEditButtonState,
   getSelectedEngineId,
-  setShowTranscriptBulkEditSnackState,
-  restoreOriginalEngineResultsFailure
+  restoreOriginalEngineResultsFailure,
+  restoreOriginalEngineResultsSuccess
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
@@ -882,8 +885,7 @@ function* createTranscriptBulkEditAssetSaga(
       })
     );
   }
-
-  return yield put(setShowTranscriptBulkEditSnackState(widgetId, true));
+  yield put(createBulkEditTranscriptAssetSuccess(widgetId));
 }
 
 function* watchUpdateTdoContentTemplates() {
@@ -1011,40 +1013,79 @@ function* fetchSchemas(widgetId, schemaIds) {
 function* watchRestoreOriginalEngineResults() {
   yield takeEvery(RESTORE_ORIGINAL_ENGINE_RESULTS, function*(action) {
     const { widgetId } = action.meta;
-    const { tdo } = action.payload;
+    const { tdo, engineId, removeAllUserEdits } = action.payload;
 
-    const engineResultsToDeleteAssets = get(action.payload, 'engineResults', [])
-      .filter(jsonData => jsonData.userEdited && !!jsonData.assetId);
-    const assetsToDelete = uniq(engineResultsToDeleteAssets.map(jsonData => jsonData.assetId));
+    // these could be partial or retrieved data from ttml assets
+    const fetchedAssetIdsToDelete = get(action.payload, 'engineResults', [])
+      .filter(jsonData => jsonData.sourceEngineId === engineId && jsonData.userEdited && !!jsonData.assetId)
+      .map(jsonData => jsonData.assetId);
+
+    let userEditedVtnAssetIdsToDelete = [];
+    if (removeAllUserEdits) {
+      // list all user edited vtn-standard assets for this tdo and engine
+      // TODO: extract this to a separate saga and reuse
+      const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
+        temporalDataObject(id: $tdoId) {
+          assets (limit: 1000, type: "vtn-standard", orderBy: createdDateTime) {
+            records {
+              id
+              isUserEdited
+              sourceData {
+                engineId
+              }
+            }
+          }
+        }
+      }`;
+      const config = yield select(configModule.getConfig);
+      const { apiRoot, graphQLEndpoint } = config;
+      const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+      const sessionToken = yield select(authModule.selectSessionToken);
+      const oauthToken = yield select(authModule.selectOAuthToken);
+      const token = sessionToken || oauthToken;
+      let getVtnStandardAssetsResponse;
+      try {
+        getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
+          endpoint: graphQLUrl,
+          query: getVtnStandardAssetsQuery,
+          variables: { tdoId: tdo.id },
+          token
+        });
+      } catch (error) {
+        return yield put(
+          restoreOriginalEngineResultsFailure(widgetId, { error })
+        );
+      }
+      userEditedVtnAssetIdsToDelete = get(getVtnStandardAssetsResponse, 'data.temporalDataObject.assets.records', [])
+        .filter(asset => asset.isUserEdited && get(asset, 'sourceData.engineId') === engineId)
+        .map(asset => asset.id);
+    }
+
+    const assetsToDelete = union(fetchedAssetIdsToDelete, userEditedVtnAssetIdsToDelete);
     if (!assetsToDelete.length) {
       return;
     }
 
-    const deleteAssetsResponse = yield call(deleteAssetsSaga, uniq(assetsToDelete));
+    const deleteAssetsResponse = yield call(deleteAssetsSaga, assetsToDelete);
     if (deleteAssetsResponse.errors) {
       // report errors and continue refetching engine results and runs
-      yield put(restoreOriginalEngineResultsFailure, { error: 'Errors deleting user edited engine results for selected engine' });
+      yield put(restoreOriginalEngineResultsFailure(
+        widgetId,
+        { error: 'Errors deleting user edited engine results for selected engine' }));
     }
 
     yield call(refreshEngineRuns, widgetId, tdo.id);
 
-    const refreshEngineResultCalls = [];
-    uniq(engineResultsToDeleteAssets.map(jsonData => jsonData.sourceEngineId))
-      .forEach(engineId => {
-        refreshEngineResultCalls.push(
-          put(
-            engineResultsModule.fetchEngineResults({
-              tdo,
-              engineId,
-              startOffsetMs: 0,
-              stopOffsetMs: Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
-            })
-          )
-        );
-      });
-    yield all(refreshEngineResultCalls);
+    yield put(engineResultsModule.fetchEngineResults({
+        tdo,
+        engineId,
+        startOffsetMs: 0,
+        stopOffsetMs: Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+      })
+    );
 
     yield call(insertIntoIndexSaga, tdo.id);
+    yield put(restoreOriginalEngineResultsSuccess(widgetId));
   });
 }
 
@@ -1374,6 +1415,7 @@ function* watchSaveAssetData() {
         })
       );
     }
+    const { widgetId } = action.meta;
     const createAssetCalls = [];
     forEach(assetData, jsonData => {
       if (get(jsonData, 'series.length')) {
@@ -1395,7 +1437,6 @@ function* watchSaveAssetData() {
         assetId: jsonData.assetId,
         taskId: jsonData.taskId
       };
-      const { widgetId } = action.meta;
       createAssetCalls.push(
         call(
           createFileAssetSaga,
@@ -1408,7 +1449,8 @@ function* watchSaveAssetData() {
         )
       );
     });
-    return yield all(createAssetCalls);
+    yield all(createAssetCalls);
+    yield put(saveAssetDataSuccess(widgetId));
   });
 }
 

@@ -36,19 +36,26 @@ export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
 export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
+export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
 export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
 export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
+  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
 export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
 export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
-export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
+export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE =
+  'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 export const RESTORE_ORIGINAL_ENGINE_RESULTS = 'RESTORE_ORIGINAL_ENGINE_RESULTS';
-export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE = 'RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS =
+  'RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE =
+  'RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -69,14 +76,17 @@ const defaultMDPState = {
   error: null,
   alertDialogConfig: {
     show: false,
-    title: 'Save Changes?',
-    description: 'Would you like to save the changes?',
-    cancelButtonLabel: 'Discard',
-    confirmButtonLabel: 'Save',
-    nextAction: noop
+    title: '',
+    description: '',
+    cancelButtonLabel: '',
+    confirmButtonLabel: '',
+    confirmAction: noop,
+    cancelAction: noop
   },
   isEditButtonDisabled: false,
-  showTranscriptBulkEditSnack: false
+  showTranscriptBulkEditSnack: false,
+  isRestoringOriginalEngineResult: false,
+  isSavingEngineResults: false,
 };
 
 const defaultState = {};
@@ -666,11 +676,132 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [RESTORE_ORIGINAL_ENGINE_RESULTS](
-    state
+  [SAVE_ASSET_DATA](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
   ) {
     return {
-      ...state
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isSavingEngineResults: true,
+        enableSave: false,
+      }
+    };
+  },
+  [SAVE_ASSET_DATA_SUCCESS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isSavingEngineResults: false,
+        enableSave: true,
+      }
+    };
+  },
+  [SAVE_ASSET_DATA_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'Unknown error saving engine results',
+        isSavingEngineResults: false,
+        enableSave: true,
+      }
+    };
+  },
+  [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isSavingEngineResults: false,
+        enableSave: true,
+        showTranscriptBulkEditSnack: true,
+      }
+    };
+  },
+  [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'Unknown error saving bulk transcript edit',
+        isSavingEngineResults: false,
+        enableSave: true,
+      }
+    };
+  },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isEditButtonDisabled: true,
+        isRestoringOriginalEngineResult: true
+      }
+    };
+  },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isEditButtonDisabled: false,
+        isRestoringOriginalEngineResult: false
+      }
+    };
+  },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'Unknown error restoring engine results',
+        isEditButtonDisabled: false,
+        isRestoringOriginalEngineResult: false
+      }
     };
   },
 });
@@ -711,6 +842,10 @@ export const isEditButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isEditButtonDisabled']);
 export const showTranscriptBulkEditSnack = (state, widgetId) =>
   get(local(state), [widgetId, 'showTranscriptBulkEditSnack']);
+export const isRestoringOriginalEngineResult = (state, widgetId) =>
+  get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
+export const isSavingEngineResults = (state, widgetId) =>
+  get(local(state), [widgetId, 'isSavingEngineResults']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -849,6 +984,11 @@ export const saveAssetDataFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
+export const saveAssetDataSuccess = (widgetId) => ({
+  type: SAVE_ASSET_DATA_SUCCESS,
+  meta: { widgetId }
+});
+
 export const createFileAssetSuccess = (widgetId, assetId) => ({
   type: CREATE_FILE_ASSET_SUCCESS,
   payload: {
@@ -867,6 +1007,11 @@ export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
+export const createBulkEditTranscriptAssetSuccess = (widgetId) => ({
+  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
+  meta: { widgetId }
+});
+
 export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
   type: REFRESH_ENGINE_RUNS_SUCCESS,
   payload: {
@@ -874,11 +1019,12 @@ export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
   },
   meta: { widgetId }
 });
-export const openConfirmModal = (nextAction, widgetId) => ({
+
+export const openConfirmModal = (widgetId, modalConfig) => ({
   type: SHOW_CONFIRM_DIALOG,
   payload: {
     show: true,
-    nextAction: nextAction
+    ...modalConfig
   },
   meta: { widgetId }
 });
@@ -904,12 +1050,13 @@ export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulk
   meta: { widgetId }
 });
 
-export const restoreOriginalEngineResults = (widgetId, tdo, selectedEngineId, engineResults) => ({
+export const restoreOriginalEngineResults = (widgetId, tdo, engineId, engineResults, removeAllUserEdits) => ({
   type: RESTORE_ORIGINAL_ENGINE_RESULTS,
   payload: {
     tdo,
-    selectedEngineId,
-    engineResults
+    engineId,
+    engineResults,
+    removeAllUserEdits
   },
   meta: { widgetId }
 });
@@ -917,4 +1064,9 @@ export const restoreOriginalEngineResults = (widgetId, tdo, selectedEngineId, en
 export const restoreOriginalEngineResultsFailure = (widgetId, { error }) => ({
   type: RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE,
   meta: { error, widgetId }
+});
+
+export const restoreOriginalEngineResultsSuccess = (widgetId) => ({
+  type: RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS,
+  meta: { widgetId }
 });
