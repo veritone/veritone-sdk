@@ -1,6 +1,7 @@
 import { isEmpty, keyBy, get, pickBy } from 'lodash';
 import { getConfig } from 'modules/config';
 import fetchGraphQLApi from 'helpers/api/fetchGraphQLApi';
+import callGraphQLApi from 'helpers/api/callGraphQLApi';
 import { createReducer } from 'helpers/redux';
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
 
@@ -63,7 +64,7 @@ export default createReducer(defaultState, {
       ...state,
       isFetchingCategories: false,
       fetchingCategoriesFailed: false,
-      engineCategories: [...action.payload.results]
+      engineCategories: [...action.payload.results.records]
     };
   },
   [FETCH_ENGINE_CATEGORIES_FAILURE](state, action) {
@@ -177,16 +178,12 @@ export function fetchEngines(
   };
 }
 
-export function fetchEngineCategories(
+export const fetchEngineCategories = (
   { offset, limit } = {},
   searchQuery,
-  type,
-  id
-) {
-  return async function action(dispatch, getState) {
-    dispatch({ type: FETCH_ENGINE_CATEGORIES });
-
-    const query = `
+  type
+) => async (dispatch, getState) => {
+  const query = `
       ${engineCategoryFieldsFragment}
       query EngineCategories(
         $name: String = ""
@@ -207,43 +204,23 @@ export function fetchEngineCategories(
       }
     `;
 
-    const config = getConfig(getState());
-    const { apiRoot, graphQLEndpoint } = config;
-    const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-
-    try {
-      const response = await fetchGraphQLApi({
-        endpoint: graphQLUrl,
-        query,
-        variables: {
-          name: searchQuery,
-          offset,
-          limit,
-          type
-        },
-        token: selectSessionToken(getState()) || selectOAuthToken(getState())
-      });
-
-      if (!isEmpty(response.errors) && isEmpty(response.data.results)) {
-        throw response.errors;
-      }
-
-      const results = get(response, 'data.results.records');
-
-      dispatch({
-        type: FETCH_ENGINE_CATEGORIES_SUCCESS,
-        payload: { results },
-        meta: { searchQuery, id }
-      });
-    } catch (err) {
-      dispatch({
-        type: FETCH_ENGINE_CATEGORIES_FAILURE,
-        payload: err,
-        meta: {}
-      });
-    }
-  };
-}
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_ENGINE_CATEGORIES,
+      FETCH_ENGINE_CATEGORIES_SUCCESS,
+      FETCH_ENGINE_CATEGORIES_FAILURE
+    ],
+    query,
+    variables: {
+      name: searchQuery,
+      offset,
+      limit,
+      type
+    },
+    dispatch,
+    getState
+  });
+};
 
 export function getEngines(state) {
   return local(state).enginesById;
