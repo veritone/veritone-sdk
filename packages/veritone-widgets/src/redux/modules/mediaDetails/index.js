@@ -688,7 +688,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isSavingEngineResults: true,
-        enableSave: false,
       }
     };
   },
@@ -703,7 +702,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         isSavingEngineResults: false,
-        enableSave: true,
       }
     };
   },
@@ -720,7 +718,6 @@ export default createReducer(defaultState, {
         ...state[widgetId],
         error: errorMessage || 'Unknown error saving engine results',
         isSavingEngineResults: false,
-        enableSave: true,
       }
     };
   },

@@ -536,6 +536,14 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  hasSelectedEngineResults = () => {
+    const selectedEngineResults = this.props.selectedEngineResults;
+    return get(selectedEngineResults, 'length') &&
+      some(selectedEngineResults, engineResult =>
+        get(engineResult, 'series.length')
+      );
+  };
+
   buildEngineNullStateComponent = () => {
     const selectedEngineId = this.props.selectedEngineId;
     const engines = get(this.props.selectedEngineCategory, 'engines');
@@ -545,12 +553,7 @@ class MediaDetailsWidget extends React.Component {
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
     const engineMode = get(selectedEngine, 'mode');
-    const selectedEngineResults = this.props.selectedEngineResults;
-    const hasEngineResults =
-      get(selectedEngineResults, 'length') &&
-      some(selectedEngineResults, engineResult =>
-        get(engineResult, 'series.length')
-      );
+    const hasEngineResults = this.hasSelectedEngineResults();
     const isRealTimeEngine =
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||
@@ -634,17 +637,26 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
-    if (!this.isEditableEngineResults()) {
+    if (!this.isEditableEngineResults() ||
+        !this.hasSelectedEngineResults()) {
       return false;
     }
+    return true;
+  };
+
+  isEditModeButtonDisabled = () => {
+    return this.props.isEditButtonDisabled || this.isDisplayingOriginalEngineResultForUserEdit();
+  };
+
+  isDisplayingOriginalEngineResultForUserEdit = () => {
     const editableCategoryTypes = ['face', 'transcript'];
     const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
     if (includes(editableCategoryTypes, this.props.selectedEngineCategory.categoryType) &&
       get(selectedEngine, 'hasUserEdits') &&
       !this.props.isDisplayingUserEditedOutput) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   };
 
   closeTranscriptBulkEditSnack = () => {
@@ -993,7 +1005,7 @@ class MediaDetailsWidget extends React.Component {
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
-                        disabled={this.props.isEditButtonDisabled}
+                        disabled={this.isEditModeButtonDisabled()}
                       >
                         EDIT MODE
                       </Button>
