@@ -8,6 +8,7 @@ export const namespace = 'engineResults';
 export const FETCH_ENGINE_RESULTS = `vtn/${namespace}/FETCH_ENGINE_RESULTS`;
 export const FETCH_ENGINE_RESULTS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_RESULTS_SUCCESS`;
 export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESULTS_FAILURE`;
+export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID = `vtn/${namespace}/CLEAR_ENGINE_RESULTS_BY_ENGINE_ID`;
 
 export const defaultState = {
   engineResultsMappedByEngineId: {},
@@ -57,6 +58,15 @@ export default createReducer(defaultState, {
       fetchEngineResultsError:
         get(action, 'payload[0].message') || 'Error fetching engine results'
     };
+  },
+  [CLEAR_ENGINE_RESULTS_BY_ENGINE_ID](state, { engineId }) {
+    return {
+      ...state,
+      engineResultsMappedByEngineId: {
+        ...state.engineResultsMappedByEngineId,
+        [engineId]: []
+      }
+    };
   }
 });
 
@@ -77,6 +87,11 @@ export const isDisplayingUserEditedOutput = (state, engineId) => {
   const results = engineResultsByEngineId(state, engineId);
   return !!find(results, { userEdited: true });
 };
+
+export const clearEngineResultsByEngineId = engineId => ({
+  type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
+  engineId
+});
 
 export const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int, $ignoreUserEdited: Boolean) {
   engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs, ignoreUserEdited: $ignoreUserEdited) {

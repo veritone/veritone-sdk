@@ -71,7 +71,8 @@ const saga = util.reactReduxSaga.saga;
     removeDetectedFace: faceEngineOutput.removeDetectedFace,
     openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
-    cancelFaceEdits: faceEngineOutput.cancelFaceEdits
+    cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
+    clearEngineResultsByEngineId: engineResultsModule.clearEngineResultsByEngineId
   },
   null,
   { withRef: true }
@@ -167,7 +168,8 @@ class FaceEngineOutputContainer extends Component {
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
     pendingUserEdits: bool,
-    isDisplayingUserEditedOutput: bool
+    isDisplayingUserEditedOutput: bool,
+    clearEngineResultsByEngineId: func
   };
 
   state = {
@@ -312,6 +314,7 @@ class FaceEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
+    this.props.clearEngineResultsByEngineId(this.props.selectedEngineId);
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,

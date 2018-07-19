@@ -40,7 +40,8 @@ const saga = util.reactReduxSaga.saga;
     change: changeWidthDebounce,
     reset: TranscriptRedux.reset,
     receiveData: TranscriptRedux.receiveData,
-    fetchEngineResults: engineResultsModule.fetchEngineResults
+    fetchEngineResults: engineResultsModule.fetchEngineResults,
+    clearEngineResultsByEngineId: engineResultsModule.clearEngineResultsByEngineId
   },
   null,
   { withRef: true }
@@ -127,7 +128,8 @@ export default class TranscriptEngineOutputWidget extends Component {
     bulkEditEnabled: bool,
 
     fetchEngineResults: func,
-    isDisplayingUserEditedOutput: bool
+    isDisplayingUserEditedOutput: bool,
+    clearEngineResultsByEngineId: func
   };
 
   state = {
@@ -188,6 +190,7 @@ export default class TranscriptEngineOutputWidget extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
+    this.props.clearEngineResultsByEngineId(this.props.selectedEngineId);
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,
@@ -196,7 +199,6 @@ export default class TranscriptEngineOutputWidget extends Component {
         Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
       ignoreUserEdited: !showUserEdited
     });
-
   };
 
   handleAlertConfirm = () => {
