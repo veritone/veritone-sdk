@@ -65,3 +65,6 @@ This allows redux-common to use more than one version of the API.
 * Added Redux as a peer dependency
 * Added `callGraphQLApi` helper for calling the veritone API with a graphql query within a thunk.
 * Renamed existing internal `callGraphQLApi` helper to `fetchGraphQLApi`
+
+## 3.6.1
+* Fix export of `callGraphQLApi` in 3.6.0 due to babel bug (cannot `export default async function`)
