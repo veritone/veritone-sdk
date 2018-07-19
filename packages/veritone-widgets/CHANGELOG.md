@@ -128,3 +128,7 @@ const MyPage = () => (
 ## 5.2.1
 * Moved Video-React from a peer dependency to a dependency
 * Bumped Redux to 4.0
+
+## 5.2.2
+* Bumped internal veritone-redux-common dependency.
+* Import `fetchGraphQLApi` from veritone-redux-common and remove own internal version.
