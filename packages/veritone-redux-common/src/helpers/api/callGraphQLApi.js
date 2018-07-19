@@ -3,7 +3,7 @@ import { getConfig } from '../../modules/config';
 import { selectOAuthToken, selectSessionToken } from '../../modules/auth';
 import fetchGraphQLApi from './fetchGraphQLApi';
 
-export default async function callGraphQLApi({
+async function callGraphQLApi({
   actionTypes: [requestType, successType, failureType],
   query,
   variables,
@@ -73,3 +73,5 @@ export default async function callGraphQLApi({
 
   return response.data;
 }
+
+export default callGraphQLApi;
