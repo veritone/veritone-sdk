@@ -60,3 +60,8 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.5.0
 * Added regeneratorRuntime to the bundle to prevent build errors.
+
+## 3.6.0
+* Added Redux as a peer dependency
+* Added `callGraphQLApi` helper for calling the veritone API with a graphql query within a thunk.
+* Renamed existing internal `callGraphQLApi` helper to `fetchGraphQLApi`
