@@ -212,7 +212,7 @@ export function fetchEngineCategories(
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
     try {
-      const response = await callGraphQLApi({
+      const response = await fetchGraphQLApi({
         endpoint: graphQLUrl,
         query,
         variables: {
