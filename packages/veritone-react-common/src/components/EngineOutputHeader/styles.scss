@@ -46,6 +46,7 @@
     font-family: Roboto !important;
     font-size: 14px !important;
     line-height: 16px !important;
+    z-index: auto;
   }
 
   .actionIconDivider {
@@ -62,4 +63,8 @@
 
 .engine {
   @include mui-text('body1');
+}
+
+.moreMenuPopperContent {
+  z-index: 1;
 }

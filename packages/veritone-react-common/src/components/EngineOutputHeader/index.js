@@ -100,6 +100,7 @@ class EngineOutputHeader extends Component {
         </Target>
         {isMoreMenuOpen && moreMenuOptions && (
           <Popper
+            className={styles.moreMenuPopperContent}
             placement="bottom-end"
             eventsEnabled={isMoreMenuOpen}
           >
