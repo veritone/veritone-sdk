@@ -989,7 +989,7 @@ class MediaDetailsWidget extends React.Component {
                     </div>
                     {this.showEditButton() && (
                       <Button
-                        variant="raised"
+                        variant="contained"
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
@@ -1036,6 +1036,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
+                        disabled={isSavingEngineResults}
                         onClick={this.checkSaveState}
                       >
                         CANCEL
