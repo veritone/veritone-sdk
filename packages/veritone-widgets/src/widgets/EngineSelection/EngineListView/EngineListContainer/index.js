@@ -26,7 +26,7 @@ import * as engineSelectionModule from '../../../../redux/modules/engineSelectio
 export default class EngineListContainer extends React.Component {
   static propTypes = {
     id: string.isRequired,
-    currentTabIndex: number.isRequired,
+    currentTab: string.isRequired,
     engineIds: arrayOf(string),
     onExploreAllEnginesClick: func,
     noFilterResultsFound: bool.isRequired,
@@ -62,7 +62,7 @@ export default class EngineListContainer extends React.Component {
       );
     }
 
-    if (!this.props.currentTabIndex && this.props.noFilterResultsFound) {
+    if (this.props.currentTab === 'own' && this.props.noFilterResultsFound) {
       return (
         <div className={styles.noResults}>
           <i className="icon-engines" />
@@ -74,7 +74,7 @@ export default class EngineListContainer extends React.Component {
     }
 
     if (isEmpty(this.props.engineIds)) {
-      if (this.props.currentTabIndex) {
+      if (this.props.currentTab === 'explore') {
         return (
           <div className={styles.noResults}>
             <i className="icon-engines" />

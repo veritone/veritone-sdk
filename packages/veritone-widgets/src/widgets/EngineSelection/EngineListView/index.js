@@ -35,7 +35,7 @@ import styles from './styles.scss';
     isFetchingEngines: engineModule.isFetchingEngines(state, id),
     failedToFetchEngines: engineModule.failedToFetchEngines(state, id),
     searchQuery: engineSelectionModule.getSearchQuery(state, id),
-    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state, id),
+    currentTab: engineSelectionModule.getCurrentTab(state, id),
     isSearchOpen: engineSelectionModule.isSearchOpen(state, id)
   }),
   {
@@ -62,7 +62,7 @@ export default class EngineListView extends React.Component {
     searchQuery: string,
     isFetchingEngines: bool.isRequired,
     failedToFetchEngines: bool.isRequired,
-    currentTabIndex: number.isRequired,
+    currentTab: string.isRequired,
     isSearchOpen: bool.isRequired,
     selectEngines: func.isRequired,
     deselectEngines: func.isRequired,
@@ -104,9 +104,10 @@ export default class EngineListView extends React.Component {
   }
 
   handleCheckAll = () => {
-    const enginesToCheck = this.props.currentTabIndex
-      ? this.props.currentResults
-      : this.props.selectedEngineIds;
+    const enginesToCheck =
+      this.props.currentTab === 'explore'
+        ? this.props.currentResults
+        : this.props.selectedEngineIds;
 
     this.props.allEnginesChecked
       ? this.props.uncheckAllEngines(this.props.id)
@@ -132,7 +133,7 @@ export default class EngineListView extends React.Component {
   };
 
   render() {
-    const { checkedEngineIds, currentTabIndex } = this.props;
+    const { checkedEngineIds, currentTab } = this.props;
 
     return (
       <div className={styles.engineSelection}>
@@ -142,7 +143,7 @@ export default class EngineListView extends React.Component {
             <SelectedActionBar
               id={this.props.id}
               selectedEngines={checkedEngineIds}
-              disabledSelectAllMessage={!currentTabIndex}
+              disabledSelectAllMessage={currentTab === 'own'}
               currentResultsCount={this.props.currentResults.length}
               onBack={this.handleOnBack}
               onAddSelected={this.props.selectEngines}
@@ -154,7 +155,7 @@ export default class EngineListView extends React.Component {
           {isEmpty(checkedEngineIds) && (
             <Tabs
               className={styles.tabs}
-              value={this.props.currentTabIndex}
+              value={this.props.currentTab}
               onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
@@ -162,10 +163,12 @@ export default class EngineListView extends React.Component {
             >
               <Tab
                 classes={{ selected: styles.tab }}
+                value="own"
                 label={`Your Engines (${this.props.selectedEngineIds.length})`}
               />
               <Tab
                 classes={{ selected: styles.tab }}
+                value="explore"
                 label="Explore All Engines"
               />
             </Tabs>
@@ -182,9 +185,9 @@ export default class EngineListView extends React.Component {
                 isSearchOpen={this.props.isSearchOpen}
                 isChecked={this.props.allEnginesChecked}
                 actionMenuItems={this.props.actionMenuItems}
-                currentTabIndex={currentTabIndex}
+                currentTab={currentTab}
                 count={
-                  currentTabIndex
+                  currentTab === 'explore'
                     ? this.props.currentResults.length
                     : this.props.selectedEngineIds.length
                 }
@@ -193,9 +196,9 @@ export default class EngineListView extends React.Component {
             <div className={styles.engineList}>
               <EngineListContainer
                 id={this.props.id}
-                currentTabIndex={this.props.currentTabIndex}
+                currentTab={this.props.currentTab}
                 engineIds={
-                  currentTabIndex
+                  currentTab === 'explore'
                     ? this.props.currentResults
                     : this.props.selectedEngineIds
                 }

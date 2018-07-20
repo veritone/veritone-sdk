@@ -14,8 +14,7 @@ import * as engineSelectionModule from '../../../../redux/modules/engineSelectio
 @connect(
   (state, { id }) => ({
     filters: engineSelectionModule.getEngineFilters(state, id),
-    activeSidebarPath: engineSelectionModule.getActiveSidebarPath(state, id),
-    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state, id)
+    activeSidebarPath: engineSelectionModule.getActiveSidebarPath(state, id)
   }),
   {
     addEngineFilter: engineSelectionModule.addEngineFilter,
@@ -38,7 +37,7 @@ export default class EnginesSideBar extends React.Component {
   };
 
   handleFiltersNavigate = newPath => {
-    this.props.setActiveSidebarPath(this.props.id, newPath)
+    this.props.setActiveSidebarPath(this.props.id, newPath);
   };
 
   handleClearFilter = id => {

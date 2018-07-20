@@ -52,12 +52,12 @@ const defaultFilterState = {
 
 const defaultSelectionState = {
   tabState: {
-    0: {
+    own: {
       searchQuery: '',
       isSearchOpen: false,
       filters: defaultFilterState
     },
-    1: {
+    explore: {
       searchQuery: '',
       isSearchOpen: false,
       filters: defaultFilterState
@@ -67,7 +67,7 @@ const defaultSelectionState = {
   selectedEngineIds: [],
   checkedEngineIds: [],
   allEnginesChecked: false,
-  currentTabIndex: 0,
+  currentTab: 'own',
   activeSidebarPath: [],
   deselectedEngineIds: [],
   allEnginesSelected: false
@@ -203,7 +203,7 @@ export default createReducer(defaultState, {
   },
   [ADD_FILTER](state, action) {
     const id = action.meta.id;
-    const currentTab = state[id].currentTabIndex;
+    const currentTab = state[id].currentTab;
     return {
       ...state,
       [id]: {
@@ -225,7 +225,7 @@ export default createReducer(defaultState, {
   },
   [REMOVE_FILTER](state, action) {
     const id = action.meta.id;
-    const currentTab = state[id].currentTabIndex;
+    const currentTab = state[id].currentTab;
     return {
       ...state,
       [id]: {
@@ -247,7 +247,7 @@ export default createReducer(defaultState, {
   },
   [CLEAR_ALL_FILTERS](state, action) {
     const id = action.meta.id;
-    const currentTab = state[id].currentTabIndex;
+    const currentTab = state[id].currentTab;
     return {
       ...state,
       [id]: {
@@ -276,7 +276,7 @@ export default createReducer(defaultState, {
   },
   [SEARCH](state, action) {
     const id = action.meta.id;
-    const currentTab = state[id].currentTabIndex;
+    const currentTab = state[id].currentTab;
     return {
       ...state,
       [id]: {
@@ -295,7 +295,7 @@ export default createReducer(defaultState, {
   },
   [CLEAR_SEARCH](state, action) {
     const id = action.meta.id;
-    const currentTab = state[id].currentTabIndex;
+    const currentTab = state[id].currentTab;
     return {
       ...state,
       [id]: {
@@ -319,14 +319,14 @@ export default createReducer(defaultState, {
       ...state,
       [id]: {
         ...state[id],
-        currentTabIndex: action.payload.tabIndex,
+        currentTab: action.payload.tab,
         activeSidebarPath: []
       }
     };
   },
   [TOGGLE_SEARCH](state, action) {
     const id = action.meta.id;
-    const currentTab = state[id].currentTabIndex;
+    const currentTab = state[id].currentTab;
     return {
       ...state,
       [id]: {
@@ -499,11 +499,11 @@ export function clearAllFilters(id) {
   };
 }
 
-export function changeTab(id, tabIndex) {
+export function changeTab(id, tab) {
   return {
     type: CHANGE_TAB,
     payload: {
-      tabIndex
+      tab
     },
     meta: { id }
   };
@@ -551,15 +551,15 @@ export function pathFor(searchQuery, filters) {
   return [searchQuery, JSON.stringify(filters)];
 }
 
-export function getCurrentTabIndex(state, id) {
-  return get(local(state), [id, 'currentTabIndex']);
+export function getCurrentTab(state, id) {
+  return get(local(state), [id, 'currentTab']);
 }
 
 export function isSearchOpen(state, id) {
   return get(local(state), [
     id,
     'tabState',
-    getCurrentTabIndex(state, id),
+    getCurrentTab(state, id),
     'isSearchOpen'
   ]);
 }
@@ -571,15 +571,10 @@ export function getCurrentResults(state, id) {
       get(local(state), [
         id,
         'tabState',
-        getCurrentTabIndex(state, id),
+        getCurrentTab(state, id),
         'searchQuery'
       ]),
-      get(local(state), [
-        id,
-        'tabState',
-        getCurrentTabIndex(state, id),
-        'filters'
-      ])
+      get(local(state), [id, 'tabState', getCurrentTab(state, id), 'filters'])
     )
   );
   return results;
@@ -589,7 +584,7 @@ export function getSearchQuery(state, id) {
   return get(local(state), [
     id,
     'tabState',
-    getCurrentTabIndex(state, id),
+    getCurrentTab(state, id),
     'searchQuery'
   ]);
 }
@@ -598,7 +593,7 @@ export function getEngineFilters(state, id) {
   return get(local(state), [
     id,
     'tabState',
-    getCurrentTabIndex(state, id),
+    getCurrentTab(state, id),
     'filters'
   ]);
 }
