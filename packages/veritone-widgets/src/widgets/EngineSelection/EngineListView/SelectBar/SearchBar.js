@@ -1,6 +1,5 @@
 import React from 'react';
-import { bool, func, string, number } from 'prop-types';
-import { debounce } from 'lodash';
+import { bool, func, string } from 'prop-types';
 
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
@@ -13,7 +12,6 @@ import styles from './styles.scss';
 export default class SearchBar extends React.Component {
   static propTypes = {
     id: string.isRequired,
-    currentTabIndex: number.isRequired,
     searchQuery: string,
     onToggleSearch: func.isRequired,
     isOpen: bool,
@@ -30,25 +28,6 @@ export default class SearchBar extends React.Component {
     searchQuery: this.props.searchQuery
   };
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      nextProps.currentTabIndex !== prevState.currentTabIndex || // if tab switch
-      !nextProps.isOpen // if closed
-    ) {
-      return {
-        searchQuery: nextProps.searchQuery,
-        currentTabIndex: nextProps.currentTabIndex
-      };
-    }
-
-    return null;
-  }
-
-  forwardChange = debounce(
-    event => this.props.onSearch(event.target.value),
-    300
-  );
-
   handleToggleSearch = () => {
     this.props.onToggleSearch(this.props.id);
 
@@ -59,53 +38,46 @@ export default class SearchBar extends React.Component {
 
   handleChange = event => {
     this.setState({
-      searchQuery: event.target.value,
-      currentTabIndex: this.props.currentTabIndex
+      searchQuery: event.target.value
     });
 
     event.persist();
-    this.forwardChange(event);
+    this.props.onSearch(event);
   };
 
-  renderOpenedState = () => (
-    <TextField
-      className={styles.searchBar}
-      placeholder="Search by engine name"
-      value={this.state.searchQuery}
-      onChange={this.handleChange}
-      inputProps={{
-        className: styles.searchBarInput
-      }}
-      InputProps={{
-        classes: {
-          underline: styles.searchBarUnderline
-        },
-        endAdornment: (
-          <InputAdornment className={styles.searchBarIcon} position="end">
-            <IconButton
-              className={styles.searchBarIcon}
-              onClick={this.handleToggleSearch}
-            >
-              <CloseIcon />
-            </IconButton>
-          </InputAdornment>
-        )
-      }}
-    />
-  );
-
-  renderClosedState = () => (
-    <IconButton
-      onClick={this.handleToggleSearch}
-      className={styles.searchBarIcon}
-    >
-      <SearchIcon />
-    </IconButton>
-  );
-
   render() {
-    return this.props.isOpen
-      ? this.renderOpenedState()
-      : this.renderClosedState();
+    return this.props.isOpen ? (
+      <TextField
+        className={styles.searchBar}
+        placeholder="Search by engine name"
+        value={this.state.searchQuery}
+        onChange={this.handleChange}
+        inputProps={{
+          className: styles.searchBarInput
+        }}
+        InputProps={{
+          classes: {
+            underline: styles.searchBarUnderline
+          },
+          endAdornment: (
+            <InputAdornment className={styles.searchBarIcon} position="end">
+              <IconButton
+                className={styles.searchBarIcon}
+                onClick={this.handleToggleSearch}
+              >
+                <CloseIcon />
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+      />
+    ) : (
+      <IconButton
+        onClick={this.handleToggleSearch}
+        className={styles.searchBarIcon}
+      >
+        <SearchIcon />
+      </IconButton>
+    );
   }
 }

@@ -10,7 +10,7 @@ import {
   shape,
   number
 } from 'prop-types';
-import { isEmpty } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -113,9 +113,11 @@ export default class EngineListView extends React.Component {
       : this.props.checkAllEngines(this.props.id, enginesToCheck);
   };
 
-  handleSearch = name => {
-    this.props.searchEngines(this.props.id, { name });
-  };
+  handleSearch = debounce(
+    event =>
+      this.props.searchEngines(this.props.id, { name: event.target.value }),
+    300
+  );
 
   handleTabChange = (event, tabIndex) => {
     this.props.changeTab(this.props.id, tabIndex);
@@ -169,24 +171,25 @@ export default class EngineListView extends React.Component {
             </Tabs>
           )}
           <div className={styles.engineListContainer}>
-            <SelectBar
-              id={this.props.id}
-              onCheckAll={this.handleCheckAll}
-              searchQuery={this.props.searchQuery}
-              onSearch={this.handleSearch}
-              onClearSearch={this.props.clearSearch}
-              onToggleSearch={this.props.toggleSearch}
-              isSearchOpen={this.props.isSearchOpen}
-              isChecked={this.props.allEnginesChecked}
-              actionMenuItems={this.props.actionMenuItems}
-              hideActionMenuItems={this.props.failedToFetchEngines}
-              currentTabIndex={currentTabIndex}
-              count={
-                currentTabIndex
-                  ? this.props.currentResults.length
-                  : this.props.selectedEngineIds.length
-              }
-            />
+            {!this.props.failedToFetchEngines && (
+              <SelectBar
+                id={this.props.id}
+                onCheckAll={this.handleCheckAll}
+                searchQuery={this.props.searchQuery}
+                onSearch={this.handleSearch}
+                onClearSearch={this.props.clearSearch}
+                onToggleSearch={this.props.toggleSearch}
+                isSearchOpen={this.props.isSearchOpen}
+                isChecked={this.props.allEnginesChecked}
+                actionMenuItems={this.props.actionMenuItems}
+                currentTabIndex={currentTabIndex}
+                count={
+                  currentTabIndex
+                    ? this.props.currentResults.length
+                    : this.props.selectedEngineIds.length
+                }
+              />
+            )}
             <div className={styles.engineList}>
               <EngineListContainer
                 id={this.props.id}

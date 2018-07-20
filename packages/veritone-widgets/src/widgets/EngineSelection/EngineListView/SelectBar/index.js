@@ -18,7 +18,6 @@ export default class SelectBar extends React.Component {
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
     isChecked: bool.isRequired,
-    hideActionMenuItems: bool.isRequired,
     isSearchOpen: bool.isRequired,
     onToggleSearch: func.isRequired,
     actionMenuItems: arrayOf(
@@ -32,10 +31,6 @@ export default class SelectBar extends React.Component {
   };
 
   render() {
-    if (this.props.hideActionMenuItems) {
-      return null;
-    }
-
     return (
       <div className={styles.selectBar}>
         <Checkbox
@@ -48,8 +43,12 @@ export default class SelectBar extends React.Component {
 
         <div className={styles.selectBarIcons}>
           <SearchBar
+            key={
+              this.props.id +
+              this.props.isSearchOpen +
+              this.props.currentTabIndex
+            }
             id={this.props.id}
-            currentTabIndex={this.props.currentTabIndex}
             onSearch={this.props.onSearch}
             onClearSearch={this.props.onClearSearch}
             onToggleSearch={this.props.onToggleSearch}
@@ -62,28 +61,25 @@ export default class SelectBar extends React.Component {
             </div>
           )}
           {this.props.actionMenuItems &&
-            this.props.actionMenuItems.map((item, key) => {
-              if (item.buttonText) {
-                return (
+            this.props.actionMenuItems.map(
+              ({ buttonText, iconClass, onClick }) =>
+                buttonText ? (
                   <Button
-                    key={key} // eslint-disable-line
-                    onClick={item.onClick}
+                    key={`${buttonText}-${iconClass}`}
+                    onClick={onClick}
                     color="primary"
                   >
-                    {item.buttonText}
+                    {buttonText}
                   </Button>
-                );
-              }
-
-              return (
-                <IconButton
-                  key={key} // eslint-disable-line
-                  onClick={item.onClick}
-                >
-                  <i className={item.iconClass} />
-                </IconButton>
-              );
-            })}
+                ) : (
+                  <IconButton
+                    key={`${buttonText}-${iconClass}`}
+                    onClick={onClick}
+                  >
+                    <i className={iconClass} />
+                  </IconButton>
+                )
+            )}
         </div>
       </div>
     );

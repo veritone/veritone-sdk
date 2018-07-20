@@ -375,7 +375,7 @@ export function initializeWidget(id) {
   };
 }
 
-export function refetchEngines(id, currentTabIndex) {
+export function refetchEngines(id) {
   return function action(dispatch, getState) {
     const searchQuery = getSearchQuery(getState(), id);
     const filters = getEngineFilters(getState(), id);
