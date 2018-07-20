@@ -313,11 +313,12 @@ function* refreshEngineRuns(widgetId, tdoId) {
   });
 }
 
-function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
-  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
+function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData, $primaryAsset: [SetPrimaryAsset!]){
       updateTDO( input: {
         id: $tdoId
         details: $details
+        primaryAsset: $primaryAsset
       })
       {
         ${tdoInfoQueryClause}
@@ -336,7 +337,8 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
       query: updateTdoQuery,
       variables: {
         tdoId,
-        details: !isEmpty(tdoDataToUpdate) ? tdoDataToUpdate : null
+        details: !isEmpty(tdoDetailsToUpdate) ? tdoDetailsToUpdate : null,
+        primaryAsset: !isEmpty(primaryAssetData) ? primaryAssetData : null,
       },
       token
     });
@@ -786,37 +788,15 @@ function* createTranscriptBulkEditAssetSaga(
       'data.temporalDataObject.primaryAsset.id'
     );
   } else {
-    const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
-      temporalDataObject(id: $tdoId) {
-        assets (limit: 1000, type: "vtn-standard", orderBy: createdDateTime) {
-          records {
-            id
-            sourceData {
-              engineId
-            }
-          }
-        }
-      }
-    }`;
-    let getVtnStandardAssetsResponse;
     try {
-      getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
-        endpoint: graphQLUrl,
-        query: getVtnStandardAssetsQuery,
-        variables: { tdoId: requestTdo.id },
-        token
-      });
+      const vtnStandardAssets = yield call(fetchAssets, requestTdo.id, 'vtn-standard');
+      const transcriptVtnAsset = vtnStandardAssets.find(asset => get(asset, 'sourceData.engineId') === selectedEngineId);
+      originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
     } catch (error) {
       return yield put(
         createBulkEditTranscriptAssetFailure(widgetId, { error })
       );
     }
-    const transcriptVtnAsset = get(
-      getVtnStandardAssetsResponse,
-      'data.temporalDataObject.assets.records',
-      []
-    ).find(asset => get(asset, 'sourceData.engineId') === selectedEngineId);
-    originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
   }
 
   if (!originalTranscriptAssetId) {
@@ -1010,58 +990,86 @@ function* fetchSchemas(widgetId, schemaIds) {
   });
 }
 
-function* watchRestoreOriginalEngineResults() {
-  yield takeEvery(RESTORE_ORIGINAL_ENGINE_RESULTS, function*(action) {
-    const { widgetId } = action.meta;
-    const { tdo, engineId, removeAllUserEdits } = action.payload;
-
-    // these could be partial or retrieved data from ttml assets
-    const fetchedAssetIdsToDelete = get(action.payload, 'engineResults', [])
-      .filter(jsonData => jsonData.sourceEngineId === engineId && jsonData.userEdited && !!jsonData.assetId)
-      .map(jsonData => jsonData.assetId);
-
-    let userEditedVtnAssetIdsToDelete = [];
-    if (removeAllUserEdits) {
-      // list all user edited vtn-standard assets for this tdo and engine
-      // TODO: extract this to a separate saga and reuse
-      const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
+function* fetchAssets(tdoId, assetType) {
+  const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
         temporalDataObject(id: $tdoId) {
-          assets (limit: 1000, type: "vtn-standard", orderBy: createdDateTime) {
+          assets (limit: 1000, type: "${assetType}", orderBy: createdDateTime) {
             records {
               id
               isUserEdited
               sourceData {
                 engineId
               }
+              jsondata
             }
           }
         }
       }`;
-      const config = yield select(configModule.getConfig);
-      const { apiRoot, graphQLEndpoint } = config;
-      const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-      const sessionToken = yield select(authModule.selectSessionToken);
-      const oauthToken = yield select(authModule.selectOAuthToken);
-      const token = sessionToken || oauthToken;
-      let getVtnStandardAssetsResponse;
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
+  let getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
+    endpoint: graphQLUrl,
+    query: getVtnStandardAssetsQuery,
+    variables: { tdoId: tdoId },
+    token
+  });
+  return get(getVtnStandardAssetsResponse, 'data.temporalDataObject.assets.records', []);
+}
+
+function* watchRestoreOriginalEngineResults() {
+  yield takeEvery(RESTORE_ORIGINAL_ENGINE_RESULTS, function*(action) {
+    const { widgetId } = action.meta;
+    const { tdo, engineId, engineCategoryType, removeAllUserEdits } = action.payload;
+
+    // these could be partial or fully retrieved data from assets
+    const fetchedAssetIdsToDelete = get(action.payload, 'engineResults', [])
+      .filter(jsonData => jsonData.sourceEngineId === engineId && jsonData.userEdited && !!jsonData.assetId)
+      .map(jsonData => jsonData.assetId);
+
+    // list all user edited vtn-standard assets for this tdo and engine
+    let userEditedVtnAssetIdsToDelete = [];
+    if (removeAllUserEdits) {
       try {
-        getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
-          endpoint: graphQLUrl,
-          query: getVtnStandardAssetsQuery,
-          variables: { tdoId: tdo.id },
-          token
-        });
+        const vtnStandardAssets = yield call(fetchAssets, tdo.id, 'vtn-standard');
+        userEditedVtnAssetIdsToDelete = vtnStandardAssets
+          .filter(asset => asset.isUserEdited && get(asset, 'sourceData.engineId') === engineId)
+          .map(asset => asset.id);
       } catch (error) {
         return yield put(
           restoreOriginalEngineResultsFailure(widgetId, { error })
         );
       }
-      userEditedVtnAssetIdsToDelete = get(getVtnStandardAssetsResponse, 'data.temporalDataObject.assets.records', [])
-        .filter(asset => asset.isUserEdited && get(asset, 'sourceData.engineId') === engineId)
-        .map(asset => asset.id);
     }
 
-    const assetsToDelete = union(fetchedAssetIdsToDelete, userEditedVtnAssetIdsToDelete);
+    // handle ttml assets if restoring transcript edit - delete manually edited and set new primary
+    let ttmlUserEditedAssetIdsToDelete = [];
+    if (engineCategoryType === 'transcript') {
+      const ttmlTranscriptAssets = yield call(fetchAssets, tdo.id, 'transcript');
+      let userEditedTtmlAssets = [];
+      if (removeAllUserEdits) {
+        userEditedTtmlAssets = ttmlTranscriptAssets.filter(asset => get(asset, 'jsondata.source') === 'manual');
+      } else {
+        userEditedTtmlAssets = ttmlTranscriptAssets.filter(asset => fetchedAssetIdsToDelete.includes(asset.id));
+      }
+      if (userEditedTtmlAssets.length) {
+        ttmlUserEditedAssetIdsToDelete = userEditedTtmlAssets.map(asset => asset.id);
+        // the new primary ttml asset should be the most recent non user-edited asset
+        const newPrimaryTtmlAsset = ttmlTranscriptAssets.find(asset => get(asset, 'jsondata.source') !== 'manual');
+        if (newPrimaryTtmlAsset) {
+          yield call(updateTdoSaga, widgetId, tdo.id, null, { id: newPrimaryTtmlAsset.id, assetType: 'transcript' });
+        } else {
+          yield put(restoreOriginalEngineResultsFailure(
+            widgetId,
+            { error: 'Cannot delete user edited ttml asset. No primary asset found to set.' }));
+        }
+      }
+    }
+
+    const assetsToDelete = union(fetchedAssetIdsToDelete, userEditedVtnAssetIdsToDelete, ttmlUserEditedAssetIdsToDelete);
     if (!assetsToDelete.length) {
       return;
     }

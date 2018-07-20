@@ -692,9 +692,16 @@ class MediaDetailsWidget extends React.Component {
 
   onRestoreOriginalConfirm = () => {
     this.props.closeConfirmModal(this.props.id);
-    const { id, tdo, selectedEngineId, selectedEngineResults } = this.props;
+    const { id, tdo, selectedEngineId, selectedEngineCategory, selectedEngineResults } = this.props;
     const removeAllUserEdits = true;
-    this.props.restoreOriginalEngineResults(id, tdo, selectedEngineId, selectedEngineResults, removeAllUserEdits);
+    this.props.restoreOriginalEngineResults(
+      id,
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory.categoryType,
+      selectedEngineResults,
+      removeAllUserEdits
+    );
   };
 
   onRestoreOriginalCancel = () => {
