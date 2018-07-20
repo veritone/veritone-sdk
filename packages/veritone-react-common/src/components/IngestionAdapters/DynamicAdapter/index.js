@@ -105,6 +105,7 @@ class DynamicAdapter extends React.Component {
               openCreateSource={this.props.openCreateSource}
               closeCreateSource={this.props.closeCreateSource}
               loadNextPage={this.props.loadNextSources}
+              pageSize={this.props.pageSize}
             />
             <div className={styles.adapterDivider} />
           </div>

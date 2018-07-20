@@ -23,7 +23,12 @@ export default class SourceDropdownMenu extends React.Component {
     handleSourceChange: func.isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
-    loadNextPage: func.isRequired
+    loadNextPage: func.isRequired,
+    pageSize: number
+  };
+
+  static defaultProps = {
+    pageSize: 30
   };
 
   state = {
@@ -33,7 +38,7 @@ export default class SourceDropdownMenu extends React.Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.loadMoreRows({ startIndex: 0, stopIndex: 30 });
+    this.loadMoreRows({ startIndex: 0, stopIndex: this.props.pageSize });
   }
 
   loadMoreRows = ({startIndex, stopIndex}) => {
@@ -79,6 +84,7 @@ export default class SourceDropdownMenu extends React.Component {
             hasNextPage={this.state.hasNextPage}
             isNextPageLoading={this.state.isNextPageLoading}
             loadNextPage={this.loadMoreRows}
+            pageSize={this.props.pageSize}
           />
         </div>
       </div>
@@ -97,7 +103,8 @@ class SourceContainer extends React.Component {
     closeCreateSource: func.isRequired,
     hasNextPage: bool.isRequired,
     isNextPageLoading: bool.isRequired,
-    loadNextPage: func.isRequired
+    loadNextPage: func.isRequired,
+    pageSize: number
   };
 
   state = {
@@ -174,7 +181,7 @@ class SourceContainer extends React.Component {
 
   render() {
     const rowCount = this.props.hasNextPage
-      ? this.props.sources.length + 30
+      ? this.props.sources.length + this.props.pageSize
       : this.props.sources.length;
     const loadMoreRows = this.props.isNextPageLoading
       ? noop

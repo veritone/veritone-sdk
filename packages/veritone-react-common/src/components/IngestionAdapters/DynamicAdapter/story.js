@@ -373,7 +373,7 @@ function loadNextSources({startIndex, stopIndex}) {
   console.log(startIndex + ' ' + stopIndex);
   return new Promise(resolve => setTimeout(() => {
     resolve(cloneDeep(SOURCES));
-  }, 2000));
+  }, 1000));
 }
 
 function loadNextClusters() {
@@ -382,7 +382,7 @@ function loadNextClusters() {
     console.log(startIndex + ' ' + stopIndex);
     return new Promise(resolve => setTimeout(() => {
       resolve(cloneDeep(CLUSTERS));
-    }, 2000));
+    }, 1000));
   }
 }
 
