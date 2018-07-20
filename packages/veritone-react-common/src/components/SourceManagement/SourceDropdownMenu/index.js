@@ -269,6 +269,7 @@ const SourceSelector = ({
             isRowLoaded={isRowLoaded}
             loadMoreRows={loadMoreRows}
             rowCount={rowCount}
+            threshold={3}
           >
             {({ onRowsRendered, registerChild }) => (
               <AutoSizer disableHeight>

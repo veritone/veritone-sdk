@@ -344,7 +344,7 @@ const CLUSTERS = [{
 },
 {
   "id": "ami-7981bfe7-18a5-4879-b27f-f673732e1bef",
-  "name": "test1524197355227",
+  "name": "test152419735522aeiuaywo3478tyqo287tq23rq3tq23tq23tq237",
   "type": "ami",
   "allowedEngines": [
     "d1bc57fe-675d-435d-9f4d-2f074485ec55"
@@ -356,8 +356,8 @@ const CLUSTERS = [{
 
 function updateConfiguration(config) {
   console.log('updateConfiguration', config);
-  Object.keys(config).forEach(key => (configuration[key] = config[key]));
-  // configuration = config;
+  // Object.keys(config).forEach(key => (configuration[key] = config[key]));
+  configuration = config;
 }
 
 function openCreateSource() {
@@ -386,9 +386,7 @@ function loadNextClusters() {
   }
 }
 
-let configuration = {
-  sourceId: SOURCES[0].id
-};
+let configuration = {};
 
 storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
   <DynamicAdapter

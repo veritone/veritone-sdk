@@ -22,9 +22,12 @@ export default class InfiniteDropdownMenu extends React.Component {
   static propTypes = {
     id: string,
     label: string,
-    pageSize: number,
     handleSelectionChange: func.isRequired,
-    loadNextPage: func.isRequired
+    loadNextPage: func.isRequired,
+    hasNextPage: bool.isRequired,
+    isNextPageLoading: bool.isRequired,
+    items: arrayOf(any),
+    pageSize: number
   };
 
   static defaultProps = {
@@ -32,30 +35,11 @@ export default class InfiniteDropdownMenu extends React.Component {
   };
 
   state = {
-    hasNextPage: false,
-    isNextPageLoading: false,
-    items: [],
     anchorEl: null
   }
 
   UNSAFE_componentWillMount() {
-    this.loadMoreRows({ startIndex: 0, stopIndex: this.props.pageSize });
-  }
-
-  loadMoreRows = ({startIndex, stopIndex}) => {
-    this.setState({ isNextPageLoading: true });
-    return this.props.loadNextPage({startIndex, stopIndex}).then(nextPage => {
-      const newState = {
-        hasNextPage: !!get(nextPage, 'length'),
-        isNextPageLoading: false,
-        items: cloneDeep(this.state.items).concat(nextPage)
-      }
-      if (newState.items.length && !this.props.id) {
-        this.props.handleSelectionChange(newState.items[0]);
-      }
-      this.setState(newState);
-      return nextPage;
-    });
+    this.props.loadNextPage({ startIndex: 0, stopIndex: this.props.pageSize });
   }
 
   handleMenuClick = event => {
@@ -66,7 +50,7 @@ export default class InfiniteDropdownMenu extends React.Component {
     this.setState({ anchorEl: null });
   };
 
-  isRowLoaded = ({ index }) => get(this.state.items, index);
+  isRowLoaded = ({ index }) => get(this.props.items, index);
 
   rowRenderer = ({ index, key, style }) => {
     let item;
@@ -75,7 +59,7 @@ export default class InfiniteDropdownMenu extends React.Component {
         name: 'Loading...'
       };
     } else {
-      item = this.state.items[index];
+      item = this.props.items[index];
     }
 
     const handleItemClick = item => () => {
@@ -108,17 +92,17 @@ export default class InfiniteDropdownMenu extends React.Component {
   };
 
   render() {
-    const rowCount = this.state.hasNextPage
-      ? this.state.items.length + this.props.pageSize
-      : this.state.items.length;
-    const loadMoreRows = this.state.isNextPageLoading
+    const rowCount = this.props.hasNextPage
+      ? this.props.items.length + this.props.pageSize
+      : this.props.items.length;
+    const loadMoreRows = this.props.isNextPageLoading
       ? noop
-      : this.loadMoreRows;
+      : this.props.loadNextPage;
 
     return (
       <ItemSelector
         initialValue={this.props.id}
-        items={this.state.items}
+        items={this.props.items}
         handleSelectionChange={this.props.handleSelectionChange}
         handleMenuClose={this.handleMenuClose}
         handleMenuClick={this.handleMenuClick}
@@ -190,6 +174,7 @@ const ItemSelector = ({
           isRowLoaded={isRowLoaded}
           loadMoreRows={loadMoreRows}
           rowCount={rowCount}
+          threshold={3}
           children={({ onRowsRendered, registerChild }) => (
             <AutoSizer disableHeight>
               {({ width }) => (

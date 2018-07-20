@@ -39,6 +39,14 @@ class DynamicAdapter extends React.Component {
     pageSize: number
   };
 
+  state = {
+    cluster: {
+      hasNextPage: false,
+      isNextPageLoading: false,
+      items: []
+    }
+  }
+
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
@@ -74,6 +82,10 @@ class DynamicAdapter extends React.Component {
       sourceId: selectedSource.id,
       ...pick(selectedSource.sourceType, ['isLive', 'requiresScanPipeline', 'supportedRunModes'])
     };
+    if (this.state.sourceId !== selectedSource.id) {
+      // Clusters must use isLive (selecting a new source may have changed isLives value)
+      this.loadMoreClusters({ startIndex: 0, stopIndex: this.props.pageSize });
+    }
     this.setState(newState, this.sendConfiguration);
   };
 
@@ -93,6 +105,28 @@ class DynamicAdapter extends React.Component {
     stateUpdate[fieldKey] = fieldValue;
     this.setState(stateUpdate, this.sendConfiguration);
   };
+
+  loadMoreClusters = ({startIndex, stopIndex}) => {
+    this.setState({ cluster: {
+      isNextPageLoading: true,
+      hasNextPage: false,
+      items: this.state.cluster.items
+    }});
+    return this.props.loadNextClusters(this.state.isLive)({startIndex, stopIndex}).then(nextPage => {
+      const newState = {
+        cluster: {
+          hasNextPage: !!get(nextPage, 'length'),
+          isNextPageLoading: false,
+          items: startIndex === 0 ? nextPage : cloneDeep(this.state.cluster.items).concat(nextPage)
+        }
+      }
+      if (newState.cluster.items.length && !this.props.id) {
+        this.handleClusterChange(newState.cluster.items[0]);
+      }
+      this.setState(newState);
+      return nextPage;
+    });
+  }
 
   render() {
     return (
@@ -153,7 +187,10 @@ class DynamicAdapter extends React.Component {
                     label="Select a Cluster"
                     id={this.state.clusterId}
                     handleSelectionChange={this.handleClusterChange}
-                    loadNextPage={this.props.loadNextClusters(this.state.isLive)}
+                    loadNextPage={this.loadMoreClusters}
+                    hasNextPage={this.state.cluster.hasNextPage}
+                    isNextPageLoading={this.state.cluster.isNextPageLoading}
+                    items={this.state.cluster.items}
                     pageSize={this.props.pageSize}
                   />
                 </div>
@@ -260,6 +297,9 @@ export default {
     let errors = [];
     if (get(adapterStep, 'supportedSourceTypes.length') && !configuration.sourceId) {
       errors.push('Source is required');
+    }
+    if (!configuration.clusterId) {
+      errors.push('Cluster is required');
     }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
