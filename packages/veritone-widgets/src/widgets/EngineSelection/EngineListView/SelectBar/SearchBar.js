@@ -41,8 +41,7 @@ export default class SearchBar extends React.Component {
       searchQuery: event.target.value
     });
 
-    event.persist();
-    this.props.onSearch(event);
+    this.props.onSearch(event.target.value);
   };
 
   render() {

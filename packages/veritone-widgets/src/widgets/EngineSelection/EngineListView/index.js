@@ -115,8 +115,8 @@ export default class EngineListView extends React.Component {
   };
 
   handleSearch = debounce(
-    event =>
-      this.props.searchEngines(this.props.id, { name: event.target.value }),
+    name =>
+      this.props.searchEngines(this.props.id, { name }),
     300
   );
 
