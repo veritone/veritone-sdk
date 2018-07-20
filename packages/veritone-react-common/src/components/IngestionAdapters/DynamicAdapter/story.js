@@ -155,6 +155,7 @@ const SOURCES = [
     sourceType: {
       id: '3',
       name: 'YouTube',
+      isLive: false,
       sourceSchema: {
         id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
         definition: {
@@ -225,6 +226,7 @@ const SOURCES = [
     sourceType: {
       id: '3',
       name: 'YouTube',
+      isLive: false,
       sourceSchema: {
         id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
         definition: {
@@ -374,12 +376,14 @@ function loadNextSources({startIndex, stopIndex}) {
   }, 2000));
 }
 
-function loadNextClusters({startIndex, stopIndex}) {
-  console.log('Called loadNextClusters');
-  console.log(startIndex + ' ' + stopIndex);
-  return new Promise(resolve => setTimeout(() => {
-    resolve(cloneDeep(CLUSTERS));
-  }, 2000));
+function loadNextClusters() {
+  return function ({startIndex, stopIndex}) {
+    console.log('Called loadNextClusters');
+    console.log(startIndex + ' ' + stopIndex);
+    return new Promise(resolve => setTimeout(() => {
+      resolve(cloneDeep(CLUSTERS));
+    }, 2000));
+  }
 }
 
 let configuration = {
