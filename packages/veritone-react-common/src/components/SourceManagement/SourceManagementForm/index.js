@@ -189,7 +189,7 @@ export default class SourceManagementForm extends React.Component {
     const { activeTab } = this.state;
 
     return (
-      <FullScreenDialog open={this.state.openDialog} className={styles['sm-fullscreen-dialog']}>
+      <FullScreenDialog open={this.state.openDialog}>
         <div className={styles['sm-form-wrapper']}>
           <ModalHeader
             title={
