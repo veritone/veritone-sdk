@@ -17,7 +17,9 @@ import {
   difference,
   keys,
   constant,
-  includes
+  includes,
+  findIndex,
+  intersection
 } from 'lodash';
 import { withProps } from 'recompose';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -37,7 +39,17 @@ const initDate = new Date();
   initialValues: {
     // This provides defaults to the form. Shallow merged with
     // props.initialValues to allow overriding.
-    scheduleType: 'Recurring',
+    scheduleType: props.initialValues.scheduleType ||
+      get(props, 'supportedScheduleTypes.length') ? 
+        (
+          props.supportedScheduleTypes[0] === 'Any' ?
+            'Recurring' :
+            intersection( // using intersection to maintain ordering
+              ['Recurring', 'Continuous', 'Now', 'Once'],
+              props.supportedScheduleTypes
+            )[0]
+        )
+        : 'Recurring',
     start: get(props, 'initialValues.start')
       ? new Date(props.initialValues.start)
       : subDays(initDate, 3),
@@ -224,10 +236,12 @@ class Scheduler extends React.Component {
       ];
     } else {
       ScheduleSelections = [];
-      this.props.supportedScheduleTypes.forEach(type => {
-        if (ScheduleTypeSelection[type]) {
-          ScheduleSelections.push(ScheduleTypeSelection[type]);
-        }
+      ['Recurring', 'Continuous', 'Now', 'Once'].forEach(type => {
+        const showSection = findIndex(
+          this.props.supportedScheduleTypes,
+          supportedType => supportedType === type
+        ) !== -1;
+        showSection && ScheduleSelections.push(ScheduleTypeSelection[type]);
       });
     }
 

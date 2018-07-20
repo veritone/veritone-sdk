@@ -11,7 +11,7 @@ import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 import { objectOf, any, func, arrayOf, string, bool, number } from 'prop-types';
-import { get, cloneDeep, noop } from 'lodash';
+import { get, cloneDeep, noop, find } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -44,8 +44,15 @@ export default class SourceDropdownMenu extends React.Component {
         isNextPageLoading: false,
         sources: cloneDeep(this.state.sources).concat(sourcePage)
       }
-      if (newState.sources.length && !this.props.sourceId) {
-        this.props.handleSourceChange(newState.sources[0].id);
+      if (newState.sources.length) {
+        if (!this.props.sourceId) {
+          this.props.handleSourceChange(newState.sources[0]);
+        } else {
+          const match = find(newState.sources, source => source.id === this.props.sourceId);
+          if (match) {
+            this.props.handleSourceChange(match);
+          }
+        }
       }
       this.setState(newState);
       return sourcePage;
@@ -132,7 +139,7 @@ class SourceContainer extends React.Component {
     const sourceTypeDisplay = get(source, 'sourceType.name');
 
     const handleItemClick = source => () => {
-      this.props.handleSourceChange(source.id);
+      this.props.handleSourceChange(source);
       this.handleMenuClose();
     }
 
@@ -167,7 +174,7 @@ class SourceContainer extends React.Component {
 
   render() {
     const rowCount = this.props.hasNextPage
-      ? this.props.sources.length + 1
+      ? this.props.sources.length + 30
       : this.props.sources.length;
     const loadMoreRows = this.props.isNextPageLoading
       ? noop
@@ -255,7 +262,6 @@ const SourceSelector = ({
             isRowLoaded={isRowLoaded}
             loadMoreRows={loadMoreRows}
             rowCount={rowCount}
-            threshold={1}
           >
             {({ onRowsRendered, registerChild }) => (
               <AutoSizer disableHeight>

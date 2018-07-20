@@ -1,0 +1,44 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.itemLabel {
+  font-weight: normal;
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.itemSelector {
+  min-width: 400px;
+
+  & > div > div {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.itemScrollContainer {
+  &:focus {
+    outline: none;
+  }
+  
+  & > li {
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 16px !important;
+  }
+}
+
+.menuItemName {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 15px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.menuIconSpacer {
+  width: 30px;
+
+  svg {
+    font-size: 20px !important;
+  }
+}

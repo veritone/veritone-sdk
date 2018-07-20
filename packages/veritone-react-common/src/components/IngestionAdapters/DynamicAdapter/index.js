@@ -14,13 +14,15 @@ import {
   isUndefined,
   startCase,
   toLower,
-  includes
+  includes,
+  pick
 } from 'lodash';
-import { objectOf, any, func } from 'prop-types';
+import { objectOf, any, func, number } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
 import SourceDropdownMenu from '../../SourceManagement/SourceDropdownMenu';
+import InfiniteDropdownMenu from '../../InfiniteDropdownMenu';
 
 import styles from './styles.scss';
 
@@ -32,13 +34,18 @@ class DynamicAdapter extends React.Component {
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
-    loadNextPage: func.isRequired
+    loadNextSources: func.isRequired,
+    loadNextClusters: func.isRequired,
+    pageSize: number
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
-    const newState = {};
+    const newState = {
+      sourceId: get(this.props, 'configuration.sourceId'),
+      clusterId: get(this.props, 'configuration.clusterId')
+    };
     if (isArray(fields)) {
       fields.forEach(field => {
         if (field.name) {
@@ -62,8 +69,21 @@ class DynamicAdapter extends React.Component {
     this.props.updateConfiguration(this.state);
   };
 
-  handleSourceChange = selectedSourceId => {
-    let newState = { sourceId: selectedSourceId };
+  handleSourceChange = selectedSource => {
+    const newState = {
+      sourceId: selectedSource.id,
+      ...pick(selectedSource.sourceType, ['isLive', 'requiresScanPipeline', 'supportedRunModes'])
+    };
+    this.setState(newState, this.sendConfiguration);
+  };
+
+  handleClusterChange = selectedCluster => {
+    const newState = { clusterId: selectedCluster.id };
+    if (!selectedCluster.bypassAllowedEngines) {
+      newState.engineWhitelist = selectedCluster.allowedEngines;
+    } else {
+      newState.engineWhitelist = undefined;
+    }
     this.setState(newState, this.sendConfiguration);
   };
 
@@ -84,7 +104,7 @@ class DynamicAdapter extends React.Component {
               handleSourceChange={this.handleSourceChange}
               openCreateSource={this.props.openCreateSource}
               closeCreateSource={this.props.closeCreateSource}
-              loadNextPage={this.props.loadNextPage}
+              loadNextPage={this.props.loadNextSources}
             />
             <div className={styles.adapterDivider} />
           </div>
@@ -124,9 +144,20 @@ class DynamicAdapter extends React.Component {
                 </div>
               </div>
             </div>
-            <div className={styles.adapterContainer}>
-              <TextField label="Cluster" value="Veritone CPU" disabled />
-            </div>
+            { isUndefined(this.state.isLive) ?
+              null :
+              (
+                <div className={styles.adapterContainer}>
+                  <InfiniteDropdownMenu
+                    label="Select a Cluster"
+                    id={this.state.clusterId}
+                    handleSelectionChange={this.handleClusterChange}
+                    loadNextPage={this.props.loadNextClusters(this.state.isLive)}
+                    pageSize={this.props.pageSize}
+                  />
+                </div>
+              )
+            }
             <div>
               <DynamicFieldForm
                 fields={this.props.adapterConfig.fields}
@@ -252,19 +283,10 @@ export default {
   },
   getHydratedData: adapterStep => hydrateData => {
     let configuration = {};
-    let ingestionTask, sourceId;
-    let tasks = get(
-      hydrateData,
-      'jobTemplates.records[0].taskTemplates.records'
-    );
-    if (tasks) {
-      ingestionTask = tasks.filter(
-        task => get(task, 'engine.category.type.name') === 'Ingestion'
-      )[0];
-    }
+    let ingestionTask = hydrateData.ingestionTask;
     if (ingestionTask) {
-      sourceId = get(ingestionTask, 'payload.sourceId');
-      configuration.sourceId = sourceId;
+      configuration.sourceId = get(ingestionTask, 'payload.sourceId');
+      configuration.clusterId = get(hydrateData, 'allJobTemplates.records[0].clusterId');
       let fields = get(adapterStep, 'fields');
       if (fields) {
         fields.forEach(field => {
