@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { func, string, arrayOf, bool, number } from 'prop-types';
+import { func, string, arrayOf, bool } from 'prop-types';
 import { isEmpty, noop } from 'lodash';
 
 import Button from '@material-ui/core/Button';

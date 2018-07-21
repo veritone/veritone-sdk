@@ -7,8 +7,7 @@ import {
   object,
   arrayOf,
   string,
-  shape,
-  number
+  shape
 } from 'prop-types';
 import { isEmpty, debounce } from 'lodash';
 
