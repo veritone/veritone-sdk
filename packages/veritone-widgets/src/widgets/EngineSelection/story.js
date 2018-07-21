@@ -18,7 +18,7 @@ storiesOf('EngineSelectionWidget', module)
     const props = {
       onSave: noop,
       onCancel: noop,
-      initialSelectedEngineIds: ['033563f9-2a6c-47fc-bfba-40dfabcef736']
+      initialSelectedEngineIds: ['20bdf75f-add6-4f91-9661-fe50fb73b526']
     };
 
     return <BaseStory widget={EngineSelectionWidget} widgetProps={props} />;
@@ -37,7 +37,7 @@ storiesOf('EngineSelectionWidget', module)
       onSave: noop,
       onCancel: noop,
       allEnginesSelected: true,
-      initialDeselectedEngineIds: ['033563f9-2a6c-47fc-bfba-40dfabcef736']
+      initialDeselectedEngineIds: ['20bdf75f-add6-4f91-9661-fe50fb73b526']
     };
 
     return <BaseStory widget={EngineSelectionWidget} widgetProps={props} />;
