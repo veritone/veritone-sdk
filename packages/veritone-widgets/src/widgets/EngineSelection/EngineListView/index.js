@@ -115,13 +115,12 @@ export default class EngineListView extends React.Component {
   };
 
   handleSearch = debounce(
-    name =>
-      this.props.searchEngines(this.props.id, { name }),
+    name => this.props.searchEngines(this.props.id, { name }),
     300
   );
 
-  handleTabChange = (event, tabIndex) => {
-    this.props.changeTab(this.props.id, tabIndex);
+  handleTabChange = (event, tab) => {
+    this.props.changeTab(this.props.id, tab);
   };
 
   handleSave = () => {

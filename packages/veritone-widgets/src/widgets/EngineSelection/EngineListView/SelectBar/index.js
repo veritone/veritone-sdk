@@ -12,7 +12,7 @@ import styles from './styles.scss';
 export default class SelectBar extends React.Component {
   static propTypes = {
     id: string.isRequired,
-    currentTabIndex: number.isRequired,
+    currentTab: string.isRequired,
     onCheckAll: func.isRequired,
     searchQuery: string,
     onSearch: func.isRequired,
@@ -44,9 +44,7 @@ export default class SelectBar extends React.Component {
         <div className={styles.selectBarIcons}>
           <SearchBar
             key={
-              this.props.id +
-              this.props.isSearchOpen +
-              this.props.currentTabIndex
+              this.props.id + this.props.isSearchOpen + this.props.currentTab
             }
             id={this.props.id}
             onSearch={this.props.onSearch}

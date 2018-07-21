@@ -37,7 +37,7 @@ export default class EngineListContainer extends React.Component {
   };
 
   handleExploreAllEnginesClick = e => {
-    this.props.onExploreAllEnginesClick(e, 1);
+    this.props.onExploreAllEnginesClick(e, 'explore');
   };
 
   handleRefetchEngines = () => {
