@@ -99,6 +99,7 @@ const programLiveImageNullState =
     ),
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
+    isSavingEngineResults: mediaDetailsModule.isSavingEngineResults(state, id),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
@@ -106,7 +107,8 @@ const programLiveImageNullState =
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),
-    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(state, id)
+    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(state, id),
+    isRestoringOriginalEngineResult: mediaDetailsModule.isRestoringOriginalEngineResult(state, id),
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -124,7 +126,8 @@ const programLiveImageNullState =
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
     setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState,
-    updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState
+    updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
+    restoreOriginalEngineResults: mediaDetailsModule.restoreOriginalEngineResults
   },
   null,
   { withRef: true }
@@ -300,13 +303,15 @@ class MediaDetailsWidget extends React.Component {
     saveAssetData: func,
     widgetError: string,
     isSaveEnabled: bool,
+    isSavingEngineResults: bool,
     alertDialogConfig: shape({
       show: bool,
       title: string,
       description: string,
       cancelButtonLabel: string,
       confirmButtonLabel: string,
-      nextAction: func
+      confirmAction: func,
+      cancelAction: func
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
@@ -316,7 +321,9 @@ class MediaDetailsWidget extends React.Component {
     isEditButtonDisabled: bool,
     setShowTranscriptBulkEditSnackState: func,
     showTranscriptBulkEditSnack: bool,
-    updateMediaPlayerState: func
+    updateMediaPlayerState: func,
+    restoreOriginalEngineResults: func,
+    isRestoringOriginalEngineResult: bool
   };
 
   static contextTypes = {
@@ -464,7 +471,14 @@ class MediaDetailsWidget extends React.Component {
 
   checkSaveState = () => {
     if (this.props.isSaveEnabled) {
-      this.props.openConfirmModal(this.onSaveEdit, this.props.id);
+      this.props.openConfirmModal(this.props.id, {
+        title: 'Save Changes?',
+        description: 'Would you like to save the changes?',
+        cancelButtonLabel: 'Discard',
+        confirmButtonLabel: 'Save',
+        confirmAction: this.onSaveEdit,
+        cancelAction: this.handleCancelSaveDialog
+      });
     } else {
       this.onCancelEdit();
     }
@@ -534,6 +548,14 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  hasSelectedEngineResults = () => {
+    const selectedEngineResults = this.props.selectedEngineResults;
+    return get(selectedEngineResults, 'length') &&
+      some(selectedEngineResults, engineResult =>
+        get(engineResult, 'series.length')
+      );
+  };
+
   buildEngineNullStateComponent = () => {
     const selectedEngineId = this.props.selectedEngineId;
     const engines = get(this.props.selectedEngineCategory, 'engines');
@@ -543,18 +565,14 @@ class MediaDetailsWidget extends React.Component {
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
     const engineMode = get(selectedEngine, 'mode');
-    const selectedEngineResults = this.props.selectedEngineResults;
-    const isFetchingEngineResults = this.props.isFetchingEngineResults;
-    const hasEngineResults =
-      get(selectedEngineResults, 'length') &&
-      some(selectedEngineResults, engineResult =>
-        get(engineResult, 'series.length')
-      );
+    const hasEngineResults = this.hasSelectedEngineResults();
     const isRealTimeEngine =
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||
         engineMode.toLowerCase() === 'chunk');
-    if (isFetchingEngineResults) {
+    if (this.props.isFetchingEngineResults ||
+        this.props.isRestoringOriginalEngineResult ||
+        this.props.isSavingEngineResults) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
     } else if (!hasEngineResults && engineStatus === 'complete') {
@@ -631,17 +649,26 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
-    if (!this.isEditableEngineResults()) {
+    if (!this.isEditableEngineResults() ||
+        !this.hasSelectedEngineResults()) {
       return false;
     }
+    return true;
+  };
+
+  isEditModeButtonDisabled = () => {
+    return this.props.isEditButtonDisabled || this.isDisplayingOriginalEngineResultForUserEdit();
+  };
+
+  isDisplayingOriginalEngineResultForUserEdit = () => {
     const editableCategoryTypes = ['face', 'transcript'];
     const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
     if (includes(editableCategoryTypes, this.props.selectedEngineCategory.categoryType) &&
       get(selectedEngine, 'hasUserEdits') &&
       !this.props.isDisplayingUserEditedOutput) {
-      return false;
+      return true;
     }
-    return true;
+    return false;
   };
 
   closeTranscriptBulkEditSnack = () => {
@@ -664,6 +691,35 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  onRestoreOriginalClick = () => {
+    this.props.openConfirmModal(this.props.id, {
+      title: 'Restore Original',
+      description: 'Are you sure you want to restore original version? \nAll edited work will be lost.',
+      cancelButtonLabel: 'Discard',
+      confirmButtonLabel: 'Restore',
+      confirmAction: this.onRestoreOriginalConfirm,
+      cancelAction: this.onRestoreOriginalCancel
+    });
+  };
+
+  onRestoreOriginalConfirm = () => {
+    this.props.closeConfirmModal(this.props.id);
+    const { id, tdo, selectedEngineId, selectedEngineCategory, selectedEngineResults } = this.props;
+    const removeAllUserEdits = true;
+    this.props.restoreOriginalEngineResults(
+      id,
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory.categoryType,
+      selectedEngineResults,
+      removeAllUserEdits
+    );
+  };
+
+  onRestoreOriginalCancel = () => {
+    this.props.closeConfirmModal(this.props.id);
+  };
+
   render() {
     let {
       engineCategories,
@@ -683,6 +739,7 @@ class MediaDetailsWidget extends React.Component {
       googleMapsApiKey,
       widgetError,
       isSaveEnabled,
+      isSavingEngineResults,
       alertDialogConfig
     } = this.props;
 
@@ -702,8 +759,8 @@ class MediaDetailsWidget extends React.Component {
             content={alertDialogConfig.description}
             cancelButtonLabel={alertDialogConfig.cancelButtonLabel}
             approveButtonLabel={alertDialogConfig.confirmButtonLabel}
-            onCancel={this.handleCancelSaveDialog}
-            onApprove={alertDialogConfig.nextAction}
+            onApprove={alertDialogConfig.confirmAction}
+            onCancel={alertDialogConfig.cancelAction}
           />
         )}
         <Paper className={styles.mediaDetailsPageContent}>
@@ -963,11 +1020,11 @@ class MediaDetailsWidget extends React.Component {
                     </div>
                     {this.showEditButton() && (
                       <Button
-                        variant="raised"
+                        variant="contained"
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
-                        disabled={this.props.isEditButtonDisabled}
+                        disabled={this.isEditModeButtonDisabled()}
                       >
                         EDIT MODE
                       </Button>
@@ -1010,6 +1067,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
+                        disabled={isSavingEngineResults}
                         onClick={this.checkSaveState}
                       >
                         CANCEL
@@ -1018,7 +1076,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={!isSaveEnabled}
+                        disabled={!isSaveEnabled || isSavingEngineResults}
                         onClick={this.onSaveEdit}
                       >
                         SAVE
@@ -1081,6 +1139,7 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1097,6 +1156,7 @@ class MediaDetailsWidget extends React.Component {
                           this.handleUpdateMediaPlayerTime
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&

@@ -58,6 +58,7 @@ export default class TranscriptEngineOutput extends Component {
     onScroll: func,
     onEngineChange: func,
     onExpandClick: func,
+    onRestoreOriginalClick: func,
 
     mediaLengthMs: number,
     neglectableTimeMs: number,
@@ -212,10 +213,12 @@ export default class TranscriptEngineOutput extends Component {
       editMode,
       onEngineChange,
       onExpandClick,
+      onRestoreOriginalClick,
       headerClassName,
       viewTypeSelectionEnabled
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
+    const moreMenuOptions = [{ label: 'Restore Original', action: onRestoreOriginalClick }];
     return (
       <EngineOutputHeader
         title={title}
@@ -225,6 +228,8 @@ export default class TranscriptEngineOutput extends Component {
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
+        showMoreMenuButton={!editMode && selectedEngine && selectedEngine.hasUserEdits}
+        moreMenuOptions={moreMenuOptions}
       >
         <div className={classNames(styles.controllers)}>
           {editMode && (this.renderEditOptions())}

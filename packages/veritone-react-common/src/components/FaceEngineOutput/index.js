@@ -65,6 +65,7 @@ class FaceEngineOutput extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClick: func,
+    onRestoreOriginalClick: func,
     recognizedFaces: objectOf(
       arrayOf(
         shape({
@@ -142,12 +143,14 @@ class FaceEngineOutput extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
+      onRestoreOriginalClick,
       outputNullState,
       showingUserEditedOutput
     } = this.props;
     const { viewMode } = this.state;
 
     const selectedEngine = find(this.props.engines, { id: selectedEngineId });
+    const moreMenuOptions = [{ label: 'Restore Original', action: onRestoreOriginalClick }];
 
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -157,6 +160,8 @@ class FaceEngineOutput extends Component {
           selectedEngineId={selectedEngineId}
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
+          showMoreMenuButton={!editMode && selectedEngine && selectedEngine.hasUserEdits}
+          moreMenuOptions={moreMenuOptions}
         >
           {!editMode &&
             selectedEngine &&
