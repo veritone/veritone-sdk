@@ -652,7 +652,8 @@ export default createReducer(defaultState, {
         showTranscriptBulkEditSnack
       }
     };
-  },[SAVE_ASSET_DATA](
+  },
+  [SAVE_ASSET_DATA](
     state,
     {
       payload,
@@ -696,7 +697,8 @@ export default createReducer(defaultState, {
         isSavingEngineResults: false,
       }
     };
-  },[CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
+  },
+  [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
     state,
     {
       meta: { widgetId }
