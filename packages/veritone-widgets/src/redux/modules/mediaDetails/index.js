@@ -49,6 +49,7 @@ export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
+export const UPDATE_MEDIA_PLAYER_STATE = 'UPDATE_MEDIA_PLAYER_STATE';
 
 export const namespace = 'mediaDetails';
 
@@ -75,7 +76,8 @@ const defaultMDPState = {
     confirmButtonLabel: 'Save',
     nextAction: noop
   },
-  isEditButtonDisabled: false
+  isEditButtonDisabled: false,
+  currentMediaPlayerTime: 0
 };
 
 const defaultState = {};
@@ -643,6 +645,21 @@ export default createReducer(defaultState, {
         isEditButtonDisabled
       }
     };
+  },
+  [UPDATE_MEDIA_PLAYER_STATE](
+    state,
+    {
+      currentTime,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        currentMediaPlayerTime: currentTime
+      }
+    };
   }
 });
 
@@ -686,6 +703,8 @@ export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const isEditButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isEditButtonDisabled']);
+export const currentMediaPlayerTime = (state, widgetId) =>
+  get(local(state), [widgetId, 'currentMediaPlayerTime']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -881,5 +900,11 @@ export const discardUnsavedChanges = () => ({
 export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
   type: SET_EDIT_BUTTON_STATE,
   isEditButtonDisabled,
+  meta: { widgetId }
+});
+
+export const updateMediaPlayerState = (widgetId, mediaPlayerState) => ({
+  type: UPDATE_MEDIA_PLAYER_STATE,
+  ...mediaPlayerState,
   meta: { widgetId }
 });
