@@ -4,8 +4,6 @@ const { createReducer } = helpers;
 
 export const LOAD_ENGINE_CATEGORIES_SUCCESS = 'LOAD_ENGINE_CATEGORIES_SUCCESS';
 export const LOAD_ENGINE_CATEGORIES_FAILURE = 'LOAD_ENGINE_CATEGORIES_FAILURE';
-export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID =
-  'CLEAR_ENGINE_RESULTS_BY_ENGINE_ID';
 export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const LOAD_TDO_FAILURE = 'LOAD_TDO_FAILURE';
@@ -143,28 +141,6 @@ export default createReducer(defaultState, {
         error: errorMessage || 'unknown error',
         warning: warn || null,
         engineCategories: []
-      }
-    };
-  },
-  [CLEAR_ENGINE_RESULTS_BY_ENGINE_ID](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        engineResultsByEngineId: {
-          ...state[widgetId].engineResultsByEngineId,
-          [payload.engineId]: []
-        },
-        engineResultRequestsByEngineId: {
-          ...state[widgetId].engineResultRequestsByEngineId,
-          [payload.engineId]: []
-        }
       }
     };
   },
