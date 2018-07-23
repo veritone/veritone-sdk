@@ -1047,11 +1047,12 @@ export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulk
   meta: { widgetId }
 });
 
-export const restoreOriginalEngineResults = (widgetId, tdo, engineId, engineResults, removeAllUserEdits) => ({
+export const restoreOriginalEngineResults = (widgetId, tdo, engineId, engineCategoryType, engineResults, removeAllUserEdits) => ({
   type: RESTORE_ORIGINAL_ENGINE_RESULTS,
   payload: {
     tdo,
     engineId,
+    engineCategoryType,
     engineResults,
     removeAllUserEdits
   },
