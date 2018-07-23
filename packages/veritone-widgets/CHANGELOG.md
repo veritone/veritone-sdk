@@ -117,3 +117,10 @@ const MyPage = () => (
 
 ## 5.1.0
 * Added Engine Selection widget
+
+## 5.2.0
+* Added MediaPlayer component.
+* Fixed Redux devtools extension crashing.
+* Engine Selection widget
+  *  Fix initial selected engines not reinitializing across widgets.
+  *  Optimized search by sharing search results state across widgets.

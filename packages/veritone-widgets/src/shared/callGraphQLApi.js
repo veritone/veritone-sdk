@@ -3,7 +3,9 @@ export default function callGraphQLApi({
   query,
   variables,
   operationName,
-  token
+  token,
+  dispatch,
+  getState
 }) {
   return fetch(endpoint, {
     method: 'post',
@@ -13,7 +15,7 @@ export default function callGraphQLApi({
       operationName
     }),
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `bearer ${token}`,
       'Content-Type': 'application/json'
     }
   }).then(r => r.json());
