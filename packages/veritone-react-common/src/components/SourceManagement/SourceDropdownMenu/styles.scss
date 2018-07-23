@@ -57,12 +57,18 @@
 .sourceMenuItemName {
   color: rgba(0, 0, 0, 0.87);
   font-size: 15px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
-.sourceMenuItemVersion {
+.sourceMenuItemTypeDisplay {
   margin-left: 20px;
   color: rgba(0, 0, 0, 0.54);
   font-size: 12px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  max-width: 135px;
 }
 
 .menuIconSpacer {

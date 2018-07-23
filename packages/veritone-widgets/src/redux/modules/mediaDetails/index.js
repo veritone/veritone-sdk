@@ -47,6 +47,7 @@ export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
 export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
+export const UPDATE_MEDIA_PLAYER_STATE = 'UPDATE_MEDIA_PLAYER_STATE';
 
 export const namespace = 'mediaDetails';
 
@@ -74,7 +75,8 @@ const defaultMDPState = {
     nextAction: noop
   },
   isEditButtonDisabled: false,
-  showTranscriptBulkEditSnack: false
+  showTranscriptBulkEditSnack: false,
+  currentMediaPlayerTime: 0
 };
 
 const defaultState = {};
@@ -664,6 +666,21 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [UPDATE_MEDIA_PLAYER_STATE](
+    state,
+    {
+      currentTime,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        currentMediaPlayerTime: currentTime
+      }
+    };
+  }
 });
 
 const local = state => state[namespace];
@@ -702,6 +719,8 @@ export const isEditButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isEditButtonDisabled']);
 export const showTranscriptBulkEditSnack = (state, widgetId) =>
   get(local(state), [widgetId, 'showTranscriptBulkEditSnack']);
+export const currentMediaPlayerTime = (state, widgetId) =>
+  get(local(state), [widgetId, 'currentMediaPlayerTime']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -894,3 +913,10 @@ export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulk
   showTranscriptBulkEditSnack,
   meta: { widgetId }
 });
+
+export const updateMediaPlayerState = (widgetId, mediaPlayerState) => ({
+  type: UPDATE_MEDIA_PLAYER_STATE,
+  ...mediaPlayerState,
+  meta: { widgetId }
+});
+
