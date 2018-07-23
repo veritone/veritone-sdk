@@ -64,7 +64,7 @@ class EngineOutputHeader extends Component {
   toggleIsMoreMenuOpen = () => {
     this.setState(prevState => {
       return {
-        isMoreMenuOpen: !{ ...prevState }.isMoreMenuOpen
+        isMoreMenuOpen: !prevState.isMoreMenuOpen
       };
     });
   };
