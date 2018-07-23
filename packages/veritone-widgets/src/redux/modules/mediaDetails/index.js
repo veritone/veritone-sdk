@@ -49,8 +49,8 @@ export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
-export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE =
-  'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
+export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
+export const UPDATE_MEDIA_PLAYER_STATE = 'UPDATE_MEDIA_PLAYER_STATE';
 export const RESTORE_ORIGINAL_ENGINE_RESULTS = 'RESTORE_ORIGINAL_ENGINE_RESULTS';
 export const RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS =
   'RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS';
@@ -85,6 +85,7 @@ const defaultMDPState = {
   },
   isEditButtonDisabled: false,
   showTranscriptBulkEditSnack: false,
+  currentMediaPlayerTime: 0,
   isRestoringOriginalEngineResult: false,
   isSavingEngineResults: false,
 };
@@ -675,8 +676,7 @@ export default createReducer(defaultState, {
         showTranscriptBulkEditSnack
       }
     };
-  },
-  [SAVE_ASSET_DATA](
+  },[SAVE_ASSET_DATA](
     state,
     {
       payload,
@@ -720,8 +720,7 @@ export default createReducer(defaultState, {
         isSavingEngineResults: false,
       }
     };
-  },
-  [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
+  },[CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
     state,
     {
       meta: { widgetId }
@@ -751,6 +750,21 @@ export default createReducer(defaultState, {
         error: errorMessage || 'Unknown error saving bulk transcript edit',
         isSavingEngineResults: false,
         enableSave: true,
+      }
+    };
+  },
+  [UPDATE_MEDIA_PLAYER_STATE](
+    state,
+    {
+      currentTime,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        currentMediaPlayerTime: currentTime
       }
     };
   },
@@ -839,6 +853,8 @@ export const isEditButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isEditButtonDisabled']);
 export const showTranscriptBulkEditSnack = (state, widgetId) =>
   get(local(state), [widgetId, 'showTranscriptBulkEditSnack']);
+export const currentMediaPlayerTime = (state, widgetId) =>
+  get(local(state), [widgetId, 'currentMediaPlayerTime']);
 export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
 export const isSavingEngineResults = (state, widgetId) =>
@@ -1044,6 +1060,12 @@ export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
 export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulkEditSnack) => ({
   type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
   showTranscriptBulkEditSnack,
+  meta: { widgetId }
+});
+
+export const updateMediaPlayerState = (widgetId, mediaPlayerState) => ({
+  type: UPDATE_MEDIA_PLAYER_STATE,
+  ...mediaPlayerState,
   meta: { widgetId }
 });
 

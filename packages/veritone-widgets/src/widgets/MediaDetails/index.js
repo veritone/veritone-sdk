@@ -93,7 +93,10 @@ const programLiveImageNullState =
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
-    currentMediaPlayerTime: state.player.currentTime,
+    currentMediaPlayerTime: mediaDetailsModule.currentMediaPlayerTime(
+      state,
+      id
+    ),
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     isSavingEngineResults: mediaDetailsModule.isSavingEngineResults(state, id),
@@ -123,6 +126,7 @@ const programLiveImageNullState =
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
     setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState,
+    updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
     restoreOriginalEngineResults: mediaDetailsModule.restoreOriginalEngineResults
   },
   null,
@@ -317,6 +321,7 @@ class MediaDetailsWidget extends React.Component {
     isEditButtonDisabled: bool,
     setShowTranscriptBulkEditSnackState: func,
     showTranscriptBulkEditSnack: bool,
+    updateMediaPlayerState: func,
     restoreOriginalEngineResults: func,
     isRestoringOriginalEngineResult: bool
   };
@@ -346,12 +351,19 @@ class MediaDetailsWidget extends React.Component {
     }
   }
 
+  handleMediaPlayerStateChange(state) {
+    this.props.updateMediaPlayerState(this.props.id, state);
+  }
+
   handleDisableEditBtn = boolVal => {
     this.props.setEditButtonState(this.props.id, boolVal);
   };
 
   mediaPlayerRef = ref => {
     this.mediaPlayer = ref;
+    this.mediaPlayer.subscribeToStateChange(
+      this.handleMediaPlayerStateChange.bind(this)
+    );
   };
 
   handleUpdateMediaPlayerTime = (startTime, stopTime) => {
@@ -1095,7 +1107,6 @@ class MediaDetailsWidget extends React.Component {
                         fluid={false}
                         width={450}
                         height={250}
-                        store={this.context.store}
                         playerRef={this.mediaPlayerRef}
                         src={this.getPrimaryAssetUri()}
                         streams={get(this.props, 'tdo.streams')}
