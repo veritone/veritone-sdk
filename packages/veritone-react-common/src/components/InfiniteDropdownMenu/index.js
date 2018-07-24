@@ -11,7 +11,7 @@ import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 import { objectOf, any, func, arrayOf, string, bool, number, shape } from 'prop-types';
-import { get, cloneDeep, noop } from 'lodash';
+import { get, noop } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -178,7 +178,8 @@ const ItemSelector = ({
           loadMoreRows={loadMoreRows}
           rowCount={rowCount}
           threshold={3}
-          children={({ onRowsRendered, registerChild }) => (
+        >
+          {({ onRowsRendered, registerChild }) => (
             <AutoSizer disableHeight>
               {({ width }) => (
                 <List
@@ -193,7 +194,7 @@ const ItemSelector = ({
               )}
             </AutoSizer>
           )}
-        />
+        </InfiniteLoader>
       </Menu>
     </FormControl>
   );

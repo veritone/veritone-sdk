@@ -1,30 +1,20 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { cloneDeep, get } from 'lodash';
 
 import InfiniteDropdownMenu from './';
 
 describe('InfiniteDropdownMenu', () => {
   const PAGE_SIZE = 3;
-  const FAKE_ITEMS = [{
-    id: '0',
-    name: '0'
-  }, {
-    id: '1',
-    name: '1'
-  }, {
-    id: '2',
-    name: '2'
-  }];
-
-  const handleSelectionChange = state => item => {
-    state.id = item.id;
-  };
-
-  const loadNextPage = state => () => {
-    const fakeResults = cloneDeep(FAKE_ITEMS);
-    state.items = state.items.concat(fakeResults);
-  };
+  // const FAKE_ITEMS = [{
+  //   id: '0',
+  //   name: '0'
+  // }, {
+  //   id: '1',
+  //   name: '1'
+  // }, {
+  //   id: '2',
+  //   name: '2'
+  // }];
 
   it('InfiniteDropdownMenu should fetch the first page immediately', () => {
     const state = {
@@ -36,7 +26,7 @@ describe('InfiniteDropdownMenu', () => {
       loadNextPage: jest.fn(),
       handleSelectionChange: jest.fn()
     };
-    const wrapper = mount(
+    mount(
       <InfiniteDropdownMenu
         handleSelectionChange={testFuncs.handleSelectionChange}
         items={state.items}

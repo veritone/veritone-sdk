@@ -386,7 +386,10 @@ function loadNextClusters() {
   }
 }
 
-let configuration = {};
+let configuration = {
+  sourceId: SOURCES[1].id,
+  clusterId: CLUSTERS[1].id
+};
 
 storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
   <DynamicAdapter
