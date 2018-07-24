@@ -1,19 +1,24 @@
 import React from 'react';
-import cx from 'classnames';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
-import { string,  bool, func } from 'prop-types';
-import { pick } from 'lodash';
+import { string, bool, func, any, instanceOf } from 'prop-types';
+import { isFunction } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
 import styles from './styles.scss';
 
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
-export default function SourceTypeField({ id, type, required, title, ...rest }) {
+export default function SourceTypeField({ id, type, onChange, ...rest }) {
+  function handleChange(e) {
+    if (isFunction(onChange)) {
+      return onChange(e, id, { ...rest, type });
+    }
+  }
+
   const supportedTypes = [
     'object',
     'string',
@@ -25,74 +30,104 @@ export default function SourceTypeField({ id, type, required, title, ...rest }) 
     'geoPoint'
   ];
 
-  if (!supportedTypes.some(supportedType => type.includes(supportedType))) {
-    return (
-      <div className={styles.unsupportedMsg}>
-        {`Unsupported Type: ${type}${title ? ` for ${title}` : ''}`}
-      </div>
-    );
+  const foundSupportedType = supportedTypes.find(supportedType =>
+    type.includes(supportedType)
+  );
+
+  if (!foundSupportedType) {
+    return <UnsupportedTypeField type={type} {...rest} />;
   }
 
-  if (type.includes('dateTime')) {
-    return (
-      <FormControl className={styles.dateTimeContainer}>
-        <InputLabel
-          className={cx(styles.textFieldLabel, styles.dateTimeLabel)}
-          htmlFor={id}
-        >
-          {title}
-        </InputLabel>
-        <DateTimePicker
+  let FieldTypeComponent = {
+    dateTime: DateTimeTypeField,
+    boolean: BoolTypeField,
+    geoPoint: GeoPointField,
+    number: NumberField,
+    integer: NumberField
+  }[foundSupportedType];
+
+  if (!FieldTypeComponent) {
+    FieldTypeComponent = BaseField;
+  }
+
+  return <FieldTypeComponent id={id} onChange={handleChange} {...rest} />;
+}
+
+SourceTypeField.propTypes = {
+  id: string.isRequired,
+  type: string.isRequired,
+  title: string,
+  value: any, // eslint-disable-line react/forbid-prop-types
+  onChange: func,
+  required: bool
+};
+
+const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {
+  return (
+    <FormControl className={styles.dateTimeContainer}>
+      <InputLabel className={styles.textFieldLabel} shrink htmlFor={id}>
+        {title}
+      </InputLabel>
+      <DateTimePicker
+        id={id}
+        showIcon
+        showTimezone
+        input={{
+          value: value ? new Date(value) : new Date(),
+          onChange: onChange
+        }}
+        {...rest}
+      />
+    </FormControl>
+  );
+};
+
+DateTimeTypeField.propTypes = {
+  id: string.isRequired,
+  title: string,
+  value: instanceOf(Date),
+  onChange: func
+};
+
+const BoolTypeField = ({ id, title, value, onChange, ...rest }) => {
+  return (
+    <FormControlLabel
+      label={title}
+      control={
+        <Checkbox
           id={id}
-          showIcon
-          showTimezone
-          input={{
-            value: rest.value ? new Date(rest.value) : new Date(),
-            onChange: rest.onChange
-          }}
+          onChange={onChange}
+          checked={value}
+          color="primary"
           {...rest}
         />
-      </FormControl>
-    );
-  }
+      }
+    />
+  );
+};
 
-  if (type.includes('boolean')) {
-    return (
-      <FormControlLabel
-        label={title}
-        control={
-          <Checkbox
-            id={id}
-            {...pick(rest, ['onChange'])}
-            checked={rest.value}
-            color="primary"
-          />
-        }
-      />
-    );
-  }
+BoolTypeField.propTypes = {
+  id: string.isRequired,
+  title: string,
+  value: bool,
+  onChange: func
+};
 
+const GeoPointField = props => {
+  return <BaseField helperText="eg. 12.0, 2.0" {...props} />;
+};
+
+const NumberField = props => {
+  return <BaseField {...props} type="number" />;
+};
+
+const BaseField = ({ id, title, ...rest }) => {
   const inputProps = {
     label: title || id,
     fullWidth: true,
-    margin: 'normal'
+    margin: 'normal',
+    type: id.toLowerCase().includes('password') ? 'password' : 'text'
   };
-
-  if (required) {
-    inputProps.required = true;
-  }
-
-  if (type.includes('string')) {
-    inputProps.type = id.toLowerCase().includes('password')
-      ? 'password'
-      : 'text';
-  } else if (type.includes('number') || type.includes('integer')) {
-    inputProps.type = 'number';
-  }
-
-  if (type.includes('geoPoint')) {
-    rest.helperText = 'eg. 12.0, 2.0';
-  }
 
   return (
     <TextField
@@ -103,12 +138,22 @@ export default function SourceTypeField({ id, type, required, title, ...rest }) 
       {...rest}
     />
   );
-}
+};
 
-SourceTypeField.propTypes = {
+BaseField.propTypes = {
   id: string.isRequired,
+  title: string
+};
+
+const UnsupportedTypeField = ({ type, title }) => {
+  return (
+    <div className={styles.unsupportedMsg}>
+      {`Unsupported Type: ${type}${title ? ` for ${title}` : ''}`}
+    </div>
+  );
+};
+
+UnsupportedTypeField.propTypes = {
   type: string.isRequired,
-  required: bool,
-  onChange: func,
   title: string
 };

@@ -15,3 +15,4 @@ export {
 } from './widgets/Notifications';
 export ContentTemplate from './widgets/ContentTemplate';
 export ContentTemplateForm from './widgets/ContentTemplateForm';
+export { MediaPlayer } from './widgets/MediaPlayer';

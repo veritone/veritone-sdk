@@ -15,7 +15,8 @@ export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
 export DiscoverySideBar, {
-  sectionsShape as discoverySidebarSectionsShape
+  sectionsShape as discoverySidebarSectionsShape,
+  DiscoverySideBarContainerPure as DiscoverySideBarPure
 } from './components/DiscoverySideBar';
 export FullScreenDialog from './components/FullScreenDialog';
 export ProfileMenu from './components/ProfileMenu';
@@ -34,6 +35,5 @@ export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
-export MediaPlayer from './components/MediaPlayer';
 export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
 export ContentTemplate from './components/ContentTemplates';

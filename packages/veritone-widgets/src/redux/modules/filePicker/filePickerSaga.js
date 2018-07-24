@@ -13,7 +13,8 @@ import { isArray, noop } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
-import callGraphQLApi from '../../../shared/callGraphQLApi';
+import { helpers } from 'veritone-redux-common';
+const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
 
@@ -49,7 +50,7 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   try {
     signedWritableUrlResponses = yield all(
       files.map(({ name }) =>
-        call(callGraphQLApi, {
+        call(fetchGraphQLApi, {
           endpoint: graphQLUrl,
           query: getUrlQuery,
           // todo: add uuid to $name to prevent naming conflicts

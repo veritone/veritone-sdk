@@ -12,12 +12,12 @@ import styles from './styles.scss';
 export default class SelectBar extends React.Component {
   static propTypes = {
     id: string.isRequired,
+    currentTab: string.isRequired,
     onCheckAll: func.isRequired,
     searchQuery: string,
     onSearch: func.isRequired,
     onClearSearch: func.isRequired,
     isChecked: bool.isRequired,
-    hideActionMenuItems: bool.isRequired,
     isSearchOpen: bool.isRequired,
     onToggleSearch: func.isRequired,
     actionMenuItems: arrayOf(
@@ -41,46 +41,44 @@ export default class SelectBar extends React.Component {
         />
         <div>Select All ({this.props.count})</div>
 
-        {!this.props.hideActionMenuItems && (
-          <div className={styles.selectBarIcons}>
-            <SearchBar
-              id={this.props.id}
-              onSearch={this.props.onSearch}
-              onClearSearch={this.props.onClearSearch}
-              onToggleSearch={this.props.onToggleSearch}
-              searchQuery={this.props.searchQuery}
-              isOpen={this.props.isSearchOpen}
-            />
-            {this.props.actionMenuItems && (
-              <div className={styles.actionMenuDividerContainer}>
-                <div className={styles.actionMenuDivider} />
-              </div>
-            )}
-            {this.props.actionMenuItems &&
-              this.props.actionMenuItems.map((item, key) => {
-                if (item.buttonText) {
-                  return (
-                    <Button
-                      key={key} // eslint-disable-line
-                      onClick={item.onClick}
-                      color="primary"
-                    >
-                      {item.buttonText}
-                    </Button>
-                  );
-                }
-
-                return (
-                  <IconButton
-                    key={key} // eslint-disable-line
-                    onClick={item.onClick}
+        <div className={styles.selectBarIcons}>
+          <SearchBar
+            key={
+              this.props.id + this.props.isSearchOpen + this.props.currentTab
+            }
+            id={this.props.id}
+            onSearch={this.props.onSearch}
+            onClearSearch={this.props.onClearSearch}
+            onToggleSearch={this.props.onToggleSearch}
+            searchQuery={this.props.searchQuery}
+            isOpen={this.props.isSearchOpen}
+          />
+          {this.props.actionMenuItems && (
+            <div className={styles.actionMenuDividerContainer}>
+              <div className={styles.actionMenuDivider} />
+            </div>
+          )}
+          {this.props.actionMenuItems &&
+            this.props.actionMenuItems.map(
+              ({ buttonText, iconClass, onClick }) =>
+                buttonText ? (
+                  <Button
+                    key={`${buttonText}-${iconClass}`}
+                    onClick={onClick}
+                    color="primary"
                   >
-                    <i className={item.iconClass} />
+                    {buttonText}
+                  </Button>
+                ) : (
+                  <IconButton
+                    key={`${buttonText}-${iconClass}`}
+                    onClick={onClick}
+                  >
+                    <i className={iconClass} />
                   </IconButton>
-                );
-              })}
-          </div>
-        )}
+                )
+            )}
+        </div>
       </div>
     );
   }
