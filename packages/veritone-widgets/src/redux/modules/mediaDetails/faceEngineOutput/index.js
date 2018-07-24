@@ -428,8 +428,10 @@ export const getFaces = createSelector(
 /* HELPERS */
 export const getFaceEngineAssetData = (state, engineId) => {
   const engineResults = cloneDeep(getFaceDataByEngine(state, engineId));
-  const userDetectedFaces = cloneDeep(getUserDetectedFaces(state, engineId)) || [];
-  const userRemovedFaces = cloneDeep(getUserRemovedFaces(state, engineId)) || [];
+  const userDetectedFaces =
+    cloneDeep(getUserDetectedFaces(state, engineId)) || [];
+  const userRemovedFaces =
+    cloneDeep(getUserRemovedFaces(state, engineId)) || [];
 
   const allJsonData = addUserDetectedFaces(
     engineResults,

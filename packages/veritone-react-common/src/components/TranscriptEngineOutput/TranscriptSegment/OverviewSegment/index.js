@@ -49,9 +49,9 @@ export default class OverviewSegment extends Component {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
       const value = entry.value || '';
-      const fragmentKey = entry.guid ?
-        entry.guid :
-        `overview-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
+      const fragmentKey = entry.guid
+        ? entry.guid
+        : `overview-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
       return (
         <OverviewFragment
           key={fragmentKey}

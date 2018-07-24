@@ -200,19 +200,35 @@ export default class TranscriptContent extends Component {
           }
 
           //---Update Start & Stop Time---
-          if (snippetStartTime === undefined || snippetStartTime > entry.startTimeMs) {
+          if (
+            snippetStartTime === undefined ||
+            snippetStartTime > entry.startTimeMs
+          ) {
             snippetStartTime = entry.startTimeMs;
           }
-          if (snippetStopTime === undefined || snippetStopTime < entry.stopTimeMs) {
+          if (
+            snippetStopTime === undefined ||
+            snippetStopTime < entry.stopTimeMs
+          ) {
             snippetStopTime = entry.stopTimeMs;
           }
-          if (entryIndex === series.length - 1 && groupStopTime && groupStopTime > snippetStopTime) {
+          if (
+            entryIndex === series.length - 1 &&
+            groupStopTime &&
+            groupStopTime > snippetStopTime
+          ) {
             snippetStopTime = groupStopTime;
           }
-          if (overviewStartTime === undefined || overviewStartTime > snippetStartTime) {
+          if (
+            overviewStartTime === undefined ||
+            overviewStartTime > snippetStartTime
+          ) {
             overviewStartTime = snippetStartTime;
           }
-          if (overviewStopTime === undefined || overviewStopTime < snippetStopTime) {
+          if (
+            overviewStopTime === undefined ||
+            overviewStopTime < snippetStopTime
+          ) {
             overviewStopTime = snippetStopTime;
           }
         });

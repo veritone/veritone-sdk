@@ -14,9 +14,7 @@ import {
   TranscriptEditMode
 } from 'veritone-react-common';
 
-const {
-  engineResults: engineResultsModule
-} = modules;
+const { engineResults: engineResultsModule } = modules;
 
 const saga = util.reactReduxSaga.saga;
 
@@ -32,7 +30,7 @@ const saga = util.reactReduxSaga.saga;
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       selectedEngineId
-    ),
+    )
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -41,7 +39,8 @@ const saga = util.reactReduxSaga.saga;
     reset: TranscriptRedux.reset,
     receiveData: TranscriptRedux.receiveData,
     fetchEngineResults: engineResultsModule.fetchEngineResults,
-    clearEngineResultsByEngineId: engineResultsModule.clearEngineResultsByEngineId
+    clearEngineResultsByEngineId:
+      engineResultsModule.clearEngineResultsByEngineId
   },
   null,
   { withRef: true }
@@ -75,10 +74,12 @@ export default class TranscriptEngineOutputWidget extends Component {
               confidence: number,
               text: string
             }),
-            boundingPoly: arrayOf(shape({
-              x: number,
-              y: number
-            }))
+            boundingPoly: arrayOf(
+              shape({
+                x: number,
+                y: number
+              })
+            )
           })
         )
       })
@@ -152,7 +153,8 @@ export default class TranscriptEngineOutputWidget extends Component {
       });
 
     const prevProps = prevState.props;
-    !isEqual(prevProps.selectedEngineResults, nextData) && prevProps.receiveData(nextData);
+    !isEqual(prevProps.selectedEngineResults, nextData) &&
+      prevProps.receiveData(nextData);
     return { ...prevState, props: nextProps };
   }
 

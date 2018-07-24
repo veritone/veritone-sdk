@@ -73,7 +73,8 @@ const saga = util.reactReduxSaga.saga;
     openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
     cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
-    clearEngineResultsByEngineId: engineResultsModule.clearEngineResultsByEngineId
+    clearEngineResultsByEngineId:
+      engineResultsModule.clearEngineResultsByEngineId
   },
   null,
   { withRef: true }

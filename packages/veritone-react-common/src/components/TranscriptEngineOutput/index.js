@@ -93,7 +93,7 @@ export default class TranscriptEngineOutput extends Component {
 
   handleUserEditChange = evt => {
     this.props.onToggleUserEditedOutput &&
-    this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
 
   handleViewChange = event => {
@@ -124,15 +124,27 @@ export default class TranscriptEngineOutput extends Component {
       >
         <FormControlLabel
           value={Edit.SNIPPET}
-          classes={{label: styles.radioLabel, root: styles.radioLabelRoot}}
-          control={<Radio color="primary" disableRipple classes={{root: styles.radioRoot}}/>}
+          classes={{ label: styles.radioLabel, root: styles.radioLabelRoot }}
+          control={
+            <Radio
+              color="primary"
+              disableRipple
+              classes={{ root: styles.radioRoot }}
+            />
+          }
           label="Snippet Edit Mode"
         />
         {this.props.bulkEditEnabled && (
           <FormControlLabel
             value={Edit.BULK}
-            classes={{label: styles.radioLabel, root: styles.radioLabelRoot}}
-            control={<Radio color="primary" disableRipple classes={{root: styles.radioRoot}}/>}
+            classes={{ label: styles.radioLabel, root: styles.radioLabelRoot }}
+            control={
+              <Radio
+                color="primary"
+                disableRipple
+                classes={{ root: styles.radioRoot }}
+              />
+            }
             label="Bulk Edit Mode"
           />
         )}
@@ -141,39 +153,37 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderResultOptions() {
-    const {
-      showingUserEditedOutput
-    } = this.props;
+    const { showingUserEditedOutput } = this.props;
     return (
-        <Select
-          autoWidth
-          value={showingUserEditedOutput ? 'userEdited' : 'original'}
-          onChange={this.handleUserEditChange}
-          className={styles.outputHeaderSelect}
-          MenuProps={{
-            anchorOrigin: {
-              horizontal: 'center',
-              vertical: 'bottom'
-            },
-            transformOrigin: {
-              horizontal: 'center'
-            },
-            getContentAnchorEl: null
-          }}
+      <Select
+        autoWidth
+        value={showingUserEditedOutput ? 'userEdited' : 'original'}
+        onChange={this.handleUserEditChange}
+        className={styles.outputHeaderSelect}
+        MenuProps={{
+          anchorOrigin: {
+            horizontal: 'center',
+            vertical: 'bottom'
+          },
+          transformOrigin: {
+            horizontal: 'center'
+          },
+          getContentAnchorEl: null
+        }}
+      >
+        <MenuItem
+          value="userEdited"
+          className={classNames(styles.selectMenuItem)}
         >
-          <MenuItem
-            value="userEdited"
-            className={classNames(styles.selectMenuItem)}
-          >
-            User Edited
-          </MenuItem>
-          <MenuItem
-            value="original"
-            className={classNames(styles.selectMenuItem)}
-          >
-            Original
-          </MenuItem>
-        </Select>
+          User Edited
+        </MenuItem>
+        <MenuItem
+          value="original"
+          className={classNames(styles.selectMenuItem)}
+        >
+          Original
+        </MenuItem>
+      </Select>
     );
   }
 
@@ -195,10 +205,16 @@ export default class TranscriptEngineOutput extends Component {
           getContentAnchorEl: null
         }}
       >
-        <MenuItem value={View.TIME} className={classNames(styles.selectMenuItem)}>
+        <MenuItem
+          value={View.TIME}
+          className={classNames(styles.selectMenuItem)}
+        >
           Time
         </MenuItem>
-        <MenuItem value={View.OVERVIEW} className={classNames(styles.selectMenuItem)}>
+        <MenuItem
+          value={View.OVERVIEW}
+          className={classNames(styles.selectMenuItem)}
+        >
           Overview
         </MenuItem>
       </Select>
@@ -218,7 +234,9 @@ export default class TranscriptEngineOutput extends Component {
       viewTypeSelectionEnabled
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
-    const moreMenuOptions = [{ label: 'Restore Original', action: onRestoreOriginalClick }];
+    const moreMenuOptions = [
+      { label: 'Restore Original', action: onRestoreOriginalClick }
+    ];
     return (
       <EngineOutputHeader
         title={title}
@@ -228,13 +246,18 @@ export default class TranscriptEngineOutput extends Component {
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
-        showMoreMenuButton={!editMode && selectedEngine && selectedEngine.hasUserEdits}
+        showMoreMenuButton={
+          !editMode && selectedEngine && selectedEngine.hasUserEdits
+        }
         moreMenuOptions={moreMenuOptions}
       >
         <div className={classNames(styles.controllers)}>
-          {editMode && (this.renderEditOptions())}
-          {!editMode && selectedEngine && selectedEngine.hasUserEdits && (this.renderResultOptions())}
-          {!editMode && viewTypeSelectionEnabled && (this.renderViewOptions())}
+          {editMode && this.renderEditOptions()}
+          {!editMode &&
+            selectedEngine &&
+            selectedEngine.hasUserEdits &&
+            this.renderResultOptions()}
+          {!editMode && viewTypeSelectionEnabled && this.renderViewOptions()}
         </div>
       </EngineOutputHeader>
     );

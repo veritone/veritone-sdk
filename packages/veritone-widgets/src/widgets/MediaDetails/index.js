@@ -107,8 +107,14 @@ const programLiveImageNullState =
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),
-    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(state, id),
-    isRestoringOriginalEngineResult: mediaDetailsModule.isRestoringOriginalEngineResult(state, id),
+    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(
+      state,
+      id
+    ),
+    isRestoringOriginalEngineResult: mediaDetailsModule.isRestoringOriginalEngineResult(
+      state,
+      id
+    )
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -125,9 +131,11 @@ const programLiveImageNullState =
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
-    setShowTranscriptBulkEditSnackState: mediaDetailsModule.setShowTranscriptBulkEditSnackState,
+    setShowTranscriptBulkEditSnackState:
+      mediaDetailsModule.setShowTranscriptBulkEditSnackState,
     updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
-    restoreOriginalEngineResults: mediaDetailsModule.restoreOriginalEngineResults
+    restoreOriginalEngineResults:
+      mediaDetailsModule.restoreOriginalEngineResults
   },
   null,
   { withRef: true }
@@ -550,10 +558,12 @@ class MediaDetailsWidget extends React.Component {
 
   hasSelectedEngineResults = () => {
     const selectedEngineResults = this.props.selectedEngineResults;
-    return get(selectedEngineResults, 'length') &&
+    return (
+      get(selectedEngineResults, 'length') &&
       some(selectedEngineResults, engineResult =>
         get(engineResult, 'series.length')
-      );
+      )
+    );
   };
 
   buildEngineNullStateComponent = () => {
@@ -570,9 +580,11 @@ class MediaDetailsWidget extends React.Component {
       engineMode &&
       (engineMode.toLowerCase() === 'stream' ||
         engineMode.toLowerCase() === 'chunk');
-    if (this.props.isFetchingEngineResults ||
-        this.props.isRestoringOriginalEngineResult ||
-        this.props.isSavingEngineResults) {
+    if (
+      this.props.isFetchingEngineResults ||
+      this.props.isRestoringOriginalEngineResult ||
+      this.props.isSavingEngineResults
+    ) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
     } else if (!hasEngineResults && engineStatus === 'complete') {
@@ -649,23 +661,32 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
-    if (!this.isEditableEngineResults() ||
-        !this.hasSelectedEngineResults()) {
+    if (!this.isEditableEngineResults() || !this.hasSelectedEngineResults()) {
       return false;
     }
     return true;
   };
 
   isEditModeButtonDisabled = () => {
-    return this.props.isEditButtonDisabled || this.isDisplayingOriginalEngineResultForUserEdit();
+    return (
+      this.props.isEditButtonDisabled ||
+      this.isDisplayingOriginalEngineResultForUserEdit()
+    );
   };
 
   isDisplayingOriginalEngineResultForUserEdit = () => {
     const editableCategoryTypes = ['face', 'transcript'];
-    const selectedEngine = find(this.props.selectedEngineCategory.engines, { id: this.props.selectedEngineId });
-    if (includes(editableCategoryTypes, this.props.selectedEngineCategory.categoryType) &&
+    const selectedEngine = find(this.props.selectedEngineCategory.engines, {
+      id: this.props.selectedEngineId
+    });
+    if (
+      includes(
+        editableCategoryTypes,
+        this.props.selectedEngineCategory.categoryType
+      ) &&
       get(selectedEngine, 'hasUserEdits') &&
-      !this.props.isDisplayingUserEditedOutput) {
+      !this.props.isDisplayingUserEditedOutput
+    ) {
       return true;
     }
     return false;
@@ -694,7 +715,8 @@ class MediaDetailsWidget extends React.Component {
   onRestoreOriginalClick = () => {
     this.props.openConfirmModal(this.props.id, {
       title: 'Restore Original',
-      description: 'Are you sure you want to restore original version? \nAll edited work will be lost.',
+      description:
+        'Are you sure you want to restore original version? \nAll edited work will be lost.',
       cancelButtonLabel: 'Discard',
       confirmButtonLabel: 'Restore',
       confirmAction: this.onRestoreOriginalConfirm,
@@ -704,7 +726,13 @@ class MediaDetailsWidget extends React.Component {
 
   onRestoreOriginalConfirm = () => {
     this.props.closeConfirmModal(this.props.id);
-    const { id, tdo, selectedEngineId, selectedEngineCategory, selectedEngineResults } = this.props;
+    const {
+      id,
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory,
+      selectedEngineResults
+    } = this.props;
     const removeAllUserEdits = true;
     this.props.restoreOriginalEngineResults(
       id,

@@ -18,7 +18,7 @@ import {
 } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { isEmpty, find, cloneDeep } from 'lodash';
-import  { guid } from 'helpers/guid';
+import { guid } from 'helpers/guid';
 
 import EngineOutputNullState from '../EngineOutputNullState';
 
@@ -221,7 +221,8 @@ const libraries = [
   }
 ];
 
-const tdoLength = 100000, interval = 1000;
+const tdoLength = 100000,
+  interval = 1000;
 
 const faceObjects = genFaceObjects(0, tdoLength, interval, faces, entities);
 
@@ -383,13 +384,7 @@ storiesOf('FaceEngineOutput', module)
     );
   });
 
-function genFaceObjects(
-  startTime,
-  stopTime,
-  timeInterval,
-  faces,
-  entities
-) {
+function genFaceObjects(startTime, stopTime, timeInterval, faces, entities) {
   const series = [];
   const numEntries = Math.ceil((stopTime - startTime) / timeInterval);
   for (let entryIndex = 0; entryIndex < numEntries; entryIndex++) {
@@ -398,7 +393,9 @@ function genFaceObjects(
     const faceItem = cloneDeep(faces[randomFaceIndex]);
     const isEntity = Math.floor(Math.random() * 5) === 0;
     if (isEntity) {
-      const randomEntityIndex = Math.round(Math.random() * (entities.length - 1));
+      const randomEntityIndex = Math.round(
+        Math.random() * (entities.length - 1)
+      );
       faceItem.entityId = entities[randomEntityIndex].id;
       faceItem.libraryId = entities[randomEntityIndex].libraryId;
       faceItem.confidence = Math.round(Math.random() * 1000) / 1000;
@@ -407,7 +404,7 @@ function genFaceObjects(
       startTimeMs: entryStartTime,
       stopTimeMs: entryStartTime + Math.floor(Math.random() * 5000),
       guid: guid(),
-      object: { ...faceItem, type: 'face'}
+      object: { ...faceItem, type: 'face' }
     });
   }
 

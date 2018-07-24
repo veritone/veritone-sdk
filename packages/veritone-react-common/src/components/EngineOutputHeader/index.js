@@ -38,10 +38,12 @@ class EngineOutputHeader extends Component {
     onEngineChange: func,
     onExpandClick: func,
     children: oneOfType([arrayOf(node), node]),
-    moreMenuOptions: arrayOf(shape({
-      label: string.isRequired,
-      action: func.isRequired
-    }))
+    moreMenuOptions: arrayOf(
+      shape({
+        label: string.isRequired,
+        action: func.isRequired
+      })
+    )
   };
 
   static defaultProps = {
@@ -69,66 +71,63 @@ class EngineOutputHeader extends Component {
     });
   };
 
-  onMoreMenuItemClick = (evt) => {
+  onMoreMenuItemClick = evt => {
     this.toggleIsMoreMenuOpen();
     this.props.moreMenuOptions[evt.target.value].action();
   };
 
   renderMoreMenu = () => {
-    const {
-      moreMenuOptions
-    } = this.props;
-    const {
-      isMoreMenuOpen
-    } = this.state;
+    const { moreMenuOptions } = this.props;
+    const { isMoreMenuOpen } = this.state;
     return (
       <Manager>
         <Target>
           <div ref={this.setMenuTarget}>
-              <IconButton
-                aria-label="More"
-                aria-haspopup="true"
-                aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
-                onClick={this.toggleIsMoreMenuOpen}
-                classes={{
-                  root: styles.moreMenuButton
-                }}
-              >
-                <MoreVertIcon />
-              </IconButton>
+            <IconButton
+              aria-label="More"
+              aria-haspopup="true"
+              aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
+              onClick={this.toggleIsMoreMenuOpen}
+              classes={{
+                root: styles.moreMenuButton
+              }}
+            >
+              <MoreVertIcon />
+            </IconButton>
           </div>
         </Target>
-        {isMoreMenuOpen && moreMenuOptions && (
-          <Popper
-            className={styles.moreMenuPopperContent}
-            placement="bottom-end"
-            eventsEnabled={isMoreMenuOpen}
-          >
-            <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
-              <Grow
-                in={isMoreMenuOpen}
-                id="menu-list-grow"
-                style={{ transformOrigin: '0 0 0' }}
-              >
-                <Paper>
-                  <MenuList role="menu">
-                    {moreMenuOptions.map(option => {
-                      return (
-                        <MenuItem
-                          key={`more-menu-item-${option.label}`}
-                          classes={{ root: styles.moreMenuItem }}
-                          onClick={this.onMoreMenuItemClick}
-                        >
-                          {option.label}
-                        </MenuItem>
-                      );
-                    })}
-                  </MenuList>
-                </Paper>
-              </Grow>
-            </ClickAwayListener>
-          </Popper>
-        )}
+        {isMoreMenuOpen &&
+          moreMenuOptions && (
+            <Popper
+              className={styles.moreMenuPopperContent}
+              placement="bottom-end"
+              eventsEnabled={isMoreMenuOpen}
+            >
+              <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
+                <Grow
+                  in={isMoreMenuOpen}
+                  id="menu-list-grow"
+                  style={{ transformOrigin: '0 0 0' }}
+                >
+                  <Paper>
+                    <MenuList role="menu">
+                      {moreMenuOptions.map(option => {
+                        return (
+                          <MenuItem
+                            key={`more-menu-item-${option.label}`}
+                            classes={{ root: styles.moreMenuItem }}
+                            onClick={this.onMoreMenuItemClick}
+                          >
+                            {option.label}
+                          </MenuItem>
+                        );
+                      })}
+                    </MenuList>
+                  </Paper>
+                </Grow>
+              </ClickAwayListener>
+            </Popper>
+          )}
       </Manager>
     );
   };

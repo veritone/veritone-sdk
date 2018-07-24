@@ -338,7 +338,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
       variables: {
         tdoId,
         details: !isEmpty(tdoDetailsToUpdate) ? tdoDetailsToUpdate : null,
-        primaryAsset: !isEmpty(primaryAssetData) ? primaryAssetData : null,
+        primaryAsset: !isEmpty(primaryAssetData) ? primaryAssetData : null
       },
       token
     });
@@ -789,8 +789,14 @@ function* createTranscriptBulkEditAssetSaga(
     );
   } else {
     try {
-      const vtnStandardAssets = yield call(fetchAssets, requestTdo.id, 'vtn-standard');
-      const transcriptVtnAsset = vtnStandardAssets.find(asset => get(asset, 'sourceData.engineId') === selectedEngineId);
+      const vtnStandardAssets = yield call(
+        fetchAssets,
+        requestTdo.id,
+        'vtn-standard'
+      );
+      const transcriptVtnAsset = vtnStandardAssets.find(
+        asset => get(asset, 'sourceData.engineId') === selectedEngineId
+      );
       originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
     } catch (error) {
       return yield put(
@@ -857,7 +863,10 @@ function* createTranscriptBulkEditAssetSaga(
       })
     );
   }
-  if (get(runBulkEditJobResponse, 'data.createJob.tasks.records[0].status') === 'failed') {
+  if (
+    get(runBulkEditJobResponse, 'data.createJob.tasks.records[0].status') ===
+    'failed'
+  ) {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
         error:
@@ -1017,26 +1026,48 @@ function* fetchAssets(tdoId, assetType) {
     variables: { tdoId: tdoId },
     token
   });
-  return get(getVtnStandardAssetsResponse, 'data.temporalDataObject.assets.records', []);
+  return get(
+    getVtnStandardAssetsResponse,
+    'data.temporalDataObject.assets.records',
+    []
+  );
 }
 
 function* watchRestoreOriginalEngineResults() {
   yield takeEvery(RESTORE_ORIGINAL_ENGINE_RESULTS, function*(action) {
     const { widgetId } = action.meta;
-    const { tdo, engineId, engineCategoryType, removeAllUserEdits } = action.payload;
+    const {
+      tdo,
+      engineId,
+      engineCategoryType,
+      removeAllUserEdits
+    } = action.payload;
 
     // these could be partial or fully retrieved data from assets
     const fetchedAssetIdsToDelete = get(action.payload, 'engineResults', [])
-      .filter(jsonData => jsonData.sourceEngineId === engineId && jsonData.userEdited && !!jsonData.assetId)
+      .filter(
+        jsonData =>
+          jsonData.sourceEngineId === engineId &&
+          jsonData.userEdited &&
+          !!jsonData.assetId
+      )
       .map(jsonData => jsonData.assetId);
 
     // list all user edited vtn-standard assets for this tdo and engine
     let userEditedVtnAssetIdsToDelete = [];
     if (removeAllUserEdits) {
       try {
-        const vtnStandardAssets = yield call(fetchAssets, tdo.id, 'vtn-standard');
+        const vtnStandardAssets = yield call(
+          fetchAssets,
+          tdo.id,
+          'vtn-standard'
+        );
         userEditedVtnAssetIdsToDelete = vtnStandardAssets
-          .filter(asset => asset.isUserEdited && get(asset, 'sourceData.engineId') === engineId)
+          .filter(
+            asset =>
+              asset.isUserEdited &&
+              get(asset, 'sourceData.engineId') === engineId
+          )
           .map(asset => asset.id);
       } catch (error) {
         return yield put(
@@ -1048,28 +1079,50 @@ function* watchRestoreOriginalEngineResults() {
     // handle ttml assets if restoring transcript edit - delete manually edited and set new primary
     let ttmlUserEditedAssetIdsToDelete = [];
     if (engineCategoryType === 'transcript') {
-      const ttmlTranscriptAssets = yield call(fetchAssets, tdo.id, 'transcript');
+      const ttmlTranscriptAssets = yield call(
+        fetchAssets,
+        tdo.id,
+        'transcript'
+      );
       let userEditedTtmlAssets = [];
       if (removeAllUserEdits) {
-        userEditedTtmlAssets = ttmlTranscriptAssets.filter(asset => get(asset, 'jsondata.source') === 'manual');
+        userEditedTtmlAssets = ttmlTranscriptAssets.filter(
+          asset => get(asset, 'jsondata.source') === 'manual'
+        );
       } else {
-        userEditedTtmlAssets = ttmlTranscriptAssets.filter(asset => fetchedAssetIdsToDelete.includes(asset.id));
+        userEditedTtmlAssets = ttmlTranscriptAssets.filter(asset =>
+          fetchedAssetIdsToDelete.includes(asset.id)
+        );
       }
       if (userEditedTtmlAssets.length) {
-        ttmlUserEditedAssetIdsToDelete = userEditedTtmlAssets.map(asset => asset.id);
+        ttmlUserEditedAssetIdsToDelete = userEditedTtmlAssets.map(
+          asset => asset.id
+        );
         // the new primary ttml asset should be the most recent non user-edited asset
-        const newPrimaryTtmlAsset = ttmlTranscriptAssets.find(asset => get(asset, 'jsondata.source') !== 'manual');
+        const newPrimaryTtmlAsset = ttmlTranscriptAssets.find(
+          asset => get(asset, 'jsondata.source') !== 'manual'
+        );
         if (newPrimaryTtmlAsset) {
-          yield call(updateTdoSaga, widgetId, tdo.id, null, { id: newPrimaryTtmlAsset.id, assetType: 'transcript' });
+          yield call(updateTdoSaga, widgetId, tdo.id, null, {
+            id: newPrimaryTtmlAsset.id,
+            assetType: 'transcript'
+          });
         } else {
-          yield put(restoreOriginalEngineResultsFailure(
-            widgetId,
-            { error: 'Cannot delete user edited ttml asset. No primary asset found to set.' }));
+          yield put(
+            restoreOriginalEngineResultsFailure(widgetId, {
+              error:
+                'Cannot delete user edited ttml asset. No primary asset found to set.'
+            })
+          );
         }
       }
     }
 
-    const assetsToDelete = union(fetchedAssetIdsToDelete, userEditedVtnAssetIdsToDelete, ttmlUserEditedAssetIdsToDelete);
+    const assetsToDelete = union(
+      fetchedAssetIdsToDelete,
+      userEditedVtnAssetIdsToDelete,
+      ttmlUserEditedAssetIdsToDelete
+    );
     if (!assetsToDelete.length) {
       return;
     }
@@ -1077,18 +1130,23 @@ function* watchRestoreOriginalEngineResults() {
     const deleteAssetsResponse = yield call(deleteAssetsSaga, assetsToDelete);
     if (deleteAssetsResponse.errors) {
       // report errors and continue refetching engine results and runs
-      yield put(restoreOriginalEngineResultsFailure(
-        widgetId,
-        { error: 'Errors deleting user edited engine results for selected engine' }));
+      yield put(
+        restoreOriginalEngineResultsFailure(widgetId, {
+          error:
+            'Errors deleting user edited engine results for selected engine'
+        })
+      );
     }
 
     yield call(refreshEngineRuns, widgetId, tdo.id);
 
-    yield put(engineResultsModule.fetchEngineResults({
+    yield put(
+      engineResultsModule.fetchEngineResults({
         tdo,
         engineId,
         startOffsetMs: 0,
-        stopOffsetMs: Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
       })
     );
 
