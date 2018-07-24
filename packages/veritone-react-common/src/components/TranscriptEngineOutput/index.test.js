@@ -98,6 +98,7 @@ describe('Transcript Engine Output - View Mode', () => {
 
   it('Invalid Time View Mode', () => {
     const timeMode = transcriptEngineOutput.setState({
+      viewTypeSelectionEnabled: true,
       viewType: ViewMode.TIME
     });
 
@@ -177,12 +178,6 @@ describe('Transcript Engine Ouput - Edit Mode', () => {
 
     const snippetSegment = snippetEditMode.find('SnippetSegment');
     expect(snippetSegment).toHaveLength(1);
-    expect(
-      snippetSegment
-        .find('div.time')
-        .at(0)
-        .text()
-    ).toEqual('00:00:00');
 
     const snippetFragments = snippetSegment.find('SnippetFragment');
     expect(snippetFragments).toHaveLength(3);
@@ -196,11 +191,5 @@ describe('Transcript Engine Ouput - Edit Mode', () => {
     const noDataSegment = snippetEditMode.find('NoDataSegment');
     expect(noDataSegment).toHaveLength(1);
     expect(noDataSegment.prop('editMode')).toEqual(true);
-    expect(
-      noDataSegment
-        .find('div.time')
-        .at(0)
-        .text()
-    ).toEqual('00:00:02');
   });
 });

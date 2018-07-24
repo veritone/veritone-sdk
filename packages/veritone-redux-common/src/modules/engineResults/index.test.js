@@ -7,8 +7,8 @@ const mockStore = makeMockStore();
 describe('engineResults module reducer', () => {
   describe('fetchEngineResults', () => {
     const mockFetchEngineResultsVars = {
-      tdoId: "123",
-      engineIds: ["myengine1"],
+      tdoId: '123',
+      engineIds: ['myengine1'],
       ignoreUserEdited: false,
       stopOffsetMs: 5000
     };
@@ -18,17 +18,25 @@ describe('engineResults module reducer', () => {
         engineResults: {
           records: [
             {
-              assetId: "test-asset-123",
-              engineId: "myengine1",
+              assetId: 'test-asset-123',
+              engineId: 'myengine1',
               jsondata: {
                 series: [
-                  {startTimeMs:0,stopTimeMs: 2500, words:[{word:"hello", confidence: 1}]},
-                  {startTimeMs:2501,stopTimeMs: 5000, words:[{word:"world", confidence: 1}]}
+                  {
+                    startTimeMs: 0,
+                    stopTimeMs: 2500,
+                    words: [{ word: 'hello', confidence: 1 }]
+                  },
+                  {
+                    startTimeMs: 2501,
+                    stopTimeMs: 5000,
+                    words: [{ word: 'world', confidence: 1 }]
+                  }
                 ]
               },
               startOffsetMs: 0,
               stopOffsetMs: 5000,
-              tdoId: "123",
+              tdoId: '123',
               userEdited: true
             }
           ]
@@ -38,14 +46,14 @@ describe('engineResults module reducer', () => {
 
     const mockEngineResultsErrorResponse = {
       data: {},
-      errors: [{message: 'An error message'}]
+      errors: [{ message: 'An error message' }]
     };
 
     it('should dispatch FETCH_ENGINE_RESULTS and FETCH_ENGINE_RESULTS_SUCCESS on successful response', () => {
       const store = mockStore({
         config: {
           apiRoot: 'http://www.test.com:80',
-          graphQLEndpoint: "graphql"
+          graphQLEndpoint: 'graphql'
         },
         auth: {
           sessionToken: '123'
@@ -79,9 +87,9 @@ describe('engineResults module reducer', () => {
 
       const engineResults = engineResultsModule.fetchEngineResults({
         tdo: {
-          id: "123"
+          id: '123'
         },
-        engineId: "myengine1",
+        engineId: 'myengine1',
         startOffsetMs: 0,
         stopOffsetMs: 5000,
         ignoreUserEdited: false
@@ -98,7 +106,7 @@ describe('engineResults module reducer', () => {
       const store = mockStore({
         config: {
           apiRoot: 'http://www.test.com',
-          graphQLEndpoint: "graphql"
+          graphQLEndpoint: 'graphql'
         },
         auth: {
           sessionToken: '123'
@@ -112,9 +120,9 @@ describe('engineResults module reducer', () => {
 
       const engineResults = engineResultsModule.fetchEngineResults({
         tdo: {
-          id: "123"
+          id: '123'
         },
-        engineId: "myengine1",
+        engineId: 'myengine1',
         startOffsetMs: 0,
         stopOffsetMs: 5000,
         ignoreUserEdited: false

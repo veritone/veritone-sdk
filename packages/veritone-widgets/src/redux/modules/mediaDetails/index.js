@@ -1,11 +1,9 @@
-import { get, has, values, uniqBy, keyBy, noop } from 'lodash';
+import { get, has, find, values, uniqBy, keyBy, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
 export const LOAD_ENGINE_CATEGORIES_SUCCESS = 'LOAD_ENGINE_CATEGORIES_SUCCESS';
 export const LOAD_ENGINE_CATEGORIES_FAILURE = 'LOAD_ENGINE_CATEGORIES_FAILURE';
-export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID =
-  'CLEAR_ENGINE_RESULTS_BY_ENGINE_ID';
 export const LOAD_TDO = 'LOAD_TDO';
 export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
 export const LOAD_TDO_FAILURE = 'LOAD_TDO_FAILURE';
@@ -40,16 +38,22 @@ export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
 export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
 export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
-export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
-  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
   'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
+  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
 export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
 export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
+export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = 'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 export const UPDATE_MEDIA_PLAYER_STATE = 'UPDATE_MEDIA_PLAYER_STATE';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS = 'RESTORE_ORIGINAL_ENGINE_RESULTS';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS =
+  'RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS';
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE =
+  'RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -70,14 +74,18 @@ const defaultMDPState = {
   error: null,
   alertDialogConfig: {
     show: false,
-    title: 'Save Changes?',
-    description: 'Would you like to save the changes?',
-    cancelButtonLabel: 'Discard',
-    confirmButtonLabel: 'Save',
-    nextAction: noop
+    title: '',
+    description: '',
+    cancelButtonLabel: '',
+    confirmButtonLabel: '',
+    confirmAction: noop,
+    cancelAction: noop
   },
   isEditButtonDisabled: false,
-  currentMediaPlayerTime: 0
+  showTranscriptBulkEditSnack: false,
+  currentMediaPlayerTime: 0,
+  isRestoringOriginalEngineResult: false,
+  isSavingEngineResults: false,
 };
 
 const defaultState = {};
@@ -103,13 +111,19 @@ export default createReducer(defaultState, {
       meta: { warn, widgetId }
     }
   ) {
+    let selectedEngineCategory = state[widgetId].selectedEngineCategory;
+    const selectedEngineCategoryNewValue = find(payload, {id: get(selectedEngineCategory, 'id')});
+    if (selectedEngineCategory && selectedEngineCategoryNewValue) {
+      selectedEngineCategory = selectedEngineCategoryNewValue;
+    }
     return {
       ...state,
       [widgetId]: {
         ...state[widgetId],
         error: null,
         warning: warn || null,
-        engineCategories: payload
+        engineCategories: payload,
+        selectedEngineCategory: selectedEngineCategory
       }
     };
   },
@@ -127,28 +141,6 @@ export default createReducer(defaultState, {
         error: errorMessage || 'unknown error',
         warning: warn || null,
         engineCategories: []
-      }
-    };
-  },
-  [CLEAR_ENGINE_RESULTS_BY_ENGINE_ID](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        engineResultsByEngineId: {
-          ...state[widgetId].engineResultsByEngineId,
-          [payload.engineId]: []
-        },
-        engineResultRequestsByEngineId: {
-          ...state[widgetId].engineResultRequestsByEngineId,
-          [payload.engineId]: []
-        }
       }
     };
   },
@@ -646,6 +638,99 @@ export default createReducer(defaultState, {
       }
     };
   },
+  [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](
+    state,
+    {
+      showTranscriptBulkEditSnack,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        showTranscriptBulkEditSnack
+      }
+    };
+  },
+  [SAVE_ASSET_DATA](
+    state,
+    {
+      payload,
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isSavingEngineResults: true,
+      }
+    };
+  },
+  [SAVE_ASSET_DATA_SUCCESS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isSavingEngineResults: false,
+      }
+    };
+  },
+  [SAVE_ASSET_DATA_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'Unknown error saving engine results',
+        isSavingEngineResults: false,
+      }
+    };
+  },
+  [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isSavingEngineResults: false,
+        enableSave: true,
+        showTranscriptBulkEditSnack: true,
+      }
+    };
+  },
+  [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'Unknown error saving bulk transcript edit',
+        isSavingEngineResults: false,
+        enableSave: true,
+      }
+    };
+  },
   [UPDATE_MEDIA_PLAYER_STATE](
     state,
     {
@@ -660,7 +745,54 @@ export default createReducer(defaultState, {
         currentMediaPlayerTime: currentTime
       }
     };
-  }
+  },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isEditButtonDisabled: true,
+        isRestoringOriginalEngineResult: true
+      }
+    };
+  },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS](
+    state,
+    {
+      meta: { widgetId }
+    }
+  ) {
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        isEditButtonDisabled: false,
+        isRestoringOriginalEngineResult: false
+      }
+    };
+  },
+  [RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE](
+    state,
+    {
+      meta: { error, widgetId }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      [widgetId]: {
+        ...state[widgetId],
+        error: errorMessage || 'Unknown error restoring engine results',
+        isEditButtonDisabled: false,
+        isRestoringOriginalEngineResult: false
+      }
+    };
+  },
 });
 
 const local = state => state[namespace];
@@ -693,18 +825,18 @@ export const getSchemasById = (state, widgetId) =>
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
-export const isUserGeneratedTranscriptEngineId = engineId => {
-  return (
-    engineId === 'bulk-edit-transcript' ||
-    engineId === 'bde0b023-333d-acb0-e01a-f95c74214607'
-  );
-};
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const isEditButtonDisabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isEditButtonDisabled']);
+export const showTranscriptBulkEditSnack = (state, widgetId) =>
+  get(local(state), [widgetId, 'showTranscriptBulkEditSnack']);
 export const currentMediaPlayerTime = (state, widgetId) =>
   get(local(state), [widgetId, 'currentMediaPlayerTime']);
+export const isRestoringOriginalEngineResult = (state, widgetId) =>
+  get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
+export const isSavingEngineResults = (state, widgetId) =>
+  get(local(state), [widgetId, 'isSavingEngineResults']);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -720,12 +852,6 @@ export const loadEngineCategoriesSuccess = (widgetId, result) => ({
 export const loadEngineCategoriesFailure = (widgetId, { error }) => ({
   type: LOAD_ENGINE_CATEGORIES_FAILURE,
   meta: { error, widgetId }
-});
-
-export const clearEngineResultsByEngineId = (engineId, widgetId) => ({
-  type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
-  payload: { engineId },
-  meta: { widgetId }
 });
 
 export const loadTdoRequest = (widgetId, tdoId, callback) => ({
@@ -849,6 +975,11 @@ export const saveAssetDataFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
+export const saveAssetDataSuccess = (widgetId) => ({
+  type: SAVE_ASSET_DATA_SUCCESS,
+  meta: { widgetId }
+});
+
 export const createFileAssetSuccess = (widgetId, assetId) => ({
   type: CREATE_FILE_ASSET_SUCCESS,
   payload: {
@@ -862,14 +993,14 @@ export const createFileAssetFailure = (widgetId, { error }) => ({
   meta: { error, widgetId }
 });
 
-export const createBulkEditTranscriptAssetSuccess = widgetId => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
-  meta: { widgetId }
-});
-
 export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
   type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
   meta: { error, widgetId }
+});
+
+export const createBulkEditTranscriptAssetSuccess = (widgetId) => ({
+  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
+  meta: { widgetId }
 });
 
 export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
@@ -879,11 +1010,12 @@ export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
   },
   meta: { widgetId }
 });
-export const openConfirmModal = (nextAction, widgetId) => ({
+
+export const openConfirmModal = (widgetId, modalConfig) => ({
   type: SHOW_CONFIRM_DIALOG,
   payload: {
     show: true,
-    nextAction: nextAction
+    ...modalConfig
   },
   meta: { widgetId }
 });
@@ -903,8 +1035,36 @@ export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
   meta: { widgetId }
 });
 
+export const setShowTranscriptBulkEditSnackState = (widgetId, showTranscriptBulkEditSnack) => ({
+  type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
+  showTranscriptBulkEditSnack,
+  meta: { widgetId }
+});
+
 export const updateMediaPlayerState = (widgetId, mediaPlayerState) => ({
   type: UPDATE_MEDIA_PLAYER_STATE,
   ...mediaPlayerState,
+  meta: { widgetId }
+});
+
+export const restoreOriginalEngineResults = (widgetId, tdo, engineId, engineCategoryType, engineResults, removeAllUserEdits) => ({
+  type: RESTORE_ORIGINAL_ENGINE_RESULTS,
+  payload: {
+    tdo,
+    engineId,
+    engineCategoryType,
+    engineResults,
+    removeAllUserEdits
+  },
+  meta: { widgetId }
+});
+
+export const restoreOriginalEngineResultsFailure = (widgetId, { error }) => ({
+  type: RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE,
+  meta: { error, widgetId }
+});
+
+export const restoreOriginalEngineResultsSuccess = (widgetId) => ({
+  type: RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS,
   meta: { widgetId }
 });

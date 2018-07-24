@@ -23,7 +23,8 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType
+  oneOfType,
+  node
 } from 'prop-types';
 import styles from './styles.scss';
 import {
@@ -71,7 +72,8 @@ const saga = util.reactReduxSaga.saga;
     removeDetectedFace: faceEngineOutput.removeDetectedFace,
     openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
-    cancelFaceEdits: faceEngineOutput.cancelFaceEdits
+    cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
+    clearEngineResultsByEngineId: engineResultsModule.clearEngineResultsByEngineId
   },
   null,
   { withRef: true }
@@ -142,6 +144,7 @@ class FaceEngineOutputContainer extends Component {
       })
     ),
     onEngineChange: func,
+    onRestoreOriginalClick: func,
     editMode: bool,
     currentMediaPlayerTime: number,
     className: string,
@@ -150,6 +153,7 @@ class FaceEngineOutputContainer extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClicked: func,
+    outputNullState: node,
     fetchLibraries: func,
     isFetchingEngineResults: bool,
     isFetchingEntities: bool,
@@ -167,7 +171,8 @@ class FaceEngineOutputContainer extends Component {
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
     pendingUserEdits: bool,
-    isDisplayingUserEditedOutput: bool
+    isDisplayingUserEditedOutput: bool,
+    clearEngineResultsByEngineId: func
   };
 
   state = {
@@ -312,6 +317,7 @@ class FaceEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
+    this.props.clearEngineResultsByEngineId(this.props.selectedEngineId);
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,
@@ -506,7 +512,9 @@ class FaceEngineOutputContainer extends Component {
       'entitySearchResults',
       'selectedEngineId',
       'onFaceOccurrenceClicked',
-      'isSearchingEntities'
+      'isSearchingEntities',
+      'onRestoreOriginalClick',
+      'outputNullState'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {

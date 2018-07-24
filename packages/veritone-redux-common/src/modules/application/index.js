@@ -144,10 +144,10 @@ export function getContextMenuExtensions(state) {
     (accumulator, currentVal) => {
       return {
         ...accumulator,
-        tdos: [...accumulator.tdos, ...currentVal.contextMenuExtensions.tdos],
+        tdos: [...accumulator.tdos, ...get(currentVal, 'contextMenuExtensions.tdos', [])],
         mentions: [
           ...accumulator.mentions,
-          ...currentVal.contextMenuExtensions.mentions
+          ...get(currentVal, 'contextMenuExtensions.mentions', [])
         ]
       };
     },
