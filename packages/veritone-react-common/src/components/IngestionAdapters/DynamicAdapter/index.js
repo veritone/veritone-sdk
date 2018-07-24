@@ -15,7 +15,8 @@ import {
   startCase,
   toLower,
   includes,
-  pick
+  pick,
+  find
 } from 'lodash';
 import { objectOf, any, func, number } from 'prop-types';
 
@@ -80,7 +81,9 @@ class DynamicAdapter extends React.Component {
   handleSourceChange = selectedSource => {
     const newState = {
       sourceId: selectedSource.id,
-      ...pick(selectedSource.sourceType, ['isLive', 'requiresScanPipeline', 'supportedRunModes'])
+      source: {
+        selectedSource
+      }
     };
     if (this.state.sourceId !== selectedSource.id) {
       // Clusters must use isLive (selecting a new source may have changed isLives value)
@@ -90,12 +93,13 @@ class DynamicAdapter extends React.Component {
   };
 
   handleClusterChange = selectedCluster => {
-    const newState = { clusterId: selectedCluster.id };
-    if (!selectedCluster.bypassAllowedEngines) {
-      newState.engineWhitelist = selectedCluster.allowedEngines;
-    } else {
-      newState.engineWhitelist = undefined;
-    }
+    const newState = {
+      clusterId: selectedCluster.id,
+      cluster: {
+        ...pick(this.state.cluster, ['hasNextPage', 'isNextPageLoading', 'items']),
+        selectedCluster
+      }
+    };
     this.setState(newState, this.sendConfiguration);
   };
 
@@ -112,7 +116,8 @@ class DynamicAdapter extends React.Component {
       hasNextPage: false,
       items: this.state.cluster.items
     }});
-    return this.props.loadNextClusters(this.state.isLive)({startIndex, stopIndex}).then(nextPage => {
+    const isLive = get(this.state.source, 'selectedSource.sourceType.isLive');
+    return this.props.loadNextClusters(isLive)({startIndex, stopIndex}).then(nextPage => {
       const newState = {
         cluster: {
           hasNextPage: !!get(nextPage, 'length'),
@@ -120,7 +125,13 @@ class DynamicAdapter extends React.Component {
           items: startIndex === 0 ? nextPage : cloneDeep(this.state.cluster.items).concat(nextPage)
         }
       }
-      if (newState.cluster.items.length && !this.props.id) {
+      const clusterToSelect = find(
+        newState.cluster.items,
+        cluster => cluster.id === this.state.clusterId
+      );
+      if (clusterToSelect) {
+        this.handleClusterChange(clusterToSelect);
+      } else if (newState.cluster.items.length && !this.props.id) {
         this.handleClusterChange(newState.cluster.items[0]);
       }
       this.setState(newState);
@@ -179,8 +190,7 @@ class DynamicAdapter extends React.Component {
                 </div>
               </div>
             </div>
-            { isUndefined(this.state.isLive) ?
-              null :
+            { get(this.state, 'source.selectedSource') ?
               (
                 <div className={styles.adapterContainer}>
                   <InfiniteDropdownMenu
@@ -194,7 +204,7 @@ class DynamicAdapter extends React.Component {
                     pageSize={this.props.pageSize}
                   />
                 </div>
-              )
+              ) : null
             }
             <div>
               <DynamicFieldForm
@@ -295,10 +305,10 @@ export default {
   },
   validate: adapterStep => (configuration) => {
     let errors = [];
-    if (get(adapterStep, 'supportedSourceTypes.length') && !configuration.sourceId) {
+    if (get(adapterStep, 'supportedSourceTypes.length') && !get(configuration, 'source.selectedSource')) {
       errors.push('Source is required');
     }
-    if (!configuration.clusterId) {
+    if (!get(configuration, 'cluster.selectedCluster')) {
       errors.push('Cluster is required');
     }
     if (isArray(adapterStep.fields)) {
