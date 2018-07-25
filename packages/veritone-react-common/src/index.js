@@ -35,3 +35,5 @@ export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
+export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
+export ContentTemplate from './components/ContentTemplates';
