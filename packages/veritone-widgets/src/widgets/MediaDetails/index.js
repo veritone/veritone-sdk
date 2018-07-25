@@ -369,9 +369,11 @@ class MediaDetailsWidget extends React.Component {
 
   mediaPlayerRef = ref => {
     this.mediaPlayer = ref;
-    this.mediaPlayer.subscribeToStateChange(
-      this.handleMediaPlayerStateChange.bind(this)
-    );
+    if (this.mediaPlayer) {
+      this.mediaPlayer.subscribeToStateChange(
+        this.handleMediaPlayerStateChange.bind(this)
+      );
+    }
   };
 
   handleUpdateMediaPlayerTime = (startTime, stopTime) => {
