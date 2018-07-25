@@ -50,6 +50,10 @@ for (let i = 0; i < 15; i++) {
   sourceResults.push(sourceResult.data.source);
 }
 
+function btnClick() {
+  alert('Button Clicked!');
+}
+
 storiesOf('SourceManagement', module)
-  .add('NullState', () => <NullState />)
+  .add('NullState', () => <NullState onClick={btnClick} />)
   .add('Tile View', () => <SourceTileView sources={sourceResults} />)

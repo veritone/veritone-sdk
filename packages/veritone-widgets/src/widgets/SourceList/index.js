@@ -17,12 +17,9 @@ class SourceListWidget extends React.Component {
     fetchData: func
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      sources: props.sources
-    };
-  }
+  state = {
+    sources: this.props.sources
+  };
 
   handleFetchData = ({ start, end }) => {
     const perPage = end - start + 1;
