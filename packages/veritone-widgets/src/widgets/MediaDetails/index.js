@@ -576,12 +576,8 @@ class MediaDetailsWidget extends React.Component {
     });
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
-    const engineMode = get(selectedEngine, 'mode');
     const hasEngineResults = this.hasSelectedEngineResults();
-    const isRealTimeEngine =
-      engineMode &&
-      (engineMode.toLowerCase() === 'stream' ||
-        engineMode.toLowerCase() === 'chunk');
+    const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
       this.props.isFetchingEngineResults ||
       this.props.isRestoringOriginalEngineResult ||
@@ -672,7 +668,8 @@ class MediaDetailsWidget extends React.Component {
   isEditModeButtonDisabled = () => {
     return (
       this.props.isEditButtonDisabled ||
-      this.isDisplayingOriginalEngineResultForUserEdit()
+      this.isDisplayingOriginalEngineResultForUserEdit() ||
+      this.isSelectedEngineRealTimeAndRunning()
     );
   };
 
@@ -692,6 +689,21 @@ class MediaDetailsWidget extends React.Component {
       return true;
     }
     return false;
+  };
+
+  isSelectedEngineRealTimeAndRunning() {
+    const selectedEngineId = this.props.selectedEngineId;
+    const engines = get(this.props.selectedEngineCategory, 'engines');
+    const selectedEngine = find(engines, {
+      id: selectedEngineId
+    });
+    const engineStatus = get(selectedEngine, 'status');
+    return this.isRealTimeEngine(selectedEngine) && engineStatus === 'running';
+  }
+
+  isRealTimeEngine(engine) {
+    const engineMode = get(engine, 'mode');
+    return engineMode && (engineMode.toLowerCase() === 'stream' || engineMode.toLowerCase() === 'chunk');
   };
 
   closeTranscriptBulkEditSnack = () => {
