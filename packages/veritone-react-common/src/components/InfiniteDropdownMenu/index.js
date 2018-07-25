@@ -202,10 +202,10 @@ const ItemSelector = ({
 
 ItemSelector.propTypes = {
   initialValue: string,
-  items: arrayOf(objectOf(shape({
+  items: arrayOf(shape({
     id: string,
     name: string
-  }))).isRequired,
+  })).isRequired,
   handleSelectionChange: func.isRequired,
   selectLabel: string,
   handleMenuClick: func,
