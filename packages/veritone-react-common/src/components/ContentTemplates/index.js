@@ -27,7 +27,8 @@ export default class ContentTemplates extends React.Component {
         data: objectOf(any)
       })
     ),
-    onListChange: func.isRequired,
+    onAddTemplate: func.isRequired,
+    onRemoveTemplate: func.isRequired,
     onInputChange: func.isRequired
   };
   static defaultProps = {
@@ -44,7 +45,8 @@ export default class ContentTemplates extends React.Component {
           <TemplateList
             templates={this.props.templateData}
             selectedTemplates={selectedTemplateSchemas}
-            addOrRemoveTemplate={this.props.onListChange}
+            addTemplate={this.props.onAddTemplate}
+            removeTemplate={this.props.onRemoveTemplate}
           />
         </div>
         <div className={styles['content-templates']}>
@@ -53,7 +55,7 @@ export default class ContentTemplates extends React.Component {
           ) : (
               <TemplateForms
                 templates={selectedTemplateSchemas}
-                onRemoveTemplate={this.props.onListChange}
+                onRemoveTemplate={this.props.onRemoveTemplate}
                 onTemplateDetailsChange={this.props.onInputChange}
               />
             )}

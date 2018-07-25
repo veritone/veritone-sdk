@@ -1,5 +1,6 @@
 import React from 'react';
 import { string, shape, objectOf, func } from 'prop-types';
+import cx from 'classnames';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -18,7 +19,8 @@ export default class TemplateList extends React.Component {
         id: string
       })
     ),
-    addOrRemoveTemplate: func.isRequired
+    addTemplate: func.isRequired,
+    removeTemplate: func.isRequired
   };
 
   static defaultProps = {
@@ -26,11 +28,11 @@ export default class TemplateList extends React.Component {
   }
 
   addTemplate = schemaId => () => {
-    this.props.addOrRemoveTemplate(schemaId);
+    this.props.addTemplate(schemaId);
   };
 
   removeTemplate = schemaId => () => {
-    this.props.addOrRemoveTemplate(schemaId, true);
+    this.props.removeTemplate(schemaId);
   };
 
   buildTemplateList = () => {
@@ -42,8 +44,7 @@ export default class TemplateList extends React.Component {
       return (
         <div className={styles.templateRow} key={schemaId}>
           <div
-            className={styles.name}
-            style={isAdded ? { fontWeight: 500 } : undefined}
+            className={cx(styles.name, { [styles.addedTemplate]: isAdded })}
           >
             {templates[schemaId].name}
           </div>
