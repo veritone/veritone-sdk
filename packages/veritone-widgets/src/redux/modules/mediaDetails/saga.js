@@ -8,6 +8,7 @@ import {
   take,
   takeLatest
 } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import {
   get,
   uniq,
@@ -17,7 +18,8 @@ import {
   isUndefined,
   isArray,
   every,
-  forEach
+  forEach,
+  find
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import {
@@ -93,6 +95,7 @@ import {
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
+import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
     details
@@ -134,6 +137,8 @@ const engineRunsQueryClause = `engineRuns(limit: 1000) {
   `;
 
 function* finishLoadEngineCategories(widgetId, result, { error }) {
+  console.log('finishLoadEngineCategories');
+  console.log(result);
   if (error) {
     return yield put(loadEngineCategoriesFailure(widgetId, { error }));
   }
@@ -307,10 +312,10 @@ function* refreshEngineRuns(widgetId, tdoId) {
   } else {
     throw new Error('Could not refresh engineRuns');
   }
-  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
   yield* finishLoadEngineCategories(widgetId, engineCategories, {
     error: false
   });
+  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
@@ -1612,7 +1617,45 @@ function* watchLatestFetchEngineResultsEnd(widgetId) {
       engineResultsModule.FETCH_ENGINE_RESULTS_FAILURE
     ],
     function*() {
-      yield put(setEditButtonState(widgetId, false));
+      ;
+      yield call(refreshRealTimeEngineResultsWithTimeout, widgetId);
+    }
+  );
+}
+
+function* refreshRealTimeEngineResultsWithTimeout(widgetId) {
+  yield delay(10000);
+  const selectedEngineCategory = yield select(
+    getSelectedEngineCategory,
+    widgetId
+  );
+  const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+  const selectedEngine = find(get(selectedEngineCategory, 'engines', []), {
+    id: selectedEngineId
+  });
+  const engineMode = get(selectedEngine, 'mode');
+  const engineStatus = get(selectedEngine, 'status');
+  if (
+    engineMode &&
+    (engineMode.toLowerCase() === 'stream' ||
+      engineMode.toLowerCase() === 'chunk') &&
+    engineStatus === 'running'
+  ) {
+    const requestTdo = yield select(getTdo, widgetId);
+    engineResultsModule.fetchEngineResults({
+      tdo: requestTdo,
+      engineId: selectedEngineId
+    });
+  }
+}
+
+function* watchToStartRefreshEngineRunsWithTimeout(widgetId) {
+  yield takeLatest(
+    [LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS],
+    function*() {
+      const requestTdo = yield select(getTdo, widgetId);
+      yield delay(10000);
+      yield call(refreshEngineRuns, widgetId, requestTdo.id);
     }
   );
 }
@@ -1639,6 +1682,7 @@ export default function* root({ id, mediaId }) {
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
+    fork(watchToStartRefreshEngineRunsWithTimeout, id),
     fork(onMount, id, mediaId)
   ]);
 }

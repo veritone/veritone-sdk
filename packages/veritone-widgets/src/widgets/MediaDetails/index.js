@@ -701,8 +701,12 @@ class MediaDetailsWidget extends React.Component {
 
   isRealTimeEngine(engine) {
     const engineMode = get(engine, 'mode');
-    return engineMode && (engineMode.toLowerCase() === 'stream' || engineMode.toLowerCase() === 'chunk');
-  };
+    return (
+      engineMode &&
+      (engineMode.toLowerCase() === 'stream' ||
+        engineMode.toLowerCase() === 'chunk')
+    );
+  }
 
   closeTranscriptBulkEditSnack = () => {
     this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
