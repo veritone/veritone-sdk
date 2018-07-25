@@ -9,10 +9,8 @@ import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import yellow from '@material-ui/core/colors/yellow';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class ProgressDialog extends React.Component {
   static propTypes = {
     percentComplete: number,
