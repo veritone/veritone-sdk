@@ -17,7 +17,7 @@ export default class ModalHeader extends React.Component {
 
   render() {
     return (
-      <div className={styles['modal-header']}>
+      <div className={styles.modalHeader}>
         <div className={styles.fullScreenTopBar}>
           <span className={styles.topBarTitle}>{this.props.title}</span>
           <div className={styles.iconGroup}>{this.props.icons}</div>

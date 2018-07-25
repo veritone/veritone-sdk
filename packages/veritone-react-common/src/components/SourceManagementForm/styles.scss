@@ -5,9 +5,9 @@
   width: 50%;
 }
 
-.formScroll {
+.form-scroll {
   height: calc(100vh - 106px);
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .form-tab {
@@ -35,6 +35,6 @@
   }
 }
 
-.tabIndicator {
+.tab-indicator {
   background-color: #f9a02c !important;
 }

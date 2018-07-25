@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has, get } from 'lodash';
+import { pick, has, get, noop } from 'lodash';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Icon from '@material-ui/core/Icon';
@@ -52,12 +52,13 @@ export default class SourceManagementForm extends React.Component {
       })
     ),
     onSubmit: func.isRequired,
-    onClose: func.isRequired,
+    onClose: func,
     open: bool
   };
 
   static defaultProps = {
-    initialTemplates: {}
+    initialTemplates: {},
+    onClose: noop
   };
 
   state = {
@@ -119,7 +120,7 @@ export default class SourceManagementForm extends React.Component {
     return this.setState(newState);
   }
 
-  handleOnClose = () => {
+  handleCloseDialog = () => {
     return this.setState({ openDialog: false }, () => {
       this.props.onClose();
     });
@@ -138,42 +139,36 @@ export default class SourceManagementForm extends React.Component {
     }));
   };
 
-  manageTemplatesList = (templateSchemaId, remove = false) => {
+  addToTemplateList = (templateSchemaId) => {
     const { templateData, initialTemplates } = this.props;
+    const data = {};
 
-    if (remove) {
-      if (this.state.contentTemplates[templateSchemaId]) {
-        return this.setState(prevState => {
-          const contentTemplates = { ...prevState.contentTemplates };
-          delete contentTemplates[templateSchemaId];
+    Object.keys(templateData[templateSchemaId].definition.properties)
+      .reduce((fields, schemaDefProp) => {
+        data[schemaDefProp] = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp], '');
+      }, data);
 
-          return { contentTemplates };
-        });
-      }
-    } else {
-      const data = {};
-      Object.keys(templateData[templateSchemaId].definition.properties).reduce(
-        (fields, schemaDefProp) => {
-          data[schemaDefProp] =
-            initialTemplates[templateSchemaId] &&
-              initialTemplates[templateSchemaId].data
-              ? initialTemplates[templateSchemaId].data[schemaDefProp]
-              : '';
+    this.setState(prevState => ({
+      contentTemplates: {
+        [templateSchemaId]: {
+          ...templateData[templateSchemaId],
+          data
         },
-        data
-      );
+        ...prevState.contentTemplates
+      }
+    }));
+  }
 
-      this.setState(prevState => ({
-        contentTemplates: {
-          [templateSchemaId]: {
-            ...templateData[templateSchemaId],
-            data
-          },
-          ...prevState.contentTemplates
-        }
-      }));
+  removeFromTemplateList = (templateSchemaId) => {
+    if (this.state.contentTemplates[templateSchemaId]) {
+      return this.setState(prevState => {
+        const contentTemplates = { ...prevState.contentTemplates };
+        delete contentTemplates[templateSchemaId];
+
+        return { contentTemplates };
+      });
     }
-  };
+  }
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     const { contentTemplates } = this.state;
@@ -207,22 +202,18 @@ export default class SourceManagementForm extends React.Component {
       <FullScreenDialog open={this.state.openDialog}>
         <div className={styles['sm-form-wrapper']}>
           <ModalHeader
-            title={
-              this.state.sourceConfig.name
-                ? this.state.sourceConfig.name
-                : 'New Source'
-            }
+            title={this.state.sourceConfig.name || 'New Source'}
             icons={[
               <IconButton aria-label="exit" key="icon-3">
                 <Icon
                   className="icon-close-exit"
-                  onClick={this.handleOnClose}
+                  onClick={this.handleCloseDialog}
                 />
               </IconButton>
             ]}
           >
             <Tabs
-              classes={{ indicator: styles.tabIndicator }}
+              classes={{ indicator: styles['tab-indicator'] }}
               value={activeTab}
               onChange={this.handleChangeTab}
             >
@@ -236,25 +227,26 @@ export default class SourceManagementForm extends React.Component {
               />
             </Tabs>
           </ModalHeader>
-          <form onSubmit={this.handleSubmit} className={styles.formScroll}>
+          <form onSubmit={this.handleSubmit} className={styles['form-scroll']}>
             {activeTab === 0 && (
               <SourceConfiguration
                 sourceTypes={this.props.sourceTypes}
                 source={this.state.sourceConfig}
                 onInputChange={this.saveConfiguration}
-                onClose={this.handleOnClose}
+                onClose={this.handleCloseDialog}
               />
             )}
             {activeTab === 1 && (
               <ContentTemplates
                 templateData={this.props.templateData}
                 selectedTemplateSchemas={this.state.contentTemplates}
-                onListChange={this.manageTemplatesList}
+                onAddTemplate={this.addToTemplateList}
+                onRemoveTemplate={this.removeFromTemplateList}
                 onInputChange={this.updateTemplateDetails}
               />
             )}
             <div className={styles['btn-container']}>
-              <Button onClick={this.handleOnClose}>Cancel</Button>
+              <Button onClick={this.handleCloseDialog}>Cancel</Button>
               <Button variant="raised" color="primary" type="submit">
                 {get(this.props, 'source.id') ? 'Save' : 'Create'}
               </Button>

@@ -17,7 +17,7 @@ const sourceTypes = {
               },
               username: {
                 type: 'string',
-                title: 'User Name'
+                title: 'username'
               },
               password: {
                 type: 'string'
@@ -38,7 +38,7 @@ const sourceTypes = {
               },
               username: {
                 type: 'string',
-                title: 'User Name 2'
+                title: 'username 2'
               },
               password: {
                 type: 'string'
@@ -137,14 +137,15 @@ const dataSchemas = {
                       title: 'URL'
                     },
                     username: {
-                      type: 'string'
+                      type: 'string',
+                      title: 'Username'
                     },
                     testArray: {
                       type: 'array',
                       title: 'Array Test',
                       items: {
                         type: 'number',
-                        title: 'item title'
+                        title: 'Item Title'
                       }
                     },
                     testObject: {
@@ -167,7 +168,7 @@ const dataSchemas = {
                     },
                     geoLocation: {
                       type: 'geoPoint',
-                      title: 'geoLocation'
+                      title: 'Geo Location'
                     },
                     trueOrFalse: {
                       type: 'boolean',
@@ -175,7 +176,7 @@ const dataSchemas = {
                     },
                     datetimeEnd: {
                       type: 'dateTime',
-                      title: 'datetimeEnd'
+                      title: 'End Date'
                     }
                   }
                 }
