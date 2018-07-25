@@ -37,3 +37,4 @@ export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
 export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
 export ContentTemplate from './components/ContentTemplates';
+export SourceManagementForm from './components/SourceManagementForm';

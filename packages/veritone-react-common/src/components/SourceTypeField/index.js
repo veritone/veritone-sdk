@@ -64,7 +64,7 @@ SourceTypeField.propTypes = {
 
 const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {
   return (
-    <FormControl className={styles.dateTimeContainer}>
+    <FormControl fullWidth className={styles.dateTimeContainer}>
       <InputLabel className={styles.textFieldLabel} shrink htmlFor={id}>
         {title}
       </InputLabel>
