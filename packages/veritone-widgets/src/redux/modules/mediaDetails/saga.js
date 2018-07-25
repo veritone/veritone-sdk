@@ -310,9 +310,13 @@ function* refreshEngineRuns(widgetId, tdoId) {
   } else {
     throw new Error('Could not refresh engineRuns');
   }
+
+  yield* refreshSelectedEngineResultsOnStatusChange(widgetId, engineCategories);
+
   yield* finishLoadEngineCategories(widgetId, engineCategories, {
     error: false
   });
+
   yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
 }
 
@@ -1615,31 +1619,58 @@ function* watchLatestFetchEngineResultsEnd(widgetId) {
       engineResultsModule.FETCH_ENGINE_RESULTS_FAILURE
     ],
     function*() {
-      ;
-      yield call(refreshRealTimeEngineResultsWithTimeout, widgetId);
+      yield put(setEditButtonState(widgetId, false));
     }
   );
 }
 
-function* refreshRealTimeEngineResultsWithTimeout(widgetId) {
-  yield delay(10000);
-  const selectedEngineCategory = yield select(
+function* refreshSelectedEngineResultsOnStatusChange(
+  widgetId,
+  engineCategoriesNewValue
+) {
+  const requestTdo = yield select(getTdo, widgetId);
+  const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+  const selectedEngineCategoryOldValue = yield select(
     getSelectedEngineCategory,
     widgetId
   );
-  const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-  const selectedEngine = find(get(selectedEngineCategory, 'engines', []), {
-    id: selectedEngineId
+  const selectedEngineCategoryNewValue = find(engineCategoriesNewValue, {
+    id: selectedEngineCategoryOldValue.id
   });
-  const engineMode = get(selectedEngine, 'mode');
-  const engineStatus = get(selectedEngine, 'status');
-  if (
+  const selectedEngineOldValue = find(
+    get(selectedEngineCategoryOldValue, 'engines', []),
+    {
+      id: selectedEngineId
+    }
+  );
+  const selectedEngineNewValue = find(
+    get(selectedEngineCategoryNewValue, 'engines', []),
+    {
+      id: selectedEngineId
+    }
+  );
+  const engineMode = get(selectedEngineNewValue, 'mode');
+  const engineStatusOldValue = get(selectedEngineOldValue, 'status');
+  const engineStatusNewValue = get(selectedEngineNewValue, 'status');
+  const isRealTimeEngine =
     engineMode &&
     (engineMode.toLowerCase() === 'stream' ||
-      engineMode.toLowerCase() === 'chunk') &&
-    engineStatus === 'running'
+      engineMode.toLowerCase() === 'chunk');
+  const isRealTimeStillRunning =
+    isRealTimeEngine && engineStatusNewValue === 'running';
+  const isRealTimeFinishedRunning =
+    isRealTimeEngine &&
+    engineStatusOldValue === 'running' &&
+    engineStatusNewValue !== 'running';
+  const wentToCompletedStatus =
+    engineStatusOldValue &&
+    engineStatusOldValue !== 'complete' &&
+    engineStatusNewValue === 'complete';
+  if (
+    isRealTimeStillRunning ||
+    isRealTimeFinishedRunning ||
+    wentToCompletedStatus
   ) {
-    const requestTdo = yield select(getTdo, widgetId);
     engineResultsModule.fetchEngineResults({
       tdo: requestTdo,
       engineId: selectedEngineId
@@ -1647,13 +1678,18 @@ function* refreshRealTimeEngineResultsWithTimeout(widgetId) {
   }
 }
 
-function* watchToStartRefreshEngineRunsWithTimeout(widgetId) {
+function* watchToStartRefreshEngineRunsWithTimeout(
+  widgetId,
+  refreshIntervalMs
+) {
   yield takeLatest(
     [LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS],
     function*() {
-      const requestTdo = yield select(getTdo, widgetId);
-      yield delay(10000);
-      yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      if (refreshIntervalMs > 0) {
+        const requestTdo = yield select(getTdo, widgetId);
+        yield delay(refreshIntervalMs);
+        yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      }
     }
   );
 }
@@ -1663,7 +1699,7 @@ function* onMount(id, mediaId) {
   yield put(applicationModule.fetchApplications());
 }
 
-export default function* root({ id, mediaId }) {
+export default function* root({ id, mediaId, refreshIntervalMs }) {
   yield all([
     fork(watchLoadEngineResultsComplete),
     fork(watchLoadTdoRequest),
@@ -1680,7 +1716,7 @@ export default function* root({ id, mediaId }) {
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
-    fork(watchToStartRefreshEngineRunsWithTimeout, id),
+    fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
     fork(onMount, id, mediaId)
   ]);
 }

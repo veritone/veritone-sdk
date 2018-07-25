@@ -149,6 +149,7 @@ class MediaDetailsWidget extends React.Component {
       features: objectOf(any),
       applicationIds: arrayOf(string)
     }),
+    refreshIntervalMs: number,
     onRunProcess: func,
     onClose: func,
     updateTdoRequest: func,
