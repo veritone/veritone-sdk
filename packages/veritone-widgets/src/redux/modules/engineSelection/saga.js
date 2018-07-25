@@ -14,7 +14,8 @@ function* watchRefetchEngineActions() {
     engineSelectionModule.SEARCH,
     engineSelectionModule.CLEAR_SEARCH,
     engineSelectionModule.ADD_FILTER,
-    engineSelectionModule.REMOVE_FILTER
+    engineSelectionModule.REMOVE_FILTER,
+    engineSelectionModule.CHANGE_TAB
   ];
 
   yield takeLatest(refetchTypes, function* onInvalidateAction({

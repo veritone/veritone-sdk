@@ -1,6 +1,6 @@
 import React from 'react';
 import { string } from 'prop-types';
-import blue from '@material-ui/core/colors/blue';
+import indigo from '@material-ui/core/colors/indigo';
 
 import styles from './styles.scss';
 
@@ -9,7 +9,7 @@ const Lozenge = ({ children, iconClassName, backgroundColor, textColor }) => {
     <div
       className={styles.lozenge}
       style={{
-        backgroundColor: backgroundColor || blue[500],
+        backgroundColor: backgroundColor || indigo[500],
         color: textColor || '#fff'
       }}
     >

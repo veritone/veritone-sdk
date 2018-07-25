@@ -121,7 +121,7 @@ const source = {
   }
 };
 
-//// FORM CARDS LIST SETUP
+// FORM CARDS LIST SETUP
 const result = {
   data: {
     dataRegistries: {
@@ -255,8 +255,10 @@ class Story extends React.Component {
       sources,
       templateData,
       initialTemplates,
-      onSubmit: noop,
-      onClose: noop
+      onClose: noop,
+      onSubmit: (data) => {
+        console.log('data:', data);
+      }
     });
   }
 

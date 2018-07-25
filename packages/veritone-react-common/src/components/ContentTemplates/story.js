@@ -198,7 +198,8 @@ storiesOf('Content Templates', module)
   .add('Template List', () => (
     <TemplateList
       templates={templateData}
-      addOrRemoveTemplate={noop}
+      addTemplate={noop}
+      removeTemplate={noop}
     />
   ))
   .add('Form Cards', () => (

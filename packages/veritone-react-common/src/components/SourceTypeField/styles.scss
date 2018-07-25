@@ -1,3 +1,5 @@
+@import 'src/styles/modules/variables';
+
 .textFieldLabel {
   font-weight: normal !important;
 }
@@ -6,14 +8,9 @@
   padding-top: 18px !important;
 }
 
-.dateTimeLabel {
-  transform: translate(0, 1.5px) scale(0.75) !important;
-  transform-origin: top left !important;
-}
-
 .unsupportedMsg {
   padding-top: 20px;
-  color: rgba(0, 0, 0, 0.54);
+  color: $light-black;
   font-size: 14px;
   font-style: italic;
 }
