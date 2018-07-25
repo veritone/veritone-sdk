@@ -149,6 +149,8 @@ class MediaDetailsWidget extends React.Component {
       features: objectOf(any),
       applicationIds: arrayOf(string)
     }),
+    // property to configure experimental autorefresh in saga
+    // eslint-disable-next-line react/no-unused-prop-types
     refreshIntervalMs: number,
     onRunProcess: func,
     onClose: func,
@@ -567,6 +569,15 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  isSelectedEngineCompleted = () => {
+    const selectedEngineId = this.props.selectedEngineId;
+    const engines = get(this.props.selectedEngineCategory, 'engines');
+    const selectedEngine = find(engines, {
+      id: selectedEngineId
+    });
+    return get(selectedEngine, 'status') === 'complete';
+  };
+
   buildEngineNullStateComponent = () => {
     const selectedEngineId = this.props.selectedEngineId;
     const engines = get(this.props.selectedEngineCategory, 'engines');
@@ -658,7 +669,11 @@ class MediaDetailsWidget extends React.Component {
   };
 
   showEditButton = () => {
-    if (!this.isEditableEngineResults() || !this.hasSelectedEngineResults()) {
+    if (
+      !this.isEditableEngineResults() ||
+      !this.hasSelectedEngineResults() ||
+      !this.isSelectedEngineCompleted()
+    ) {
       return false;
     }
     return true;
