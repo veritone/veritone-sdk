@@ -25,7 +25,7 @@ export default class TemplateForms extends React.Component {
   static defaultProps = {};
 
   handleRemoveTemplate = schemaId => {
-    this.props.onRemoveTemplate(schemaId, true);
+    this.props.onRemoveTemplate(schemaId);
   };
 
   handleFieldChange = (schemaId, fieldId, type) => event => {
@@ -202,7 +202,7 @@ function BuildFormElements({
     element = (value || ['']).map((elem, index) => {
       return (
         <div
-          key={`${schemaProp}.${'containter' + index}`}
+          key={`${schemaProp}.${'container' + index}`}
           className={styles.arrayRow}
         >
           <BuildFormElements
@@ -272,7 +272,7 @@ function BuildFormElements({
   }
 
   if (depth) {
-    element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>;
+    element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>; // eslint-disable-line
   }
 
   return element;

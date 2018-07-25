@@ -7,7 +7,7 @@
   "author": "Mitch Robb <mrobb@veritone.com>",
   "license": "Apache-2.0",
   "scripts": {
-    "buildall": "./buildall.sh",
+    "buildall": "yarn wsrun build --fast-exit --exclude-missing --stages",
     "publish-dev": "./publish-dev.sh",
     "lintall": "yarn wsrun lint --fast-exit --exclude-missing",
     "testall": "yarn wsrun test --fast-exit --exclude-missing",

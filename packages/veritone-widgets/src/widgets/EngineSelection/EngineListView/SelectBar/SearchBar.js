@@ -1,6 +1,5 @@
 import React from 'react';
 import { bool, func, string } from 'prop-types';
-import { debounce } from 'lodash';
 
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
@@ -25,10 +24,9 @@ export default class SearchBar extends React.Component {
     searchQuery: ''
   };
 
-  forwardChange = debounce(
-    event => this.props.onSearch(event.target.value),
-    300
-  );
+  state = {
+    searchQuery: this.props.searchQuery
+  };
 
   handleToggleSearch = () => {
     this.props.onToggleSearch(this.props.id);
@@ -39,53 +37,46 @@ export default class SearchBar extends React.Component {
   };
 
   handleChange = event => {
-    if (event.target.value === this.props.searchQuery) {
-      return;
-    }
+    this.setState({
+      searchQuery: event.target.value
+    });
 
-    event.persist();
-    this.forwardChange(event);
+    this.props.onSearch(event.target.value);
   };
 
-  renderOpenedState = () => (
-    <TextField
-      className={styles.searchBar}
-      placeholder="Search by engine name"
-      defaultValue={this.props.searchQuery}
-      onChange={this.handleChange}
-      inputProps={{
-        className: styles.searchBarInput
-      }}
-      InputProps={{
-        classes: {
-          underline: styles.searchBarUnderline
-        },
-        endAdornment: (
-          <InputAdornment className={styles.searchBarIcon} position="end">
-            <IconButton
-              className={styles.searchBarIcon}
-              onClick={this.handleToggleSearch}
-            >
-              <CloseIcon />
-            </IconButton>
-          </InputAdornment>
-        )
-      }}
-    />
-  );
-
-  renderClosedState = () => (
-    <IconButton
-      onClick={this.handleToggleSearch}
-      className={styles.searchBarIcon}
-    >
-      <SearchIcon />
-    </IconButton>
-  );
-
   render() {
-    return this.props.isOpen
-      ? this.renderOpenedState()
-      : this.renderClosedState();
+    return this.props.isOpen ? (
+      <TextField
+        className={styles.searchBar}
+        placeholder="Search by engine name"
+        value={this.state.searchQuery}
+        onChange={this.handleChange}
+        inputProps={{
+          className: styles.searchBarInput
+        }}
+        InputProps={{
+          classes: {
+            underline: styles.searchBarUnderline
+          },
+          endAdornment: (
+            <InputAdornment className={styles.searchBarIcon} position="end">
+              <IconButton
+                className={styles.searchBarIcon}
+                onClick={this.handleToggleSearch}
+              >
+                <CloseIcon />
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
+      />
+    ) : (
+      <IconButton
+        onClick={this.handleToggleSearch}
+        className={styles.searchBarIcon}
+      >
+        <SearchIcon />
+      </IconButton>
+    );
   }
 }

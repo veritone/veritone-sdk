@@ -7,10 +7,9 @@ import {
   object,
   arrayOf,
   string,
-  shape,
-  number
+  shape
 } from 'prop-types';
-import { isEmpty } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -29,15 +28,13 @@ import styles from './styles.scss';
 
 @connect(
   (state, { id }) => ({
-    allEngines: engineModule.getEngines(state, id),
     currentResults: engineSelectionModule.getCurrentResults(state, id),
     allEnginesChecked: engineSelectionModule.allEnginesChecked(state, id),
-    selectedEngineIds: engineSelectionModule.getSelectedEngineIds(state, id),
     checkedEngineIds: engineSelectionModule.getCheckedEngineIds(state, id),
     isFetchingEngines: engineModule.isFetchingEngines(state, id),
     failedToFetchEngines: engineModule.failedToFetchEngines(state, id),
     searchQuery: engineSelectionModule.getSearchQuery(state, id),
-    currentTabIndex: engineSelectionModule.getCurrentTabIndex(state, id),
+    currentTab: engineSelectionModule.getCurrentTab(state, id),
     isSearchOpen: engineSelectionModule.isSearchOpen(state, id)
   }),
   {
@@ -64,7 +61,7 @@ export default class EngineListView extends React.Component {
     searchQuery: string,
     isFetchingEngines: bool.isRequired,
     failedToFetchEngines: bool.isRequired,
-    currentTabIndex: number.isRequired,
+    currentTab: string.isRequired,
     isSearchOpen: bool.isRequired,
     selectEngines: func.isRequired,
     deselectEngines: func.isRequired,
@@ -87,7 +84,6 @@ export default class EngineListView extends React.Component {
   };
 
   static defaultProps = {
-    allEngines: {},
     currentResults: []
   };
 
@@ -107,29 +103,35 @@ export default class EngineListView extends React.Component {
   }
 
   handleCheckAll = () => {
-    const enginesToCheck = this.props.currentTabIndex
-      ? this.props.currentResults
-      : this.props.selectedEngineIds;
+    const enginesToCheck =
+      this.props.currentTab === 'explore'
+        ? this.props.currentResults
+        : this.props.selectedEngineIds;
 
     this.props.allEnginesChecked
       ? this.props.uncheckAllEngines(this.props.id)
       : this.props.checkAllEngines(this.props.id, enginesToCheck);
   };
 
-  handleSearch = name => {
-    this.props.searchEngines(this.props.id, { name });
-  };
+  handleSearch = debounce(
+    name => this.props.searchEngines(this.props.id, { name }),
+    300
+  );
 
-  handleTabChange = (event, tabIndex) => {
-    this.props.changeTab(this.props.id, tabIndex);
+  handleTabChange = (event, tab) => {
+    this.props.changeTab(this.props.id, tab);
   };
 
   handleSave = () => {
     this.props.onSave();
   };
 
+  handleOnBack = () => {
+    this.props.uncheckAllEngines(this.props.id);
+  };
+
   render() {
-    const { checkedEngineIds, currentTabIndex } = this.props;
+    const { checkedEngineIds, currentTab } = this.props;
 
     return (
       <div className={styles.engineSelection}>
@@ -139,9 +141,9 @@ export default class EngineListView extends React.Component {
             <SelectedActionBar
               id={this.props.id}
               selectedEngines={checkedEngineIds}
-              disabledSelectAllMessage={!currentTabIndex}
+              disabledSelectAllMessage={currentTab === 'own'}
               currentResultsCount={this.props.currentResults.length}
-              onBack={this.props.uncheckAllEngines}
+              onBack={this.handleOnBack}
               onAddSelected={this.props.selectEngines}
               onRemoveSelected={this.props.deselectEngines}
               onSelectAll={this.props.checkAllEngines}
@@ -151,45 +153,50 @@ export default class EngineListView extends React.Component {
           {isEmpty(checkedEngineIds) && (
             <Tabs
               className={styles.tabs}
-              value={this.props.currentTabIndex}
+              value={this.props.currentTab}
               onChange={this.handleTabChange}
               indicatorColor="primary"
               textColor="primary"
               fullWidth
             >
-              <Tab classes={{ selected: styles.tab }} label="Your Engines" />
               <Tab
                 classes={{ selected: styles.tab }}
+                value="own"
+                label={`Your Engines (${this.props.selectedEngineIds.length})`}
+              />
+              <Tab
+                classes={{ selected: styles.tab }}
+                value="explore"
                 label="Explore All Engines"
               />
             </Tabs>
           )}
           <div className={styles.engineListContainer}>
-            <SelectBar
-              id={this.props.id}
-              onCheckAll={this.handleCheckAll}
-              searchQuery={this.props.searchQuery}
-              onSearch={this.handleSearch}
-              onClearSearch={this.props.clearSearch}
-              onToggleSearch={this.props.toggleSearch}
-              isSearchOpen={this.props.isSearchOpen}
-              isChecked={this.props.allEnginesChecked}
-              actionMenuItems={this.props.actionMenuItems}
-              hideActionMenuItems={
-                this.props.failedToFetchEngines || !currentTabIndex
-              }
-              count={
-                currentTabIndex
-                  ? this.props.currentResults.length
-                  : this.props.selectedEngineIds.length
-              }
-            />
+            {!this.props.failedToFetchEngines && (
+              <SelectBar
+                id={this.props.id}
+                onCheckAll={this.handleCheckAll}
+                searchQuery={this.props.searchQuery}
+                onSearch={this.handleSearch}
+                onClearSearch={this.props.clearSearch}
+                onToggleSearch={this.props.toggleSearch}
+                isSearchOpen={this.props.isSearchOpen}
+                isChecked={this.props.allEnginesChecked}
+                actionMenuItems={this.props.actionMenuItems}
+                currentTab={currentTab}
+                count={
+                  currentTab === 'explore'
+                    ? this.props.currentResults.length
+                    : this.props.selectedEngineIds.length
+                }
+              />
+            )}
             <div className={styles.engineList}>
               <EngineListContainer
                 id={this.props.id}
-                currentTabIndex={this.props.currentTabIndex}
+                currentTab={this.props.currentTab}
                 engineIds={
-                  currentTabIndex
+                  currentTab === 'explore'
                     ? this.props.currentResults
                     : this.props.selectedEngineIds
                 }

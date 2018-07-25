@@ -1,6 +1,7 @@
 import { isEmpty, keyBy, get, pickBy } from 'lodash';
 import { getConfig } from 'modules/config';
-import { callGraphQLApi } from 'helpers/api';
+import fetchGraphQLApi from 'helpers/api/fetchGraphQLApi';
+import callGraphQLApi from 'helpers/api/callGraphQLApi';
 import { createReducer } from 'helpers/redux';
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
 
@@ -10,10 +11,19 @@ export const FETCH_ENGINES = 'vtn/engine/FETCH_ENGINES';
 export const FETCH_ENGINES_SUCCESS = 'vtn/engine/FETCH_ENGINES_SUCCESS';
 export const FETCH_ENGINES_FAILURE = 'vtn/engine/FETCH_ENGINES_FAILURE';
 
+export const FETCH_ENGINE_CATEGORIES = 'vtn/engine/FETCH_ENGINE_CATEGORIES';
+export const FETCH_ENGINE_CATEGORIES_SUCCESS =
+  'vtn/engine/FETCH_ENGINE_CATEGORIES_SUCCESS';
+export const FETCH_ENGINE_CATEGORIES_FAILURE =
+  'vtn/engine/FETCH_ENGINES_CATEGORIES_FAILURE';
+
 const defaultState = {
   enginesById: {},
   isFetching: false,
-  fetchingFailed: false
+  fetchingFailed: false,
+  engineCategories: [],
+  isFetchingCategories: false,
+  fetchingCategoriesFailed: false
 };
 
 export default createReducer(defaultState, {
@@ -41,6 +51,28 @@ export default createReducer(defaultState, {
       isFetching: false,
       fetchingFailed: true
     };
+  },
+  [FETCH_ENGINE_CATEGORIES](state, action) {
+    return {
+      ...state,
+      isFetchingCategories: true,
+      fetchingCategoriesFailed: false
+    };
+  },
+  [FETCH_ENGINE_CATEGORIES_SUCCESS](state, action) {
+    return {
+      ...state,
+      isFetchingCategories: false,
+      fetchingCategoriesFailed: false,
+      engineCategories: [...action.payload.results.records]
+    };
+  },
+  [FETCH_ENGINE_CATEGORIES_FAILURE](state, action) {
+    return {
+      ...state,
+      isFetchingCategories: false,
+      fetchingCategoriesFailed: true
+    };
   }
 });
 
@@ -49,7 +81,7 @@ function local(state) {
 }
 
 export function fetchEngines(
-  { offset, limit, owned },
+  { offset, limit, owned } = {},
   searchQuery,
   filters = {},
   builds = {},
@@ -106,7 +138,7 @@ export function fetchEngines(
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
     try {
-      const response = await callGraphQLApi({
+      const response = await fetchGraphQLApi({
         endpoint: graphQLUrl,
         query,
         variables: {
@@ -146,6 +178,50 @@ export function fetchEngines(
   };
 }
 
+export const fetchEngineCategories = (
+  { offset, limit } = {},
+  searchQuery,
+  type
+) => async (dispatch, getState) => {
+  const query = `
+      ${engineCategoryFieldsFragment}
+      query EngineCategories(
+        $name: String = ""
+        $offset: Int
+        $limit: Int
+        $type: String
+      ) {
+        results: engineCategories(
+          name: $name
+          offset: $offset
+          limit: $limit
+          type: $type
+        ) {
+          records {
+            ...engineCategoryFields
+          }
+        }
+      }
+    `;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_ENGINE_CATEGORIES,
+      FETCH_ENGINE_CATEGORIES_SUCCESS,
+      FETCH_ENGINE_CATEGORIES_FAILURE
+    ],
+    query,
+    variables: {
+      name: searchQuery,
+      offset,
+      limit,
+      type
+    },
+    dispatch,
+    getState
+  });
+};
+
 export function getEngines(state) {
   return local(state).enginesById;
 }
@@ -160,6 +236,18 @@ export function isFetchingEngines(state) {
 
 export function failedToFetchEngines(state) {
   return local(state).fetchingFailed;
+}
+
+export function getEngineCategories(state) {
+  return local(state).engineCategories;
+}
+
+export function isFetchingEngineCategories(state) {
+  return local(state).isFetchingCategories;
+}
+
+export function failedToFetchEngineCategories(state) {
+  return local(state).fetchingCategoriesFailed;
 }
 
 const engineFieldsFragment = `
@@ -180,5 +268,20 @@ const engineFieldsFragment = `
       name
       color
     }
+  }
+`;
+
+const engineCategoryFieldsFragment = `
+  fragment engineCategoryFields on EngineCategory{
+    id
+    name
+    description
+    categoryType
+    type {
+      name
+      description
+    }
+    iconClass
+    color
   }
 `;

@@ -1,5 +1,5 @@
-export default function callGraphQLApi({
-  endpoint,
+export default function fetchGraphQLApi({
+  endpoint = 'https://api.veritone.com/v3/graphql',
   query,
   variables,
   operationName,
@@ -13,7 +13,7 @@ export default function callGraphQLApi({
       operationName
     }),
     headers: {
-      Authorization: `bearer ${token}`,
+      Authorization: token ? `bearer ${token}` : null,
       'Content-Type': 'application/json'
     }
   }).then(r => r.json());
