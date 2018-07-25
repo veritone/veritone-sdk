@@ -137,8 +137,6 @@ const engineRunsQueryClause = `engineRuns(limit: 1000) {
   `;
 
 function* finishLoadEngineCategories(widgetId, result, { error }) {
-  console.log('finishLoadEngineCategories');
-  console.log(result);
   if (error) {
     return yield put(loadEngineCategoriesFailure(widgetId, { error }));
   }
