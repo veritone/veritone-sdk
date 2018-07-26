@@ -17,12 +17,9 @@ class IngestionJobListWidget extends React.Component {
     fetchData: func
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      jobs: props.jobs
-    };
-  }
+  state = {
+    jobs: this.props.jobs
+  };
 
   handleFetchData = ({ start, end }) => {
     const perPage = end - start + 1;

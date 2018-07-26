@@ -33,7 +33,7 @@ export default class IngestionJobTileView extends React.Component {
     const icons = uniq(map(taskTemplates.records, 'engine.category.iconClass'));
 
     return (
-      <span className={styles['engine-icons']}>
+      <span className={styles.engineIcons}>
         {icons.length ? (
           icons.map(
             icon => (icon ? <span key={icon} className={icon} /> : undefined)
