@@ -5,6 +5,27 @@
   $width: 250px;
   min-width: $width;
   max-width: $width;
+  border-right: 1px solid $grey-4;
+
+  .isFetching {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+
+  .failedToFetchIcon {
+    $iconSize: 50px;
+    height: $iconSize;
+    width: $iconSize;
+    color: rgba(0, 0, 0, 0.26);
+  }
+
+  .failedToFetchMessage {
+    font-size: 18px;
+    color: $light-black;
+    font-weight: 200;
+    margin: 15px 0;
+  }
 }
 
 .inlineFilter {

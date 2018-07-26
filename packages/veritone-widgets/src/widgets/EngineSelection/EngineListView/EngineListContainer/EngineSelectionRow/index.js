@@ -86,7 +86,7 @@ export default class EngineSelectionRow extends React.Component {
       <div className={styles.row}>
         <div className={styles.avatar}>
           {this.props.engine.iconPath ? (
-            <img src={this.props.engine.iconPath} />
+            <img className={styles.icon} src={this.props.engine.iconPath} />
           ) : (
             <i className="icon-engines" />
           )}

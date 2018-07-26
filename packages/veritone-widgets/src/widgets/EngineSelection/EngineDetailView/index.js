@@ -43,7 +43,7 @@ export default class EngineDetailView extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className={styles.detailsContainer}>
         <div className={styles.back}>
           <div
             className={styles.backBtn}

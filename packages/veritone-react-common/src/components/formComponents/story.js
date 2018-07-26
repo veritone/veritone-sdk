@@ -25,6 +25,7 @@ import Checkbox from './Checkbox';
 import RadioGroup from './RadioGroup';
 import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
+import DateTimePicker from './DateTimePicker';
 
 const store = createStore(
   combineReducers({
@@ -339,4 +340,36 @@ storiesOf('Form Components', module)
         <Field component={DateRangePicker} name="date" />
       </StoryForm>
     </Provider>
-  ));
+  ))
+  .add('DateTimePicker', () => {
+    return (
+      <Provider store={store}>
+        <StoryForm
+          onSubmit={values => alert(JSON.stringify(values))}
+          initialValues={{
+            dateTime: new Date(),
+            dateTimeIcon: new Date(),
+            dateTimeClearable: new Date(),
+            dateTimeTimezone: new Date()
+          }}
+        >
+          <Field component={DateTimePicker} name="dateTime" />
+          <br />
+          <Field component={DateTimePicker} name="dateTimeIcon" showIcon />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="dateTimeClearable"
+            clearable
+          />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="dateTimeTimezone"
+            clearable
+            showTimezone
+          />
+        </StoryForm>
+      </Provider>
+    );
+  });
