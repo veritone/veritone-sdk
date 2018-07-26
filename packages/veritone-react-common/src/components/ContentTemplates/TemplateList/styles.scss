@@ -1,0 +1,61 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.template-list {
+  height: 100%;
+  overflow: auto;
+  border-right: 6px solid $grey-2;
+
+  .title {
+    @include mui-text('title');
+
+    color: $dark-black;
+    padding-left: 20px;
+    padding-top: 20px;
+  }
+
+  .description {
+    @include mui-text('body1');
+
+    color: $light-black;
+    margin-top: 5px;
+    margin-bottom: 30px;
+    padding-left: 20px;
+    padding-right: 30px;
+  }
+
+  .templateRow {
+    height: 40px;
+    width: 100%;
+    padding-left: 20px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .name {
+      font-size: 14px;
+      color: $dark-black;
+    }
+
+    .addedTemplate {
+      font-weight: 500;
+    }
+
+    .trashIcon {
+      height: auto;
+      width: auto;
+      padding: 4px;
+      margin-right: 20px;
+
+      &:hover {
+        background-color: transparent !important;
+      }
+    }
+
+    &:hover {
+      background-color: $grey-2;
+    }
+  }
+}

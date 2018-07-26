@@ -13,5 +13,9 @@ export {
   GlobalNotificationDialog,
   GlobalSnackBar
 } from './widgets/Notifications';
+export ContentTemplate from './widgets/ContentTemplate';
+export ContentTemplateForm from './widgets/ContentTemplateForm';
+export SourceManagementForm from './widgets/SourceManagementForm';
+export SourceList from './widgets/SourceList';
 export { MediaPlayer } from './widgets/MediaPlayer';
 export IngestionJobsList from './widgets/IngestionJobsList';
