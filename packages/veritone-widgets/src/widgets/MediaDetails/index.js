@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
@@ -32,7 +33,6 @@ import {
   MediaInfoPanel,
   Image,
   MediaPlayer,
-  FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
   FingerprintEngineOutput,
@@ -151,6 +151,7 @@ class MediaDetailsWidget extends React.Component {
     }),
     onRunProcess: func,
     onClose: func,
+    className: string,
     updateTdoRequest: func,
     engineCategories: arrayOf(
       shape({
@@ -703,8 +704,12 @@ class MediaDetailsWidget extends React.Component {
 
   isRealTimeEngine(engine) {
     const engineMode = get(engine, 'mode');
-    return engineMode && (engineMode.toLowerCase() === 'stream' || engineMode.toLowerCase() === 'chunk');
-  };
+    return (
+      engineMode &&
+      (engineMode.toLowerCase() === 'stream' ||
+        engineMode.toLowerCase() === 'chunk')
+    );
+  }
 
   closeTranscriptBulkEditSnack = () => {
     this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
@@ -768,6 +773,7 @@ class MediaDetailsWidget extends React.Component {
       selectedEngineCategory,
       selectedEngineId,
       selectedEngineResults,
+      className,
       isInfoPanelOpen,
       isExpandedMode,
       currentMediaPlayerTime,
@@ -793,7 +799,7 @@ class MediaDetailsWidget extends React.Component {
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     return (
-      <FullScreenDialog open className={styles.mdpFullScreenDialog}>
+      <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
         {alertDialogConfig && (
           <AlertDialog
             open={alertDialogConfig.show}
@@ -1341,7 +1347,7 @@ class MediaDetailsWidget extends React.Component {
 
           {this.renderTranscriptBulkEditSnack()}
         </Paper>
-      </FullScreenDialog>
+      </Dialog>
     );
   }
 }
