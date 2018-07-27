@@ -189,7 +189,6 @@ export default createReducer(defaultState, {
     }
   ) {
     const errorMessage = get(error, 'message', error);
-    console.log('Failed to load tdo. Disable Spinner. Show error.');
     return {
       ...state,
       [widgetId]: {

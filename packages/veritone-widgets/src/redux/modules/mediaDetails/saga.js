@@ -8,6 +8,7 @@ import {
   take,
   takeLatest
 } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import {
   get,
   uniq,
@@ -17,7 +18,8 @@ import {
   isUndefined,
   isArray,
   every,
-  forEach
+  forEach,
+  find
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import {
@@ -93,6 +95,7 @@ import {
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
+import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
     details
@@ -307,10 +310,14 @@ function* refreshEngineRuns(widgetId, tdoId) {
   } else {
     throw new Error('Could not refresh engineRuns');
   }
-  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
+
+  yield* refreshSelectedEngineResultsOnStatusChange(widgetId, engineCategories);
+
   yield* finishLoadEngineCategories(widgetId, engineCategories, {
     error: false
   });
+
+  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
 }
 
 function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
@@ -1617,12 +1624,82 @@ function* watchLatestFetchEngineResultsEnd(widgetId) {
   );
 }
 
+function* refreshSelectedEngineResultsOnStatusChange(
+  widgetId,
+  engineCategoriesNewValue
+) {
+  const requestTdo = yield select(getTdo, widgetId);
+  const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+  const selectedEngineCategoryOldValue = yield select(
+    getSelectedEngineCategory,
+    widgetId
+  );
+  const selectedEngineCategoryNewValue = find(engineCategoriesNewValue, {
+    id: selectedEngineCategoryOldValue.id
+  });
+  const selectedEngineOldValue = find(
+    get(selectedEngineCategoryOldValue, 'engines', []),
+    {
+      id: selectedEngineId
+    }
+  );
+  const selectedEngineNewValue = find(
+    get(selectedEngineCategoryNewValue, 'engines', []),
+    {
+      id: selectedEngineId
+    }
+  );
+  const engineMode = get(selectedEngineNewValue, 'mode');
+  const engineStatusOldValue = get(selectedEngineOldValue, 'status');
+  const engineStatusNewValue = get(selectedEngineNewValue, 'status');
+  const isRealTimeEngine =
+    engineMode &&
+    (engineMode.toLowerCase() === 'stream' ||
+      engineMode.toLowerCase() === 'chunk');
+  const isRealTimeStillRunning =
+    isRealTimeEngine && engineStatusNewValue === 'running';
+  const isRealTimeFinishedRunning =
+    isRealTimeEngine &&
+    engineStatusOldValue === 'running' &&
+    engineStatusNewValue !== 'running';
+  const wentToCompletedStatus =
+    engineStatusOldValue &&
+    engineStatusOldValue !== 'complete' &&
+    engineStatusNewValue === 'complete';
+  if (
+    isRealTimeStillRunning ||
+    isRealTimeFinishedRunning ||
+    wentToCompletedStatus
+  ) {
+    engineResultsModule.fetchEngineResults({
+      tdo: requestTdo,
+      engineId: selectedEngineId
+    });
+  }
+}
+
+function* watchToStartRefreshEngineRunsWithTimeout(
+  widgetId,
+  refreshIntervalMs
+) {
+  yield takeLatest(
+    [LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS],
+    function*() {
+      if (refreshIntervalMs > 0) {
+        const requestTdo = yield select(getTdo, widgetId);
+        yield delay(refreshIntervalMs);
+        yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      }
+    }
+  );
+}
+
 function* onMount(id, mediaId) {
   yield put(loadTdoRequest(id, mediaId));
   yield put(applicationModule.fetchApplications());
 }
 
-export default function* root({ id, mediaId }) {
+export default function* root({ id, mediaId, refreshIntervalMs }) {
   yield all([
     fork(watchLoadEngineResultsComplete),
     fork(watchLoadTdoRequest),
@@ -1639,6 +1716,7 @@ export default function* root({ id, mediaId }) {
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
+    fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
     fork(onMount, id, mediaId)
   ]);
 }
