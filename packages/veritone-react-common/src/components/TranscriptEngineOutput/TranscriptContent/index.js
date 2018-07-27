@@ -151,6 +151,8 @@ export default class TranscriptContent extends Component {
           snippetSentences = '';
         };
 
+        const sentenceSeparator = series.length ? ' ' : '';
+
         series.forEach((entry, entryIndex) => {
           //---Updata Content Value---
           if (entry.words) {
@@ -182,10 +184,12 @@ export default class TranscriptContent extends Component {
             }
 
             //---Update Snippet Data---
-            snippetSentences = snippetSentences + selectedWord + ' ';
+            snippetSentences =
+              snippetSentences + selectedWord + sentenceSeparator;
             snippetParts.push(snippet);
             //---Update Overview Data---
-            overviewSentences = overviewSentences + selectedWord + ' ';
+            overviewSentences =
+              overviewSentences + selectedWord + sentenceSeparator;
             overviewParts.push(snippet);
           } else {
             // No Transcript Data
