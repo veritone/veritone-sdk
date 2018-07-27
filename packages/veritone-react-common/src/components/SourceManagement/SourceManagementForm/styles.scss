@@ -1,6 +1,10 @@
 @import 'src/styles/modules/variables';
 @import 'src/styles/modules/muiTypography';
 
+.sm-fullscreen-dialog {
+  z-index: 950;
+}
+
 .source-config-wrapper {
   width: 50%;
 }
