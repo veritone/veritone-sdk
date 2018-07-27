@@ -22,7 +22,7 @@ class _VeritoneApp {
 
   constructor(config) {
     this._store.dispatch(configModule.setConfig({ ...appConfig, ...config }));
-    this._theme = config.theme;
+    this._theme = config && config.theme;
   }
 
   _register(widget) {
