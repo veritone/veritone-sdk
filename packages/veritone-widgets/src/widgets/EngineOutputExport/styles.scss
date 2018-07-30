@@ -1,0 +1,107 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.engineOutputExport {
+  height: 100%;
+}
+
+.engineOutputExportHeader {
+  height: 110px;
+  background-color: #1f2532;
+  color: $darkWhite;
+
+  .title {
+    @include mui-text('title');
+    padding: 20px 0 0 20px;
+  }
+
+  .subtitle {
+    @include mui-text('body1');
+    padding: 5px 20px 0;
+  }
+
+  .closeButton {
+    margin-top: 5px;
+    margin-right: 10px;
+    float: right;
+  }
+}
+
+.engineOutputExportContent {
+  padding: 25px 0;
+  overflow-y: auto;
+}
+
+.engineOutputExportActions {
+  padding: 0 20px;
+
+  .actionButton {
+    margin: 20px 0;
+  }
+}
+
+.formatSelection {
+  margin-bottom: 20px;
+
+  .loadingConfigsContainer {
+    height: 60px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.exportFormatTitle {
+  @include mui-text('title');
+  margin-bottom: 15px !important;
+}
+
+.exportFormatSubHeader {
+  @include mui-text('caption');
+  color: $light-black;
+}
+
+.expandIcon {
+  margin-right: -10px !important;
+}
+
+.engineListItem {
+  background-color: $grey-1;
+
+  .engineLogo {
+    margin-left: 30px;
+    width: 24px;
+    height: 24px;
+    background-color: $grey-3;
+  }
+
+  .customizeOutputBox {
+    @include mui-text('body1');
+    width: 100%;
+    margin-left: 30px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(33, 150, 243, 0.1);
+    padding: 15px 5px 15px 15px;
+
+    .closedCaptionIcon {
+      color: $grey-5;
+      margin-right: 5px;
+      flex: none;
+    }
+
+    .customizeSubtitleText {
+      flex: auto;
+    }
+
+    .customizeButton {
+      flex: none;
+    }
+  }
+}
+
+.engineConfigInput {
+  width: 65%;
+  margin-right: 5px;
+}
