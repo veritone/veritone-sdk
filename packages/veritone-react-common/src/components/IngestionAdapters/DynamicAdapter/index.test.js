@@ -13,27 +13,33 @@ describe('DynamicAdapter', () => {
     supportedSourceTypes: null,
     namespace: 'configuration'
   };
-  const SOURCES = [{
-    id: 'test-source-id-0'
-  }, {
-    id: 'test-source-id-1'
-  }];
-  const CLUSTERS = [{
-    id: 'test-cluster-id-0'
-  }, {
-    id: 'test-cluster-id-1'
-  }];
+  const SOURCES = [
+    {
+      id: 'test-source-id-0'
+    },
+    {
+      id: 'test-source-id-1'
+    }
+  ];
+  const CLUSTERS = [
+    {
+      id: 'test-cluster-id-0'
+    },
+    {
+      id: 'test-cluster-id-1'
+    }
+  ];
   const SUPPORTED_SOURCE_TYPES = ['10'];
   const FIELDS = [
     {
-      "name": "location",
-      "options": null,
-      "type": "Text",
-      "max": null,
-      "min": null,
-      "step": null,
-      "info": "location",
-      "defaultValue": "Los Angeles"
+      name: 'location',
+      options: null,
+      type: 'Text',
+      max: null,
+      min: null,
+      step: null,
+      info: 'location',
+      defaultValue: 'Los Angeles'
     }
   ];
 
@@ -51,71 +57,83 @@ describe('DynamicAdapter', () => {
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({
-      clusterId: 'fakeId',
-      cluster: {
-        selectedCluster: {}
-      }
-    }).then((result) => {
-      testFuncs.validateCB(result);
-      expect(testFuncs.validateCB).toHaveBeenCalled();
-      done();
-      return result;
-    });
+    testFuncs
+      .validate({
+        clusterId: 'fakeId',
+        cluster: {
+          selectedCluster: {}
+        }
+      })
+      .then(result => {
+        testFuncs.validateCB(result);
+        expect(testFuncs.validateCB).toHaveBeenCalled();
+        done();
+        return result;
+      });
   });
 
   it('Validate function should only require source if adapterConfig has supportedSourceTypes defined w/ length > 1', done => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      supportedSourceTypes: SUPPORTED_SOURCE_TYPES
+    });
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(ADAPTER_CONFIG),
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({
-      clusterId: 'fakeId',
-      cluster: {
-        selectedCluster: {}
-      }
-    }).catch(err => {
-      testFuncs.validateCB(err);
-      expect(testFuncs.validateCB).toHaveBeenCalledWith('Source is required');
-      done();
-    });
+    testFuncs
+      .validate({
+        clusterId: 'fakeId',
+        cluster: {
+          selectedCluster: {}
+        }
+      })
+      .catch(err => {
+        testFuncs.validateCB(err);
+        expect(testFuncs.validateCB).toHaveBeenCalledWith('Source is required');
+        done();
+      });
   });
 
   it('Validate function should only require fields which have default values', done => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      fields: FIELDS
+    });
     const testFuncs = {
       validate: DynamicAdapterConfig.validate(ADAPTER_CONFIG),
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({
-      sourceId: SOURCES[0].id,
-      source: {
-        selectedSource: SOURCES[0]
-      },
-      clusterId: CLUSTERS[0].id,
-      cluster: {
-        selectedCluster: CLUSTERS[0]
-      }
-    }).catch(err => {
-      testFuncs.validateCB(err);
-      expect(testFuncs.validateCB).toHaveBeenCalledWith(`${startCase(toLower(FIELDS[0].name))} is invalid`);
+    testFuncs
+      .validate({
+        sourceId: SOURCES[0].id,
+        source: {
+          selectedSource: SOURCES[0]
+        },
+        clusterId: CLUSTERS[0].id,
+        cluster: {
+          selectedCluster: CLUSTERS[0]
+        }
+      })
+      .catch(err => {
+        testFuncs.validateCB(err);
+        expect(testFuncs.validateCB).toHaveBeenCalledWith(
+          `${startCase(toLower(FIELDS[0].name))} is invalid`
+        );
 
-      testSuccess();
-    });
-    
-    function testSuccess () {
+        testSuccess();
+      });
+
+    function testSuccess() {
       let configuration = {
         clusterId: CLUSTERS[0].id,
         cluster: {
           selectedCluster: CLUSTERS[0]
         }
       };
-      configuration[FIELDS[0].name] = 'test'
+      configuration[FIELDS[0].name] = 'test';
       testFuncs.validate(configuration).then(result => {
-        testFuncs.validateCB(result)
+        testFuncs.validateCB(result);
         expect(testFuncs.validateCB).toHaveBeenCalledWith(configuration);
         done();
         return result;
@@ -124,7 +142,9 @@ describe('DynamicAdapter', () => {
   });
 
   it('DynamicAdapter should set default values for any adapter input fields', () => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      fields: FIELDS
+    });
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
@@ -139,7 +159,6 @@ describe('DynamicAdapter', () => {
         return Promise.resolve(SOURCES);
       },
       loadNextClusters: () => {
-        done();
         return Promise.resolve(CLUSTERS);
       }
     };
@@ -153,8 +172,9 @@ describe('DynamicAdapter', () => {
         closeCreateSource={CLOSE_CREATE_SOURCE}
         loadNextSources={testFuncs.loadNextSources}
         loadNextClusters={testFuncs.loadNextClusters}
-        pageSize={3} />
-      );
+        pageSize={3}
+      />
+    );
     let expectedConfiguration = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
@@ -169,8 +189,11 @@ describe('DynamicAdapter', () => {
   });
 
   it('DynamicAdapter should rehydrate its state if the existing configuration matches the adapters fields', () => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES, fields: FIELDS });
-    const TEST_FIELD_VALUE  = 'TEST FIELD VALUE';
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      supportedSourceTypes: SUPPORTED_SOURCE_TYPES,
+      fields: FIELDS
+    });
+    const TEST_FIELD_VALUE = 'TEST FIELD VALUE';
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
@@ -186,7 +209,6 @@ describe('DynamicAdapter', () => {
         return Promise.resolve(SOURCES);
       },
       loadNextClusters: () => {
-        done();
         return Promise.resolve(CLUSTERS);
       }
     };
@@ -201,8 +223,9 @@ describe('DynamicAdapter', () => {
         closeCreateSource={CLOSE_CREATE_SOURCE}
         loadNextSources={testFuncs.loadNextSources}
         loadNextClusters={testFuncs.loadNextClusters}
-        pageSize={3}  />
-      );
+        pageSize={3}
+      />
+    );
     let expectedConfiguration = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
@@ -215,5 +238,4 @@ describe('DynamicAdapter', () => {
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
   });
-
 });
