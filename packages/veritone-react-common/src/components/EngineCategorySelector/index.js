@@ -56,8 +56,7 @@ export default class EngineCategorySelector extends Component {
                     }
                     classes={{
                       root: styles.engineCategoryTab,
-                      selected:
-                        styles.engineCategoryTabSelectedColor
+                      selected: styles.engineCategoryTabSelectedColor
                     }}
                   />
                 );

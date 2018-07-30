@@ -1,9 +1,11 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
+import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Grow from '@material-ui/core/Grow';
@@ -23,7 +25,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some } from 'lodash';
+import { find, get, some, includes } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -31,7 +33,6 @@ import {
   MediaInfoPanel,
   Image,
   MediaPlayer,
-  FullScreenDialog,
   OCREngineOutputView,
   SentimentEngineOutput,
   FingerprintEngineOutput,
@@ -46,8 +47,11 @@ import {
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
-import { modules } from 'veritone-redux-common';
-const { application: applicationModule } = modules;
+import { modules, util } from 'veritone-redux-common';
+const {
+  application: applicationModule,
+  engineResults: engineResultsModule
+} = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -55,6 +59,9 @@ import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
+import rootSaga from '../../redux/modules/mediaDetails/saga';
+
+const saga = util.reactReduxSaga.saga;
 
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
@@ -63,14 +70,16 @@ const programLiveImageNullState =
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))
+@saga(rootSaga)
 @connect(
   (state, { id }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
-    engineResultsByEngineId: mediaDetailsModule.getEngineResultsByEngineId(
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
+    selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
-      id
+      mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
       state,
@@ -84,16 +93,31 @@ const programLiveImageNullState =
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
     schemasById: mediaDetailsModule.getSchemasById(state, id),
-    currentMediaPlayerTime: state.player.currentTime,
+    currentMediaPlayerTime: mediaDetailsModule.currentMediaPlayerTime(
+      state,
+      id
+    ),
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isUserGeneratedEngineId: mediaDetailsModule.isUserGeneratedEngineId,
+    isSavingEngineResults: mediaDetailsModule.isSavingEngineResults(state, id),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
-    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id)
+    alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
+      state,
+      mediaDetailsModule.getSelectedEngineId(state, id)
+    ),
+    isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),
+    showTranscriptBulkEditSnack: mediaDetailsModule.showTranscriptBulkEditSnack(
+      state,
+      id
+    ),
+    isRestoringOriginalEngineResult: mediaDetailsModule.isRestoringOriginalEngineResult(
+      state,
+      id
+    )
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
-    loadTdoRequest: mediaDetailsModule.loadTdoRequest,
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
@@ -102,11 +126,16 @@ const programLiveImageNullState =
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    fetchApplications: applicationModule.fetchApplications,
     saveAssetData: mediaDetailsModule.saveAssetData,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
-    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges
+    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
+    setEditButtonState: mediaDetailsModule.setEditButtonState,
+    setShowTranscriptBulkEditSnackState:
+      mediaDetailsModule.setShowTranscriptBulkEditSnackState,
+    updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
+    restoreOriginalEngineResults:
+      mediaDetailsModule.restoreOriginalEngineResults
   },
   null,
   { withRef: true }
@@ -116,16 +145,17 @@ class MediaDetailsWidget extends React.Component {
     id: string.isRequired,
     initializeWidget: func,
     mediaId: number.isRequired,
-    fetchApplications: func.isRequired,
     kvp: shape({
       features: objectOf(any),
       applicationIds: arrayOf(string)
     }),
+    // property to configure experimental autorefresh in saga
+    // eslint-disable-next-line react/no-unused-prop-types
+    refreshIntervalMs: number,
     onRunProcess: func,
     onClose: func,
-    loadTdoRequest: func,
+    className: string,
     updateTdoRequest: func,
-    isUserGeneratedEngineId: func,
     engineCategories: arrayOf(
       shape({
         name: string,
@@ -172,9 +202,39 @@ class MediaDetailsWidget extends React.Component {
       }),
       applicationId: string
     }),
-    engineResultsByEngineId: shape({
-      engineId: arrayOf(any)
-    }),
+    isFetchingEngineResults: bool,
+    selectedEngineResults: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            words: arrayOf(
+              shape({
+                word: string.isRequired,
+                confidence: number.isRequired
+              })
+            ),
+            object: shape({
+              label: string,
+              type: string,
+              uri: string,
+              entityId: string,
+              libraryId: string,
+              confidence: number,
+              text: string
+            }),
+            boundingPoly: arrayOf(
+              shape({
+                x: number,
+                y: number
+              })
+            )
+          })
+        )
+      })
+    ),
     selectEngineCategory: func,
     selectedEngineCategory: shape({
       id: string,
@@ -255,17 +315,27 @@ class MediaDetailsWidget extends React.Component {
     saveAssetData: func,
     widgetError: string,
     isSaveEnabled: bool,
+    isSavingEngineResults: bool,
     alertDialogConfig: shape({
       show: bool,
       title: string,
       description: string,
       cancelButtonLabel: string,
       confirmButtonLabel: string,
-      nextAction: func
+      confirmAction: func,
+      cancelAction: func
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
-    discardUnsavedChanges: func
+    discardUnsavedChanges: func,
+    isDisplayingUserEditedOutput: bool,
+    setEditButtonState: func,
+    isEditButtonDisabled: bool,
+    setShowTranscriptBulkEditSnackState: func,
+    showTranscriptBulkEditSnack: bool,
+    updateMediaPlayerState: func,
+    restoreOriginalEngineResults: func,
+    isRestoringOriginalEngineResult: bool
   };
 
   static contextTypes = {
@@ -279,18 +349,12 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     isMenuOpen: false,
-    selectedTabValue: 'mediaDetails',
-    disableEditBtn: false
+    selectedTabValue: 'mediaDetails'
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     this.props.initializeWidget(this.props.id);
-  }
-
-  componentDidMount() {
-    this.props.loadTdoRequest(this.props.id, this.props.mediaId);
-    this.props.fetchApplications();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -299,12 +363,21 @@ class MediaDetailsWidget extends React.Component {
     }
   }
 
+  handleMediaPlayerStateChange(state) {
+    this.props.updateMediaPlayerState(this.props.id, state);
+  }
+
   handleDisableEditBtn = boolVal => {
-    this.setState({ disableEditBtn: boolVal });
+    this.props.setEditButtonState(this.props.id, boolVal);
   };
 
   mediaPlayerRef = ref => {
     this.mediaPlayer = ref;
+    if (this.mediaPlayer) {
+      this.mediaPlayer.subscribeToStateChange(
+        this.handleMediaPlayerStateChange.bind(this)
+      );
+    }
   };
 
   handleUpdateMediaPlayerTime = (startTime, stopTime) => {
@@ -412,7 +485,14 @@ class MediaDetailsWidget extends React.Component {
 
   checkSaveState = () => {
     if (this.props.isSaveEnabled) {
-      this.props.openConfirmModal(this.onSaveEdit, this.props.id);
+      this.props.openConfirmModal(this.props.id, {
+        title: 'Save Changes?',
+        description: 'Would you like to save the changes?',
+        cancelButtonLabel: 'Discard',
+        confirmButtonLabel: 'Save',
+        confirmAction: this.onSaveEdit,
+        cancelAction: this.handleCancelSaveDialog
+      });
     } else {
       this.onCancelEdit();
     }
@@ -482,6 +562,25 @@ class MediaDetailsWidget extends React.Component {
     );
   };
 
+  hasSelectedEngineResults = () => {
+    const selectedEngineResults = this.props.selectedEngineResults;
+    return (
+      get(selectedEngineResults, 'length') &&
+      some(selectedEngineResults, engineResult =>
+        get(engineResult, 'series.length')
+      )
+    );
+  };
+
+  isSelectedEngineCompleted = () => {
+    const selectedEngineId = this.props.selectedEngineId;
+    const engines = get(this.props.selectedEngineCategory, 'engines');
+    const selectedEngine = find(engines, {
+      id: selectedEngineId
+    });
+    return get(selectedEngine, 'status') === 'complete';
+  };
+
   buildEngineNullStateComponent = () => {
     const selectedEngineId = this.props.selectedEngineId;
     const engines = get(this.props.selectedEngineCategory, 'engines');
@@ -490,29 +589,13 @@ class MediaDetailsWidget extends React.Component {
     });
     let engineStatus = get(selectedEngine, 'status');
     const engineName = get(selectedEngine, 'name');
-    const engineMode = get(selectedEngine, 'mode');
-    const selectedEngineResults = this.props.engineResultsByEngineId[
-      selectedEngineId
-    ];
-    const isFetchingEngineResults = some(
-      selectedEngineResults,
-      engineResult => {
-        return engineResult && engineResult.status === 'FETCHING';
-      }
-    );
-    const hasEngineResults =
-      selectedEngineResults &&
-      selectedEngineResults.length &&
-      some(selectedEngineResults, engineResult => {
-        return (
-          engineResult && engineResult.series && engineResult.series.length
-        );
-      });
-    const isRealTimeEngine =
-      engineMode &&
-      (engineMode.toLowerCase() === 'stream' ||
-        engineMode.toLowerCase() === 'chunk');
-    if (isFetchingEngineResults) {
+    const hasEngineResults = this.hasSelectedEngineResults();
+    const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
+    if (
+      this.props.isFetchingEngineResults ||
+      this.props.isRestoringOriginalEngineResult ||
+      this.props.isSavingEngineResults
+    ) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
     } else if (!hasEngineResults && engineStatus === 'complete') {
@@ -529,16 +612,11 @@ class MediaDetailsWidget extends React.Component {
       // nullstate not needed for RealTime running or failed engine if there are results available
       return;
     }
-    let onRunProcessCallback = null;
-    if (!this.props.isUserGeneratedEngineId(selectedEngineId)) {
-      // enable rerun for non-user generated engine results
-      onRunProcessCallback = this.handleRunProcess;
-    }
     return (
       <EngineOutputNullState
         engineStatus={engineStatus}
         engineName={engineName}
-        onRunProcess={onRunProcessCallback}
+        onRunProcess={this.handleRunProcess}
       />
     );
   };
@@ -593,12 +671,125 @@ class MediaDetailsWidget extends React.Component {
     window.open(cme.url.replace('${tdoId}', this.props.tdo.id), '_blank');
   };
 
+  showEditButton = () => {
+    if (
+      !this.isEditableEngineResults() ||
+      !this.hasSelectedEngineResults() ||
+      !this.isSelectedEngineCompleted()
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  isEditModeButtonDisabled = () => {
+    return (
+      this.props.isEditButtonDisabled ||
+      this.isDisplayingOriginalEngineResultForUserEdit() ||
+      this.isSelectedEngineRealTimeAndRunning()
+    );
+  };
+
+  isDisplayingOriginalEngineResultForUserEdit = () => {
+    const editableCategoryTypes = ['face', 'transcript'];
+    const selectedEngine = find(this.props.selectedEngineCategory.engines, {
+      id: this.props.selectedEngineId
+    });
+    if (
+      includes(
+        editableCategoryTypes,
+        this.props.selectedEngineCategory.categoryType
+      ) &&
+      get(selectedEngine, 'hasUserEdits') &&
+      !this.props.isDisplayingUserEditedOutput
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  isSelectedEngineRealTimeAndRunning() {
+    const selectedEngineId = this.props.selectedEngineId;
+    const engines = get(this.props.selectedEngineCategory, 'engines');
+    const selectedEngine = find(engines, {
+      id: selectedEngineId
+    });
+    const engineStatus = get(selectedEngine, 'status');
+    return this.isRealTimeEngine(selectedEngine) && engineStatus === 'running';
+  }
+
+  isRealTimeEngine(engine) {
+    const engineMode = get(engine, 'mode');
+    return (
+      engineMode &&
+      (engineMode.toLowerCase() === 'stream' ||
+        engineMode.toLowerCase() === 'chunk')
+    );
+  }
+
+  closeTranscriptBulkEditSnack = () => {
+    this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
+  };
+
+  renderTranscriptBulkEditSnack = () => {
+    return (
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={this.props.showTranscriptBulkEditSnack}
+        autoHideDuration={5000}
+        onClose={this.closeTranscriptBulkEditSnack}
+        message={
+          <span className={styles.snackbarMessageText}>
+            {`Bulk edit transcript will run in the background and may take some time to finish.`}
+          </span>
+        }
+      />
+    );
+  };
+
+  onRestoreOriginalClick = () => {
+    this.props.openConfirmModal(this.props.id, {
+      title: 'Restore Original',
+      description:
+        'Are you sure you want to restore original version? \nAll edited work will be lost.',
+      cancelButtonLabel: 'Discard',
+      confirmButtonLabel: 'Restore',
+      confirmAction: this.onRestoreOriginalConfirm,
+      cancelAction: this.onRestoreOriginalCancel
+    });
+  };
+
+  onRestoreOriginalConfirm = () => {
+    this.props.closeConfirmModal(this.props.id);
+    const {
+      id,
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory,
+      selectedEngineResults
+    } = this.props;
+    const removeAllUserEdits = true;
+    this.props.restoreOriginalEngineResults(
+      id,
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory.categoryType,
+      selectedEngineResults,
+      removeAllUserEdits
+    );
+  };
+
+  onRestoreOriginalCancel = () => {
+    this.props.closeConfirmModal(this.props.id);
+  };
+
   render() {
     let {
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
-      engineResultsByEngineId,
+      selectedEngineResults,
+      className,
       isInfoPanelOpen,
       isExpandedMode,
       currentMediaPlayerTime,
@@ -612,6 +803,7 @@ class MediaDetailsWidget extends React.Component {
       googleMapsApiKey,
       widgetError,
       isSaveEnabled,
+      isSavingEngineResults,
       alertDialogConfig
     } = this.props;
 
@@ -623,7 +815,7 @@ class MediaDetailsWidget extends React.Component {
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     return (
-      <FullScreenDialog open className={styles.mdpFullScreenDialog}>
+      <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
         {alertDialogConfig && (
           <AlertDialog
             open={alertDialogConfig.show}
@@ -631,8 +823,8 @@ class MediaDetailsWidget extends React.Component {
             content={alertDialogConfig.description}
             cancelButtonLabel={alertDialogConfig.cancelButtonLabel}
             approveButtonLabel={alertDialogConfig.confirmButtonLabel}
-            onCancel={this.handleCancelSaveDialog}
-            onApprove={alertDialogConfig.nextAction}
+            onApprove={alertDialogConfig.confirmAction}
+            onCancel={alertDialogConfig.cancelAction}
           />
         )}
         <Paper className={styles.mediaDetailsPageContent}>
@@ -890,13 +1082,13 @@ class MediaDetailsWidget extends React.Component {
                         onSelectEngineCategory={this.handleEngineCategoryChange}
                       />
                     </div>
-                    {this.isEditableEngineResults() && (
+                    {this.showEditButton() && (
                       <Button
-                        variant="raised"
+                        variant="contained"
                         color="primary"
                         className={styles.toEditModeButton}
                         onClick={this.toggleEditMode}
-                        disabled={this.state.disableEditBtn}
+                        disabled={this.isEditModeButtonDisabled()}
                       >
                         EDIT MODE
                       </Button>
@@ -939,6 +1131,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
+                        disabled={isSavingEngineResults}
                         onClick={this.checkSaveState}
                       >
                         CANCEL
@@ -947,7 +1140,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={!isSaveEnabled}
+                        disabled={!isSaveEnabled || isSavingEngineResults}
                         onClick={this.onSaveEdit}
                       >
                         SAVE
@@ -978,7 +1171,6 @@ class MediaDetailsWidget extends React.Component {
                         fluid={false}
                         width={450}
                         height={250}
-                        store={this.context.store}
                         playerRef={this.mediaPlayerRef}
                         src={this.getPrimaryAssetUri()}
                         streams={get(this.props, 'tdo.streams')}
@@ -997,10 +1189,10 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutputWidget
+                        tdo={tdo}
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
-                        data={engineResultsByEngineId[selectedEngineId]}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1011,7 +1203,7 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
-                        onSave={this.onSaveEdit}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1028,12 +1220,13 @@ class MediaDetailsWidget extends React.Component {
                           this.handleUpdateMediaPlayerTime
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'object' && (
                       <ObjectDetectionEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
@@ -1047,7 +1240,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'logo' && (
                       <LogoDetectionEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
@@ -1060,7 +1253,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'ocr' && (
                       <OCREngineOutputView
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
@@ -1073,7 +1266,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'fingerprint' && (
                       <FingerprintEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         entities={entities}
                         className={styles.engineOuputContainer}
                         engines={selectedEngineCategory.engines}
@@ -1085,7 +1278,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'translate' && (
                       <TranslationEngineOutput
-                        contents={engineResultsByEngineId[selectedEngineId]}
+                        contents={selectedEngineResults}
                         onClick={this.handleUpdateMediaPlayerTime}
                         onRerunProcess={this.handleRunProcess}
                         className={styles.engineOuputContainer}
@@ -1100,7 +1293,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'sentiment' && (
                       <SentimentEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         className={cx(
                           styles.engineOuputContainer,
                           styles.sentimentChartViewRoot
@@ -1116,7 +1309,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'geolocation' && (
                       <GeoEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         startTimeStamp={
                           tdo && tdo.startDateTime ? tdo.startDateTime : null
                         }
@@ -1133,7 +1326,7 @@ class MediaDetailsWidget extends React.Component {
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'correlation' && (
                       <StructuredDataEngineOutput
-                        data={engineResultsByEngineId[selectedEngineId]}
+                        data={selectedEngineResults}
                         schemasById={schemasById}
                         engines={selectedEngineCategory.engines}
                         selectedEngineId={selectedEngineId}
@@ -1167,8 +1360,10 @@ class MediaDetailsWidget extends React.Component {
                 onSubmit={this.updateContentTemplates}
               />
             )}
+
+          {this.renderTranscriptBulkEditSnack()}
         </Paper>
-      </FullScreenDialog>
+      </Dialog>
     );
   }
 }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -92,7 +92,7 @@ class FacesByScene extends Component {
         {!recognizedEntityObjects.length ? (
           <NoFacesFound />
         ) : (
-          <div>{recognizedEntityObjects}</div>
+          <Fragment>{recognizedEntityObjects}</Fragment>
         )}
       </div>
     );

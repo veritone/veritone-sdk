@@ -183,7 +183,12 @@ class MediaInfoPanel extends Component {
   };
 
   render() {
-    const { isOpen, isMenuOpen, isEditMetadataOpen, isEditTagsOpen } = this.state;
+    const {
+      isOpen,
+      isMenuOpen,
+      isEditMetadataOpen,
+      isEditTagsOpen
+    } = this.state;
 
     const { tdo } = this.props;
 

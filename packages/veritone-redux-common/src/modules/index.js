@@ -50,3 +50,9 @@ export const confirmation = {
   ...confirmationModule,
   confirmationRootSaga
 };
+
+import engineResultsReducer, * as engineResultsModule from './engineResults';
+export const engineResults = {
+  reducer: engineResultsReducer,
+  ...engineResultsModule
+};

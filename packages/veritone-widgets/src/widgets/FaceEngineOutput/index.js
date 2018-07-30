@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { util } from 'veritone-redux-common';
+import { util, modules } from 'veritone-redux-common';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
@@ -23,7 +23,8 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType
+  oneOfType,
+  node
 } from 'prop-types';
 import styles from './styles.scss';
 import {
@@ -35,6 +36,8 @@ import {
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 
+const { engineResults: engineResultsModule } = modules;
+
 const saga = util.reactReduxSaga.saga;
 
 @withMuiThemeProvider
@@ -45,16 +48,23 @@ const saga = util.reactReduxSaga.saga;
     entities: faceEngineOutput.getEntities(state),
     libraries: faceEngineOutput.getLibraries(state),
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
-    isFetchingEngineResults: faceEngineOutput.isFetchingEngineResults(state),
+    isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     isFetchingEntities: faceEngineOutput.isFetchingEntities(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
     showConfirmationDialog: faceEngineOutput.showConfirmationDialog(state),
     confirmationAction: faceEngineOutput.confirmationAction(state),
-    pendingUserEdits: faceEngineOutput.pendingUserEdits(state, selectedEngineId)
+    pendingUserEdits: faceEngineOutput.pendingUserEdits(
+      state,
+      selectedEngineId
+    ),
+    isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
+      state,
+      selectedEngineId
+    )
   }),
   {
-    fetchEngineResults: faceEngineOutput.fetchEngineResults,
+    fetchEngineResults: engineResultsModule.fetchEngineResults,
     fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
     addDetectedFace: faceEngineOutput.addDetectedFace,
@@ -62,7 +72,9 @@ const saga = util.reactReduxSaga.saga;
     removeDetectedFace: faceEngineOutput.removeDetectedFace,
     openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
-    cancelFaceEdits: faceEngineOutput.cancelFaceEdits
+    cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
+    clearEngineResultsByEngineId:
+      engineResultsModule.clearEngineResultsByEngineId
   },
   null,
   { withRef: true }
@@ -133,6 +145,7 @@ class FaceEngineOutputContainer extends Component {
       })
     ),
     onEngineChange: func,
+    onRestoreOriginalClick: func,
     editMode: bool,
     currentMediaPlayerTime: number,
     className: string,
@@ -141,6 +154,7 @@ class FaceEngineOutputContainer extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClicked: func,
+    outputNullState: node,
     fetchLibraries: func,
     isFetchingEngineResults: bool,
     isFetchingEntities: bool,
@@ -157,7 +171,9 @@ class FaceEngineOutputContainer extends Component {
     cancelFaceEdits: func,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
-    pendingUserEdits: bool
+    pendingUserEdits: bool,
+    isDisplayingUserEditedOutput: bool,
+    clearEngineResultsByEngineId: func
   };
 
   state = {
@@ -188,14 +204,6 @@ class FaceEngineOutputContainer extends Component {
       !unrecognizedFaces.length
     ) {
       this.props.disableEdit(true);
-    }
-
-    // fetch engine results when user changes engine
-    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
-      this.props.fetchEngineResults({
-        selectedEngineId: nextProps.selectedEngineId,
-        tdo: this.props.tdo
-      });
     }
   }
 
@@ -291,7 +299,7 @@ class FaceEngineOutputContainer extends Component {
     return this.closeDialog();
   };
 
-  showFaceDetectionDoneSnack = (entity) => {
+  showFaceDetectionDoneSnack = entity => {
     this.setState({
       showFaceDetectionDoneSnack: true,
       faceDetectionDoneEntity: entity
@@ -305,6 +313,19 @@ class FaceEngineOutputContainer extends Component {
     this.setState({
       showFaceDetectionDoneSnack: false,
       faceDetectionDoneEntity: null
+    });
+  };
+
+  handleToggleEditedOutput = showUserEdited => {
+    const tdo = this.props.tdo;
+    this.props.clearEngineResultsByEngineId(this.props.selectedEngineId);
+    this.props.fetchEngineResults({
+      engineId: this.props.selectedEngineId,
+      tdo: tdo,
+      startOffsetMs: 0,
+      stopOffsetMs:
+        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+      ignoreUserEdited: !showUserEdited
     });
   };
 
@@ -465,10 +486,7 @@ class FaceEngineOutputContainer extends Component {
   };
 
   renderFaceDetectionDoneSnackbar = () => {
-    const {
-      showFaceDetectionDoneSnack,
-      faceDetectionDoneEntity
-    } = this.state;
+    const { showFaceDetectionDoneSnack, faceDetectionDoneEntity } = this.state;
     const entityName = get(faceDetectionDoneEntity, 'name', '');
 
     return (
@@ -495,7 +513,9 @@ class FaceEngineOutputContainer extends Component {
       'entitySearchResults',
       'selectedEngineId',
       'onFaceOccurrenceClicked',
-      'isSearchingEntities'
+      'isSearchingEntities',
+      'onRestoreOriginalClick',
+      'outputNullState'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -524,6 +544,8 @@ class FaceEngineOutputContainer extends Component {
           onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
+          showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
+          onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}

@@ -138,7 +138,7 @@ class FaceDetectionBox extends Component {
         editFaceEntity: false
       });
     }
-  }
+  };
 
   calculatePopperPlacement = () => {
     let shift = 'start';

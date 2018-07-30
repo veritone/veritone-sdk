@@ -115,10 +115,18 @@ export default class LogoDetectionEngineOutput extends Component {
             const stopTime = Math.ceil(itemInfo.stopTimeMs / 1000) * 1000;
             const startTimeString = msToReadableString(itemInfo.startTimeMs);
             const stopTimeString = msToReadableString(itemInfo.stopTimeMs);
-            const timeRangeKeyPart = `${itemInfo.startTimeMs}-${itemInfo.stopTimeMs}`;
+            const timeRangeKeyPart = `${itemInfo.startTimeMs}-${
+              itemInfo.stopTimeMs
+            }`;
             const boundingPoly = get(itemInfo.object, 'boundingPoly', []);
-            const boundingPolyKeyPart = boundingPoly.length ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}` : '';
-            const pillKey = `logo-pill-${kebabCase(itemInfo.object.label)}-${timeRangeKeyPart}-${itemInfo.confidence}-${boundingPolyKeyPart}`;
+            const boundingPolyKeyPart = boundingPoly.length
+              ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}`
+              : '';
+            const pillKey = `logo-pill-${kebabCase(
+              itemInfo.object.label
+            )}-${timeRangeKeyPart}-${
+              itemInfo.confidence
+            }-${boundingPolyKeyPart}`;
             const logoItem = (
               <PillButton
                 value={index}

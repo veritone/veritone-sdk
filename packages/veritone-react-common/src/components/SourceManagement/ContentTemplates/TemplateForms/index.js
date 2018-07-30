@@ -230,7 +230,11 @@ function BuildFormElements({
         <span>{title}</span>
         {element}
         <div className={styles.arrayAdd}>
-          <IconButton className={styles.noHover} disableRipple onClick={handleArrayElementAdd(schemaId, schemaProp)}>
+          <IconButton
+            className={styles.noHover}
+            disableRipple
+            onClick={handleArrayElementAdd(schemaId, schemaProp)}
+          >
             <AddIcon />
           </IconButton>
         </div>

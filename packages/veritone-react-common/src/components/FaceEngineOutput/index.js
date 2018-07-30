@@ -15,6 +15,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
+import { find } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -64,19 +65,22 @@ class FaceEngineOutput extends Component {
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClick: func,
+    onRestoreOriginalClick: func,
     recognizedFaces: objectOf(
-      arrayOf(shape({
-        startTimeMs: number.isRequired,
-        stopTimeMs: number.isRequired,
-        object: shape({
-          label: string,
-          uri: string,
-          confidence: number,
-          type: string,
-          entityId: string.isRequired,
-          libraryId: string.isRequired
+      arrayOf(
+        shape({
+          startTimeMs: number.isRequired,
+          stopTimeMs: number.isRequired,
+          object: shape({
+            label: string,
+            uri: string,
+            confidence: number,
+            type: string,
+            entityId: string.isRequired,
+            libraryId: string.isRequired
+          })
         })
-      }))
+      )
     ).isRequired,
     unrecognizedFaces: arrayOf(
       shape({
@@ -88,13 +92,24 @@ class FaceEngineOutput extends Component {
         })
       })
     ).isRequired,
-    isSearchingEntities: bool
+    isSearchingEntities: bool,
+    showingUserEditedOutput: bool,
+    onToggleUserEditedOutput: func
   };
 
   state = {
     activeTab: 'faceRecognition',
     viewMode: 'summary'
   };
+
+  static getDerivedStateFromProps(nextProps, state) {
+    if (nextProps.editMode && state.viewMode !== 'summary') {
+      return {
+        viewMode: 'summary'
+      };
+    }
+    return null;
+  }
 
   handleTabChange = (event, activeTab) => {
     if (activeTab !== this.state.activeTab) {
@@ -106,6 +121,11 @@ class FaceEngineOutput extends Component {
     this.setState({
       viewMode: evt.target.value
     });
+  };
+
+  handleUserEditChange = evt => {
+    this.props.onToggleUserEditedOutput &&
+      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
 
   render() {
@@ -123,9 +143,16 @@ class FaceEngineOutput extends Component {
       selectedEngineId,
       onEngineChange,
       onExpandClick,
-      outputNullState
+      onRestoreOriginalClick,
+      outputNullState,
+      showingUserEditedOutput
     } = this.props;
     const { viewMode } = this.state;
+
+    const selectedEngine = find(this.props.engines, { id: selectedEngineId });
+    const moreMenuOptions = [
+      { label: 'Restore Original', action: onRestoreOriginalClick }
+    ];
 
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -135,13 +162,50 @@ class FaceEngineOutput extends Component {
           selectedEngineId={selectedEngineId}
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
+          showMoreMenuButton={
+            !editMode && selectedEngine && selectedEngine.hasUserEdits
+          }
+          moreMenuOptions={moreMenuOptions}
         >
           {!editMode &&
+            selectedEngine &&
+            selectedEngine.hasUserEdits && (
+              <Select
+                autoWidth
+                value={showingUserEditedOutput ? 'userEdited' : 'original'}
+                onChange={this.handleUserEditChange}
+                className={cx(styles.outputHeaderSelect)}
+                MenuProps={{
+                  anchorOrigin: {
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                  },
+                  transformOrigin: {
+                    horizontal: 'center'
+                  },
+                  getContentAnchorEl: null
+                }}
+              >
+                <MenuItem
+                  value="userEdited"
+                  className={cx(styles.selectMenuItem)}
+                >
+                  User Edited
+                </MenuItem>
+                <MenuItem
+                  value="original"
+                  className={cx(styles.selectMenuItem)}
+                >
+                  Original
+                </MenuItem>
+              </Select>
+            )}
+          {!editMode && (
             <Select
               autoWidth
               value={viewMode}
               onChange={this.handleViewModeChange}
-              className={cx(styles.displayOptions)}
+              className={cx(styles.outputHeaderSelect)}
               MenuProps={{
                 anchorOrigin: {
                   horizontal: 'center',
@@ -153,16 +217,17 @@ class FaceEngineOutput extends Component {
                 getContentAnchorEl: null
               }}
             >
-              <MenuItem value="summary" className={cx(styles.view)}>
+              <MenuItem value="summary" className={cx(styles.selectMenuItem)}>
                 Summary
               </MenuItem>
-              <MenuItem value="byFrame" className={cx(styles.view)}>
+              <MenuItem value="byFrame" className={cx(styles.selectMenuItem)}>
                 By Frame
               </MenuItem>
-              <MenuItem value="byScene" className={cx(styles.view)}>
+              <MenuItem value="byScene" className={cx(styles.selectMenuItem)}>
                 By Scene
               </MenuItem>
-            </Select>}
+            </Select>
+          )}
         </EngineOutputHeader>
         <Tabs
           value={this.state.activeTab}

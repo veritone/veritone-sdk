@@ -17,10 +17,18 @@ const ObjectGroup = ({
     <span>
       {objectGroup.series &&
         objectGroup.series.map(objectData => {
-          const timeRangeKeyPart = `${objectData.startTimeMs}-${objectData.stopTimeMs}`;
+          const timeRangeKeyPart = `${objectData.startTimeMs}-${
+            objectData.stopTimeMs
+          }`;
           const boundingPoly = get(objectData.object, 'boundingPoly', []);
-          const boundingPolyKeyPart = boundingPoly.length ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}` : '';
-          const pillKey = `object-pill-${kebabCase(objectData.object.label)}-${timeRangeKeyPart}-${objectData.object.confidence}-${boundingPolyKeyPart}`;
+          const boundingPolyKeyPart = boundingPoly.length
+            ? `x1-${boundingPoly[0].x}-y1-${boundingPoly[0].y}`
+            : '';
+          const pillKey = `object-pill-${kebabCase(
+            objectData.object.label
+          )}-${timeRangeKeyPart}-${
+            objectData.object.confidence
+          }-${boundingPolyKeyPart}`;
           return (
             <PillButton
               key={pillKey}

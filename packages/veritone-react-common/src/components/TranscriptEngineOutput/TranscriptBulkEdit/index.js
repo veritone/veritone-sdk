@@ -20,15 +20,18 @@ export default class TranscriptBulkEdit extends Component {
   };
 
   state = {
-    content: this.props.content
+    // keep content in local state to avoid textarea cursor jumping to the end on async update
+    // update content synchronously, through setState, except for the first init.
+    content: null
   };
 
   static getDerivedStateFromProps(nextProps, currentState) {
+    const noCurrentContent = !currentState.content;
     const newContent = nextProps.content !== currentState.content;
     const newEngine =
       nextProps.selectedEngineId !== currentState.selectedEngineId;
 
-    if (newContent && newEngine) {
+    if (noCurrentContent || (newContent && newEngine)) {
       return {
         ...currentState,
         content: nextProps.content,

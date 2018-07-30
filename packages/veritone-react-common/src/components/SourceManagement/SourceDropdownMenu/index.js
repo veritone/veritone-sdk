@@ -35,34 +35,36 @@ export default class SourceDropdownMenu extends React.Component {
     hasNextPage: false,
     isNextPageLoading: false,
     sources: []
-  }
+  };
 
   UNSAFE_componentWillMount() {
     this.loadMoreRows({ startIndex: 0, stopIndex: this.props.pageSize });
   }
 
-  loadMoreRows = ({startIndex, stopIndex}) => {
+  loadMoreRows = ({ startIndex, stopIndex }) => {
     this.setState({ isNextPageLoading: true });
-    return this.props.loadNextPage({startIndex, stopIndex}).then(sourcePage => {
-      const newState = {
-        hasNextPage: !!get(sourcePage, 'length'),
-        isNextPageLoading: false,
-        sources: cloneDeep(this.state.sources).concat(sourcePage)
-      }
-      if (newState.sources.length) {
-        if (!this.props.sourceId) {
-          this.props.handleSourceChange(newState.sources[0]);
-        } else {
-          const match = find(newState.sources, source => source.id === this.props.sourceId);
-          if (match) {
-            this.props.handleSourceChange(match);
+    return this.props
+      .loadNextPage({ startIndex, stopIndex })
+      .then(sourcePage => {
+        const newState = {
+          hasNextPage: !!get(sourcePage, 'length'),
+          isNextPageLoading: false,
+          sources: cloneDeep(this.state.sources).concat(sourcePage)
+        };
+        if (newState.sources.length) {
+          if (!this.props.sourceId) {
+            this.props.handleSourceChange(newState.sources[0]);
+          } else {
+            const match = find(newState.sources, { id: this.props.sourceId });
+            if (match) {
+              this.props.handleSourceChange(match);
+            }
           }
         }
-      }
-      this.setState(newState);
-      return sourcePage;
-    });
-  }
+        this.setState(newState);
+        return sourcePage;
+      });
+  };
 
   render() {
     return (
@@ -148,13 +150,10 @@ class SourceContainer extends React.Component {
     const handleItemClick = source => () => {
       this.props.handleSourceChange(source);
       this.handleMenuClose();
-    }
+    };
 
     return (
-      <div
-        key={key}
-        style={style}
-      >
+      <div key={key} style={style}>
         <MenuItem
           key={source.id}
           value={source.id}
@@ -173,7 +172,7 @@ class SourceContainer extends React.Component {
             <span className={styles.sourceMenuItemTypeDisplay}>
               {sourceTypeDisplay}
             </span>
-          ) : null }
+          ) : null}
         </MenuItem>
       </div>
     );

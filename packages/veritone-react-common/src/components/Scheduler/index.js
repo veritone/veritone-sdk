@@ -19,7 +19,8 @@ import {
   constant,
   includes,
   findIndex,
-  intersection
+  intersection,
+  some
 } from 'lodash';
 import { withProps } from 'recompose';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -43,12 +44,16 @@ const initDate = new Date();
     if (props.supportedScheduleTypes[0] === 'Any') {
       scheduleType = 'Recurring';
     } else {
-      const availableSelections = intersection( // using intersection to maintain ordering
+      const availableSelections = intersection(
+        // using intersection to maintain ordering
         ['Recurring', 'Continuous', 'Now', 'Once'],
         props.supportedScheduleTypes
       );
       if (availableSelections.length) {
-        const selectIndex = findIndex(availableSelections, availableSelection => scheduleType === availableSelection);
+        const selectIndex = findIndex(
+          availableSelections,
+          availableSelection => scheduleType === availableSelection
+        );
         if (selectIndex !== -1) {
           scheduleType = availableSelections[selectIndex];
         } else {
@@ -61,57 +66,58 @@ const initDate = new Date();
   } else if (!scheduleType) {
     scheduleType = 'Recurring';
   }
-  
-  return ({
-  initialValues: {
-    // This provides defaults to the form. Shallow merged with
-    // props.initialValues to allow overriding.
-    scheduleType,
-    start: get(props, 'initialValues.start')
-      ? new Date(props.initialValues.start)
-      : subDays(initDate, 3),
-    end: get(props, 'initialValues.end')
-      ? new Date(props.initialValues.end)
-      : initDate,
-    repeatEvery: {
-      number: '1',
-      period: 'day'
-    },
-    daily: [
-      {
-        start: '00:00',
-        end: '01:00'
-      }
-    ],
-    weekly: {
-      // make sure we set a default start/end for any days which aren't given
-      // explicit default values in props.initialValues.weekly
-      ...difference(
-        // for days not given explicit initial values in props,..
-        [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-          'Sunday'
-        ],
-        keys(get(props, 'initialValues.weekly'))
-        // ... provide them with default start/end ranges
-      ).reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
-      // and assume any days given explicit initial values should be selected
-      selectedDays: mapValues(
-        get(props, 'initialValues.weekly'),
-        constant(true)
-      ),
-      // then merge back with the days given explicit initial values in props
-      ...get(props, 'initialValues.weekly')
-    },
-    // shallow-merge the properties we didn't have special merge logic for
-    ...omit(props.initialValues, ['start', 'end', 'weekly'])
-  }
-})})
+
+  return {
+    initialValues: {
+      // This provides defaults to the form. Shallow merged with
+      // props.initialValues to allow overriding.
+      scheduleType,
+      start: get(props, 'initialValues.start')
+        ? new Date(props.initialValues.start)
+        : subDays(initDate, 3),
+      end: get(props, 'initialValues.end')
+        ? new Date(props.initialValues.end)
+        : initDate,
+      repeatEvery: {
+        number: '1',
+        period: 'day'
+      },
+      daily: [
+        {
+          start: '00:00',
+          end: '01:00'
+        }
+      ],
+      weekly: {
+        // make sure we set a default start/end for any days which aren't given
+        // explicit default values in props.initialValues.weekly
+        ...difference(
+          // for days not given explicit initial values in props,..
+          [
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday'
+          ],
+          keys(get(props, 'initialValues.weekly'))
+          // ... provide them with default start/end ranges
+        ).reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
+        // and assume any days given explicit initial values should be selected
+        selectedDays: mapValues(
+          get(props, 'initialValues.weekly'),
+          constant(true)
+        ),
+        // then merge back with the days given explicit initial values in props
+        ...get(props, 'initialValues.weekly')
+      },
+      // shallow-merge the properties we didn't have special merge logic for
+      ...omit(props.initialValues, ['start', 'end', 'weekly'])
+    }
+  };
+})
 @reduxForm({
   form: 'scheduler'
 })
@@ -121,10 +127,14 @@ class Scheduler extends React.Component {
     scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once']).isRequired,
     onSubmit: func, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
-    supportedScheduleTypes: arrayOf((propValue, key) => 
-      findIndex(['Recurring', 'Continuous', 'Now', 'Once', 'Any'], type => propValue[key] === type) === -1 ?
-      new Error('Invalid supportedScheduleTypes') :
-      undefined
+    supportedScheduleTypes: arrayOf(
+      (propValue, key) =>
+        !some(
+          ['Recurring', 'Continuous', 'Now', 'Once', 'Any'],
+          type => propValue[key] === type
+        )
+          ? new Error('Invalid supportedScheduleTypes')
+          : undefined
     ),
     relativeSize: number, // optional - used to scale text sizes from hosting app
     color: string
@@ -258,10 +268,10 @@ class Scheduler extends React.Component {
     } else {
       ScheduleSelections = [];
       ['Recurring', 'Continuous', 'Now', 'Once'].forEach(type => {
-        const showSection = findIndex(
+        const showSection = some(
           this.props.supportedScheduleTypes,
           supportedType => supportedType === type
-        ) !== -1;
+        );
         showSection && ScheduleSelections.push(ScheduleTypeSelection[type]);
       });
     }
