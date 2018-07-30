@@ -15,7 +15,8 @@ export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
 export DiscoverySideBar, {
-  sectionsShape as discoverySidebarSectionsShape
+  sectionsShape as discoverySidebarSectionsShape,
+  DiscoverySideBarContainerPure as DiscoverySideBarPure
 } from './components/DiscoverySideBar';
 export FullScreenDialog from './components/FullScreenDialog';
 export ProfileMenu from './components/ProfileMenu';
@@ -36,3 +37,9 @@ export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
 export Overlay from './components/BoundingPolyOverlay/Overlay';
 export OverlayPositioningProvider from './components/BoundingPolyOverlay/OverlayPositioningProvider';
+export SDOTable from './components/SDOTable';
+export * as IngestionJobs from './components/IngestionJobs';
+export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
+export ContentTemplate from './components/ContentTemplates';
+export SourceManagementForm from './components/SourceManagementForm';
+export * as SourceManagement from './components/SourceManagement';

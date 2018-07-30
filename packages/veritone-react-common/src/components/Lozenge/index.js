@@ -1,16 +1,17 @@
 import React from 'react';
-import { string } from 'prop-types';
-import blue from '@material-ui/core/colors/blue';
+import { string, node } from 'prop-types';
+import indigo from '@material-ui/core/colors/indigo';
 
 import styles from './styles.scss';
 
-const Lozenge = ({ children, iconClassName, backgroundColor, textColor }) => {
+const Lozenge = ({ children, iconClassName, backgroundColor, textColor, border, className }) => {
   return (
     <div
-      className={styles.lozenge}
+      className={className || styles.lozenge}
       style={{
-        backgroundColor: backgroundColor || blue[500],
-        color: textColor || '#fff'
+        backgroundColor: backgroundColor || indigo[500],
+        color: textColor || '#fff',
+        border: border || 'none'
       }}
     >
       {iconClassName && <i className={iconClassName} />}
@@ -20,10 +21,12 @@ const Lozenge = ({ children, iconClassName, backgroundColor, textColor }) => {
 };
 
 Lozenge.propTypes = {
-  children: string.isRequired,
+  children: node.isRequired,
   iconClassName: string,
   backgroundColor: string,
-  textColor: string
+  textColor: string,
+  border: string,
+  className: string,
 };
 
 export default Lozenge;

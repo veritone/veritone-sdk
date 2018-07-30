@@ -1,17 +1,42 @@
 import React from 'react';
-import { func, arrayOf, string, shape } from 'prop-types';
-import { without } from 'lodash';
+import { connect } from 'react-redux';
+import { func, arrayOf, string, shape, bool } from 'prop-types';
+import { without, sortBy } from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { modules } from 'veritone-redux-common';
+const { engine: engineModule } = modules;
 
+import FailureScreen from '../../EngineListContainer/FailureScreen';
 import styles from '../styles.scss';
 
+@connect(
+  (state, { id }) => ({
+    engineCategories: engineModule.getEngineCategories(state),
+    isFetchingEngineCategories: engineModule.isFetchingEngineCategories(state),
+    failedToFetchEngineCategories: engineModule.failedToFetchEngineCategories(
+      state
+    )
+  }),
+  {
+    fetchEngineCategories: engineModule.fetchEngineCategories
+  }
+)
 class CategoriesFilter extends React.Component {
   static propTypes = {
     id: string.isRequired,
     filters: shape({
       category: arrayOf(string).isRequired
     }).isRequired,
-    filterBy: func.isRequired
+    filterBy: func.isRequired,
+    engineCategories: arrayOf(
+      shape({
+        name: string.isRequired
+      })
+    ),
+    fetchEngineCategories: func.isRequired,
+    isFetchingEngineCategories: bool.isRequired,
+    failedToFetchEngineCategories: bool.isRequired
   };
 
   addCategory = category => {
@@ -39,35 +64,49 @@ class CategoriesFilter extends React.Component {
     }
   };
 
+  handleRefetchCategories = () => {
+    this.props.fetchEngineCategories();
+  };
+
   render() {
-    const categories = [
-      'Object Detection',
-      'Fingerprint',
-      'Geolocation',
-      'Translate',
-      'Human',
-      'Text Recognition',
-      'Logo Recognition',
-      'Transcription',
-      'Facial Detection',
-      'Audio Detection',
-      'Music Detection'
-    ];
+    if (this.props.isFetchingEngineCategories) {
+      return (
+        <div className={styles.isFetching}>
+          <CircularProgress size={50} />
+        </div>
+      );
+    }
+
+    if (this.props.failedToFetchEngineCategories) {
+      return (
+        <FailureScreen
+          message="Failed to fetch categories."
+          classes={{
+            errorOutlineIcon: {
+              root: styles.failedToFetchIcon
+            },
+            message: {
+              root: styles.failedToFetchMessage
+            }
+          }}
+          onRetry={this.handleRefetchCategories}
+        />
+      );
+    }
 
     return (
       <div className={styles.filterContainer}>
-        <div className={styles.title}>Categories</div>
         <div>
-          {categories.map(category => (
-            <div key={category}>
+          {sortBy(this.props.engineCategories, ['name']).map(category => (
+            <div key={category.name}>
               <div className={styles.inlineFilter}>
                 <Checkbox
                   color="primary"
                   classes={{ root: styles.checkbox }}
-                  checked={this.props.filters.category.includes(category)}
-                  onClick={() => this.handleClick(category)} // eslint-disable-line
+                  checked={this.props.filters.category.includes(category.name)}
+                  onClick={() => this.handleClick(category.name)} // eslint-disable-line
                 />
-                {category}
+                {category.name}
               </div>
             </div>
           ))}
