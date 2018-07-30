@@ -53,7 +53,7 @@ describe('DynamicAdapter', () => {
     jest.spyOn(testFuncs, 'validateCB');
     testFuncs.validate({
       clusterId: 'fakeId',
-      cluster: {
+      _cluster: {
         selectedCluster: {}
       }
     }).then((result) => {
@@ -73,7 +73,7 @@ describe('DynamicAdapter', () => {
     jest.spyOn(testFuncs, 'validateCB');
     testFuncs.validate({
       clusterId: 'fakeId',
-      cluster: {
+      _cluster: {
         selectedCluster: {}
       }
     }).catch(err => {
@@ -92,11 +92,11 @@ describe('DynamicAdapter', () => {
     jest.spyOn(testFuncs, 'validateCB');
     testFuncs.validate({
       sourceId: SOURCES[0].id,
-      source: {
+      _source: {
         selectedSource: SOURCES[0]
       },
       clusterId: CLUSTERS[0].id,
-      cluster: {
+      _cluster: {
         selectedCluster: CLUSTERS[0]
       }
     }).catch(err => {
@@ -109,7 +109,7 @@ describe('DynamicAdapter', () => {
     function testSuccess () {
       let configuration = {
         clusterId: CLUSTERS[0].id,
-        cluster: {
+        _cluster: {
           selectedCluster: CLUSTERS[0]
         }
       };
@@ -123,12 +123,12 @@ describe('DynamicAdapter', () => {
     }
   });
 
-  it('DynamicAdapter should set default values for any adapter input fields', () => {
+  it('DynamicAdapter should set default values for any adapter input fields', done => {
     const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
-      cluster: {}
+      _cluster: {}
     };
     const DynamicAdapter = DynamicAdapterConfig.adapter;
     const UPDATE_CONFIGURATION = jest.fn();
@@ -158,7 +158,7 @@ describe('DynamicAdapter', () => {
     let expectedConfiguration = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
-      cluster: {
+      _cluster: {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
@@ -168,13 +168,13 @@ describe('DynamicAdapter', () => {
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
   });
 
-  it('DynamicAdapter should rehydrate its state if the existing configuration matches the adapters fields', () => {
+  it('DynamicAdapter should rehydrate its state if the existing configuration matches the adapters fields', done => {
     const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { supportedSourceTypes: SUPPORTED_SOURCE_TYPES, fields: FIELDS });
     const TEST_FIELD_VALUE  = 'TEST FIELD VALUE';
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
-      cluster: {}
+      _cluster: {}
     };
     CONFIGURATION[FIELDS[0].name] = TEST_FIELD_VALUE;
     const DynamicAdapter = DynamicAdapterConfig.adapter;
@@ -206,7 +206,7 @@ describe('DynamicAdapter', () => {
     let expectedConfiguration = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
-      cluster: {
+      _cluster: {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []

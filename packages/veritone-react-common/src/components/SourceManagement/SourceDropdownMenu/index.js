@@ -53,7 +53,7 @@ export default class SourceDropdownMenu extends React.Component {
         if (!this.props.sourceId) {
           this.props.handleSourceChange(newState.sources[0]);
         } else {
-          const match = find(newState.sources, source => source.id === this.props.sourceId);
+          const match = find(newState.sources, ['id', this.props.sourceId]);
           if (match) {
             this.props.handleSourceChange(match);
           }

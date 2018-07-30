@@ -376,14 +376,12 @@ function loadNextSources({startIndex, stopIndex}) {
   }, 1000));
 }
 
-function loadNextClusters() {
-  return function ({startIndex, stopIndex}) {
-    console.log('Called loadNextClusters');
-    console.log(startIndex + ' ' + stopIndex);
-    return new Promise(resolve => setTimeout(() => {
-      resolve(cloneDeep(CLUSTERS));
-    }, 1000));
-  }
+function loadNextClusters({startIndex, stopIndex}) {
+  console.log('Called loadNextClusters');
+  console.log(startIndex + ' ' + stopIndex);
+  return new Promise(resolve => setTimeout(() => {
+    resolve(cloneDeep(CLUSTERS));
+  }, 1000));
 }
 
 let configuration = {

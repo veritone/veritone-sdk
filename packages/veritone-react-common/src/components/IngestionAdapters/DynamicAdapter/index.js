@@ -41,7 +41,7 @@ class DynamicAdapter extends React.Component {
   };
 
   state = {
-    cluster: {
+    _cluster: {
       hasNextPage: false,
       isNextPageLoading: false,
       items: []
@@ -81,22 +81,18 @@ class DynamicAdapter extends React.Component {
   handleSourceChange = selectedSource => {
     const newState = {
       sourceId: selectedSource.id,
-      source: {
+      _source: {
         selectedSource
       }
     };
-    if (this.state.sourceId !== selectedSource.id) {
-      // Clusters must use isLive (selecting a new source may have changed isLives value)
-      this.loadMoreClusters({ startIndex: 0, stopIndex: this.props.pageSize });
-    }
     this.setState(newState, this.sendConfiguration);
   };
 
   handleClusterChange = selectedCluster => {
     const newState = {
       clusterId: selectedCluster.id,
-      cluster: {
-        ...pick(this.state.cluster, ['hasNextPage', 'isNextPageLoading', 'items']),
+      _cluster: {
+        ...pick(this.state._cluster, ['hasNextPage', 'isNextPageLoading', 'items']),
         selectedCluster
       }
     };
@@ -111,30 +107,36 @@ class DynamicAdapter extends React.Component {
   };
 
   loadMoreClusters = ({startIndex, stopIndex}) => {
-    this.setState({ cluster: {
-      isNextPageLoading: true,
-      hasNextPage: false,
-      items: this.state.cluster.items
-    }});
-    const isLive = get(this.state.source, 'selectedSource.sourceType.isLive');
-    return this.props.loadNextClusters(isLive)({startIndex, stopIndex}).then(nextPage => {
+    this.setState({
+      _cluster: {
+        isNextPageLoading: true,
+        hasNextPage: false,
+        items: this.state._cluster.items
+      }
+    });
+    return this.props.loadNextClusters({startIndex, stopIndex}).then(nextPage => {
       const newState = {
-        cluster: {
+        _cluster: {
           hasNextPage: !!get(nextPage, 'length'),
           isNextPageLoading: false,
-          items: startIndex === 0 ? nextPage : cloneDeep(this.state.cluster.items).concat(nextPage)
+          items: startIndex === 0 ? nextPage : cloneDeep(this.state._cluster.items).concat(nextPage)
         }
       }
       const clusterToSelect = find(
-        newState.cluster.items,
-        cluster => cluster.id === this.state.clusterId
+        newState._cluster.items,
+        ['id', this.state.clusterId]
       );
       if (clusterToSelect) {
-        this.handleClusterChange(clusterToSelect);
-      } else if (newState.cluster.items.length && !this.props.id) {
-        this.handleClusterChange(newState.cluster.items[0]);
+        this.setState(newState, () => {
+          this.handleClusterChange(clusterToSelect);
+        });
+      } else if (newState._cluster.items.length && !this.state.clusterId) {
+        this.setState(newState, () => {
+          this.handleClusterChange(newState._cluster.items[0]);
+        });
+      } else {
+        this.setState(newState);
       }
-      this.setState(newState);
       return nextPage;
     });
   }
@@ -190,22 +192,18 @@ class DynamicAdapter extends React.Component {
                 </div>
               </div>
             </div>
-            { get(this.state, 'source.selectedSource') ?
-              (
-                <div className={styles.adapterContainer}>
-                  <InfiniteDropdownMenu
-                    label="Select a Cluster"
-                    id={this.state.clusterId}
-                    handleSelectionChange={this.handleClusterChange}
-                    loadNextPage={this.loadMoreClusters}
-                    hasNextPage={this.state.cluster.hasNextPage}
-                    isNextPageLoading={this.state.cluster.isNextPageLoading}
-                    items={this.state.cluster.items}
-                    pageSize={this.props.pageSize}
-                  />
-                </div>
-              ) : null
-            }
+            <div className={styles.adapterContainer}>
+              <InfiniteDropdownMenu
+                label="Select a Cluster"
+                id={this.state.clusterId}
+                handleSelectionChange={this.handleClusterChange}
+                loadNextPage={this.loadMoreClusters}
+                hasNextPage={this.state._cluster.hasNextPage}
+                isNextPageLoading={this.state._cluster.isNextPageLoading}
+                items={this.state._cluster.items}
+                pageSize={this.props.pageSize}
+              />
+            </div>
             <div>
               <DynamicFieldForm
                 fields={this.props.adapterConfig.fields}
@@ -305,11 +303,13 @@ export default {
   },
   validate: adapterStep => (configuration) => {
     let errors = [];
-    if (get(adapterStep, 'supportedSourceTypes.length') && !get(configuration, 'source.selectedSource')) {
-      errors.push('Source is required');
-    }
-    if (!get(configuration, 'cluster.selectedCluster')) {
-      errors.push('Cluster is required');
+    if (get(adapterStep, 'supportedSourceTypes.length')) {
+      if (!get(configuration, '_source.selectedSource')) {
+        errors.push('Source is required');
+      }
+      if (!get(configuration, '_cluster.selectedCluster')) {
+        errors.push('Cluster is required');
+      }
     }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
