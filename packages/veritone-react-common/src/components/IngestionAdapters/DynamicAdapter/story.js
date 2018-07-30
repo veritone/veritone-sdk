@@ -155,6 +155,7 @@ const SOURCES = [
     sourceType: {
       id: '3',
       name: 'YouTube',
+      isLive: false,
       sourceSchema: {
         id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
         definition: {
@@ -225,6 +226,7 @@ const SOURCES = [
     sourceType: {
       id: '3',
       name: 'YouTube',
+      isLive: false,
       sourceSchema: {
         id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
         definition: {
@@ -315,10 +317,47 @@ const SOURCES = [
   }
 ];
 
+const CLUSTERS = [{
+  "id": "rt-deadbeef-0000-0001-0001-ba5eba111111",
+  "name": "dev-rt-cluster",
+  "type": "RT",
+  "allowedEngines": [
+    "9e611ad7-2d3b-48f6-a51b-0a1ba40feab4",
+    "c0e55cde-340b-44d7-bb42-2e0d65e98141",
+    "b88ca760-381a-471c-a089-e53894db881a",
+    "01e41442-758c-4602-9b85-e18b0fff7068"
+  ],
+  "paused": false,
+  "default": true,
+  "bypassAllowedEngines": false
+},
+{
+  "id": "ami-27eb5c50-fe69-4379-bd1f-a2f837014bd2",
+  "name": "test1528746147539",
+  "type": "ami",
+  "allowedEngines": [
+    "d1bc57fe-675d-435d-9f4d-2f074485ec55"
+  ],
+  "paused": false,
+  "default": false,
+  "bypassAllowedEngines": true
+},
+{
+  "id": "ami-7981bfe7-18a5-4879-b27f-f673732e1bef",
+  "name": "test152419735522aeiuaywo3478tyqo287tq23rq3tq23tq23tq237",
+  "type": "ami",
+  "allowedEngines": [
+    "d1bc57fe-675d-435d-9f4d-2f074485ec55"
+  ],
+  "paused": false,
+  "default": false,
+  "bypassAllowedEngines": false
+}];
+
 function updateConfiguration(config) {
   console.log('updateConfiguration', config);
-  Object.keys(config).forEach(key => (configuration[key] = config[key]));
-  // configuration = config;
+  // Object.keys(config).forEach(key => (configuration[key] = config[key]));
+  configuration = config;
 }
 
 function openCreateSource() {
@@ -329,28 +368,38 @@ function closeCreateSource() {
   console.log('closeCreateSource');
 }
 
-function loadNextPage({ startIndex, stopIndex }) {
-  console.log('Called loadNextPage');
+function loadNextSources({startIndex, stopIndex}) {
+  console.log('Called loadNextSources');
   console.log(startIndex + ' ' + stopIndex);
-  return new Promise(resolve =>
-    setTimeout(() => {
-      resolve(cloneDeep(SOURCES));
-    }, 2000)
-  );
+  return new Promise(resolve => setTimeout(() => {
+    resolve(cloneDeep(SOURCES));
+  }, 1000));
+}
+
+function loadNextClusters() {
+  return function ({startIndex, stopIndex}) {
+    console.log('Called loadNextClusters');
+    console.log(startIndex + ' ' + stopIndex);
+    return new Promise(resolve => setTimeout(() => {
+      resolve(cloneDeep(CLUSTERS));
+    }, 1000));
+  }
 }
 
 let configuration = {
-  sourceId: SOURCES[0].id
+  sourceId: SOURCES[1].id,
+  clusterId: CLUSTERS[1].id
 };
 
 storiesOf('DynamicAdapter', module).add('DynamicAdapter', () => (
   <DynamicAdapter
-    sources={SOURCES}
     configuration={configuration}
     adapterConfig={ADAPTER_CONFIG}
     updateConfiguration={updateConfiguration}
     openCreateSource={openCreateSource}
     closeCreateSource={closeCreateSource}
-    loadNextPage={loadNextPage}
+    loadNextSources={loadNextSources}
+    loadNextClusters={loadNextClusters}
+    pageSize={3}
   />
 ));

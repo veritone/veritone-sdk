@@ -14,13 +14,16 @@ import {
   isUndefined,
   startCase,
   toLower,
-  includes
+  includes,
+  pick,
+  find
 } from 'lodash';
-import { objectOf, any, func } from 'prop-types';
+import { objectOf, any, func, number } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
 import SourceDropdownMenu from '../../SourceManagement/SourceDropdownMenu';
+import InfiniteDropdownMenu from '../../InfiniteDropdownMenu';
 
 import styles from './styles.scss';
 
@@ -32,13 +35,26 @@ class DynamicAdapter extends React.Component {
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
-    loadNextPage: func.isRequired
+    loadNextSources: func.isRequired,
+    loadNextClusters: func.isRequired,
+    pageSize: number
   };
+
+  state = {
+    cluster: {
+      hasNextPage: false,
+      isNextPageLoading: false,
+      items: []
+    }
+  }
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     let fields = get(this.props.adapterConfig, 'fields');
-    const newState = {};
+    const newState = {
+      sourceId: get(this.props, 'configuration.sourceId'),
+      clusterId: get(this.props, 'configuration.clusterId')
+    };
     if (isArray(fields)) {
       fields.forEach(field => {
         if (field.name) {
@@ -62,8 +78,28 @@ class DynamicAdapter extends React.Component {
     this.props.updateConfiguration(this.state);
   };
 
-  handleSourceChange = selectedSourceId => {
-    let newState = { sourceId: selectedSourceId };
+  handleSourceChange = selectedSource => {
+    const newState = {
+      sourceId: selectedSource.id,
+      source: {
+        selectedSource
+      }
+    };
+    if (this.state.sourceId !== selectedSource.id) {
+      // Clusters must use isLive (selecting a new source may have changed isLives value)
+      this.loadMoreClusters({ startIndex: 0, stopIndex: this.props.pageSize });
+    }
+    this.setState(newState, this.sendConfiguration);
+  };
+
+  handleClusterChange = selectedCluster => {
+    const newState = {
+      clusterId: selectedCluster.id,
+      cluster: {
+        ...pick(this.state.cluster, ['hasNextPage', 'isNextPageLoading', 'items']),
+        selectedCluster
+      }
+    };
     this.setState(newState, this.sendConfiguration);
   };
 
@@ -73,6 +109,35 @@ class DynamicAdapter extends React.Component {
     stateUpdate[fieldKey] = fieldValue;
     this.setState(stateUpdate, this.sendConfiguration);
   };
+
+  loadMoreClusters = ({startIndex, stopIndex}) => {
+    this.setState({ cluster: {
+      isNextPageLoading: true,
+      hasNextPage: false,
+      items: this.state.cluster.items
+    }});
+    const isLive = get(this.state.source, 'selectedSource.sourceType.isLive');
+    return this.props.loadNextClusters(isLive)({startIndex, stopIndex}).then(nextPage => {
+      const newState = {
+        cluster: {
+          hasNextPage: !!get(nextPage, 'length'),
+          isNextPageLoading: false,
+          items: startIndex === 0 ? nextPage : cloneDeep(this.state.cluster.items).concat(nextPage)
+        }
+      }
+      const clusterToSelect = find(
+        newState.cluster.items,
+        cluster => cluster.id === this.state.clusterId
+      );
+      if (clusterToSelect) {
+        this.handleClusterChange(clusterToSelect);
+      } else if (newState.cluster.items.length && !this.props.id) {
+        this.handleClusterChange(newState.cluster.items[0]);
+      }
+      this.setState(newState);
+      return nextPage;
+    });
+  }
 
   render() {
     return (
@@ -84,7 +149,8 @@ class DynamicAdapter extends React.Component {
               handleSourceChange={this.handleSourceChange}
               openCreateSource={this.props.openCreateSource}
               closeCreateSource={this.props.closeCreateSource}
-              loadNextPage={this.props.loadNextPage}
+              loadNextPage={this.props.loadNextSources}
+              pageSize={this.props.pageSize}
             />
             <div className={styles.adapterDivider} />
           </div>
@@ -124,9 +190,22 @@ class DynamicAdapter extends React.Component {
                 </div>
               </div>
             </div>
-            <div className={styles.adapterContainer}>
-              <TextField label="Cluster" value="Veritone CPU" disabled />
-            </div>
+            { get(this.state, 'source.selectedSource') ?
+              (
+                <div className={styles.adapterContainer}>
+                  <InfiniteDropdownMenu
+                    label="Select a Cluster"
+                    id={this.state.clusterId}
+                    handleSelectionChange={this.handleClusterChange}
+                    loadNextPage={this.loadMoreClusters}
+                    hasNextPage={this.state.cluster.hasNextPage}
+                    isNextPageLoading={this.state.cluster.isNextPageLoading}
+                    items={this.state.cluster.items}
+                    pageSize={this.props.pageSize}
+                  />
+                </div>
+              ) : null
+            }
             <div>
               <DynamicFieldForm
                 fields={this.props.adapterConfig.fields}
@@ -142,7 +221,7 @@ class DynamicAdapter extends React.Component {
 }
 
 function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
-  return fields
+  return (fields)
     .map(field => {
       const inputId = field.name + 'DynamicField';
       const camelCasedFieldName = startCase(toLower(field.name));
@@ -224,13 +303,13 @@ export default {
       setName: true
     }
   },
-  validate: adapterStep => configuration => {
+  validate: adapterStep => (configuration) => {
     let errors = [];
-    if (
-      get(adapterStep, 'supportedSourceTypes.length') &&
-      !configuration.sourceId
-    ) {
+    if (get(adapterStep, 'supportedSourceTypes.length') && !get(configuration, 'source.selectedSource')) {
       errors.push('Source is required');
+    }
+    if (!get(configuration, 'cluster.selectedCluster')) {
+      errors.push('Cluster is required');
     }
     if (isArray(adapterStep.fields)) {
       adapterStep.fields.forEach(field => {
@@ -255,19 +334,10 @@ export default {
   },
   getHydratedData: adapterStep => hydrateData => {
     let configuration = {};
-    let ingestionTask, sourceId;
-    let tasks = get(
-      hydrateData,
-      'jobTemplates.records[0].taskTemplates.records'
-    );
-    if (tasks) {
-      ingestionTask = tasks.filter(
-        task => get(task, 'engine.category.type.name') === 'Ingestion'
-      )[0];
-    }
+    let ingestionTask = hydrateData.ingestionTask;
     if (ingestionTask) {
-      sourceId = get(ingestionTask, 'payload.sourceId');
-      configuration.sourceId = sourceId;
+      configuration.sourceId = get(ingestionTask, 'payload.sourceId');
+      configuration.clusterId = get(hydrateData, 'allJobTemplates.records[0].clusterId');
       let fields = get(adapterStep, 'fields');
       if (fields) {
         fields.forEach(field => {

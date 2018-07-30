@@ -17,7 +17,9 @@ import {
   difference,
   keys,
   constant,
-  includes
+  includes,
+  findIndex,
+  intersection
 } from 'lodash';
 import { withProps } from 'recompose';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -33,11 +35,38 @@ import ContinuousSection from './ContinuousSection';
 
 const initDate = new Date();
 
-@withProps(props => ({
+@withProps(props => {
+  // There may be inconsistencies in what scheduleType is currently selected and what's available
+  // This logic selects the schedule type that's valid
+  let scheduleType = props.initialValues && props.initialValues.scheduleType;
+  if (get(props, 'supportedScheduleTypes.length')) {
+    if (props.supportedScheduleTypes[0] === 'Any') {
+      scheduleType = 'Recurring';
+    } else {
+      const availableSelections = intersection( // using intersection to maintain ordering
+        ['Recurring', 'Continuous', 'Now', 'Once'],
+        props.supportedScheduleTypes
+      );
+      if (availableSelections.length) {
+        const selectIndex = findIndex(availableSelections, availableSelection => scheduleType === availableSelection);
+        if (selectIndex !== -1) {
+          scheduleType = availableSelections[selectIndex];
+        } else {
+          scheduleType = availableSelections[0];
+        }
+      } else if (!scheduleType) {
+        scheduleType = 'Recurring';
+      }
+    }
+  } else if (!scheduleType) {
+    scheduleType = 'Recurring';
+  }
+  
+  return ({
   initialValues: {
     // This provides defaults to the form. Shallow merged with
     // props.initialValues to allow overriding.
-    scheduleType: 'Recurring',
+    scheduleType,
     start: get(props, 'initialValues.start')
       ? new Date(props.initialValues.start)
       : subDays(initDate, 3),
@@ -82,7 +111,7 @@ const initDate = new Date();
     // shallow-merge the properties we didn't have special merge logic for
     ...omit(props.initialValues, ['start', 'end', 'weekly'])
   }
-}))
+})})
 @reduxForm({
   form: 'scheduler'
 })
@@ -92,7 +121,11 @@ class Scheduler extends React.Component {
     scheduleType: oneOf(['Recurring', 'Continuous', 'Now', 'Once']).isRequired,
     onSubmit: func, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
-    supportedScheduleTypes: arrayOf(string),
+    supportedScheduleTypes: arrayOf((propValue, key) => 
+      findIndex(['Recurring', 'Continuous', 'Now', 'Once', 'Any'], type => propValue[key] === type) === -1 ?
+      new Error('Invalid supportedScheduleTypes') :
+      undefined
+    ),
     relativeSize: number, // optional - used to scale text sizes from hosting app
     color: string
   };
@@ -224,10 +257,12 @@ class Scheduler extends React.Component {
       ];
     } else {
       ScheduleSelections = [];
-      this.props.supportedScheduleTypes.forEach(type => {
-        if (ScheduleTypeSelection[type]) {
-          ScheduleSelections.push(ScheduleTypeSelection[type]);
-        }
+      ['Recurring', 'Continuous', 'Now', 'Once'].forEach(type => {
+        const showSection = findIndex(
+          this.props.supportedScheduleTypes,
+          supportedType => supportedType === type
+        ) !== -1;
+        showSection && ScheduleSelections.push(ScheduleTypeSelection[type]);
       });
     }
 

@@ -11,7 +11,7 @@ import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 import { objectOf, any, func, arrayOf, string, bool, number } from 'prop-types';
-import { get, cloneDeep, noop } from 'lodash';
+import { get, cloneDeep, noop, find } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -23,36 +23,46 @@ export default class SourceDropdownMenu extends React.Component {
     handleSourceChange: func.isRequired,
     openCreateSource: func.isRequired,
     closeCreateSource: func.isRequired,
-    loadNextPage: func.isRequired
+    loadNextPage: func.isRequired,
+    pageSize: number
+  };
+
+  static defaultProps = {
+    pageSize: 30
   };
 
   state = {
     hasNextPage: false,
     isNextPageLoading: false,
     sources: []
-  };
-
-  UNSAFE_componentWillMount() {
-    this.loadMoreRows({ startIndex: 0, stopIndex: 30 });
   }
 
-  loadMoreRows = ({ startIndex, stopIndex }) => {
+  UNSAFE_componentWillMount() {
+    this.loadMoreRows({ startIndex: 0, stopIndex: this.props.pageSize });
+  }
+
+  loadMoreRows = ({startIndex, stopIndex}) => {
     this.setState({ isNextPageLoading: true });
-    return this.props
-      .loadNextPage({ startIndex, stopIndex })
-      .then(sourcePage => {
-        const newState = {
-          hasNextPage: !!get(sourcePage, 'length'),
-          isNextPageLoading: false,
-          sources: cloneDeep(this.state.sources).concat(sourcePage)
-        };
-        if (newState.sources.length && !this.props.sourceId) {
-          this.props.handleSourceChange(newState.sources[0].id);
+    return this.props.loadNextPage({startIndex, stopIndex}).then(sourcePage => {
+      const newState = {
+        hasNextPage: !!get(sourcePage, 'length'),
+        isNextPageLoading: false,
+        sources: cloneDeep(this.state.sources).concat(sourcePage)
+      }
+      if (newState.sources.length) {
+        if (!this.props.sourceId) {
+          this.props.handleSourceChange(newState.sources[0]);
+        } else {
+          const match = find(newState.sources, source => source.id === this.props.sourceId);
+          if (match) {
+            this.props.handleSourceChange(match);
+          }
         }
-        this.setState(newState);
-        return sourcePage;
-      });
-  };
+      }
+      this.setState(newState);
+      return sourcePage;
+    });
+  }
 
   render() {
     return (
@@ -74,6 +84,7 @@ export default class SourceDropdownMenu extends React.Component {
             hasNextPage={this.state.hasNextPage}
             isNextPageLoading={this.state.isNextPageLoading}
             loadNextPage={this.loadMoreRows}
+            pageSize={this.props.pageSize}
           />
         </div>
       </div>
@@ -92,7 +103,8 @@ class SourceContainer extends React.Component {
     closeCreateSource: func.isRequired,
     hasNextPage: bool.isRequired,
     isNextPageLoading: bool.isRequired,
-    loadNextPage: func.isRequired
+    loadNextPage: func.isRequired,
+    pageSize: number
   };
 
   state = {
@@ -134,12 +146,15 @@ class SourceContainer extends React.Component {
     const sourceTypeDisplay = get(source, 'sourceType.name');
 
     const handleItemClick = source => () => {
-      this.props.handleSourceChange(source.id);
+      this.props.handleSourceChange(source);
       this.handleMenuClose();
-    };
+    }
 
     return (
-      <div key={key} style={style}>
+      <div
+        key={key}
+        style={style}
+      >
         <MenuItem
           key={source.id}
           value={source.id}
@@ -166,7 +181,7 @@ class SourceContainer extends React.Component {
 
   render() {
     const rowCount = this.props.hasNextPage
-      ? this.props.sources.length + 1
+      ? this.props.sources.length + this.props.pageSize
       : this.props.sources.length;
     const loadMoreRows = this.props.isNextPageLoading
       ? noop
@@ -254,7 +269,7 @@ const SourceSelector = ({
             isRowLoaded={isRowLoaded}
             loadMoreRows={loadMoreRows}
             rowCount={rowCount}
-            threshold={1}
+            threshold={3}
           >
             {({ onRowsRendered, registerChild }) => (
               <AutoSizer disableHeight>

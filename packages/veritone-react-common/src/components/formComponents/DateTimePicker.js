@@ -105,9 +105,7 @@ const TimeZoneField = ({ value }) => {
       }}
       disabled
     />
-  ) : (
-    undefined
-  );
+  ) : null;
 };
 
 TimeZoneField.propTypes = {
