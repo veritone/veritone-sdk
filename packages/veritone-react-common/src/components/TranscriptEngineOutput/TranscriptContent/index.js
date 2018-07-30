@@ -31,6 +31,7 @@ export default class TranscriptContent extends Component {
           shape({
             startTimeMs: number,
             stopTimeMs: number,
+            guid: string,
             words: arrayOf(
               shape({
                 word: string,
@@ -150,74 +151,90 @@ export default class TranscriptContent extends Component {
           snippetSentences = '';
         };
 
+        const sentenceSeparator = series.length ? ' ' : '';
+
         series.forEach((entry, entryIndex) => {
           //---Updata Content Value---
           if (entry.words) {
             // Has Transcript Data
-            snippetStatus !== undefined &&
-              snippetStatus !== 'success' &&
+            if (snippetStatus && snippetStatus !== 'success') {
               saveSnippetData();
-            overviewStatus !== undefined &&
-              overviewStatus !== 'success' &&
+            }
+            if (overviewStatus && overviewStatus !== 'success') {
               saveOverviewData();
-
+            }
             snippetStatus = 'success';
             overviewStatus = 'success';
 
             //---Get Correct Word---
-            let selectedWord;
+            let selectedWord = '';
             let words = entry.words || [];
             words = orderBy(words, ['confidence'], ['desc']);
-            words.length > 0
-              ? (selectedWord = words[0].word)
-              : (selectedWord = '');
+            if (words.length > 0) {
+              selectedWord = words[0].word;
+            }
+
+            const snippet = {
+              startTimeMs: entry.startTimeMs,
+              stopTimeMs: entry.stopTimeMs,
+              value: selectedWord
+            };
+            if (entry.guid) {
+              snippet.guid = entry.guid;
+            }
 
             //---Update Snippet Data---
-            snippetSentences = snippetSentences + selectedWord + ' ';
-            snippetParts.push({
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
-            });
-
+            snippetSentences =
+              snippetSentences + selectedWord + sentenceSeparator;
+            snippetParts.push(snippet);
             //---Update Overview Data---
-            overviewSentences = overviewSentences + selectedWord + ' ';
-            overviewParts.push({
-              startTimeMs: entry.startTimeMs,
-              stopTimeMs: entry.stopTimeMs,
-              value: selectedWord
-            });
+            overviewSentences =
+              overviewSentences + selectedWord + sentenceSeparator;
+            overviewParts.push(snippet);
           } else {
             // No Transcript Data
-            snippetStatus !== undefined &&
-              snippetStatus !== 'no-transcript' &&
+            if (snippetStatus && snippetStatus !== 'no-transcript') {
               saveSnippetData();
-            overviewStatus !== undefined &&
-              overviewStatus !== 'no-transcript' &&
+            }
+            if (overviewStatus && overviewStatus !== 'no-transcript') {
               saveOverviewData();
-
+            }
             snippetStatus = 'no-transcript';
             overviewStatus = 'no-transcript';
           }
 
           //---Update Start & Stop Time---
-          (snippetStartTime === undefined ||
-            snippetStartTime > entry.startTimeMs) &&
-            (snippetStartTime = entry.startTimeMs);
-          (snippetStopTime === undefined ||
-            snippetStopTime < entry.stopTimeMs) &&
-            (snippetStopTime = entry.stopTimeMs);
-          entryIndex === series.length - 1 &&
+          if (
+            snippetStartTime === undefined ||
+            snippetStartTime > entry.startTimeMs
+          ) {
+            snippetStartTime = entry.startTimeMs;
+          }
+          if (
+            snippetStopTime === undefined ||
+            snippetStopTime < entry.stopTimeMs
+          ) {
+            snippetStopTime = entry.stopTimeMs;
+          }
+          if (
+            entryIndex === series.length - 1 &&
             groupStopTime &&
-            groupStopTime > snippetStopTime &&
-            (snippetStopTime = groupStopTime);
-
-          (overviewStartTime === undefined ||
-            overviewStartTime > snippetStartTime) &&
-            (overviewStartTime = snippetStartTime);
-          (overviewStopTime === undefined ||
-            overviewStopTime < snippetStopTime) &&
-            (overviewStopTime = snippetStopTime);
+            groupStopTime > snippetStopTime
+          ) {
+            snippetStopTime = groupStopTime;
+          }
+          if (
+            overviewStartTime === undefined ||
+            overviewStartTime > snippetStartTime
+          ) {
+            overviewStartTime = snippetStartTime;
+          }
+          if (
+            overviewStopTime === undefined ||
+            overviewStopTime < snippetStopTime
+          ) {
+            overviewStopTime = snippetStopTime;
+          }
         });
 
         saveSnippetData();
@@ -236,7 +253,7 @@ export default class TranscriptContent extends Component {
   renderSnippetSegments = parsedData => {
     const {
       editMode,
-      selectedEngineId,
+      viewType,
       mediaPlayerTimeMs,
       mediaPlayerTimeIntervalMs
     } = this.props;
@@ -257,11 +274,11 @@ export default class TranscriptContent extends Component {
               key={'transcript-snippet' + segmentData.startTimeMs}
               content={segmentData}
               editMode={editMode}
+              showSegmentTime={viewType == View.TIME}
               onChange={this.handleDataChanged}
               onClick={this.handleOnClick}
               startMediaPlayHeadMs={mediaPlayerTimeMs}
               stopMediaPlayHeadMs={stopMediaPlayHeadMs}
-              selectedEngineId={selectedEngineId}
               classNames={classNames(styles.contentSegment)}
             />
           );

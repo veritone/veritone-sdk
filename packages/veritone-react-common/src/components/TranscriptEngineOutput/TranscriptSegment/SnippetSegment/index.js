@@ -24,18 +24,19 @@ export default class SnippetSegment extends Component {
     className: string,
     timeClassName: string,
     contentClassName: string,
-    sentenceMode: bool,
+    isSentenceMode: bool,
+    showSegmentTime: bool,
     editMode: bool,
     onClick: func,
     onChange: func,
-    selectedEngineId: string,
     startMediaPlayHeadMs: number,
     stopMediaPlayHeadMs: number
   };
 
   static defaultProps = {
     editMode: false,
-    sentenceMode: false,
+    isSentenceMode: false,
+    showSegmentTime: false,
     startMediaPlayHeadMs: 0,
     stopMediaPlayHeadMs: 1000
   };
@@ -56,7 +57,7 @@ export default class SnippetSegment extends Component {
     }
   };
 
-  renderTime(startTime) {
+  renderTime() {
     const { content, timeClassName } = this.props;
 
     const formatedTime = msToReadableString(content.startTimeMs, true);
@@ -72,21 +73,22 @@ export default class SnippetSegment extends Component {
       content,
       editMode,
       contentClassName,
-      selectedEngineId,
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
     } = this.props;
 
-    const contentComponents = content.fragments.map((entry, index) => {
+    const contentComponents = content.fragments.map(entry => {
       const startTime = entry.startTimeMs;
       const stopTime = entry.stopTimeMs;
+      const value = entry.value || '';
+      const fragmentKey = entry.guid
+        ? entry.guid
+        : `snippet-fragment-${startTime}-${stopTime}-${value.substr(0, 32)}`;
 
       return (
         <SnippetFragment
-          key={
-            'snippet::' + selectedEngineId + '-' + startTime + '-' + stopTime
-          }
-          value={entry.value}
+          key={fragmentKey}
+          value={value}
           active={
             !(
               stopMediaPlayHeadMs < startTime || startMediaPlayHeadMs > stopTime
@@ -141,12 +143,12 @@ export default class SnippetSegment extends Component {
   }
 
   render() {
-    const { className, sentenceMode } = this.props;
+    const { className, isSentenceMode, showSegmentTime } = this.props;
 
     return (
       <div className={classNames(styles.transcriptSegment, className)}>
-        {this.renderTime()}
-        {sentenceMode ? this.renderSentence() : this.renderFragments()}
+        {showSegmentTime && this.renderTime()}
+        {isSentenceMode ? this.renderSentence() : this.renderFragments()}
       </div>
     );
   }

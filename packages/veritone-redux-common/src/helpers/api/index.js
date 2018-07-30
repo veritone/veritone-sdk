@@ -51,7 +51,7 @@ export async function callGraphQL({
   getState
 }) {
   if (!isFunction(dispatch) || !isFunction(getState)) {
-    throw new Error('callGraphQLApi requires dispatch and getState functions')
+    throw new Error('callGraphQLApi requires dispatch and getState functions');
   }
 
   const state = getState();

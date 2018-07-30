@@ -1,9 +1,5 @@
 @import '../veritone-react-common/src/styles/modules/variables';
 
-.mdpFullScreenDialog {
-  z-index: 50;
-}
-
 .popperContent {
   z-index: 1;
 }
@@ -125,12 +121,7 @@
 
     .toEditModeButton {
       align-self: center;
-      text-transform: uppercase;
-      background-color: #2196f3;
-      color: #fff;
       height: 36px;
-      border-radius: 3px;
-      box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
       margin-right: 20px;
     }
   }
@@ -234,4 +225,8 @@
 
 .tabIndicator {
   background-color: #f9a02c !important;
+}
+
+.snackbarMessageText {
+  font-size: 14px;
 }

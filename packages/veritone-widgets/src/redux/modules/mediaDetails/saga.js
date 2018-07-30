@@ -5,37 +5,45 @@ import {
   put,
   takeEvery,
   select,
-  take
+  take,
+  takeLatest
 } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import {
   get,
   uniq,
+  union,
   isObject,
   isEmpty,
   isUndefined,
   isArray,
   every,
-  find,
-  forEach
+  forEach,
+  find
 } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import {
   getFaceEngineAssetData,
   cancelFaceEdits,
-  fetchEngineResults as fetchFaceEngineResults,
-  ADD_DETECTED_FACE
+  pendingUserEdits,
+  ADD_DETECTED_FACE,
+  REMOVE_DETECTED_FACE,
+  CANCEL_FACE_EDITS
 } from './faceEngineOutput';
 import {
   getTranscriptEditAssetData,
   reset as resetTranscript
 } from './transcriptWidget';
-const { auth: authModule, config: configModule } = modules;
+const {
+  auth: authModule,
+  config: configModule,
+  application: applicationModule,
+  engineResults: engineResultsModule
+} = modules;
 
 import callGraphQLApi from '../../../shared/callGraphQLApi';
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
-  LOAD_ENGINE_RESULTS,
-  LOAD_ENGINE_RESULTS_SUCCESS,
   LOAD_TDO,
   UPDATE_TDO,
   UPDATE_TDO_FAILURE,
@@ -53,11 +61,10 @@ import {
   SAVE_ASSET_DATA,
   CREATE_FILE_ASSET_SUCCESS,
   TOGGLE_EDIT_MODE,
+  RESTORE_ORIGINAL_ENGINE_RESULTS,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
-  loadEngineResultsRequest,
-  loadEngineResultsSuccess,
-  loadEngineResultsFailure,
+  loadTdoRequest,
   loadTdoSuccess,
   loadTdoFailure,
   updateTdoSuccess,
@@ -70,24 +77,25 @@ import {
   setEngineId,
   getTdoMetadata,
   getTdo,
-  getEngineResultRequestsByEngineId,
   toggleSaveMode,
   saveAssetDataFailure,
+  saveAssetDataSuccess,
   createFileAssetSuccess,
   createFileAssetFailure,
-  createBulkEditTranscriptAssetSuccess,
   createBulkEditTranscriptAssetFailure,
+  createBulkEditTranscriptAssetSuccess,
   isEditModeEnabled,
-  isUserGeneratedTranscriptEngineId,
-  isUserGeneratedFaceEngineId,
   toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
-  clearEngineResultsByEngineId,
-  getEngineCategories
+  setEditButtonState,
+  getSelectedEngineId,
+  restoreOriginalEngineResultsFailure,
+  restoreOriginalEngineResultsSuccess
 } from '.';
 
 import { UPDATE_EDIT_STATUS } from './transcriptWidget';
+import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
     details
@@ -108,7 +116,7 @@ const tdoInfoQueryClause = `id
       uri
     }`;
 
-const engineRunsQueryClause = `engineRuns {
+const engineRunsQueryClause = `engineRuns(limit: 1000) {
       records {
         engine {
           id
@@ -123,6 +131,7 @@ const engineRunsQueryClause = `engineRuns {
           }
         }
         status
+        hasUserEdits
       }
     }
   `;
@@ -150,27 +159,6 @@ function processEngineRuns(engineRuns) {
   const engineCategories = [];
 
   engineRuns
-    .map(engineRun => {
-      const engineId = get(engineRun, 'engine.id');
-      if (isUserGeneratedTranscriptEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '67cd4dd0-2f75-445d-a6f0-2f297d6cd182',
-          name: 'Transcription',
-          iconClass: 'icon-transcription',
-          categoryType: 'transcript',
-          editable: true
-        };
-      } else if (isUserGeneratedFaceEngineId(engineId)) {
-        engineRun.engine.category = {
-          id: '6faad6b7-0837-45f9-b161-2f6bf31b7a07',
-          name: 'Facial Detection',
-          categoryType: 'face',
-          iconClass: 'icon-face',
-          editable: true
-        };
-      }
-      return engineRun;
-    })
     // filter those that have category, category icon, and are supported categories
     .filter(
       engineRun =>
@@ -196,6 +184,7 @@ function processEngineRuns(engineRuns) {
         engineCategories.push(engineCategory);
       }
       engineRun.engine.status = engineRun.status;
+      engineRun.engine.hasUserEdits = engineRun.hasUserEdits;
       engineCategory.engines.push(engineRun.engine);
     });
 
@@ -321,17 +310,22 @@ function* refreshEngineRuns(widgetId, tdoId) {
   } else {
     throw new Error('Could not refresh engineRuns');
   }
-  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
+
+  yield* refreshSelectedEngineResultsOnStatusChange(widgetId, engineCategories);
+
   yield* finishLoadEngineCategories(widgetId, engineCategories, {
     error: false
   });
+
+  yield put(refreshEngineRunsSuccess(engineRuns, widgetId));
 }
 
-function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
-  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData){
+function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
+  const updateTdoQuery = `mutation updateTDO($tdoId: ID!, $details: JSONData, $primaryAsset: [SetPrimaryAsset!]){
       updateTDO( input: {
         id: $tdoId
         details: $details
+        primaryAsset: $primaryAsset
       })
       {
         ${tdoInfoQueryClause}
@@ -350,7 +344,8 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
       query: updateTdoQuery,
       variables: {
         tdoId,
-        details: !isEmpty(tdoDataToUpdate) ? tdoDataToUpdate : null
+        details: !isEmpty(tdoDetailsToUpdate) ? tdoDetailsToUpdate : null,
+        primaryAsset: !isEmpty(primaryAssetData) ? primaryAssetData : null
       },
       token
     });
@@ -375,66 +370,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDataToUpdate) {
   }
 
   yield put(updateTdoSuccess(widgetId, response.data.updateTDO));
-}
-
-function* loadEngineResultsSaga(
-  widgetId,
-  engineId,
-  startOffsetMs,
-  stopOffsetMs
-) {
-  const getEngineResultsQuery = `query engineResults($tdoId: ID!, $engineIds: [ID!]!, $startOffsetMs: Int, $stopOffsetMs: Int) {
-      engineResults(tdoId: $tdoId, engineIds: $engineIds, startOffsetMs: $startOffsetMs, stopOffsetMs: $stopOffsetMs) {
-        records {
-          tdoId
-          engineId
-          startOffsetMs
-          stopOffsetMs
-          jsondata
-        }
-      }
-    }`;
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-  const requestTdo = yield select(getTdo, widgetId);
-  const variables = { tdoId: requestTdo.id, engineIds: [engineId] };
-  if (startOffsetMs) {
-    variables.startOffsetMs = startOffsetMs;
-  }
-  if (stopOffsetMs) {
-    variables.stopOffsetMs = stopOffsetMs;
-  }
-  let response;
-  try {
-    response = yield call(callGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: getEngineResultsQuery,
-      variables: variables,
-      token
-    });
-  } catch (error) {
-    return yield put(
-      loadEngineResultsFailure({
-        error,
-        startOffsetMs,
-        stopOffsetMs,
-        engineId,
-        widgetId
-      })
-    );
-  }
-
-  yield put(
-    loadEngineResultsSuccess(response.data.engineResults.records, {
-      startOffsetMs,
-      stopOffsetMs,
-      engineId,
-      widgetId
-    })
-  );
+  yield call(insertIntoIndexSaga, tdoId);
 }
 
 function* loadContentTemplates(widgetId) {
@@ -677,25 +613,36 @@ function* createFileAssetSaga(
   type,
   contentType,
   sourceData,
-  fileData
+  fileData,
+  isUserEdited
 ) {
   const requestTdo = yield select(getTdo, widgetId);
-  const createAssetQuery = `mutation createAsset($tdoId: ID!, $type: String, $contentType: String, $file: UploadedFile){
+  const createAssetQuery = `mutation createAsset(
+    $tdoId: ID!,
+    $type: String,
+    $contentType: String,
+    $file: UploadedFile,
+    $sourceData: SetAssetSourceData,
+    $isUserEdited: Boolean
+  ){
     createAsset( input: {
       containerId: $tdoId,
       type: $type,
       contentType: $contentType,
-      sourceData: ${sourceData},
-      file: $file
+      sourceData: $sourceData,
+      file: $file,
+      isUserEdited: $isUserEdited
     })
     { id }
   }`;
 
   const variables = {
     tdoId: requestTdo.id,
-    type: type,
-    contentType: contentType,
-    file: fileData
+    type,
+    contentType,
+    file: fileData,
+    sourceData,
+    isUserEdited
   };
 
   const config = yield select(configModule.getConfig);
@@ -757,38 +704,19 @@ function* createFileAssetSaga(
       widgetId
     );
     yield call(refreshEngineRuns, widgetId, requestTdo.id);
-    const engineCategories = yield select(getEngineCategories, widgetId);
-    const updatedCategory = find(engineCategories, {
-      categoryType: selectedEngineCategory.categoryType
-    });
-    const userGeneratedEngine = find(updatedCategory.engines, engine => {
-      return (
-        engine.id === 'user-edited-face-engine-results' ||
-        engine.id === '7a3d86bf-331d-47e7-b55c-0434ec6fe5fd' ||
-        engine.id === 'bulk-edit-transcript' ||
-        engine.id === 'bde0b023-333d-acb0-e01a-f95c74214607'
-      );
-    });
-    let userGeneratedEngineId;
-    if (userGeneratedEngine) {
-      userGeneratedEngineId = userGeneratedEngine.id;
-    }
-    // Reset the the transcipt engine results.
-    if (selectedEngineCategory.categoryType === 'transcript') {
-      yield put(clearEngineResultsByEngineId(userGeneratedEngineId, widgetId));
-    } else if (
-      selectedEngineCategory.categoryType === 'face' &&
-      userGeneratedEngineId
-    ) {
-      yield put(
-        fetchFaceEngineResults({
-          selectedEngineId: userGeneratedEngineId,
-          tdo: requestTdo
-        })
-      );
-    }
+    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+    yield put(
+      engineResultsModule.fetchEngineResults({
+        tdo: requestTdo,
+        engineId: selectedEngineId,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(requestTdo.stopDateTime) -
+          Date.parse(requestTdo.startDateTime),
+        ignoreUserEdited: false
+      })
+    );
     yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    yield put(selectEngineCategory(widgetId, updatedCategory));
     yield put(createFileAssetSuccess(widgetId, assetId));
   }
 
@@ -811,7 +739,8 @@ function* createTranscriptBulkEditAssetSaga(
       type,
       contentType,
       sourceData,
-      text
+      text,
+      false
     );
   } catch (error) {
     return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
@@ -866,37 +795,21 @@ function* createTranscriptBulkEditAssetSaga(
       'data.temporalDataObject.primaryAsset.id'
     );
   } else {
-    const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
-      temporalDataObject(id: $tdoId) {
-        assets (limit: 1000, type: "vtn-standard", orderBy: createdDateTime) {
-          records {
-            id
-            sourceData {
-              engineId
-            }
-          }
-        }
-      }
-    }`;
-    let getVtnStandardAssetsResponse;
     try {
-      getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
-        endpoint: graphQLUrl,
-        query: getVtnStandardAssetsQuery,
-        variables: { tdoId: requestTdo.id },
-        token
-      });
+      const vtnStandardAssets = yield call(
+        fetchAssets,
+        requestTdo.id,
+        'vtn-standard'
+      );
+      const transcriptVtnAsset = vtnStandardAssets.find(
+        asset => get(asset, 'sourceData.engineId') === selectedEngineId
+      );
+      originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
     } catch (error) {
       return yield put(
         createBulkEditTranscriptAssetFailure(widgetId, { error })
       );
     }
-    const transcriptVtnAsset = get(
-      getVtnStandardAssetsResponse,
-      'data.temporalDataObject.assets.records',
-      []
-    ).find(asset => get(asset, 'sourceData.engineId') === selectedEngineId);
-    originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
   }
 
   if (!originalTranscriptAssetId) {
@@ -917,6 +830,7 @@ function* createTranscriptBulkEditAssetSaga(
         payload: {
           originalTranscriptAssetId: "${originalTranscriptAssetId}",
           temporaryBulkEditAssetId: "${bulkTextAssetId}",
+          originalEngineId: "${selectedEngineId}",
           saveTtmlToVtnStandard: true
         }
       },
@@ -928,6 +842,7 @@ function* createTranscriptBulkEditAssetSaga(
       }]
     }) {
       id
+      status
       tasks {
         records {
           id
@@ -956,8 +871,8 @@ function* createTranscriptBulkEditAssetSaga(
     );
   }
   if (
-    isEmpty(get(runBulkEditJobResponse, 'data.createJob.tasks.records')) ||
-    !get(get(runBulkEditJobResponse, 'data.createJob.tasks.records')[0], 'id')
+    get(runBulkEditJobResponse, 'data.createJob.tasks.records[0].status') ===
+    'failed'
   ) {
     return yield put(
       createBulkEditTranscriptAssetFailure(widgetId, {
@@ -966,8 +881,7 @@ function* createTranscriptBulkEditAssetSaga(
       })
     );
   }
-
-  return yield put(createBulkEditTranscriptAssetSuccess(widgetId));
+  yield put(createBulkEditTranscriptAssetSuccess(widgetId));
 }
 
 function* watchUpdateTdoContentTemplates() {
@@ -982,22 +896,6 @@ function* watchUpdateTdoContentTemplates() {
       widgetId,
       contentTemplatesToDelete,
       contentTemplatesToCreate
-    );
-  });
-}
-
-function* watchLoadEngineResultsRequest() {
-  yield takeEvery(LOAD_ENGINE_RESULTS, function*(action) {
-    const { engineId } = action.payload;
-    let { startOffsetMs, stopOffsetMs } = action.payload;
-    const { widgetId } = action.meta;
-
-    yield call(
-      loadEngineResultsSaga,
-      widgetId,
-      engineId,
-      startOffsetMs,
-      stopOffsetMs
     );
   });
 }
@@ -1108,12 +1006,170 @@ function* fetchSchemas(widgetId, schemaIds) {
   });
 }
 
+function* fetchAssets(tdoId, assetType) {
+  const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
+        temporalDataObject(id: $tdoId) {
+          assets (limit: 1000, type: "${assetType}", orderBy: createdDateTime) {
+            records {
+              id
+              isUserEdited
+              sourceData {
+                engineId
+              }
+              jsondata
+            }
+          }
+        }
+      }`;
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
+  let getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
+    endpoint: graphQLUrl,
+    query: getVtnStandardAssetsQuery,
+    variables: { tdoId: tdoId },
+    token
+  });
+  return get(
+    getVtnStandardAssetsResponse,
+    'data.temporalDataObject.assets.records',
+    []
+  );
+}
+
+function* watchRestoreOriginalEngineResults() {
+  yield takeEvery(RESTORE_ORIGINAL_ENGINE_RESULTS, function*(action) {
+    const { widgetId } = action.meta;
+    const {
+      tdo,
+      engineId,
+      engineCategoryType,
+      removeAllUserEdits
+    } = action.payload;
+
+    // these could be partial or fully retrieved data from assets
+    const fetchedAssetIdsToDelete = get(action.payload, 'engineResults', [])
+      .filter(
+        jsonData =>
+          jsonData.sourceEngineId === engineId &&
+          jsonData.userEdited &&
+          !!jsonData.assetId
+      )
+      .map(jsonData => jsonData.assetId);
+
+    // list all user edited vtn-standard assets for this tdo and engine
+    let userEditedVtnAssetIdsToDelete = [];
+    if (removeAllUserEdits) {
+      try {
+        const vtnStandardAssets = yield call(
+          fetchAssets,
+          tdo.id,
+          'vtn-standard'
+        );
+        userEditedVtnAssetIdsToDelete = vtnStandardAssets
+          .filter(
+            asset =>
+              asset.isUserEdited &&
+              get(asset, 'sourceData.engineId') === engineId
+          )
+          .map(asset => asset.id);
+      } catch (error) {
+        return yield put(
+          restoreOriginalEngineResultsFailure(widgetId, { error })
+        );
+      }
+    }
+
+    // handle ttml assets if restoring transcript edit - delete manually edited and set new primary
+    let ttmlUserEditedAssetIdsToDelete = [];
+    if (engineCategoryType === 'transcript') {
+      const ttmlTranscriptAssets = yield call(
+        fetchAssets,
+        tdo.id,
+        'transcript'
+      );
+      let userEditedTtmlAssets = [];
+      if (removeAllUserEdits) {
+        userEditedTtmlAssets = ttmlTranscriptAssets.filter(
+          asset => get(asset, 'jsondata.source') === 'manual'
+        );
+      } else {
+        userEditedTtmlAssets = ttmlTranscriptAssets.filter(asset =>
+          fetchedAssetIdsToDelete.includes(asset.id)
+        );
+      }
+      if (userEditedTtmlAssets.length) {
+        ttmlUserEditedAssetIdsToDelete = userEditedTtmlAssets.map(
+          asset => asset.id
+        );
+        // the new primary ttml asset should be the most recent non user-edited asset
+        const newPrimaryTtmlAsset = ttmlTranscriptAssets.find(
+          asset => get(asset, 'jsondata.source') !== 'manual'
+        );
+        if (newPrimaryTtmlAsset) {
+          yield call(updateTdoSaga, widgetId, tdo.id, null, {
+            id: newPrimaryTtmlAsset.id,
+            assetType: 'transcript'
+          });
+        } else {
+          yield put(
+            restoreOriginalEngineResultsFailure(widgetId, {
+              error:
+                'Cannot delete user edited ttml asset. No primary asset found to set.'
+            })
+          );
+        }
+      }
+    }
+
+    const assetsToDelete = union(
+      fetchedAssetIdsToDelete,
+      userEditedVtnAssetIdsToDelete,
+      ttmlUserEditedAssetIdsToDelete
+    );
+    if (!assetsToDelete.length) {
+      return;
+    }
+
+    const deleteAssetsResponse = yield call(deleteAssetsSaga, assetsToDelete);
+    if (deleteAssetsResponse.errors) {
+      // report errors and continue refetching engine results and runs
+      yield put(
+        restoreOriginalEngineResultsFailure(widgetId, {
+          error:
+            'Errors deleting user edited engine results for selected engine'
+        })
+      );
+    }
+
+    yield call(refreshEngineRuns, widgetId, tdo.id);
+
+    yield put(
+      engineResultsModule.fetchEngineResults({
+        tdo,
+        engineId,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+      })
+    );
+
+    yield call(insertIntoIndexSaga, tdo.id);
+    yield put(restoreOriginalEngineResultsSuccess(widgetId));
+  });
+}
+
 function* watchLoadEngineResultsComplete() {
-  yield takeEvery(LOAD_ENGINE_RESULTS_SUCCESS, function*(action) {
+  yield takeEvery(engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS, function*(
+    action
+  ) {
     let entityIds = [],
       schemaIds = [];
-    action.payload.forEach(jsonData => {
-      jsonData.jsondata.series.forEach(s => {
+    get(action, 'payload.engineResults.records', []).forEach(record => {
+      get(record, 'jsondata.series', []).forEach(s => {
         let entityId = get(s, 'object.entityId');
         if (entityId) {
           entityIds.push(entityId);
@@ -1308,12 +1364,16 @@ function* watchSetEngineId() {
   yield takeEvery(SET_SELECTED_ENGINE_ID, function*(action) {
     const selectedEngineId = action.payload;
     const { widgetId } = action.meta;
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
 
-    if (!selectedEngineId) {
+    // Ignore face engine results because the FaceEngineOutput handles it's own fetching
+    if (!selectedEngineId || selectedEngineCategory.categoryType === 'face') {
       return;
     }
 
-    // TODO: Currently fetching the entire tdo assets. Will eventually use mediaplayer time etc to fetch the required data
     const currentTdo = yield select(getTdo, widgetId);
     const startOfTdo = new Date(currentTdo.startDateTime).getTime();
     const endOfTdo = new Date(currentTdo.stopDateTime).getTime();
@@ -1325,43 +1385,18 @@ function* watchSetEngineId() {
       stopOffsetMs = endOfTdo - startOfTdo;
     }
 
-    let engineResultRequests = yield select(
-      getEngineResultRequestsByEngineId,
-      widgetId,
-      selectedEngineId
-    );
-    let resultsInTimeBounds = engineResultRequests.filter(result => {
-      return (
-        (result.startOffsetMs >= startOffsetMs &&
-          result.startOffsetMs <= stopOffsetMs) ||
-        (result.startOffsetMs >= startOffsetMs &&
-          result.startOffsetMs <= stopOffsetMs)
-      );
-    });
-
-    // TODO: Optimize this to get all gaps not just the first
-    if (resultsInTimeBounds.length === 1) {
-      if (resultsInTimeBounds[0].startOffsetMs > startOffsetMs) {
-        stopOffsetMs = resultsInTimeBounds[0].startOffsetMs - 1;
-      } else {
-        startOffsetMs = resultsInTimeBounds[0].stopOffsetMs + 1;
-      }
-    } else if (resultsInTimeBounds.length > 1) {
-      startOffsetMs = resultsInTimeBounds[0].stopOffsetMs + 1;
-      stopOffsetMs = resultsInTimeBounds[1].startOffsetMs - 1;
-    }
-
     if (startOffsetMs > stopOffsetMs) {
       return;
     }
 
     yield put(
-      loadEngineResultsRequest(
-        widgetId,
-        selectedEngineId,
+      engineResultsModule.fetchEngineResults({
+        tdo: currentTdo,
+        engineId: selectedEngineId,
         startOffsetMs,
-        stopOffsetMs
-      )
+        stopOffsetMs,
+        ignoreUserEdited: false
+      })
     );
   });
 }
@@ -1382,12 +1417,18 @@ function* watchTranscriptStatus() {
   });
 }
 
-function* watchFaceEngineEntityUpdate() {
-  yield takeEvery(action => action.type === ADD_DETECTED_FACE, function*(
-    action
-  ) {
-    yield put(toggleSaveMode(true));
-  });
+function* watchFaceEngineEntityUpdate(widgetId) {
+  yield takeEvery(
+    [ADD_DETECTED_FACE, REMOVE_DETECTED_FACE, CANCEL_FACE_EDITS],
+    function*(action) {
+      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+      const hasPendingFaceEdits = yield select(
+        pendingUserEdits,
+        selectedEngineId
+      );
+      yield put(toggleSaveMode(hasPendingFaceEdits));
+    }
+  );
 }
 
 // Remove AWS prefixed params, keep the rest.
@@ -1418,11 +1459,11 @@ function* watchSaveAssetData() {
         getTranscriptEditAssetData,
         action.payload.selectedEngineId
       );
-      if (assetData.isBulkEdit) {
+      if (assetData.text) {
         const contentType = 'text/plain';
-        const type = 'v-bulk-edit-transcript';
-        const sourceData = '{}';
+        const type = 'bulk-edit-transcript';
         const { widgetId } = action.meta;
+        const sourceData = {};
         // do save bulk transcript asset and return
         return yield call(
           createTranscriptBulkEditAssetSaga,
@@ -1434,7 +1475,6 @@ function* watchSaveAssetData() {
           action.payload.selectedEngineId
         );
       }
-      delete assetData.isBulkEdit;
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
       assetData = yield select(
         getFaceEngineAssetData,
@@ -1448,39 +1488,57 @@ function* watchSaveAssetData() {
         })
       );
     }
-    if (!assetData.sourceEngineId) {
-      return yield put(
-        saveAssetDataFailure(action.meta.widgetId, {
-          error: 'Source engine id must be set on the engine result'
-        })
-      );
-    }
-    if (get(assetData, 'series.length')) {
-      forEach(assetData.series, asset => {
-        if (get(asset, 'object.uri')) {
-          asset.object.uri = removeAwsSignatureParams(get(asset, 'object.uri'));
-        }
-      });
-    }
-    // process vtn-standard asset
-    const contentType = 'application/json';
-    const type = 'vtn-standard';
-    const sourceData = `{ name: "${assetData.sourceEngineName}", engineId: "${
-      assetData.sourceEngineId
-    }" }`;
     const { widgetId } = action.meta;
-    yield call(
-      createFileAssetSaga,
-      widgetId,
-      type,
-      contentType,
-      sourceData,
-      assetData
-    );
+    const createAssetCalls = [];
+    forEach(assetData, jsonData => {
+      if (get(jsonData, 'series.length')) {
+        forEach(jsonData.series, asset => {
+          if (get(asset, 'object.uri')) {
+            asset.object.uri = removeAwsSignatureParams(
+              get(asset, 'object.uri')
+            );
+          }
+          delete asset.guid;
+        });
+      }
+      // process vtn-standard asset
+      const contentType = 'application/json';
+      const type = 'vtn-standard';
+      const sourceData = {
+        name: jsonData.sourceEngineName,
+        engineId: jsonData.sourceEngineId,
+        assetId: jsonData.assetId,
+        taskId: jsonData.taskId
+      };
+      createAssetCalls.push(
+        call(
+          createFileAssetSaga,
+          widgetId,
+          type,
+          contentType,
+          sourceData,
+          jsonData,
+          true
+        )
+      );
+    });
+    yield all(createAssetCalls);
+    yield put(saveAssetDataSuccess(widgetId));
   });
 }
 
 function* watchCreateFileAssetSuccess() {
+  yield takeEvery(
+    action => action.type === CREATE_FILE_ASSET_SUCCESS,
+    function* insertIntoIndex(action) {
+      const { widgetId } = action.meta;
+      const tdo = yield select(getTdo, widgetId);
+      return yield call(insertIntoIndexSaga, tdo.id);
+    }
+  );
+}
+
+function* insertIntoIndexSaga(tdoId) {
   const createJobQuery = `mutation createJob($tdoId: ID!) {
     createJob(input: {
       targetId: $tdoId,
@@ -1498,40 +1556,33 @@ function* watchCreateFileAssetSuccess() {
     }
   }`;
 
-  yield takeEvery(
-    action => action.type === CREATE_FILE_ASSET_SUCCESS,
-    function* insertIntoIndex(action) {
-      const { widgetId } = action.meta;
-      const config = yield select(configModule.getConfig);
-      const { apiRoot, graphQLEndpoint } = config;
-      const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-      const sessionToken = yield select(authModule.selectSessionToken);
-      const oauthToken = yield select(authModule.selectOAuthToken);
-      const token = sessionToken || oauthToken;
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
+  const token = sessionToken || oauthToken;
 
-      try {
-        const tdo = yield select(getTdo, widgetId);
-        const response = yield call(callGraphQLApi, {
-          endpoint: graphQLUrl,
-          query: createJobQuery,
-          variables: { tdoId: tdo.id },
-          token
-        });
+  try {
+    const response = yield call(callGraphQLApi, {
+      endpoint: graphQLUrl,
+      query: createJobQuery,
+      variables: { tdoId: tdoId },
+      token
+    });
 
-        if (!get(response, 'data.createJob.id')) {
-          throw new Error('Failed to create insert-into-index task.');
-        }
-        if (
-          isEmpty(get(response, 'data.createJob.tasks.records')) ||
-          !get(response, 'data.createJob.tasks.records[0].id')
-        ) {
-          throw new Error('Failed to create insert-into-index task.');
-        }
-      } catch (error) {
-        // return yield put(insertIntoIndexFailure(widgetId, { error }));
-      }
+    if (!get(response, 'data.createJob.id')) {
+      throw new Error('Failed to create insert-into-index task.');
     }
-  );
+    if (
+      isEmpty(get(response, 'data.createJob.tasks.records')) ||
+      !get(response, 'data.createJob.tasks.records[0].id')
+    ) {
+      throw new Error('Failed to create insert-into-index task.');
+    }
+  } catch (error) {
+    // return yield put(insertIntoIndexFailure(widgetId, { error }));
+  }
 }
 
 function* watchCancelEdit() {
@@ -1555,9 +1606,101 @@ function* watchCancelEdit() {
   });
 }
 
-export default function* root() {
+function* watchLatestFetchEngineResultsStart(widgetId) {
+  yield takeLatest([engineResultsModule.FETCH_ENGINE_RESULTS], function*() {
+    yield put(setEditButtonState(widgetId, true));
+  });
+}
+
+function* watchLatestFetchEngineResultsEnd(widgetId) {
+  yield takeLatest(
+    [
+      engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS,
+      engineResultsModule.FETCH_ENGINE_RESULTS_FAILURE
+    ],
+    function*() {
+      yield put(setEditButtonState(widgetId, false));
+    }
+  );
+}
+
+function* refreshSelectedEngineResultsOnStatusChange(
+  widgetId,
+  engineCategoriesNewValue
+) {
+  const requestTdo = yield select(getTdo, widgetId);
+  const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+  const selectedEngineCategoryOldValue = yield select(
+    getSelectedEngineCategory,
+    widgetId
+  );
+  const selectedEngineCategoryNewValue = find(engineCategoriesNewValue, {
+    id: selectedEngineCategoryOldValue.id
+  });
+  const selectedEngineOldValue = find(
+    get(selectedEngineCategoryOldValue, 'engines', []),
+    {
+      id: selectedEngineId
+    }
+  );
+  const selectedEngineNewValue = find(
+    get(selectedEngineCategoryNewValue, 'engines', []),
+    {
+      id: selectedEngineId
+    }
+  );
+  const engineMode = get(selectedEngineNewValue, 'mode');
+  const engineStatusOldValue = get(selectedEngineOldValue, 'status');
+  const engineStatusNewValue = get(selectedEngineNewValue, 'status');
+  const isRealTimeEngine =
+    engineMode &&
+    (engineMode.toLowerCase() === 'stream' ||
+      engineMode.toLowerCase() === 'chunk');
+  const isRealTimeStillRunning =
+    isRealTimeEngine && engineStatusNewValue === 'running';
+  const isRealTimeFinishedRunning =
+    isRealTimeEngine &&
+    engineStatusOldValue === 'running' &&
+    engineStatusNewValue !== 'running';
+  const wentToCompletedStatus =
+    engineStatusOldValue &&
+    engineStatusOldValue !== 'complete' &&
+    engineStatusNewValue === 'complete';
+  if (
+    isRealTimeStillRunning ||
+    isRealTimeFinishedRunning ||
+    wentToCompletedStatus
+  ) {
+    engineResultsModule.fetchEngineResults({
+      tdo: requestTdo,
+      engineId: selectedEngineId
+    });
+  }
+}
+
+function* watchToStartRefreshEngineRunsWithTimeout(
+  widgetId,
+  refreshIntervalMs
+) {
+  yield takeLatest(
+    [LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS],
+    function*() {
+      if (refreshIntervalMs > 0) {
+        const requestTdo = yield select(getTdo, widgetId);
+        yield delay(refreshIntervalMs);
+        yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      }
+    }
+  );
+}
+
+function* onMount(id, mediaId) {
+  yield put(loadTdoRequest(id, mediaId));
+  yield put(applicationModule.fetchApplications());
+}
+
+export default function* root({ id, mediaId, refreshIntervalMs }) {
   yield all([
-    fork(watchLoadEngineResultsRequest),
     fork(watchLoadEngineResultsComplete),
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
@@ -1566,9 +1709,14 @@ export default function* root() {
     fork(watchLoadContentTemplates),
     fork(watchUpdateTdoContentTemplates),
     fork(watchTranscriptStatus),
-    fork(watchFaceEngineEntityUpdate),
+    fork(watchFaceEngineEntityUpdate, id),
     fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
-    fork(watchCancelEdit)
+    fork(watchCancelEdit),
+    fork(watchLatestFetchEngineResultsStart, id),
+    fork(watchLatestFetchEngineResultsEnd, id),
+    fork(watchRestoreOriginalEngineResults),
+    fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
+    fork(onMount, id, mediaId)
   ]);
 }

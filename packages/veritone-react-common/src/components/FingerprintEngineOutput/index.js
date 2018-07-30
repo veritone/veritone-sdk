@@ -92,7 +92,9 @@ export default class FingerprintEngineOutput extends Component {
     const { data, entities } = this.props;
 
     const entitiesMap = keyBy(cloneDeep(entities), 'id'); // deep copy entities to avoid changing original
-    const libraries = entities.filter(entity => entity.library && entity.library.id).map(entity => entity.library);
+    const libraries = entities
+      .filter(entity => entity.library && entity.library.id)
+      .map(entity => entity.library);
     const librariesMap = keyBy(libraries, 'id');
 
     sortBy(data, 'startTimeMs', 'endTimeMs');

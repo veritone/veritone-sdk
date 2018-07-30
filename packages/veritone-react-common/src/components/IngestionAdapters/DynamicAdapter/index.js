@@ -46,7 +46,7 @@ class DynamicAdapter extends React.Component {
       isNextPageLoading: false,
       items: []
     }
-  }
+  };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
@@ -92,7 +92,11 @@ class DynamicAdapter extends React.Component {
     const newState = {
       clusterId: selectedCluster.id,
       _cluster: {
-        ...pick(this.state._cluster, ['hasNextPage', 'isNextPageLoading', 'items']),
+        ...pick(this.state._cluster, [
+          'hasNextPage',
+          'isNextPageLoading',
+          'items'
+        ]),
         selectedCluster
       }
     };
@@ -107,12 +111,14 @@ class DynamicAdapter extends React.Component {
   };
 
   loadMoreClusters = ({startIndex, stopIndex}) => {
-    this.setState({
-      _cluster: {
-        isNextPageLoading: true,
-        hasNextPage: false,
-        items: this.state._cluster.items
-      }
+    this.setState(prevState => {
+      return Object.assign({}, prevState, {
+        _cluster: {
+          isNextPageLoading: true,
+          hasNextPage: false,
+          items: prevState._cluster.items
+        }
+      });
     });
     return this.props.loadNextClusters({startIndex, stopIndex}).then(nextPage => {
       const newState = {
@@ -180,9 +186,7 @@ class DynamicAdapter extends React.Component {
                     border
                   />
                 </div>
-              ) : (
-                ''
-              )}
+              ) : null}
               <div>
                 <div className={styles.adapterHeader}>
                   {this.props.adapterConfig.name}
@@ -219,7 +223,7 @@ class DynamicAdapter extends React.Component {
 }
 
 function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
-  return (fields)
+  return fields
     .map(field => {
       const inputId = field.name + 'DynamicField';
       const camelCasedFieldName = startCase(toLower(field.name));
@@ -301,7 +305,7 @@ export default {
       setName: true
     }
   },
-  validate: adapterStep => (configuration) => {
+  validate: adapterStep => configuration => {
     let errors = [];
     if (get(adapterStep, 'supportedSourceTypes.length')) {
       if (!get(configuration, '_source.selectedSource')) {
@@ -337,7 +341,10 @@ export default {
     let ingestionTask = hydrateData.ingestionTask;
     if (ingestionTask) {
       configuration.sourceId = get(ingestionTask, 'payload.sourceId');
-      configuration.clusterId = get(hydrateData, 'allJobTemplates.records[0].clusterId');
+      configuration.clusterId = get(
+        hydrateData,
+        'allJobTemplates.records[0].clusterId'
+      );
       let fields = get(adapterStep, 'fields');
       if (fields) {
         fields.forEach(field => {

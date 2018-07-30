@@ -148,7 +148,7 @@ storiesOf('Transcript Engine Output', module)
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={action('engine changed')}
-          onExpandClicked={action('expand view clicked')}
+          onExpandClick={action('expand view clicked')}
         />
       </div>
     );

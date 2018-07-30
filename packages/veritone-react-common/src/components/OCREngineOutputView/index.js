@@ -78,9 +78,6 @@ class OCREngineOutputView extends Component {
                     dataObject.taskId
                   }`}
                 >
-                  {dataObject.status === 'FETCHING' && (
-                    <div>Display a progress</div>
-                  )}
                   {!isEmpty(dataObject.series) &&
                     dataObject.series.map(ocrObject => {
                       return (

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { any, bool, string, func, oneOfType} from 'prop-types';
+import { any, bool, string, func, oneOfType } from 'prop-types';
 
 import { omit } from 'lodash';
 
@@ -21,14 +21,14 @@ export default class AlertDialog extends Component {
     open: bool,
     title: string,
     content: string,
-    fullScreen:bool,
+    fullScreen: bool,
     cancelButtonLabel: string,
     approveButtonLabel: string,
     onCancel: func,
     onApprove: func.isRequired,
     cancelValue: oneOfType([any]),
     approveValue: oneOfType([any])
-  }
+  };
 
   static defaultProps = {
     open: false,
@@ -39,19 +39,26 @@ export default class AlertDialog extends Component {
     approveValue: 'approve',
     cancelButtonLabel: 'Cancel',
     approveButtonLabel: 'Continue'
-  }
+  };
 
-  handleCancel = (event) => {
+  handleCancel = event => {
     this.props.onCancel(this.props.cancelValue);
-  }
+  };
 
-  handleApprove = (event) => {
+  handleApprove = event => {
     this.props.onApprove(this.props.approveValue);
-  }
+  };
 
-  render () {
-    const { open, title, content, onCancel, cancelButtonLabel, approveButtonLabel } = this.props;
-    const forwardingProps = {...this.props};
+  render() {
+    const {
+      open,
+      title,
+      content,
+      onCancel,
+      cancelButtonLabel,
+      approveButtonLabel
+    } = this.props;
+    const forwardingProps = { ...this.props };
     const omittedProps = [
       'onCancel',
       'onApprove',
@@ -68,27 +75,19 @@ export default class AlertDialog extends Component {
         aria-labelledby={labelId}
         aria-describedby={descriptionId}
       >
-        {
-          title &&
-          (<DialogTitle id={labelId}>{title}</DialogTitle>)
-        }
-        {
-          content && 
-          (<DialogContent>
-            <DialogContentText id={descriptionId}>
-              {content}
-            </DialogContentText>
-          </DialogContent>)
-        }
+        {title && <DialogTitle id={labelId}>{title}</DialogTitle>}
+        {content && (
+          <DialogContent>
+            <DialogContentText id={descriptionId}>{content}</DialogContentText>
+          </DialogContent>
+        )}
         <DialogActions>
-          {
-            onCancel && (
-              <Button onClick={this.handleCancel} color='primary'>
-                {cancelButtonLabel}
-              </Button>
-            )
-          }
-          <Button onClick={this.handleApprove} color='primary' autoFocus>
+          {onCancel && (
+            <Button onClick={this.handleCancel} color="primary">
+              {cancelButtonLabel}
+            </Button>
+          )}
+          <Button onClick={this.handleApprove} color="primary" autoFocus>
             {approveButtonLabel}
           </Button>
         </DialogActions>

@@ -79,9 +79,7 @@ export default class FingerprintLibrary extends Component {
             data={entityData}
             onClick={onClick}
             highlight={active}
-            key={`finger-print-entity-${entityData.id}-${
-              entityData.name
-            }`}
+            key={`finger-print-entity-${entityData.id}-${entityData.name}`}
           />
         );
       });

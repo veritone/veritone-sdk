@@ -8,58 +8,20 @@ import {
   select
 } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
-import { get, isUndefined, isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { modules } from 'veritone-redux-common';
 import * as faceEngineOutput from '.';
 import * as gqlQuery from './queries';
 
 import callGraphQLApi from '../../../../shared/callGraphQLApi';
 
-const { auth: authModule, config: configModule } = modules;
+const {
+  auth: authModule,
+  config: configModule,
+  engineResults: engineResultsModule
+} = modules;
 
 /* WATCH FUNCTIONS */
-function* loadEngineResults(tdo, engineId, startOffsetMs, stopOffsetMs) {
-  const config = yield select(configModule.getConfig);
-  const token = yield select(authModule.selectSessionToken);
-
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const variables = {
-    tdoId: tdo.id,
-    engineIds: [engineId]
-  };
-
-  const meta = {
-    engineId,
-    startOffsetMs,
-    stopOffsetMs
-  };
-
-  if (!isUndefined(startOffsetMs)) {
-    variables.startOffsetMs = startOffsetMs;
-  }
-  if (!isUndefined(stopOffsetMs)) {
-    variables.stopOffsetMs = stopOffsetMs;
-  }
-
-  try {
-    yield put(faceEngineOutput.fetchingEngineResults(meta));
-
-    const response = yield call(callGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: gqlQuery.getEngineResultsQuery,
-      variables: variables,
-      token
-    });
-
-    yield put(faceEngineOutput.fetchEngineResultsSuccess(response, meta));
-  } catch (error) {
-    yield put(faceEngineOutput.fetchEngineResultsFailure(error, meta));
-  } finally {
-    yield put(faceEngineOutput.doneFetchingEngineResults(meta));
-  }
-}
-
 function* fetchEntities(entityIds) {
   const entityQueries = gqlQuery.getEntities(entityIds);
   const config = yield select(configModule.getConfig);
@@ -173,12 +135,15 @@ function* searchForEntities(action) {
 }
 
 function* onMount(tdo, selectedEngineId) {
-  yield call(
-    loadEngineResults,
-    tdo,
-    selectedEngineId,
-    0,
-    Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
+  yield put(
+    engineResultsModule.fetchEngineResults({
+      tdo: tdo,
+      engineId: selectedEngineId,
+      startOffsetMs: 0,
+      stopOffsetMs:
+        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+      ignoreUserEdited: false
+    })
   );
 }
 
@@ -186,11 +151,10 @@ function* onMount(tdo, selectedEngineId) {
 
 function* watchFetchEngineResultsSuccess() {
   yield takeEvery(
-    action => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS_SUCCESS,
+    action => action.type === engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS,
     function*(action) {
       if (!action.payload.errors) {
-        // const entityIds = {};
-        const engineResults = get(action.payload.data, 'engineResults.records');
+        const engineResults = get(action.payload, 'engineResults.records');
 
         if (engineResults && engineResults.length) {
           const entityIds = engineResults.reduce((result, engineResult) => {
@@ -235,29 +199,12 @@ function* watchSearchEntities() {
   );
 }
 
-function* watchFetchEngineResults() {
-  yield takeEvery(
-    action => action.type === faceEngineOutput.FETCH_ENGINE_RESULTS,
-    function*(action) {
-      const { tdo, selectedEngineId } = action.meta;
-      yield call(
-        loadEngineResults,
-        tdo,
-        selectedEngineId,
-        0,
-        Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime)
-      );
-    }
-  );
-}
-
 export default function* root({ tdo, selectedEngineId }) {
   yield all([
-    fork(onMount, tdo, selectedEngineId),
-    fork(watchFetchEngineResults),
     fork(watchFetchEngineResultsSuccess),
     fork(watchFetchLibraries),
     fork(watchCreateEntity),
-    fork(watchSearchEntities)
+    fork(watchSearchEntities),
+    fork(onMount, tdo, selectedEngineId)
   ]);
 }
