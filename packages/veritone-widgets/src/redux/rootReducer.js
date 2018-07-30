@@ -13,6 +13,10 @@ import notificationsReducer, {
   namespace as notificationsNamespace
 } from './modules/notifications';
 
+import engineOutputExportReducer, {
+  namespace as engineOutputExportNamespace
+} from './modules/engineOutputExport';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -27,6 +31,7 @@ export default function createReducer(asyncReducers) {
     [filePickerNamespace]: filePickerReducer,
     [engineSelectionNamespace]: engineSelectionReducer,
     [notificationsNamespace]: notificationsReducer,
+    [engineOutputExportNamespace]: engineOutputExportReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
