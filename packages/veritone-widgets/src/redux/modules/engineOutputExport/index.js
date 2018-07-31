@@ -14,6 +14,8 @@ export const TOGGLE_CONFIG_EXPAND = `vtn/${namespace}/TOGGLE_CONFIG_EXPAND`;
 
 export const UPDATE_SELECTED_FILE_TYPES = `vtn/${namespace}/UPDATE_SELECTED_FILE_TYPES`;
 
+export const APPLY_SUBTITLE_OPTIONS = `vtn/${namespace}/APPLY_SUBTITLE_OPTIONS`;
+
 // TODO: convert this to an api call or get it from the user org. (need to clarify this)
 const fakeOrgSetting = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
@@ -126,6 +128,25 @@ export default createReducer(defaultState, {
         return config;
       })
     };
+  },
+  [APPLY_SUBTITLE_OPTIONS](state, action) {
+    return {
+      ...state,
+      outputConfigurations: state.outputConfigurations.map(config => {
+        if(config.categoryId === action.categoryId) {
+          return {
+            ...config,
+            formats: config.formats.map(format => {
+              return {
+                ...format,
+                options: { ...action.values }
+              }
+            })
+          }
+        }
+        return config;
+      })
+    }
   }
 });
 
@@ -192,3 +213,11 @@ export const selectFileType = (selectedFileTypes, categoryId, engineId, applyAll
     applyAll
   };
 };
+
+export const applySubtitleConfigs = (categoryId, values) => {
+  return {
+    type: APPLY_SUBTITLE_OPTIONS,
+    categoryId,
+    values
+  }
+}

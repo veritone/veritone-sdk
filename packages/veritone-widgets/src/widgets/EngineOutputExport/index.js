@@ -73,6 +73,10 @@ export default class EngineOutputExport extends Component {
     toggleConfigExpand: func
   };
 
+  static defaultProps = {
+    enableBulkExport: false
+  };
+
   static state = {
     bulkExportEnabled: false
   };

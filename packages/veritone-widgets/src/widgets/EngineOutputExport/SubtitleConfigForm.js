@@ -24,7 +24,8 @@ const SubtitleConfigForm = reduxForm({
           label="Max Characters per Caption Line"
           style={{ width: 195 }}
           component={formComponents.TextField}
-          normalize={parseInt}
+          // eslint-disable-next-line
+          normalize={value => parseInt(value)}
           InputLabelProps={{
             classes: {
               root: styles.subtitleFieldLabel,

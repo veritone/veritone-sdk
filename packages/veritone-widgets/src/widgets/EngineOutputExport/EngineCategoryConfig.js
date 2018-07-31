@@ -31,7 +31,9 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId)
   }),
-  {},
+  {
+    applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs
+  },
   null,
   { withRef: true }
 )
@@ -58,6 +60,7 @@ export default class EngineCategoryConfig extends Component {
         )
       })
     ).isRequired,
+    applySubtitleConfigs: func,
     expanded: bool,
     onExpandConfigs: func,
     bulkExportEnabled: bool
@@ -74,6 +77,13 @@ export default class EngineCategoryConfig extends Component {
   };
 
   handleCloseDialog = () => {
+    this.setState({
+      dialogOpen: false
+    })
+  };
+
+  handleFormSubmit = values => {
+    this.props.applySubtitleConfigs(this.props.category.id, values);
     this.setState({
       dialogOpen: false
     })
@@ -168,6 +178,7 @@ export default class EngineCategoryConfig extends Component {
                 'maxLinesPerCaptionLine': 32,
                 'newLineOnPunctuation': false
               }}
+              onSubmit={this.handleFormSubmit}
             />
           </DialogContent>
         </Dialog>
