@@ -3,45 +3,66 @@ import { oneOfType, func, node, objectOf, object, any } from 'prop-types';
 import {
   MuiThemeProvider,
   createMuiTheme,
+  withTheme,
   jssPreset
 } from '@material-ui/core/styles';
 import { create } from 'jss';
 import JssProvider from 'react-jss/lib/JssProvider';
+import blue from '@material-ui/core/colors/blue';
 
 import { guid } from './guid';
 
-export class VSDKStyleWrapper extends React.PureComponent {
-  static propTypes = {
-    theme: objectOf(any),
-    children: node
-  };
-
-  constructor() {
-    super();
-    this._style = `vsdk-${guid()}`;
-    this._jss = create(jssPreset());
+export const defaultVSDKTheme = {
+  palette: {
+    primary: {
+      light: blue[300],
+      main: blue[500],
+      dark: blue[700]
+    }
+  },
+  typography: {
+    button: {
+      fontWeight: 400
+    }
   }
+};
 
-  render() {
-    const mergedTheme = this.props.theme
-      ? createMuiTheme({
-          ...this.props.theme
-        })
-      : createMuiTheme();
+const VSDKStyleWrapper = withTheme()(
+  class VSDKStyleWrapperWithoutTheme extends React.Component {
+    static propTypes = {
+      theme: objectOf(any),
+      customTheme: objectOf(any),
+      children: node
+    };
 
-    return (
-      <JssProvider jss={this._jss} classNamePrefix={this._style}>
-        <MuiThemeProvider theme={mergedTheme}>
-          {this.props.children}
-        </MuiThemeProvider>
-      </JssProvider>
-    );
+    constructor() {
+      super();
+      this._style = `vsdk-${guid()}`;
+      this._jss = create(jssPreset());
+    }
+
+    render() {
+      const mergedTheme = createMuiTheme({
+        ...this.props.theme,
+        ...this.props.customTheme
+      });
+
+      return (
+        <JssProvider jss={this._jss} classNamePrefix={this._style}>
+          <MuiThemeProvider theme={mergedTheme}>
+            {this.props.children}
+          </MuiThemeProvider>
+        </JssProvider>
+      );
+    }
   }
-}
+);
+
+export { VSDKStyleWrapper };
 
 export function withMuiThemeProvider(theme) {
   return function decorator(Class) {
-    class WrappedWithMuiThemeProvider extends React.PureComponent {
+    class WrappedWithMuiThemeProvider extends React.Component {
       static propTypes = {
         forwardedRef: oneOfType([func, object])
       };
@@ -49,7 +70,7 @@ export function withMuiThemeProvider(theme) {
       render() {
         const { forwardedRef, ...rest } = this.props;
         return (
-          <VSDKStyleWrapper theme={theme}>
+          <VSDKStyleWrapper customTheme={theme}>
             <Class ref={forwardedRef} {...rest} />
           </VSDKStyleWrapper>
         );
