@@ -33,7 +33,6 @@ class DynamicAdapter extends React.Component {
     configuration: objectOf(any).isRequired,
     adapterConfig: objectOf(any).isRequired,
     openCreateSource: func.isRequired,
-    closeCreateSource: func.isRequired,
     loadNextSources: func.isRequired,
     loadNextClusters: func.isRequired,
     pageSize: number

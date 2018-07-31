@@ -215,10 +215,11 @@ const ItemSelector = ({
         {
           isArray(customTriggers) ?
           customTriggers.map((customTrigger, index) => {
+            const customKey = customTrigger.label.split(' ').join('');
             return (
               <MenuItem
                 className={styles.customTriggerItem}
-                key={'custom-trigger-' + index}
+                key={'custom-trigger-' + customKey}
                 value={null}
                 onClick={customTrigger.trigger}
               >
@@ -247,5 +248,9 @@ ItemSelector.propTypes = {
   rowCount: number,
   loadMoreRows: func,
   isRowLoaded: func,
-  rowRenderer: func
+  rowRenderer: func,
+  customTriggers: arrayOf(shape({
+    label: string.isRequired,
+    trigger: func.isRequired
+  }))
 };
