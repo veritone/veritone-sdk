@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { boolean } from '@storybook/addon-knobs';
 
 import BaseStory from '../../shared/BaseStory';
 import EngineOutputExport from './index';
@@ -22,7 +23,7 @@ class Story extends React.Component {
     return (
       <EngineOutputExport
         tdos={tdoData}
-        enableBulkExport
+        enableBulkExport={boolean('enableBulkExport', false)}
         onCancel={action('Cancel Export and Download')}
         onExport={action('Export')}
       />

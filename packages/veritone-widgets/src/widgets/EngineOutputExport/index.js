@@ -54,6 +54,7 @@ export default class EngineOutputExport extends Component {
         stopOffsetMs: number
       })
     ).isRequired,
+    enableBulkExport: bool,
     outputConfigsByCategoryId: objectOf(
       arrayOf(
         shape({
@@ -71,6 +72,16 @@ export default class EngineOutputExport extends Component {
     fetchingEngineRuns: bool,
     toggleConfigExpand: func
   };
+
+  static state = {
+    bulkExportEnabled: false
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    return {
+      bulkExportEnabled: props.enableBulkExport
+    };
+  }
 
   componentDidMount() {
     this.props.fetchEngineRuns(this.props.tdos);
@@ -90,6 +101,7 @@ export default class EngineOutputExport extends Component {
       toggleConfigExpand,
       fetchingEngineRuns
     } = this.props;
+    const { bulkExportEnabled } = this.state;
 
     return (
       <FullScreenDialog open>
@@ -101,7 +113,7 @@ export default class EngineOutputExport extends Component {
         >
           <Grid item className={styles.engineOutputExportHeader} container>
             <Grid item xs={11}>
-              <div className={styles.title}>Export and Download</div>
+              <div className={styles.title}>{`${bulkExportEnabled && "Bulk "}Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
                 export below based on your selection. Please note that larger
@@ -138,23 +150,32 @@ export default class EngineOutputExport extends Component {
                     subheader: styles.exportFormatSubHeader
                   }}
                 />
-                { !fetchingEngineRuns ?
-                    <List disablePadding>
-                      {Object.keys(outputConfigsByCategoryId).map((key, index) => (
+                {!fetchingEngineRuns ? (
+                  <List disablePadding>
+                    {Object.keys(outputConfigsByCategoryId).map(
+                      (key, index) => (
                         <Fragment key={`engine-output-config-${key}`}>
                           <EngineCategoryConfig
                             categoryId={key}
-                            engineCategoryConfigs={outputConfigsByCategoryId[key]}
+                            engineCategoryConfigs={
+                              outputConfigsByCategoryId[key]
+                            }
                             expanded={expandedCategories[key]}
+                            bulkExportEnabled={bulkExportEnabled}
                             onExpandConfigs={toggleConfigExpand}
                           />
                           {index !==
-                          Object.keys(outputConfigsByCategoryId).length - 1 && (
-                            <Divider />
-                          )}
+                            Object.keys(outputConfigsByCategoryId).length -
+                              1 && <Divider />}
                         </Fragment>
-                      ))}
-                    </List> : <div className={styles.loadingConfigsContainer}><CircularProgress size={50} thickness={2.5}/></div>}
+                      )
+                    )}
+                  </List>
+                ) : (
+                  <div className={styles.loadingConfigsContainer}>
+                    <CircularProgress size={50} thickness={2.5} />
+                  </div>
+                )}
               </Card>
               <Card>
                 <CardHeader

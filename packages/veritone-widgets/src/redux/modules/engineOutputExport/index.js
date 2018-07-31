@@ -110,8 +110,8 @@ export default createReducer(defaultState, {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
         if (
-          config.engineId === action.engineId &&
-          config.categoryId === action.categoryId
+          (config.engineId === action.engineId && config.categoryId === action.categoryId) ||
+          (config.categoryId === action.categoryId && action.applyAll)
         ) {
           return {
             ...config,
@@ -183,11 +183,12 @@ export const toggleConfigExpand = categoryId => {
   };
 };
 
-export const selectFileType = (selectedFileTypes, categoryId, engineId) => {
+export const selectFileType = (selectedFileTypes, categoryId, engineId, applyAll = false) => {
   return {
     type: UPDATE_SELECTED_FILE_TYPES,
     selectedFileTypes,
     categoryId,
-    engineId
+    engineId,
+    applyAll
   };
 };

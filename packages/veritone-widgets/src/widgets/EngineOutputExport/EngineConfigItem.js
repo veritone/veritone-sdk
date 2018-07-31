@@ -23,7 +23,7 @@ import styles from './styles.scss';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 
 @connect(
-  (state, { config: { engineId, categoryId } }) => ({
+  (state, { engineId, categoryId }) => ({
     engine: engineOutputExportModule.getEngineById(state, engineId),
     categoryFormatOptions: engineOutputExportModule.categoryFormatOptions(
       state,
@@ -38,54 +38,54 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 )
 export default class EngineConfigItem extends Component {
   static propTypes = {
-    config: shape({
-      engineId: string.isRequired,
-      categoryId: string.isRequired,
-      formats: arrayOf(
-        shape({
-          extension: string.isRequired,
-          options: shape({
-            maxCharacterPerLine: number,
-            newLineOnPunctuation: bool,
-            linesPerScreen: number
-          })
+    engineId: string,
+    categoryId: string.isRequired,
+    formats: arrayOf(
+      shape({
+        extension: string.isRequired,
+        options: shape({
+          maxCharacterPerLine: number,
+          newLineOnPunctuation: bool,
+          linesPerScreen: number
         })
-      )
-    }).isRequired,
+      })
+    ).isRequired,
     engine: shape({
       id: string,
       name: string.isRequired,
       signedLogoPath: string
-    }).isRequired,
+    }),
     selectFileType: func,
     categoryFormatOptions: objectOf(oneOf(['enabled', 'disabled'])).isRequired
   };
 
   render() {
     const {
-      config,
+      engineId,
+      categoryId,
+      formats,
       selectFileType,
       engine,
       categoryFormatOptions
     } = this.props;
 
-    const selectedFileExtensions = config.formats.map(
+    const selectedFileExtensions = formats.map(
       format => format.extension
     );
     return (
       <ListItem className={styles.engineListItem}>
-        <img className={styles.engineLogo} src={engine.signedLogoPath} />
-        <ListItemText primary={engine.name} />
+        { engine && <img className={styles.engineLogo} src={engine.signedLogoPath} /> }
+        <ListItemText primary={engine ? engine.name : "All Engines"} inset={!engine} />
         <Select
           multiple
           value={selectedFileExtensions}
           // eslint-disable-next-line
           onChange={evt =>
-            selectFileType(evt.target.value, config.categoryId, config.engineId)
+            selectFileType(evt.target.value, categoryId, engineId, !engine)
           }
           inputProps={{
-            name: config.engineId,
-            id: `engine-select-${config.engineId}`
+            name: engineId,
+            id: `engine-select-${engineId}`
           }}
           // eslint-disable-next-line
           renderValue={value => `.${value.join(', .')}`}
@@ -100,7 +100,7 @@ export default class EngineConfigItem extends Component {
           {Object.keys(categoryFormatOptions).map(
             key =>
               categoryFormatOptions[key] === 'enabled' ? (
-                <MenuItem key={`format-${config.engineId}-${key}`} value={key}>
+                <MenuItem key={`format-${engineId}-${key}`} value={key}>
                   <Checkbox
                     color="primary"
                     checked={includes(selectedFileExtensions, key)}

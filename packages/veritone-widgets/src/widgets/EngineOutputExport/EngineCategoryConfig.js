@@ -54,7 +54,8 @@ export default class EngineCategoryConfig extends Component {
       })
     ).isRequired,
     expanded: bool,
-    onExpandConfigs: func
+    onExpandConfigs: func,
+    bulkExportEnabled: bool
   };
 
   render() {
@@ -62,7 +63,8 @@ export default class EngineCategoryConfig extends Component {
       category,
       engineCategoryConfigs,
       onExpandConfigs,
-      expanded
+      expanded,
+      bulkExportEnabled
     } = this.props;
 
     let hasFormatsSelected = false;
