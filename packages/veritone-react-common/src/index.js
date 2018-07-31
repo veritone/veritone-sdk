@@ -16,7 +16,8 @@ export NavigationSideBar, {
   sectionsShape as navigationSidebarSectionsShape
 } from './components/NavigationSideBar';
 export DiscoverySideBar, {
-  sectionsShape as discoverySidebarSectionsShape
+  sectionsShape as discoverySidebarSectionsShape,
+  DiscoverySideBarContainerPure as DiscoverySideBarPure
 } from './components/DiscoverySideBar';
 export FullScreenDialog from './components/FullScreenDialog';
 export ProfileMenu from './components/ProfileMenu';
@@ -59,9 +60,9 @@ export SourceDropdownMenu from './components/SourceManagement/SourceDropdownMenu
 
 export SourceNullState from './components/SourceManagement/Nullstate';
 export SourceTileView from './components/SourceManagement/SourceTileView';
-export SourceManagementForm from './components/SourceManagement/SourceManagementForm';
-export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm';
-export ContentTemplate from './components/SourceManagement/ContentTemplates';
+// export SourceManagementForm from './components/SourceManagement/SourceManagementForm'; TODO: remove pkg
+// export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm'; TODO: remove pkg
+// export ContentTemplate from './components/SourceManagement/ContentTemplates'; TODO: remove pkg
 export SourceManagementOverview from './components/SourceManagement/';
 
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
@@ -75,5 +76,10 @@ export GeoPicker from './components/GeoPicker';
 
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
+export * as IngestionJobs from './components/IngestionJobs';
+export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
+export ContentTemplate from './components/ContentTemplates';
+export SourceManagementForm from './components/SourceManagementForm';
+export * as SourceManagement from './components/SourceManagement';
 
 export withMuiThemeProvider from './helpers/withMuiThemeProvider';

@@ -7,10 +7,21 @@
   align-items: center;
   justify-content: center;
   margin-top: 100px;
-}
 
-.headline {
-  @include mui-text('headline');
-  font-weight: 200 !important;
-  color: $light-black;
+  .message {
+    @include mui-text('headline');
+    font-weight: 200 !important;
+    color: $light-black;
+    margin: 15px 0;
+  }
+
+  .errorIcon {
+    height: 105px;
+    width: 105px;
+    color: rgba(0, 0, 0, 0.26);
+  }
+
+  .button {
+    background-color: $fullWhite;
+  }
 }

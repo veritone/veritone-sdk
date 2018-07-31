@@ -1,10 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { noop } from 'lodash';
+import ListView from './ListView';
+import NullState from './NullState';
 
-import IngestionJobTileView from './IngestionJobTileView';
-import IngestionJobNullstate from './Nullstate';
-
-// TODO: new data needed
 const jobInfo = {
   data: {
     scheduledJobs: {
@@ -211,11 +210,11 @@ function handleSelectMenuItem(menuAction, dataKeyValue, event) {
 }
 
 storiesOf('IngestionJobs', module)
-  .add('Tile View', () => (
-    <IngestionJobTileView
+  .add('List', () => (
+    <ListView
       jobs={jobInfo.data.scheduledJobs.records}
       onSelectJob={handleSelectJob}
       onSelectMenuItem={handleSelectMenuItem}
     />
   ))
-  .add('NullState', () => <IngestionJobNullstate />);
+  .add('NullState', () => <NullState onClick={noop} />);

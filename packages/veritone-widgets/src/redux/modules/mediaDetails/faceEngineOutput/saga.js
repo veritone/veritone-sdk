@@ -9,11 +9,12 @@ import {
 } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { get, isEmpty } from 'lodash';
-import { modules } from 'veritone-redux-common';
+import { helpers, modules } from 'veritone-redux-common';
+// TODO: refactor to use callGraphQLApi
+const { fetchGraphQLApi } = helpers;
+
 import * as faceEngineOutput from '.';
 import * as gqlQuery from './queries';
-
-import callGraphQLApi from '../../../../shared/callGraphQLApi';
 
 const {
   auth: authModule,
@@ -30,7 +31,7 @@ function* fetchEntities(entityIds) {
   const token = yield select(authModule.selectSessionToken);
 
   try {
-    const response = yield call(callGraphQLApi, {
+    const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: `query{${entityQueries.join(' ')}}`,
       token
@@ -50,7 +51,7 @@ function* fetchLibraries(action) {
   const { libraryType } = action.payload;
 
   try {
-    const response = yield call(callGraphQLApi, {
+    const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: gqlQuery.getLibrariesByType,
       variables: { type: libraryType },
@@ -73,7 +74,7 @@ function* createNewEntity(action) {
   const { meta } = action;
 
   try {
-    const response = yield call(callGraphQLApi, {
+    const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: gqlQuery.createEntity,
       variables: { input: action.payload.entity },
@@ -118,7 +119,7 @@ function* searchForEntities(action) {
     yield put(faceEngineOutput.fetchingEntitySearchResults());
     yield delay(400);
 
-    const response = yield call(callGraphQLApi, {
+    const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: gqlQuery.searchForEntities,
       variables: {

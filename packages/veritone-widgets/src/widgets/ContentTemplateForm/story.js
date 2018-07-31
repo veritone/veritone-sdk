@@ -157,7 +157,7 @@ class Story extends React.Component {
       title: 'Content Template Form Widget',
       templateData,
       initialTemplates,
-      onSubmit: function(data) {
+      onSubmit: function (data) {
         console.log('data:', data);
       }
     });

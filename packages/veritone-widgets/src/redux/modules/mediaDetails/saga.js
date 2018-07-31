@@ -21,7 +21,7 @@ import {
   forEach,
   find
 } from 'lodash';
-import { modules } from 'veritone-redux-common';
+import { helpers, modules } from 'veritone-redux-common';
 import {
   getFaceEngineAssetData,
   cancelFaceEdits,
@@ -40,8 +40,8 @@ const {
   application: applicationModule,
   engineResults: engineResultsModule
 } = modules;
-
-import callGraphQLApi from '../../../shared/callGraphQLApi';
+// TODO: refactor to use callGraphQLApi
+const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
 import {
   LOAD_TDO,
@@ -233,7 +233,7 @@ function* loadTdoSaga(widgetId, tdoId) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: getTdoQuery,
       variables: { tdoId },
@@ -287,7 +287,7 @@ function* refreshEngineRuns(widgetId, tdoId) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: refreshEngineRunsQuery,
       variables: { tdoId },
@@ -339,7 +339,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: updateTdoQuery,
       variables: {
@@ -402,7 +402,7 @@ function* loadContentTemplates(widgetId) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: loadTemplatesQuery,
       token
@@ -458,7 +458,7 @@ function* loadTdoContentTemplatesSaga(widgetId) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: getTdoContentTemplates,
       token,
@@ -538,7 +538,7 @@ function* createTdoContentTemplatesSaga(widgetId, contentTemplates) {
     };
     let response;
     try {
-      response = yield call(callGraphQLApi, {
+      response = yield call(fetchGraphQLApi, {
         endpoint: graphQLUrl,
         query: applyContentTemplatesQuery,
         token,
@@ -588,7 +588,7 @@ function* deleteAssetsSaga(assetIds) {
   let response;
   const errors = [];
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: deleteAssetsQuery,
       token,
@@ -774,7 +774,7 @@ function* createTranscriptBulkEditAssetSaga(
     }`;
   let getPrimaryTranscriptAssetResponse;
   try {
-    getPrimaryTranscriptAssetResponse = yield call(callGraphQLApi, {
+    getPrimaryTranscriptAssetResponse = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: getPrimaryTranscriptAssetQuery,
       variables: { tdoId: requestTdo.id },
@@ -853,7 +853,7 @@ function* createTranscriptBulkEditAssetSaga(
 
   let runBulkEditJobResponse;
   try {
-    runBulkEditJobResponse = yield call(callGraphQLApi, {
+    runBulkEditJobResponse = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: runBulkEditJobQuery,
       variables: { tdoId: requestTdo.id },
@@ -928,7 +928,7 @@ function* fetchEntities(widgetId, entityIds) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: `query{${entityQueries.join(' ')}}`,
       token
@@ -980,7 +980,7 @@ function* fetchSchemas(widgetId, schemaIds) {
 
   let response;
   try {
-    response = yield call(callGraphQLApi, {
+    response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: `query{${schemaQueries.join(' ')}}`,
       token
@@ -1027,7 +1027,7 @@ function* fetchAssets(tdoId, assetType) {
   const sessionToken = yield select(authModule.selectSessionToken);
   const oauthToken = yield select(authModule.selectOAuthToken);
   const token = sessionToken || oauthToken;
-  let getVtnStandardAssetsResponse = yield call(callGraphQLApi, {
+  let getVtnStandardAssetsResponse = yield call(fetchGraphQLApi, {
     endpoint: graphQLUrl,
     query: getVtnStandardAssetsQuery,
     variables: { tdoId: tdoId },
@@ -1219,7 +1219,7 @@ function* uploadImage(fileToUpload, widgetId) {
 
   let signedWritableUrlResponse;
   try {
-    signedWritableUrlResponse = yield call(callGraphQLApi, {
+    signedWritableUrlResponse = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: getUrlQuery,
       variables: { name },
@@ -1564,7 +1564,7 @@ function* insertIntoIndexSaga(tdoId) {
   const token = sessionToken || oauthToken;
 
   try {
-    const response = yield call(callGraphQLApi, {
+    const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
       query: createJobQuery,
       variables: { tdoId: tdoId },

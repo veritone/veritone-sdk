@@ -4,6 +4,9 @@ import { pick } from 'lodash';
 import SourceManagementNullState from './Nullstate';
 import SourceTileView from './SourceTileView';
 import SourceManagementForm from './SourceManagementForm';
+export NullState from './NullState';
+export SourceTileView from './SourceTileView';
+
 
 export default class SourceManagementOverview extends React.Component {
   static propTypes = {

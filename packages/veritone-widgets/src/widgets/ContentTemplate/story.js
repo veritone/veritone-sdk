@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
-import ContentTemplateFormWidget from './';
+import ContentTemplateWidget from './';
 import { has } from 'lodash';
 
 // CONTENT TEMPLATES SETUP
@@ -152,25 +152,25 @@ const initialTemplates = createInitialTemplates(
 
 class Story extends React.Component {
   componentDidMount() {
-    this._ctFormWidget = new ContentTemplateFormWidget({
-      elId: 'ct-form-widget',
-      title: 'Content Template Form Widget',
+    this._ctWidget = new ContentTemplateWidget({
+      elId: 'ct-widget',
+      title: 'Content Template Widget',
       templateData,
       initialTemplates,
-      onSubmit: function(data) {
+      handleUpdateContentTemplates: function (data) {
         console.log('data:', data);
       }
     });
   }
 
   componentWillUnmount() {
-    this._ctFormWidget.destroy();
+    this._ctWidget.destroy();
   }
 
   render() {
     return (
       <div>
-        <span id="ct-form-widget" />
+        <span id="ct-widget" />
       </div>
     );
   }

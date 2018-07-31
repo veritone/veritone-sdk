@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -31,7 +31,7 @@
     "react-virtualized": "^9.19.1",
     "recharts": "^1.0.0-beta.10",
     "recompose": "^0.26.0",
-    "redux": "^3.7.2",
+    "redux": "^4.0.0",
     "redux-form": "^7.1.2",
     "shaka-player": "^2.3.5",
     "video-react": "^0.10.5"

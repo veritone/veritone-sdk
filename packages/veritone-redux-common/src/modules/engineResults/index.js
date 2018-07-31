@@ -1,5 +1,5 @@
 import { createReducer } from 'helpers/redux';
-import { callGraphQL } from 'helpers/api';
+import callGraphQLApi from 'helpers/api/callGraphQLApi';
 import { get, groupBy, find, forEach } from 'lodash';
 import { guid } from 'helpers/misc';
 
@@ -121,7 +121,7 @@ export const fetchEngineResults = ({
   if (stopOffsetMs) {
     variables.stopOffsetMs = stopOffsetMs;
   }
-  const response = await callGraphQL({
+  const response = await callGraphQLApi({
     actionTypes: [
       FETCH_ENGINE_RESULTS,
       FETCH_ENGINE_RESULTS_SUCCESS,
