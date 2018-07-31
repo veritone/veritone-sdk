@@ -113,7 +113,7 @@ export default class EngineOutputExport extends Component {
         >
           <Grid item className={styles.engineOutputExportHeader} container>
             <Grid item xs={11}>
-              <div className={styles.title}>{`${bulkExportEnabled && "Bulk "}Export and Download`}</div>
+              <div className={styles.title}>{`${bulkExportEnabled ? "Bulk " : ""}Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
                 export below based on your selection. Please note that larger

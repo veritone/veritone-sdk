@@ -45,7 +45,7 @@
 
   .loadingConfigsContainer {
     height: 60px;
-    display:flex;
+    display: flex;
     align-items: center;
     justify-content: center;
   }
@@ -104,4 +104,21 @@
 .engineConfigInput {
   width: 65%;
   margin-right: 5px;
+}
+
+.subtitleConfigInfo {
+  @include mui-text('caption');
+}
+
+.subtitleConfigField {
+  margin-top: 25px;
+
+  .subtitleFieldLabel {
+    @include mui-text('caption');
+  }
+
+  .subtitleFieldLabelShrink {
+    transform: translate(0, 1.5px);
+    transform-origin: top left;
+  }
 }

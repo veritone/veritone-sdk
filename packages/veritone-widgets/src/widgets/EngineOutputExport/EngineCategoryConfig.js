@@ -3,6 +3,7 @@ import { forEach, get } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
 
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -10,16 +11,20 @@ import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 
 import EngineConfigItem from './EngineConfigItem';
+import SubtitleConfigForm from './SubtitleConfigForm';
 import styles from './styles.scss';
 import { withMuiThemeProvider } from 'veritone-react-common';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
-import List from '@material-ui/core/List';
 
 @withMuiThemeProvider
 @connect(
@@ -56,6 +61,22 @@ export default class EngineCategoryConfig extends Component {
     expanded: bool,
     onExpandConfigs: func,
     bulkExportEnabled: bool
+  };
+
+  state = {
+    dialogOpen: false
+  };
+
+  openCustomizeSubtitles = () => {
+    this.setState({
+      dialogOpen: true
+    })
+  };
+
+  handleCloseDialog = () => {
+    this.setState({
+      dialogOpen: false
+    })
   };
 
   render() {
@@ -95,14 +116,24 @@ export default class EngineCategoryConfig extends Component {
         </ListItem>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <List disablePadding>
-            {engineCategoryConfigs.map(config => {
-              return (
+            { bulkExportEnabled ?
                 <EngineConfigItem
-                  key={`engine-config-item-${config.engineId}`}
-                  config={config}
-                />
-              );
-            })}
+                  categoryId={category.id}
+                  formats={engineCategoryConfigs[0].formats}
+                /> :
+                <Fragment>
+                  {engineCategoryConfigs.map(config => {
+                    return (
+                      <EngineConfigItem
+                        key={`engine-config-item-${config.engineId}`}
+                        engineId={config.engineId}
+                        categoryId={config.categoryId}
+                        formats={config.formats}
+                      />
+                    );
+                  })}
+                </Fragment>
+            }
 
             {hasFormatsSelected && (
               <ListItem className={styles.engineListItem}>
@@ -112,7 +143,7 @@ export default class EngineCategoryConfig extends Component {
                     Subtitle formats have been selected, adjust and display
                     settings here
                   </span>
-                  <Button color="primary" className={styles.customizeButton}>
+                  <Button color="primary" className={styles.customizeButton} onClick={this.openCustomizeSubtitles}>
                     Customize
                   </Button>
                 </div>
@@ -120,6 +151,26 @@ export default class EngineCategoryConfig extends Component {
             )}
           </List>
         </Collapse>
+        <Dialog
+          open={this.state.dialogOpen}
+          onClose={this.handleCloseDialog}
+          aria-labelledby="customize-dialog-title"
+        >
+          <DialogTitle id="customize-dialog-title">Subtitle Format Settings</DialogTitle>
+          <DialogContent>
+            <DialogContentText className={styles.subtitleConfigInfo}>
+              Adjust the format and display settings for your subtitle export for maximum readability.
+            </DialogContentText>
+            <SubtitleConfigForm
+              handleCancel={this.handleCloseDialog}
+              initialValues={{
+                'linesPerScreen': 2,
+                'maxLinesPerCaptionLine': 32,
+                'newLineOnPunctuation': false
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </Fragment>
     );
   }
