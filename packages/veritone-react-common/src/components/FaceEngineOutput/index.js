@@ -181,7 +181,8 @@ class FaceEngineOutput extends Component {
                     vertical: 'bottom'
                   },
                   transformOrigin: {
-                    horizontal: 'center'
+                    horizontal: 'center',
+                    vertical: 'top'
                   },
                   getContentAnchorEl: null
                 }}
@@ -212,7 +213,8 @@ class FaceEngineOutput extends Component {
                   vertical: 'bottom'
                 },
                 transformOrigin: {
-                  horizontal: 'center'
+                  horizontal: 'center',
+                  vertical: 'top'
                 },
                 getContentAnchorEl: null
               }}

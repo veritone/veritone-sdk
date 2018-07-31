@@ -166,7 +166,8 @@ export default class TranscriptEngineOutput extends Component {
             vertical: 'bottom'
           },
           transformOrigin: {
-            horizontal: 'center'
+            horizontal: 'center',
+            vertical: 'top'
           },
           getContentAnchorEl: null
         }}
@@ -200,7 +201,8 @@ export default class TranscriptEngineOutput extends Component {
             vertical: 'bottom'
           },
           transformOrigin: {
-            horizontal: 'center'
+            horizontal: 'center',
+            vertical: 'top'
           },
           getContentAnchorEl: null
         }}
