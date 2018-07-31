@@ -23,3 +23,4 @@ export SourceList from './widgets/SourceList';
 export { MediaPlayer } from './widgets/MediaPlayer';
 export SDOTable from './widgets/SDOTable';
 export IngestionJobsList from './widgets/IngestionJobsList';
+export IngestionAdapters from './widgets/IngestionAdapters';

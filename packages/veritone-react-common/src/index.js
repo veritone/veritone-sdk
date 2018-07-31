@@ -41,3 +41,5 @@ export ContentTemplateForm from './components/ContentTemplates/ContentTemplateFo
 export ContentTemplate from './components/ContentTemplates';
 export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
+export Image from '.components/Image';
+export IngestionAdapters from './components/IngestionAdapters';
