@@ -55,7 +55,6 @@ export GeoEngineOutput from './components/GeoEngineOutput';
 
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
-export SourceDropdownMenu from './components/SourceManagement/SourceDropdownMenu';
 
 export SourceNullState from './components/SourceManagement/Nullstate';
 export SourceTileView from './components/SourceManagement/SourceTileView';

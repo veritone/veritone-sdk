@@ -11,7 +11,7 @@ import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 import { objectOf, any, func, arrayOf, string, bool, number, shape } from 'prop-types';
-import { get, noop } from 'lodash';
+import { get, noop, isArray } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
@@ -22,6 +22,7 @@ export default class InfiniteDropdownMenu extends React.Component {
   static propTypes = {
     id: string,
     label: string,
+    secondaryNameKey: string,
     handleSelectionChange: func.isRequired,
     loadNextPage: func.isRequired,
     hasNextPage: bool.isRequired,
@@ -29,6 +30,10 @@ export default class InfiniteDropdownMenu extends React.Component {
     items: arrayOf(shape({
       id: string,
       name: string
+    })),
+    customTriggers: arrayOf(shape({
+      label: string.isRequired,
+      trigger: func.isRequired
     })),
     pageSize: number
   };
@@ -65,6 +70,8 @@ export default class InfiniteDropdownMenu extends React.Component {
       item = this.props.items[index];
     }
 
+    const secondaryNameDisplay = get(item, this.props.secondaryNameKey);
+
     const handleItemClick = item => () => {
       this.props.handleSelectionChange(item);
       this.handleMenuClose();
@@ -89,6 +96,11 @@ export default class InfiniteDropdownMenu extends React.Component {
             <span className={styles.menuIconSpacer} />
           )}
           <span className={styles.menuItemName}>{item.name}</span>
+          {secondaryNameDisplay ? (
+            <span className={styles.secondaryNameDisplay}>
+              {secondaryNameDisplay}
+            </span>
+          ) : null }
         </MenuItem>
       </div>
     );
@@ -115,6 +127,7 @@ export default class InfiniteDropdownMenu extends React.Component {
         loadMoreRows={loadMoreRows}
         isRowLoaded={this.isRowLoaded}
         rowRenderer={this.rowRenderer}
+        customTriggers={this.props.customTriggers}
       />
     );
   }
@@ -131,7 +144,8 @@ const ItemSelector = ({
   rowCount,
   loadMoreRows,
   isRowLoaded,
-  rowRenderer
+  rowRenderer,
+  customTriggers
 }) => {
   const menuId = 'long-menu';
   const dummyItem = 'dummy-item';
@@ -173,28 +187,47 @@ const ItemSelector = ({
           }
         }}
       >
-        <InfiniteLoader
-          isRowLoaded={isRowLoaded}
-          loadMoreRows={loadMoreRows}
-          rowCount={rowCount}
-          threshold={3}
-        >
-          {({ onRowsRendered, registerChild }) => (
-            <AutoSizer disableHeight>
-              {({ width }) => (
-                <List
-                  width={width}
-                  height={144}
-                  rowCount={rowCount}
-                  rowHeight={48}
-                  ref={registerChild}
-                  onRowsRendered={onRowsRendered}
-                  rowRenderer={rowRenderer}
-                />
-              )}
-            </AutoSizer>
-          )}
-        </InfiniteLoader>
+        <div key="scroll-container" className={styles.itemScrollContainer}>
+          <InfiniteLoader
+            isRowLoaded={isRowLoaded}
+            loadMoreRows={loadMoreRows}
+            rowCount={rowCount}
+            threshold={3}
+          >
+            {({ onRowsRendered, registerChild }) => (
+              <AutoSizer disableHeight>
+                {({ width }) => (
+                  <List
+                    width={width}
+                    height={144}
+                    rowCount={rowCount}
+                    rowHeight={48}
+                    ref={registerChild}
+                    onRowsRendered={onRowsRendered}
+                    rowRenderer={rowRenderer}
+                  />
+                )}
+              </AutoSizer>
+            )}
+          </InfiniteLoader>
+        </div>
+        <div>
+        {
+          isArray(customTriggers) ?
+          customTriggers.map((customTrigger, index) => {
+            return (
+              <MenuItem
+                className={styles.customTriggerItem}
+                key={'custom-trigger-' + index}
+                value={null}
+                onClick={customTrigger.trigger}
+              >
+                {customTrigger.label}
+              </MenuItem>
+            );
+          }) : null
+        }
+        </div>
       </Menu>
     </FormControl>
   );

@@ -22,7 +22,6 @@ import { objectOf, any, func, number } from 'prop-types';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
-import SourceDropdownMenu from '../../SourceManagement/SourceDropdownMenu';
 import InfiniteDropdownMenu from '../../InfiniteDropdownMenu';
 
 import styles from './styles.scss';
@@ -41,6 +40,11 @@ class DynamicAdapter extends React.Component {
   };
 
   state = {
+    _source: {
+      hasNextPage: false,
+      isNextPageLoading: false,
+      items: []
+    },
     _cluster: {
       hasNextPage: false,
       isNextPageLoading: false,
@@ -82,6 +86,11 @@ class DynamicAdapter extends React.Component {
     const newState = {
       sourceId: selectedSource.id,
       _source: {
+        ...pick(this.state._source, [
+          'hasNextPage',
+          'isNextPageLoading',
+          'items'
+        ]),
         selectedSource
       }
     };
@@ -109,6 +118,43 @@ class DynamicAdapter extends React.Component {
     stateUpdate[fieldKey] = fieldValue;
     this.setState(stateUpdate, this.sendConfiguration);
   };
+
+  loadMoreSources = ({startIndex, stopIndex}) => {
+    this.setState(prevState => {
+      return Object.assign({}, prevState, {
+        _source: {
+          isNextPageLoading: true,
+          hasNextPage: false,
+          items: prevState._source.items
+        }
+      });
+    });
+    return this.props.loadNextSources({startIndex, stopIndex}).then(nextPage => {
+      const newState = {
+        _source: {
+          hasNextPage: !!get(nextPage, 'length'),
+          isNextPageLoading: false,
+          items: startIndex === 0 ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
+        }
+      }
+      const sourceToSelect = find(
+        newState._source.items,
+        ['id', this.state.sourceId]
+      );
+      if (sourceToSelect) {
+        this.setState(newState, () => {
+          this.handleSourceChange(sourceToSelect);
+        });
+      } else if (newState._source.items.length && !this.state.sourceId) {
+        this.setState(newState, () => {
+          this.handleSourceChange(newState._source.items[0]);
+        });
+      } else {
+        this.setState(newState);
+      }
+      return nextPage;
+    });
+  }
 
   loadMoreClusters = ({startIndex, stopIndex}) => {
     this.setState(prevState => {
@@ -148,18 +194,37 @@ class DynamicAdapter extends React.Component {
   }
 
   render() {
+    const customTriggers = [];
+    if (this.props.openCreateSource) {
+      customTriggers.push({
+        label: 'Create New Source',
+        trigger: this.props.openCreateSource
+      });
+    }
     return (
       <div>
         {get(this.props, 'adapterConfig.supportedSourceTypes.length') ? (
           <div>
-            <SourceDropdownMenu
-              sourceId={this.state.sourceId}
-              handleSourceChange={this.handleSourceChange}
-              openCreateSource={this.props.openCreateSource}
-              closeCreateSource={this.props.closeCreateSource}
-              loadNextPage={this.props.loadNextSources}
-              pageSize={this.props.pageSize}
-            />
+            <div className={styles.adapterContainer}>
+              <div className={styles.adapterHeader}>Select a Source</div>
+              <div className={styles.adapterDescription}>
+                Select from your available ingestion sources or create a new source.
+              </div>
+            </div>
+            <div className={styles.adapterContainer}>
+              <InfiniteDropdownMenu
+                label="Select a Source*"
+                id={this.state.sourceId}
+                secondaryNameKey="sourceType.name"
+                handleSelectionChange={this.handleSourceChange}
+                loadNextPage={this.loadMoreSources}
+                hasNextPage={this.state._source.hasNextPage}
+                isNextPageLoading={this.state._source.isNextPageLoading}
+                items={this.state._source.items}
+                pageSize={this.props.pageSize}
+                customTriggers={customTriggers}
+              />
+            </div>
             <div className={styles.adapterDivider} />
           </div>
         ) : null}
