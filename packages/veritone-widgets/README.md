@@ -1,5 +1,5 @@
 ## Quick Start
-As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. When both are available, the smart component is the default export and the widget is a named export. For example, `import FilePicker, { FilePickerWidget } from 'veritone-widgets` imports the smart component as FilePicker and the widget as FilePickerWidget. Smart components usually require redux reducers and sagas to be imported as well, see [Using Smart Components](#using-smart-components)
+As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. When both are available, the smart component is the default export and the widget is a named export. For example, `import FilePicker, { FilePickerWidget } from 'veritone-widgets'` imports the smart component as FilePicker and the widget as FilePickerWidget. Smart components usually require redux reducers and sagas to be imported as well, see [Using Smart Components](#using-smart-components)
 
 ### Widgets (framework agnostic)
 ```javascript
@@ -47,10 +47,10 @@ Because smart components are not rendered within the VeritoneApp widget framewor
 ### Smart component reducer/saga requirements
 #### FilePicker
 * reducer:
-`import {filePickerReducer} from 'veritone-widgets`
+`import {filePickerReducer} from 'veritone-widgets'`
 
 * saga:
-`import {filePickerSaga} from 'veritone-widgets`
+`import {filePickerSaga} from 'veritone-widgets'`
 
 #### Notifications
 * reducer:
