@@ -29,13 +29,17 @@ class ContentTemplateWidget extends React.Component {
     this.setState(newState);
   }
 
-  addToTemplateList = (templateSchemaId) => {
+  addToTemplateList = templateSchemaId => {
     const { templateData, initialTemplates } = this.props;
     const data = {};
 
     Object.keys(templateData[templateSchemaId].definition.properties).reduce(
       (fields, schemaDefProp) => {
-        const value = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp]);
+        const value = get(initialTemplates, [
+          templateSchemaId,
+          'data',
+          schemaDefProp
+        ]);
         if (value) {
           data[schemaDefProp] = value;
         }
@@ -56,9 +60,9 @@ class ContentTemplateWidget extends React.Component {
     this.setState(newState, () => {
       this.props.handleUpdateContentTemplates(newState.contentTemplates);
     });
-  }
+  };
 
-  removeFromTemplateList = (templateSchemaId) => {
+  removeFromTemplateList = templateSchemaId => {
     if (this.state.contentTemplates[templateSchemaId]) {
       const contentTemplates = { ...this.state.contentTemplates };
       delete contentTemplates[templateSchemaId];
@@ -69,35 +73,38 @@ class ContentTemplateWidget extends React.Component {
         this.props.handleUpdateContentTemplates(newState.contentTemplates);
       });
     }
-  }
+  };
 
   onInputChange = (templateSchemaId, fieldId, value) => {
     let newState;
     const { contentTemplates } = this.state;
 
-    this.setState(prevState => {
-      newState = {
-        contentTemplates: {
-          ...contentTemplates,
-          [templateSchemaId]: {
-            ...contentTemplates[templateSchemaId],
-            data: {
-              ...contentTemplates[templateSchemaId].data
+    this.setState(
+      prevState => {
+        newState = {
+          contentTemplates: {
+            ...contentTemplates,
+            [templateSchemaId]: {
+              ...contentTemplates[templateSchemaId],
+              data: {
+                ...contentTemplates[templateSchemaId].data
+              }
             }
           }
+        };
+
+        if (value) {
+          newState.contentTemplates[templateSchemaId].data[fieldId] = value;
+        } else {
+          delete newState.contentTemplates[templateSchemaId].data[fieldId];
         }
-      };
 
-      if (value) {
-        newState.contentTemplates[templateSchemaId].data[fieldId] = value;
-      } else {
-        delete newState.contentTemplates[templateSchemaId].data[fieldId];
+        return newState;
+      },
+      () => {
+        this.props.handleUpdateContentTemplates(newState.contentTemplates);
       }
-
-      return newState;
-    }, () => {
-      this.props.handleUpdateContentTemplates(newState.contentTemplates);
-    })
+    );
   };
 
   render() {

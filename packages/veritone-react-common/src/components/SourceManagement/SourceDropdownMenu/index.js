@@ -172,7 +172,7 @@ class SourceContainer extends React.Component {
             <span className={styles.sourceMenuItemTypeDisplay}>
               {sourceTypeDisplay}
             </span>
-          ) : null }
+          ) : null}
         </MenuItem>
       </div>
     );

@@ -41,7 +41,7 @@ describe('InfiniteDropdownMenu', () => {
       stopIndex: PAGE_SIZE
     });
   });
-  
+
   // it('Image should be rendered in a div tag.', () => {
   //   const wrapper = mount(<Image src={TEST_IMG} />);
   //   expect(wrapper.find('div')).toHaveLength(1);

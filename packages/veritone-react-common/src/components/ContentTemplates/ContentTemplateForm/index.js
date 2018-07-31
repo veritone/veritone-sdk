@@ -47,14 +47,20 @@ export default class ContentTemplateForm extends React.Component {
     this.setState(newState);
   }
 
-  addToTemplateList = (templateSchemaId) => {
+  addToTemplateList = templateSchemaId => {
     const { templateData, initialTemplates } = this.props;
     const data = {};
 
-    Object.keys(templateData[templateSchemaId].definition.properties)
-      .reduce((fields, schemaDefProp) => {
-        data[schemaDefProp] = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp], '');
-      }, data);
+    Object.keys(templateData[templateSchemaId].definition.properties).reduce(
+      (fields, schemaDefProp) => {
+        data[schemaDefProp] = get(
+          initialTemplates,
+          [templateSchemaId, 'data', schemaDefProp],
+          ''
+        );
+      },
+      data
+    );
 
     this.setState(prevState => ({
       contentTemplates: {
@@ -65,9 +71,9 @@ export default class ContentTemplateForm extends React.Component {
         ...prevState.contentTemplates
       }
     }));
-  }
+  };
 
-  removeFromTemplateList = (templateSchemaId) => {
+  removeFromTemplateList = templateSchemaId => {
     if (this.state.contentTemplates[templateSchemaId]) {
       return this.setState(prevState => {
         const contentTemplates = { ...prevState.contentTemplates };
@@ -76,7 +82,7 @@ export default class ContentTemplateForm extends React.Component {
         return { contentTemplates };
       });
     }
-  }
+  };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     this.setState(prevState => ({
@@ -102,7 +108,10 @@ export default class ContentTemplateForm extends React.Component {
 
   render() {
     return (
-      <form className={styles['form-content-templates']} onSubmit={this.handleSubmit}>
+      <form
+        className={styles['form-content-templates']}
+        onSubmit={this.handleSubmit}
+      >
         <ContentTemplates
           templateData={this.props.templateData}
           selectedTemplateSchemas={this.state.contentTemplates}

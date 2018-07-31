@@ -7,7 +7,6 @@ import SourceManagementForm from './SourceManagementForm';
 export NullState from './NullState';
 export SourceTileView from './SourceTileView';
 
-
 export default class SourceManagementOverview extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,

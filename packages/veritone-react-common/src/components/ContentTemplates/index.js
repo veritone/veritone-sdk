@@ -53,12 +53,12 @@ export default class ContentTemplates extends React.Component {
           {showNullstate ? (
             <ContentTemplatesNullState />
           ) : (
-              <TemplateForms
-                templates={selectedTemplateSchemas}
-                onRemoveTemplate={this.props.onRemoveTemplate}
-                onTemplateDetailsChange={this.props.onInputChange}
-              />
-            )}
+            <TemplateForms
+              templates={selectedTemplateSchemas}
+              onRemoveTemplate={this.props.onRemoveTemplate}
+              onTemplateDetailsChange={this.props.onInputChange}
+            />
+          )}
         </div>
       </div>
     );

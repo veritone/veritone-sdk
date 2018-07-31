@@ -110,7 +110,7 @@ class DynamicAdapter extends React.Component {
     this.setState(stateUpdate, this.sendConfiguration);
   };
 
-  loadMoreClusters = ({startIndex, stopIndex}) => {
+  loadMoreClusters = ({ startIndex, stopIndex }) => {
     this.setState(prevState => {
       return Object.assign({}, prevState, {
         _cluster: {
@@ -120,32 +120,37 @@ class DynamicAdapter extends React.Component {
         }
       });
     });
-    return this.props.loadNextClusters({startIndex, stopIndex}).then(nextPage => {
-      const newState = {
-        _cluster: {
-          hasNextPage: !!get(nextPage, 'length'),
-          isNextPageLoading: false,
-          items: startIndex === 0 ? nextPage : cloneDeep(this.state._cluster.items).concat(nextPage)
+    return this.props
+      .loadNextClusters({ startIndex, stopIndex })
+      .then(nextPage => {
+        const newState = {
+          _cluster: {
+            hasNextPage: !!get(nextPage, 'length'),
+            isNextPageLoading: false,
+            items:
+              startIndex === 0
+                ? nextPage
+                : cloneDeep(this.state._cluster.items).concat(nextPage)
+          }
+        };
+        const clusterToSelect = find(newState._cluster.items, [
+          'id',
+          this.state.clusterId
+        ]);
+        if (clusterToSelect) {
+          this.setState(newState, () => {
+            this.handleClusterChange(clusterToSelect);
+          });
+        } else if (newState._cluster.items.length && !this.state.clusterId) {
+          this.setState(newState, () => {
+            this.handleClusterChange(newState._cluster.items[0]);
+          });
+        } else {
+          this.setState(newState);
         }
-      }
-      const clusterToSelect = find(
-        newState._cluster.items,
-        ['id', this.state.clusterId]
-      );
-      if (clusterToSelect) {
-        this.setState(newState, () => {
-          this.handleClusterChange(clusterToSelect);
-        });
-      } else if (newState._cluster.items.length && !this.state.clusterId) {
-        this.setState(newState, () => {
-          this.handleClusterChange(newState._cluster.items[0]);
-        });
-      } else {
-        this.setState(newState);
-      }
-      return nextPage;
-    });
-  }
+        return nextPage;
+      });
+  };
 
   render() {
     return (

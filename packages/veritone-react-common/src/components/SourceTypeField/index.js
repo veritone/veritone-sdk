@@ -4,7 +4,15 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
-import { string, bool, func, any, instanceOf, oneOfType, oneOf } from 'prop-types';
+import {
+  string,
+  bool,
+  func,
+  any,
+  instanceOf,
+  oneOfType,
+  oneOf
+} from 'prop-types';
 import { isFunction } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 

@@ -10,7 +10,16 @@ import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
 import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
-import { objectOf, any, func, arrayOf, string, bool, number, shape } from 'prop-types';
+import {
+  objectOf,
+  any,
+  func,
+  arrayOf,
+  string,
+  bool,
+  number,
+  shape
+} from 'prop-types';
 import { get, noop } from 'lodash';
 
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
@@ -26,10 +35,12 @@ export default class InfiniteDropdownMenu extends React.Component {
     loadNextPage: func.isRequired,
     hasNextPage: bool.isRequired,
     isNextPageLoading: bool.isRequired,
-    items: arrayOf(shape({
-      id: string,
-      name: string
-    })),
+    items: arrayOf(
+      shape({
+        id: string,
+        name: string
+      })
+    ),
     pageSize: number
   };
 
@@ -39,7 +50,7 @@ export default class InfiniteDropdownMenu extends React.Component {
 
   state = {
     anchorEl: null
-  }
+  };
 
   UNSAFE_componentWillMount() {
     this.props.loadNextPage({ startIndex: 0, stopIndex: this.props.pageSize });
@@ -68,13 +79,10 @@ export default class InfiniteDropdownMenu extends React.Component {
     const handleItemClick = item => () => {
       this.props.handleSelectionChange(item);
       this.handleMenuClose();
-    }
+    };
 
     return (
-      <div
-        key={key}
-        style={style}
-      >
+      <div key={key} style={style}>
         <MenuItem
           key={item.id}
           value={item.id}
@@ -202,10 +210,12 @@ const ItemSelector = ({
 
 ItemSelector.propTypes = {
   initialValue: string,
-  items: arrayOf(shape({
-    id: string,
-    name: string
-  })).isRequired,
+  items: arrayOf(
+    shape({
+      id: string,
+      name: string
+    })
+  ).isRequired,
   handleSelectionChange: func.isRequired,
   selectLabel: string,
   handleMenuClick: func,
