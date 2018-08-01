@@ -50,27 +50,12 @@ export default class EngineOutputExport extends Component {
       })
     ).isRequired,
     open: bool,
-    enableBulkExport: bool,
     onCancel: func,
     onExport: func,
     includeMedia: bool,
     setIncludeMedia: func,
     fetchingEngineRuns: bool
   };
-
-  static defaultProps = {
-    enableBulkExport: false
-  };
-
-  state = {
-    bulkExportEnabled: false
-  };
-
-  static getDerivedStateFromProps(props, state) {
-    return {
-      bulkExportEnabled: props.enableBulkExport
-    };
-  }
 
   handleIncludeMediaChange = event => {
     this.props.setIncludeMedia(event.target.checked);
@@ -85,7 +70,6 @@ export default class EngineOutputExport extends Component {
       open,
       onCancel
     } = this.props;
-    const { bulkExportEnabled } = this.state;
 
     return (
       <Dialog fullScreen open={open}>
@@ -97,7 +81,7 @@ export default class EngineOutputExport extends Component {
         >
           <Grid item className={styles.engineOutputExportHeader} container>
             <Grid item xs={11}>
-              <div className={styles.title}>{`${bulkExportEnabled ? "Bulk " : ""}Export and Download`}</div>
+              <div className={styles.title}>{`${tdos.length > 1 ? "Bulk " : ""}Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
                 export below based on your selection. Please note that larger
@@ -134,7 +118,7 @@ export default class EngineOutputExport extends Component {
                     subheader: styles.exportFormatSubHeader
                   }}
                 />
-                <EngineCategoryConfigList tdos={tdos} bulkExportEnabled={bulkExportEnabled}/>
+                <EngineCategoryConfigList tdos={tdos}/>
               </Card>
               <Card>
                 <CardHeader

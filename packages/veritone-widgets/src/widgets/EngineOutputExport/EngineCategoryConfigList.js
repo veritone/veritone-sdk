@@ -48,8 +48,7 @@ export default class EngineCategoryConfigList extends Component {
     expandedCategories: objectOf(bool),
     fetchEngineRuns: func,
     fetchingEngineRuns: bool,
-    toggleConfigExpand: func,
-    bulkExportEnabled: bool
+    toggleConfigExpand: func
   };
 
   componentDidMount() {
@@ -58,10 +57,10 @@ export default class EngineCategoryConfigList extends Component {
 
   render () {
     const {
+      tdos,
       fetchingEngineRuns,
       outputConfigsByCategoryId,
       expandedCategories,
-      bulkExportEnabled,
       toggleConfigExpand
     } = this.props;
 
@@ -78,7 +77,7 @@ export default class EngineCategoryConfigList extends Component {
                       outputConfigsByCategoryId[key]
                     }
                     expanded={expandedCategories[key]}
-                    bulkExportEnabled={bulkExportEnabled}
+                    bulkExportEnabled={tdos.length > 1}
                     onExpandConfigs={toggleConfigExpand}
                   />
                   {index !==
