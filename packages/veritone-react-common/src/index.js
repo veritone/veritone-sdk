@@ -60,9 +60,6 @@ export SourceDropdownMenu from './components/SourceManagement/SourceDropdownMenu
 
 export SourceNullState from './components/SourceManagement/Nullstate';
 export SourceTileView from './components/SourceManagement/SourceTileView';
-// export SourceManagementForm from './components/SourceManagement/SourceManagementForm'; TODO: remove pkg
-// export ContentTemplateForm from './components/SourceManagement/ContentTemplateForm'; TODO: remove pkg
-// export ContentTemplate from './components/SourceManagement/ContentTemplates'; TODO: remove pkg
 export SourceManagementOverview from './components/SourceManagement/';
 
 export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';

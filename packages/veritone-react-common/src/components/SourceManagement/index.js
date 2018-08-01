@@ -3,7 +3,7 @@ import { arrayOf, objectOf, any, func, shape, string } from 'prop-types';
 import { pick } from 'lodash';
 import SourceManagementNullState from './Nullstate';
 import SourceTileView from './SourceTileView';
-import SourceManagementForm from './SourceManagementForm';
+import SourceManagementForm from '../SourceManagementForm';
 export NullState from './NullState';
 export SourceTileView from './SourceTileView';
 
