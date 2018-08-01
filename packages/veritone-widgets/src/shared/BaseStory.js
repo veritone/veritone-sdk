@@ -123,8 +123,8 @@ export default class BaseStory extends React.Component {
                 {...this.props.componentProps}
               />
             ) : (
-              'No component class specified'
-            ))}
+                'No component class specified'
+              ))}
 
           <AppContainer appBarOffset>
             <p>

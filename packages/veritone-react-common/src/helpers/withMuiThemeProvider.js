@@ -3,7 +3,6 @@ import { oneOfType, func, node, objectOf, object, any } from 'prop-types';
 import {
   MuiThemeProvider,
   createMuiTheme,
-  withTheme,
   jssPreset
 } from '@material-ui/core/styles';
 import { create } from 'jss';
@@ -28,44 +27,30 @@ export const defaultVSDKTheme = {
   }
 };
 
-const VSDKStyleWrapper = withTheme()(
-  class VSDKStyleWrapperWithoutTheme extends React.Component {
-    static propTypes = {
-      theme: objectOf(any),
-      customTheme: objectOf(any),
-      children: node
-    };
+export class VSDKStyleWrapper extends React.Component {
+  static propTypes = {
+    theme: objectOf(any),
+    children: node
+  };
 
-    constructor() {
-      super();
-      this._style = `vsdk-${guid()}`;
-      this._jss = create(jssPreset());
-    }
+  getJSSNamespace = () => `vsdk-${guid()}`;
 
-    render() {
-      // need to merge the results of createMuiTheme
-      // because some variables like htmlFontSize
-      // are used for the calculation of theme properties
-      // ex: createMuiTheme({typography: { htmlFontSize: 5 }) => { typography: { fontSize: 10 / 5 }}
-      // the values will be incorrect if you merge just the themes without applying createMuiTheme
-      const mergedTheme = merge(
-        {},
-        createMuiTheme(this.props.theme),
-        createMuiTheme(this.props.customTheme)
-      );
+  getJSS = () => create(jssPreset());
 
-      return (
-        <JssProvider jss={this._jss} classNamePrefix={this._style}>
-          <MuiThemeProvider theme={mergedTheme}>
-            {this.props.children}
-          </MuiThemeProvider>
-        </JssProvider>
-      );
-    }
+  render() {
+    const mergedTheme = createMuiTheme(
+      merge({}, defaultVSDKTheme, this.props.theme)
+    );
+
+    return (
+      <JssProvider jss={this.getJSS()} classNamePrefix={this.getJSSNamespace()}>
+        <MuiThemeProvider theme={mergedTheme}>
+          {this.props.children}
+        </MuiThemeProvider>
+      </JssProvider>
+    );
   }
-);
-
-export { VSDKStyleWrapper };
+}
 
 export function withMuiThemeProvider(theme) {
   return function decorator(Class) {
@@ -77,7 +62,7 @@ export function withMuiThemeProvider(theme) {
       render() {
         const { forwardedRef, ...rest } = this.props;
         return (
-          <VSDKStyleWrapper customTheme={theme}>
+          <VSDKStyleWrapper theme={theme}>
             <Class ref={forwardedRef} {...rest} />
           </VSDKStyleWrapper>
         );

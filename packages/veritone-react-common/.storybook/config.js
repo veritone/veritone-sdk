@@ -4,8 +4,7 @@ import { withKnobs } from '@storybook/addon-knobs';
 
 import '../src/styles/global.scss';
 import {
-  VSDKStyleWrapper,
-  defaultVSDKTheme
+  VSDKStyleWrapper
 } from '../src/helpers/withMuiThemeProvider';
 
 const req = require.context('../src', true, /story.js$/);
@@ -14,9 +13,8 @@ function loadStories() {
   req.keys().forEach(filename => req(filename));
 }
 
-
 const withStyles = story => (
-  <VSDKStyleWrapper customTheme={defaultVSDKTheme}>{story()}</VSDKStyleWrapper>
+  <VSDKStyleWrapper>{story()}</VSDKStyleWrapper>
 );
 
 addDecorator(withStyles);
