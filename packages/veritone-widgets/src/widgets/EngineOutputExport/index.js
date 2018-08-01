@@ -1,31 +1,28 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { FullScreenDialog } from 'veritone-react-common';
 import {
   bool,
   func,
   string,
   arrayOf,
   shape,
-  number,
-  objectOf
+  number
 } from 'prop-types';
 
-import List from '@material-ui/core/List';
+import Dialog from '@material-ui/core/Dialog';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Switch from '@material-ui/core/Switch';
-import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
 import CloseIcon from '@material-ui/icons/Close';
 import styles from './styles.scss';
 import { withMuiThemeProvider } from 'veritone-react-common';
 
-import EngineCategoryConfig from './EngineCategoryConfig';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
+import EngineCategoryConfigList from './EngineCategoryConfigList';
 
 @withMuiThemeProvider
 @connect(
@@ -38,9 +35,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
     fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state)
   }),
   {
-    fetchEngineRuns: engineOutputExportModule.fetchEngineRuns,
-    setIncludeMedia: engineOutputExportModule.setIncludeMedia,
-    toggleConfigExpand: engineOutputExportModule.toggleConfigExpand
+    setIncludeMedia: engineOutputExportModule.setIncludeMedia
   },
   null,
   { withRef: true }
@@ -54,30 +49,20 @@ export default class EngineOutputExport extends Component {
         stopOffsetMs: number
       })
     ).isRequired,
+    open: bool,
     enableBulkExport: bool,
-    outputConfigsByCategoryId: objectOf(
-      arrayOf(
-        shape({
-          engineId: string,
-          categoryId: string
-        })
-      )
-    ).isRequired,
-    expandedCategories: objectOf(bool),
     onCancel: func,
     onExport: func,
     includeMedia: bool,
     setIncludeMedia: func,
-    fetchEngineRuns: func,
-    fetchingEngineRuns: bool,
-    toggleConfigExpand: func
+    fetchingEngineRuns: bool
   };
 
   static defaultProps = {
     enableBulkExport: false
   };
 
-  static state = {
+  state = {
     bulkExportEnabled: false
   };
 
@@ -87,28 +72,23 @@ export default class EngineOutputExport extends Component {
     };
   }
 
-  componentDidMount() {
-    this.props.fetchEngineRuns(this.props.tdos);
-  }
-
   handleIncludeMediaChange = event => {
     this.props.setIncludeMedia(event.target.checked);
   };
 
   render() {
     const {
+      tdos,
       includeMedia,
-      outputConfigsByCategoryId,
-      onCancel,
       onExport,
-      expandedCategories,
-      toggleConfigExpand,
-      fetchingEngineRuns
+      fetchingEngineRuns,
+      open,
+      onCancel
     } = this.props;
     const { bulkExportEnabled } = this.state;
 
     return (
-      <FullScreenDialog open>
+      <Dialog fullScreen open={open}>
         <Grid
           container
           direction="column"
@@ -154,32 +134,7 @@ export default class EngineOutputExport extends Component {
                     subheader: styles.exportFormatSubHeader
                   }}
                 />
-                {!fetchingEngineRuns ? (
-                  <List disablePadding>
-                    {Object.keys(outputConfigsByCategoryId).map(
-                      (key, index) => (
-                        <Fragment key={`engine-output-config-${key}`}>
-                          <EngineCategoryConfig
-                            categoryId={key}
-                            engineCategoryConfigs={
-                              outputConfigsByCategoryId[key]
-                            }
-                            expanded={expandedCategories[key]}
-                            bulkExportEnabled={bulkExportEnabled}
-                            onExpandConfigs={toggleConfigExpand}
-                          />
-                          {index !==
-                            Object.keys(outputConfigsByCategoryId).length -
-                              1 && <Divider />}
-                        </Fragment>
-                      )
-                    )}
-                  </List>
-                ) : (
-                  <div className={styles.loadingConfigsContainer}>
-                    <CircularProgress size={50} thickness={2.5} />
-                  </div>
-                )}
+                <EngineCategoryConfigList tdos={tdos} bulkExportEnabled={bulkExportEnabled}/>
               </Card>
               <Card>
                 <CardHeader
@@ -221,7 +176,7 @@ export default class EngineOutputExport extends Component {
             </Button>
           </Grid>
         </Grid>
-      </FullScreenDialog>
+      </Dialog>
     );
   }
 }
