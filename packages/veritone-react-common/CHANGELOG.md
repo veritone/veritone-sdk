@@ -98,3 +98,6 @@
 * Added SourceTypeField component
 * Added export for DateTimePicker component
 * Bumped Redux to 4.0
+
+## 5.3.0
+* Exported the Interval class and defaultIntervals for use with date-handling components.
