@@ -57,9 +57,6 @@ export default createReducer(defaultState, {
         });
       }
     });
-    newOutputConfigurations = state.outputConfigurations.concat(
-      newOutputConfigurations
-    );
     newOutputConfigurations = uniqWith(
       newOutputConfigurations,
       (output1, output2) => {
