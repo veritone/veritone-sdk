@@ -106,6 +106,10 @@ export default class InfiniteDropdownMenu extends React.Component {
     );
   };
 
+  openCustomTrigger = trigger => () => {
+    this.setState({ anchorEl: null }, trigger);
+  }
+
   render() {
     const rowCount = this.props.hasNextPage
       ? this.props.items.length + this.props.pageSize
@@ -127,6 +131,7 @@ export default class InfiniteDropdownMenu extends React.Component {
         loadMoreRows={loadMoreRows}
         isRowLoaded={this.isRowLoaded}
         rowRenderer={this.rowRenderer}
+        openCustomTrigger={this.openCustomTrigger}
         customTriggers={this.props.customTriggers}
       />
     );
@@ -145,6 +150,7 @@ const ItemSelector = ({
   loadMoreRows,
   isRowLoaded,
   rowRenderer,
+  openCustomTrigger,
   customTriggers
 }) => {
   const menuId = 'long-menu';
@@ -221,7 +227,7 @@ const ItemSelector = ({
                 className={styles.customTriggerItem}
                 key={'custom-trigger-' + customKey}
                 value={null}
-                onClick={customTrigger.trigger}
+                onClick={openCustomTrigger(customTrigger.trigger)}
               >
                 {customTrigger.label}
               </MenuItem>
