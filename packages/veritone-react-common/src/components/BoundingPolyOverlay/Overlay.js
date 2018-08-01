@@ -314,7 +314,7 @@ export default class Overlay extends React.Component {
 
     this.setState({
       userActingOnBoundingBox: false,
-      focusedBoundingBoxIndex: null,
+      focusedBoundingBoxIndex: null
     });
   };
 
@@ -372,6 +372,13 @@ export default class Overlay extends React.Component {
       !this.state.userActingOnBoundingBox &&
       !this.state.userMinimizedConfirmMenu;
 
+    const boundingBoxStyles = {
+      border: this.props.overlayBorderStyle,
+      backgroundColor: this.props.overlayBackgroundColor,
+      mixBlendMode: this.props.overlayBackgroundBlendMode,
+      willChange: 'left, top, width, height' // this seems to fix some rendering jank
+    };
+
     return (
       <div
         style={{
@@ -395,9 +402,7 @@ export default class Overlay extends React.Component {
               onClick: this.handleClickBox
             }}
             style={{
-              border: this.props.overlayBorderStyle,
-              backgroundColor: this.props.overlayBackgroundColor,
-              mixBlendMode: this.props.overlayBackgroundBlendMode,
+              ...boundingBoxStyles,
               // do not let this box interfere with mouse events as we draw out
               // the initial bounding box
               pointerEvents:
@@ -428,9 +433,7 @@ export default class Overlay extends React.Component {
           !this.props.readOnly && (
             <RndBox
               style={{
-                border: this.props.overlayBorderStyle,
-                backgroundColor: this.props.overlayBackgroundColor,
-                mixBlendMode: this.props.overlayBackgroundBlendMode,
+                ...boundingBoxStyles,
                 // do not let this box interfere with mouse events as we draw it out
                 pointerEvents: this.state.drawingInitialBoundingBox
                   ? 'none'
