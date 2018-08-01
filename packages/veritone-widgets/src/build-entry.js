@@ -21,7 +21,6 @@ export MediaDetailsPage from './widgets/MediaDetails';
 export SourceManagement from './widgets/SourceManagementOverview';
 export SourceList from './widgets/SourceList';
 export SourceManagementForm from './widgets/SourceManagementForm';
-export SourceDropdownMenu from './widgets/SourceDropdownMenu';
 export ContentTemplate from './widgets/ContentTemplate';
 export ContentTemplateForm from './widgets/ContentTemplateForm';
 export SDOTable from './widgets/SDOTable';

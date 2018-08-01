@@ -141,10 +141,8 @@ describe('DynamicAdapter', () => {
     }
   });
 
-  it('DynamicAdapter should set default values for any adapter input fields', done => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
-      fields: FIELDS
-    });
+  it('DynamicAdapter should set default values for any adapter input fields', () => {
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
@@ -159,7 +157,6 @@ describe('DynamicAdapter', () => {
         return Promise.resolve(SOURCES);
       },
       loadNextClusters: () => {
-        done();
         return Promise.resolve(CLUSTERS);
       }
     };
@@ -179,6 +176,11 @@ describe('DynamicAdapter', () => {
     let expectedConfiguration = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
+      _source: {
+        hasNextPage: false,
+        isNextPageLoading: false,
+        items: []
+      },
       _cluster: {
         hasNextPage: false,
         isNextPageLoading: false,
@@ -189,7 +191,7 @@ describe('DynamicAdapter', () => {
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
   });
 
-  it('DynamicAdapter should rehydrate its state if the existing configuration matches the adapters fields', done => {
+  it('DynamicAdapter should rehydrate its state if the existing configuration matches the adapters fields', () => {
     const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
       supportedSourceTypes: SUPPORTED_SOURCE_TYPES,
       fields: FIELDS
@@ -230,6 +232,11 @@ describe('DynamicAdapter', () => {
     let expectedConfiguration = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
+      _source: {
+        hasNextPage: false,
+        isNextPageLoading: false,
+        items: []
+      },
       _cluster: {
         hasNextPage: false,
         isNextPageLoading: false,
