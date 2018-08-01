@@ -33,9 +33,9 @@ export class VSDKStyleWrapper extends React.Component {
     children: node
   };
 
-  getJSSNamespace = () => `vsdk-${guid()}`;
+  jssNamespace = `vsdk-${guid()}`;
 
-  getJSS = () => create(jssPreset());
+  jss = create(jssPreset());
 
   render() {
     const mergedTheme = createMuiTheme(
@@ -43,7 +43,7 @@ export class VSDKStyleWrapper extends React.Component {
     );
 
     return (
-      <JssProvider jss={this.getJSS()} classNamePrefix={this.getJSSNamespace()}>
+      <JssProvider jss={this.jss} classNamePrefix={this.jssNamespace}>
         <MuiThemeProvider theme={mergedTheme}>
           {this.props.children}
         </MuiThemeProvider>
