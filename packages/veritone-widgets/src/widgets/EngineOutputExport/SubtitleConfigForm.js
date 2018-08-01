@@ -5,8 +5,8 @@ import { formComponents } from "veritone-react-common";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+import Grid from '@material-ui/core/Grid';
 
 import styles from "./styles.scss";
 
@@ -17,43 +17,52 @@ const SubtitleConfigForm = reduxForm({
 })(({ handleSubmit, handleCancel, children, submitting, invalid }) => (
   <form onSubmit={handleSubmit}>
     <div className={styles.subtitleConfigField}>
-      <FormControl>
-        <Field
-          type="number"
-          name="maxLinesPerCaptionLine"
-          label="Max Characters per Caption Line"
-          style={{ width: 195 }}
-          component={formComponents.TextField}
-          // eslint-disable-next-line
-          normalize={value => parseInt(value)}
-          InputLabelProps={{
-            classes: {
-              root: styles.subtitleFieldLabel,
-              shrink: styles.subtitleFieldLabelShrink
-            }
-          }}
-        />
+      <FormControl fullWidth>
+        <Grid container spacing={16} alignItems="flex-end">
+          <Grid item className={styles.subtitleFieldLabel}>Max Characters per Caption Line</Grid>
+          <Grid item>
+            <Field
+              type="number"
+              name="maxLinesPerCaptionLine"
+              style={{ width: 50 }}
+              component={formComponents.TextField}
+              // eslint-disable-next-line
+              normalize={value => parseInt(value)}
+              InputLabelProps={{
+                classes: {
+                  root: styles.subtitleFieldLabel,
+                  shrink: styles.subtitleFieldLabelShrink
+                }
+              }}
+              InputProps={{
+                classes: {
+                  input: styles.subtitleFieldInput
+                }
+              }}
+            />
+          </Grid>
+        </Grid>
       </FormControl>
     </div>
     <div className={styles.subtitleConfigField}>
-      <FormControl>
-        <InputLabel
-          classes={{
-            root: styles.subtitleFieldLabel,
-            shrink: styles.subtitleFieldLabelShrink
-          }}
-        >
-          Number of Lines per Screen
-        </InputLabel>
-        <Field
-          component={formComponents.Select}
-          name="linesPerScreen"
-          style={{ width: 195 }}
-        >
-          <MenuItem value={1}>1</MenuItem>
-          <MenuItem value={2}>2</MenuItem>
-          <MenuItem value={3}>3</MenuItem>
-        </Field>
+      <FormControl fullWidth>
+        <Grid container spacing={16} alignItems="flex-end">
+          <Grid item className={styles.subtitleFieldLabel}>Number of Lines per Screen</Grid>
+          <Grid item>
+            <Field
+              component={formComponents.Select}
+              name="linesPerScreen"
+              style={{ width: 50 }}
+              classes={{
+                select: styles.subtitleFieldInput
+              }}
+            >
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
+              <MenuItem value={3}>3</MenuItem>
+            </Field>
+          </Grid>
+        </Grid>
       </FormControl>
     </div>
     <div className={styles.subtitleConfigField}>

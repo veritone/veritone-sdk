@@ -115,6 +115,13 @@
 
   .subtitleFieldLabel {
     @include mui-text('caption');
+    color: $light-black;
+  }
+
+  .subtitleFieldInput {
+    @include mui-text('body1');
+    padding-bottom: 4px;
+    height: 1.1875em;
   }
 
   .subtitleFieldLabelShrink {
