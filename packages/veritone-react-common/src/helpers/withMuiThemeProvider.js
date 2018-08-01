@@ -43,9 +43,11 @@ const VSDKStyleWrapper = withTheme()(
     }
 
     render() {
-      // need to merge the results of createMuiTheme, because some variables like htmlFontSize are used for the calculation of theme properties
+      // need to merge the results of createMuiTheme
+      // because some variables like htmlFontSize
+      // are used for the calculation of theme properties
       // ex: createMuiTheme({typography: { htmlFontSize: 5 }) => { typography: { fontSize: 10 / 5 }}
-      // if you merge just the themes without applying createMuiTheme beforehand, the values will be incorrect
+      // the values will be incorrect if you merge just the themes without applying createMuiTheme
       const mergedTheme = merge(
         {},
         createMuiTheme(this.props.theme),
