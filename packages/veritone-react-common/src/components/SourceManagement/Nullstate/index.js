@@ -19,7 +19,7 @@ export default class SourceManagementNullState extends React.Component {
       <NullState
         imgProps={{
           src: NullstateImage,
-          alt: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
+          alt: "https://static.veritone.com/veritone-ui/default-nullstate.svg",
           style: {
             fontSize: '100px',
             marginBottom: '30px'
@@ -28,7 +28,7 @@ export default class SourceManagementNullState extends React.Component {
         titleText="No Sources"
         btnProps={{
           onClick,
-          text: 'Create a Source'
+          text: "Create a Source"
         }}
       >
         <div className={styles.greyText}>
