@@ -107,7 +107,7 @@ class _VeritoneApp {
     }
 
     ReactDOM.render(
-      <VSDKStyleWrapper theme={this._theme}>
+      <VSDKStyleWrapper customTheme={this._theme}>
         <Provider store={this._store}>
           <div>
             {appModule.widgets(this._store.getState()).map(w => {

@@ -9,6 +9,7 @@ import {
 import { create } from 'jss';
 import JssProvider from 'react-jss/lib/JssProvider';
 import blue from '@material-ui/core/colors/blue';
+import merge from 'lodash/merge';
 
 import { guid } from './guid';
 
@@ -42,10 +43,14 @@ const VSDKStyleWrapper = withTheme()(
     }
 
     render() {
-      const mergedTheme = createMuiTheme({
-        ...this.props.theme,
-        ...this.props.customTheme
-      });
+      // need to merge the results of createMuiTheme, because some variables like htmlFontSize are used for the calculation of theme properties
+      // ex: createMuiTheme({typography: { htmlFontSize: 5 }) => { typography: { fontSize: 10 / 5 }}
+      // if you merge just the themes without applying createMuiTheme beforehand, the values will be incorrect
+      const mergedTheme = merge(
+        {},
+        createMuiTheme(this.props.theme),
+        createMuiTheme(this.props.customTheme)
+      );
 
       return (
         <JssProvider jss={this._jss} classNamePrefix={this._style}>
