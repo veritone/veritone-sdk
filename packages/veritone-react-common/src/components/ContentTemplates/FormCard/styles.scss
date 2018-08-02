@@ -1,0 +1,29 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.formCard {
+  width: 60%;
+  background-color: $fullWhite;
+  padding: 24px 24px 50px;
+  position: relative;
+  box-shadow: 0 0 2px 0 $faint-black, 0 2px 2px 0 $faint-black;
+  margin-bottom: 30px;
+
+  .name {
+    @include mui-text('subhead');
+    color: $dark-black;
+    font-weight: 500 !important;
+  }
+
+  .trashIcon {
+    height: 14px;
+    width: 14px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+
+  .formElements {
+    margin-top: 20px;
+  }
+}
