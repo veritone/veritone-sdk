@@ -1,4 +1,4 @@
-import { forEach, get, uniqWith, groupBy, find } from 'lodash';
+import { forEach, get, uniqWith, groupBy, find, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -16,8 +16,14 @@ export const UPDATE_SELECTED_FILE_TYPES = `vtn/${namespace}/UPDATE_SELECTED_FILE
 
 export const APPLY_SUBTITLE_OPTIONS = `vtn/${namespace}/APPLY_SUBTITLE_OPTIONS`;
 
+export const FETCH_ENGINE_CATEGORY_EXPORT_FORMATS = `vtn/${namespace}/FETCH_ENGINE_CATEGORY_EXPORT_FORMATS`;
 export const FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS`;
 export const FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE`;
+
+export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
+export const EXPORT_AND_DOWNLOAD_FAILURE = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_FAILURE`;
+
+export const SET_ON_EXPORT_CALLBACK = `vtb/${namespace}/SET_ON_EXPORT_CALLBACK`;
 
 const defaultState = {
   fetchingEngineRuns: false,
@@ -26,10 +32,13 @@ const defaultState = {
   enginesRan: {},
   categoryLookup: {},
   expandedCategories: {},
+  tdoData: [],
   outputConfigurations: [],
   engineCategoryExportFormats: [],
   fetchingEngineRunsError: '',
-  fetchCategoryExportFormatsError: ''
+  fetchCategoryExportFormatsError: '',
+  exportAndDownloadError: '',
+  onExport: noop
 };
 
 export default createReducer(defaultState, {
@@ -40,7 +49,7 @@ export default createReducer(defaultState, {
       fetchingEngineRunsError: ''
     };
   },
-  [FETCH_ENGINE_RUNS_SUCCESS](state, { enginesRan }) {
+  [FETCH_ENGINE_RUNS_SUCCESS](state, { enginesRan, tdoData }) {
     let newOutputConfigurations = [];
     const categoryLookup = {};
     const expandedCategories = {};
@@ -80,7 +89,8 @@ export default createReducer(defaultState, {
         ...categoryLookup
       },
       outputConfigurations: newOutputConfigurations,
-      expandedCategories: expandedCategories
+      expandedCategories: expandedCategories,
+      tdoData
     };
   },
   [FETCH_ENGINE_RUNS_FAILURE](state, { error }) {
@@ -147,16 +157,36 @@ export default createReducer(defaultState, {
       })
     };
   },
+  [FETCH_ENGINE_CATEGORY_EXPORT_FORMATS](state) {
+    return {
+      ...state,
+      fetchingCategoryExportFormats: true
+    };
+  },
   [FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS](state, action) {
     return {
       ...state,
+      fetchingCategoryExportFormats: false,
       engineCategoryExportFormats: [...action.engineCategoryExportFormats]
     };
   },
   [FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE](state, { error }) {
     return {
       ...state,
+      fetchingCategoryExportFormats: false,
       fetchCategoryExportFormatsError: error
+    };
+  },
+  [SET_ON_EXPORT_CALLBACK](state, { onExport }) {
+    return {
+      ...state,
+      onExport: onExport || noop
+    };
+  },
+  [EXPORT_AND_DOWNLOAD_FAILURE](state, { error }) {
+    return {
+      ...state,
+      exportAndDownloadError: error
     };
   }
 });
@@ -165,7 +195,7 @@ function local(state) {
   return state[namespace];
 }
 
-export const includeMedia = state => get(local(state), 'includeMedia');
+export const getIncludeMedia = state => get(local(state), 'includeMedia');
 export const outputConfigsByCategoryId = state =>
   groupBy(get(local(state), 'outputConfigurations'), 'categoryId');
 export const getCategoryById = (state, categoryId) => {
@@ -181,6 +211,12 @@ export const engineCategoryExportFormats = (state, categoryId) =>
   });
 export const fetchingEngineRuns = state =>
   get(local(state), 'fetchingEngineRuns');
+export const fetchingCategoryExportFormats = state =>
+  get(local(state), 'fetchingCategoryExportFormats');
+export const onExport = state => get(local(state), 'onExport');
+export const getOutputConfigurations = state =>
+  get(local(state), 'outputConfigurations');
+export const getTdoData = state => get(local(state), 'tdoData');
 
 export const fetchEngineRuns = tdos => {
   return {
@@ -196,10 +232,11 @@ export const fetchEngineRunsFailure = error => {
   };
 };
 
-export const fetchEngineRunsSuccess = enginesRan => {
+export const fetchEngineRunsSuccess = (enginesRan, tdoData) => {
   return {
     type: FETCH_ENGINE_RUNS_SUCCESS,
-    enginesRan
+    enginesRan,
+    tdoData
   };
 };
 
@@ -240,6 +277,12 @@ export const applySubtitleConfigs = (categoryId, values) => {
   };
 };
 
+export const fetchEngineCategoryExportFormats = () => {
+  return {
+    type: FETCH_ENGINE_CATEGORY_EXPORT_FORMATS
+  };
+};
+
 export const fetchEngineCategoryExportFormatsSuccess = engineCategoryExportFormats => {
   return {
     type: FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS,
@@ -250,6 +293,26 @@ export const fetchEngineCategoryExportFormatsSuccess = engineCategoryExportForma
 export const fetchEngineCategoryExportFormatsFailure = error => {
   return {
     type: FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE,
+    error
+  };
+};
+
+export const setOnExportCallback = cb => {
+  return {
+    type: SET_ON_EXPORT_CALLBACK,
+    onExport: cb
+  };
+};
+
+export const startExportAndDownload = () => {
+  return {
+    type: START_EXPORT_AND_DOWNLOAD
+  };
+};
+
+export const exportAndDownloadFailure = error => {
+  return {
+    type: EXPORT_AND_DOWNLOAD_FAILURE,
     error
   };
 };

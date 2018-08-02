@@ -149,8 +149,8 @@ export default class EngineCategoryConfig extends Component {
                 <div className={styles.customizeOutputBox}>
                   <ClosedCaptionIcon className={styles.closedCaptionIcon} />
                   <span className={styles.customizeSubtitleText}>
-                    Subtitle formats have been selected, adjust the format and display
-                    settings here
+                    Subtitle formats have been selected, adjust the format and
+                    display settings here
                   </span>
                   <Button
                     color="primary"

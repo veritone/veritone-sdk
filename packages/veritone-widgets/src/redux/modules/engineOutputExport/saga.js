@@ -3,10 +3,17 @@ import { get, forEach } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
   FETCH_ENGINE_RUNS,
+  START_EXPORT_AND_DOWNLOAD,
+  getIncludeMedia,
   fetchEngineRunsFailure,
   fetchEngineRunsSuccess,
+  fetchEngineCategoryExportFormats as fetchEngineCategoryExportFormatsAction,
   fetchEngineCategoryExportFormatsFailure,
-  fetchEngineCategoryExportFormatsSuccess
+  fetchEngineCategoryExportFormatsSuccess,
+  onExport,
+  getOutputConfigurations,
+  getTdoData,
+  exportAndDownloadFailure
 } from './';
 
 const { auth: authModule, config: configModule, user: userModule } = modules;
@@ -21,6 +28,7 @@ function* fetchEngineRuns(tdoIds) {
   const tdoQueries = tdoIds.reduce((accumulator, id) => {
     const subquery = `
       tdo${id}:  temporalDataObject(id: "${id}") {
+        id
         engineRuns {
           records {
             engine {
@@ -63,10 +71,14 @@ function* fetchEngineRuns(tdoIds) {
   }
 
   let engineRuns = [];
+  let tdoData = [];
   if (response.data) {
     forEach(response.data, tdo => {
       if (get(tdo, 'engineRuns.records.length')) {
         engineRuns = engineRuns.concat(get(tdo, 'engineRuns.records'));
+        tdoData = tdoData.concat({
+          tdoId: get(tdo, 'id')
+        });
       }
     });
   }
@@ -81,12 +93,14 @@ function* fetchEngineRuns(tdoIds) {
           };
         }
         return accumulator;
-      }, {})
+      }, {}),
+      tdoData
     )
   );
 }
 
 function* fetchEngineCategoryExportFormats() {
+  yield put(fetchEngineCategoryExportFormatsAction());
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
@@ -135,6 +149,61 @@ function* fetchEngineCategoryExportFormats() {
   yield put(fetchEngineCategoryExportFormatsSuccess(categoryExportFormats));
 }
 
+function* exportAndDownload() {
+  const onExportFunction = yield select(onExport);
+
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  const mutation = `
+    mutation createExportRequest(
+      $includeMedia: Boolean,
+      $tdoData: [CreateExportRequestForTDO!]!,
+      $outputConfigurations: [CreateExportRequestOutputConfig!]
+    ) {
+      createExportRequest(input: {
+        includeMedia: $includeMedia
+        tdoData: $tdoData
+        outputConfigurations: $outputConfigurations
+      }) {
+        id
+        status
+        organizationId
+        createdDateTime
+        modifiedDateTime
+        requestorId
+        assetUri
+      }
+    }
+  `;
+
+  const includeMedia = yield select(getIncludeMedia);
+  const outputConfigurations = yield select(getOutputConfigurations);
+  const tdoData = yield select(getTdoData);
+
+  const variables = {
+    includeMedia,
+    outputConfigurations,
+    tdoData
+  };
+
+  let response;
+  try {
+    response = yield call(helpers.fetchGraphQLApi, {
+      endpoint: graphQLUrl,
+      variables,
+      query: mutation,
+      token
+    });
+  } catch (e) {
+    return yield put(exportAndDownloadFailure(e));
+  }
+
+  onExportFunction(get(response, 'data.createExportRequest'));
+}
+
 function* watchFetchEngineRuns() {
   yield takeEvery(FETCH_ENGINE_RUNS, function* onFetchEngineRuns({ tdoIds }) {
     yield call(fetchEngineCategoryExportFormats);
@@ -142,6 +211,15 @@ function* watchFetchEngineRuns() {
   });
 }
 
+function* watchStartExportAndDownload() {
+  yield takeEvery(
+    START_EXPORT_AND_DOWNLOAD,
+    function* onStartExportAndDownload() {
+      yield call(exportAndDownload);
+    }
+  );
+}
+
 export default function* root() {
-  yield all([fork(watchFetchEngineRuns)]);
+  yield all([fork(watchFetchEngineRuns), fork(watchStartExportAndDownload)]);
 }

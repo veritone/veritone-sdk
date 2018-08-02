@@ -278,6 +278,10 @@ export function selectUser(state) {
   return local(state).user;
 }
 
+export function selectUserOrganizationId(state) {
+  return get(local(state).user, 'organization.organizationId');
+}
+
 export function selectUserOrganizationKvp(state) {
   return get(local(state).user, 'organization.kvp');
 }

@@ -18,15 +18,20 @@ import EngineCategoryConfigList from './EngineCategoryConfigList';
 
 @connect(
   state => ({
-    includeMedia: engineOutputExportModule.includeMedia(state),
+    includeMedia: engineOutputExportModule.getIncludeMedia(state),
     outputConfigsByCategoryId: engineOutputExportModule.outputConfigsByCategoryId(
       state
     ),
     expandedCategories: engineOutputExportModule.expandedCategories(state),
-    fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state)
+    fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state),
+    fetchingCategoryExportFormats: engineOutputExportModule.fetchingCategoryExportFormats(
+      state
+    )
   }),
   {
-    setIncludeMedia: engineOutputExportModule.setIncludeMedia
+    setIncludeMedia: engineOutputExportModule.setIncludeMedia,
+    setOnExportCallback: engineOutputExportModule.setOnExportCallback,
+    startExportAndDownload: engineOutputExportModule.startExportAndDownload
   },
   null,
   { withRef: true }
@@ -45,8 +50,15 @@ export default class EngineOutputExport extends Component {
     onExport: func,
     includeMedia: bool,
     setIncludeMedia: func,
-    fetchingEngineRuns: bool
+    fetchingEngineRuns: bool,
+    fetchingCategoryExportFormats: bool,
+    startExportAndDownload: func,
+    setOnExportCallback: func
   };
+
+  componentDidMount() {
+    this.props.setOnExportCallback(this.props.onExport);
+  }
 
   handleIncludeMediaChange = event => {
     this.props.setIncludeMedia(event.target.checked);
@@ -56,12 +68,15 @@ export default class EngineOutputExport extends Component {
     const {
       tdos,
       includeMedia,
-      onExport,
       fetchingEngineRuns,
+      fetchingCategoryExportFormats,
       open,
-      onCancel
+      onCancel,
+      startExportAndDownload
     } = this.props;
 
+    const disableExportButton =
+      fetchingEngineRuns || fetchingCategoryExportFormats;
     return (
       <Dialog fullScreen open={open}>
         <Grid
@@ -146,8 +161,8 @@ export default class EngineOutputExport extends Component {
               variant="contained"
               color="primary"
               className={styles.actionButton}
-              onClick={onExport}
-              disabled={fetchingEngineRuns}
+              onClick={startExportAndDownload}
+              disabled={disableExportButton}
             >
               Export
             </Button>
