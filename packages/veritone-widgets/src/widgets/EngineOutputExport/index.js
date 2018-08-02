@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  bool,
-  func,
-  string,
-  arrayOf,
-  shape,
-  number
-} from 'prop-types';
+import { bool, func, string, arrayOf, shape, number } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
 import Card from '@material-ui/core/Card';
@@ -81,7 +74,9 @@ export default class EngineOutputExport extends Component {
         >
           <Grid item className={styles.engineOutputExportHeader} container>
             <Grid item xs={11}>
-              <div className={styles.title}>{`${tdos.length > 1 ? "Bulk " : ""}Export and Download`}</div>
+              <div className={styles.title}>{`${
+                tdos.length > 1 ? 'Bulk ' : ''
+              }Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
                 export below based on your selection. Please note that larger
@@ -118,7 +113,7 @@ export default class EngineOutputExport extends Component {
                     subheader: styles.exportFormatSubHeader
                   }}
                 />
-                <EngineCategoryConfigList tdos={tdos}/>
+                <EngineCategoryConfigList tdos={tdos} />
               </Card>
               <Card>
                 <CardHeader

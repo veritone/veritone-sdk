@@ -1,14 +1,22 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { withMuiThemeProvider } from 'veritone-react-common';
-import { arrayOf, bool, number, objectOf, shape, string, func } from "prop-types";
+import {
+  arrayOf,
+  bool,
+  number,
+  objectOf,
+  shape,
+  string,
+  func
+} from 'prop-types';
 
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-import * as engineOutputExportModule from "../../redux/modules/engineOutputExport";
-import EngineCategoryConfig from "./EngineCategoryConfig";
+import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
+import EngineCategoryConfig from './EngineCategoryConfig';
 
 import styles from './styles.scss';
 
@@ -55,7 +63,7 @@ export default class EngineCategoryConfigList extends Component {
     this.props.fetchEngineRuns(this.props.tdos);
   }
 
-  render () {
+  render() {
     const {
       tdos,
       fetchingEngineRuns,
@@ -68,24 +76,21 @@ export default class EngineCategoryConfigList extends Component {
       <div>
         {!fetchingEngineRuns ? (
           <List disablePadding>
-            {Object.keys(outputConfigsByCategoryId).map(
-              (key, index) => (
-                <Fragment key={`engine-output-config-${key}`}>
-                  <EngineCategoryConfig
-                    categoryId={key}
-                    engineCategoryConfigs={
-                      outputConfigsByCategoryId[key]
-                    }
-                    expanded={expandedCategories[key]}
-                    bulkExportEnabled={tdos.length > 1}
-                    onExpandConfigs={toggleConfigExpand}
-                  />
-                  {index !==
-                  Object.keys(outputConfigsByCategoryId).length -
-                  1 && <Divider />}
-                </Fragment>
-              )
-            )}
+            {Object.keys(outputConfigsByCategoryId).map((key, index) => (
+              <Fragment key={`engine-output-config-${key}`}>
+                <EngineCategoryConfig
+                  categoryId={key}
+                  engineCategoryConfigs={outputConfigsByCategoryId[key]}
+                  expanded={expandedCategories[key]}
+                  bulkExportEnabled={tdos.length > 1}
+                  onExpandConfigs={toggleConfigExpand}
+                />
+                {index !==
+                  Object.keys(outputConfigsByCategoryId).length - 1 && (
+                  <Divider />
+                )}
+              </Fragment>
+            ))}
           </List>
         ) : (
           <div className={styles.loadingConfigsContainer}>

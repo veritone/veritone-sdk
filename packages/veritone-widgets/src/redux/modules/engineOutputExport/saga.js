@@ -4,10 +4,12 @@ import { helpers, modules } from 'veritone-redux-common';
 import {
   FETCH_ENGINE_RUNS,
   fetchEngineRunsFailure,
-  fetchEngineRunsSuccess
+  fetchEngineRunsSuccess,
+  fetchEngineCategoryExportFormatsFailure,
+  fetchEngineCategoryExportFormatsSuccess
 } from './';
 
-const { auth: authModule, config: configModule } = modules;
+const { auth: authModule, config: configModule, user: userModule } = modules;
 
 function* fetchEngineRuns(tdoIds) {
   const config = yield select(configModule.getConfig);
@@ -52,12 +54,12 @@ function* fetchEngineRuns(tdoIds) {
       token
     });
   } catch (e) {
-    yield put(fetchEngineRunsFailure(e));
+    return yield put(fetchEngineRunsFailure(e));
   }
 
   const error = get(response, 'errors[0]');
   if (error) {
-    yield put(fetchEngineRunsFailure(error.message));
+    return yield put(fetchEngineRunsFailure(error.message));
   }
 
   let engineRuns = [];
@@ -84,8 +86,58 @@ function* fetchEngineRuns(tdoIds) {
   );
 }
 
+function* fetchEngineCategoryExportFormats() {
+  const config = yield select(configModule.getConfig);
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = yield select(authModule.selectSessionToken);
+
+  const orgId = yield select(userModule.selectUserOrganizationId);
+
+  const query = `
+      query organization($id: ID!){
+        organization(id: $id) {
+          id
+          engineCategoryExportFormats {
+            engineCategoryId
+            exportFormats {
+              format
+              isEnabled
+            }
+          }
+        }
+      }
+    `;
+
+  let response;
+  try {
+    response = yield call(helpers.fetchGraphQLApi, {
+      endpoint: graphQLUrl,
+      variables: {
+        id: orgId
+      },
+      query,
+      token
+    });
+  } catch (e) {
+    return yield put(fetchEngineCategoryExportFormatsFailure(e));
+  }
+
+  const error = get(response, 'errors[0]');
+  if (error) {
+    return yield put(fetchEngineCategoryExportFormatsFailure(error));
+  }
+
+  const categoryExportFormats = get(
+    response,
+    'data.organization.engineCategoryExportFormats'
+  );
+  yield put(fetchEngineCategoryExportFormatsSuccess(categoryExportFormats));
+}
+
 function* watchFetchEngineRuns() {
   yield takeEvery(FETCH_ENGINE_RUNS, function* onFetchEngineRuns({ tdoIds }) {
+    yield call(fetchEngineCategoryExportFormats);
     yield call(fetchEngineRuns, tdoIds);
   });
 }

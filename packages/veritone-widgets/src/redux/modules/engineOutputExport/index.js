@@ -1,4 +1,4 @@
-import { forEach, get, uniqWith, groupBy } from 'lodash';
+import { forEach, get, uniqWith, groupBy, find } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer } = helpers;
 
@@ -16,30 +16,28 @@ export const UPDATE_SELECTED_FILE_TYPES = `vtn/${namespace}/UPDATE_SELECTED_FILE
 
 export const APPLY_SUBTITLE_OPTIONS = `vtn/${namespace}/APPLY_SUBTITLE_OPTIONS`;
 
-// TODO: convert this to an api call or get it from the user org. (need to clarify this)
-const fakeOrgSetting = {
-  '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': {
-    vlf: 'enabled',
-    ttml: 'enabled',
-    txt: 'disabled'
-  }
-};
+export const FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS = `vtn/${namespace}/FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS`;
+export const FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE`;
 
 const defaultState = {
   fetchingEngineRuns: false,
+  fetchingCategoryExportFormats: false,
   includeMedia: false,
   enginesRan: {},
   categoryLookup: {},
   expandedCategories: {},
-  orgSettings: fakeOrgSetting,
-  outputConfigurations: []
+  outputConfigurations: [],
+  engineCategoryExportFormats: [],
+  fetchingEngineRunsError: '',
+  fetchCategoryExportFormatsError: ''
 };
 
 export default createReducer(defaultState, {
   [FETCH_ENGINE_RUNS](state) {
     return {
       ...state,
-      fetchingEngineRuns: true
+      fetchingEngineRuns: true,
+      fetchingEngineRunsError: ''
     };
   },
   [FETCH_ENGINE_RUNS_SUCCESS](state, { enginesRan }) {
@@ -47,7 +45,10 @@ export default createReducer(defaultState, {
     const categoryLookup = {};
     const expandedCategories = {};
     forEach(enginesRan, engineRun => {
-      if (state.orgSettings[engineRun.category.id]) {
+      const categoryExportFormat = find(state.engineCategoryExportFormats, {
+        engineCategoryId: engineRun.category.id
+      });
+      if (categoryExportFormat) {
         categoryLookup[engineRun.category.id] = engineRun.category;
         expandedCategories[engineRun.category.id] = false;
         newOutputConfigurations.push({
@@ -86,7 +87,7 @@ export default createReducer(defaultState, {
     return {
       ...state,
       fetchingEngineRuns: false,
-      error
+      fetchingEngineRunsError: error
     };
   },
   [SET_INCLUDE_MEDIA](state, action) {
@@ -109,7 +110,8 @@ export default createReducer(defaultState, {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
         if (
-          (config.engineId === action.engineId && config.categoryId === action.categoryId) ||
+          (config.engineId === action.engineId &&
+            config.categoryId === action.categoryId) ||
           (config.categoryId === action.categoryId && action.applyAll)
         ) {
           return {
@@ -130,20 +132,32 @@ export default createReducer(defaultState, {
     return {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
-        if(config.categoryId === action.categoryId) {
+        if (config.categoryId === action.categoryId) {
           return {
             ...config,
             formats: config.formats.map(format => {
               return {
                 ...format,
                 options: { ...action.values }
-              }
+              };
             })
-          }
+          };
         }
         return config;
       })
-    }
+    };
+  },
+  [FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS](state, action) {
+    return {
+      ...state,
+      engineCategoryExportFormats: [...action.engineCategoryExportFormats]
+    };
+  },
+  [FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE](state, { error }) {
+    return {
+      ...state,
+      fetchCategoryExportFormatsError: error
+    };
   }
 });
 
@@ -161,8 +175,10 @@ export const expandedCategories = state =>
   get(local(state), 'expandedCategories');
 export const getEngineById = (state, engineId) =>
   get(local(state), ['enginesRan', engineId]);
-export const categoryFormatOptions = (state, categoryId) =>
-  get(local(state), ['orgSettings', categoryId]);
+export const engineCategoryExportFormats = (state, categoryId) =>
+  find(get(local(state), 'engineCategoryExportFormats'), {
+    engineCategoryId: categoryId
+  });
 export const fetchingEngineRuns = state =>
   get(local(state), 'fetchingEngineRuns');
 
@@ -201,7 +217,12 @@ export const toggleConfigExpand = categoryId => {
   };
 };
 
-export const selectFileType = (selectedFileTypes, categoryId, engineId, applyAll = false) => {
+export const selectFileType = (
+  selectedFileTypes,
+  categoryId,
+  engineId,
+  applyAll = false
+) => {
   return {
     type: UPDATE_SELECTED_FILE_TYPES,
     selectedFileTypes,
@@ -216,5 +237,19 @@ export const applySubtitleConfigs = (categoryId, values) => {
     type: APPLY_SUBTITLE_OPTIONS,
     categoryId,
     values
-  }
-}
+  };
+};
+
+export const fetchEngineCategoryExportFormatsSuccess = engineCategoryExportFormats => {
+  return {
+    type: FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_SUCCESS,
+    engineCategoryExportFormats
+  };
+};
+
+export const fetchEngineCategoryExportFormatsFailure = error => {
+  return {
+    type: FETCH_ENGINE_CATEGORY_EXPORT_FORMATS_FAILURE,
+    error
+  };
+};

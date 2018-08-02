@@ -1,15 +1,14 @@
 import React from 'react';
-import { Field, reduxForm } from "redux-form";
-import { formComponents } from "veritone-react-common";
+import { Field, reduxForm } from 'redux-form';
+import { formComponents } from 'veritone-react-common';
 
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import MenuItem from "@material-ui/core/MenuItem";
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 
-import styles from "./styles.scss";
-
+import styles from './styles.scss';
 
 const SubtitleConfigForm = reduxForm({
   form: 'subtitleConfig',
@@ -19,7 +18,9 @@ const SubtitleConfigForm = reduxForm({
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
         <Grid container spacing={16} alignItems="flex-end">
-          <Grid item className={styles.subtitleFieldLabel}>Max Characters per Caption Line</Grid>
+          <Grid item className={styles.subtitleFieldLabel}>
+            Max Characters per Caption Line
+          </Grid>
           <Grid item>
             <Field
               type="number"
@@ -47,7 +48,9 @@ const SubtitleConfigForm = reduxForm({
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
         <Grid container spacing={16} alignItems="flex-end">
-          <Grid item className={styles.subtitleFieldLabel}>Number of Lines per Screen</Grid>
+          <Grid item className={styles.subtitleFieldLabel}>
+            Number of Lines per Screen
+          </Grid>
           <Grid item>
             <Field
               component={formComponents.Select}
@@ -75,9 +78,7 @@ const SubtitleConfigForm = reduxForm({
     </div>
     <br />
     <DialogActions>
-      <Button onClick={handleCancel}>
-        Cancel
-      </Button>
+      <Button onClick={handleCancel}>Cancel</Button>
       <Button type="submit" color="primary" disabled={submitting || invalid}>
         Save
       </Button>

@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  arrayOf,
-  bool,
-  number,
-  shape,
-  string,
-  func,
-  objectOf,
-  oneOf
-} from 'prop-types';
+import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { includes } from 'lodash';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -25,7 +16,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 @connect(
   (state, { engineId, categoryId }) => ({
     engine: engineOutputExportModule.getEngineById(state, engineId),
-    categoryFormatOptions: engineOutputExportModule.categoryFormatOptions(
+    engineCategoryExportFormats: engineOutputExportModule.engineCategoryExportFormats(
       state,
       categoryId
     )
@@ -56,7 +47,15 @@ export default class EngineConfigItem extends Component {
       signedLogoPath: string
     }),
     selectFileType: func,
-    categoryFormatOptions: objectOf(oneOf(['enabled', 'disabled'])).isRequired
+    engineCategoryExportFormats: shape({
+      engineCategoryId: string.isRequired,
+      exportFormats: arrayOf(
+        shape({
+          format: string.isRequired,
+          isEnabled: bool.isRequired
+        })
+      ).isRequired
+    }).isRequired
   };
 
   render() {
@@ -66,16 +65,20 @@ export default class EngineConfigItem extends Component {
       formats,
       selectFileType,
       engine,
-      categoryFormatOptions
+      engineCategoryExportFormats
     } = this.props;
 
-    const selectedFileExtensions = formats.map(
-      format => format.extension
-    );
+    const selectedFileExtensions = formats.map(format => format.extension);
+
     return (
       <ListItem className={styles.engineListItem}>
-        { engine && <img className={styles.engineLogo} src={engine.signedLogoPath} /> }
-        <ListItemText primary={engine ? engine.name : "All Engines"} inset={!engine} />
+        {engine && (
+          <img className={styles.engineLogo} src={engine.signedLogoPath} />
+        )}
+        <ListItemText
+          primary={engine ? engine.name : 'All Engines'}
+          inset={!engine}
+        />
         <Select
           multiple
           value={selectedFileExtensions}
@@ -97,15 +100,18 @@ export default class EngineConfigItem extends Component {
             />
           }
         >
-          {Object.keys(categoryFormatOptions).map(
-            key =>
-              categoryFormatOptions[key] === 'enabled' ? (
-                <MenuItem key={`format-${engineId}-${key}`} value={key}>
+          {engineCategoryExportFormats.exportFormats.map(
+            format =>
+              format.isEnabled ? (
+                <MenuItem
+                  key={`format-${engineId}-${format.format}`}
+                  value={format.format}
+                >
                   <Checkbox
                     color="primary"
-                    checked={includes(selectedFileExtensions, key)}
+                    checked={includes(selectedFileExtensions, format.format)}
                   />
-                  <ListItemText primary={`.${key}`} />
+                  <ListItemText primary={`.${format.format}`} />
                 </MenuItem>
               ) : null
           )}
