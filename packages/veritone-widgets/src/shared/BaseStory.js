@@ -5,7 +5,7 @@ import { withProps } from 'recompose';
 import { bool, func, objectOf, any } from 'prop-types';
 import { connect } from 'react-redux';
 import Switch from '@material-ui/core/Switch';
-import { AppContainer } from 'veritone-react-common';
+import { AppContainer, VeritoneSDKThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 
 const { user } = modules;
@@ -118,13 +118,15 @@ export default class BaseStory extends React.Component {
 
           {!this.state.showingWidget &&
             (this.props.componentClass ? (
-              <this.props.componentClass
-                store={this.props.store} // eslint-disable-line
-                {...this.props.componentProps}
-              />
+              <VeritoneSDKThemeProvider>
+                <this.props.componentClass
+                  store={this.props.store} // eslint-disable-line
+                  {...this.props.componentProps}
+                />
+              </VeritoneSDKThemeProvider>
             ) : (
-                'No component class specified'
-              ))}
+              'No component class specified'
+            ))}
 
           <AppContainer appBarOffset>
             <p>
