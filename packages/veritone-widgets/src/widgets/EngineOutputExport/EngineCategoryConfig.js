@@ -22,11 +22,9 @@ import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
 import styles from './styles.scss';
-import { withMuiThemeProvider } from 'veritone-react-common';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 
-@withMuiThemeProvider
 @connect(
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId)

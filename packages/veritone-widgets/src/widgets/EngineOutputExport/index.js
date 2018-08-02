@@ -12,12 +12,10 @@ import Button from '@material-ui/core/Button';
 
 import CloseIcon from '@material-ui/icons/Close';
 import styles from './styles.scss';
-import { withMuiThemeProvider } from 'veritone-react-common';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
 
-@withMuiThemeProvider
 @connect(
   state => ({
     includeMedia: engineOutputExportModule.includeMedia(state),

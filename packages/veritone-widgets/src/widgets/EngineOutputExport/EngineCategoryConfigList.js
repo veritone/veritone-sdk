@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { withMuiThemeProvider } from 'veritone-react-common';
 import {
   arrayOf,
   bool,
@@ -20,7 +19,6 @@ import EngineCategoryConfig from './EngineCategoryConfig';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 @connect(
   state => ({
     outputConfigsByCategoryId: engineOutputExportModule.outputConfigsByCategoryId(
