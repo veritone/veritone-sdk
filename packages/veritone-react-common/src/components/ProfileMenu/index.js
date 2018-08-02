@@ -4,11 +4,8 @@ import Menu from '@material-ui/core/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import { string, func, shape } from 'prop-types';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-
 import InnerProfileMenu from './InnerProfileMenu';
 
-@withMuiThemeProvider
 export default class ProfileMenu extends React.Component {
   static propTypes = {
     className: string,
