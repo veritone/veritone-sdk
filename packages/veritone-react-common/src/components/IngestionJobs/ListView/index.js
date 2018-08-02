@@ -30,7 +30,7 @@ export default class IngestionJobTileView extends React.Component {
   };
 
   renderEnginesIcons = taskTemplates => {
-    const icons = uniq(map(taskTemplates.records, 'engine.category.iconClass'));
+    const icons = uniq(map(taskTemplates, 'records.engine.category.iconClass'));
 
     return (
       <span className={styles.engineIcons}>
@@ -66,8 +66,7 @@ export default class IngestionJobTileView extends React.Component {
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
     const tableProps = omit(this.props, ['jobs', 'paginate', 'onFetchData']);
-    const ingestionJobKey =
-      'ingestionJob.records[0].taskTemplates.records[0].engine';
+    const ingestionJobKey = 'ingestionTask.engine';
 
     if (this.props.paginate) {
       tableProps.onShowCellRange = this.props.onFetchData;
@@ -88,7 +87,7 @@ export default class IngestionJobTileView extends React.Component {
           cellRenderer={this.renderStatus}
         />
         <Column
-          dataKey="jobTemplates.records[0].taskTemplates"
+          dataKey="completeTasks"
           header="Engines"
           cellRenderer={this.renderEnginesIcons}
           align="center"

@@ -61,7 +61,7 @@ export SourceNullState from './components/SourceManagement/Nullstate';
 export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementOverview from './components/SourceManagement/';
 
-export IngestionJobTileView from './components/IngestionJobs/IngestionJobTileView';
+export IngestionJobTileView from './components/IngestionJobs/ListView';
 export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
 export StatusPill from './components/StatusPill';
 export SDOTable from './components/SDOTable';
