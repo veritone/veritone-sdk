@@ -73,20 +73,20 @@ export default class EngineCategoryConfig extends Component {
   openCustomizeSubtitles = () => {
     this.setState({
       dialogOpen: true
-    })
+    });
   };
 
   handleCloseDialog = () => {
     this.setState({
       dialogOpen: false
-    })
+    });
   };
 
   handleFormSubmit = values => {
     this.props.applySubtitleConfigs(this.props.category.id, values);
     this.setState({
       dialogOpen: false
-    })
+    });
   };
 
   render() {
@@ -126,34 +126,39 @@ export default class EngineCategoryConfig extends Component {
         </ListItem>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <List disablePadding>
-            { bulkExportEnabled ?
-                <EngineConfigItem
-                  categoryId={category.id}
-                  formats={engineCategoryConfigs[0].formats}
-                /> :
-                <Fragment>
-                  {engineCategoryConfigs.map(config => {
-                    return (
-                      <EngineConfigItem
-                        key={`engine-config-item-${config.engineId}`}
-                        engineId={config.engineId}
-                        categoryId={config.categoryId}
-                        formats={config.formats}
-                      />
-                    );
-                  })}
-                </Fragment>
-            }
+            {bulkExportEnabled ? (
+              <EngineConfigItem
+                categoryId={category.id}
+                formats={engineCategoryConfigs[0].formats}
+              />
+            ) : (
+              <Fragment>
+                {engineCategoryConfigs.map(config => {
+                  return (
+                    <EngineConfigItem
+                      key={`engine-config-item-${config.engineId}`}
+                      engineId={config.engineId}
+                      categoryId={config.categoryId}
+                      formats={config.formats}
+                    />
+                  );
+                })}
+              </Fragment>
+            )}
 
             {hasFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
                   <ClosedCaptionIcon className={styles.closedCaptionIcon} />
                   <span className={styles.customizeSubtitleText}>
-                    Subtitle formats have been selected, adjust and display
+                    Subtitle formats have been selected, adjust the format and display
                     settings here
                   </span>
-                  <Button color="primary" className={styles.customizeButton} onClick={this.openCustomizeSubtitles}>
+                  <Button
+                    color="primary"
+                    className={styles.customizeButton}
+                    onClick={this.openCustomizeSubtitles}
+                  >
                     Customize
                   </Button>
                 </div>
@@ -166,17 +171,20 @@ export default class EngineCategoryConfig extends Component {
           onClose={this.handleCloseDialog}
           aria-labelledby="customize-dialog-title"
         >
-          <DialogTitle id="customize-dialog-title">Subtitle Format Settings</DialogTitle>
+          <DialogTitle id="customize-dialog-title">
+            Subtitle Format Settings
+          </DialogTitle>
           <DialogContent>
             <DialogContentText className={styles.subtitleConfigInfo}>
-              Adjust the format and display settings for your subtitle export for maximum readability.
+              Adjust the format and display settings for your subtitle export
+              for maximum readability.
             </DialogContentText>
             <SubtitleConfigForm
               handleCancel={this.handleCloseDialog}
               initialValues={{
-                'linesPerScreen': 2,
-                'maxLinesPerCaptionLine': 32,
-                'newLineOnPunctuation': false
+                linesPerScreen: 2,
+                maxLinesPerCaptionLine: 32,
+                newLineOnPunctuation: false
               }}
               onSubmit={this.handleFormSubmit}
             />
