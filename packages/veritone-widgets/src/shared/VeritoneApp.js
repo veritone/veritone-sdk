@@ -6,7 +6,7 @@ import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 import { modules, helpers } from 'veritone-redux-common';
-import { VSDKStyleWrapper } from 'veritone-react-common';
+import { VeritoneSDKThemeProvider } from 'veritone-react-common';
 
 const { auth: authModule, config: configModule, user: userModule } = modules;
 const { promiseMiddleware } = helpers;
@@ -107,7 +107,7 @@ class _VeritoneApp {
     }
 
     ReactDOM.render(
-      <VSDKStyleWrapper theme={this._theme}>
+      <VeritoneSDKThemeProvider theme={this._theme}>
         <Provider store={this._store}>
           <div>
             {appModule.widgets(this._store.getState()).map(w => {
@@ -135,7 +135,7 @@ class _VeritoneApp {
             })}
           </div>
         </Provider>
-      </VSDKStyleWrapper>,
+      </VeritoneSDKThemeProvider>,
       this._containerEl
     );
   }

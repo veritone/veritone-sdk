@@ -4,8 +4,8 @@ import { withKnobs } from '@storybook/addon-knobs';
 
 import '../src/styles/global.scss';
 import {
-  VSDKStyleWrapper
-} from '../src/helpers/withMuiThemeProvider';
+  VeritoneSDKThemeProvider
+} from '../src/helpers/withVeritoneSDKThemeProvider';
 
 const req = require.context('../src', true, /story.js$/);
 
@@ -14,7 +14,7 @@ function loadStories() {
 }
 
 const withStyles = story => (
-  <VSDKStyleWrapper>{story()}</VSDKStyleWrapper>
+  <VeritoneSDKThemeProvider>{story()}</VeritoneSDKThemeProvider>
 );
 
 addDecorator(withStyles);

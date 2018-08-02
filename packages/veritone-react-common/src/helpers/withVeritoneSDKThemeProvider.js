@@ -27,7 +27,7 @@ export const defaultVSDKTheme = {
   }
 };
 
-export class VSDKStyleWrapper extends React.Component {
+export class VeritoneSDKThemeProvider extends React.Component {
   static propTypes = {
     theme: objectOf(any),
     children: node
@@ -52,9 +52,9 @@ export class VSDKStyleWrapper extends React.Component {
   }
 }
 
-export function withMuiThemeProvider(theme) {
+export function withVeritoneSDKThemeProvider(theme) {
   return function decorator(Class) {
-    class WrappedWithMuiThemeProvider extends React.Component {
+    class WrappedWithVeritoneSDKThemeProvider extends React.Component {
       static propTypes = {
         forwardedRef: oneOfType([func, object])
       };
@@ -62,19 +62,19 @@ export function withMuiThemeProvider(theme) {
       render() {
         const { forwardedRef, ...rest } = this.props;
         return (
-          <VSDKStyleWrapper theme={theme}>
+          <VeritoneSDKThemeProvider theme={theme}>
             <Class ref={forwardedRef} {...rest} />
-          </VSDKStyleWrapper>
+          </VeritoneSDKThemeProvider>
         );
       }
     }
 
     function forwardRef(props, ref) {
-      return <WrappedWithMuiThemeProvider {...props} forwardedRef={ref} />;
+      return <WrappedWithVeritoneSDKThemeProvider {...props} forwardedRef={ref} />;
     }
 
     const name = Class.displayName || Class.name;
-    forwardRef.displayName = `WrappedWithMuiThemeProvider(${name})`;
+    forwardRef.displayName = `WrappedWithVeritoneSDKThemeProvider(${name})`;
 
     return React.forwardRef(forwardRef);
   };
