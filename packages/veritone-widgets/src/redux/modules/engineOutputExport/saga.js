@@ -1,5 +1,5 @@
 import { all, fork, takeEvery, call, select, put } from 'redux-saga/effects';
-import { get, forEach } from 'lodash';
+import { get, forEach, set } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
   FETCH_ENGINE_RUNS,
@@ -7,16 +7,13 @@ import {
   getIncludeMedia,
   fetchEngineRunsFailure,
   fetchEngineRunsSuccess,
-  fetchEngineCategoryExportFormats as fetchEngineCategoryExportFormatsAction,
-  fetchEngineCategoryExportFormatsFailure,
-  fetchEngineCategoryExportFormatsSuccess,
   onExport,
   getOutputConfigurations,
   getTdoData,
   exportAndDownloadFailure
 } from './';
 
-const { auth: authModule, config: configModule, user: userModule } = modules;
+const { auth: authModule, config: configModule } = modules;
 
 function* fetchEngineRuns(tdoIds) {
   const config = yield select(configModule.getConfig);
@@ -40,6 +37,7 @@ function* fetchEngineRuns(tdoIds) {
                 id
                 name
                 iconClass
+                exportFormats
               }
             }
           }
@@ -76,6 +74,24 @@ function* fetchEngineRuns(tdoIds) {
     forEach(response.data, tdo => {
       if (get(tdo, 'engineRuns.records.length')) {
         engineRuns = engineRuns.concat(get(tdo, 'engineRuns.records'));
+        // TODO: Remove this when api is updated.
+        forEach(engineRuns, engineRun => {
+          const categoryName = get(engineRun, 'engine.category.name');
+          if (categoryName === 'Transcription') {
+            set(engineRun, 'engine.category.exportFormats', [
+              {
+                label: 'Veritone Lattice Format',
+                format: 'vlf',
+                types: []
+              },
+              {
+                label: 'Time Text Markup Language',
+                format: 'ttml',
+                types: []
+              }
+            ]);
+          }
+        });
         tdoData = tdoData.concat({
           tdoId: get(tdo, 'id')
         });
@@ -97,56 +113,6 @@ function* fetchEngineRuns(tdoIds) {
       tdoData
     )
   );
-}
-
-function* fetchEngineCategoryExportFormats() {
-  yield put(fetchEngineCategoryExportFormatsAction());
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-
-  const orgId = yield select(userModule.selectUserOrganizationId);
-
-  const query = `
-      query organization($id: ID!){
-        organization(id: $id) {
-          id
-          engineCategoryExportFormats {
-            engineCategoryId
-            exportFormats {
-              format
-              isEnabled
-            }
-          }
-        }
-      }
-    `;
-
-  let response;
-  try {
-    response = yield call(helpers.fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      variables: {
-        id: orgId
-      },
-      query,
-      token
-    });
-  } catch (e) {
-    return yield put(fetchEngineCategoryExportFormatsFailure(e));
-  }
-
-  const error = get(response, 'errors[0]');
-  if (error) {
-    return yield put(fetchEngineCategoryExportFormatsFailure(error));
-  }
-
-  const categoryExportFormats = get(
-    response,
-    'data.organization.engineCategoryExportFormats'
-  );
-  yield put(fetchEngineCategoryExportFormatsSuccess(categoryExportFormats));
 }
 
 function* exportAndDownload() {
@@ -206,7 +172,6 @@ function* exportAndDownload() {
 
 function* watchFetchEngineRuns() {
   yield takeEvery(FETCH_ENGINE_RUNS, function* onFetchEngineRuns({ tdoIds }) {
-    yield call(fetchEngineCategoryExportFormats);
     yield call(fetchEngineRuns, tdoIds);
   });
 }
