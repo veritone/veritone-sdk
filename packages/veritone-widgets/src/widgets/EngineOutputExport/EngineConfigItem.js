@@ -16,10 +16,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 @connect(
   (state, { engineId, categoryId }) => ({
     engine: engineOutputExportModule.getEngineById(state, engineId),
-    engineCategoryExportFormats: engineOutputExportModule.engineCategoryExportFormats(
-      state,
-      categoryId
-    )
+    category: engineOutputExportModule.getCategoryById(state, categoryId)
   }),
   {
     selectFileType: engineOutputExportModule.selectFileType
@@ -31,41 +28,41 @@ export default class EngineConfigItem extends Component {
   static propTypes = {
     engineId: string,
     categoryId: string.isRequired,
-    formats: arrayOf(
-      shape({
-        extension: string.isRequired,
-        options: shape({
-          maxCharacterPerLine: number,
-          newLineOnPunctuation: bool,
-          linesPerScreen: number
-        })
-      })
-    ).isRequired,
     engine: shape({
       id: string,
       name: string.isRequired,
       signedLogoPath: string
     }),
-    selectFileType: func,
-    engineCategoryExportFormats: shape({
-      engineCategoryId: string.isRequired,
+    category: shape({
       exportFormats: arrayOf(
         shape({
+          label: string,
           format: string.isRequired,
-          isEnabled: bool.isRequired
+          types: arrayOf(string)
         })
       ).isRequired
-    }).isRequired
+    }).isRequired,
+    formats: arrayOf(
+      shape({
+        extension: string.isRequired,
+        options: shape({
+          linesPerScreen: number,
+          maxLinesPerCaptionLine: number,
+          newLineOnPunctuation: bool
+        })
+      })
+    ).isRequired,
+    selectFileType: func
   };
 
   render() {
     const {
+      engine,
       engineId,
       categoryId,
+      category,
       formats,
-      selectFileType,
-      engine,
-      engineCategoryExportFormats
+      selectFileType
     } = this.props;
 
     const selectedFileExtensions = formats.map(format => format.extension);
@@ -86,10 +83,6 @@ export default class EngineConfigItem extends Component {
           onChange={evt =>
             selectFileType(evt.target.value, categoryId, engineId, !engine)
           }
-          inputProps={{
-            name: engineId,
-            id: `engine-select-${engineId}`
-          }}
           // eslint-disable-next-line
           renderValue={value => `.${value.join(', .')}`}
           input={
@@ -107,24 +100,21 @@ export default class EngineConfigItem extends Component {
             getContentAnchorEl: null
           }}
         >
-          {engineCategoryExportFormats.exportFormats.map(
-            format =>
-              format.isEnabled ? (
-                <MenuItem
-                  key={`format-${engineId}-${format.format}`}
-                  value={format.format}
-                  classes={{
-                    selected: styles.exportFormatSelected
-                  }}
-                >
-                  <Checkbox
-                    color="primary"
-                    checked={includes(selectedFileExtensions, format.format)}
-                  />
-                  <ListItemText primary={`.${format.format}`} />
-                </MenuItem>
-              ) : null
-          )}
+          {category.exportFormats.map(format => (
+            <MenuItem
+              key={`format-${engineId}-${format.format}`}
+              value={format.format}
+              classes={{
+                selected: styles.exportFormatSelected
+              }}
+            >
+              <Checkbox
+                color="primary"
+                checked={includes(selectedFileExtensions, format.format)}
+              />
+              <ListItemText primary={`.${format.format} (${format.label})`} />
+            </MenuItem>
+          ))}
         </Select>
       </ListItem>
     );

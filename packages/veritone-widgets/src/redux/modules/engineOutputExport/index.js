@@ -255,14 +255,14 @@ export const toggleConfigExpand = categoryId => {
 };
 
 export const selectFileType = (
-  selectedFileTypes,
+  selectedFileType,
   categoryId,
   engineId,
   applyAll = false
 ) => {
   return {
     type: UPDATE_SELECTED_FILE_TYPES,
-    selectedFileTypes,
+    selectedFileType,
     categoryId,
     engineId,
     applyAll
