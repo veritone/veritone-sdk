@@ -59,6 +59,13 @@ const SubtitleConfigForm = reduxForm({
               classes={{
                 select: styles.subtitleFieldInput
               }}
+              MenuProps={{
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left'
+                },
+                getContentAnchorEl: null
+              }}
             >
               <MenuItem value={1}>1</MenuItem>
               <MenuItem value={2}>2</MenuItem>

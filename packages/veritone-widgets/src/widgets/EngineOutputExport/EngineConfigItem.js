@@ -99,6 +99,13 @@ export default class EngineConfigItem extends Component {
               }}
             />
           }
+          MenuProps={{
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left'
+            },
+            getContentAnchorEl: null
+          }}
         >
           {engineCategoryExportFormats.exportFormats.map(
             format =>
@@ -106,6 +113,9 @@ export default class EngineConfigItem extends Component {
                 <MenuItem
                   key={`format-${engineId}-${format.format}`}
                   value={format.format}
+                  classes={{
+                    selected: styles.exportFormatSelected
+                  }}
                 >
                   <Checkbox
                     color="primary"

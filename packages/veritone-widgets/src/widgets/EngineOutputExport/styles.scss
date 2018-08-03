@@ -106,6 +106,10 @@
   margin-right: 5px;
 }
 
+.exportFormatSelected {
+  background-color: transparent !important;
+}
+
 .subtitleConfigInfo {
   @include mui-text('caption');
 }
