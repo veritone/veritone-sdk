@@ -102,7 +102,7 @@ const handleImplicitRedirect = (
   hash = window.location.hash,
   opener = window.opener
 ) => {
-  let OAuthToken, error;
+  let OAuthToken, error, errorDescription;
 
   try {
     OAuthToken = hash.match(/access_token=(.+)$/)[1].split('&')[0];
@@ -113,6 +113,7 @@ const handleImplicitRedirect = (
   if (!OAuthToken) {
     try {
       error = hash.match(/error=(.+)$/)[1].split('&')[0];
+      errorDescription = hash.match(/error_description=(.+)$/)[1].split('&')[0];
     } catch (e) {
       /**/
     }
@@ -121,7 +122,8 @@ const handleImplicitRedirect = (
   opener.postMessage(
     {
       OAuthToken,
-      error
+      error,
+      errorDescription
     },
     window.origin
   );
