@@ -76,13 +76,13 @@ describe('EngineConfigItem', () => {
     });
 
     it('should call selectFileType when file type is selected', () => {
-      wrapper.find(Select).prop('onChange')({ target: { value: 'vlf' } });
+      wrapper.find(Select).prop('onChange')({ target: { value: ['vlf'] } });
 
       const actions = store.getActions();
       const expectedActions = [
         {
           type: engineOutputExportModule.UPDATE_SELECTED_FILE_TYPES,
-          selectedFileType: 'vlf',
+          selectedFileTypes: ['vlf'],
           categoryId: testEngine.category.id,
           applyAll: false,
           engineId: testEngine.id
@@ -123,13 +123,13 @@ describe('EngineConfigItem', () => {
     });
 
     it('should call selectFileType with applyAll equal to true when file type is selected', () => {
-      wrapper.find(Select).prop('onChange')({ target: { value: 'vlf' } });
+      wrapper.find(Select).prop('onChange')({ target: { value: ['vlf'] } });
 
       const actions = store.getActions();
       const expectedActions = [
         {
           type: engineOutputExportModule.UPDATE_SELECTED_FILE_TYPES,
-          selectedFileType: 'vlf',
+          selectedFileTypes: ['vlf'],
           categoryId: testEngine.category.id,
           applyAll: true
         }
