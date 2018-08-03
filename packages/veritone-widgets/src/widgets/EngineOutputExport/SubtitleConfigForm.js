@@ -1,6 +1,7 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { formComponents } from 'veritone-react-common';
+import { func, shape, number, bool } from 'prop-types';
 
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
@@ -13,7 +14,7 @@ import styles from './styles.scss';
 const SubtitleConfigForm = reduxForm({
   form: 'subtitleConfig',
   initialValues: {}
-})(({ handleSubmit, handleCancel, children, submitting, invalid }) => (
+})(({ handleSubmit, onCancel, children, submitting, invalid }) => (
   <form onSubmit={handleSubmit}>
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
@@ -85,12 +86,22 @@ const SubtitleConfigForm = reduxForm({
     </div>
     <br />
     <DialogActions>
-      <Button onClick={handleCancel}>Cancel</Button>
+      <Button onClick={onCancel}>Cancel</Button>
       <Button type="submit" color="primary" disabled={submitting || invalid}>
         Save
       </Button>
     </DialogActions>
   </form>
 ));
+
+SubtitleConfigForm.propTypes = {
+  handleCancel: func,
+  initialValues: shape({
+    linesPerScreen: number,
+    maxLinesPerCaptionLine: number,
+    newLineOnPunctuation: bool
+  }),
+  onSubmit: func
+};
 
 export default SubtitleConfigForm;

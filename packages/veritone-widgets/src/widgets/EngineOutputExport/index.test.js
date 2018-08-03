@@ -1,12 +1,15 @@
 import React from 'react';
+import { Field } from 'redux-form';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
 import Select from '@material-ui/core/Select';
 import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
 
 import EngineConfigItem from './EngineConfigItem';
+import SubtitleConfigForm from './SubtitleConfigForm';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 
 import styles from './styles.scss';
@@ -136,5 +139,41 @@ describe('EngineConfigItem', () => {
       ];
       expect(actions).toEqual(expectedActions);
     });
+  });
+});
+
+describe('SubtitleConfigForm', () => {
+  let wrapper, store, onCancel, onSubmit;
+
+  const testInitialValues = {
+    linesPerScreen: 2,
+    maxLinesPerCaptionLine: 32,
+    newLineOnPunctuation: false
+  };
+
+  beforeEach(() => {
+    store = mockStore();
+
+    onCancel = jest.fn();
+    onSubmit = jest.fn();
+    wrapper = mount(
+      <Provider store={store}>
+        <SubtitleConfigForm
+          onCancel={onCancel}
+          initialValues={testInitialValues}
+          onSubmit={onSubmit}
+        />
+      </Provider>
+    );
+  });
+
+  it('should call onCancel when the "Cancel" button is pressed', () => {
+    wrapper.find(Button).not('[type="submit"]').simulate('click');
+    expect(onCancel).toHaveBeenCalled();
+  });
+
+  it('should call onSubmit with updated values when form is submitted', () => {
+    wrapper.find('form').simulate('submit');
+    expect(onSubmit).toHaveBeenCalled();
   });
 });

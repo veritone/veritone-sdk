@@ -178,7 +178,7 @@ export default class EngineCategoryConfig extends Component {
               for maximum readability.
             </DialogContentText>
             <SubtitleConfigForm
-              handleCancel={this.handleCloseDialog}
+              onCancel={this.handleCloseDialog}
               initialValues={{
                 linesPerScreen: 2,
                 maxLinesPerCaptionLine: 32,
