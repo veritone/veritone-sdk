@@ -27,14 +27,18 @@ export default class InfiniteDropdownMenu extends React.Component {
     loadNextPage: func.isRequired,
     hasNextPage: bool.isRequired,
     isNextPageLoading: bool.isRequired,
-    items: arrayOf(shape({
-      id: string,
-      name: string
-    })),
-    customTriggers: arrayOf(shape({
-      label: string.isRequired,
-      trigger: func.isRequired
-    })),
+    items: arrayOf(
+      shape({
+        id: string,
+        name: string
+      })
+    ),
+    customTriggers: arrayOf(
+      shape({
+        label: string.isRequired,
+        trigger: func.isRequired
+      })
+    ),
     pageSize: number
   };
 
@@ -44,7 +48,7 @@ export default class InfiniteDropdownMenu extends React.Component {
 
   state = {
     anchorEl: null
-  }
+  };
 
   UNSAFE_componentWillMount() {
     this.props.loadNextPage({ startIndex: 0, stopIndex: this.props.pageSize });
@@ -75,7 +79,7 @@ export default class InfiniteDropdownMenu extends React.Component {
     const handleItemClick = item => () => {
       this.props.handleSelectionChange(item);
       this.handleMenuClose();
-    }
+    };
 
     return (
       <div
@@ -242,10 +246,12 @@ const ItemSelector = ({
 
 ItemSelector.propTypes = {
   initialValue: string,
-  items: arrayOf(shape({
-    id: string,
-    name: string
-  })).isRequired,
+  items: arrayOf(
+    shape({
+      id: string,
+      name: string
+    })
+  ).isRequired,
   handleSelectionChange: func.isRequired,
   selectLabel: string,
   handleMenuClick: func,
@@ -258,5 +264,6 @@ ItemSelector.propTypes = {
   customTriggers: arrayOf(shape({
     label: string.isRequired,
     trigger: func.isRequired
-  }))
+  })),
+  openCustomTrigger: func
 };

@@ -57,17 +57,19 @@ describe('DynamicAdapter', () => {
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({
-      clusterId: 'fakeId',
-      _cluster: {
-        selectedCluster: {}
-      }
-    }).then(result => {
-      testFuncs.validateCB(result);
-      expect(testFuncs.validateCB).toHaveBeenCalled();
-      done();
-      return result;
-    });
+    testFuncs
+      .validate({
+        clusterId: 'fakeId',
+        _cluster: {
+          selectedCluster: {}
+        }
+      })
+      .then(result => {
+        testFuncs.validateCB(result);
+        expect(testFuncs.validateCB).toHaveBeenCalled();
+        done();
+        return result;
+      });
   });
 
   it('Validate function should only require source if adapterConfig has supportedSourceTypes defined w/ length > 1', done => {
@@ -79,16 +81,18 @@ describe('DynamicAdapter', () => {
       validateCB: jest.fn()
     };
     jest.spyOn(testFuncs, 'validateCB');
-    testFuncs.validate({
-      clusterId: 'fakeId',
-      _cluster: {
-        selectedCluster: {}
-      }
-    }).catch(err => {
-      testFuncs.validateCB(err);
-      expect(testFuncs.validateCB).toHaveBeenCalledWith('Source is required');
-      done();
-    });
+    testFuncs
+      .validate({
+        clusterId: 'fakeId',
+        _cluster: {
+          selectedCluster: {}
+        }
+      })
+      .catch(err => {
+        testFuncs.validateCB(err);
+        expect(testFuncs.validateCB).toHaveBeenCalledWith('Source is required');
+        done();
+      });
   });
 
   it('Validate function should only require fields which have default values', done => {

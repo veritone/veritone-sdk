@@ -93,3 +93,8 @@
 * Added Lozenge component
 * Added Truncate component
 * Added ExpandableInputField component
+
+## 5.2.0
+* Added SourceTypeField component
+* Added export for DateTimePicker component
+* Bumped Redux to 4.0

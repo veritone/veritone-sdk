@@ -1,9 +1,11 @@
 import React from 'react';
 import { arrayOf, object, func, bool } from 'prop-types';
-import { SourceNullState, SourceTileView } from 'veritone-react-common';
+import { SourceManagement } from 'veritone-react-common';
 import { omit } from 'lodash';
 
 import widget from '../../shared/widget';
+
+const { NullState, SourceTileView } = SourceManagement;
 
 class SourceListWidget extends React.Component {
   static propTypes = {
@@ -15,12 +17,9 @@ class SourceListWidget extends React.Component {
     fetchData: func
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      sources: props.sources
-    };
-  }
+  state = {
+    sources: this.props.sources
+  };
 
   handleFetchData = ({ start, end }) => {
     const perPage = end - start + 1;
@@ -52,7 +51,7 @@ class SourceListWidget extends React.Component {
     ]);
 
     return !this.state.sources.length ? (
-      <SourceNullState onClick={this.props.onCreateSource} />
+      <NullState onClick={this.props.onCreateSource} />
     ) : (
       <SourceTileView
         {...viewProps}

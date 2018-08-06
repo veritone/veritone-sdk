@@ -1,6 +1,6 @@
 import { isEmpty, keyBy, get } from 'lodash';
 import { getConfig } from 'modules/config';
-import { callGraphQLApi } from 'helpers/api';
+import callGraphQLApi from 'helpers/api/callGraphQLApi';
 import { createReducer } from 'helpers/redux';
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
 

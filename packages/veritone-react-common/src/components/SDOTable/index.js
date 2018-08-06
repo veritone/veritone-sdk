@@ -40,7 +40,7 @@ export default class SDOTable extends React.Component {
   render() {
     const tableProps = omit(this.props, ['data', 'schema', 'paginate']);
 
-    const TableComp = this.props.paginate ? PaginatedTable : Table;
+    const TableComponent = this.props.paginate ? PaginatedTable : Table;
     const tableColumns = map(this.props.schema, (propDetails, prop) => {
       return (
         <Column
@@ -57,13 +57,13 @@ export default class SDOTable extends React.Component {
     });
 
     return (
-      <TableComp
+      <TableComponent
         {...tableProps}
         rowGetter={this.getRowData}
         rowCount={this.props.data.length}
       >
         {tableColumns}
-      </TableComp>
+      </TableComponent>
     );
   }
 }

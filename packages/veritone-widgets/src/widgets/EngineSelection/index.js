@@ -32,11 +32,16 @@ import widget from '../../shared/widget';
     selectedEngineIds: engineSelectionModule.getSelectedEngineIds(
       state,
       _widgetId
+    ),
+    filteredSelectedEngineIds: engineSelectionModule.getFilteredSelectedEngineids(
+      state,
+      _widgetId
     )
   }),
   {
     initializeWidget: engineSelectionModule.initializeWidget,
     fetchEngines: engineSelectionModule.refetchEngines,
+    fetchEngineCategories: engineModule.fetchEngineCategories,
     selectEngines: engineSelectionModule.selectEngines,
     setDeselectedEngineIds: engineSelectionModule.setDeselectedEngineIds,
     setAllEnginesSelected: engineSelectionModule.setAllEnginesSelected
@@ -63,10 +68,12 @@ class EngineSelection extends React.Component {
     allEnginesSelected: bool,
     initialDeselectedEngineIds: arrayOf(string),
     initialSelectedEngineIds: arrayOf(string),
+    filteredSelectedEngineIds: arrayOf(string),
     selectedEngineIds: arrayOf(string),
     deselectedEngineIds: arrayOf(string),
     allEngines: objectOf(object),
     selectEngines: func.isRequired,
+    fetchEngineCategories: func.isRequired,
     hideActions: bool
   };
 
@@ -98,6 +105,8 @@ class EngineSelection extends React.Component {
       this.props.allEnginesSelected
     );
 
+    this.props.fetchEngineCategories();
+
     if (isEmpty(this.props.allEngines)) {
       this.props.fetchEngines(this.props._widgetId);
     } else {
@@ -118,6 +127,7 @@ class EngineSelection extends React.Component {
 
   veritoneAppDidAuthenticate = () => {
     this.props.fetchEngines(this.props._widgetId);
+    this.props.fetchEngineCategories();
   };
 
   handleViewDetail = engine => {
@@ -150,7 +160,7 @@ class EngineSelection extends React.Component {
         actionMenuItems={this.props.actionMenuItems}
         allEngines={this.props.allEngines}
         allEnginesSelected={this.props.allEnginesSelected}
-        selectedEngineIds={this.props.selectedEngineIds}
+        selectedEngineIds={this.props.filteredSelectedEngineIds}
         hideActions={this.props.hideActions}
         initialSelectedEngineIds={this.props.initialSelectedEngineIds}
       />

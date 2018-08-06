@@ -36,9 +36,11 @@ export const DELETE_SEARCH_PROFILE_FAILURE =
   'vtn/savedSearch/DELETE_SEARCH_PROFILE_FAILURE';
 
 export const RESET_SEARCH_PROFILES = 'vtn/savedSearch/RESET_SEARCH_PROFILES';
-export const RESET_SAVE_SEARCH= 'vtn/savedSearch/RESET_SAVE_SEARCH';
-export const RESET_MY_SEARCH_PROFILES = 'vtn/savedSearch/RESET_MY_SEARCH_PROFILES';
-export const RESET_ORG_SEARCH_PROFILES = 'vtn/savedSearch/RESET_ORG_SEARCH_PROFILES';
+export const RESET_SAVE_SEARCH = 'vtn/savedSearch/RESET_SAVE_SEARCH';
+export const RESET_MY_SEARCH_PROFILES =
+  'vtn/savedSearch/RESET_MY_SEARCH_PROFILES';
+export const RESET_ORG_SEARCH_PROFILES =
+  'vtn/savedSearch/RESET_ORG_SEARCH_PROFILES';
 
 const getDefaultState = () => ({
   isSaving: false,
@@ -99,7 +101,7 @@ const resetSaveSearchModal = state => ({
 
   duplicateProfileName: '',
   duplicateProfileId: '',
-  duplicateProfileShared: false,
+  duplicateProfileShared: false
 });
 
 const reducer = createReducer(getDefaultState(), {
@@ -293,12 +295,12 @@ const reducer = createReducer(getDefaultState(), {
     if (!action.meta.variables.shared) {
       return {
         ...state,
-        mySearchProfilesCount: get(action.payload, 'totalRecords.count'),
+        mySearchProfilesCount: get(action.payload, 'totalRecords.count')
       };
     } else {
       return {
         ...state,
-        orgSearchProfilesCount: get(action.payload, 'totalRecords.count'),
+        orgSearchProfilesCount: get(action.payload, 'totalRecords.count')
       };
     }
   },
@@ -338,7 +340,9 @@ export const resetSearchProfiles = () => ({ type: RESET_SEARCH_PROFILES });
 
 export const resetMySearchProfile = () => ({ type: RESET_MY_SEARCH_PROFILES });
 
-export const resetOrgSearchProfile = () => ({ type: RESET_ORG_SEARCH_PROFILES });
+export const resetOrgSearchProfile = () => ({
+  type: RESET_ORG_SEARCH_PROFILES
+});
 
 // duplicate profile
 export const isDuplicate = state => {

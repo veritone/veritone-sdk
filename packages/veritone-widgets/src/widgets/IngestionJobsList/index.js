@@ -1,12 +1,11 @@
 import React from 'react';
 import { arrayOf, object, func, bool } from 'prop-types';
-import {
-  IngestionJobNullstate,
-  IngestionJobTileView
-} from 'veritone-react-common';
+import { IngestionJobs } from 'veritone-react-common';
 import { omit } from 'lodash';
 
 import widget from '../../shared/widget';
+
+const { NullState, ListView } = IngestionJobs;
 
 class IngestionJobListWidget extends React.Component {
   static propTypes = {
@@ -18,12 +17,9 @@ class IngestionJobListWidget extends React.Component {
     fetchData: func
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      jobs: props.jobs
-    };
-  }
+  state = {
+    jobs: this.props.jobs
+  };
 
   handleFetchData = ({ start, end }) => {
     const perPage = end - start + 1;
@@ -49,9 +45,9 @@ class IngestionJobListWidget extends React.Component {
     const viewProps = omit(this.props, ['onCreateJob', 'jobs', 'fetchData']);
 
     return !this.state.jobs.length ? (
-      <IngestionJobNullstate onClick={this.props.onCreateJob} />
+      <NullState onClick={this.props.onCreateJob} />
     ) : (
-      <IngestionJobTileView
+      <ListView
         {...viewProps}
         jobs={this.state.jobs}
         onFetchData={this.handleFetchData}

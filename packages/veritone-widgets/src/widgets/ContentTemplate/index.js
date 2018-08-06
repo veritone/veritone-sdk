@@ -29,67 +29,82 @@ class ContentTemplateWidget extends React.Component {
     this.setState(newState);
   }
 
-  onListChange = (templateSchemaId, remove = false) => {
+  addToTemplateList = templateSchemaId => {
     const { templateData, initialTemplates } = this.props;
-    let newState;
-    if (remove) {
-      if (this.state.contentTemplates[templateSchemaId]) {
-        const contentTemplates = { ...this.state.contentTemplates };
-        delete contentTemplates[templateSchemaId];
-        newState = { contentTemplates };
-        this.setState(newState);
-      }
-    } else {
-      const data = {};
-      Object.keys(templateData[templateSchemaId].definition.properties).reduce(
-        (fields, schemaDefProp) => {
-          let value = get(initialTemplates, [
-            templateSchemaId,
-            'data',
-            schemaDefProp
-          ]);
-          if (value) {
-            data[schemaDefProp] = value;
-          }
-        },
-        data
-      );
-      newState = {
-        contentTemplates: {
-          ...this.state.contentTemplates,
-          [templateSchemaId]: {
-            ...templateData[templateSchemaId],
-            data
-          }
+    const data = {};
+
+    Object.keys(templateData[templateSchemaId].definition.properties).reduce(
+      (fields, schemaDefProp) => {
+        const value = get(initialTemplates, [
+          templateSchemaId,
+          'data',
+          schemaDefProp
+        ]);
+        if (value) {
+          data[schemaDefProp] = value;
         }
-      };
-      this.setState(newState);
-    }
-    if (newState) {
+      },
+      data
+    );
+
+    const newState = {
+      contentTemplates: {
+        ...this.state.contentTemplates,
+        [templateSchemaId]: {
+          ...templateData[templateSchemaId],
+          data
+        }
+      }
+    };
+
+    this.setState(newState, () => {
       this.props.handleUpdateContentTemplates(newState.contentTemplates);
+    });
+  };
+
+  removeFromTemplateList = templateSchemaId => {
+    if (this.state.contentTemplates[templateSchemaId]) {
+      const contentTemplates = { ...this.state.contentTemplates };
+      delete contentTemplates[templateSchemaId];
+
+      const newState = { contentTemplates };
+
+      this.setState(newState, () => {
+        this.props.handleUpdateContentTemplates(newState.contentTemplates);
+      });
     }
   };
 
   onInputChange = (templateSchemaId, fieldId, value) => {
+    let newState;
     const { contentTemplates } = this.state;
-    let newState = {
-      contentTemplates: {
-        ...contentTemplates,
-        [templateSchemaId]: {
-          ...contentTemplates[templateSchemaId],
-          data: {
-            ...contentTemplates[templateSchemaId].data
+
+    this.setState(
+      prevState => {
+        newState = {
+          contentTemplates: {
+            ...contentTemplates,
+            [templateSchemaId]: {
+              ...contentTemplates[templateSchemaId],
+              data: {
+                ...contentTemplates[templateSchemaId].data
+              }
+            }
           }
+        };
+
+        if (value) {
+          newState.contentTemplates[templateSchemaId].data[fieldId] = value;
+        } else {
+          delete newState.contentTemplates[templateSchemaId].data[fieldId];
         }
+
+        return newState;
+      },
+      () => {
+        this.props.handleUpdateContentTemplates(newState.contentTemplates);
       }
-    };
-    if (value) {
-      newState.contentTemplates[templateSchemaId].data[fieldId] = value;
-    } else {
-      delete newState.contentTemplates[templateSchemaId].data[fieldId];
-    }
-    this.setState(newState);
-    this.props.handleUpdateContentTemplates(newState.contentTemplates);
+    );
   };
 
   render() {
@@ -97,8 +112,8 @@ class ContentTemplateWidget extends React.Component {
       <ContentTemplate
         templateData={this.props.templateData}
         selectedTemplateSchemas={this.state.contentTemplates}
-        handleUpdateContentTemplates={this.props.handleUpdateContentTemplates}
-        onListChange={this.onListChange}
+        onAddTemplate={this.addToTemplateList}
+        onRemoveTemplate={this.removeFromTemplateList}
         onInputChange={this.onInputChange}
       />
     );

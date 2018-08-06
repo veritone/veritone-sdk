@@ -31,7 +31,7 @@ describe('StatusPill', () => {
     expect(wrapper.find('div').get(0).props.className).toEqual('statusPill');
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'backgroundColor',
-      '#00C853'
+      '#00c853'
     );
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'color',
@@ -45,7 +45,7 @@ describe('StatusPill', () => {
     wrapper = mount(<StatusPill status="inactive" />);
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'backgroundColor',
-      '#9E9E9E'
+      '#9e9e9e'
     );
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'color',
@@ -59,17 +59,17 @@ describe('StatusPill', () => {
     );
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'color',
-      '#607D8B'
+      '#607d8b'
     );
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'border',
-      '1px solid #607D8B'
+      '1px solid #607d8b'
     );
 
     wrapper = mount(<StatusPill status="processing" />);
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'backgroundColor',
-      '#2196F3'
+      '#2196f3'
     );
     expect(wrapper.find('div').get(0).props.style).toHaveProperty(
       'color',
