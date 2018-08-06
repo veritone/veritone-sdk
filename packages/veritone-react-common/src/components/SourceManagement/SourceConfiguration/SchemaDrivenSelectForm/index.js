@@ -48,7 +48,7 @@ export default class DynamicSelect extends React.Component {
 
   handleDetailChange = fieldId => event => {
     this.props.onSourceDetailChange({
-      [fieldId]: event.target.value
+      [fieldId]: event.target.type === 'checkbox' ? event.target.checked : event.target.value
     });
   };
 
@@ -191,7 +191,7 @@ export function SourceTypeField({ id, type, required, title, ...rest }) {
         control={
           <Checkbox
             {...pick(rest, ['onChange'])}
-            checked={rest.value}
+            checked={rest.checked}
             color="primary"
           />
         }
