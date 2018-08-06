@@ -45,9 +45,7 @@ export default class ContentTemplates extends React.Component {
         <div className={styles['template-list-container']}>
           <TemplateList
             templates={this.props.templateData}
-            // selectedTemplates={selectedTemplateSchemas}
             addTemplate={this.props.onAddTemplate}
-            // removeTemplate={this.props.onRemoveTemplate}
           />
         </div>
         <div className={styles['content-templates']}>

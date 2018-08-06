@@ -200,7 +200,6 @@ export default class SourceManagementForm extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    // TODO:  update caller
     return this.props.onSubmit({
       sourceConfiguration: this.state.sourceConfig,
       contentTemplates: this.state.contentTemplates
