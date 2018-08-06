@@ -104,17 +104,18 @@ export default class EngineCategoryConfig extends Component {
     });
 
     return (
-      <Fragment>
+      <div>
         <ListItem>
           <ListItemIcon>
             <Icon className={category.iconClass} />
           </ListItemIcon>
           <ListItemText
+            id="engineCategoryName"
             primary={`${category.name} (${engineCategoryConfigs.length})`}
           />
           <ListItemIcon classes={{ root: styles.expandIcon }}>
             <IconButton
-              aria-label="Show more"
+              aria-label="Expand Category"
               // eslint-disable-next-line
               onClick={() => onExpandConfigs(category.id)}
             >
@@ -188,7 +189,7 @@ export default class EngineCategoryConfig extends Component {
             />
           </DialogContent>
         </Dialog>
-      </Fragment>
+      </div>
     );
   }
 }
