@@ -19,7 +19,10 @@ export const APPLY_SUBTITLE_OPTIONS = `vtn/${namespace}/APPLY_SUBTITLE_OPTIONS`;
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
 export const EXPORT_AND_DOWNLOAD_FAILURE = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_FAILURE`;
 
-export const SET_ON_EXPORT_CALLBACK = `vtb/${namespace}/SET_ON_EXPORT_CALLBACK`;
+export const SET_ON_EXPORT_CALLBACK = `vtn/${namespace}/SET_ON_EXPORT_CALLBACK`;
+
+export const ADD_SNACK_BAR = `vtn/${namespace}/ADD_SNACK_BAR`;
+export const CLOSE_SNACK_BAR = `vtn/${namespace}/CLOSE_SNACK_BAR`;
 
 const defaultState = {
   fetchingEngineRuns: false,
@@ -30,9 +33,9 @@ const defaultState = {
   expandedCategories: {},
   tdoData: [],
   outputConfigurations: [],
-  fetchingEngineRunsError: '',
-  fetchCategoryExportFormatsError: '',
-  exportAndDownloadError: '',
+  errorSnackBars: [],
+  fetchingEngineRunsError: null,
+  exportAndDownloadError: null,
   onExport: noop
 };
 
@@ -41,7 +44,7 @@ export default createReducer(defaultState, {
     return {
       ...state,
       fetchingEngineRuns: true,
-      fetchingEngineRunsError: ''
+      fetchingEngineRunsError: null
     };
   },
   [FETCH_ENGINE_RUNS_SUCCESS](state, { enginesRan, tdoData }) {
@@ -155,11 +158,37 @@ export default createReducer(defaultState, {
       onExport: onExport || noop
     };
   },
+  [START_EXPORT_AND_DOWNLOAD](state) {
+    return {
+      ...state,
+      exportAndDownloadError: null
+    };
+  },
   [EXPORT_AND_DOWNLOAD_FAILURE](state, { error }) {
     return {
       ...state,
       exportAndDownloadError: error
     };
+  },
+  [ADD_SNACK_BAR](state, { snackBarConfig }) {
+    return {
+      ...state,
+      errorSnackBars: [...state.errorSnackBars, snackBarConfig]
+    }
+  },
+  [CLOSE_SNACK_BAR](state, { snackBarId }) {
+    return {
+      ...state,
+      errorSnackBars: state.errorSnackBars.map(snackBar => {
+        if (snackBar.id === snackBarId) {
+          return {
+            ...snackBar,
+            open: false
+          }
+        }
+        return snackBar;
+      })
+    }
   }
 });
 
@@ -185,6 +214,8 @@ export const onExport = state => get(local(state), 'onExport');
 export const getOutputConfigurations = state =>
   get(local(state), 'outputConfigurations');
 export const getTdoData = state => get(local(state), 'tdoData');
+export const errorSnackBars = state => get(local(state), 'errorSnackBars');
+export const fetchingEngineRunsError = state => get(local(state), 'fetchingEngineRunsError');
 
 export const fetchEngineRuns = tdos => {
   return {
@@ -196,7 +227,7 @@ export const fetchEngineRuns = tdos => {
 export const fetchEngineRunsFailure = error => {
   return {
     type: FETCH_ENGINE_RUNS_FAILURE,
-    fetchEngineRunError: error
+    error
   };
 };
 
@@ -263,4 +294,18 @@ export const exportAndDownloadFailure = error => {
     type: EXPORT_AND_DOWNLOAD_FAILURE,
     error
   };
+};
+
+export const addSnackBar = snackBarConfig => {
+  return {
+    type: ADD_SNACK_BAR,
+    snackBarConfig
+  }
+};
+
+export const closeSnackBar = snackBarId => {
+  return {
+    type: CLOSE_SNACK_BAR,
+    snackBarId
+  }
 };

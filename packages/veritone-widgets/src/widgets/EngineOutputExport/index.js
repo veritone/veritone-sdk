@@ -9,12 +9,18 @@ import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import CloseIcon from '@material-ui/icons/Close';
+
 import styles from './styles.scss';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
+
+const snackBarClasses = {
+  error: styles.errorSnackBar
+};
 
 @connect(
   state => ({
@@ -26,12 +32,15 @@ import EngineCategoryConfigList from './EngineCategoryConfigList';
     fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state),
     fetchingCategoryExportFormats: engineOutputExportModule.fetchingCategoryExportFormats(
       state
-    )
+    ),
+    errorSnackBars: engineOutputExportModule.errorSnackBars(state),
+    fetchingEngineRunsError: engineOutputExportModule.fetchingEngineRunsError(state)
   }),
   {
     setIncludeMedia: engineOutputExportModule.setIncludeMedia,
     setOnExportCallback: engineOutputExportModule.setOnExportCallback,
-    startExportAndDownload: engineOutputExportModule.startExportAndDownload
+    startExportAndDownload: engineOutputExportModule.startExportAndDownload,
+    closeSnackBar: engineOutputExportModule.closeSnackBar
   },
   null,
   { withRef: true }
@@ -53,7 +62,10 @@ export default class EngineOutputExport extends Component {
     fetchingEngineRuns: bool,
     fetchingCategoryExportFormats: bool,
     startExportAndDownload: func,
-    setOnExportCallback: func
+    setOnExportCallback: func,
+    errorSnackBars: arrayOf(shape({})),
+    closeSnackBar: func,
+    fetchingEngineRunsError: string
   };
 
   componentDidMount() {
@@ -72,11 +84,15 @@ export default class EngineOutputExport extends Component {
       fetchingCategoryExportFormats,
       open,
       onCancel,
-      startExportAndDownload
+      startExportAndDownload,
+      errorSnackBars,
+      closeSnackBar,
+      fetchingEngineRunsError
     } = this.props;
 
     const disableExportButton =
-      fetchingEngineRuns || fetchingCategoryExportFormats;
+      fetchingEngineRuns || fetchingCategoryExportFormats || fetchingEngineRunsError;
+
     return (
       <Dialog fullScreen open={open}>
         <Grid
@@ -168,6 +184,35 @@ export default class EngineOutputExport extends Component {
             </Button>
           </Grid>
         </Grid>
+        { errorSnackBars.map(snackBar => {
+            return (
+              <Snackbar
+                key={`snack-bar-${snackBar.id}`}
+                anchorOrigin={snackBar.anchorOrigin}
+                open={snackBar.open}
+                autoHideDuration={5000}
+                // eslint-disable-next-line
+                onClose={() => closeSnackBar(snackBar.id)}
+              >
+                <SnackbarContent
+                  className={snackBarClasses[snackBar.variant]}
+                  message={<span id="message-id">{snackBar.message}</span>}
+                  action={[
+                    <IconButton
+                      key="close"
+                      aria-label="Close"
+                      color="inherit"
+                      // eslint-disable-next-line
+                      onClick={() => closeSnackBar(snackBar.id)}
+                    >
+                      <CloseIcon />
+                    </IconButton>,
+                  ]}
+                />
+              </Snackbar>
+            );
+          })
+        }
       </Dialog>
     );
   }

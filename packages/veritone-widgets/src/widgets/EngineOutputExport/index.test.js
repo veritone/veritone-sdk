@@ -1,5 +1,4 @@
 import React from 'react';
-import { Field } from 'redux-form';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
