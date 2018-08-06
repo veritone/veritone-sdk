@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, objectOf, any, func } from 'prop-types';
+import { string, shape, arrayOf, objectOf, any, func } from 'prop-types';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import TemplateForms from './TemplateForms';
@@ -18,9 +18,10 @@ export default class ContentTemplates extends React.Component {
         definition: objectOf(any)
       })
     ).isRequired,
-    selectedTemplateSchemas: objectOf(
+    selectedTemplateSchemas: arrayOf(
       shape({
         id: string,
+        guid: string,
         name: string.isRequired,
         status: string,
         definition: objectOf(any),
@@ -32,7 +33,7 @@ export default class ContentTemplates extends React.Component {
     onInputChange: func.isRequired
   };
   static defaultProps = {
-    selectedTemplateSchemas: {}
+    selectedTemplateSchemas: []
   };
 
   render() {
@@ -44,9 +45,9 @@ export default class ContentTemplates extends React.Component {
         <div className={styles['template-list-container']}>
           <TemplateList
             templates={this.props.templateData}
-            selectedTemplates={selectedTemplateSchemas}
+            // selectedTemplates={selectedTemplateSchemas}
             addTemplate={this.props.onAddTemplate}
-            removeTemplate={this.props.onRemoveTemplate}
+            // removeTemplate={this.props.onRemoveTemplate}
           />
         </div>
         <div className={styles['content-templates']}>

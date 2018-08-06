@@ -25,7 +25,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes } from 'lodash';
+import { find, get, some, includes, isEqual } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -285,7 +285,7 @@ class MediaDetailsWidget extends React.Component {
         definition: objectOf(any)
       })
     ),
-    tdoContentTemplates: objectOf(
+    tdoContentTemplates: arrayOf(
       shape({
         id: string,
         name: string.isRequired,
@@ -531,28 +531,24 @@ class MediaDetailsWidget extends React.Component {
     const contentTemplatesToCreate = [];
     const contentTemplatesToDelete = [];
     // find content templates that were added or modified
-    Object.keys(contentTemplates).forEach(schemaId => {
+    contentTemplates.forEach(contentTemplate => {
       if (
-        !contentTemplates[schemaId].assetId ||
-        !this.props.tdoContentTemplates[schemaId]
+        !contentTemplates.assetId ||
+        !this.props.tdoContentTemplates.some(tdoContentTemplate =>
+          isEqual(tdoContentTemplate, contentTemplate)
+        )
       ) {
-        contentTemplatesToCreate.push(contentTemplates[schemaId]);
-      } else {
-        const originalTemplate = this.props.tdoContentTemplates[schemaId];
-        const newTemplate = contentTemplates[schemaId];
-        if (
-          JSON.stringify(originalTemplate.data) !==
-          JSON.stringify(newTemplate.data)
-        ) {
-          contentTemplatesToDelete.push(originalTemplate);
-          contentTemplatesToCreate.push(newTemplate);
-        }
+        contentTemplatesToCreate.push(contentTemplate);
       }
     });
     // find content templates that were removed
-    Object.keys(this.props.tdoContentTemplates).forEach(schemaId => {
-      if (!contentTemplates[schemaId]) {
-        contentTemplatesToDelete.push(this.props.tdoContentTemplates[schemaId]);
+    this.props.tdoContentTemplates.forEach(tdoContentTemplate => {
+      if (
+        !contentTemplates.some(contentTemplate =>
+          isEqual(tdoContentTemplate, contentTemplate)
+        )
+      ) {
+        contentTemplatesToDelete.push(tdoContentTemplate);
       }
     });
     this.props.updateTdoContentTemplates(

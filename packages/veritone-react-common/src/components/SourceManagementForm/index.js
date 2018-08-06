@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has, get, noop } from 'lodash';
+import { pick, has, get, noop, reject } from 'lodash';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Icon from '@material-ui/core/Icon';
@@ -12,6 +12,7 @@ import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
 import SourceConfiguration from 'components/SourceConfiguration';
 import ContentTemplates from 'components/ContentTemplates';
+import { guid } from 'helpers/guid';
 
 import styles from './styles.scss';
 @withMuiThemeProvider
@@ -44,7 +45,7 @@ export default class SourceManagementForm extends React.Component {
       details: objectOf(any),
       thumbnailUrl: string
     }),
-    initialTemplates: objectOf(
+    initialTemplates: arrayOf(
       shape({
         id: string,
         name: string.isRequired,
@@ -59,7 +60,7 @@ export default class SourceManagementForm extends React.Component {
   };
 
   static defaultProps = {
-    initialTemplates: {},
+    initialTemplates: [],
     onClose: noop
   };
 
@@ -80,9 +81,11 @@ export default class SourceManagementForm extends React.Component {
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     const { sourceTypes } = this.props;
+
     const newState = {
-      contentTemplates: { ...this.props.initialTemplates }
+      contentTemplates: [...this.props.initialTemplates]
     };
+    newState.contentTemplates.forEach(template => (template.guid = guid()));
 
     if (has(this.props, 'open')) {
       newState.openDialog = this.props.open;
@@ -142,61 +145,62 @@ export default class SourceManagementForm extends React.Component {
   };
 
   addToTemplateList = templateSchemaId => {
-    const { templateData, initialTemplates } = this.props;
+    const { templateData } = this.props;
     const data = {};
-
     Object.keys(templateData[templateSchemaId].definition.properties).reduce(
       (fields, schemaDefProp) => {
-        data[schemaDefProp] = get(
-          initialTemplates,
-          [templateSchemaId, 'data', schemaDefProp],
-          ''
-        );
+        data[schemaDefProp] = data[schemaDefProp];
       },
       data
     );
-
     this.setState(prevState => ({
-      contentTemplates: {
-        [templateSchemaId]: {
+      contentTemplates: [
+        {
           ...templateData[templateSchemaId],
-          data
+          data,
+          guid: guid()
         },
         ...prevState.contentTemplates
-      }
+      ]
     }));
   };
 
-  removeFromTemplateList = templateSchemaId => {
-    if (this.state.contentTemplates[templateSchemaId]) {
-      return this.setState(prevState => {
-        const contentTemplates = { ...prevState.contentTemplates };
-        delete contentTemplates[templateSchemaId];
-
-        return { contentTemplates };
-      });
-    }
+  removeFromTemplateList = templateId => {
+    return this.setState(prevState => {
+      return {
+        contentTemplates: reject([...prevState.contentTemplates], {
+          guid: templateId
+        })
+      };
+    });
   };
 
-  updateTemplateDetails = (templateSchemaId, fieldId, value) => {
-    const { contentTemplates } = this.state;
-
-    this.setState({
-      contentTemplates: {
-        ...contentTemplates,
-        [templateSchemaId]: {
-          ...contentTemplates[templateSchemaId],
+  updateTemplateDetails = (templateId, fieldId, value) => {
+    this.setState(prevState => {
+      if (
+        prevState.contentTemplates.some(
+          template => template.guid === templateId
+        )
+      ) {
+        const contentTemplates = [...prevState.contentTemplates];
+        const templateIndex = contentTemplates.findIndex(
+          template => template.guid === templateId
+        );
+        contentTemplates[templateIndex] = {
+          ...contentTemplates[templateIndex],
           data: {
-            ...contentTemplates[templateSchemaId].data,
+            ...contentTemplates[templateIndex].data,
             [fieldId]: value
           }
-        }
+        };
+        return { contentTemplates };
       }
     });
   };
 
   handleSubmit = e => {
     e.preventDefault();
+    // TODO:  update caller
     return this.props.onSubmit({
       sourceConfiguration: this.state.sourceConfig,
       contentTemplates: this.state.contentTemplates
