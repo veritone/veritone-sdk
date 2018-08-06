@@ -15,7 +15,7 @@ import {
   exportAndDownloadFailure,
   addSnackBar
 } from './';
-import { guid } from  '../../../shared/util';
+import { guid } from '../../../shared/util';
 
 const { auth: authModule, config: configModule } = modules;
 
@@ -65,13 +65,21 @@ function* fetchEngineRuns(tdoIds) {
     });
   } catch (e) {
     console.error(e);
-    return yield put(fetchEngineRunsFailure('There was an error fetching engines ran for one or more of the recordings.'));
+    return yield put(
+      fetchEngineRunsFailure(
+        'There was an error fetching engines ran for one or more of the recordings.'
+      )
+    );
   }
 
   const error = get(response, 'errors[0]');
   if (error) {
     console.error(error);
-    return yield put(fetchEngineRunsFailure('There was an error fetching engines ran for one or more of the recordings.'));
+    return yield put(
+      fetchEngineRunsFailure(
+        'There was an error fetching engines ran for one or more of the recordings.'
+      )
+    );
   }
 
   let engineRuns = [];
@@ -94,6 +102,11 @@ function* fetchEngineRuns(tdoIds) {
                 label: 'Time Text Markup Language',
                 format: 'ttml',
                 types: []
+              },
+              {
+                label: 'SubRip Text',
+                format: 'srt',
+                types: ['subtitle']
               }
             ]);
           }
@@ -193,22 +206,28 @@ function* watchStartExportAndDownload() {
 
 function* watchErrors() {
   yield takeEvery(
-    [ FETCH_ENGINE_RUNS_FAILURE, EXPORT_AND_DOWNLOAD_FAILURE],
+    [FETCH_ENGINE_RUNS_FAILURE, EXPORT_AND_DOWNLOAD_FAILURE],
     function* onError({ error }) {
-      yield put(addSnackBar({
-        id: guid(),
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
-        },
-        open: true,
-        message: error,
-        variant: "error"
-      }));
+      yield put(
+        addSnackBar({
+          id: guid(),
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center'
+          },
+          open: true,
+          message: error,
+          variant: 'error'
+        })
+      );
     }
-  )
+  );
 }
 
 export default function* root() {
-  yield all([fork(watchFetchEngineRuns), fork(watchStartExportAndDownload), fork(watchErrors)]);
+  yield all([
+    fork(watchFetchEngineRuns),
+    fork(watchStartExportAndDownload),
+    fork(watchErrors)
+  ]);
 }

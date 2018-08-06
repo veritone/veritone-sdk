@@ -167,7 +167,10 @@ describe('SubtitleConfigForm', () => {
   });
 
   it('should call onCancel when the "Cancel" button is pressed', () => {
-    wrapper.find(Button).not('[type="submit"]').simulate('click');
+    wrapper
+      .find(Button)
+      .not('[type="submit"]')
+      .simulate('click');
     expect(onCancel).toHaveBeenCalled();
   });
 

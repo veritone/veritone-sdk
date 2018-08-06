@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { includes } from 'lodash';
+import { modules } from 'veritone-redux-common';
+const { user: userModule } = modules;
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -16,7 +18,11 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 @connect(
   (state, { engineId, categoryId }) => ({
     engine: engineOutputExportModule.getEngineById(state, engineId),
-    category: engineOutputExportModule.getCategoryById(state, categoryId)
+    category: engineOutputExportModule.getCategoryById(state, categoryId),
+    exportClosedCaptionsEnabled: userModule.hasFeature(
+      state,
+      'exportClosedCaptions'
+    )
   }),
   {
     selectFileType: engineOutputExportModule.selectFileType
@@ -52,7 +58,8 @@ export default class EngineConfigItem extends Component {
         })
       })
     ).isRequired,
-    selectFileType: func
+    selectFileType: func,
+    exportClosedCaptionsEnabled: bool
   };
 
   render() {
@@ -62,7 +69,8 @@ export default class EngineConfigItem extends Component {
       categoryId,
       category,
       formats,
-      selectFileType
+      selectFileType,
+      exportClosedCaptionsEnabled
     } = this.props;
 
     const selectedFileExtensions = formats.map(format => format.extension);
@@ -100,21 +108,30 @@ export default class EngineConfigItem extends Component {
             getContentAnchorEl: null
           }}
         >
-          {category.exportFormats.map(format => (
-            <MenuItem
-              key={`format-${engineId}-${format.format}`}
-              value={format.format}
-              classes={{
-                selected: styles.exportFormatSelected
-              }}
-            >
-              <Checkbox
-                color="primary"
-                checked={includes(selectedFileExtensions, format.format)}
-              />
-              <ListItemText primary={`.${format.format} (${format.label})`} />
-            </MenuItem>
-          ))}
+          {category.exportFormats.map(format => {
+            if (
+              includes(format.types, 'subtitle') &&
+              !exportClosedCaptionsEnabled
+            ) {
+              return null;
+            }
+
+            return (
+              <MenuItem
+                key={`format-${engineId}-${format.format}`}
+                value={format.format}
+                classes={{
+                  selected: styles.exportFormatSelected
+                }}
+              >
+                <Checkbox
+                  color="primary"
+                  checked={includes(selectedFileExtensions, format.format)}
+                />
+                <ListItemText primary={`.${format.format} (${format.label})`} />
+              </MenuItem>
+            );
+          })}
         </Select>
       </ListItem>
     );

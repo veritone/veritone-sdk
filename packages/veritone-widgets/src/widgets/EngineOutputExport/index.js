@@ -34,7 +34,9 @@ const snackBarClasses = {
       state
     ),
     errorSnackBars: engineOutputExportModule.errorSnackBars(state),
-    fetchingEngineRunsError: engineOutputExportModule.fetchingEngineRunsError(state)
+    fetchingEngineRunsError: engineOutputExportModule.fetchingEngineRunsError(
+      state
+    )
   }),
   {
     setIncludeMedia: engineOutputExportModule.setIncludeMedia,
@@ -91,7 +93,9 @@ export default class EngineOutputExport extends Component {
     } = this.props;
 
     const disableExportButton =
-      fetchingEngineRuns || fetchingCategoryExportFormats || fetchingEngineRunsError;
+      fetchingEngineRuns ||
+      fetchingCategoryExportFormats ||
+      fetchingEngineRunsError;
 
     return (
       <Dialog fullScreen open={open}>
@@ -184,35 +188,34 @@ export default class EngineOutputExport extends Component {
             </Button>
           </Grid>
         </Grid>
-        { errorSnackBars.map(snackBar => {
-            return (
-              <Snackbar
-                key={`snack-bar-${snackBar.id}`}
-                anchorOrigin={snackBar.anchorOrigin}
-                open={snackBar.open}
-                autoHideDuration={5000}
-                // eslint-disable-next-line
-                onClose={() => closeSnackBar(snackBar.id)}
-              >
-                <SnackbarContent
-                  className={snackBarClasses[snackBar.variant]}
-                  message={<span id="message-id">{snackBar.message}</span>}
-                  action={[
-                    <IconButton
-                      key="close"
-                      aria-label="Close"
-                      color="inherit"
-                      // eslint-disable-next-line
-                      onClick={() => closeSnackBar(snackBar.id)}
-                    >
-                      <CloseIcon />
-                    </IconButton>,
-                  ]}
-                />
-              </Snackbar>
-            );
-          })
-        }
+        {errorSnackBars.map(snackBar => {
+          return (
+            <Snackbar
+              key={`snack-bar-${snackBar.id}`}
+              anchorOrigin={snackBar.anchorOrigin}
+              open={snackBar.open}
+              autoHideDuration={5000}
+              // eslint-disable-next-line
+              onClose={() => closeSnackBar(snackBar.id)}
+            >
+              <SnackbarContent
+                className={snackBarClasses[snackBar.variant]}
+                message={<span id="message-id">{snackBar.message}</span>}
+                action={[
+                  <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    // eslint-disable-next-line
+                    onClick={() => closeSnackBar(snackBar.id)}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                ]}
+              />
+            </Snackbar>
+          );
+        })}
       </Dialog>
     );
   }

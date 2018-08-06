@@ -174,7 +174,7 @@ export default createReducer(defaultState, {
     return {
       ...state,
       errorSnackBars: [...state.errorSnackBars, snackBarConfig]
-    }
+    };
   },
   [CLOSE_SNACK_BAR](state, { snackBarId }) {
     return {
@@ -184,11 +184,11 @@ export default createReducer(defaultState, {
           return {
             ...snackBar,
             open: false
-          }
+          };
         }
         return snackBar;
       })
-    }
+    };
   }
 });
 
@@ -215,7 +215,8 @@ export const getOutputConfigurations = state =>
   get(local(state), 'outputConfigurations');
 export const getTdoData = state => get(local(state), 'tdoData');
 export const errorSnackBars = state => get(local(state), 'errorSnackBars');
-export const fetchingEngineRunsError = state => get(local(state), 'fetchingEngineRunsError');
+export const fetchingEngineRunsError = state =>
+  get(local(state), 'fetchingEngineRunsError');
 
 export const fetchEngineRuns = tdos => {
   return {
@@ -300,12 +301,12 @@ export const addSnackBar = snackBarConfig => {
   return {
     type: ADD_SNACK_BAR,
     snackBarConfig
-  }
+  };
 };
 
 export const closeSnackBar = snackBarId => {
   return {
     type: CLOSE_SNACK_BAR,
     snackBarId
-  }
+  };
 };

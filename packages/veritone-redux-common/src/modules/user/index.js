@@ -335,3 +335,15 @@ export function selectEnabledApps(state) {
 export function userIsAuthenticated(state) {
   return !isEmpty(local(state).user);
 }
+
+export function hasFeature(state, featureName) {
+  return (
+    get(local(state), [
+      'user',
+      'organization',
+      'kvp',
+      'features',
+      featureName
+    ]) === 'enabled'
+  );
+}
