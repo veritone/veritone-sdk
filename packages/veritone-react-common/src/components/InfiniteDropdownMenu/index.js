@@ -264,5 +264,6 @@ ItemSelector.propTypes = {
   customTriggers: arrayOf(shape({
     label: string.isRequired,
     trigger: func.isRequired
-  }))
+  })),
+  openCustomTrigger: func
 };
