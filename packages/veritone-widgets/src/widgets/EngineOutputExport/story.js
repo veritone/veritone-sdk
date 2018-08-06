@@ -1,12 +1,22 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
+import { object } from '@storybook/addon-knobs';
 import { isEmpty } from 'lodash';
 
 import BaseStory from '../../shared/BaseStory';
-import EngineOutputExport from './index';
+import EngineOutputExport, { EngineOutputExportWidget } from './index';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+
+const EngineOutputExportButton = (
+  { handleOpen } // eslint-disable-line
+) => (
+  <Button variant="contained" onClick={handleOpen}>
+    Open
+  </Button>
+);
 
 class Story extends React.Component {
   state = {
@@ -58,9 +68,7 @@ class Story extends React.Component {
           onChange={this.handleTdoChange}
           margin="normal"
         />
-        <Button variant="contained" onClick={this.handleOpen}>
-          Open
-        </Button>
+        <EngineOutputExportButton handleOpen={this.handleOpen} />
         {!isEmpty(this.state.exportResponse) && (
           <pre>{JSON.stringify(this.state.exportResponse, undefined, 2)}</pre>
         )}
@@ -76,5 +84,22 @@ class Story extends React.Component {
 }
 
 storiesOf('EngineOutputExport', module).add('Base', () => {
-  return <BaseStory componentClass={Story} />;
+  return (
+    <BaseStory
+      widget={EngineOutputExportWidget}
+      widgetProps={{
+        tdos: object('TDOs', [
+          {
+            id: '400000238'
+          }
+        ]),
+        onExport: action('onExport'),
+        onCancel: action('onCancel')
+      }}
+      widgetInstanceMethods={{
+        open: instance => instance.open()
+      }}
+      componentClass={Story}
+    />
+  );
 });

@@ -91,6 +91,10 @@ export default createReducer(defaultState, {
   [FETCH_ENGINE_RUNS_FAILURE](state, { error }) {
     return {
       ...state,
+      enginesRan: {},
+      categoryLookup: {},
+      expandedCategories: {},
+      outputConfigurations: [],
       fetchingEngineRuns: false,
       fetchingEngineRunsError: error
     };

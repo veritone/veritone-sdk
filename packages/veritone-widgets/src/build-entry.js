@@ -14,3 +14,6 @@ export {
   GlobalSnackBar
 } from './widgets/Notifications';
 export { MediaPlayer } from './widgets/MediaPlayer';
+export EngineOutputExport, {
+  EngineOutputExportWidget
+} from './widgets/EngineOutputExport';

@@ -16,6 +16,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import styles from './styles.scss';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
+import widget from '../../shared/widget';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
 
 const snackBarClasses = {
@@ -47,7 +48,7 @@ const snackBarClasses = {
   null,
   { withRef: true }
 )
-export default class EngineOutputExport extends Component {
+class EngineOutputExport extends Component {
   static propTypes = {
     tdos: arrayOf(
       shape({
@@ -220,3 +221,57 @@ export default class EngineOutputExport extends Component {
     );
   }
 }
+
+class EngineOutputExportWidgetComponent extends Component {
+  static propTypes = {
+    _widgetId: string.isRequired,
+    tdos: arrayOf(
+      shape({
+        id: string.isRequired,
+        startOffsetMs: number,
+        stopOffsetMs: number
+      })
+    ).isRequired,
+    onExport: func.isRequired,
+    onCancel: func
+  };
+
+  state = {
+    open: false
+  };
+
+  open = () => {
+    this.setState({
+      open: true
+    });
+  };
+
+  handleCancel = () => {
+    this.props.onCancel();
+    this.setState({
+      open: false
+    });
+  };
+
+  handleExport = response => {
+    this.props.onExport(response);
+    this.setState({
+      open: false
+    });
+  };
+
+  render() {
+    return (
+      <EngineOutputExport
+        id={this.props._widgetId}
+        open={this.state.open}
+        {...this.props}
+        onExport={this.handleExport}
+        onCancel={this.handleCancel}
+      />
+    );
+  }
+}
+
+const EngineOutputExportWidget = widget(EngineOutputExportWidgetComponent);
+export { EngineOutputExport as default, EngineOutputExportWidget };
