@@ -81,9 +81,9 @@ describe('EngineCategoryConfig', () => {
               )[testEngine.category.id]
             }
             expanded={
-              engineOutputExportModule.expandedCategories(
-                store.getState()
-              )[testEngine.category.id]
+              engineOutputExportModule.expandedCategories(store.getState())[
+                testEngine.category.id
+              ]
             }
             bulkExportEnabled={false}
             onExpandConfigs={onExpandConfigs}
@@ -97,11 +97,18 @@ describe('EngineCategoryConfig', () => {
     });
 
     it('should display the engine category icon class', () => {
-      expect(wrapper.find(Icon).hasClass(testEngine.category.iconClass)).toEqual(true);
+      expect(
+        wrapper.find(Icon).hasClass(testEngine.category.iconClass)
+      ).toEqual(true);
     });
 
     it('should display the engine category name', () => {
-      expect(wrapper.find(ListItemText).find('div#engineCategoryName').html()).toMatch(new RegExp(testEngine.category.name));
+      expect(
+        wrapper
+          .find(ListItemText)
+          .find('div#engineCategoryName')
+          .html()
+      ).toMatch(new RegExp(testEngine.category.name));
     });
 
     it('should display an ExpandMoreIcon', () => {
@@ -109,7 +116,12 @@ describe('EngineCategoryConfig', () => {
     });
 
     it('should not display the list of EngineConfigItems', () => {
-      expect(wrapper.find(Collapse).find(List).exists()).toEqual(false);
+      expect(
+        wrapper
+          .find(Collapse)
+          .find(List)
+          .exists()
+      ).toEqual(false);
     });
 
     it('should call onExpandConfig callback when expand button is clicked', () => {
@@ -142,9 +154,9 @@ describe('EngineCategoryConfig', () => {
               )[testEngine.category.id]
             }
             expanded={
-              engineOutputExportModule.expandedCategories(
-                store.getState()
-              )[testEngine.category.id]
+              engineOutputExportModule.expandedCategories(store.getState())[
+                testEngine.category.id
+              ]
             }
             bulkExportEnabled={false}
             onExpandConfigs={onExpandConfigs}
@@ -158,11 +170,18 @@ describe('EngineCategoryConfig', () => {
     });
 
     it('should display the engine category icon class', () => {
-      expect(wrapper.find(Icon).hasClass(testEngine.category.iconClass)).toEqual(true);
+      expect(
+        wrapper.find(Icon).hasClass(testEngine.category.iconClass)
+      ).toEqual(true);
     });
 
     it('should display the engine category name', () => {
-      expect(wrapper.find(ListItemText).find('div#engineCategoryName').html()).toMatch(new RegExp(testEngine.category.name));
+      expect(
+        wrapper
+          .find(ListItemText)
+          .find('div#engineCategoryName')
+          .html()
+      ).toMatch(new RegExp(testEngine.category.name));
     });
 
     it('should display an ExpandLessIcon', () => {
@@ -170,8 +189,15 @@ describe('EngineCategoryConfig', () => {
     });
 
     it('should display a list of EngineConfigItems', () => {
-      expect(wrapper.find(Collapse).find(List).exists()).toEqual(true);
-      expect(wrapper.find(EngineConfigItem).length).toEqual(testOutputConfigs.length);
+      expect(
+        wrapper
+          .find(Collapse)
+          .find(List)
+          .exists()
+      ).toEqual(true);
+      expect(wrapper.find(EngineConfigItem).length).toEqual(
+        testOutputConfigs.length
+      );
     });
 
     it('should call onExpandConfig callback when expand button is clicked', () => {

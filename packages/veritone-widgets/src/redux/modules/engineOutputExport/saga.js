@@ -6,6 +6,7 @@ import {
   START_EXPORT_AND_DOWNLOAD,
   FETCH_ENGINE_RUNS_FAILURE,
   EXPORT_AND_DOWNLOAD_FAILURE,
+  APPLY_SUBTITLE_CONFIGS,
   getIncludeMedia,
   fetchEngineRunsFailure,
   fetchEngineRunsSuccess,
@@ -13,7 +14,8 @@ import {
   getOutputConfigurations,
   getTdoData,
   exportAndDownloadFailure,
-  addSnackBar
+  addSnackBar,
+  storeSubtitleConfigs
 } from './';
 import { guid } from '../../../shared/util';
 
@@ -224,10 +226,20 @@ function* watchErrors() {
   );
 }
 
+function* watchApplySubtitleConfigs() {
+  yield takeEvery(APPLY_SUBTITLE_CONFIGS, function* onApplySubtitleConfigs({
+    categoryId,
+    values
+  }) {
+    yield put(storeSubtitleConfigs(categoryId, values));
+  });
+}
+
 export default function* root() {
   yield all([
     fork(watchFetchEngineRuns),
     fork(watchStartExportAndDownload),
-    fork(watchErrors)
+    fork(watchErrors),
+    fork(watchApplySubtitleConfigs)
   ]);
 }

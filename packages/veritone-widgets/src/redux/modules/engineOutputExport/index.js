@@ -14,7 +14,8 @@ export const TOGGLE_CONFIG_EXPAND = `vtn/${namespace}/TOGGLE_CONFIG_EXPAND`;
 
 export const UPDATE_SELECTED_FILE_TYPES = `vtn/${namespace}/UPDATE_SELECTED_FILE_TYPES`;
 
-export const APPLY_SUBTITLE_OPTIONS = `vtn/${namespace}/APPLY_SUBTITLE_OPTIONS`;
+export const APPLY_SUBTITLE_CONFIGS = `vtn/${namespace}/APPLY_SUBTITLE_CONFIGS`;
+export const STORE_SUBTITLE_CONFIGS = `vtn/${namespace}/STORE_SUBTITLE_CONFIGS`;
 
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
 export const EXPORT_AND_DOWNLOAD_FAILURE = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_FAILURE`;
@@ -31,6 +32,7 @@ const defaultState = {
   enginesRan: {},
   categoryLookup: {},
   expandedCategories: {},
+  subtitleConfigCache: {},
   tdoData: [],
   outputConfigurations: [],
   errorSnackBars: [],
@@ -123,12 +125,20 @@ export default createReducer(defaultState, {
             config.categoryId === action.categoryId) ||
           (config.categoryId === action.categoryId && action.applyAll)
         ) {
+          const storedSubtitleConfig = get(state, [
+            'subtitleConfigCache',
+            action.categoryId
+          ]);
           return {
             ...config,
             formats: action.selectedFileTypes.map(type => {
               return {
                 extension: type,
-                options: {}
+                options: storedSubtitleConfig
+                  ? {
+                      ...storedSubtitleConfig
+                    }
+                  : {}
               };
             })
           };
@@ -137,7 +147,7 @@ export default createReducer(defaultState, {
       })
     };
   },
-  [APPLY_SUBTITLE_OPTIONS](state, action) {
+  [APPLY_SUBTITLE_CONFIGS](state, action) {
     return {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
@@ -154,6 +164,18 @@ export default createReducer(defaultState, {
         }
         return config;
       })
+    };
+  },
+  [STORE_SUBTITLE_CONFIGS](state, { categoryId, config }) {
+    console.log(categoryId, config);
+    return {
+      ...state,
+      subtitleConfigCache: {
+        ...state.subtitleConfigCache,
+        [categoryId]: {
+          ...config
+        }
+      }
     };
   },
   [SET_ON_EXPORT_CALLBACK](state, { onExport }) {
@@ -221,6 +243,8 @@ export const getTdoData = state => get(local(state), 'tdoData');
 export const errorSnackBars = state => get(local(state), 'errorSnackBars');
 export const fetchingEngineRunsError = state =>
   get(local(state), 'fetchingEngineRunsError');
+export const getSubtitleConfig = (state, categoryId) =>
+  get(local(state), ['subtitleConfigCache', categoryId]);
 
 export const fetchEngineRuns = tdos => {
   return {
@@ -275,7 +299,7 @@ export const selectFileType = (
 
 export const applySubtitleConfigs = (categoryId, values) => {
   return {
-    type: APPLY_SUBTITLE_OPTIONS,
+    type: APPLY_SUBTITLE_CONFIGS,
     categoryId,
     values
   };
@@ -312,5 +336,13 @@ export const closeSnackBar = snackBarId => {
   return {
     type: CLOSE_SNACK_BAR,
     snackBarId
+  };
+};
+
+export const storeSubtitleConfigs = (categoryId, config) => {
+  return {
+    type: STORE_SUBTITLE_CONFIGS,
+    categoryId,
+    config
   };
 };

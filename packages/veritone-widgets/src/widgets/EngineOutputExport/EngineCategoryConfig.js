@@ -27,7 +27,11 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 
 @connect(
   (state, { categoryId }) => ({
-    category: engineOutputExportModule.getCategoryById(state, categoryId)
+    category: engineOutputExportModule.getCategoryById(state, categoryId),
+    initialSubtitleConfig: engineOutputExportModule.getSubtitleConfig(
+      state,
+      categoryId
+    )
   }),
   {
     applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs
@@ -61,7 +65,12 @@ export default class EngineCategoryConfig extends Component {
     applySubtitleConfigs: func,
     expanded: bool,
     onExpandConfigs: func,
-    bulkExportEnabled: bool
+    bulkExportEnabled: bool,
+    initialSubtitleConfig: shape({
+      maxCharacterPerLine: number,
+      newLineOnPunctuation: bool,
+      linesPerScreen: number
+    })
   };
 
   state = {
@@ -93,7 +102,8 @@ export default class EngineCategoryConfig extends Component {
       engineCategoryConfigs,
       onExpandConfigs,
       expanded,
-      bulkExportEnabled
+      bulkExportEnabled,
+      initialSubtitleConfig
     } = this.props;
 
     let hasFormatsSelected = false;
@@ -102,6 +112,12 @@ export default class EngineCategoryConfig extends Component {
         hasFormatsSelected = true;
       }
     });
+
+    const defaultSubtitleConfig = {
+      linesPerScreen: 2,
+      maxLinesPerCaptionLine: 32,
+      newLineOnPunctuation: false
+    };
 
     return (
       <div>
@@ -180,11 +196,7 @@ export default class EngineCategoryConfig extends Component {
             </DialogContentText>
             <SubtitleConfigForm
               onCancel={this.handleCloseDialog}
-              initialValues={{
-                linesPerScreen: 2,
-                maxLinesPerCaptionLine: 32,
-                newLineOnPunctuation: false
-              }}
+              initialValues={initialSubtitleConfig || defaultSubtitleConfig}
               onSubmit={this.handleFormSubmit}
             />
           </DialogContent>
