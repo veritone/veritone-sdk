@@ -19,7 +19,8 @@ export default class OverlayToolBar extends React.PureComponent {
         onClick: func.isRequired
       })
     ),
-    bottomOffset: number
+    bottomOffset: number,
+    focusedBoundingBoxId: string
   };
 
   static defaultProps = {
@@ -39,8 +40,9 @@ export default class OverlayToolBar extends React.PureComponent {
     const itemIndex = e.target.getAttribute('data-itemindex');
 
     if (itemIndex) {
-      // fixme -- what should this be called with?
-      this.props.menuItems[Number(itemIndex)].onClick();
+      this.props.menuItems[Number(itemIndex)].onClick(
+        this.props.focusedBoundingBoxId
+      );
     }
 
     this.setState({ menuAnchorEl: null });

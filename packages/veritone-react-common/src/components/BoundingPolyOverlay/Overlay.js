@@ -1,5 +1,5 @@
 import React from 'react';
-import { isNumber, isEqual } from 'lodash';
+import { isNumber, isEqual, isString, findIndex } from 'lodash';
 import memoize from 'memoize-one';
 import {
   arrayOf,
@@ -20,7 +20,10 @@ import { OverlayPositioningContext } from './OverlayPositioningProvider';
 import OverlayConfirmMenu from './OverlayConfirmMenu';
 import OverlayActionsMenu from './OverlayActionsMenu';
 import RndBox from './RndBox';
-import { percentagePolyToPixelXYWidthHeight } from './helpers';
+import {
+  percentagePolyToPixelXYWidthHeight,
+  pixelXYWidthHeightToPercentagePoly
+} from './helpers';
 
 @withContextProps(OverlayPositioningContext.Consumer, context => ({
   overlayPositioningContext: context
@@ -51,14 +54,21 @@ export default class Overlay extends React.Component {
     overlayBackgroundColor: string,
     overlayBorderStyle: string,
     overlayBackgroundBlendMode: string,
-    onBoundingBoxChange: func.isRequired,
+    onAddBoundingBox: func.isRequired,
+    onDeleteBoundingBox: func.isRequired,
+    onChangeBoundingBox: func.isRequired,
     initialBoundingBoxPolys: arrayOf(
-      arrayOf(
-        shape({
-          x: number.isRequired,
-          y: number.isRequired
-        })
-      )
+      shape({
+        // unique ID
+        id: string.isRequired,
+        // vertices
+        object: arrayOf(
+          shape({
+            x: number.isRequired,
+            y: number.isRequired
+          }).isRequired
+        ).isRequired
+      })
     ),
     actionMenuItems: arrayOf(
       shape({
@@ -81,7 +91,7 @@ export default class Overlay extends React.Component {
 
   state = {
     boundingBoxPositions: [], // set in getDerivedStateFromProps
-    focusedBoundingBoxIndex: null,
+    focusedBoundingBoxId: null,
     stagedBoundingBoxPosition: {},
     userMinimizedConfirmMenu: false,
     userActingOnBoundingBox: false,
@@ -102,18 +112,23 @@ export default class Overlay extends React.Component {
   /* eslint-disable-next-line react/sort-comp */
   static mapPolysToInternalFormat = memoize(
     (polys, width, height) =>
-      polys.map(poly =>
-        percentagePolyToPixelXYWidthHeight(poly, width, height)
-      ),
+      polys.map(({ object, id }) => ({
+        object: percentagePolyToPixelXYWidthHeight(object, width, height),
+        id
+      })),
     isEqual
   );
 
-  handleResize = (e, direction, ref, delta, position) => {
+  handleResizeExistingBox = (e, direction, ref, delta, position) => {
     this.removeStagedBoundingBox();
 
     this.setState(state => {
-      const focusedIndex = ref.getAttribute('data-boxindex');
-      state.boundingBoxPositions[focusedIndex] = {
+      const focusedId = ref.getAttribute('data-boxid');
+      const focusedIndex = findIndex(state.boundingBoxPositions, {
+        id: focusedId
+      });
+
+      state.boundingBoxPositions[focusedIndex].object = {
         width: ref.offsetWidth,
         height: ref.offsetHeight,
         ...position
@@ -138,7 +153,28 @@ export default class Overlay extends React.Component {
     }));
   };
 
-  handleResizeStop = () => {
+  handleResizeStagedBoxStop = () => {
+    this.setState({
+      userActingOnBoundingBox: false,
+      userMinimizedConfirmMenu: false
+    });
+  };
+
+  handleResizeExistingBoxStop = (e, direction, ref, delta, position) => {
+    const focusedId = ref.getAttribute('data-boxid');
+    const focusedIndex = findIndex(this.state.boundingBoxPositions, {
+      id: focusedId
+    });
+
+    this.props.onChangeBoundingBox({
+      object: pixelXYWidthHeightToPercentagePoly(
+        this.state.boundingBoxPositions[focusedIndex].object,
+        this.props.overlayPositioningContext.width,
+        this.props.overlayPositioningContext.height
+      ),
+      id: focusedId
+    });
+
     this.setState({
       userActingOnBoundingBox: false,
       userMinimizedConfirmMenu: false
@@ -156,16 +192,29 @@ export default class Overlay extends React.Component {
   };
 
   handleDragExistingBoxStop = (e, { node, x, y }) => {
-    this.setState(state => {
-      const focusedIndex = Number(node.getAttribute('data-boxindex'));
-      state.boundingBoxPositions[focusedIndex].x = x;
-      state.boundingBoxPositions[focusedIndex].y = y;
+    const focusedId = node.getAttribute('data-boxid');
+    const focusedIndex = findIndex(this.state.boundingBoxPositions, {
+      id: focusedId
+    });
 
-      return {
-        boundingBoxPositions: state.boundingBoxPositions,
-        userActingOnBoundingBox: false,
-        userMinimizedConfirmMenu: false
-      };
+    const draggedObject = {
+      ...this.state.boundingBoxPositions[focusedIndex].object,
+      x,
+      y
+    };
+
+    this.props.onChangeBoundingBox({
+      object: pixelXYWidthHeightToPercentagePoly(
+        draggedObject,
+        this.props.overlayPositioningContext.width,
+        this.props.overlayPositioningContext.height
+      ),
+      id: focusedId
+    });
+
+    this.setState({
+      userActingOnBoundingBox: false,
+      userMinimizedConfirmMenu: false
     });
   };
 
@@ -191,35 +240,23 @@ export default class Overlay extends React.Component {
     this.removeStagedBoundingBox();
 
     // fixme: try to ignore clicks that are the result of mouseup after resize/drag
-    const focusedIndex = e.target.getAttribute('data-boxindex');
+    const focusedId = e.target.getAttribute('data-boxid');
 
     this.setState(state => {
-      // clicking a focused box de-focuses it
-      // if (
-      //   focusedIndex &&
-      //   Number(focusedIndex) === state.focusedBoundingBoxIndex
-      // ) {
-      //   return { focusedBoundingBoxIndex: null };
-      // }
-
-      // otherwise focus the clicked box
       return {
-        focusedBoundingBoxIndex: focusedIndex
-          ? Number(focusedIndex)
-          : state.focusedBoundingBoxIndex
+        focusedBoundingBoxId: focusedId ? focusedId : state.focusedBoundingBoxId
       };
     });
   };
 
   confirmStagedBoundingBox = () => {
-    this.props.onBoundingBoxChange({
-      allPolys: this.toPercentageBasedPoly([
-        ...this.state.boundingBoxPositions,
-        this.state.stagedBoundingBoxPosition
-      ]),
-      newPoly: this.toPercentageBasedPoly([
-        this.state.stagedBoundingBoxPosition
-      ])[0]
+    this.props.onAddBoundingBox({
+      object: pixelXYWidthHeightToPercentagePoly(
+        this.state.stagedBoundingBoxPosition,
+        this.props.overlayPositioningContext.width,
+        this.props.overlayPositioningContext.height
+      ),
+      id: null // ID must be assigned by caller before passing back in.
     });
 
     this.removeStagedBoundingBox();
@@ -257,7 +294,6 @@ export default class Overlay extends React.Component {
     );
 
     this.setState({
-      // focusedBoundingBoxIndex: null,
       drawingInitialBoundingBox: true,
       userActingOnBoundingBox: true,
       stagedBoundingBoxPosition: {
@@ -297,57 +333,19 @@ export default class Overlay extends React.Component {
       this.setState({
         drawingInitialBoundingBox: false,
         userActingOnBoundingBox: false,
-        focusedBoundingBoxIndex: null,
+        focusedBoundingBoxId: null,
         userMinimizedConfirmMenu: false
       });
     }
   };
 
   handleDelete = () => {
-    let result = [...this.state.boundingBoxPositions];
-    result.splice(this.state.focusedBoundingBoxIndex, 1);
-
-    this.props.onBoundingBoxChange({
-      allPolys: this.toPercentageBasedPoly(result),
-      deletedIndex: this.state.focusedBoundingBoxIndex
-    });
+    this.props.onDeleteBoundingBox(this.state.focusedBoundingBoxId);
 
     this.setState({
       userActingOnBoundingBox: false,
-      focusedBoundingBoxIndex: null
+      focusedBoundingBoxId: null
     });
-  };
-
-  toPercentageBasedPoly = positions => {
-    // translate from internal (x, y, width, height) format to veritone's
-    // percentage-based vertex format
-    const {
-      width: containerWidth,
-      height: containerHeight
-    } = this.props.overlayPositioningContext;
-
-    return positions.map(({ x, y, width, height }) => [
-      // top-left
-      {
-        x: x / containerWidth,
-        y: y / containerHeight
-      },
-      // top-right
-      {
-        x: (x + width) / containerWidth,
-        y: y / containerHeight
-      },
-      // bottom-right
-      {
-        x: (x + width) / containerWidth,
-        y: (y + height) / containerHeight
-      },
-      // bottom-left
-      {
-        x: x / containerWidth,
-        y: (y + height) / containerHeight
-      }
-    ]);
   };
 
   hasStagedBoundingBox = () => {
@@ -368,7 +366,7 @@ export default class Overlay extends React.Component {
       !this.state.userMinimizedConfirmMenu;
 
     const showingActionsMenu =
-      isNumber(this.state.focusedBoundingBoxIndex) &&
+      isString(this.state.focusedBoundingBoxId) &&
       !this.state.userActingOnBoundingBox &&
       !this.state.userMinimizedConfirmMenu;
 
@@ -392,49 +390,48 @@ export default class Overlay extends React.Component {
           ...this.props.wrapperStyles
         }}
       >
-        {this.state.boundingBoxPositions.map(({ x, y, width, height }, i) => (
-          <RndBox
-            // index is significant since boxes don't have IDs
-            // eslint-disable-next-line react/no-array-index-key
-            key={i}
-            extendsProps={{
-              'data-boxindex': i,
-              onClick: this.handleClickBox
-            }}
-            style={{
-              ...boundingBoxStyles,
-              // do not let this box interfere with mouse events as we draw out
-              // the initial bounding box
-              pointerEvents:
-                this.props.readOnly ||
-                this.props.addOnly ||
-                this.state.drawingInitialBoundingBox
-                  ? 'none'
-                  : 'auto'
-            }}
-            size={{ width, height }}
-            position={{ x, y }}
-            onDragStop={this.handleDragExistingBoxStop}
-            onDrag={this.handleDragExistingBox}
-            onResize={this.handleResize}
-            onResizeStop={this.handleResizeStop}
-            disableDragging={this.props.readOnly || this.props.addOnly}
-            enableResizing={
-              !this.props.readOnly &&
-              !this.props.addOnly &&
-              this.state.focusedBoundingBoxIndex === i
-                ? undefined
-                : false
-            }
-          />
-        ))}
+        {this.state.boundingBoxPositions.map(
+          ({ id, object: { x, y, width, height } }) => (
+            <RndBox
+              key={id}
+              extendsProps={{
+                'data-boxid': id,
+                onClick: this.handleClickBox
+              }}
+              style={{
+                ...boundingBoxStyles,
+                // do not let this box interfere with mouse events as we draw out
+                // the initial bounding box
+                pointerEvents:
+                  this.props.readOnly ||
+                  this.props.addOnly ||
+                  this.state.drawingInitialBoundingBox
+                    ? 'none'
+                    : 'auto'
+              }}
+              size={{ width, height }}
+              position={{ x, y }}
+              onDragStop={this.handleDragExistingBoxStop}
+              onDrag={this.handleDragExistingBox}
+              onResize={this.handleResizeExistingBox}
+              onResizeStop={this.handleResizeExistingBoxStop}
+              disableDragging={this.props.readOnly || this.props.addOnly}
+              enableResizing={
+                !this.props.readOnly &&
+                !this.props.addOnly &&
+                this.state.focusedBoundingBoxId === id
+                  ? undefined
+                  : false
+              }
+            />
+          )
+        )}
 
         {this.hasStagedBoundingBox() &&
           !this.props.readOnly && (
             <RndBox
               style={{
-                ...boundingBoxStyles,
-                // do not let this box interfere with mouse events as we draw it out
+                ...boundingBoxStyles, // do not let this box interfere with mouse events as we draw it out
                 pointerEvents: this.state.drawingInitialBoundingBox
                   ? 'none'
                   : 'auto'
@@ -450,7 +447,7 @@ export default class Overlay extends React.Component {
               onDragStop={this.handleDragStagedBoxStop}
               onDrag={this.handleDragStagedBox}
               onResize={this.handleResizeStagedBox}
-              onResizeStop={this.handleResizeStop}
+              onResizeStop={this.handleResizeStagedBoxStop}
               enableResizing={
                 // don't show handles during initial drag placement
                 this.state.drawingInitialBoundingBox ? false : undefined
@@ -478,8 +475,9 @@ export default class Overlay extends React.Component {
               onMinimize={this.minimizeConfirmMenu}
               menuItems={this.props.actionMenuItems}
               onDelete={this.handleDelete}
-              onConfirm={this.handleConfirmChange}
+              // onConfirm={this.handleConfirmChange}
               bottomOffset={this.props.toolBarOffset}
+              focusedBoundingBoxId={this.state.focusedBoundingBoxId}
             />
           )}
 

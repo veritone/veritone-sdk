@@ -1,3 +1,34 @@
+export function pixelXYWidthHeightToPercentagePoly(
+  { x, y, width, height },
+  contentWidth,
+  contentHeight
+) {
+  // translate from internal (x, y, width, height) format to veritone's
+  // percentage-based vertex format
+  return [
+    // top-left
+    {
+      x: x / contentWidth,
+      y: y / contentHeight
+    },
+    // top-right
+    {
+      x: (x + width) / contentWidth,
+      y: y / contentHeight
+    },
+    // bottom-right
+    {
+      x: (x + width) / contentWidth,
+      y: (y + height) / contentHeight
+    },
+    // bottom-left
+    {
+      x: x / contentWidth,
+      y: (y + height) / contentHeight
+    }
+  ];
+}
+
 export function percentagePolyToPixelXYWidthHeight(
   poly,
   contentWidth,

@@ -19,7 +19,8 @@ export default class OverlayActionsMenu extends React.PureComponent {
         onClick: func.isRequired
       })
     ),
-    bottomOffset: number
+    bottomOffset: number,
+    focusedBoundingBoxId: string
   };
 
   static defaultProps = {};
@@ -31,13 +32,16 @@ export default class OverlayActionsMenu extends React.PureComponent {
         onMinimize={this.props.onMinimize}
         menuItems={this.props.menuItems}
         bottomOffset={this.props.bottomOffset}
+        focusedBoundingBoxId={this.props.focusedBoundingBoxId}
       >
         <IconButton onClick={this.props.onDelete}>
           <DeleteIcon />
         </IconButton>
-        <IconButton onClick={this.props.onConfirm}>
-          <CheckCircleIcon />
-        </IconButton>
+        {this.props.onConfirm && (
+          <IconButton onClick={this.props.onConfirm}>
+            <CheckCircleIcon />
+          </IconButton>
+        )}
       </OverlayToolBar>
     );
   }

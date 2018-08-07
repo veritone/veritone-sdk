@@ -1,9 +1,11 @@
 import React from 'react';
+import { findIndex } from 'lodash';
 import { storiesOf } from '@storybook/react';
 import { select, number, text, boolean } from '@storybook/addon-knobs';
 import Slider from '@material-ui/lab/Slider';
 import faker from 'faker';
 
+import { guid } from 'helpers/guid';
 import OverlayPositioningProvider from './OverlayPositioningProvider';
 import Overlay from './Overlay';
 
@@ -11,12 +13,15 @@ function randomPolyBox() {
   const rand = faker.random.number;
   const options = { min: 0, max: 1, precision: 0.0001 };
 
-  return Array(4)
-    .fill()
-    .map(() => ({
-      x: rand(options),
-      y: rand(options)
-    }));
+  return {
+    id: guid(),
+    object: Array(4)
+      .fill()
+      .map(() => ({
+        x: rand(options),
+        y: rand(options)
+      }))
+  };
 }
 
 const frames = Array(10)
@@ -31,8 +36,57 @@ class Story extends React.Component {
     frame: 0
   };
 
-  handleAddBoundingBox = boundingBoxes => {
-    this.setState({ boundingBoxes });
+  actionMenuItems = [
+    {
+      label: 'Do action 1',
+      onClick: id => console.log('Action 1 performed on box', id)
+    },
+    {
+      label: 'Do action 2',
+      onClick: id => console.log('Action 2 performed on box', id)
+    }
+  ];
+
+  handleAddBoundingBox = newBox => {
+    console.log('Added box', newBox);
+
+    this.setState(state => ({
+      boundingBoxes: [
+        ...state.boundingBoxes,
+        {
+          ...newBox,
+          id: guid()
+        }
+      ]
+    }));
+  };
+
+  handleDeleteBoundingBox = deletedId => {
+    console.log('Deleted box with ID', deletedId);
+
+    this.setState(state => ({
+      boundingBoxes: state.boundingBoxes.filter(({ id }) => id !== deletedId)
+    }));
+  };
+
+  handleChangeBoundingBox = changedBox => {
+    console.log('Changed box', changedBox);
+
+    this.setState(state => {
+      const affectedIndex = findIndex(state.boundingBoxes, {
+        id: changedBox.id
+      });
+
+      let newState = {
+        boundingBoxes: [...state.boundingBoxes]
+      };
+
+      newState.boundingBoxes[affectedIndex] = changedBox;
+
+      return {
+        boundingBoxes: newState.boundingBoxes
+      };
+    });
   };
 
   handleChangeFrame = (e, frame) => {
@@ -55,13 +109,16 @@ class Story extends React.Component {
           fixedWidth
         >
           <Overlay
-            onBoundingBoxChange={this.handleAddBoundingBox}
+            onAddBoundingBox={this.handleAddBoundingBox}
+            onDeleteBoundingBox={this.handleDeleteBoundingBox}
+            onChangeBoundingBox={this.handleChangeBoundingBox}
             overlayBackgroundColor={this.props.overlayBackgroundColor}
             overlayBorderStyle={this.props.overlayBorderStyle}
             overlayBackgroundBlendMode={this.props.overlayBackgroundBlendMode}
             initialBoundingBoxPolys={this.state.boundingBoxes}
-            key={this.state.frame}
+            actionMenuItems={this.actionMenuItems}
             readOnly={this.props.readOnly}
+            key={this.state.frame}
           />
           <div
             style={{
