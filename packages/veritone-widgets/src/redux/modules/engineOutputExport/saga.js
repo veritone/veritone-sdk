@@ -1,5 +1,5 @@
 import { all, fork, takeEvery, call, select, put } from 'redux-saga/effects';
-import { get, forEach, set } from 'lodash';
+import { get, forEach } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
   FETCH_ENGINE_RUNS,
@@ -90,29 +90,6 @@ function* fetchEngineRuns(tdoIds) {
     forEach(response.data, tdo => {
       if (get(tdo, 'engineRuns.records.length')) {
         engineRuns = engineRuns.concat(get(tdo, 'engineRuns.records'));
-        // TODO: Remove this when api is updated.
-        forEach(engineRuns, engineRun => {
-          const categoryName = get(engineRun, 'engine.category.name');
-          if (categoryName === 'Transcription') {
-            set(engineRun, 'engine.category.exportFormats', [
-              {
-                label: 'Veritone Lattice Format',
-                format: 'vlf',
-                types: []
-              },
-              {
-                label: 'Time Text Markup Language',
-                format: 'ttml',
-                types: []
-              },
-              {
-                label: 'SubRip Text',
-                format: 'srt',
-                types: ['subtitle']
-              }
-            ]);
-          }
-        });
         tdoData = tdoData.concat({
           tdoId: get(tdo, 'id')
         });
