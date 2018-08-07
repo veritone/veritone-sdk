@@ -38,7 +38,7 @@ export default class EngineCategoryConfigList extends Component {
   static propTypes = {
     tdos: arrayOf(
       shape({
-        id: string.isRequired,
+        tdoId: string.isRequired,
         startOffsetMs: number,
         stopOffsetMs: number
       })

@@ -1,6 +1,6 @@
-import { forEach, get, uniqWith, groupBy, noop } from 'lodash';
+import { forEach, get, uniqWith, groupBy } from 'lodash';
 import { helpers } from 'veritone-redux-common';
-const { createReducer } = helpers;
+const { createReducer, callGraphQLApi } = helpers;
 
 export const namespace = 'engineOutputExport';
 
@@ -18,9 +18,8 @@ export const APPLY_SUBTITLE_CONFIGS = `vtn/${namespace}/APPLY_SUBTITLE_CONFIGS`;
 export const STORE_SUBTITLE_CONFIGS = `vtn/${namespace}/STORE_SUBTITLE_CONFIGS`;
 
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
+export const EXPORT_AND_DOWNLOAD_SUCCESS = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_SUCCESS`;
 export const EXPORT_AND_DOWNLOAD_FAILURE = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_FAILURE`;
-
-export const SET_ON_EXPORT_CALLBACK = `vtn/${namespace}/SET_ON_EXPORT_CALLBACK`;
 
 export const ADD_SNACK_BAR = `vtn/${namespace}/ADD_SNACK_BAR`;
 export const CLOSE_SNACK_BAR = `vtn/${namespace}/CLOSE_SNACK_BAR`;
@@ -33,12 +32,10 @@ const defaultState = {
   categoryLookup: {},
   expandedCategories: {},
   subtitleConfigCache: {},
-  tdoData: [],
   outputConfigurations: [],
   errorSnackBars: [],
-  fetchingEngineRunsError: null,
-  exportAndDownloadError: null,
-  onExport: noop
+  fetchEngineRunsFailed: false,
+  exportAndDownloadFailed: false
 };
 
 export default createReducer(defaultState, {
@@ -46,13 +43,24 @@ export default createReducer(defaultState, {
     return {
       ...state,
       fetchingEngineRuns: true,
-      fetchingEngineRunsError: null
+      fetchEngineRunsFailed: null
     };
   },
-  [FETCH_ENGINE_RUNS_SUCCESS](state, { enginesRan, tdoData }) {
+  [FETCH_ENGINE_RUNS_SUCCESS](state, { payload }) {
     let newOutputConfigurations = [];
     const categoryLookup = {};
     const expandedCategories = {};
+    const enginesRan = Object.values(payload).reduce((accumulator, tdo) => {
+      const engines = get(tdo, 'engineRuns.records');
+      if (engines) {
+        engines.forEach(record => {
+          if (record.status !== 'failed') {
+            accumulator[record.engine.id] = record.engine;
+          }
+        });
+      }
+      return accumulator;
+    }, {});
     forEach(enginesRan, engineRun => {
       if (get(engineRun, 'category.exportFormats.length')) {
         categoryLookup[engineRun.category.id] = engineRun.category;
@@ -87,10 +95,11 @@ export default createReducer(defaultState, {
       },
       outputConfigurations: newOutputConfigurations,
       expandedCategories: expandedCategories,
-      tdoData
+      fetchEngineRunsFailed: false,
+      includeMedia: false
     };
   },
-  [FETCH_ENGINE_RUNS_FAILURE](state, { error }) {
+  [FETCH_ENGINE_RUNS_FAILURE](state, action) {
     return {
       ...state,
       enginesRan: {},
@@ -98,7 +107,7 @@ export default createReducer(defaultState, {
       expandedCategories: {},
       outputConfigurations: [],
       fetchingEngineRuns: false,
-      fetchingEngineRunsError: error
+      fetchEngineRunsFailed: true
     };
   },
   [SET_INCLUDE_MEDIA](state, action) {
@@ -167,7 +176,6 @@ export default createReducer(defaultState, {
     };
   },
   [STORE_SUBTITLE_CONFIGS](state, { categoryId, config }) {
-    console.log(categoryId, config);
     return {
       ...state,
       subtitleConfigCache: {
@@ -178,22 +186,16 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SET_ON_EXPORT_CALLBACK](state, { onExport }) {
-    return {
-      ...state,
-      onExport: onExport || noop
-    };
-  },
   [START_EXPORT_AND_DOWNLOAD](state) {
     return {
       ...state,
-      exportAndDownloadError: null
+      exportAndDownloadFailed: false
     };
   },
-  [EXPORT_AND_DOWNLOAD_FAILURE](state, { error }) {
+  [EXPORT_AND_DOWNLOAD_FAILURE](state) {
     return {
       ...state,
-      exportAndDownloadError: error
+      exportAndDownloadFailed: true
     };
   },
   [ADD_SNACK_BAR](state, { snackBarConfig }) {
@@ -236,36 +238,98 @@ export const fetchingEngineRuns = state =>
   get(local(state), 'fetchingEngineRuns');
 export const fetchingCategoryExportFormats = state =>
   get(local(state), 'fetchingCategoryExportFormats');
-export const onExport = state => get(local(state), 'onExport');
 export const getOutputConfigurations = state =>
   get(local(state), 'outputConfigurations');
-export const getTdoData = state => get(local(state), 'tdoData');
 export const errorSnackBars = state => get(local(state), 'errorSnackBars');
-export const fetchingEngineRunsError = state =>
-  get(local(state), 'fetchingEngineRunsError');
+export const fetchEngineRunsFailed = state =>
+  get(local(state), 'fetchEngineRunsFailed');
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
 
-export const fetchEngineRuns = tdos => {
-  return {
-    type: FETCH_ENGINE_RUNS,
-    tdoIds: tdos.map(tdo => tdo.id)
-  };
+export const fetchEngineRuns = tdos => async (dispatch, getState) => {
+  // TODO: Update the temporalDataObjects query to accept multiple ids.
+  const tdoQueries = tdos.map(tdo => tdo.tdoId).reduce((accumulator, id) => {
+    const subquery = `
+      tdo${id}:  temporalDataObject(id: "${id}") {
+        id
+        engineRuns {
+          records {
+            engine {
+              id
+              name
+              signedLogoPath
+              iconPath
+              category {
+                id
+                name
+                iconClass
+                exportFormats
+              }
+            },
+            status
+          }
+        }
+      }
+    `;
+    return accumulator + subquery;
+  }, '');
+
+  const query = `
+    query {
+      ${tdoQueries}
+    }
+  `;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_ENGINE_RUNS,
+      FETCH_ENGINE_RUNS_SUCCESS,
+      FETCH_ENGINE_RUNS_FAILURE
+    ],
+    query,
+    dispatch,
+    getState
+  });
 };
 
-export const fetchEngineRunsFailure = error => {
-  return {
-    type: FETCH_ENGINE_RUNS_FAILURE,
-    error
-  };
-};
+export const exportAndDownload = tdoData => async (dispatch, getState) => {
+  const query = `
+    mutation createExportRequest(
+      $includeMedia: Boolean,
+      $tdoData: [CreateExportRequestForTDO!]!,
+      $outputConfigurations: [CreateExportRequestOutputConfig!]
+    ) {
+      createExportRequest(input: {
+        includeMedia: $includeMedia
+        tdoData: $tdoData
+        outputConfigurations: $outputConfigurations
+      }) {
+        id
+        status
+        organizationId
+        createdDateTime
+        modifiedDateTime
+        requestorId
+        assetUri
+      }
+    }
+  `;
 
-export const fetchEngineRunsSuccess = (enginesRan, tdoData) => {
-  return {
-    type: FETCH_ENGINE_RUNS_SUCCESS,
-    enginesRan,
-    tdoData
-  };
+  return await callGraphQLApi({
+    actionTypes: [
+      START_EXPORT_AND_DOWNLOAD,
+      EXPORT_AND_DOWNLOAD_SUCCESS,
+      EXPORT_AND_DOWNLOAD_FAILURE
+    ],
+    query,
+    variables: {
+      includeMedia: getIncludeMedia(getState()),
+      outputConfigurations: getOutputConfigurations(getState()),
+      tdoData
+    },
+    dispatch,
+    getState
+  });
 };
 
 export const setIncludeMedia = includeMedia => {
@@ -302,26 +366,6 @@ export const applySubtitleConfigs = (categoryId, values) => {
     type: APPLY_SUBTITLE_CONFIGS,
     categoryId,
     values
-  };
-};
-
-export const setOnExportCallback = cb => {
-  return {
-    type: SET_ON_EXPORT_CALLBACK,
-    onExport: cb
-  };
-};
-
-export const startExportAndDownload = () => {
-  return {
-    type: START_EXPORT_AND_DOWNLOAD
-  };
-};
-
-export const exportAndDownloadFailure = error => {
-  return {
-    type: EXPORT_AND_DOWNLOAD_FAILURE,
-    error
   };
 };
 

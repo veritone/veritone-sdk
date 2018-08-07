@@ -83,16 +83,22 @@ export default class EngineConfigItem extends Component {
           <img className={styles.engineLogo} src={engine.signedLogoPath} />
         )}
         <ListItemText
-          classes={{primary: styles.engineNameText}}
-          primary={engine ? engine.name : <span className={styles.allEnginesText}>
-            <span>All Engines</span>
-            <Tooltip
-              title="Export will include formats selected for all available engines in this category"
-              placement="bottom-start"
-            >
-              <InfoIcon className={styles.allEnginesInfoIcon}/>
-            </Tooltip>
-          </span>}
+          classes={{ primary: styles.engineNameText }}
+          primary={
+            engine ? (
+              engine.name
+            ) : (
+              <span className={styles.allEnginesText}>
+                <span>All Engines</span>
+                <Tooltip
+                  title="Export will include formats selected for all available engines in this category"
+                  placement="bottom-start"
+                >
+                  <InfoIcon className={styles.allEnginesInfoIcon} />
+                </Tooltip>
+              </span>
+            )
+          }
           inset={!engine}
         />
         <Select

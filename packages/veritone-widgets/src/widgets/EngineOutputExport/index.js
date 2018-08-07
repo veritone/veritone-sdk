@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { get } from 'lodash';
 import { bool, func, string, arrayOf, shape, number } from 'prop-types';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -35,14 +36,11 @@ const snackBarClasses = {
       state
     ),
     errorSnackBars: engineOutputExportModule.errorSnackBars(state),
-    fetchingEngineRunsError: engineOutputExportModule.fetchingEngineRunsError(
-      state
-    )
+    fetchEngineRunsFailed: engineOutputExportModule.fetchEngineRunsFailed(state)
   }),
   {
     setIncludeMedia: engineOutputExportModule.setIncludeMedia,
-    setOnExportCallback: engineOutputExportModule.setOnExportCallback,
-    startExportAndDownload: engineOutputExportModule.startExportAndDownload,
+    exportAndDownload: engineOutputExportModule.exportAndDownload,
     closeSnackBar: engineOutputExportModule.closeSnackBar
   },
   null,
@@ -52,7 +50,7 @@ class EngineOutputExport extends Component {
   static propTypes = {
     tdos: arrayOf(
       shape({
-        id: string.isRequired,
+        tdoId: string.isRequired,
         startOffsetMs: number,
         stopOffsetMs: number
       })
@@ -64,19 +62,22 @@ class EngineOutputExport extends Component {
     setIncludeMedia: func,
     fetchingEngineRuns: bool,
     fetchingCategoryExportFormats: bool,
-    startExportAndDownload: func,
-    setOnExportCallback: func,
+    exportAndDownload: func.isRequired,
     errorSnackBars: arrayOf(shape({})),
     closeSnackBar: func,
-    fetchingEngineRunsError: string
+    fetchEngineRunsFailed: bool
   };
-
-  componentDidMount() {
-    this.props.setOnExportCallback(this.props.onExport);
-  }
 
   handleIncludeMediaChange = event => {
     this.props.setIncludeMedia(event.target.checked);
+  };
+
+  handleExportAndDownload = () => {
+    this.props.exportAndDownload(this.props.tdos).then(response => {
+      const createExportRequest = get(response, 'createExportRequest');
+      this.props.onExport(createExportRequest);
+      return createExportRequest;
+    });
   };
 
   render() {
@@ -87,16 +88,15 @@ class EngineOutputExport extends Component {
       fetchingCategoryExportFormats,
       open,
       onCancel,
-      startExportAndDownload,
       errorSnackBars,
       closeSnackBar,
-      fetchingEngineRunsError
+      fetchEngineRunsFailed
     } = this.props;
 
     const disableExportButton =
       fetchingEngineRuns ||
       fetchingCategoryExportFormats ||
-      fetchingEngineRunsError;
+      fetchEngineRunsFailed;
 
     return (
       <Dialog fullScreen open={open}>
@@ -182,7 +182,7 @@ class EngineOutputExport extends Component {
               variant="contained"
               color="primary"
               className={styles.actionButton}
-              onClick={startExportAndDownload}
+              onClick={this.handleExportAndDownload}
               disabled={disableExportButton}
             >
               Export
@@ -227,7 +227,7 @@ class EngineOutputExportWidgetComponent extends Component {
     _widgetId: string.isRequired,
     tdos: arrayOf(
       shape({
-        id: string.isRequired,
+        tdoId: string.isRequired,
         startOffsetMs: number,
         stopOffsetMs: number
       })

@@ -30,7 +30,7 @@ class Story extends React.Component {
     if (this.state.tdoId) {
       this.setState(prevState => ({
         isOpen: true,
-        tdoObjects: [{ id: prevState.tdoId }]
+        tdoObjects: [{ tdoId: prevState.tdoId }]
       }));
     }
   };
@@ -90,7 +90,7 @@ storiesOf('EngineOutputExport', module).add('Base', () => {
       widgetProps={{
         tdos: object('TDOs', [
           {
-            id: '400000238'
+            tdoId: '400000238'
           }
         ]),
         onExport: action('onExport'),
