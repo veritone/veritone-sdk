@@ -10,7 +10,6 @@ import {
   any,
   object
 } from 'prop-types';
-import { noop } from 'lodash';
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
@@ -41,6 +40,7 @@ class MediaPlayerComponent extends React.Component {
       shape({
         startTimeMs: number.isRequired,
         stopTimeMs: number.isRequired,
+        id: string.isRequired,
         object: shape({
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
@@ -48,7 +48,9 @@ class MediaPlayerComponent extends React.Component {
         })
       })
     ),
-    onBoundingBoxChange: func,
+    onAddBoundingBox: func.isRequired,
+    onDeleteBoundingBox: func.isRequired,
+    onChangeBoundingBox: func.isRequired,
     overlayBorderStyle: string,
     readOnly: bool,
     addOnly: bool,
@@ -72,15 +74,11 @@ class MediaPlayerComponent extends React.Component {
   };
 
   static defaultProps = {
-    onBoundingBoxChange: noop,
     fluid: true
   };
 
-  handleBoundingBoxChange = (changes) => {
-    this.props.onBoundingBoxChange({
-      ...changes,
-      currentTime: this.props.currentTime
-    });
+  handleAddBoundingBox = newBox => {
+    this.props.onAddBoundingBox(newBox, this.props.currentTime * 1000);
   };
 
   render() {
@@ -100,7 +98,9 @@ class MediaPlayerComponent extends React.Component {
         {this.props.hasStarted && (
           <Overlay
             wrapperStyles={{ zIndex: 100 }}
-            onBoundingBoxChange={this.handleBoundingBoxChange}
+            onAddBoundingBox={this.handleAddBoundingBox}
+            onDeleteBoundingBox={this.props.onDeleteBoundingBox}
+            onChangeBoundingBox={this.props.onChangeBoundingBox}
             overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
             overlayBorderStyle={this.props.overlayBorderStyle}
             initialBoundingBoxPolys={

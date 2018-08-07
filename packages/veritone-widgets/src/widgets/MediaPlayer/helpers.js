@@ -4,5 +4,5 @@ export function getPolysForTime(series, timeMs) {
       ({ startTimeMs, stopTimeMs }) =>
         startTimeMs <= timeMs && timeMs <= stopTimeMs
     )
-    .map(({ object }) => object.boundingPoly);
+    .map(({ object }) => object);
 }

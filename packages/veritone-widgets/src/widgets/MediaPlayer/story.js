@@ -1,9 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
-import { isNumber } from 'lodash';
+import { find, findIndex } from 'lodash';
 import faker from 'faker';
 import 'video-react/dist/video-react.css';
+
+import { guid } from '../../shared/util';
 
 function randomPolyBox() {
   const rand = faker.random.number;
@@ -21,6 +23,7 @@ const timeSeries = [
   {
     startTimeMs: 0,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 5000
@@ -28,6 +31,7 @@ const timeSeries = [
   {
     startTimeMs: 2000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 8000
@@ -35,6 +39,7 @@ const timeSeries = [
   {
     startTimeMs: 8000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 12000
@@ -42,6 +47,7 @@ const timeSeries = [
   {
     startTimeMs: 9000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 14000
@@ -49,6 +55,7 @@ const timeSeries = [
   {
     startTimeMs: 10000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 14000
@@ -56,6 +63,7 @@ const timeSeries = [
   {
     startTimeMs: 17000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 19000
@@ -63,6 +71,7 @@ const timeSeries = [
   {
     startTimeMs: 20000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 25000
@@ -70,6 +79,7 @@ const timeSeries = [
   {
     startTimeMs: 21000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 24000
@@ -77,6 +87,7 @@ const timeSeries = [
   {
     startTimeMs: 21000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 25000
@@ -84,6 +95,7 @@ const timeSeries = [
   {
     startTimeMs: 25000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 30000
@@ -91,6 +103,7 @@ const timeSeries = [
   {
     startTimeMs: 28000,
     object: {
+      id: guid(),
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 30000
@@ -142,72 +155,61 @@ class Story extends React.Component {
 
   playerRef = React.createRef();
 
-  handleBoundingBoxChange = ({
-    allPolys,
-    newPoly,
-    deletedIndex,
-    currentTime
-  }) => {
-    if (newPoly) {
-      return this.handleAddBoundingBox(newPoly, currentTime * 1000);
-    }
+  handleAddBoundingBox = (newBox, insertAtTime) => {
+    console.log('Added box', newBox, 'at', insertAtTime);
 
-    if (isNumber(deletedIndex)) {
-      return this.handleDeleteBoundingBox(deletedIndex);
-    }
-
-    this.handleChangeBoundingBox(allPolys, currentTime * 1000);
-    // if editing an existing poly, find the matching time series object and edit it
-    // for that whole period
+    this.setState(state => ({
+      boundingPolySeries: [
+        ...state.boundingPolySeries,
+        {
+          object: {
+            ...newBox,
+            id: guid()
+          },
+          startTimeMs: insertAtTime,
+          stopTimeMs: insertAtTime + 10000 // 10 second
+        }
+      ]
+    }));
   };
 
-  handleAddBoundingBox(newPoly, insertAtTime) {
-    // if adding a new poly, add it during the first matching existing window if
-    // available, otherwise make a new one at currentTime +- 1 second
-    const relevantTimeSeriesObjects = this.state.boundingPolySeries.filter(
-      ({ startTimeMs, stopTimeMs }) =>
-        startTimeMs <= insertAtTime && insertAtTime <= stopTimeMs
-    );
-
-    const firstRelevantTimeSeries = relevantTimeSeriesObjects[0];
+  handleDeleteBoundingBox = deletedId => {
+    console.log('Deleted box with ID', deletedId);
 
     this.setState(state => ({
-      boundingPolySeries: [
-        {
-          startTimeMs: firstRelevantTimeSeries
-            ? firstRelevantTimeSeries.startTimeMs
-            : insertAtTime - 1000,
-          stopTimeMs: firstRelevantTimeSeries
-            ? firstRelevantTimeSeries.stopTimeMs
-            : insertAtTime + 1000,
-          object: {
-            boundingPoly: newPoly
-          }
-        },
-        ...state.boundingPolySeries
-      ]
+      boundingPolySeries: state.boundingPolySeries.filter(
+        ({ object: { id } }) => id !== deletedId
+      )
     }));
-  }
+  };
 
-  handleDeleteBoundingBox(deletedIndex) {
-    this.setState(state => ({
-      boundingPolySeries: [
-        ...state.boundingPolySeries.slice(0, deletedIndex),
-        ...state.boundingPolySeries.slice(deletedIndex + 1)
-      ]
-    }));
-  }
+  handleChangeBoundingBox = changedBox => {
+    console.log('Changed box', changedBox);
 
-  handleChangeBoundingBox(allPolys, currentTime) {
-    // const relevantTimeSeriesObjects = this.state.boundingPolySeries.filter(
-    //   ({ startTimeMs, stopTimeMs }) =>
-    //     startTimeMs <= currentTime && currentTime <= stopTimeMs
-    // );
+    return this.setState(state => {
+      const relevantTimeSeriesObject = find(state.boundingPolySeries, {
+        object: { id: changedBox.id }
+      });
+      const relevantTimeSeriesObjectIndex = findIndex(
+        state.boundingPolySeries,
+        relevantTimeSeriesObject
+      );
 
-    this.setState({
-      boundingPolySeries: []
+      return {
+        boundingPolySeries: [
+          ...state.boundingPolySeries.slice(0, relevantTimeSeriesObjectIndex),
+          {
+            ...relevantTimeSeriesObject,
+            object: {
+              ...relevantTimeSeriesObject.object,
+              ...changedBox
+            }
+          },
+          ...state.boundingPolySeries.slice(relevantTimeSeriesObjectIndex + 1)
+        ]
+      };
     });
-  }
+  };
 
   render() {
     return (
@@ -215,7 +217,9 @@ class Story extends React.Component {
         <MediaPlayer
           {...this.props}
           boundingPolySeries={this.state.boundingPolySeries}
-          onBoundingBoxChange={this.handleBoundingBoxChange}
+          onAddBoundingBox={this.handleAddBoundingBox}
+          onDeleteBoundingBox={this.handleDeleteBoundingBox}
+          onChangeBoundingBox={this.handleChangeBoundingBox}
           ref={this.playerRef}
         />
         <DefaultControlBar playerRef={this.playerRef} />
