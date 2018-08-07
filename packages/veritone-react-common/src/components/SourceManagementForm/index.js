@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has, get, noop, reject } from 'lodash';
+import { pick, has, get, noop, reject, cloneDeep } from 'lodash';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Icon from '@material-ui/core/Icon';
@@ -200,9 +200,11 @@ export default class SourceManagementForm extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    const resultTemplates = cloneDeep(this.state.contentTemplates);
+    resultTemplates.forEach(template => delete template.guid);
     return this.props.onSubmit({
       sourceConfiguration: this.state.sourceConfig,
-      contentTemplates: this.state.contentTemplates
+      contentTemplates: resultTemplates
     });
   };
 
