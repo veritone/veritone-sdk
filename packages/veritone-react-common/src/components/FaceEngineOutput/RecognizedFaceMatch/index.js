@@ -14,7 +14,7 @@ class RecognizedFaceMatch extends Component {
   render() {
     const { entity, confidence, onViewDetailsClick } = this.props;
     const confidenceColor =
-      Math.round((confidence > 1 ? confidence : confidence * 100)) >= 90
+      Math.round(confidence * 100) >= 90
         ? styles.greenBackground
         : styles.orangeBackground;
 
@@ -31,7 +31,7 @@ class RecognizedFaceMatch extends Component {
         <div>
           {confidence && (
             <div className={cx(styles.timeSlotConfidence, confidenceColor)}>
-              {Math.round((confidence > 1 ? confidence : confidence * 100))}% Match
+              {Math.round(confidence * 100)}% Match
             </div>
           )}
           <div
