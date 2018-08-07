@@ -1,0 +1,14 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.activeSectionContainer {
+  display: flex;
+  flex-direction: column;
+
+  label,
+  span,
+  input {
+    font-weight: inherit;
+    font-size: 0.8rem !important;
+  }
+}
