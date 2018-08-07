@@ -44,8 +44,7 @@ function* watchErrors() {
 
 function* watchApplySubtitleConfigs() {
   yield takeEvery(APPLY_SUBTITLE_CONFIGS, function* onApplySubtitleConfigs({
-    categoryId,
-    values
+    payload: { categoryId, values }
   }) {
     yield put(storeSubtitleConfigs(categoryId, values));
   });

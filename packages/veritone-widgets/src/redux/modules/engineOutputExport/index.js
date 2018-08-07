@@ -93,13 +93,14 @@ export default createReducer(defaultState, {
         ...state.categoryLookup,
         ...categoryLookup
       },
+      subtitleConfigCache: {},
       outputConfigurations: newOutputConfigurations,
       expandedCategories: expandedCategories,
       fetchEngineRunsFailed: false,
       includeMedia: false
     };
   },
-  [FETCH_ENGINE_RUNS_FAILURE](state, action) {
+  [FETCH_ENGINE_RUNS_FAILURE](state) {
     return {
       ...state,
       enginesRan: {},
@@ -110,37 +111,51 @@ export default createReducer(defaultState, {
       fetchEngineRunsFailed: true
     };
   },
-  [SET_INCLUDE_MEDIA](state, action) {
+  [SET_INCLUDE_MEDIA](
+    state,
+    {
+      payload: { includeMedia }
+    }
+  ) {
     return {
       ...state,
-      includeMedia: action.includeMedia
+      includeMedia: includeMedia
     };
   },
-  [TOGGLE_CONFIG_EXPAND](state, action) {
+  [TOGGLE_CONFIG_EXPAND](
+    state,
+    {
+      payload: { categoryId }
+    }
+  ) {
     return {
       ...state,
       expandedCategories: {
         ...state.expandedCategories,
-        [action.categoryId]: !state.expandedCategories[action.categoryId]
+        [categoryId]: !state.expandedCategories[categoryId]
       }
     };
   },
-  [UPDATE_SELECTED_FILE_TYPES](state, action) {
+  [UPDATE_SELECTED_FILE_TYPES](
+    state,
+    {
+      payload: { engineId, categoryId, applyAll, selectedFileTypes }
+    }
+  ) {
     return {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
         if (
-          (config.engineId === action.engineId &&
-            config.categoryId === action.categoryId) ||
-          (config.categoryId === action.categoryId && action.applyAll)
+          (config.engineId === engineId && config.categoryId === categoryId) ||
+          (config.categoryId === categoryId && applyAll)
         ) {
           const storedSubtitleConfig = get(state, [
             'subtitleConfigCache',
-            action.categoryId
+            categoryId
           ]);
           return {
             ...config,
-            formats: action.selectedFileTypes.map(type => {
+            formats: selectedFileTypes.map(type => {
               return {
                 extension: type,
                 options: storedSubtitleConfig
@@ -156,17 +171,22 @@ export default createReducer(defaultState, {
       })
     };
   },
-  [APPLY_SUBTITLE_CONFIGS](state, action) {
+  [APPLY_SUBTITLE_CONFIGS](
+    state,
+    {
+      payload: { categoryId, values }
+    }
+  ) {
     return {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
-        if (config.categoryId === action.categoryId) {
+        if (config.categoryId === categoryId) {
           return {
             ...config,
             formats: config.formats.map(format => {
               return {
                 ...format,
-                options: { ...action.values }
+                options: { ...values }
               };
             })
           };
@@ -175,7 +195,12 @@ export default createReducer(defaultState, {
       })
     };
   },
-  [STORE_SUBTITLE_CONFIGS](state, { categoryId, config }) {
+  [STORE_SUBTITLE_CONFIGS](
+    state,
+    {
+      payload: { categoryId, config }
+    }
+  ) {
     return {
       ...state,
       subtitleConfigCache: {
@@ -198,13 +223,23 @@ export default createReducer(defaultState, {
       exportAndDownloadFailed: true
     };
   },
-  [ADD_SNACK_BAR](state, { snackBarConfig }) {
+  [ADD_SNACK_BAR](
+    state,
+    {
+      payload: { snackBarConfig }
+    }
+  ) {
     return {
       ...state,
       errorSnackBars: [...state.errorSnackBars, snackBarConfig]
     };
   },
-  [CLOSE_SNACK_BAR](state, { snackBarId }) {
+  [CLOSE_SNACK_BAR](
+    state,
+    {
+      payload: { snackBarId }
+    }
+  ) {
     return {
       ...state,
       errorSnackBars: state.errorSnackBars.map(snackBar => {
@@ -335,14 +370,18 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
 export const setIncludeMedia = includeMedia => {
   return {
     type: SET_INCLUDE_MEDIA,
-    includeMedia
+    payload: {
+      includeMedia
+    }
   };
 };
 
 export const toggleConfigExpand = categoryId => {
   return {
     type: TOGGLE_CONFIG_EXPAND,
-    categoryId
+    payload: {
+      categoryId
+    }
   };
 };
 
@@ -354,39 +393,49 @@ export const selectFileType = (
 ) => {
   return {
     type: UPDATE_SELECTED_FILE_TYPES,
-    selectedFileTypes,
-    categoryId,
-    engineId,
-    applyAll
+    payload: {
+      selectedFileTypes,
+      categoryId,
+      engineId,
+      applyAll
+    }
   };
 };
 
 export const applySubtitleConfigs = (categoryId, values) => {
   return {
     type: APPLY_SUBTITLE_CONFIGS,
-    categoryId,
-    values
+    payload: {
+      categoryId,
+      values
+    }
   };
 };
 
 export const addSnackBar = snackBarConfig => {
   return {
     type: ADD_SNACK_BAR,
-    snackBarConfig
+    payload: {
+      snackBarConfig
+    }
   };
 };
 
 export const closeSnackBar = snackBarId => {
   return {
     type: CLOSE_SNACK_BAR,
-    snackBarId
+    payload: {
+      snackBarId
+    }
   };
 };
 
 export const storeSubtitleConfigs = (categoryId, config) => {
   return {
     type: STORE_SUBTITLE_CONFIGS,
-    categoryId,
-    config
+    payload: {
+      categoryId,
+      config
+    }
   };
 };

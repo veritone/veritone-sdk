@@ -253,10 +253,12 @@ describe('EngineConfigItem', () => {
       const expectedActions = [
         {
           type: engineOutputExportModule.UPDATE_SELECTED_FILE_TYPES,
-          selectedFileTypes: ['vlf'],
-          categoryId: testEngine.category.id,
-          applyAll: false,
-          engineId: testEngine.id
+          payload: {
+            selectedFileTypes: ['vlf'],
+            categoryId: testEngine.category.id,
+            applyAll: false,
+            engineId: testEngine.id
+          }
         }
       ];
       expect(actions).toEqual(expectedActions);
@@ -296,9 +298,11 @@ describe('EngineConfigItem', () => {
       const expectedActions = [
         {
           type: engineOutputExportModule.UPDATE_SELECTED_FILE_TYPES,
-          selectedFileTypes: ['vlf'],
-          categoryId: testEngine.category.id,
-          applyAll: true
+          payload: {
+            selectedFileTypes: ['vlf'],
+            categoryId: testEngine.category.id,
+            applyAll: true
+          }
         }
       ];
       expect(actions).toEqual(expectedActions);
