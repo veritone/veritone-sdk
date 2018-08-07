@@ -60,7 +60,7 @@ export default class Overlay extends React.Component {
         // unique ID
         id: string.isRequired,
         // vertices
-        object: arrayOf(
+        boundingPoly: arrayOf(
           shape({
             x: number.isRequired,
             y: number.isRequired
@@ -110,8 +110,8 @@ export default class Overlay extends React.Component {
   /* eslint-disable-next-line react/sort-comp */
   static mapPolysToInternalFormat = memoize(
     (polys, width, height) =>
-      polys.map(({ object, id }) => ({
-        object: percentagePolyToPixelXYWidthHeight(object, width, height),
+      polys.map(({ boundingPoly, id }) => ({
+        boundingPoly: percentagePolyToPixelXYWidthHeight(boundingPoly, width, height),
         id
       })),
     isEqual
@@ -126,7 +126,7 @@ export default class Overlay extends React.Component {
         id: focusedId
       });
 
-      state.boundingBoxPositions[focusedIndex].object = {
+      state.boundingBoxPositions[focusedIndex].boundingPoly = {
         width: ref.offsetWidth,
         height: ref.offsetHeight,
         ...position
@@ -165,8 +165,8 @@ export default class Overlay extends React.Component {
     });
 
     this.props.onChangeBoundingBox({
-      object: pixelXYWidthHeightToPercentagePoly(
-        this.state.boundingBoxPositions[focusedIndex].object,
+      boundingPoly: pixelXYWidthHeightToPercentagePoly(
+        this.state.boundingBoxPositions[focusedIndex].boundingPoly,
         this.props.overlayPositioningContext.width,
         this.props.overlayPositioningContext.height
       ),
@@ -196,13 +196,13 @@ export default class Overlay extends React.Component {
     });
 
     const draggedObject = {
-      ...this.state.boundingBoxPositions[focusedIndex].object,
+      ...this.state.boundingBoxPositions[focusedIndex].boundingPoly,
       x,
       y
     };
 
     this.props.onChangeBoundingBox({
-      object: pixelXYWidthHeightToPercentagePoly(
+      boundingPoly: pixelXYWidthHeightToPercentagePoly(
         draggedObject,
         this.props.overlayPositioningContext.width,
         this.props.overlayPositioningContext.height
@@ -249,7 +249,7 @@ export default class Overlay extends React.Component {
 
   confirmStagedBoundingBox = () => {
     this.props.onAddBoundingBox({
-      object: pixelXYWidthHeightToPercentagePoly(
+      boundingPoly: pixelXYWidthHeightToPercentagePoly(
         this.state.stagedBoundingBoxPosition,
         this.props.overlayPositioningContext.width,
         this.props.overlayPositioningContext.height
@@ -389,7 +389,7 @@ export default class Overlay extends React.Component {
         }}
       >
         {this.state.boundingBoxPositions.map(
-          ({ id, object: { x, y, width, height } }) => (
+          ({ id, boundingPoly: { x, y, width, height } }) => (
             <RndBox
               key={id}
               extendsProps={{

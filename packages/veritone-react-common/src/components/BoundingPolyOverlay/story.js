@@ -15,7 +15,7 @@ function randomPolyBox() {
 
   return {
     id: guid(),
-    object: Array(4)
+    boundingPoly: Array(4)
       .fill()
       .map(() => ({
         x: rand(options),
