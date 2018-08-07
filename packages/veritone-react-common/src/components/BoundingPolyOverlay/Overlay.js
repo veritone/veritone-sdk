@@ -15,7 +15,6 @@ import { branch, renderNothing } from 'recompose';
 
 import { getMousePosition } from 'helpers/dom';
 import withContextProps from 'helpers/withContextProps';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { OverlayPositioningContext } from './OverlayPositioningProvider';
 import OverlayConfirmMenu from './OverlayConfirmMenu';
 import OverlayActionsMenu from './OverlayActionsMenu';
@@ -37,7 +36,6 @@ import {
     ),
   renderNothing
 )
-@withMuiThemeProvider
 export default class Overlay extends React.Component {
   static propTypes = {
     confirmLabel: string,

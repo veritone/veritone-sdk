@@ -1,5 +1,4 @@
 import React from 'react';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from '@material-ui/core/Button';
 import { string, func, shape, node } from 'prop-types';
 
@@ -49,4 +48,4 @@ NullState.propTypes = {
   children: node
 };
 
-export default withMuiThemeProvider(NullState);
+export default NullState;

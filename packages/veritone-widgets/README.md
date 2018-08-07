@@ -1,5 +1,5 @@
 ## Quick Start
-As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. 
+As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. When both are available, the smart component is the default export and the widget is a named export. For example, `import FilePicker, { FilePickerWidget } from 'veritone-widgets'` imports the smart component as FilePicker and the widget as FilePickerWidget. Smart components usually require redux reducers and sagas to be imported as well, see [Using Smart Components](#using-smart-components)
 
 ### Widgets (framework agnostic)
 ```javascript
@@ -41,7 +41,36 @@ render(
 )
 ```
 
-## Use (widgets)
+## Using Smart Components
+Because smart components are not rendered within the VeritoneApp widget framework, they require the user's app to have its own redux store with the components' reducers installed. Often, [sagas](https://redux-saga.js.org/) are also included and must be started as part of the app's root saga.
+
+### Smart component reducer/saga requirements
+#### FilePicker
+* reducer:
+`import {filePickerReducer} from 'veritone-widgets'`
+
+* saga:
+`import {filePickerSaga} from 'veritone-widgets'`
+
+#### Notifications
+* reducer:
+`import {notificationsReducer} from 'veritone-widgets'`
+
+
+#### OAuthLoginButton
+* reducers:
+veritone-redux-common `User`, `Auth` and `Config` reducers
+
+### Smart component theme wrapper requirements
+In your app, import the `VeritoneSDKThemeProvider` from `veritone-react-common`:
+```
+import {VeritoneSDKThemeProvider } from 'veritone-react-common'
+```
+then wrap your root component with `<VeritoneSDKThemeProvider>`. If this is not possible, the `@withVeritoneSDKThemeProvider` decorator is provided to wrap individual components.
+
+Components can be customized using [material-ui themes](https://material-ui.com/customization/themes/) by passing a theme into the `theme` prop of the provider. Passed-in themes will be merged with the default Veritone theme.
+
+## Using Widgets
 ### 1. Create an instance of VeritoneApp
 `VeritoneApp` is a container for all the widgets and widget data in an app. Before using any widgets, you need to import and call it. Typically this will be done when your application is loaded and initialized.
 
