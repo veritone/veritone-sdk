@@ -73,7 +73,7 @@ export default class SourceManagementForm extends React.Component {
       details: {},
       thumbnailFile: null
     },
-    contentTemplates: {},
+    contentTemplates: [],
     activeTab: 0,
     openDialog: true
   };
