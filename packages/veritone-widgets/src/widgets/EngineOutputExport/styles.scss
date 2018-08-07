@@ -75,6 +75,22 @@
     background-color: $grey-3;
   }
 
+  .engineNameText {
+    @include mui-text('body1');
+    align-items: center;
+
+    .allEnginesText {
+      display: flex;
+      align-items: center;
+
+      .allEnginesInfoIcon {
+        font-size: 16px !important;
+        margin-left: 5px;
+        color: $grey-5;
+      }
+    }
+  }
+
   .customizeOutputBox {
     @include mui-text('body1');
     width: 100%;

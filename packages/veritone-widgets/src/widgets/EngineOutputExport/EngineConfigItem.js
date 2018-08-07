@@ -11,6 +11,8 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
+import InfoIcon from '@material-ui/icons/Info';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import styles from './styles.scss';
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
@@ -81,7 +83,16 @@ export default class EngineConfigItem extends Component {
           <img className={styles.engineLogo} src={engine.signedLogoPath} />
         )}
         <ListItemText
-          primary={engine ? engine.name : 'All Engines'}
+          classes={{primary: styles.engineNameText}}
+          primary={engine ? engine.name : <span className={styles.allEnginesText}>
+            <span>All Engines</span>
+            <Tooltip
+              title="Export will include formats selected for all available engines in this category"
+              placement="bottom-start"
+            >
+              <InfoIcon className={styles.allEnginesInfoIcon}/>
+            </Tooltip>
+          </span>}
           inset={!engine}
         />
         <Select
