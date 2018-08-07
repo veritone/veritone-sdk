@@ -375,7 +375,7 @@ function* updateTdoSaga(widgetId, tdoId, tdoDetailsToUpdate, primaryAssetData) {
 
 function* loadContentTemplates(widgetId) {
   let loadTemplatesQuery = `query {
-    dataRegistries {
+    dataRegistries(filterByOwnership: mine) {
       records {
         id
         name

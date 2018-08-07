@@ -14,58 +14,28 @@ export default class TemplateList extends React.Component {
         name: string.isRequired
       })
     ).isRequired,
-    selectedTemplates: objectOf(
-      // an array of content template objects that had already been added to the source
-      shape({
-        id: string
-      })
-    ),
-    addTemplate: func.isRequired,
-    removeTemplate: func.isRequired
-  };
-
-  static defaultProps = {
-    selectedTemplates: {}
+    addTemplate: func.isRequired
   };
 
   addTemplate = schemaId => () => {
     this.props.addTemplate(schemaId);
   };
 
-  removeTemplate = schemaId => () => {
-    this.props.removeTemplate(schemaId);
-  };
-
   buildTemplateList = () => {
-    const { templates, selectedTemplates } = this.props;
+    const { templates } = this.props;
 
-    return Object.keys(templates).map((schemaId, index) => {
-      const isAdded = !!selectedTemplates[schemaId];
-
+    return Object.keys(templates).map(schemaId => {
       return (
         <div className={styles.templateRow} key={schemaId}>
-          <div className={cx(styles.name, { [styles.addedTemplate]: isAdded })}>
-            {templates[schemaId].name}
-          </div>
-          {isAdded ? (
-            <IconButton
-              className={styles.trashIcon}
-              onClick={this.removeTemplate(schemaId)}
-              aria-label="trash"
-              disableRipple
-            >
-              <Icon className={'icon-trash'} />
-            </IconButton>
-          ) : (
-            <IconButton
-              className={styles.trashIcon}
-              onClick={this.addTemplate(schemaId)}
-              aria-label="add"
-              disableRipple
-            >
-              <Icon className={'icon-zoom-in'} />
-            </IconButton>
-          )}
+          <div className={cx(styles.name)}>{templates[schemaId].name}</div>
+          <IconButton
+            className={styles.trashIcon}
+            onClick={this.addTemplate(schemaId)}
+            aria-label="add"
+            disableRipple
+          >
+            <Icon className={'icon-zoom-in'} />
+          </IconButton>
         </div>
       );
     });

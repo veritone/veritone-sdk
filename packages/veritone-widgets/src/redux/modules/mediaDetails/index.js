@@ -70,7 +70,7 @@ const defaultMDPState = {
   entities: [],
   fetchingEntities: false,
   contentTemplates: {},
-  tdoContentTemplates: {},
+  tdoContentTemplates: [],
   schemasById: {},
   enableSave: false,
   error: null,
@@ -250,7 +250,7 @@ export default createReducer(defaultState, {
       meta: { widgetId }
     }
   ) {
-    const tdoContentTemplates = {};
+    const tdoContentTemplates = [];
     if (payload && payload.records) {
       payload.records.forEach(asset => {
         if (!asset.sourceData || !asset.sourceData.schema) {
@@ -258,7 +258,11 @@ export default createReducer(defaultState, {
         }
         const contentTemplate = Object.assign({}, asset.sourceData.schema);
         if (asset.transform) {
-          contentTemplate.data = JSON.parse(asset.transform);
+          try {
+            contentTemplate.data = JSON.parse(asset.transform);
+          } catch (err) {
+            return;
+          }
         }
         if (contentTemplate.dataRegistry && contentTemplate.dataRegistry.name) {
           contentTemplate.name = contentTemplate.dataRegistry.name;
@@ -266,9 +270,10 @@ export default createReducer(defaultState, {
         }
         // keep asset id on the content template for asset CRUD
         contentTemplate.assetId = asset.id;
-        tdoContentTemplates[contentTemplate.id] = contentTemplate;
+        tdoContentTemplates.push(contentTemplate);
       });
     }
+    console.log(tdoContentTemplates);
     return {
       ...state,
       [widgetId]: {
@@ -290,7 +295,7 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         error: errorMessage || 'unknown error',
-        tdoContentTemplates: {}
+        tdoContentTemplates: []
       }
     };
   },

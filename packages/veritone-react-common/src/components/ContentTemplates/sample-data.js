@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import { has, cloneDeep } from 'lodash';
 
 // CONTENT TEMPLATES SETUP
 const templateSource = {
@@ -157,19 +157,19 @@ function createTemplateData(dataSchemas) {
 }
 
 function createInitialTemplates(templateSources) {
-  const selectedTemplateSchemas = {};
+  const selectedTemplateSchemas = [];
 
   const templateSchemas = createTemplateData(
     dataSchemas.data.dataRegistries.records
   );
   templateSources.forEach(template => {
     if (has(templateSchemas, template.schemaId)) {
-      selectedTemplateSchemas[template.schemaId] =
-        templateSchemas[template.schemaId];
+      const selectedTemplate = cloneDeep(templateSchemas[template.schemaId]);
       if (template.data) {
         // if we need to fill out the form with pre-data
-        selectedTemplateSchemas[template.schemaId].data = template.data;
+        selectedTemplate.data = template.data;
       }
+      selectedTemplateSchemas.push(selectedTemplate);
     }
   });
 
