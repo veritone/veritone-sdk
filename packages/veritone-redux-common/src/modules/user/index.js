@@ -106,6 +106,13 @@ const reducer = createReducer(defaultState, {
     };
   },
 
+  [constants.LOGOUT_SUCCESS](state) {
+    return {
+      ...state,
+      user: {}
+    };
+  },
+
   [constants.FETCH_USER_APPLICATIONS](state, action) {
     const requestSuccessState = {
       ...state,
