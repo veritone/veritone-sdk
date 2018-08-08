@@ -38,7 +38,7 @@ export default class ContentTemplates extends React.Component {
 
   render() {
     const { selectedTemplateSchemas } = this.props;
-    const showNullstate = !Object.keys(selectedTemplateSchemas).length;
+    const showNullstate = !selectedTemplateSchemas.length;
 
     return (
       <div className={styles.templatePage}>
