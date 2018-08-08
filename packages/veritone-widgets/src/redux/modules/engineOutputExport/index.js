@@ -298,7 +298,11 @@ export const fetchEngineRuns = tdos => async (dispatch, getState) => {
                 id
                 name
                 iconClass
-                exportFormats
+                exportFormats {
+                  format
+                  label
+                  types
+                }
               }
             },
             status
