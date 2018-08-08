@@ -1,14 +1,18 @@
 import React from 'react';
-import { has, includes, get } from 'lodash';
+import { has, includes, pick, get, isArray } from 'lodash';
 
-import { any, arrayOf, objectOf, func, string, number } from 'prop-types';
+import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
+import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
-import SourceTypeField from 'components/SourceTypeField';
+import Checkbox from '@material-ui/core/Checkbox';
+import { DateTimePicker } from '../../formComponents';
+import SourceTypeField from '../../SourceTypeField';
 
 import styles from './styles.scss';
 
@@ -18,6 +22,7 @@ export default class DynamicSelect extends React.Component {
     currentSourceType: number, // id of initial sourceType if there is a default
     onSelectChange: func.isRequired,
     onSourceDetailChange: func.isRequired,
+    getFieldOptions: func.isRequired,
     fieldValues: objectOf(any),
     errorFields: objectOf(any),
     helperText: string,
@@ -45,7 +50,7 @@ export default class DynamicSelect extends React.Component {
 
   handleDetailChange = fieldId => event => {
     this.props.onSourceDetailChange({
-      [fieldId]: event.target.value
+      [fieldId]: event.target.type === 'checkbox' ? event.target.checked : event.target.value
     });
   };
 
@@ -78,6 +83,16 @@ export default class DynamicSelect extends React.Component {
               ? true
               : false
           }
+          options={properties[fieldId].enum}
+          peerSelection={properties[fieldId].peerEnumKey
+            ? (isArray(this.props.fieldValues[properties[fieldId].peerEnumKey]) 
+              ? this.props.fieldValues[properties[fieldId].peerEnumKey] :
+              []
+            )
+            : undefined
+          }
+          query={properties[fieldId].query || get(properties[fieldId], 'items.query' )}
+          getFieldOptions={this.props.getFieldOptions}
           key={fieldId}
         />
       );

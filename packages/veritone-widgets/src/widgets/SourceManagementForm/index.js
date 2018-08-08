@@ -11,7 +11,8 @@ class SourceManagementFormWidget extends React.Component {
     source: objectOf(any),
     initialTemplates: objectOf(any),
     onSubmit: func.isRequired,
-    onClose: func
+    onClose: func,
+    getFieldOptions: func.isRequired
   };
 
   render() {

@@ -56,6 +56,7 @@ export default class SourceManagementForm extends React.Component {
     ),
     onSubmit: func.isRequired,
     onClose: func,
+    getFieldOptions: func.isRequired,
     open: bool
   };
 
@@ -246,6 +247,7 @@ export default class SourceManagementForm extends React.Component {
                 sourceTypes={this.props.sourceTypes}
                 source={this.state.sourceConfig}
                 onInputChange={this.saveConfiguration}
+                getFieldOptions={this.props.getFieldOptions}
                 onClose={this.handleCloseDialog}
               />
             )}
@@ -256,6 +258,7 @@ export default class SourceManagementForm extends React.Component {
                 onAddTemplate={this.addToTemplateList}
                 onRemoveTemplate={this.removeFromTemplateList}
                 onInputChange={this.updateTemplateDetails}
+                getFieldOptions={this.props.getFieldOptions}
               />
             )}
             <div className={styles['btn-container']}>

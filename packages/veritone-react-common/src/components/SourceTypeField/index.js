@@ -4,6 +4,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import {
   string,
   bool,
@@ -11,63 +13,144 @@ import {
   any,
   instanceOf,
   oneOfType,
-  oneOf
+  oneOf,
+  arrayOf,
+  shape
 } from 'prop-types';
-import { isFunction } from 'lodash';
+import { isFunction, isArray, get, isUndefined } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
 import styles from './styles.scss';
 
 // This functional component will handle field type render logic
 // TODO: add fields here as needed for different field types
-export default function SourceTypeField({ id, type, onChange, ...rest }) {
-  function handleChange(e) {
+export default class SourceTypeField extends React.Component {
+  static propTypes = {
+    id: string.isRequired,
+    type: string.isRequired,
+    title: string,
+    value: any, // eslint-disable-line react/forbid-prop-types
+    onChange: func,
+    required: bool,
+    options: arrayOf(any),
+    query: string,
+    peerSelection: arrayOf(any),
+    getFieldOptions: func.isRequired
+  };
+
+  state = {
+    options: isArray(this.props.options) ? this.props.options.map(e => {
+      return { label: e, value: e }
+    }) : undefined
+  };
+
+  // eslint-disable-next-line react/sort-comp
+  UNSAFE_componentWillMount() {
+    const { query, peerSelection } = this.props;
+    if (query) {
+      this.props.getFieldOptions(query).then(results => {
+        const newState = {};
+        if (isArray(results)) {
+          newState.options = results;
+        }
+        this.setState(newState);
+      });
+    }
+  }
+
+  handleChange = e => {
+    const { id, type, ...rest } = this.props;
     if (isFunction(onChange)) {
       return onChange(e, id, { ...rest, type });
     }
   }
 
-  const supportedTypes = [
-    'object',
-    'string',
-    'number',
-    'integer',
-    'boolean',
-    'array',
-    'dateTime',
-    'geoPoint'
-  ];
+  render() {
+    const { id, type, query, options, peerSelection, getFieldOptions, ...rest } = this.props;
+    const supportedTypes = [
+      'object',
+      'string',
+      'number',
+      'integer',
+      'boolean',
+      'array',
+      'dateTime',
+      'geoPoint'
+    ];
 
-  const foundSupportedType = supportedTypes.find(supportedType =>
-    type.includes(supportedType)
-  );
+    const foundSupportedType = supportedTypes.find(supportedType =>
+      type.includes(supportedType)
+    );
 
-  if (!foundSupportedType) {
-    return <UnsupportedTypeField type={type} {...rest} />;
+    if (!foundSupportedType) {
+      return <UnsupportedTypeField type={type} {...rest} />;
+    }
+
+    let FieldTypeComponent = {
+      dateTime: DateTimeTypeField,
+      boolean: BoolTypeField,
+      geoPoint: GeoPointField,
+      number: NumberField,
+      integer: NumberField
+    }[foundSupportedType];
+
+    // Select Field Types
+    let isMultiple = false;
+    let filteredOptions = this.state.options;
+    if (isArray(peerSelection)) {
+      filteredOptions = isArray(this.state.options) && this.state.options.filter(result => !isUndefined(peerSelection.find(selection => selection === result.id)));
+    }
+    if (filteredOptions || query) {
+      FieldTypeComponent = SelectField;
+      isMultiple = type === 'array';
+    }
+
+    if (!FieldTypeComponent) {
+      FieldTypeComponent = BaseField;
+    }
+
+    return <FieldTypeComponent id={id} onChange={this.handleChange} options={filteredOptions || []} multiple={isMultiple} {...rest} />;
   }
-
-  let FieldTypeComponent = {
-    dateTime: DateTimeTypeField,
-    boolean: BoolTypeField,
-    geoPoint: GeoPointField,
-    number: NumberField,
-    integer: NumberField
-  }[foundSupportedType];
-
-  if (!FieldTypeComponent) {
-    FieldTypeComponent = BaseField;
-  }
-
-  return <FieldTypeComponent id={id} onChange={handleChange} {...rest} />;
 }
 
-SourceTypeField.propTypes = {
+const SelectField = ({ id, title, value, onChange, options, multiple, required, ...rest }) => {
+  const inputProps = {
+    name: title,
+    id: 'schema-' + id,
+    key: 'schema-' + id
+  };
+  return (
+    <FormControl className={styles.selectContainer} required={required}>
+      <InputLabel htmlFor={'schema-' + id}>{title}</InputLabel>
+      <Select
+        multiple={multiple}
+        value={multiple ? 
+          (isArray(value) ? value : []) :
+          value
+        }
+        required={required}
+        onChange={onChange}
+        disabled={!options || !options.length}
+        {...inputProps}
+        {...rest}
+      >
+        <MenuItem key={'null'}></MenuItem>
+        {isArray(options) && options.map(e => {
+          return (
+            <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>
+          );
+        })}
+      </Select>
+    </FormControl>
+  );
+};
+
+SelectField.propTypes = {
   id: string.isRequired,
-  type: string.isRequired,
   title: string,
-  value: any, // eslint-disable-line react/forbid-prop-types
-  onChange: func,
-  required: bool
+  value: any,
+  onChange: func.isRequired,
+  options: arrayOf(any).isRequired
 };
 
 const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {

@@ -21,7 +21,8 @@ export default class SourceConfiguration extends React.Component {
       name: string,
       details: objectOf(any)
     }).isRequired, // the source if this is to edit a source
-    onInputChange: func.isRequired
+    onInputChange: func.isRequired,
+    getFieldOptions: func.isRequired
   };
   static defaultProps = {};
 
@@ -197,6 +198,7 @@ export default class SourceConfiguration extends React.Component {
                 errorFields={this.state.requiredFields}
                 selectLabel="Select a Source Type"
                 helperText="NOTE: Source types available are dynamic based on your ingestion adapter"
+                getFieldOptions={this.props.getFieldOptions}
               />
             </FormControl>
           </div>

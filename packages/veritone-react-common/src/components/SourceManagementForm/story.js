@@ -11,19 +11,69 @@ const sourceTypes = {
         id: 'audio_1',
         sourceSchema: {
           definition: {
-            properties: {
-              url: {
-                type: 'string'
+            "required": ["markets", "homeMarketId", "stationCallSign", "liveTimeZone"],
+            "properties": {
+              "description": {
+                "type": "string",
+                "title": "Description"
               },
-              username: {
-                type: 'string',
-                title: 'username'
+              "bool": {
+                "type": "boolean",
+                "title": "Bool"
               },
-              password: {
-                type: 'string'
+              "radioStreamUrl": {
+                "type": "string",
+                "title": "Radio Stream Url"
+              },
+              "liveTimeZone": {
+                "type": "string",
+                "title": "Live Time Zone",
+                "query": "query { timeZones { name } }"
+              },
+              "network": {
+                "type": "array",
+                "title": "Network",
+                "items": {
+                  "type": "integer",
+                  "query": "query { networks { records { id name } } }"
+                }
+              },
+              "stationCallSign": {
+                "type": "string",
+                "title": "Call Sign"
+              },
+              "stationBand": {
+                "type": "string",
+                "title": "Band"
+              },
+              "frequency": {
+                "type": "string",
+                "title": "Frequency"
+              },
+              "webSiteUrl": {
+                "type": "string",
+                "title": "Web Site"
+              },
+              "format": {
+                "type": "integer",
+                "title": "Genre (Format)",
+                "query": "query { mediaSourceFormats { records { id name } } }"
+              },
+              "markets": {
+                "type": "array",
+                "title": "Markets",
+                "items": {
+                  "type": "integer",
+                  "query": "query { sources { records { id name } } }"
+                }
+              },
+              "homeMarketId": {
+                "type": "integer",
+                "title": "Home Market",
+                "peerEnumKey": "markets",
+                "query": "query { sources { records { id name } } }"
               }
-            },
-            required: ['url', 'username', 'password']
+            }
           }
         }
       },
@@ -288,6 +338,22 @@ function displayForm(form) {
   console.log(form);
 }
 
+const fakeSchemaOptions = [{
+  name: 'name0',
+  id: 0
+}, {
+  name: 'name1',
+  id: 1
+}, {
+  name: 'name2',
+  id: 2
+}]
+
+const getFieldOptions = query => {
+  console.log('Executed Query: ' + query);
+  return Promise.resolve(fakeSchemaOptions);
+}
+
 storiesOf('SourceManagementForm', module)
   .add('Create Source', () => {
     return (
@@ -297,6 +363,7 @@ storiesOf('SourceManagementForm', module)
         initialTemplates={initialTemplates}
         onSubmit={displayForm}
         onClose={noop}
+        getFieldOptions={getFieldOptions}
       />
     );
   })
@@ -309,6 +376,7 @@ storiesOf('SourceManagementForm', module)
         initialTemplates={initialTemplates}
         onSubmit={displayForm}
         onClose={noop}
+        getFieldOptions={getFieldOptions}
       />
     );
   });

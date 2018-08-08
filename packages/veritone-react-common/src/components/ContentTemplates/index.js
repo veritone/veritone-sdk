@@ -30,7 +30,8 @@ export default class ContentTemplates extends React.Component {
     ),
     onAddTemplate: func.isRequired,
     onRemoveTemplate: func.isRequired,
-    onInputChange: func.isRequired
+    onInputChange: func.isRequired,
+    getFieldOptions: func.isRequired
   };
   static defaultProps = {
     selectedTemplateSchemas: []
@@ -56,6 +57,7 @@ export default class ContentTemplates extends React.Component {
               templates={selectedTemplateSchemas}
               onRemoveTemplate={this.props.onRemoveTemplate}
               onTemplateDetailsChange={this.props.onInputChange}
+              getFieldOptions={this.props.getFieldOptions}
             />
           )}
         </div>

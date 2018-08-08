@@ -21,7 +21,8 @@ export default class TemplateForms extends React.Component {
       })
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
-    onRemoveTemplate: func.isRequired
+    onRemoveTemplate: func.isRequired,
+    getFieldOptions: func.isRequired
   };
   static defaultProps = {};
 
@@ -145,6 +146,7 @@ export default class TemplateForms extends React.Component {
                     onChange={this.handleFieldChange}
                     handleArrayElementAdd={this.handleArrayElementAdd}
                     handleArrayElementRemove={this.handleArrayElementRemove}
+                    getFieldOptions={this.props.getFieldOptions}
                     key={schemaProp}
                   />
                 )
@@ -179,6 +181,7 @@ function BuildFormElements({
   depth = 0,
   handleArrayElementAdd,
   handleArrayElementRemove,
+  getFieldOptions,
   ...rest
 }) {
   if (!type) {
@@ -195,6 +198,7 @@ function BuildFormElements({
         title={title}
         value={value || ''}
         onChange={onChange(template, schemaProp, type)}
+        getFieldOptions={getFieldOptions}
         {...rest}
       />
     );
