@@ -13,7 +13,7 @@ class ProgramInfoWidget extends React.Component {
     sourceData: objectOf(any).isRequired,
     canShare: bool,
     organizations: arrayOf(any),
-    canSelectAffiliateSources: bool,
+    canEditAffiliateSources: bool,
     selectedAffiliateSources: arrayOf(any),
     affiliateSources: arrayOf(any),
     onProgramImageSave: func.isRequired,

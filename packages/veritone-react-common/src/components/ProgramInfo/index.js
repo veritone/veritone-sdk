@@ -4,6 +4,13 @@ import {
   createMuiTheme,
   MuiThemeProvider
 } from '@material-ui/core/styles';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 import { func, number, string, bool, objectOf, arrayOf, any } from 'prop-types';
 import { reduxForm, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
@@ -32,7 +39,8 @@ class ProgramInfo extends React.Component {
     sourceData: objectOf(any).isRequired,
     canShare: bool,
     organizations: arrayOf(any),
-    canSelectAffiliateSources: bool,
+    canEditAffiliateSources: bool,
+    canBulkAddAffiliates: bool,
     selectedAffiliateSources: arrayOf(any),
     affiliateSources: arrayOf(any),
     onProgramImageSave: func.isRequired,
@@ -88,6 +96,13 @@ class ProgramInfo extends React.Component {
   };
 
   render() {
+    const {
+      canShare,
+      canEditAffiliateSources,
+      canBulkAddAffiliates,
+      selectedAffiliateSources
+    } = this.props;
+
     return (
       <MuiThemeProvider
         theme={this.getTheme({
@@ -95,6 +110,115 @@ class ProgramInfo extends React.Component {
           relativeSize: this.props.relativeSize
         })}
       >
+        <div className={styles.programInfoSection}>
+          <div className={styles.programInfoHeader}>Program Information</div>
+          <div className={styles.programInfoDescription}>
+            Programs represent the schedule and all content ingested during each time slot set in this job.
+          </div>
+        </div>
+        <div className={styles.programInfoSection}>
+          <TextField
+            label='Program Name'
+            className={styles.programInfoInputField}
+            margin='normal'
+          />
+        </div>
+        <div className={styles.programInfoSection}>
+          <div className={styles.programInfoLiveImageSection}>
+            <div className={styles.programInfoFieldHeader}>Program Live Image</div>
+            <div className={styles.programInfoFieldDescription}>
+              Recommended image size: 500x350 .jpg or .png
+            </div>
+          </div>
+          <div className={styles.programInfoImageSection}>
+            <div className={styles.programInfoFieldHeader}>Program Image</div>
+            <div className={styles.programInfoFieldDescription}>
+              Recommended image size: 250x250 .jpg or .png
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.programInfoSection}>
+          <TextField
+            label='Description'
+            className={styles.programInfoInputField}
+            margin='normal'
+          />
+        </div>
+        <div className={styles.programInfoSection}>
+          <TextField
+            label='Program Website (Optional)'
+            placeholder='http://'
+            className={styles.programInfoInputField}
+            margin='normal'
+          />
+        </div>
+
+        <div className={styles.programInfoSection}>
+          <FormControl className={styles.programInfoSelectControl}>
+            <InputLabel shrink htmlFor='program-format-select-input'>
+              Program Format
+            </InputLabel>
+            <Select
+              value={this.state.programFormat}
+              onChange={this.handleProgramFormatChange}
+              input={<Input name='programFormat' id='program-format-select-input'/>}
+              displayEmpty
+              name='programFormat'
+              className={styles.programInfoSelect}
+            >
+              <MenuItem value=''>
+                <em>Program Format</em>
+              </MenuItem>
+              <MenuItem value={1}>First</MenuItem>
+              <MenuItem value={2}>Second</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+
+
+
+        <div className={styles.programInfoSection}>
+          <FormControl className={styles.programInfoSelectControl}>
+            <InputLabel shrink htmlFor='program-language-select-input'>
+              Language
+            </InputLabel>
+            <Select
+              value={this.state.programLanguage}
+              onChange={this.handleProgramLanguageChange}
+              input={<Input name='programLanguage' id='program-language-select-input'/>}
+              displayEmpty
+              name='programLanguage'
+              className={styles.programInfoSelect}
+            >
+              <MenuItem value={1}>English</MenuItem>
+              <MenuItem value={2}>Second</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+
+        <div className={styles.programInfoSection}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.isNational}
+                onChange={this.handleIsNationalChange}
+                value={this.state.isNational}
+                color='primary'
+              />
+            }
+            label='Is National'
+          />
+        </div>
+
+        {canShare &&
+          <div className={styles.programInfoDivider}/>}
+
+        {(canEditAffiliateSources || get(selectedAffiliateSources, 'length') > 0 ) &&
+          <div className={styles.programInfoDivider}/>}
+
+        {canBulkAddAffiliates && <div>Bulk Add Affiliates Button</div>}
+
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <div className={styles.activeSectionContainer}>
             <span>Program Info TOBE implemented</span>
