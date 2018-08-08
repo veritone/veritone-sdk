@@ -11,6 +11,8 @@ export const namespace = 'auth';
 
 const defaultState = {
   OAuthToken: null,
+  OAuthErrorCode: null,
+  OAuthErrorDescription: null,
   sessionToken: null
 };
 
@@ -23,7 +25,22 @@ const reducer = createReducer(defaultState, {
   ) {
     return {
       ...state,
-      OAuthToken
+      OAuthToken,
+      OAuthErrorCode: null,
+      OAuthErrorDescription: null
+    };
+  },
+
+  [constants.OAUTH_GRANT_FLOW_FAILED](
+    state,
+    {
+      payload: { error, errorDescription }
+    }
+  ) {
+    return {
+      ...state,
+      OAuthErrorCode: error,
+      OAuthErrorDescription: errorDescription
     };
   },
 
@@ -58,7 +75,9 @@ const reducer = createReducer(defaultState, {
   [constants.SET_OAUTH_TOKEN](state, { payload }) {
     return {
       ...state,
-      OAuthToken: payload
+      OAuthToken: payload,
+      OAuthErrorCode: null,
+      OAuthErrorDescription: null
     };
   }
 });
@@ -131,10 +150,10 @@ export function OAuthGrantSuccess({ OAuthToken }) {
   };
 }
 
-export function OAuthGrantFailure({ error }) {
+export function OAuthGrantFailure({ error, errorDescription }) {
   return {
     type: constants.OAUTH_GRANT_FLOW_FAILED,
-    payload: { error },
+    payload: { error, errorDescription },
     error: true
   };
 }
@@ -145,4 +164,11 @@ export function selectSessionToken(state) {
 
 export function selectOAuthToken(state) {
   return local(state).OAuthToken;
+}
+
+export function selectOAuthError(state) {
+  return {
+    code: local(state).OAuthErrorCode,
+    description: local(state).OAuthErrorDescription
+  };
 }

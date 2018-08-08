@@ -1,13 +1,11 @@
 import React from 'react';
 import { func, arrayOf, string, objectOf, any } from 'prop-types';
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 
 import styles from './styles/container.scss';
 import SectionTree, { sectionsShape } from './SectionTree';
 
 export { sectionsShape } from './SectionTree';
 
-@withMuiThemeProvider
 export default class NavigationSideBarContainer extends React.Component {
   static propTypes = {
     sections: sectionsShape.isRequired,

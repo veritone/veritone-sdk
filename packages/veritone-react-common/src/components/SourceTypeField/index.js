@@ -4,7 +4,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
-import { string, bool, func, any, instanceOf } from 'prop-types';
+import { string, bool, func, any, instanceOf, oneOfType, oneOf } from 'prop-types';
 import { isFunction } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
@@ -64,7 +64,7 @@ SourceTypeField.propTypes = {
 
 const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {
   return (
-    <FormControl className={styles.dateTimeContainer}>
+    <FormControl fullWidth className={styles.dateTimeContainer}>
       <InputLabel className={styles.textFieldLabel} shrink htmlFor={id}>
         {title}
       </InputLabel>
@@ -85,7 +85,7 @@ const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {
 DateTimeTypeField.propTypes = {
   id: string.isRequired,
   title: string,
-  value: instanceOf(Date),
+  value: oneOfType([instanceOf(Date), oneOf([''])]),
   onChange: func
 };
 
@@ -109,7 +109,7 @@ const BoolTypeField = ({ id, title, value, onChange, ...rest }) => {
 BoolTypeField.propTypes = {
   id: string.isRequired,
   title: string,
-  value: bool,
+  value: oneOfType([bool, oneOf([''])]),
   onChange: func
 };
 

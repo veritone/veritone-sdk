@@ -1,0 +1,13 @@
+@import 'src/styles/modules/variables';
+
+.greyText {
+  color: $light-black;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.linkText {
+  color: $blue-1;
+  font-size: 14px;
+  line-height: 18px;
+}
