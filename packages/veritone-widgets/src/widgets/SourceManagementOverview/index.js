@@ -10,7 +10,7 @@ class SourceManagementWidget extends React.Component {
     sources: arrayOf(object).isRequired,
     source: objectOf(any),
     templateData: objectOf(any).isRequired,
-    initialTemplates: objectOf(any),
+    initialTemplates: arrayOf(any),
     onSubmit: func.isRequired,
     onSelectMenuItem: func
   };
