@@ -4,7 +4,7 @@ import { text } from '@storybook/addon-knobs';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import SourceManagementFormWidget from './';
-import { has, noop } from 'lodash';
+import { has, noop, cloneDeep } from 'lodash';
 
 const sourceTypes = {
   sourceTypes: {
@@ -222,19 +222,19 @@ function createTemplateData(dataSchemas) {
 }
 
 function createInitialTemplates(templateSources) {
-  const selectedTemplateSchemas = {};
+  const selectedTemplateSchemas = [];
 
   const templateSchemas = createTemplateData(
     result.data.dataRegistries.records
   );
   templateSources.forEach(template => {
     if (has(templateSchemas, template.schemaId)) {
-      selectedTemplateSchemas[template.schemaId] =
-        templateSchemas[template.schemaId];
+      const selectedTemplate = cloneDeep(templateSchemas[template.schemaId]);
       if (template.data) {
         // if we need to fill out the form with pre-data
-        selectedTemplateSchemas[template.schemaId].data = template.data;
+        selectedTemplate.data = template.data;
       }
+      selectedTemplateSchemas.push(selectedTemplate);
     }
   });
 
