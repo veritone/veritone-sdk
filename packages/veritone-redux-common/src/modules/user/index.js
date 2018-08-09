@@ -5,7 +5,7 @@ import {
   util as permissionUtil
 } from 'veritone-functional-permissions';
 
-import { commonHeaders } from 'helpers/api';
+import { commonHeaders, getCredentialsMode } from 'helpers/api';
 import { createReducer } from 'helpers/redux';
 import { getConfig } from 'modules/config';
 import { selectSessionToken } from 'modules/auth';
@@ -183,7 +183,8 @@ export function fetchUser() {
       ],
       endpoint: state => `${getConfig(state).apiRoot}/v1/admin/current-user`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -202,11 +203,8 @@ export function login({ userName, password }) {
         userName,
         password
       }),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -223,7 +221,8 @@ export function logout() {
         // prettier-ignore
         `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/logout`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -240,7 +239,8 @@ export function refreshApiToken() {
         // prettier-ignore
         `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/refresh`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -256,7 +256,8 @@ export function fetchEnabledApps() {
       endpoint: state =>
         `${getConfig(state).apiRoot}/v1/admin/current-user/applications`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
