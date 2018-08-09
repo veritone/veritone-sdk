@@ -13,6 +13,10 @@ import notificationsReducer, {
   namespace as notificationsNamespace
 } from './modules/notifications';
 
+import folderReducer, { 
+  namespace as folderNamespace
+} from './modules/folderCreation';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -32,6 +36,7 @@ export default function createReducer(asyncReducers) {
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
+    [folderNamespace]: folderReducer,
     ...asyncReducers
   });
 }
