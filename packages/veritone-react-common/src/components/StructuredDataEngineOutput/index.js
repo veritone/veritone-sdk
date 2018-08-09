@@ -16,10 +16,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import EngineOutputHeader from '../EngineOutputHeader';
 import SDOTable from '../SDOTable';
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class StructuredDataEngineOutput extends Component {
   static propTypes = {
     data: arrayOf(

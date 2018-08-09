@@ -1,13 +1,11 @@
 import React from 'react';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { func } from 'prop-types';
 
 import NullState from 'components/NullState';
 import NullstateImage from 'images/cms-ingestion-jobs-null.svg';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class IngestionJobNullstate extends React.Component {
   static propTypes = {
     onClick: func.isRequired

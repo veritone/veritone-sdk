@@ -124,7 +124,7 @@ describe('Translation Engine Output', () => {
 
   it('invalid error <-> rerun process segment', () => {
     const errorSegments = translationEngineOutput.find('ErrorSegment');
-    expect(errorSegments).toHaveLength(2);
+    expect(errorSegments).toHaveLength(1);
     const errorTimes = errorSegments.find('div.time');
     expect(errorTimes).toHaveLength(1);
     expect(errorTimes.at(0).text()).toEqual('00:09 - 00:15');

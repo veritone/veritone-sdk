@@ -20,13 +20,11 @@ import {
 } from 'lodash';
 import { objectOf, any, func, number } from 'prop-types';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Image from '../../Image';
 import InfiniteDropdownMenu from '../../InfiniteDropdownMenu';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,

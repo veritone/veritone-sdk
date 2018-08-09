@@ -7,12 +7,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Avatar from '@material-ui/core/Avatar';
 import Dialog from '@material-ui/core/Dialog';
 import FilePicker from 'components/FilePicker';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import defaultThumbnail from 'images/cms-sources-null.svg';
 import DynamicSelect from './SchemaDrivenSelectForm';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class SourceConfiguration extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(objectOf(any)).isRequired,

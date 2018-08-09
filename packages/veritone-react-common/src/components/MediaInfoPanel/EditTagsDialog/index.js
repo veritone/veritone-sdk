@@ -11,11 +11,9 @@ import Input from '@material-ui/core/Input';
 import { get } from 'lodash';
 import { string, arrayOf, bool, func, shape } from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import withMuiThemeProvider from '../../../helpers/withMuiThemeProvider';
 import TagPill from './tagPill';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class EditTagsDialog extends Component {
   static propTypes = {
     tags: arrayOf(

@@ -60,8 +60,7 @@ describe('Translation Engine Output', () => {
   });
 
   it('Missing ErrorSegment', () => {
-    //Error Segment appears twice bc of MUI Theme Provider
-    expect(translationContent.find('ErrorSegment')).toHaveLength(2);
+    expect(translationContent.find('ErrorSegment')).toHaveLength(1);
   });
 
   it('Missing NoDataSegment', () => {

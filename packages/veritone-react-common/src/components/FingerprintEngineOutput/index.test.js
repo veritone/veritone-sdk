@@ -161,7 +161,7 @@ describe('Fingerprint Content', () => {
     });
 
     expect(entityMode.find('.entityInfo')).toHaveLength(1);
-    expect(entityMode.find('FingerprintEntity')).toHaveLength(2); // 2 entity view bc of MUI theme
+    expect(entityMode.find('FingerprintEntity')).toHaveLength(1);
     expect(entityMode.find('FingerprintLibraries')).toHaveLength(0);
   });
 });

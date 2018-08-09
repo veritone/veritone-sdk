@@ -12,7 +12,6 @@ import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 const getEntityNameElement = (entityName, searchEntityText) => {
@@ -59,7 +58,6 @@ const renderEntitySearchMenu = ({
     );
   });
 
-@withMuiThemeProvider
 class FaceDetectionBox extends Component {
   static propTypes = {
     face: shape({
