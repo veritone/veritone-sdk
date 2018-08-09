@@ -45,7 +45,7 @@ import {
   AlertDialog
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
-import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
+import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
@@ -1182,7 +1182,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutputWidget
+                      <TranscriptEngineOutput
                         tdo={tdo}
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}

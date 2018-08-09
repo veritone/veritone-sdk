@@ -45,7 +45,7 @@ const saga = util.reactReduxSaga.saga;
   null,
   { withRef: true }
 )
-export default class TranscriptEngineOutputWidget extends Component {
+export default class TranscriptEngineOutputContainer extends Component {
   static propTypes = {
     tdo: shape({
       id: string,
