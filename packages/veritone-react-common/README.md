@@ -6,7 +6,16 @@ Import components by name. For example,
 import { Avatar, Chip } from 'veritone-react-common'
 ```
 
+In your app, import the `VeritoneSDKThemeProvider` from `veritone-react-common`:
+```
+import {VeritoneSDKThemeProvider } from 'veritone-react-common'
+```
+then wrap your root component with `<VeritoneSDKThemeProvider>`. If this is not possible, the `@withVeritoneSDKThemeProvider` decorator is provided to wrap individual components.
+
+Components can be customized using [material-ui themes](https://material-ui.com/customization/themes/) by passing a theme into the `theme` prop of the provider. Passed-in themes will be merged with the default Veritone theme.
+
 A list of all components can be found in `src/index.js`. Usage examples of each component can be found in `src/components/<component>/story.js`.
+
 
 
 ## Running the dev environment

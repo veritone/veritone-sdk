@@ -7,7 +7,6 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
 import SourceConfiguration from 'components/SourceConfiguration';
@@ -15,7 +14,7 @@ import ContentTemplates from 'components/ContentTemplates';
 import { guid } from 'helpers/guid';
 
 import styles from './styles.scss';
-@withMuiThemeProvider
+
 export default class SourceManagementForm extends React.Component {
   static propTypes = {
     sourceTypes: arrayOf(

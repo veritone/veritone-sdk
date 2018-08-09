@@ -10,7 +10,6 @@ import {
   object
 } from 'prop-types';
 import { isEmpty } from 'lodash';
-import { withMuiThemeProvider } from 'veritone-react-common';
 import { modules } from 'veritone-redux-common';
 const { engine: engineModule } = modules;
 
@@ -21,7 +20,6 @@ import * as engineSelectionModule from '../../redux/modules/engineSelection';
 
 import widget from '../../shared/widget';
 
-@withMuiThemeProvider
 @connect(
   (state, { _widgetId }) => ({
     allEngines: engineModule.getEngines(state, _widgetId),

@@ -11,7 +11,6 @@ import {
 } from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import ClearFiltersIconFixme from '@material-ui/icons/FormatClear';
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 
 import styles from './styles/container.scss';
 import Header from './header/Header';
@@ -29,7 +28,6 @@ import AllFiltersList from './AllFiltersList';
 
 export { sectionsShape } from './SectionTree';
 
-@withMuiThemeProvider
 export class DiscoverySideBarContainerPure extends React.Component {
   static propTypes = {
     formComponents: objectOf(element).isRequired,
