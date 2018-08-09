@@ -128,6 +128,11 @@ const engineRunsQueryClause = `engineRuns(limit: 1000) {
             categoryType
             iconClass
             editable
+            exportFormats {
+              format
+              label
+              types
+            }
           }
         }
         status
