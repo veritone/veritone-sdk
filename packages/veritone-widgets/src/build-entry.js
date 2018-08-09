@@ -22,5 +22,6 @@ export { MediaPlayer } from './widgets/MediaPlayer';
 export EngineOutputExport, {
   EngineOutputExportWidget
 } from './widgets/EngineOutputExport';
+export engineOutputExportReducer, * as engineOutputExportModule from './redux/modules/engineOutputExport';
 // export SDOTable from './widgets/SDOTable';
 // export IngestionJobsList from './widgets/IngestionJobsList';
