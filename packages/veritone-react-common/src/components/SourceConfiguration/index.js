@@ -20,13 +20,13 @@ export default class SourceConfiguration extends React.Component {
       details: objectOf(any)
     }).isRequired, // the source if this is to edit a source
     onInputChange: func.isRequired,
-    getFieldOptions: func.isRequired
+    getFieldOptions: func.isRequired,
+    errorFields: objectOf(any)
   };
   static defaultProps = {};
 
   state = {
     sourceTypeIndex: 0,
-    requiredFields: {},
     openFilePicker: false,
     thumbnailUrl: ''
   };
@@ -193,7 +193,7 @@ export default class SourceConfiguration extends React.Component {
                 fieldValues={source.details}
                 onSelectChange={this.handleSourceChange}
                 onSourceDetailChange={this.handleSourceDetailChange}
-                errorFields={this.state.requiredFields}
+                errorFields={this.props.errorFields}
                 selectLabel="Select a Source Type"
                 helperText="NOTE: Source types available are dynamic based on your ingestion adapter"
                 getFieldOptions={this.props.getFieldOptions}

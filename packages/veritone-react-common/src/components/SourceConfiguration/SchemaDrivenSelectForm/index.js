@@ -33,7 +33,8 @@ export default class DynamicSelect extends React.Component {
   };
 
   state = {
-    oneSourceType: false
+    oneSourceType: false,
+    errorFields: this.props.errorFields
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -77,12 +78,7 @@ export default class DynamicSelect extends React.Component {
           value={this.props.fieldValues[fieldId]}
           onChange={this.handleDetailChange(fieldId)}
           title={properties[fieldId].title || ''}
-          error={
-            has(this.props.errorFields, fieldId) &&
-            this.props.errorFields[fieldId]
-              ? true
-              : false
-          }
+          isDirty={this.props.errorFields[fieldId]}
           options={properties[fieldId].enum}
           peerSelection={properties[fieldId].peerEnumKey
             ? (isArray(this.props.fieldValues[properties[fieldId].peerEnumKey]) 

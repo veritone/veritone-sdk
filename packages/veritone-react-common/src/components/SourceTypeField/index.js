@@ -35,7 +35,8 @@ export default class SourceTypeField extends React.Component {
     options: arrayOf(any),
     query: string,
     peerSelection: arrayOf(any),
-    getFieldOptions: func.isRequired
+    getFieldOptions: func.isRequired,
+    isDirty: bool
   };
 
   state = {
@@ -113,14 +114,14 @@ export default class SourceTypeField extends React.Component {
   }
 }
 
-const SelectField = ({ id, title, value, onChange, options, multiple, required, ...rest }) => {
+const SelectField = ({ id, title, value, onChange, options, multiple, required, isDirty, error, ...rest }) => {
   const inputProps = {
     name: title,
     id: 'schema-' + id,
     key: 'schema-' + id
   };
   return (
-    <FormControl className={styles.selectContainer} required={required}>
+    <FormControl className={styles.selectContainer} required={required} error={isDirty && required && (isUndefined(value) || value === '')} {...rest}>
       <InputLabel htmlFor={'schema-' + id}>{title}</InputLabel>
       <Select
         multiple={multiple}
@@ -134,7 +135,7 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
         {...inputProps}
         {...rest}
       >
-        <MenuItem key={'null'}></MenuItem>
+        <MenuItem key="null"></MenuItem>
         {isArray(options) && options.map(e => {
           return (
             <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>

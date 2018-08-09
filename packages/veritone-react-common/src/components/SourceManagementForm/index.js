@@ -1,6 +1,6 @@
 import React from 'react';
 import { arrayOf, objectOf, any, func, string, shape, bool } from 'prop-types';
-import { pick, has, get, noop, reject, cloneDeep } from 'lodash';
+import { pick, has, get, noop, reject, cloneDeep, isUndefined } from 'lodash';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Icon from '@material-ui/core/Icon';
@@ -53,6 +53,7 @@ export default class SourceManagementForm extends React.Component {
         data: objectOf(any)
       })
     ),
+    canShare: bool,
     onSubmit: func.isRequired,
     onClose: func,
     getFieldOptions: func.isRequired,
@@ -73,6 +74,7 @@ export default class SourceManagementForm extends React.Component {
       details: {},
       thumbnailFile: null
     },
+    formDirtyStates: {},
     contentTemplates: [],
     activeTab: 0,
     openDialog: true
@@ -200,11 +202,32 @@ export default class SourceManagementForm extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const resultTemplates = cloneDeep(this.state.contentTemplates);
-    resultTemplates.forEach(template => delete template.guid);
-    return this.props.onSubmit({
-      sourceConfiguration: this.state.sourceConfig,
-      contentTemplates: resultTemplates
+    const sourceTypeId = this.state.sourceConfig.sourceTypeId;
+    const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === sourceTypeId);
+    const schemaProps = get(selectedSourceType, 'sourceSchema.definition.properties');
+    const formDirtyStates = Object.keys(schemaProps || []).reduce((acc, curVal) => {
+      acc[curVal] = true;
+      return acc;
+    }, {});
+    // TODO: Determine if there are errors, if so, then don't submit!
+    const formValues = this.state.sourceConfig.details;
+    const requiredFields = get(selectedSourceType, 'sourceSchema.definition.required') || [];
+    let isValidForm = true;
+    requiredFields.forEach(requiredField => {
+      const value = formValues[requiredField];
+      if (isUndefined(value) || value === '') {
+        isValidForm = false;
+      }
+    });
+    this.setState({ formDirtyStates }, () => {
+      if (isValidForm) {
+        const resultTemplates = cloneDeep(this.state.contentTemplates);
+        resultTemplates.forEach(template => delete template.guid);
+        this.props.onSubmit({
+          sourceConfiguration: this.state.sourceConfig,
+          contentTemplates: resultTemplates
+        });
+      }
     });
   };
 
@@ -238,6 +261,15 @@ export default class SourceManagementForm extends React.Component {
                 label="Content Templates"
                 classes={{ label: styles['form-tab'] }}
               />
+              {
+                this.props.canShare ?
+                (
+                  <Tab
+                    label="Sharing"
+                    classes={{ label: styles['form-tab'] }}
+                  />
+                ) : null
+              }
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit} className={styles['form-scroll']}>
@@ -247,6 +279,7 @@ export default class SourceManagementForm extends React.Component {
                 source={this.state.sourceConfig}
                 onInputChange={this.saveConfiguration}
                 getFieldOptions={this.props.getFieldOptions}
+                errorFields={this.state.formDirtyStates}
                 onClose={this.handleCloseDialog}
               />
             )}
@@ -259,6 +292,12 @@ export default class SourceManagementForm extends React.Component {
                 onInputChange={this.updateTemplateDetails}
                 getFieldOptions={this.props.getFieldOptions}
               />
+            )}
+            {activeTab === 2 && (
+              <div className={styles.shareContainer}>
+                <div className={styles.shareTitle}>Sharing</div>
+                <div className={styles.shareDescription}>Subtitle and description</div>
+              </div>
             )}
             <div className={styles['btn-container']}>
               <Button onClick={this.handleCloseDialog}>Cancel</Button>

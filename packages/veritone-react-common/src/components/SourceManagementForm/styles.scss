@@ -38,3 +38,22 @@
 .tab-indicator {
   background-color: #f9a02c !important;
 }
+
+.shareContainer {
+  padding: 30px;
+
+  .shareTitle {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom: 10px;
+  }
+
+  .shareDescription {
+    opacity: 0.6;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 10px;
+  }
+}
