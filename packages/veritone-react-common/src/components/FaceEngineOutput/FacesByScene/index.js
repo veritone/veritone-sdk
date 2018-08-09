@@ -1,13 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, func } from 'prop-types';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import RecognizedFaceMatch from '../RecognizedFaceMatch';
 import NoFacesFound from '../NoFacesFound';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class FacesByScene extends Component {
   static propTypes = {
     recognizedEntityObjects: arrayOf(

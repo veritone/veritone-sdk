@@ -4,10 +4,8 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Tooltip from '@material-ui/core/Tooltip';
 import { func, string, arrayOf, any } from 'prop-types';
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class EngineCategorySelector extends Component {
   static propTypes = {
     engineCategories: arrayOf(any),

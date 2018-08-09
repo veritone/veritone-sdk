@@ -3,12 +3,10 @@ import { number, string, func } from 'prop-types';
 import classNames from 'classnames';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { msToReadableString } from '../../../../helpers/time';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class ErrorSegment extends Component {
   static propTypes = {
     startTimeMs: number.isRequired,

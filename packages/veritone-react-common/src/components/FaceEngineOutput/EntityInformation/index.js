@@ -7,13 +7,11 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { startCase } from 'lodash';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class EntityInformation extends Component {
   static propTypes = {
     entity: shape({

@@ -17,14 +17,12 @@ import {
 import cx from 'classnames';
 import { find } from 'lodash';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
 import FaceEntities from './FaceEntities';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class FaceEngineOutput extends Component {
   static propTypes = {
     entities: arrayOf(

@@ -29,7 +29,6 @@ import {
 import styles from './styles.scss';
 import {
   FaceEngineOutput,
-  withMuiThemeProvider,
   AlertDialog
 } from 'veritone-react-common';
 
@@ -40,7 +39,6 @@ const { engineResults: engineResultsModule } = modules;
 
 const saga = util.reactReduxSaga.saga;
 
-@withMuiThemeProvider
 @saga(rootSaga)
 @connect(
   (state, { selectedEngineId }) => ({

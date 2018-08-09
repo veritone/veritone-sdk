@@ -13,11 +13,8 @@ import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import { objectOf, any, func, arrayOf, string, bool, number, shape } from 'prop-types';
 import { get, noop, isArray } from 'lodash';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class InfiniteDropdownMenu extends React.Component {
   static propTypes = {
     id: string,

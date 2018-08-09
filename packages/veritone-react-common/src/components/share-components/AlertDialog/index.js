@@ -10,12 +10,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-
 const labelId = 'veritone-alert-dialog-title';
 const descriptionId = 'veritone-alert-dialog-description';
 
-@withMuiThemeProvider
 export default class AlertDialog extends Component {
   static propTypes = {
     open: bool,
