@@ -9,19 +9,10 @@ const NullState = ({ imgProps, titleText, btnProps, children }) => {
 
   return (
     <div className={styles.nullStateView}>
-      {imgProps &&
-      <img
-        src={src}
-        alt={alt}
-        {...restProps}
-      />}
-      {titleText &&
-        <div className={styles.titleText}>
-          {titleText}
-        </div>
-      }
+      {imgProps && <img src={src} alt={alt} {...restProps} />}
+      {titleText && <div className={styles.titleText}>{titleText}</div>}
       {children}
-      {btnProps &&
+      {btnProps && (
         <Button
           className={styles.buttonStyle}
           variant="raised"
@@ -29,11 +20,11 @@ const NullState = ({ imgProps, titleText, btnProps, children }) => {
           onClick={btnProps.onClick}
         >
           {btnProps.text}
-        </Button>}
+        </Button>
+      )}
     </div>
   );
-}
-
+};
 
 NullState.propTypes = {
   imgProps: shape({

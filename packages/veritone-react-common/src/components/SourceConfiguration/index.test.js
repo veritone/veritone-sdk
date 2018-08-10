@@ -57,22 +57,22 @@ const sourceTypes = {
   }
 };
 
-describe('Source Configuration', function () {
+describe('Source Configuration', function() {
   const sourceRecords = sourceTypes.data.records;
   const { properties } = sourceRecords[0].sourceSchema.definition;
-    const initialSource = {
-      sourceTypeId: sourceRecords[0].id,
-      name: '',
-      thumbnailUrl: '',
-      details: Object.keys(properties).reduce((detailObj, prop) => {
-        detailObj[prop] = 'Test Value'
-        return detailObj;
-      }, {}),
-      thumbnailFile: null
-    };
+  const initialSource = {
+    sourceTypeId: sourceRecords[0].id,
+    name: '',
+    thumbnailUrl: '',
+    details: Object.keys(properties).reduce((detailObj, prop) => {
+      detailObj[prop] = 'Test Value';
+      return detailObj;
+    }, {}),
+    thumbnailFile: null
+  };
 
   describe('SchemaDrivenSelectForm', () => {
-    it('render\'s fields for a source schema', () => {
+    it("render's fields for a source schema", () => {
       const wrapper = mount(
         <SourceConfiguration
           sourceTypes={sourceRecords}
@@ -85,8 +85,10 @@ describe('Source Configuration', function () {
         expect(wrapper.find(`input#${prop}`)).toHaveLength(1);
       });
     });
-    it('render\'s fields on source change', () => {
-      const testProps = sourceRecords[sourceRecords.length - 1].sourceSchema.definition.properties;
+    it("render's fields on source change", () => {
+      const testProps =
+        sourceRecords[sourceRecords.length - 1].sourceSchema.definition
+          .properties;
       const wrapper = mount(
         <SourceConfiguration
           sourceTypes={sourceRecords}
@@ -101,9 +103,8 @@ describe('Source Configuration', function () {
           name: sourceRecords[sourceRecords.length - 1].name,
           thumbnailUrl: '',
           thumbnailFile: null,
-          details: Object.keys(testProps)
-          .reduce((detailObj, prop) => {
-            detailObj[prop] = ''
+          details: Object.keys(testProps).reduce((detailObj, prop) => {
+            detailObj[prop] = '';
             return detailObj;
           }, {})
         }
@@ -111,8 +112,7 @@ describe('Source Configuration', function () {
 
       wrapper.update();
 
-      Object.keys(testProps)
-      .forEach((prop, idx) => {
+      Object.keys(testProps).forEach((prop, idx) => {
         expect(wrapper.find(`input#${prop}`)).toHaveLength(1);
       });
     });

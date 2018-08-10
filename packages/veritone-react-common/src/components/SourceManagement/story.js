@@ -56,4 +56,4 @@ function btnClick() {
 
 storiesOf('SourceManagement', module)
   .add('NullState', () => <NullState onClick={btnClick} />)
-  .add('Tile View', () => <SourceTileView sources={sourceResults} />)
+  .add('Tile View', () => <SourceTileView sources={sourceResults} />);

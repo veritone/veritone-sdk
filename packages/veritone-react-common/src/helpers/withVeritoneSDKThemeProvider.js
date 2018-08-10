@@ -70,7 +70,9 @@ export function withVeritoneSDKThemeProvider(theme) {
     }
 
     function forwardRef(props, ref) {
-      return <WrappedWithVeritoneSDKThemeProvider {...props} forwardedRef={ref} />;
+      return (
+        <WrappedWithVeritoneSDKThemeProvider {...props} forwardedRef={ref} />
+      );
     }
 
     const name = Class.displayName || Class.name;

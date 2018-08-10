@@ -7,7 +7,8 @@ import AppBar, { AppBarWidget } from './';
 storiesOf('AppBar', module).add('Base', () => {
   const props = {
     profileMenu: true,
-    appSwitcher: true
+    appSwitcher: true,
+    onLogout: () => console.log('log out')
   };
 
   return (
