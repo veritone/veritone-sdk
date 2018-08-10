@@ -11,10 +11,11 @@ export default class TemplateList extends React.Component {
     templates: objectOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired,
+        name: string.isRequired
       })
     ).isRequired,
-    selectedTemplates: objectOf( // an array of content template objects that had already been added to the source
+    selectedTemplates: objectOf(
+      // an array of content template objects that had already been added to the source
       shape({
         id: string
       })
@@ -25,7 +26,7 @@ export default class TemplateList extends React.Component {
 
   static defaultProps = {
     selectedTemplates: {}
-  }
+  };
 
   addTemplate = schemaId => () => {
     this.props.addTemplate(schemaId);
@@ -43,9 +44,7 @@ export default class TemplateList extends React.Component {
 
       return (
         <div className={styles.templateRow} key={schemaId}>
-          <div
-            className={cx(styles.name, { [styles.addedTemplate]: isAdded })}
-          >
+          <div className={cx(styles.name, { [styles.addedTemplate]: isAdded })}>
             {templates[schemaId].name}
           </div>
           {isAdded ? (
@@ -58,15 +57,15 @@ export default class TemplateList extends React.Component {
               <Icon className={'icon-trash'} />
             </IconButton>
           ) : (
-              <IconButton
-                className={styles.trashIcon}
-                onClick={this.addTemplate(schemaId)}
-                aria-label="add"
-                disableRipple
-              >
-                <Icon className={'icon-zoom-in'} />
-              </IconButton>
-            )}
+            <IconButton
+              className={styles.trashIcon}
+              onClick={this.addTemplate(schemaId)}
+              aria-label="add"
+              disableRipple
+            >
+              <Icon className={'icon-zoom-in'} />
+            </IconButton>
+          )}
         </div>
       );
     });

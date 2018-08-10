@@ -29,7 +29,11 @@ export AppContainer from './components/AppContainer';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
-export { withVeritoneSDKThemeProvider, VeritoneSDKThemeProvider, defaultVSDKTheme } from './helpers/withVeritoneSDKThemeProvider';
+export {
+  withVeritoneSDKThemeProvider,
+  VeritoneSDKThemeProvider,
+  defaultVSDKTheme
+} from './helpers/withVeritoneSDKThemeProvider';
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';

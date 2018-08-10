@@ -16,17 +16,19 @@ import styles from './styles.scss';
 
 export default class SourceManagementForm extends React.Component {
   static propTypes = {
-    sourceTypes: arrayOf(shape({
-      id: string.isRequired,
-      name: string.isRequired,
-      sourceSchema: shape({
-        definition: shape({
-          properties: shape({
-            type: string
+    sourceTypes: arrayOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired,
+        sourceSchema: shape({
+          definition: shape({
+            properties: shape({
+              type: string
+            })
           })
         })
       })
-    })).isRequired,
+    ).isRequired,
     templateData: objectOf(
       shape({
         id: string,
@@ -39,7 +41,7 @@ export default class SourceManagementForm extends React.Component {
       name: string,
       sourceType: objectOf(any),
       details: objectOf(any),
-      thumbnailUrl: string,
+      thumbnailUrl: string
     }),
     initialTemplates: objectOf(
       shape({
@@ -138,14 +140,20 @@ export default class SourceManagementForm extends React.Component {
     }));
   };
 
-  addToTemplateList = (templateSchemaId) => {
+  addToTemplateList = templateSchemaId => {
     const { templateData, initialTemplates } = this.props;
     const data = {};
 
-    Object.keys(templateData[templateSchemaId].definition.properties)
-      .reduce((fields, schemaDefProp) => {
-        data[schemaDefProp] = get(initialTemplates, [templateSchemaId, 'data', schemaDefProp], '');
-      }, data);
+    Object.keys(templateData[templateSchemaId].definition.properties).reduce(
+      (fields, schemaDefProp) => {
+        data[schemaDefProp] = get(
+          initialTemplates,
+          [templateSchemaId, 'data', schemaDefProp],
+          ''
+        );
+      },
+      data
+    );
 
     this.setState(prevState => ({
       contentTemplates: {
@@ -156,9 +164,9 @@ export default class SourceManagementForm extends React.Component {
         ...prevState.contentTemplates
       }
     }));
-  }
+  };
 
-  removeFromTemplateList = (templateSchemaId) => {
+  removeFromTemplateList = templateSchemaId => {
     if (this.state.contentTemplates[templateSchemaId]) {
       return this.setState(prevState => {
         const contentTemplates = { ...prevState.contentTemplates };
@@ -167,7 +175,7 @@ export default class SourceManagementForm extends React.Component {
         return { contentTemplates };
       });
     }
-  }
+  };
 
   updateTemplateDetails = (templateSchemaId, fieldId, value) => {
     const { contentTemplates } = this.state;

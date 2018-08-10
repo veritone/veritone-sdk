@@ -74,7 +74,7 @@ export default class DynamicSelect extends React.Component {
           title={properties[fieldId].title || ''}
           error={
             has(this.props.errorFields, fieldId) &&
-              this.props.errorFields[fieldId]
+            this.props.errorFields[fieldId]
               ? true
               : false
           }

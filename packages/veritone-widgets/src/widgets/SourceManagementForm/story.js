@@ -256,7 +256,7 @@ class Story extends React.Component {
       templateData,
       initialTemplates,
       onClose: noop,
-      onSubmit: (data) => {
+      onSubmit: data => {
         console.log('data:', data);
       }
     });
