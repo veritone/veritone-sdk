@@ -9,6 +9,56 @@
   span,
   input {
     font-weight: inherit;
-    font-size: 0.8rem !important;
+    font-size: 14px;
   }
+}
+
+.programInfoSection {
+  padding-bottom: 20px;
+}
+
+.programInfoHeader {
+  color: $dark-black;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 24px;
+  margin-bottom: 5px;
+}
+
+.programInfoDescription {
+  color: $light-black;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.programInfoInputField {
+  min-width: 550px;
+  width: 550px;
+}
+
+.programInfoSelect {
+  min-width: 550px;
+
+  & > div > div {
+    font-size: 14px;
+    color: $dark-black;
+  }
+}
+
+.programInfoSelectLabel {
+  font-weight: normal;
+  font-size: 14px !important;
+  color: $light-black;
+}
+
+.isPublicLabel {
+  font-size: 14px;
+  color: $dark-black;
+}
+
+.programInfoDivider {
+  height: 1px;
+  width: 100%;
+  background-color: $min-black;
+  margin: 10px 0;
 }
