@@ -46,6 +46,7 @@ import {
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
+import { ExportMenuItem } from './moreMenuItems';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
@@ -112,7 +113,8 @@ const programLiveImageNullState =
     isRestoringOriginalEngineResult: mediaDetailsModule.isRestoringOriginalEngineResult(
       state,
       id
-    )
+    ),
+    categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id)
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -333,7 +335,14 @@ class MediaDetailsWidget extends React.Component {
     showTranscriptBulkEditSnack: bool,
     updateMediaPlayerState: func,
     restoreOriginalEngineResults: func,
-    isRestoringOriginalEngineResult: bool
+    isRestoringOriginalEngineResult: bool,
+    categoryExportFormats: arrayOf(
+      shape({
+        format: string.isRequired,
+        label: string.isRequired,
+        types: arrayOf(string).isRequired
+      })
+    )
   };
 
   static contextTypes = {
@@ -777,6 +786,10 @@ class MediaDetailsWidget extends React.Component {
     this.props.closeConfirmModal(this.props.id);
   };
 
+  handleExportClicked = selectedFormats => {
+    console.log(selectedFormats);
+  };
+
   render() {
     let {
       engineCategories,
@@ -798,7 +811,8 @@ class MediaDetailsWidget extends React.Component {
       widgetError,
       isSaveEnabled,
       isSavingEngineResults,
-      alertDialogConfig
+      alertDialogConfig,
+      categoryExportFormats
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -807,6 +821,18 @@ class MediaDetailsWidget extends React.Component {
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
+
+    const moreMenuItems = [];
+    if (categoryExportFormats.length) {
+      moreMenuItems.push(
+        <ExportMenuItem
+          key="quick-export"
+          label="Quick Export"
+          onExportClicked={this.handleExportClicked}
+          categoryExportFormats={categoryExportFormats}
+        />
+      );
+    }
 
     return (
       <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
@@ -1198,6 +1224,7 @@ class MediaDetailsWidget extends React.Component {
                           'enabled'
                         }
                         onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        moreMenuItems={moreMenuItems}
                       />
                     )}
                   {selectedEngineCategory &&

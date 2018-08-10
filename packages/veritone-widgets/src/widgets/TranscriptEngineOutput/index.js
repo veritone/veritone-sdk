@@ -131,7 +131,8 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     fetchEngineResults: func,
     isDisplayingUserEditedOutput: bool,
-    clearEngineResultsByEngineId: func
+    clearEngineResultsByEngineId: func,
+    moreMenuItems: arrayOf(node)
   };
 
   state = {
@@ -239,7 +240,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'mediaPlayerTimeMs',
       'mediaPlayerTimeIntervalMs',
       'outputNullState',
-      'bulkEditEnabled'
+      'bulkEditEnabled',
+      'moreMenuItems'
     ]);
 
     const alertTitle = 'Unsaved Transcript Changes';

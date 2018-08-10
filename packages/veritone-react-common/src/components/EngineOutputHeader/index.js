@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, cloneElement } from 'react';
 import {
   string,
   bool,
@@ -38,12 +38,7 @@ class EngineOutputHeader extends Component {
     onEngineChange: func,
     onExpandClick: func,
     children: oneOfType([arrayOf(node), node]),
-    moreMenuOptions: arrayOf(
-      shape({
-        label: string.isRequired,
-        action: func.isRequired
-      })
-    )
+    moreMenuItems: arrayOf(node)
   };
 
   static defaultProps = {
@@ -71,14 +66,16 @@ class EngineOutputHeader extends Component {
     });
   };
 
-  onMoreMenuItemClick = evt => {
-    this.toggleIsMoreMenuOpen();
-    this.props.moreMenuOptions[evt.target.value].action();
-  };
-
   renderMoreMenu = () => {
-    const { moreMenuOptions } = this.props;
+    const { moreMenuItems } = this.props;
     const { isMoreMenuOpen } = this.state;
+
+    const updatedMoreMenuItems = moreMenuItems.map(item => {
+      return cloneElement(item, {
+        onCloseMoreMenu: this.toggleIsMoreMenuOpen
+      });
+    });
+
     return (
       <Manager>
         <Target>
@@ -97,7 +94,7 @@ class EngineOutputHeader extends Component {
           </div>
         </Target>
         {isMoreMenuOpen &&
-          moreMenuOptions && (
+          moreMenuItems && (
             <Popper
               className={styles.moreMenuPopperContent}
               placement="bottom-end"
@@ -110,19 +107,7 @@ class EngineOutputHeader extends Component {
                   style={{ transformOrigin: '0 0 0' }}
                 >
                   <Paper>
-                    <MenuList role="menu">
-                      {moreMenuOptions.map(option => {
-                        return (
-                          <MenuItem
-                            key={`more-menu-item-${option.label}`}
-                            classes={{ root: styles.moreMenuItem }}
-                            onClick={this.onMoreMenuItemClick}
-                          >
-                            {option.label}
-                          </MenuItem>
-                        );
-                      })}
-                    </MenuList>
+                    <MenuList role="menu">{updatedMoreMenuItems}</MenuList>
                   </Paper>
                 </Grow>
               </ClickAwayListener>
@@ -135,7 +120,7 @@ class EngineOutputHeader extends Component {
   render() {
     const {
       children,
-      moreMenuOptions,
+      moreMenuItems,
       title,
       hideTitle,
       hideExpandButton,
@@ -182,7 +167,7 @@ class EngineOutputHeader extends Component {
               })}
             </Select>
           )}
-          {showMoreMenuButton && moreMenuOptions && this.renderMoreMenu()}
+          {showMoreMenuButton && moreMenuItems && this.renderMoreMenu()}
         </div>
         {onExpandClick &&
           !hideExpandButton && <div className={styles.actionIconDivider} />}

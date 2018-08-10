@@ -27,10 +27,7 @@ import {
   node
 } from 'prop-types';
 import styles from './styles.scss';
-import {
-  FaceEngineOutput,
-  AlertDialog
-} from 'veritone-react-common';
+import { FaceEngineOutput, AlertDialog } from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';

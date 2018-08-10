@@ -273,7 +273,6 @@ export default createReducer(defaultState, {
         tdoContentTemplates.push(contentTemplate);
       });
     }
-    console.log(tdoContentTemplates);
     return {
       ...state,
       [widgetId]: {
@@ -845,6 +844,8 @@ export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
 export const isSavingEngineResults = (state, widgetId) =>
   get(local(state), [widgetId, 'isSavingEngineResults']);
+export const categoryExportFormats = (state, widgetId) =>
+  get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
