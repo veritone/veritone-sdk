@@ -42,7 +42,6 @@ import {
   TranslationEngineOutput,
   StructuredDataEngineOutput,
   EngineOutputNullState,
-  withMuiThemeProvider,
   AlertDialog
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
@@ -66,7 +65,6 @@ const saga = util.reactReduxSaga.saga;
 const programLiveImageNullState =
   '//static.veritone.com/veritone-ui/default-nullstate.svg';
 
-@withMuiThemeProvider
 @withPropsOnChange([], ({ id }) => ({
   id: id || guid()
 }))

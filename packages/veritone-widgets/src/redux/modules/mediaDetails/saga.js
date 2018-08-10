@@ -19,7 +19,8 @@ import {
   isArray,
   every,
   forEach,
-  find
+  find,
+  includes
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
@@ -1051,19 +1052,23 @@ function* watchRestoreOriginalEngineResults() {
     } = action.payload;
 
     // these could be partial or fully retrieved data from assets
-    const fetchedAssetIdsToDelete = get(action.payload, 'engineResults', [])
+    const fetchedEngineResultsToDelete = get(action.payload, 'engineResults', [])
       .filter(
         jsonData =>
-          jsonData.sourceEngineId === engineId &&
           jsonData.userEdited &&
           !!jsonData.assetId
-      )
-      .map(jsonData => jsonData.assetId);
+      );
+    const fetchedAssetIdsToDelete = fetchedEngineResultsToDelete.map(jsonData => jsonData.assetId);
 
     // list all user edited vtn-standard assets for this tdo and engine
     let userEditedVtnAssetIdsToDelete = [];
     if (removeAllUserEdits) {
       try {
+        let engineIds = fetchedEngineResultsToDelete.map(engineResult => engineResult.sourceEngineId);
+        if (engineId) {
+          engineIds.push(engineId);
+        }
+        engineIds = uniq(engineIds);
         const vtnStandardAssets = yield call(
           fetchAssets,
           tdo.id,
@@ -1072,8 +1077,7 @@ function* watchRestoreOriginalEngineResults() {
         userEditedVtnAssetIdsToDelete = vtnStandardAssets
           .filter(
             asset =>
-              asset.isUserEdited &&
-              get(asset, 'sourceData.engineId') === engineId
+              asset.isUserEdited && includes(engineIds, get(asset, 'sourceData.engineId'))
           )
           .map(asset => asset.id);
       } catch (error) {

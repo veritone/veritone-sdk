@@ -50,7 +50,11 @@ function* requestOAuthGrantImplicit({
   const windowEventChannel = eventChannel(emitter => {
     function handleEvent(e) {
       if (e.data.OAuthToken || e.data.error) {
-        emitter({ OAuthToken: e.data.OAuthToken, error: e.data.error });
+        emitter({
+          OAuthToken: e.data.OAuthToken,
+          error: e.data.error,
+          errorDescription: e.data.errorDescription
+        });
         emitter(END);
       }
     }
@@ -63,15 +67,17 @@ function* requestOAuthGrantImplicit({
     };
   });
 
-  const { OAuthToken, error } = yield take(windowEventChannel);
+  const { OAuthToken, error, errorDescription } = yield take(
+    windowEventChannel
+  );
   yield call([authWindow, authWindow.close]);
 
   if (OAuthToken) {
     yield put(OAuthGrantSuccess({ OAuthToken }));
     yield call(onSuccess, { OAuthToken });
   } else if (error) {
-    yield put(OAuthGrantFailure({ error }));
-    yield call(onFailure, error);
+    yield put(OAuthGrantFailure({ error, errorDescription }));
+    yield call(onFailure, error, errorDescription);
   }
 }
 

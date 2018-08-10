@@ -5,13 +5,11 @@ import classNames from 'classnames';
 import Icon from '@material-ui/core/Icon';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import EntityMetadata from './EntityMetadata';
 import EntityStreamData from './EntityStreamData';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class FingerprintEntity extends Component {
   static propTypes = {
     className: string,

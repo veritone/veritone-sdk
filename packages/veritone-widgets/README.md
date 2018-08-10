@@ -61,6 +61,14 @@ Because smart components are not rendered within the VeritoneApp widget framewor
 * reducers:
 veritone-redux-common `User`, `Auth` and `Config` reducers
 
+### Smart component theme wrapper requirements
+In your app, import the `VeritoneSDKThemeProvider` from `veritone-react-common`:
+```
+import {VeritoneSDKThemeProvider } from 'veritone-react-common'
+```
+then wrap your root component with `<VeritoneSDKThemeProvider>`. If this is not possible, the `@withVeritoneSDKThemeProvider` decorator is provided to wrap individual components.
+
+Components can be customized using [material-ui themes](https://material-ui.com/customization/themes/) by passing a theme into the `theme` prop of the provider. Passed-in themes will be merged with the default Veritone theme.
 
 ## Using Widgets
 ### 1. Create an instance of VeritoneApp

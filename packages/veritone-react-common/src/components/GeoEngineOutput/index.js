@@ -5,7 +5,6 @@ import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { format } from '../../helpers/date';
 
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -15,7 +14,6 @@ import GoogleMapHelpers from './GeoMapView/GoogleMapComponent/GoogleMapHelpers';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class GeoEngineOutput extends Component {
   static propTypes = {
     title: string,

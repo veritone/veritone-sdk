@@ -5,7 +5,6 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import { includes } from 'lodash';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 const errorRunningEngineImage =
@@ -13,7 +12,6 @@ const errorRunningEngineImage =
 const warningNoOutputDataImage =
   '//static.veritone.com/veritone-ui/warning-icon-lg.svg';
 
-@withMuiThemeProvider
 export default class EngineOutputNullState extends Component {
   static propTypes = {
     engineName: string.isRequired,

@@ -13,10 +13,8 @@ import { shape, func, bool, string } from 'prop-types';
 import { get } from 'lodash';
 import { withStyles } from '@material-ui/core/styles';
 import FilePicker from 'components/FilePicker';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class EditMetadataDialog extends Component {
   static propTypes = {
     metadata: shape({

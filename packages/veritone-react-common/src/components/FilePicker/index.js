@@ -3,7 +3,6 @@ import { isString, isArray } from 'lodash';
 import pluralize from 'pluralize';
 import mime from 'mime-types';
 import Paper from '@material-ui/core/Paper';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { string, arrayOf, oneOfType, number, bool, func } from 'prop-types';
 import FileUploader from './FileUploader';
 import FileList from './FileList';
@@ -13,7 +12,6 @@ import UrlUploader from './UrlUploader';
 import DragDropContext from './DragDropContext';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class FilePicker extends Component {
   static propTypes = {
     accept: oneOfType([arrayOf(string), string]), // extension or mimetype

@@ -1,13 +1,11 @@
 import React from 'react';
 import { string, shape, arrayOf, objectOf, any, func } from 'prop-types';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
 import ContentTemplatesNullState from './NullState';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class ContentTemplates extends React.Component {
   static propTypes = {
     templateData: objectOf(
@@ -38,7 +36,7 @@ export default class ContentTemplates extends React.Component {
 
   render() {
     const { selectedTemplateSchemas } = this.props;
-    const showNullstate = !Object.keys(selectedTemplateSchemas).length;
+    const showNullstate = !selectedTemplateSchemas.length;
 
     return (
       <div className={styles.templatePage}>

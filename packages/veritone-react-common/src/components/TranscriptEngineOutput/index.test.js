@@ -141,9 +141,11 @@ describe('Transcript Engine Output - View Mode', () => {
 });
 
 describe('Transcript Engine Ouput - Edit Mode', () => {
+  const onRestoreOriginalClick = jest.fn();
   const transcriptEngineOutput = mount(
     <TranscriptEngineOutput
       editMode
+      onRestoreOriginalClick={onRestoreOriginalClick}
       data={sampleData}
       selectedEngineId="1"
       engines={[{ id: '1', name: 'Engine-X' }, { id: '2', name: 'Engine-Y' }]}

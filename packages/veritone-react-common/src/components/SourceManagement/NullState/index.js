@@ -1,12 +1,10 @@
 import React from 'react';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { func } from 'prop-types';
 import NullstateImage from 'images/cms-sources-null.svg';
 import NullState from 'components/NullState';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class SourceManagementNullState extends React.Component {
   static propTypes = {
     onClick: func.isRequired

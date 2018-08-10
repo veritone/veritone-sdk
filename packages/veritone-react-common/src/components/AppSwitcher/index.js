@@ -4,13 +4,11 @@ import AppsIcon from '@material-ui/icons/Apps';
 import IconButton from '@material-ui/core/IconButton';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import AppSwitcherList from './AppSwitcherList';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class AppSwitcher extends React.Component {
   static propTypes = {
     currentAppName: string,

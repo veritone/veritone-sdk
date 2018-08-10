@@ -5,10 +5,8 @@ import { msToReadableString } from 'helpers/time';
 import { isEmpty } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 class OCREngineOutputView extends Component {
   static propTypes = {
     data: arrayOf(
