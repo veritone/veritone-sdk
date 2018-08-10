@@ -29,6 +29,7 @@ import { get } from 'lodash';
 
 import styles from './styles.scss';
 
+// TODO: either use form or state, not both. Get done when defcons rush is over.
 @reduxForm({
   form: 'programInfo'
 })
