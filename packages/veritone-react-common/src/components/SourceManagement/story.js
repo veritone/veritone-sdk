@@ -20,6 +20,7 @@ const sourceResult = {
       sourceType: {
         id: '1',
         name: 'Audio',
+        isLive: true,
         sourceSchema: {
           id: 'schemaId1',
           definition: {

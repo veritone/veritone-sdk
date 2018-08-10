@@ -6,13 +6,18 @@ import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
 import Avatar from '@material-ui/core/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
-import { capitalize, omit, noop } from 'lodash';
+import { capitalize, omit, noop, get } from 'lodash';
+
+import Button from '@material-ui/core/Button';
+import ButtonWrapper from '../../share-components/buttons/ButtonWrapper';
+import styles from './styles.scss';
 
 export default class SourceTileView extends React.Component {
   static propTypes = {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
     onSelectSource: func,
     onSelectMenuItem: func,
+    onSelectLiveStream: func,
     paginate: bool,
     onFetchData: func
   };
@@ -36,6 +41,33 @@ export default class SourceTileView extends React.Component {
         }}
       />
     );
+  };
+
+  renderSourceName = (name, data) => {
+    const isLive = get(data, 'sourceType.isLive', false);
+    if (!isLive) {
+      return name;
+    } else {
+      return (
+        <span className={styles.sourceTileViewCell}>
+          {name}
+          <span className={styles.gap} />
+          <ButtonWrapper data={data} onClick={this.handleLiveStreamButton}>
+            <Button
+              variant="outlined"
+              size="small"
+              className={styles.liveNowButton}
+            >
+              Live Now
+            </Button>
+          </ButtonWrapper>
+        </span>
+      );
+    }
+  };
+
+  handleLiveStreamButton = (event, data) => {
+    this.props.onSelectLiveStream && this.props.onSelectLiveStream(data);
   };
 
   renderCreatedDate = date => {
@@ -73,7 +105,11 @@ export default class SourceTileView extends React.Component {
           cellRenderer={this.renderThumbnail}
           width={30}
         />
-        <Column dataKey="name" header="Source Name" />
+        <Column
+          dataKey="name"
+          header="Source Name"
+          cellRenderer={this.renderSourceName}
+        />
         <Column dataKey="sourceType.name" header="Source Type" />
         <Column
           dataKey="createdDateTime"
