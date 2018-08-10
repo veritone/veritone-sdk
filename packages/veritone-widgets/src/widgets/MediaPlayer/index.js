@@ -52,6 +52,12 @@ class MediaPlayerComponent extends React.Component {
     onDeleteBoundingBox: func.isRequired,
     onChangeBoundingBox: func.isRequired,
     overlayBorderStyle: string,
+    actionMenuItems: arrayOf(
+      shape({
+        label: string.isRequired,
+        onClick: func.isRequired
+      })
+    ),
     readOnly: bool,
     addOnly: bool,
     width: number,
@@ -106,6 +112,7 @@ class MediaPlayerComponent extends React.Component {
             initialBoundingBoxPolys={
               this.props.boundingPolySeries ? currentPolys : undefined
             }
+            actionMenuItems={this.props.actionMenuItems}
             addOnly={this.props.addOnly}
             readOnly={this.props.readOnly || !this.props.paused}
           />

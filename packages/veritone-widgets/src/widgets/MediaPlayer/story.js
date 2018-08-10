@@ -339,6 +339,12 @@ storiesOf('MediaPlayer', module)
         autoPlay: true,
         streams: multipleStreams,
         boundingPolySeries: timeSeries,
+        actionMenuItems: [
+          {
+            label: 'Action 1',
+            onClick: id => console.log('Performed Action 1 on', id)
+          }
+        ],
         fluid: true,
         readOnly: false
       }}
