@@ -209,7 +209,7 @@ export default class SourceManagementForm extends React.Component {
       acc[curVal] = true;
       return acc;
     }, {});
-    // TODO: Determine if there are errors, if so, then don't submit!
+    // Determine if any required fields are undefined and prevent submission if invalid
     const formValues = this.state.sourceConfig.details;
     const requiredFields = get(selectedSourceType, 'sourceSchema.definition.required') || [];
     let isValidForm = true;

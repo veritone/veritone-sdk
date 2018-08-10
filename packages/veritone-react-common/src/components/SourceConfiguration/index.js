@@ -1,6 +1,6 @@
 import React from 'react';
 import { string, shape, any, arrayOf, objectOf, func } from 'prop-types';
-import { get } from 'lodash';
+import { get, isArray, cloneDeep } from 'lodash';
 
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -95,10 +95,29 @@ export default class SourceConfiguration extends React.Component {
   };
 
   handleSourceDetailChange = formDetail => {
+    // Invalidate any unavailable peerEnumerations that may have been caused by this change
+    const cloneFormDetail = cloneDeep(formDetail);
+    const targetKey = Object.keys(formDetail)[0];
+    const targetValue = formDetail[targetKey];
+    const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === this.props.source.sourceTypeId);
+    const schemaProperties = get(selectedSourceType, 'sourceSchema.definition.properties');
+    if (schemaProperties) {
+      Object.keys(schemaProperties).forEach(propKey => {
+        const peerKey = schemaProperties[propKey].peerEnumKey;
+        if (peerKey && peerKey == targetKey) {
+          // Check if the current props value is invalidated because its peer enum has changed
+          const propValue = get(this.props.source, ['details', propKey]);
+          if (isArray(targetValue) && !targetValue.find(tVal => tVal == propValue)) {
+            cloneFormDetail[propKey] = '';
+          }
+        }
+      });
+    }
+
     this.props.onInputChange({
       details: {
         ...this.props.source.details,
-        ...formDetail
+        ...cloneFormDetail
       }
     });
   };

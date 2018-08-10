@@ -135,7 +135,12 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
         {...inputProps}
         {...rest}
       >
-        <MenuItem key="null"></MenuItem>
+        {
+          (!required && !multiple) ? 
+          (
+            <MenuItem key="null"></MenuItem>
+          ) : null
+        }
         {isArray(options) && options.map(e => {
           return (
             <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>

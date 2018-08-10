@@ -8,34 +8,30 @@ const sourceTypes = {
     records: [
       {
         name: 'Audio',
-        id: 'audio_1',
+        id: 'audio',
         sourceSchema: {
           definition: {
-            "required": ["markets", "homeMarketId", "stationCallSign", "liveTimeZone"],
+            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId", "homeMarketId"],
             "properties": {
               "description": {
                 "type": "string",
                 "title": "Description"
               },
-              "bool": {
-                "type": "boolean",
-                "title": "Bool"
-              },
               "radioStreamUrl": {
                 "type": "string",
                 "title": "Radio Stream Url"
               },
-              "liveTimeZone": {
+              "liveTimezone": {
                 "type": "string",
                 "title": "Live Time Zone",
-                "query": "query { timeZones { name } }"
+                "query": "query { schema: timeZones { id:name, name } }"
               },
               "network": {
                 "type": "array",
                 "title": "Network",
                 "items": {
                   "type": "integer",
-                  "query": "query { networks { records { id name } } }"
+                  "query": "query { schema(id: \"eb101933-f931-4e63-8733-2fae48ef6df8\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } }}"
                 }
               },
               "stationCallSign": {
@@ -46,15 +42,15 @@ const sourceTypes = {
                 "type": "string",
                 "title": "Band"
               },
-              "frequency": {
+              "stationChannel": {
                 "type": "string",
-                "title": "Frequency"
+                "title": "Station Channel (Frequency)"
               },
               "webSiteUrl": {
                 "type": "string",
                 "title": "Web Site"
               },
-              "format": {
+              "mediaSourceFormatId": {
                 "type": "integer",
                 "title": "Genre (Format)",
                 "query": "query { mediaSourceFormats { records { id name } } }"
@@ -64,37 +60,85 @@ const sourceTypes = {
                 "title": "Markets",
                 "items": {
                   "type": "integer",
-                  "query": "query { sources { records { id name } } }"
+                  "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
                 }
               },
               "homeMarketId": {
                 "type": "integer",
                 "title": "Home Market",
                 "peerEnumKey": "markets",
-                "query": "query { sources { records { id name } } }"
+                "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
               }
             }
           }
         }
       },
       {
-        name: 'Audio2',
-        id: 'audio_2',
+        name: 'Broadcast TV',
+        id: 'tv',
         sourceSchema: {
           definition: {
-            properties: {
-              url: {
-                type: 'string'
+            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId"],
+            "properties": {
+              "description": {
+                "type": "string",
+                "title": "Description"
               },
-              username: {
-                type: 'string',
-                title: 'username 2'
+              "radioStreamUrl": {
+                "type": "string",
+                "title": "Stream Url"
               },
-              password: {
-                type: 'string'
+              "isNational": {
+                "type": "boolean",
+                "title": "Is National"
               },
-              days: {
-                type: 'number'
+              "liveTimezone": {
+                "type": "string",
+                "title": "Live Time Zone",
+                "query": "query { schema: timeZones { id:name, name } }"
+              },
+              "network": {
+                "type": "array",
+                "title": "Network",
+                "items": {
+                  "type": "integer",
+                  "query": "query { schema(id: \"eb101933-f931-4e63-8733-2fae48ef6df8\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } }}"
+                }
+              },
+              "stationCallSign": {
+                "type": "string",
+                "title": "Call Sign"
+              },
+              "stationBand": {
+                "type": "string",
+                "title": "Band"
+              },
+              "stationChannel": {
+                "type": "string",
+                "title": "Station Channel (Frequency)"
+              },
+              "webSiteUrl": {
+                "type": "string",
+                "title": "Web Site"
+              },
+              "mediaSourceFormatId": {
+                "type": "integer",
+                "title": "Genre (Format)",
+                "query": "query { mediaSourceFormats { records { id name } } }"
+              },
+              "markets": {
+                "type": "array",
+                "title": "Markets",
+                "items": {
+                  "type": "integer",
+                  "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
+                }
+              },
+              "homeMarketId": {
+                "type": "integer",
+                "title": "Home Market",
+                "peerEnumKey": "markets",
+                "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
               }
             }
           }
@@ -364,6 +408,7 @@ storiesOf('SourceManagementForm', module)
         onSubmit={displayForm}
         onClose={noop}
         getFieldOptions={getFieldOptions}
+        canShare
       />
     );
   })
