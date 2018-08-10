@@ -48,8 +48,8 @@ class FullDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canShare={true}
-              canEditAffiliates={true}
+              canShare
+              canEditAffiliates
               program={{
                 id: '12345',
                 name: 'Test program',
@@ -64,13 +64,16 @@ class FullDataStory extends React.Component {
                 isPublic: true,
                 affiliates: []
               }}
-              programFormats={[{
+              programFormats={[
+                {
                   id: 'live',
                   name: 'Live'
-                }, {
+                },
+                {
                   id: 'recorded',
                   name: 'Recorded'
-                }]}
+                }
+              ]}
               acls={[]}
               affiliates={[]}
               onSubmit={this.handleSubmit}
@@ -114,15 +117,18 @@ class NoProgramDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canShare={true}
-              canEditAffiliates={true}
-              programFormats={[{
-                id: 'live',
-                name: 'Live'
-              }, {
-                id: 'recorded',
-                name: 'Recorded'
-              }]}
+              canShare
+              canEditAffiliates
+              programFormats={[
+                {
+                  id: 'live',
+                  name: 'Live'
+                },
+                {
+                  id: 'recorded',
+                  name: 'Recorded'
+                }
+              ]}
               acls={[]}
               affiliates={[]}
               onSubmit={this.handleSubmit}
@@ -165,9 +171,7 @@ class BaseStory extends React.Component {
       <div>
         <Provider store={store}>
           <div>
-            <ProgramInfo
-              onSubmit={this.handleSubmit}
-            />
+            <ProgramInfo onSubmit={this.handleSubmit} />
             <button type="button" onClick={this.submit}>
               Submit
             </button>
@@ -182,6 +186,12 @@ class BaseStory extends React.Component {
   }
 }
 
-storiesOf('Program Info', module).add('Full data', () => <FullDataStory store={store} />);
-storiesOf('Program Info', module).add('No program data', () => <NoProgramDataStory store={store} />);
-storiesOf('Program Info', module).add('Base', () => <BaseStory store={store} />);
+storiesOf('Program Info', module).add('Full data', () => (
+  <FullDataStory store={store} />
+));
+storiesOf('Program Info', module).add('No program data', () => (
+  <NoProgramDataStory store={store} />
+));
+storiesOf('Program Info', module).add('Base', () => (
+  <BaseStory store={store} />
+));
