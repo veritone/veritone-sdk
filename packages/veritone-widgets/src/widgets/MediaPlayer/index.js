@@ -60,6 +60,7 @@ class MediaPlayerComponent extends React.Component {
     ),
     readOnly: bool,
     addOnly: bool,
+    autoCommit: bool,
     width: number,
     height: number,
     // fluid = 100% width by default, see video-react docs
@@ -115,6 +116,7 @@ class MediaPlayerComponent extends React.Component {
             actionMenuItems={this.props.actionMenuItems}
             addOnly={this.props.addOnly}
             readOnly={this.props.readOnly || !this.props.paused}
+            autoCommit={this.props.autoCommit}
           />
         )}
         <Player

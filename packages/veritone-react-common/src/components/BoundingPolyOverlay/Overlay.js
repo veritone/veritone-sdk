@@ -41,6 +41,7 @@ export default class Overlay extends React.Component {
     confirmLabel: string,
     readOnly: bool,
     addOnly: bool,
+    autoCommit: bool,
     overlayPositioningContext: shape({
       top: number.isRequired,
       left: number.isRequired,
@@ -111,7 +112,11 @@ export default class Overlay extends React.Component {
   static mapPolysToInternalFormat = memoize(
     (polys, width, height) =>
       polys.map(({ boundingPoly, id }) => ({
-        boundingPoly: percentagePolyToPixelXYWidthHeight(boundingPoly, width, height),
+        boundingPoly: percentagePolyToPixelXYWidthHeight(
+          boundingPoly,
+          width,
+          height
+        ),
         id
       })),
     isEqual
@@ -248,16 +253,18 @@ export default class Overlay extends React.Component {
   };
 
   confirmStagedBoundingBox = () => {
-    this.props.onAddBoundingBox({
-      boundingPoly: pixelXYWidthHeightToPercentagePoly(
-        this.state.stagedBoundingBoxPosition,
-        this.props.overlayPositioningContext.width,
-        this.props.overlayPositioningContext.height
-      ),
-      id: null // ID must be assigned by caller before passing back in.
-    });
+    if (this.hasStagedBoundingBox()) {
+      this.props.onAddBoundingBox({
+        boundingPoly: pixelXYWidthHeightToPercentagePoly(
+          this.state.stagedBoundingBoxPosition,
+          this.props.overlayPositioningContext.width,
+          this.props.overlayPositioningContext.height
+        ),
+        id: null // ID must be assigned by caller before passing back in.
+      });
 
-    this.removeStagedBoundingBox();
+      this.removeStagedBoundingBox();
+    }
   };
 
   removeStagedBoundingBox = () => {
@@ -326,8 +333,12 @@ export default class Overlay extends React.Component {
     }
   };
 
-  handleBackgroundMouseUp = e => {
+  handleBackgroundMouseUp = () => {
     if (this.state.drawingInitialBoundingBox) {
+      if (this.props.autoCommit) {
+        this.confirmStagedBoundingBox();
+      }
+
       this.setState({
         drawingInitialBoundingBox: false,
         userActingOnBoundingBox: false,

@@ -118,6 +118,8 @@ class Story extends React.Component {
             initialBoundingBoxPolys={this.state.boundingBoxes}
             actionMenuItems={this.actionMenuItems}
             readOnly={this.props.readOnly}
+            addOnly={this.props.addOnly}
+            autoCommit={this.props.autoCommit}
             key={this.state.frame}
           />
           <div
@@ -164,6 +166,8 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
     'hard-light'
   );
   const readOnly = boolean('Read only mode', false);
+  const addOnly = boolean('Add only mode', false);
+  const autoCommit = boolean('Auto commit mode', false);
 
   return (
     <div>
@@ -180,6 +184,8 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
         overlayBorderStyle={overlayBorderStyle}
         overlayBackgroundBlendMode={overlayBackgroundBlendMode}
         readOnly={readOnly}
+        addOnly={addOnly}
+        autoCommit={autoCommit}
       />
     </div>
   );
