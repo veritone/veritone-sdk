@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
-import { find } from 'lodash';
+import { find, get } from 'lodash';
 import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
@@ -245,7 +245,7 @@ export default class TranscriptEngineOutput extends Component {
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
         className={classNames(headerClassName)}
-        showMoreMenuButton={!editMode && !!moreMenuItems.length}
+        showMoreMenuButton={!editMode && get(moreMenuItems, 'length')}
         moreMenuItems={moreMenuItems}
       >
         <div className={classNames(styles.controllers)}>

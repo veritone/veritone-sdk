@@ -25,7 +25,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual } from 'lodash';
+import { find, get, some, includes, isEqual, noop } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -57,6 +57,7 @@ import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
+import moreMenuStyles from './moreMenuItems/styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
@@ -823,12 +824,27 @@ class MediaDetailsWidget extends React.Component {
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     const moreMenuItems = [];
+    const selectedEngine = find(get(selectedEngineCategory, 'engines', []), {
+      id: selectedEngineId
+    });
+    if (!isEditModeEnabled && get(selectedEngine, 'hasUserEdits')) {
+      moreMenuItems.push(
+        <MenuItem
+          key="restore-original-output"
+          className={moreMenuStyles.exportMainMenuItem}
+          onClick={this.onRestoreOriginalClick}
+        >
+          Restore Original
+        </MenuItem>
+      );
+    }
     if (categoryExportFormats.length) {
       moreMenuItems.push(
         <ExportMenuItem
           key="quick-export"
           label="Quick Export"
           onExportClicked={this.handleExportClicked}
+          onMoreClicked={noop}
           categoryExportFormats={categoryExportFormats}
         />
       );
@@ -1223,7 +1239,6 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                         moreMenuItems={moreMenuItems}
                       />
                     )}
@@ -1241,7 +1256,7 @@ class MediaDetailsWidget extends React.Component {
                           this.handleUpdateMediaPlayerTime
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        moreMenuItems={moreMenuItems}
                       />
                     )}
                   {selectedEngineCategory &&

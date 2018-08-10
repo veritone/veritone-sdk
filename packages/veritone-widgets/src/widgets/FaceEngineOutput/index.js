@@ -168,7 +168,8 @@ class FaceEngineOutputContainer extends Component {
     closeConfirmationDialog: func,
     pendingUserEdits: bool,
     isDisplayingUserEditedOutput: bool,
-    clearEngineResultsByEngineId: func
+    clearEngineResultsByEngineId: func,
+    moreMenuItems: arrayOf(node)
   };
 
   state = {
@@ -541,6 +542,7 @@ class FaceEngineOutputContainer extends Component {
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
+          moreMenuItems={this.props.moreMenuItems}
         />
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}

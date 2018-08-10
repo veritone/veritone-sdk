@@ -8,7 +8,7 @@ import {
   shape,
   func
 } from 'prop-types';
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Icon from '@material-ui/core/Icon';
@@ -27,7 +27,6 @@ class EngineOutputHeader extends Component {
     title: string,
     hideTitle: bool,
     hideExpandButton: bool,
-    showMoreMenuButton: bool,
     engines: arrayOf(
       shape({
         id: string.isRequired,
@@ -124,7 +123,6 @@ class EngineOutputHeader extends Component {
       title,
       hideTitle,
       hideExpandButton,
-      showMoreMenuButton,
       engines,
       selectedEngineId,
       onExpandClick
@@ -167,7 +165,7 @@ class EngineOutputHeader extends Component {
               })}
             </Select>
           )}
-          {showMoreMenuButton && moreMenuItems && this.renderMoreMenu()}
+          {!!get(moreMenuItems, 'length') && this.renderMoreMenu()}
         </div>
         {onExpandClick &&
           !hideExpandButton && <div className={styles.actionIconDivider} />}

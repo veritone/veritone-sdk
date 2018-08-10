@@ -22,7 +22,7 @@ class ExportMenuItem extends Component {
         label: string.isRequired
       })
     ).isRequired,
-    onCloseMoreMenu: func.isRequired
+    onCloseMoreMenu: func
   };
 
   state = {
@@ -31,7 +31,6 @@ class ExportMenuItem extends Component {
   };
 
   toggleSubMenu = () => {
-    console.log('Toggle this stuff');
     this.setState(prevState => ({
       showSubMenu: !prevState.showSubMenu
     }));
@@ -59,19 +58,13 @@ class ExportMenuItem extends Component {
   };
 
   render() {
-    const {
-      label,
-      onMoreClicked,
-      categoryExportFormats,
-      ...remainingProps
-    } = this.props;
+    const { label, onMoreClicked, categoryExportFormats } = this.props;
     const { showSubMenu, selectedFormats } = this.state;
 
     return (
       <Manager>
         <Target>
           <MenuItem
-            {...remainingProps}
             classes={{ root: styles.exportMainMenuItem }}
             onClick={this.toggleSubMenu}
           >
