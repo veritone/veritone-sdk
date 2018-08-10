@@ -278,6 +278,10 @@ export function selectUser(state) {
   return local(state).user;
 }
 
+export function selectUserOrganizationId(state) {
+  return get(local(state).user, 'organization.organizationId');
+}
+
 export function selectUserOrganizationKvp(state) {
   return get(local(state).user, 'organization.kvp');
 }
@@ -330,4 +334,16 @@ export function selectEnabledApps(state) {
 
 export function userIsAuthenticated(state) {
   return !isEmpty(local(state).user);
+}
+
+export function hasFeature(state, featureName) {
+  return (
+    get(local(state), [
+      'user',
+      'organization',
+      'kvp',
+      'features',
+      featureName
+    ]) === 'enabled'
+  );
 }

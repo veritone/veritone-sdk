@@ -32,6 +32,10 @@ import savedSearchReducer, {
   namespace as savedSearchNamespace
 } from './modules/savedSearch';
 
+import engineOutputExportReducer, {
+  namespace as engineOutputExportNamespace
+} from './modules/engineOutputExport';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -51,6 +55,7 @@ export default function createReducer(asyncReducers) {
     [filePickerNamespace]: filePickerReducer,
     [engineSelectionNamespace]: engineSelectionReducer,
     [notificationsNamespace]: notificationsReducer,
+    [engineOutputExportNamespace]: engineOutputExportReducer,
     [mediaDetailsNamespace]: mediaDetailsReducer,
     [transcriptNamespace]: transcriptReducer,
     [faceEngineOutputNamespace]: faceEngineOutputReducer,
@@ -59,10 +64,10 @@ export default function createReducer(asyncReducers) {
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
+    form: formReducer,
     [applicationNamespace]: applicationReducer,
     [savedSearchNamespace]: savedSearchReducer,
     [engineResultsNamespace]: engineResultsReducer,
-    form: formReducer,
     player: playerReducer,
     operation: operationReducer,
     ...asyncReducers
