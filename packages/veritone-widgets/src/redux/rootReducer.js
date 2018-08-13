@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { modules } from 'veritone-redux-common';
+import { reducer as formReducer } from 'redux-form';
 
 import filePickerReducer, {
   namespace as filePickerNamespace
@@ -12,6 +13,10 @@ import engineSelectionReducer, {
 import notificationsReducer, {
   namespace as notificationsNamespace
 } from './modules/notifications';
+
+import engineOutputExportReducer, {
+  namespace as engineOutputExportNamespace
+} from './modules/engineOutputExport';
 
 const {
   user: { reducer: userReducer, namespace: userNamespace },
@@ -27,11 +32,13 @@ export default function createReducer(asyncReducers) {
     [filePickerNamespace]: filePickerReducer,
     [engineSelectionNamespace]: engineSelectionReducer,
     [notificationsNamespace]: notificationsReducer,
+    [engineOutputExportNamespace]: engineOutputExportReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
     [appNamespace]: appReducer,
     [engineNamespace]: engineReducer,
+    form: formReducer,
     ...asyncReducers
   });
 }

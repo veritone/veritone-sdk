@@ -26,6 +26,7 @@ import RadioGroup from './RadioGroup';
 import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
 import DateTimePicker from './DateTimePicker';
+import Switch from './Switch';
 
 const store = createStore(
   combineReducers({
@@ -372,4 +373,27 @@ storiesOf('Form Components', module)
         </StoryForm>
       </Provider>
     );
-  });
+  })
+  .add('Switch', () => (
+    <Provider store={store}>
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+        <FormControl>
+          <Field
+            component={Switch}
+            name="labelessSwitch"
+          />
+          <Field
+            component={Switch}
+            name="switchWithLabel"
+            label="Switch With Label"
+          />
+          <Field
+            component={Switch}
+            name="disabledSwitch"
+            label="Disabled Switch"
+            disabled
+          />
+        </FormControl>
+      </StoryForm>
+    </Provider>
+  ));
