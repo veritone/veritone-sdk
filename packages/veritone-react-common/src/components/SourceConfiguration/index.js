@@ -169,7 +169,9 @@ export default class SourceConfiguration extends React.Component {
                     }}
                   />
                   <div className={styles['avatar-img-cta']}>
-                    <span id="openFilePicker" onClick={this.openFilePicker}>Edit</span>
+                    <span id="openFilePicker" onClick={this.openFilePicker}>
+                      Edit
+                    </span>
                   </div>
                 </div>
                 <TextField

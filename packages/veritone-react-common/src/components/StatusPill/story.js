@@ -2,12 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import StatusPill from './';
 
-const status = [
-  'active',
-  'inactive',
-  'paused',
-  'processing'
-];
+const status = ['active', 'inactive', 'paused', 'processing'];
 
 const Pills = () => {
   return (
@@ -18,8 +13,7 @@ const Pills = () => {
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-storiesOf('Status Pill', module)
-  .add('Base', () => <Pills />)
+storiesOf('Status Pill', module).add('Base', () => <Pills />);

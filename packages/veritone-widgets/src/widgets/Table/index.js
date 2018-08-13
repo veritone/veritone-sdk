@@ -65,4 +65,4 @@ class Table extends React.Component {
 }
 
 const TableWidget = widget(Table);
-export { TableWidget }
+export { TableWidget };

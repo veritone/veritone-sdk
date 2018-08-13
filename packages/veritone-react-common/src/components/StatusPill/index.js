@@ -49,9 +49,7 @@ export default class StatusPill extends React.Component {
         border={pillStyles.border}
         className={styles.statusPill}
       >
-        <span className={styles.statusPillText}>
-          {this.props.status}
-        </span>
+        <span className={styles.statusPillText}>{this.props.status}</span>
       </Lozenge>
     );
   }
