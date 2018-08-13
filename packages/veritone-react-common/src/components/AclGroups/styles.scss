@@ -1,0 +1,72 @@
+@import 'src/styles/modules/variables';
+
+.aclGroupsContainer {
+  diplay: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.title {
+  diplay: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.titleLabelSection {
+  diplay: flex;
+  flex-direction: column;
+}
+
+.titleLabel {
+  font-weight: normal;
+  font-size: 16px !important;
+  color: $dark-black;
+}
+
+.titleDescription {
+  font-weight: normal;
+  font-size: 12px !important;
+  color: $light-black;
+  margin: 8px 0;
+}
+
+.addAclsButton {
+
+}
+
+.aclsListSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.aclsList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.aclsListHelperText {
+  font-weight: normal;
+  font-size: 10px;
+  color: $dark-black;
+  margin: 10px 0;
+}
+
+.aclRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 24px;
+  border-bottom: 1px $faint-black;
+}
+
+.aclRowLabel {
+  font-weight: normal;
+  font-size: 16px !important;
+  color: $dark-black;
+}
+
+.aclRowDeleteIcon {
+  margin-right: 10px;
+}

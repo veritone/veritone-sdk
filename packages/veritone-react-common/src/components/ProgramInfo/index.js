@@ -50,7 +50,7 @@ class ProgramInfo extends React.Component {
       acls: arrayOf(
         shape({
           organizationId: string.isRequired,
-          organizationName: string.isRequired
+          permission: string.isRequired
         })
       ),
       isPublic: bool,
