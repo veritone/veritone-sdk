@@ -7,8 +7,6 @@ export OAuthLoginButton, {
   OAuthLoginButtonWidget
 } from './widgets/OAuthLoginButton';
 export FilePicker, { FilePickerWidget } from './widgets/FilePicker';
-export filePickerReducer, * as filePickerModule from './redux/modules/filePicker';
-export filePickerSaga from './redux/modules/filePicker/filePickerSaga';
 export { EngineSelectionWidget } from './widgets/EngineSelection';
 export { TableWidget } from './widgets/Table';
 export {
@@ -22,5 +20,9 @@ export notificationsReducer, * as notificationsModule from './redux/modules/noti
 // export SourceList from './widgets/SourceList';
 export { MediaPlayer } from './widgets/MediaPlayer';
 export MediaPlayerControlBar from './widgets/MediaPlayer/DefaultControlBar';
+export EngineOutputExport, {
+  EngineOutputExportWidget
+} from './widgets/EngineOutputExport';
+export engineOutputExportReducer, * as engineOutputExportModule from './redux/modules/engineOutputExport';
 // export SDOTable from './widgets/SDOTable';
 // export IngestionJobsList from './widgets/IngestionJobsList';
