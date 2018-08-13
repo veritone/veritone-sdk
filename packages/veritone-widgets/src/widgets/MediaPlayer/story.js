@@ -1,9 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
 
 import 'video-react/dist/video-react.css';
-import { MediaPlayer } from './';
+import { MediaPlayer, PopupMediaPlayer } from './';
 
 const multipleStreams = [
   {
@@ -55,6 +56,14 @@ storiesOf('MediaPlayer', module)
     <MediaPlayer autoPlay streams={multipleStreams} width={500} fluid={false} />
   ))
 
+  .add('Popup Player', () => (
+    <PopupMediaPlayer 
+      live 
+      streams={multipleStreams}
+      onClose = {action('on close')}
+    />
+  ))
+
   .add('Switch Source', () => {
     const label = 'Video Sources';
     const options = [demoMp4, alternateDemoMp4];
@@ -71,3 +80,4 @@ storiesOf('MediaPlayer', module)
       poster={demoPosterImage}
     />
   ));
+  

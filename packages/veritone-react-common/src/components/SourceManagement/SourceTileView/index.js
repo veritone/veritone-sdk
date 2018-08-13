@@ -8,6 +8,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
 import { capitalize, omit, noop, get } from 'lodash';
 
+import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
 import ButtonWrapper from '../../share-components/buttons/ButtonWrapper';
 import styles from './styles.scss';
@@ -49,14 +50,14 @@ export default class SourceTileView extends React.Component {
       return name;
     } else {
       return (
-        <span className={styles.sourceTileViewCell}>
+        <span className={classNames(styles.sourceTileViewCell)}>
           {name}
-          <span className={styles.gap} />
+          <span className={classNames(styles.gap)} />
           <ButtonWrapper data={data} onClick={this.handleLiveStreamButton}>
             <Button
               variant="outlined"
               size="small"
-              className={styles.liveNowButton}
+              className={classNames(styles.liveNowButton)}
             >
               Live Now
             </Button>
