@@ -34,7 +34,11 @@ export RefreshButton from './components/RefreshButton';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
-export { withVeritoneSDKThemeProvider, VeritoneSDKThemeProvider, defaultVSDKTheme } from './helpers/withVeritoneSDKThemeProvider';
+export {
+  withVeritoneSDKThemeProvider,
+  VeritoneSDKThemeProvider,
+  defaultVSDKTheme
+} from './helpers/withVeritoneSDKThemeProvider';
 
 export AlertDialog from './components/share-components/AlertDialog';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';
@@ -70,7 +74,6 @@ export SDOTable from './components/SDOTable';
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
-
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
 export * as IngestionJobs from './components/IngestionJobs';

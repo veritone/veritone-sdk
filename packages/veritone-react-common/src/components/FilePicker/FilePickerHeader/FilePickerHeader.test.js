@@ -15,14 +15,15 @@ describe('FilePickerHeader', () => {
         onSelectTab={onSelectTab}
         onClose={onCloseModal}
         allowUrlUpload
+        title="My Cool File Picker"
       />
     );
   });
 
-  it('should have a title of "File Picker"', () => {
+  it('should have a title of props.title', () => {
     const filePickerTitle = wrapper.find('.filePickerTitle');
     expect(filePickerTitle.exists()).toEqual(true);
-    expect(filePickerTitle.text() === 'File Picker');
+    expect(filePickerTitle.text()).toEqual('My Cool File Picker');
   });
 
   it('should have a Tabs bar with two tabs', () => {

@@ -56,6 +56,9 @@ Because smart components are not rendered within the VeritoneApp widget framewor
 * reducer:
 `import {notificationsReducer} from 'veritone-widgets'`
 
+#### EngineOutputExport
+* reducer:
+`import {engineOutputExportReducer} from 'veritone-widgets'`
 
 #### OAuthLoginButton
 * reducers:
@@ -312,6 +315,26 @@ A Veritone table to display data.
 * onRefreshPageData: function, specifies how to refresh data (if needed)
   * signature: `() => {}`
 * emptyMessage: string, text to display when table has no data
+
+**EngineOutputExport**
+
+The Veritone export engine outputs full screen dialog. This will fetch the engines ran on a tdo/recording and allow the user to configure what file types are included in the export
+
+*Options:*
+
+* tdos: arrayOf(shape), array of tdo data objects that engine outputs will be exported for
+  * shape: object with the following keys:
+    * tdoId: string (required), the unique id of a tdo you want to export engine outputs for
+    * startOffsetMs: number, an integer representing the number of milliseconds from the start of the tdo where the exported engine outputs will begin
+    * stopOffsetMs: number, an integer representing the number of milliseconds from the start of the tdo where the exported engine outputs will end
+* onExport: func, specifies action to take when export button is clicked
+  * signature: `(response) => {}`
+* onCancel: func, specifies action to take when cancel button is clicked
+  * signature: `() => {}`
+
+*Instance methods*
+
+* open(): opens the export engine output dialog.
 
 ## Running the development environment (storybook)
 1. Set up your local clone of veritone-sdk, following the instructions in the [main readme](https://github.com/veritone/veritone-sdk#development)

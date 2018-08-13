@@ -10,7 +10,7 @@ storiesOf('AppBar', module)
       profileMenu
       appSwitcher
       currentAppName="Storybook"
-      logout={action('logout')}
+      onLogout={action('logout')}
       user={{
         userName: 'mrobb@veritone.com',
         kvp: {
