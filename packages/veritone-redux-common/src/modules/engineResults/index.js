@@ -29,6 +29,8 @@ export default createReducer(defaultState, {
       return this[FETCH_ENGINE_RESULTS_FAILURE](state, action);
     }
 
+    // requestEngineId could be different from the jsondata.sourceEngineId (internal engine id vs GUID)
+    // so group by requestEngineId, keep grouped results and remove requestEngineId from the results
     const results = get(action, 'payload.engineResults.records').map(result => {
       forEach(get(result, 'jsondata.series'), seriesItem => {
         seriesItem.guid = guid();
@@ -36,10 +38,16 @@ export default createReducer(defaultState, {
       return {
         ...result.jsondata,
         userEdited: result.userEdited,
-        assetId: result.assetId
+        assetId: result.assetId,
+        requestEngineId: result.engineId
       };
     });
-    const resultsGroupedByEngineId = groupBy(results, 'sourceEngineId');
+
+    const resultsGroupedByRequestEngineId = groupBy(results, 'requestEngineId');
+    forEach(Object.keys(resultsGroupedByRequestEngineId),
+      engineId =>
+        resultsGroupedByRequestEngineId[engineId]
+          .forEach(result => delete result.requestEngineId));
 
     return {
       ...state,
@@ -47,7 +55,7 @@ export default createReducer(defaultState, {
       fetchEngineResultsError: null,
       engineResultsMappedByEngineId: {
         ...state.engineResultsMappedByEngineId,
-        ...resultsGroupedByEngineId
+        ...resultsGroupedByRequestEngineId
       }
     };
   },

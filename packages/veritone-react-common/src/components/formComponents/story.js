@@ -27,8 +27,8 @@ import RadioGroup from './RadioGroup';
 import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
 import DateTimePicker from './DateTimePicker';
-import TimeRangePicker from './TimeRangePicker';
 import Switch from './Switch';
+import TimeRangePicker from './TimeRangePicker';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
