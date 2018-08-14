@@ -29,10 +29,12 @@ const generateOrganizations = function(n) {
 storiesOf('Acl Groups', module).add('Base', () => (
   <AclsGroups
     acls={generateAcls(2, 'VIEWER')} //TODO: check on correct value
-    organizations={generateOrganizations(10)}
+    organizations={generateOrganizations(21)}
     permissions={['VIEWER', 'EDITOR', 'OWNER']} //TODO: check on correct value
     defaultPermission={'VIEWER'}
     onAclsChange={action('onAclsChange')}
-    description={'Grant organizations permissions to this program and its contents. Sharing programs will also share related Sources.'}
+    description={
+      'Grant organizations permissions to this program and its contents. Sharing programs will also share related Sources.'
+    }
   />
 ));

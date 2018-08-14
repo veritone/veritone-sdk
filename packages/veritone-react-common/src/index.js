@@ -36,7 +36,11 @@ export RefreshButton from './components/RefreshButton';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
-export { withVeritoneSDKThemeProvider, VeritoneSDKThemeProvider, defaultVSDKTheme } from './helpers/withVeritoneSDKThemeProvider';
+export {
+  withVeritoneSDKThemeProvider,
+  VeritoneSDKThemeProvider,
+  defaultVSDKTheme
+} from './helpers/withVeritoneSDKThemeProvider';
 
 export AlertDialog from './components/share-components/AlertDialog';
 export TranscriptEngineOutput from './components/TranscriptEngineOutput';

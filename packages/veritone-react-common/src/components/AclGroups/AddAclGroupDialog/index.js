@@ -13,7 +13,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { get, debounce, isEqual } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import { string, arrayOf, bool, func, shape } from 'prop-types';
 import styles from './styles.scss';
 
@@ -32,13 +32,8 @@ export default class AddAclGroupDialog extends Component {
       })
     ).isRequired,
     defaultPermission: string.isRequired,
-    isOpen: bool.isRequired,
     onAdd: func,
     onClose: func
-  };
-
-  static defaultProps = {
-    selectedAcls: []
   };
 
   state = {
@@ -67,18 +62,24 @@ export default class AddAclGroupDialog extends Component {
   handleSearch = searchText => {
     const searchTextLowerCase = searchText.toLowerCase();
     this.setState({
-      organizationsView: this.props.organizations.filter(organization => organization.name.toLowerCase().includes(searchTextLowerCase))
+      organizationsView: this.props.organizations.filter(organization =>
+        organization.name.toLowerCase().includes(searchTextLowerCase)
+      )
     });
   };
 
   isSelectedOrganization = organizationId => {
-    return this.state.selectedAcls.some(acl => acl.organizationId === organizationId);
+    return this.state.selectedAcls.some(
+      acl => acl.organizationId === organizationId
+    );
   };
 
-  handleSelectAclGroup = (event, organizationId) => {
+  handleSelectAclGroup = organizationId => {
     const { defaultPermission } = this.props;
     const { selectedAcls } = this.state;
-    const selectedIndex = selectedAcls.findIndex(acl => acl.organizationId === organizationId);
+    const selectedIndex = selectedAcls.findIndex(
+      acl => acl.organizationId === organizationId
+    );
     let newSelectedAcls = [];
     if (selectedIndex === -1) {
       newSelectedAcls = newSelectedAcls.concat(selectedAcls, {
@@ -92,7 +93,7 @@ export default class AddAclGroupDialog extends Component {
     } else if (selectedIndex > 0) {
       newSelectedAcls = newSelectedAcls.concat(
         selectedAcls.slice(0, selectedIndex),
-        selectedAcls.slice(selectedIndex + 1),
+        selectedAcls.slice(selectedIndex + 1)
       );
     }
     this.setState({ selectedAcls: newSelectedAcls });
@@ -109,15 +110,12 @@ export default class AddAclGroupDialog extends Component {
     );
   };
 
-  onAddButtonClick = () => {
+  handleAddButtonClick = () => {
     this.props.onAdd(this.state.selectedAcls);
   };
 
   render() {
-    const {
-      isOpen,
-      onClose
-    } = this.props;
+    const { onClose } = this.props;
 
     const {
       searchText,
@@ -129,7 +127,7 @@ export default class AddAclGroupDialog extends Component {
 
     return (
       <Dialog
-        open={isOpen}
+        open
         onClose={onClose}
         disableBackdropClick
         aria-labelledby='add-acl-groups-dialog'
@@ -153,10 +151,7 @@ export default class AddAclGroupDialog extends Component {
               onChange={this.onSearchTextChange}
             />
             <div className={styles.dialogTitleSeparator} />
-            <IconButton
-              onClick={onClose}
-              aria-label='Close'
-            >
+            <IconButton onClick={onClose} aria-label='Close'>
               <Icon className='icon-close-exit' />
             </IconButton>
           </div>
@@ -168,11 +163,16 @@ export default class AddAclGroupDialog extends Component {
                 {organizationsView
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(organization => {
-                    const isSelected = this.isSelectedOrganization(organization.id);
+                    const isSelected = this.isSelectedOrganization(
+                      organization.id
+                    );
                     return (
+                      /* eslint-disable react/jsx-no-bind */
                       <TableRow
                         hover
-                        onClick={event => this.handleSelectAclGroup(event, organization.id)}
+                        onClick={() =>
+                          this.handleSelectAclGroup(organization.id)
+                        }
                         role='checkbox'
                         aria-checked={isSelected}
                         tabIndex={-1}
@@ -185,7 +185,7 @@ export default class AddAclGroupDialog extends Component {
                             paddingCheckbox: styles.tableCheckboxCell
                           }}
                         >
-                          <Checkbox checked={isSelected} color='primary'/>
+                          <Checkbox checked={isSelected} color='primary' />
                         </TableCell>
                         <TableCell component='th' scope='row' padding='none'>
                           {organization.name}
@@ -202,10 +202,10 @@ export default class AddAclGroupDialog extends Component {
             page={page}
             rowsPerPage={rowsPerPage}
             backIconButtonProps={{
-              'aria-label': 'Previous Page',
+              'aria-label': 'Previous Page'
             }}
             nextIconButtonProps={{
-              'aria-label': 'Next Page',
+              'aria-label': 'Next Page'
             }}
             onChangePage={this.handleChangePage}
             rowsPerPageOptions={rowsPerPageOptions}
@@ -223,7 +223,7 @@ export default class AddAclGroupDialog extends Component {
           <Button
             variant='contained'
             color='primary'
-            onClick={this.onAddButtonClick}
+            onClick={this.handleAddButtonClick}
             disabled={!this.hasPendingChanges()}
           >
             Add

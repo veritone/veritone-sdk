@@ -38,18 +38,12 @@
 }
 
 .addAclGroupsButtonLabel {
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .aclsListSection {
   display: flex;
   flex-direction: column;
-}
-
-.aclsList {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 
 .aclsListHelperText {

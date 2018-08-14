@@ -2,13 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import {
-  func,
-  string,
-  arrayOf,
-  shape,
-  number
-} from 'prop-types';
+import { func, string, arrayOf, shape } from 'prop-types';
 import { get, find, reject } from 'lodash';
 import AddAclGroupDialog from './AddAclGroupDialog';
 import styles from './styles.scss';
@@ -27,7 +21,6 @@ export default class AclGroups extends React.Component {
         name: string.isRequired
       })
     ).isRequired,
-    permissions: arrayOf(string).isRequired,
     defaultPermission: string,
     onAclsChange: func.isRequired,
     description: string
@@ -38,7 +31,9 @@ export default class AclGroups extends React.Component {
   };
 
   handleRemoveAcl = organizationId => {
-    this.props.onAclsChange(reject(this.props.acls, { organizationId: organizationId }));
+    this.props.onAclsChange(
+      reject(this.props.acls, { organizationId: organizationId })
+    );
   };
 
   openSelectAclGroupDialog = () => {
@@ -59,12 +54,7 @@ export default class AclGroups extends React.Component {
   };
 
   render() {
-    const {
-      description,
-      organizations,
-      acls,
-      defaultPermission
-    } = this.props;
+    const { description, organizations, acls, defaultPermission } = this.props;
 
     return (
       <div className={styles.aclGroupsContainer}>
@@ -86,12 +76,13 @@ export default class AclGroups extends React.Component {
             </Button>
           </div>
         </div>
-        {get(acls, 'length') > 0 &&
+        {get(acls, 'length') > 0 && (
           <div className={styles.aclsListSection}>
             <div className={styles.aclsListHelperText}>Organization</div>
             {acls.map(acl => {
               const aclOrg = find(organizations, { id: acl.organizationId });
               return (
+                /* eslint-disable react/jsx-no-bind */
                 <div key={acl.organizationId} className={styles.aclRow}>
                   <div className={styles.aclRowLabel}>
                     {aclOrg ? aclOrg.name : acl.organizationId}
@@ -99,20 +90,23 @@ export default class AclGroups extends React.Component {
                   <IconButton
                     className={styles.aclRowDeleteIcon}
                     aria-label='Delete'
-                    onClick={() => this.handleRemoveAcl(acl.organizationId)}>
+                    onClick={() => this.handleRemoveAcl(acl.organizationId)}
+                  >
                     <DeleteIcon />
                   </IconButton>
-                </div>);
+                </div>
+              );
             })}
-          </div>}
-        <AddAclGroupDialog
-          isOpen={this.state.addAclGroupsDialogOpen}
-          acls={acls}
-          organizations={organizations}
-          defaultPermission={defaultPermission}
-          onClose={this.closeSelectAclGroupsDialog}
-          onAdd={this.handleAddAclGroups}
-        />
+          </div>
+        )}
+        {this.state.addAclGroupsDialogOpen &&
+          <AddAclGroupDialog
+            acls={acls}
+            organizations={organizations}
+            defaultPermission={defaultPermission}
+            onClose={this.closeSelectAclGroupsDialog}
+            onAdd={this.handleAddAclGroups}
+          />}
       </div>
     );
   }
