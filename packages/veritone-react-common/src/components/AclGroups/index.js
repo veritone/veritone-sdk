@@ -63,8 +63,7 @@ export default class AclGroups extends React.Component {
       description,
       organizations,
       acls,
-      defaultPermission,
-      onAclsChange
+      defaultPermission
     } = this.props;
 
     return (
