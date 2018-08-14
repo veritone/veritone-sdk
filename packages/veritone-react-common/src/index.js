@@ -39,6 +39,8 @@ export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
+export Overlay from './components/BoundingPolyOverlay/Overlay';
+export OverlayPositioningProvider from './components/BoundingPolyOverlay/OverlayPositioningProvider';
 export SDOTable from './components/SDOTable';
 export * as IngestionJobs from './components/IngestionJobs';
 export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';

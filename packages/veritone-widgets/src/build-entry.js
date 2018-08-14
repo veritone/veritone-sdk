@@ -19,6 +19,7 @@ export notificationsReducer, * as notificationsModule from './redux/modules/noti
 // export SourceManagementForm from './widgets/SourceManagementForm';
 // export SourceList from './widgets/SourceList';
 export { MediaPlayer } from './widgets/MediaPlayer';
+export MediaPlayerControlBar from './widgets/MediaPlayer/DefaultControlBar';
 export EngineOutputExport, {
   EngineOutputExportWidget
 } from './widgets/EngineOutputExport';
