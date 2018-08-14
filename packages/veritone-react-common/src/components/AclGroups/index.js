@@ -4,7 +4,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import { func, string, arrayOf, shape } from 'prop-types';
 import { get, find, reject } from 'lodash';
-import AddAclGroupDialog from './AddAclGroupDialog';
+import SelectAclGroupDialog from './SelectAclGroupDialog';
 import styles from './styles.scss';
 
 export default class AclGroups extends React.Component {
@@ -27,7 +27,7 @@ export default class AclGroups extends React.Component {
   };
 
   state = {
-    addAclGroupsDialogOpen: false
+    isSelectAclGroupDialogOpen: false
   };
 
   handleRemoveAcl = organizationId => {
@@ -38,18 +38,18 @@ export default class AclGroups extends React.Component {
 
   openSelectAclGroupDialog = () => {
     this.setState({
-      addAclGroupsDialogOpen: true
+      isSelectAclGroupDialogOpen: true
     });
   };
 
-  closeSelectAclGroupsDialog = () => {
+  closeSelectAclGroupDialog = () => {
     this.setState({
-      addAclGroupsDialogOpen: false
+      isSelectAclGroupDialogOpen: false
     });
   };
 
-  handleAddAclGroups = newAcls => {
-    this.closeSelectAclGroupsDialog();
+  handleSelectAclGroup = newAcls => {
+    this.closeSelectAclGroupDialog();
     this.props.onAclsChange(newAcls);
   };
 
@@ -61,15 +61,15 @@ export default class AclGroups extends React.Component {
         <div className={styles.title}>
           <div className={styles.titleLabelSection}>
             <div className={styles.titleLabel}>ACL Groups</div>
-            <div className={styles.titleDescription}>{description}</div>
+            {description && <div className={styles.titleDescription}>{description}</div>}
           </div>
-          <div className={styles.addAclGroupsButton}>
+          <div className={styles.selectAclGroupButton}>
             <Button
               variant='outlined'
               color='primary'
               onClick={this.openSelectAclGroupDialog}
               classes={{
-                label: styles.addAclGroupsButtonLabel
+                label: styles.selectAclGroupButtonLabel
               }}
             >
               ADD ACL GROUP
@@ -99,13 +99,13 @@ export default class AclGroups extends React.Component {
             })}
           </div>
         )}
-        {this.state.addAclGroupsDialogOpen &&
-          <AddAclGroupDialog
+        {this.state.isSelectAclGroupDialogOpen &&
+          <SelectAclGroupDialog
             acls={acls}
             organizations={organizations}
             defaultPermission={defaultPermission}
-            onClose={this.closeSelectAclGroupsDialog}
-            onAdd={this.handleAddAclGroups}
+            onClose={this.closeSelectAclGroupDialog}
+            onAdd={this.handleSelectAclGroup}
           />}
       </div>
     );

@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import AddAclGroupDialog from './';
+import SelectAclGroupDialog from './';
 
 const generateAcls = function(n, permission) {
   const acls = [];
@@ -27,7 +27,7 @@ const generateOrganizations = function(n) {
 };
 
 storiesOf('Add Acl Group Dialog', module).add('Base', () => (
-  <AddAclGroupDialog
+  <SelectAclGroupDialog
     isOpen
     acls={generateAcls(2, 'viewer')}
     organizations={generateOrganizations(21)}

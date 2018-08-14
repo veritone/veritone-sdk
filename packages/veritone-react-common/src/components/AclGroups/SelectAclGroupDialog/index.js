@@ -17,7 +17,7 @@ import { debounce, isEqual } from 'lodash';
 import { string, arrayOf, func, shape } from 'prop-types';
 import styles from './styles.scss';
 
-export default class AddAclGroupDialog extends Component {
+export default class SelectAclGroupDialog extends Component {
   static propTypes = {
     acls: arrayOf(
       shape({
@@ -132,7 +132,7 @@ export default class AddAclGroupDialog extends Component {
         disableBackdropClick
         aria-labelledby='add-acl-groups-dialog'
         classes={{
-          paper: styles.addAclGroupsDialogPaper
+          paper: styles.selectAclGroupDialogPaper
         }}
       >
         <DialogTitle
@@ -213,8 +213,8 @@ export default class AddAclGroupDialog extends Component {
         </DialogContent>
         <DialogActions
           classes={{
-            root: styles.addAclGroupsActionButtons,
-            action: styles.addAclGroupsActionButton
+            root: styles.selectAclGroupActionButtons,
+            action: styles.selectAclGroupActionButton
           }}
         >
           <Button onClick={onClose} color='primary'>
