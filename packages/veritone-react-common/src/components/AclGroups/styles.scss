@@ -1,20 +1,23 @@
 @import 'src/styles/modules/variables';
 
 .aclGroupsContainer {
-  diplay: flex;
+  display: flex;
   flex-direction: column;
   padding: 10px;
 }
 
 .title {
-  diplay: flex;
+  display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
 .titleLabelSection {
-  diplay: flex;
+  display: flex;
   flex-direction: column;
+  margin-right: 40px;
 }
 
 .titleLabel {
@@ -25,13 +28,17 @@
 
 .titleDescription {
   font-weight: normal;
-  font-size: 12px !important;
+  font-size: 14px !important;
   color: $light-black;
   margin: 8px 0;
 }
 
-.addAclsButton {
+.addAclGroupsButton {
+  margin-left: 10px;
+}
 
+.addAclGroupsButtonLabel {
+  white-space: nowrap
 }
 
 .aclsListSection {
@@ -47,7 +54,7 @@
 
 .aclsListHelperText {
   font-weight: normal;
-  font-size: 10px;
+  font-size: 12px;
   color: $dark-black;
   margin: 10px 0;
 }
@@ -58,7 +65,8 @@
   justify-content: space-between;
   align-items: center;
   line-height: 24px;
-  border-bottom: 1px $faint-black;
+  border-bottom: 1px solid $faint-black;
+  margin-bottom: 5px;
 }
 
 .aclRowLabel {

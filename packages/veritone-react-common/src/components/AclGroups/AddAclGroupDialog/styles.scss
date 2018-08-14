@@ -1,0 +1,54 @@
+@import 'src/styles/modules/variables';
+
+.addAclGroupsDialogPaper {
+  min-width: 640px;
+  width: 640px;
+}
+
+.dialogTitle {
+  h2 {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.dialogTitleActions {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialogTitleSearchInput {
+  width: 250px;
+  max-width: 250px;
+}
+
+.dialogTitleSeparator {
+  width: 1px;
+  height: 32px;
+  border-right: 1px solid $light-black;
+  margin: 0 10px 0 25px;
+}
+
+.aclsViewSection {
+  margin-top: 20px;
+}
+
+.aclsTable {
+  width: 100%;
+}
+
+.tableCheckboxCell {
+  width: 20px;
+}
+
+.addAclGroupsActionButtons {
+  padding: 16px;
+}
+
+.addAclGroupsActionButton {
+  width: 80px;
+}

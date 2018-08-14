@@ -1,5 +1,7 @@
 import '../src/styles/global.scss';
 
+export AclGroups from './components/AclGroups';
+export AddAclGroupDialog from './components/AddAclGroupDialog';
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
   appFooterHeightShort,

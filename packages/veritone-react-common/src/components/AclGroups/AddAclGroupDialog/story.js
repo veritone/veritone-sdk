@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import AclsGroups from './';
+import AddAclGroupDialog from './';
 
 const generateAcls = function(n, permission) {
   const acls = [];
@@ -26,13 +26,13 @@ const generateOrganizations = function(n) {
   return organizations;
 };
 
-storiesOf('Acl Groups', module).add('Base', () => (
-  <AclsGroups
+storiesOf('Add Acl Group Dialog', module).add('Base', () => (
+  <AddAclGroupDialog
+    isOpen
     acls={generateAcls(2, 'VIEWER')} //TODO: check on correct value
-    organizations={generateOrganizations(10)}
-    permissions={['VIEWER', 'EDITOR', 'OWNER']} //TODO: check on correct value
-    defaultPermission={'VIEWER'}
-    onAclsUpdate={action('onAclsUpdate')}
-    description={'Grant organizations permissions to this program and its contents. Sharing programs will also share related Sources.'}
+    organizations={generateOrganizations(21)}
+    defaultPermission={'VIEWER'} //TODO: check on correct value
+    onAdd={action('onAdd')}
+    onClose={action('onClose')}
   />
 ));
