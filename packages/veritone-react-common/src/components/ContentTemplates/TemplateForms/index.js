@@ -285,5 +285,9 @@ function BuildFormElements({
     element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>; // eslint-disable-line
   }
 
+  if (!element) {
+    return null;
+  }
+
   return element;
 }
