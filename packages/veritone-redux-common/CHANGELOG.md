@@ -68,3 +68,10 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.6.1
 * Fix export of `callGraphQLApi` in 3.6.0 due to babel bug (cannot `export default async function`)
+
+## 3.7.0
+* Bolster error handling in the OAuth flow
+* Change credentials mode for API calls based on whether we're in a veritone-internal host
+* Add engine module action to fetch engine categories + related selectors
+* Always clear user state after logout
+* Add selectors to user module: selectUserOrganizationID and hasFeature
