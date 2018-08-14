@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import AclsGroups from './';
+import AclGroups from './';
 
 const generateAcls = function(n, permission) {
   const acls = [];
@@ -27,7 +27,7 @@ const generateOrganizations = function(n) {
 };
 
 storiesOf('Acl Groups', module).add('Base', () => (
-  <AclsGroups
+  <AclGroups
     acls={generateAcls(2, 'VIEWER')} //TODO: check on correct value
     organizations={generateOrganizations(21)}
     permissions={['VIEWER', 'EDITOR', 'OWNER']} //TODO: check on correct value
