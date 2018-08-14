@@ -11,7 +11,7 @@ const sourceTypes = {
         id: 'audio',
         sourceSchema: {
           definition: {
-            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId", "homeMarketId"],
+            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId"],
             "properties": {
               "description": {
                 "type": "string",
@@ -24,14 +24,14 @@ const sourceTypes = {
               "liveTimezone": {
                 "type": "string",
                 "title": "Live Time Zone",
-                "query": "query { schema: timeZones { id:name, name } }"
+                "query": "query { results: timeZones { id:name, name } }"
               },
               "network": {
                 "type": "array",
                 "title": "Network",
                 "items": {
                   "type": "integer",
-                  "query": "query { schema(id: \"eb101933-f931-4e63-8733-2fae48ef6df8\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } }}"
+                  "query": "query { dataRegistries (name: \"Veritone Network\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } } } } }"
                 }
               },
               "stationCallSign": {
@@ -53,21 +53,22 @@ const sourceTypes = {
               "mediaSourceFormatId": {
                 "type": "integer",
                 "title": "Genre (Format)",
-                "query": "query { mediaSourceFormats { records { id name } } }"
+                "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],
+                "enumNames": ["Country","Urban","Oldies","News","Dark - Not on air","Easy Listening/Beautiful Music","Ethnic","Contemporary Hit Radio/Top 40","Spanish","Jazz/New Age","Public/Educational Station","Nostalgia/Big Band","Religion","Sports","Rock","Adult Contemporary","Album Oriented Rock/Classic Rock","Classical","Middle of the Road","Talk","Miscellaneous"]
               },
               "markets": {
                 "type": "array",
                 "title": "Markets",
                 "items": {
                   "type": "integer",
-                  "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
+                  "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
                 }
               },
               "homeMarketId": {
                 "type": "integer",
                 "title": "Home Market",
                 "peerEnumKey": "markets",
-                "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
+                "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
               }
             }
           }

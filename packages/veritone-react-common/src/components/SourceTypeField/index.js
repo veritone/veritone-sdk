@@ -17,7 +17,7 @@ import {
   arrayOf,
   shape
 } from 'prop-types';
-import { isFunction, isArray, get, isUndefined } from 'lodash';
+import { isFunction, isArray, get, isUndefined, isString } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
 import styles from './styles.scss';
@@ -40,9 +40,10 @@ export default class SourceTypeField extends React.Component {
   };
 
   state = {
-    options: isArray(this.props.options) ? this.props.options.map(e => {
-      return { label: e, value: e }
-    }) : undefined
+    options: isArray(this.props.options) ?
+      this.props.options.map(e => {
+        return isString(e) ? { id: e, name: e } : e
+      }) : undefined
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -156,7 +157,8 @@ SelectField.propTypes = {
   title: string,
   value: any,
   onChange: func.isRequired,
-  options: arrayOf(any).isRequired
+  options: arrayOf(any).isRequired,
+  isDirty: bool
 };
 
 const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {

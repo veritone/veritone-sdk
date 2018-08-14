@@ -1,5 +1,5 @@
 import React from 'react';
-import { has, includes, pick, get, isArray } from 'lodash';
+import { has, includes, pick, get, isArray, isUndefined } from 'lodash';
 
 import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
@@ -70,6 +70,14 @@ export default class DynamicSelect extends React.Component {
     }
 
     return Object.keys(this.props.fieldValues).map((fieldId, index) => {
+      const enums = (!isUndefined(properties[fieldId].enum) && get(properties[fieldId], 'enumNames.length') === get(properties[fieldId], 'enum.length')) ?
+        properties[fieldId].enum.map((value, index) => {
+          return {
+            id: value,
+            name: properties[fieldId].enumNames[index]
+          };
+        })
+      : properties[fieldId].enum;
       return (
         <SourceTypeField
           id={fieldId}
@@ -79,7 +87,7 @@ export default class DynamicSelect extends React.Component {
           onChange={this.handleDetailChange(fieldId)}
           title={properties[fieldId].title || ''}
           isDirty={this.props.errorFields[fieldId]}
-          options={properties[fieldId].enum}
+          options={enums}
           peerSelection={properties[fieldId].peerEnumKey
             ? (isArray(this.props.fieldValues[properties[fieldId].peerEnumKey]) 
               ? this.props.fieldValues[properties[fieldId].peerEnumKey] :
