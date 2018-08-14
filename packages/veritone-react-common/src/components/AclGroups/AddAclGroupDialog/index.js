@@ -14,7 +14,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { debounce, isEqual } from 'lodash';
-import { string, arrayOf, bool, func, shape } from 'prop-types';
+import { string, arrayOf, func, shape } from 'prop-types';
 import styles from './styles.scss';
 
 export default class AddAclGroupDialog extends Component {

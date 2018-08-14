@@ -29,9 +29,9 @@ const generateOrganizations = function(n) {
 storiesOf('Add Acl Group Dialog', module).add('Base', () => (
   <AddAclGroupDialog
     isOpen
-    acls={generateAcls(2, 'VIEWER')} //TODO: check on correct value
+    acls={generateAcls(2, 'viewer')}
     organizations={generateOrganizations(21)}
-    defaultPermission={'VIEWER'} //TODO: check on correct value
+    defaultPermission={'viewer'}
     onAdd={action('onAdd')}
     onClose={action('onClose')}
   />
