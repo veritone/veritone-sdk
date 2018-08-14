@@ -87,9 +87,11 @@ export default class SourceConfiguration extends React.Component {
         });
       }
 
-      return this.props.onInputChange({
-        sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
-        details: currentFields
+      this.setState({ sourceTypeIndex }, () => {
+        this.props.onInputChange({
+          sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
+          details: currentFields
+        });
       });
     }
   };

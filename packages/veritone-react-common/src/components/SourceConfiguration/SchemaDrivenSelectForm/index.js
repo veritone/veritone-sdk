@@ -56,10 +56,8 @@ export default class DynamicSelect extends React.Component {
   };
 
   renderFields = () => {
-    const definition = get(
-      this.props.sourceTypes[this.props.currentSourceType],
-      'sourceSchema.definition'
-    );
+    const sourceSchema = get(this.props.sourceTypes[this.props.currentSourceType], 'sourceSchema');
+    const definition = get(sourceSchema, 'definition');
     const properties = definition && definition.properties;
     const requiredFields = has(definition, 'required')
       ? definition.required
@@ -69,7 +67,7 @@ export default class DynamicSelect extends React.Component {
       return [];
     }
 
-    return Object.keys(this.props.fieldValues).map((fieldId, index) => {
+    return Object.keys(properties).map((fieldId) => {
       const enums = (!isUndefined(properties[fieldId].enum) && get(properties[fieldId], 'enumNames.length') === get(properties[fieldId], 'enum.length')) ?
         properties[fieldId].enum.map((value, index) => {
           return {
@@ -97,7 +95,7 @@ export default class DynamicSelect extends React.Component {
           }
           query={properties[fieldId].query || get(properties[fieldId], 'items.query' )}
           getFieldOptions={this.props.getFieldOptions}
-          key={fieldId}
+          key={sourceSchema.id + fieldId}
         />
       );
     });
