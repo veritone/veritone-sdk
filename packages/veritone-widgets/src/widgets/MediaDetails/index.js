@@ -25,7 +25,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual, noop } from 'lodash';
+import { find, get, some, includes, isEqual, isUndefined } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -46,11 +46,13 @@ import {
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
+import EngineOutputExport from '../EngineOutputExport';
 import { ExportMenuItem } from './moreMenuItems';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
-  engineResults: engineResultsModule
+  engineResults: engineResultsModule,
+  user: userModule
 } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
@@ -115,7 +117,8 @@ const programLiveImageNullState =
       state,
       id
     ),
-    categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id)
+    categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
+    betaFlagEnabled: userModule.hasFeature(state, 'beta')
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -136,7 +139,8 @@ const programLiveImageNullState =
       mediaDetailsModule.setShowTranscriptBulkEditSnackState,
     updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
     restoreOriginalEngineResults:
-      mediaDetailsModule.restoreOriginalEngineResults
+      mediaDetailsModule.restoreOriginalEngineResults,
+    createQuickExport: mediaDetailsModule.createQuickExport
   },
   null,
   { withRef: true }
@@ -343,7 +347,10 @@ class MediaDetailsWidget extends React.Component {
         label: string.isRequired,
         types: arrayOf(string).isRequired
       })
-    )
+    ),
+    createQuickExport: func.isRequired,
+    betaFlagEnabled: bool.isRequired,
+    onExport: func
   };
 
   static contextTypes = {
@@ -357,7 +364,8 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     isMenuOpen: false,
-    selectedTabValue: 'mediaDetails'
+    selectedTabValue: 'mediaDetails',
+    engineOutputExportOpen: false
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -788,7 +796,38 @@ class MediaDetailsWidget extends React.Component {
   };
 
   handleExportClicked = selectedFormats => {
-    console.log(selectedFormats);
+    const {
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory,
+      createQuickExport
+    } = this.props;
+    createQuickExport(
+      tdo.id,
+      selectedFormats,
+      selectedEngineId,
+      selectedEngineCategory.id
+    ).then(response => {
+      this.props.onExport(get(response, 'createExportRequest'), tdo);
+      return get(response, 'createExportRequest');
+    });
+  };
+
+  openEngineOutputExport = () => {
+    this.setState({
+      engineOutputExportOpen: true
+    });
+  };
+
+  closeEngineOutputExport = () => {
+    this.setState({
+      engineOutputExportOpen: false
+    });
+  };
+
+  handleExportSuccess = response => {
+    this.props.onExport(response, this.props.tdo);
+    this.closeEngineOutputExport();
   };
 
   render() {
@@ -813,7 +852,9 @@ class MediaDetailsWidget extends React.Component {
       isSaveEnabled,
       isSavingEngineResults,
       alertDialogConfig,
-      categoryExportFormats
+      categoryExportFormats,
+      betaFlagEnabled,
+      onExport
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -838,13 +879,13 @@ class MediaDetailsWidget extends React.Component {
         </MenuItem>
       );
     }
-    if (categoryExportFormats.length) {
+    if (onExport && categoryExportFormats.length && betaFlagEnabled) {
       moreMenuItems.push(
         <ExportMenuItem
           key="quick-export"
           label="Quick Export"
           onExportClicked={this.handleExportClicked}
-          onMoreClicked={noop}
+          onMoreClicked={this.openEngineOutputExport}
           categoryExportFormats={categoryExportFormats}
         />
       );
@@ -1399,6 +1440,15 @@ class MediaDetailsWidget extends React.Component {
 
           {this.renderTranscriptBulkEditSnack()}
         </Paper>
+        {!isUndefined(onExport) &&
+          !!tdo && (
+            <EngineOutputExport
+              open={this.state.engineOutputExportOpen}
+              tdos={[{ tdoId: tdo.id }]}
+              onExport={this.handleExportSuccess}
+              onCancel={this.closeEngineOutputExport}
+            />
+          )}
       </Dialog>
     );
   }

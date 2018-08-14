@@ -1057,19 +1057,22 @@ function* watchRestoreOriginalEngineResults() {
     } = action.payload;
 
     // these could be partial or fully retrieved data from assets
-    const fetchedEngineResultsToDelete = get(action.payload, 'engineResults', [])
-      .filter(
-        jsonData =>
-          jsonData.userEdited &&
-          !!jsonData.assetId
-      );
-    const fetchedAssetIdsToDelete = fetchedEngineResultsToDelete.map(jsonData => jsonData.assetId);
+    const fetchedEngineResultsToDelete = get(
+      action.payload,
+      'engineResults',
+      []
+    ).filter(jsonData => jsonData.userEdited && !!jsonData.assetId);
+    const fetchedAssetIdsToDelete = fetchedEngineResultsToDelete.map(
+      jsonData => jsonData.assetId
+    );
 
     // list all user edited vtn-standard assets for this tdo and engine
     let userEditedVtnAssetIdsToDelete = [];
     if (removeAllUserEdits) {
       try {
-        let engineIds = fetchedEngineResultsToDelete.map(engineResult => engineResult.sourceEngineId);
+        let engineIds = fetchedEngineResultsToDelete.map(
+          engineResult => engineResult.sourceEngineId
+        );
         if (engineId) {
           engineIds.push(engineId);
         }
@@ -1082,7 +1085,8 @@ function* watchRestoreOriginalEngineResults() {
         userEditedVtnAssetIdsToDelete = vtnStandardAssets
           .filter(
             asset =>
-              asset.isUserEdited && includes(engineIds, get(asset, 'sourceData.engineId'))
+              asset.isUserEdited &&
+              includes(engineIds, get(asset, 'sourceData.engineId'))
           )
           .map(asset => asset.id);
       } catch (error) {
