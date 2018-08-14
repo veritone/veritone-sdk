@@ -185,7 +185,7 @@ function BuildFormElements({
   ...rest
 }) {
   if (!type) {
-    return undefined;
+    return null;
   }
 
   let element;
