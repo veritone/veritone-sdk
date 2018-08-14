@@ -1,4 +1,5 @@
 import React from 'react';
+import { noop } from 'lodash';
 import {
   arrayOf,
   shape,
@@ -48,9 +49,9 @@ class MediaPlayerComponent extends React.Component {
         })
       })
     ),
-    onAddBoundingBox: func.isRequired,
-    onDeleteBoundingBox: func.isRequired,
-    onChangeBoundingBox: func.isRequired,
+    onAddBoundingBox: func,
+    onDeleteBoundingBox: func,
+    onChangeBoundingBox: func,
     overlayBorderStyle: string,
     actionMenuItems: arrayOf(
       shape({
@@ -81,7 +82,10 @@ class MediaPlayerComponent extends React.Component {
   };
 
   static defaultProps = {
-    fluid: true
+    fluid: true,
+    onAddBoundingBox: noop,
+    onDeleteBoundingBox: noop,
+    onChangeBoundingBox: noop,
   };
 
   handleAddBoundingBox = newBox => {
