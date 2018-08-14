@@ -9,8 +9,8 @@ import {
   shape,
   number
 } from 'prop-types';
-import { get, find } from 'lodash';
-
+import { get, find, reject } from 'lodash';
+import AddAclGroupDialog from './AddAclGroupDialog';
 import styles from './styles.scss';
 
 export default class AclGroups extends React.Component {
@@ -34,30 +34,38 @@ export default class AclGroups extends React.Component {
   };
 
   state = {
-    acls: {
-      ...this.props.acls
-    }
+    addAclGroupsDialogOpen: false
+  };
+
+  handleRemoveAcl = organizationId => {
+    this.props.onAclsChange(reject(this.props.acls, { organizationId: organizationId }));
   };
 
   openSelectAclGroupDialog = () => {
-    console.log('Open Select acl groups dialog');
+    this.setState({
+      addAclGroupsDialogOpen: true
+    });
   };
 
-  handleRevokeAcl = event => {
-    console.log('revoking acl for ' + get(event, 'target.value'));
-    this.props.onAclsUpdate(this.state.acls);
+  closeSelectAclGroupsDialog = () => {
+    this.setState({
+      addAclGroupsDialogOpen: false
+    });
+  };
+
+  handleAddAclGroups = newAcls => {
+    this.closeSelectAclGroupsDialog();
+    this.props.onAclsChange(newAcls);
   };
 
   render() {
     const {
       description,
       organizations,
-      acls
+      acls,
+      defaultPermission,
+      onAclsChange
     } = this.props;
-
-    // const {
-    //   acls
-    // } = this.state;
 
     return (
       <div className={styles.aclGroupsContainer}>
@@ -92,12 +100,20 @@ export default class AclGroups extends React.Component {
                   <IconButton
                     className={styles.aclRowDeleteIcon}
                     aria-label='Delete'
-                    onClick={this.handleRevokeAcl(acl.organizationId)}>
+                    onClick={() => this.handleRemoveAcl(acl.organizationId)}>
                     <DeleteIcon />
                   </IconButton>
                 </div>);
             })}
           </div>}
+        <AddAclGroupDialog
+          isOpen={this.state.addAclGroupsDialogOpen}
+          acls={acls}
+          organizations={organizations}
+          defaultPermission={defaultPermission}
+          onClose={this.closeSelectAclGroupsDialog}
+          onAdd={this.handleAddAclGroups}
+        />
       </div>
     );
   }

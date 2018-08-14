@@ -32,7 +32,7 @@ storiesOf('Acl Groups', module).add('Base', () => (
     organizations={generateOrganizations(10)}
     permissions={['VIEWER', 'EDITOR', 'OWNER']} //TODO: check on correct value
     defaultPermission={'VIEWER'}
-    onAclsUpdate={action('onAclsUpdate')}
+    onAclsChange={action('onAclsChange')}
     description={'Grant organizations permissions to this program and its contents. Sharing programs will also share related Sources.'}
   />
 ));
