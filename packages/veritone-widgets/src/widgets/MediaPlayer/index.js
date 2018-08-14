@@ -13,7 +13,7 @@ import {
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
-import { Overlay, OverlayPositioningProvider } from 'veritone-react-common';
+import { BoundingPolyOverlay, OverlayPositioningProvider } from 'veritone-react-common';
 import VideoSource from './VideoSource';
 import { getPolysForTime } from './helpers';
 
@@ -103,7 +103,7 @@ class MediaPlayerComponent extends React.Component {
         fixedWidth={!props.fluid}
       >
         {this.props.hasStarted && (
-          <Overlay
+          <BoundingPolyOverlay
             wrapperStyles={{ zIndex: 100 }}
             onAddBoundingBox={this.handleAddBoundingBox}
             onDeleteBoundingBox={this.props.onDeleteBoundingBox}
