@@ -14,3 +14,6 @@
 
 ## 2.0.1
 * Do not error on :export pseudo selector
+
+## 2.0.2
+* Bump required eslint-plugin-react version
