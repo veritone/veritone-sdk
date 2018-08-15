@@ -86,3 +86,5 @@ export ContentTemplate from './components/ContentTemplates';
 export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
+
+export SharingConfiguration from './components/SharingConfiguration';

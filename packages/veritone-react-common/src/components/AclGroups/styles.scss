@@ -21,14 +21,14 @@
 }
 
 .titleLabel {
-  font-weight: normal;
-  font-size: 16px !important;
+  font-weight: 500;
+  font-size: 14px;
   color: $dark-black;
 }
 
 .titleDescription {
   font-weight: normal;
-  font-size: 14px !important;
+  font-size: 14px;
   color: $light-black;
   margin: 8px 0;
 }
@@ -58,14 +58,13 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  line-height: 24px;
   border-bottom: 1px solid $faint-black;
   margin-bottom: 5px;
 }
 
 .aclRowLabel {
-  font-weight: normal;
-  font-size: 16px !important;
+  font-weight: 500;
+  font-size: 14px;
   color: $dark-black;
 }
 
