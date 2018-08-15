@@ -77,6 +77,7 @@ describe('user module actions', function() {
 
     it('makes a POST API call to a login endpoint based on config', function() {
       const store = mockStore({
+        auth: {},
         config: {
           apiRoot: 'http://www.test.com'
         }
@@ -98,6 +99,7 @@ describe('user module actions', function() {
 
     it('contains the user object in the payload of its success action', function() {
       const store = mockStore({
+        auth: {},
         config: {
           apiRoot: 'http://www.test.com'
         }

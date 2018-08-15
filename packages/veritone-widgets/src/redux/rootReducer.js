@@ -32,6 +32,10 @@ import savedSearchReducer, {
   namespace as savedSearchNamespace
 } from './modules/savedSearch';
 
+import engineOutputExportReducer, {
+  namespace as engineOutputExportNamespace
+} from './modules/engineOutputExport';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -54,6 +58,7 @@ export default function createReducer(asyncReducers) {
     [mediaDetailsNamespace]: mediaDetailsReducer,
     [transcriptNamespace]: transcriptReducer,
     [faceEngineOutputNamespace]: faceEngineOutputReducer,
+    [engineOutputExportNamespace]: engineOutputExportReducer,
     [configNamespace]: configReducer,
     [userNamespace]: userReducer,
     [authNamespace]: authReducer,
