@@ -26,6 +26,7 @@ import {
 import { reduxForm, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
 import { get } from 'lodash';
+import SharingConfiguration from '../SharingConfiguration';
 
 import styles from './styles.scss';
 
@@ -113,6 +114,14 @@ class ProgramInfo extends React.Component {
     });
   };
 
+  openFilePickerForLiveImage = event => {
+    console.log('start upload program live image');
+  };
+
+  openFilePickerForImage = event => {
+    console.log('start upload program image');
+  };
+
   handleDescriptionChange = event => {
     const newValue = event.target.value;
     this.setState(prevState => {
@@ -161,12 +170,26 @@ class ProgramInfo extends React.Component {
     });
   };
 
-  openFilePickerForLiveImage = event => {
-    console.log('start upload program live image');
+  handleAclsChange = acls => {
+    this.setState(prevState => {
+      return {
+        program: {
+          ...prevState.program,
+          acls
+        }
+      };
+    });
   };
 
-  openFilePickerForImage = event => {
-    console.log('start upload program image');
+  handleIsPublicChange = isPublic => {
+    this.setState(prevState => {
+      return {
+        program: {
+          ...prevState.program,
+          isPublic
+        }
+      };
+    });
   };
 
   prepareResultData() {
@@ -324,7 +347,12 @@ class ProgramInfo extends React.Component {
                 onChange={this.handleWebsiteChange}
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">http://</InputAdornment>
+                    <InputAdornment
+                      position="start"
+                      classes={{ positionStart: styles.websitePrefix }}
+                    >
+                      http://
+                    </InputAdornment>
                   )
                 }}
               />
@@ -371,25 +399,41 @@ class ProgramInfo extends React.Component {
                   />
                 }
                 label="Is National"
-                className={styles.isPublicLabel}
+                className={styles.isNationalLabel}
               />
             </div>
 
+            {canShare && <div className={styles.programInfoDivider} />}
             {canShare && (
-              <div>
-                <div className={styles.programInfoDivider} />
-                TODO: Share component goes here
-                <div className={styles.shareContainer} />
+              <div className={styles.shareContainer}>
+                <SharingConfiguration
+                  acls={program.acls}
+                  organizations={organizations}
+                  isPublic={program.isPublic}
+                  defaultPermission="viewer"
+                  onAclsChange={this.handleAclsChange}
+                  showMakePublic
+                  onIsPublicChange={this.handleIsPublicChange}
+                  sharingSectionDescription="Share this program across organizations."
+                  aclGroupsSectionDescription="Grant organizations permission to this program and its contents. Sharing programs will also share related Sources."
+                  publicSectionDescription="Share this program and all of its content with all of Veritone."
+                />
               </div>
             )}
 
-            {(canEditAffiliates || get(program, 'affiliates.length') > 0) && (
-              <div>
+            {/*TODO: Affiliates part goes here*/}
+            {false &&
+              (canEditAffiliates || get(program, 'affiliates.length') > 0) && (
                 <div className={styles.programInfoDivider} />
-                TODO: Affiliates part goes here
-                {canBulkAddAffiliates && <div>Bulk Add Affiliates Button</div>}
-              </div>
-            )}
+              )}
+            {false &&
+              (canEditAffiliates || get(program, 'affiliates.length') > 0) && (
+                <div className={styles.affiliatesContainer}>
+                  {canBulkAddAffiliates && (
+                    <div>Bulk Add Affiliates Button</div>
+                  )}
+                </div>
+              )}
           </div>
         </Form>
       </MuiThemeProvider>

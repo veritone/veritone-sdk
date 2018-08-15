@@ -14,7 +14,7 @@
 }
 
 .programInfoSection {
-  padding-bottom: 20px;
+  margin: 0 15px 20px;
 }
 
 .programInfoHeader {
@@ -130,14 +130,31 @@
   color: $light-black;
 }
 
-.isPublicLabel {
+.isNationalLabel {
   font-size: 14px;
   color: $dark-black;
 }
 
 .programInfoDivider {
-  height: 1px;
+  height: 2px;
   width: 100%;
-  background-color: $min-black;
+  background-color: $faint-black;
   margin: 10px 0;
+}
+
+.shareContainer {
+  width: 850px;
+  max-width: 850px;
+  margin: 35px 15px;
+}
+
+.affiliatesContainer {
+  margin: 35px 15px;
+}
+
+.websitePrefix {
+  p {
+    font-size: 14px !important;
+  }
+  margin-right: 0 !important;
 }
