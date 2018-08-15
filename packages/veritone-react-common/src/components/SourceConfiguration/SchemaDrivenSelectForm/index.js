@@ -76,6 +76,7 @@ export default class DynamicSelect extends React.Component {
           };
         })
       : properties[fieldId].enum;
+      isArray(enums) && enums.sort((a, b) => a.name < b.name ? -1 : 1);
       return (
         <SourceTypeField
           id={fieldId}

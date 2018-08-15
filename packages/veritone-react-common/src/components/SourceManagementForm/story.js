@@ -331,6 +331,17 @@ const dataSchemas = {
   }
 };
 
+const generateOrganizations = function(n) {
+  const organizations = [];
+  for (let i = 1; i <= n; i++) {
+    organizations.push({
+      id: 'orgId' + i,
+      name: 'Organization ' + i
+    });
+  }
+  return organizations;
+};
+
 function createTemplateData(dataSchemas) {
   const templateSchemas = {};
   // array of data registries containing an array of schemas
@@ -410,6 +421,7 @@ storiesOf('SourceManagementForm', module)
         onClose={noop}
         getFieldOptions={getFieldOptions}
         canShare
+        organizations={generateOrganizations(21)}
       />
     );
   })
@@ -423,6 +435,8 @@ storiesOf('SourceManagementForm', module)
         onSubmit={displayForm}
         onClose={noop}
         getFieldOptions={getFieldOptions}
+        canShare
+        organizations={generateOrganizations(21)}
       />
     );
   });
