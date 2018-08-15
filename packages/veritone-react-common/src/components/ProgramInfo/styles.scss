@@ -1,0 +1,160 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.activeSectionContainer {
+  display: flex;
+  flex-direction: column;
+
+  label,
+  span,
+  input {
+    font-weight: inherit;
+    font-size: 14px;
+  }
+}
+
+.programInfoSection {
+  margin: 0 15px 20px;
+}
+
+.programInfoHeader {
+  color: $dark-black;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 24px;
+  margin-bottom: 5px;
+}
+
+.programInfoDescription {
+  color: $light-black;
+  font-size: 14px;
+  line-height: 16px;
+  margin-top: 10px;
+}
+
+.programInfoInputField {
+  min-width: 600px;
+  width: 600px;
+}
+
+.programInfoSelect {
+  min-width: 600px;
+
+  & > div > div {
+    font-size: 14px;
+    color: $dark-black;
+  }
+}
+
+.programInfoSelectLabel {
+  font-weight: normal;
+  font-size: 14px !important;
+  color: $light-black;
+}
+
+.programInfoFieldHeader {
+  font-weight: normal;
+  font-size: 16px !important;
+  color: $dark-black;
+}
+
+.programInfoFieldDescription {
+  font-weight: normal;
+  font-size: 12px !important;
+  color: $light-black;
+  margin: 8px 0;
+}
+
+.programInfoImagesSection {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+}
+
+.programInfoLiveImageSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.programInfoLiveImage {
+  height: 350px;
+  width: 500px;
+  margin-top: 15px;
+}
+
+.programInfoLiveImageNullState {
+  height: 350px;
+  width: 500px;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border: dashed 1px $faint-black;
+}
+
+.programInfoImageSection {
+  display: flex;
+  flex-direction: column;
+  margin-left: 40px;
+}
+
+.programInfoImage {
+  height: 250px;
+  width: 250px;
+  margin-top: 15px;
+}
+
+.programInfoImageNullState {
+  height: 250px;
+  width: 250px;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border: dashed 1px $faint-black;
+}
+
+.uploadImageIconSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.uploadImageIcon {
+  font-size: 40px;
+}
+
+.uploadImageLabel {
+  font-weight: normal;
+  font-size: 12px !important;
+  color: $light-black;
+}
+
+.isNationalLabel {
+  font-size: 14px;
+  color: $dark-black;
+}
+
+.programInfoDivider {
+  height: 2px;
+  width: 100%;
+  background-color: $faint-black;
+  margin: 10px 0;
+}
+
+.shareContainer {
+  width: 850px;
+  max-width: 850px;
+  margin: 35px 15px;
+}
+
+.affiliatesContainer {
+  margin: 35px 15px;
+}
+
+.websitePrefix {
+  p {
+    font-size: 14px !important;
+  }
+  margin-right: 0 !important;
+}

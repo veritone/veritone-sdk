@@ -1,5 +1,7 @@
 import '../src/styles/global.scss';
 
+export AclGroups from './components/AclGroups';
+export SelectAclGroupDialog from './components/AclGroups/SelectAclGroupDialog';
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
   appFooterHeightShort,
@@ -61,6 +63,7 @@ export GeoEngineOutput from './components/GeoEngineOutput';
 
 export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
+export ProgramInfo from './components/ProgramInfo';
 
 export SourceNullState from './components/SourceManagement/Nullstate';
 export SourceTileView from './components/SourceManagement/SourceTileView';
@@ -84,3 +87,5 @@ export ContentTemplate from './components/ContentTemplates';
 export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
+
+export SharingConfiguration from './components/SharingConfiguration';
