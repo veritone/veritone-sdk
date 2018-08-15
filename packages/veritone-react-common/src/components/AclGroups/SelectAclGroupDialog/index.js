@@ -75,16 +75,19 @@ export default class SelectAclGroupDialog extends Component {
   };
 
   handleSelectAclGroup = organizationId => {
-    const { defaultPermission } = this.props;
+    const { defaultPermission, acls } = this.props;
     const { selectedAcls } = this.state;
     const selectedIndex = selectedAcls.findIndex(
       acl => acl.organizationId === organizationId
     );
     let newSelectedAcls = [];
     if (selectedIndex === -1) {
+      // preserve original acl permission when user re-selects acl
+      const originalAcl = acls.find(acl => acl.organizationId === organizationId);
+      const permission = originalAcl ? originalAcl.permission : defaultPermission;
       newSelectedAcls = newSelectedAcls.concat(selectedAcls, {
         organizationId: organizationId,
-        permission: defaultPermission
+        permission: permission
       });
     } else if (selectedIndex === 0) {
       newSelectedAcls = newSelectedAcls.concat(selectedAcls.slice(1));
