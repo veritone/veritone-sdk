@@ -94,8 +94,26 @@ describe('AppSwitcherList', () => {
     });
   });
 
-  it("Shows the app's icon by URL then SVG, or a generic icon if neither exist", function() {
+  it("Shows the app's icon by signed URL, then URL, then SVG, or a generic icon if neither exist", function() {
     let wrapper = mount(
+      <AppSwitcherList
+        enabledApps={[
+          {
+            applicationId: '0',
+            applicationName: 'Discovery',
+            signedApplicationIconUrl: 'https://app-icon-url-signed',
+            applicationIconUrl: 'https://app-icon-url',
+            applicationIconSvg: 'https://app-icon-svg'
+          }
+        ]}
+        onSwitchApp={noop}
+      />
+    );
+    expect(
+      wrapper.containsMatchingElement(<img src="https://app-icon-url-signed" />)
+    ).toBeTruthy();
+
+    wrapper = mount(
       <AppSwitcherList
         enabledApps={[
           {
