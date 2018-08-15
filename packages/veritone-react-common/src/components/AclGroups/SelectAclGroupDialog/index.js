@@ -130,7 +130,7 @@ export default class SelectAclGroupDialog extends Component {
         open
         onClose={onClose}
         disableBackdropClick
-        aria-labelledby='add-acl-groups-dialog'
+        aria-labelledby="add-acl-groups-dialog"
         classes={{
           paper: styles.selectAclGroupDialogPaper
         }}
@@ -143,22 +143,22 @@ export default class SelectAclGroupDialog extends Component {
           <div>Select ACL Group</div>
           <div className={styles.dialogTitleActions}>
             <TextField
-              id='search'
-              type='search'
-              placeholder='Filter by name'
+              id="search"
+              type="search"
+              placeholder="Filter by name"
               className={styles.dialogTitleSearchInput}
               value={searchText}
               onChange={this.onSearchTextChange}
             />
             <div className={styles.dialogTitleSeparator} />
-            <IconButton onClick={onClose} aria-label='Close'>
-              <Icon className='icon-close-exit' />
+            <IconButton onClick={onClose} aria-label="Close">
+              <Icon className="icon-close-exit" />
             </IconButton>
           </div>
         </DialogTitle>
         <DialogContent>
           <div className={styles.aclsViewSection}>
-            <Table className={styles.aclsTable} aria-labelledby='tableTitle'>
+            <Table className={styles.aclsTable} aria-labelledby="tableTitle">
               <TableBody>
                 {organizationsView
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -173,21 +173,21 @@ export default class SelectAclGroupDialog extends Component {
                         onClick={() =>
                           this.handleSelectAclGroup(organization.id)
                         }
-                        role='checkbox'
+                        role="checkbox"
                         aria-checked={isSelected}
                         tabIndex={-1}
                         key={organization.id}
                         selected={isSelected}
                       >
                         <TableCell
-                          padding='checkbox'
+                          padding="checkbox"
                           classes={{
                             paddingCheckbox: styles.tableCheckboxCell
                           }}
                         >
-                          <Checkbox checked={isSelected} color='primary' />
+                          <Checkbox checked={isSelected} color="primary" />
                         </TableCell>
-                        <TableCell component='th' scope='row' padding='none'>
+                        <TableCell component="th" scope="row" padding="none">
                           {organization.name}
                         </TableCell>
                       </TableRow>
@@ -197,7 +197,7 @@ export default class SelectAclGroupDialog extends Component {
             </Table>
           </div>
           <TablePagination
-            component='div'
+            component="div"
             count={organizationsView.length}
             page={page}
             rowsPerPage={rowsPerPage}
@@ -217,12 +217,12 @@ export default class SelectAclGroupDialog extends Component {
             action: styles.selectAclGroupActionButton
           }}
         >
-          <Button onClick={onClose} color='primary'>
+          <Button onClick={onClose} color="primary">
             Cancel
           </Button>
           <Button
-            variant='contained'
-            color='primary'
+            variant="contained"
+            color="primary"
             onClick={this.handleAddButtonClick}
             disabled={!this.hasPendingChanges()}
           >

@@ -61,12 +61,14 @@ export default class AclGroups extends React.Component {
         <div className={styles.title}>
           <div className={styles.titleLabelSection}>
             <div className={styles.titleLabel}>ACL Groups</div>
-            {description && <div className={styles.titleDescription}>{description}</div>}
+            {description && (
+              <div className={styles.titleDescription}>{description}</div>
+            )}
           </div>
           <div className={styles.selectAclGroupButton}>
             <Button
-              variant='outlined'
-              color='primary'
+              variant="outlined"
+              color="primary"
               onClick={this.openSelectAclGroupDialog}
               classes={{
                 label: styles.selectAclGroupButtonLabel
@@ -89,7 +91,7 @@ export default class AclGroups extends React.Component {
                   </div>
                   <IconButton
                     className={styles.aclRowDeleteIcon}
-                    aria-label='Delete'
+                    aria-label="Delete"
                     onClick={() => this.handleRemoveAcl(acl.organizationId)}
                   >
                     <DeleteIcon />
@@ -99,14 +101,15 @@ export default class AclGroups extends React.Component {
             })}
           </div>
         )}
-        {this.state.isSelectAclGroupDialogOpen &&
+        {this.state.isSelectAclGroupDialogOpen && (
           <SelectAclGroupDialog
             acls={acls}
             organizations={organizations}
             defaultPermission={defaultPermission}
             onClose={this.closeSelectAclGroupDialog}
             onAdd={this.handleSelectAclGroup}
-          />}
+          />
+        )}
       </div>
     );
   }
