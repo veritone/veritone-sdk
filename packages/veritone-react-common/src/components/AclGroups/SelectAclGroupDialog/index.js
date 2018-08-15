@@ -83,7 +83,9 @@ export default class SelectAclGroupDialog extends Component {
     let newSelectedAcls = [];
     if (selectedIndex === -1) {
       // preserve original acl permission when user re-selects acl
-      const originalAcl = acls.find(acl => acl.organizationId === organizationId);
+      const originalAcl = acls.find(
+        acl => acl.organizationId === organizationId
+      );
       const permission = originalAcl ? originalAcl.permission : defaultPermission;
       newSelectedAcls = newSelectedAcls.concat(selectedAcls, {
         organizationId: organizationId,
