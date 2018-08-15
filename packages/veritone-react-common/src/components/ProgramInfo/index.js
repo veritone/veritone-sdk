@@ -252,15 +252,6 @@ class ProgramInfo extends React.Component {
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <div className={styles.activeSectionContainer}>
             <div className={styles.programInfoSection}>
-              <div className={styles.programInfoHeader}>
-                Program Information
-              </div>
-              <div className={styles.programInfoDescription}>
-                Programs represent the schedule and all content ingested during
-                each time slot set in this job.
-              </div>
-            </div>
-            <div className={styles.programInfoSection}>
               <TextField
                 label="Program Name"
                 className={styles.programInfoInputField}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import NullState from './NullState';
+import NullState from './Nullstate';
 import SourceTileView from './SourceTileView';
 
 // a mock return result on a source from graphql

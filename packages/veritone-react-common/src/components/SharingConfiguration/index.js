@@ -55,15 +55,17 @@ export default class SharingConfiguration extends React.Component {
             {sharingSectionDescription}
           </div>
         )}
-        <div className={styles.selectAclGroupSection}>
-          <AclGroups
-            acls={acls}
-            organizations={organizations}
-            onAclsChange={onAclsChange}
-            defaultPermission={defaultPermission}
-            description={aclGroupsSectionDescription}
-          />
-        </div>
+        {!isPublic && (
+          <div className={styles.selectAclGroupSection}>
+            <AclGroups
+              acls={acls}
+              organizations={organizations}
+              onAclsChange={onAclsChange}
+              defaultPermission={defaultPermission}
+              description={aclGroupsSectionDescription}
+            />
+          </div>
+        )}
         {showMakePublic && (
           <div className={styles.makePublicSection}>
             <div className={styles.makePublicTitle}>
