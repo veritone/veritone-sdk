@@ -222,7 +222,13 @@ export default class SelectAclGroupDialog extends Component {
             action: styles.selectAclGroupActionButton
           }}
         >
-          <Button onClick={onClose} color="primary">
+          <Button
+            onClick={onClose}
+            color="primary"
+            classes={{
+              label: styles.actionButtonLabel
+            }}
+          >
             Cancel
           </Button>
           <Button
@@ -230,6 +236,9 @@ export default class SelectAclGroupDialog extends Component {
             color="primary"
             onClick={this.handleAddButtonClick}
             disabled={!this.hasPendingChanges()}
+            classes={{
+              label: styles.actionButtonLabel
+            }}
           >
             Add
           </Button>
