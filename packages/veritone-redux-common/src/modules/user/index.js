@@ -5,7 +5,7 @@ import {
   util as permissionUtil
 } from 'veritone-functional-permissions';
 
-import { commonHeaders } from 'helpers/api';
+import { commonHeaders, getCredentialsMode } from 'helpers/api';
 import { createReducer } from 'helpers/redux';
 import { getConfig } from 'modules/config';
 import { selectSessionToken } from 'modules/auth';
@@ -106,6 +106,13 @@ const reducer = createReducer(defaultState, {
     };
   },
 
+  [constants.LOGOUT_SUCCESS](state) {
+    return {
+      ...state,
+      user: {}
+    };
+  },
+
   [constants.FETCH_USER_APPLICATIONS](state, action) {
     const requestSuccessState = {
       ...state,
@@ -176,7 +183,8 @@ export function fetchUser() {
       ],
       endpoint: state => `${getConfig(state).apiRoot}/v1/admin/current-user`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -195,11 +203,8 @@ export function login({ userName, password }) {
         userName,
         password
       }),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -216,7 +221,8 @@ export function logout() {
         // prettier-ignore
         `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/logout`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -233,7 +239,8 @@ export function refreshApiToken() {
         // prettier-ignore
         `${getConfig(state).apiRoot}/v1/admin/token/${selectSessionToken(state)}/refresh`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -249,7 +256,8 @@ export function fetchEnabledApps() {
       endpoint: state =>
         `${getConfig(state).apiRoot}/v1/admin/current-user/applications`,
       method: 'GET',
-      headers: commonHeaders
+      headers: commonHeaders,
+      credentials: getCredentialsMode()
     }
   };
 }
@@ -276,6 +284,10 @@ export function fetchingFailed(state) {
 
 export function selectUser(state) {
   return local(state).user;
+}
+
+export function selectUserOrganizationId(state) {
+  return get(local(state).user, 'organization.organizationId');
 }
 
 export function selectUserOrganizationKvp(state) {
@@ -330,4 +342,16 @@ export function selectEnabledApps(state) {
 
 export function userIsAuthenticated(state) {
   return !isEmpty(local(state).user);
+}
+
+export function hasFeature(state, featureName) {
+  return (
+    get(local(state), [
+      'user',
+      'organization',
+      'kvp',
+      'features',
+      featureName
+    ]) === 'enabled'
+  );
 }
