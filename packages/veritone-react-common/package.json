@@ -1,6 +1,6 @@
 {
   "name": "veritone-react-common",
-  "version": "5.3.0",
+  "version": "6.0.0",
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
   "jsnext:main": "dist/bundle-es.js",
@@ -13,6 +13,7 @@
     "google-maps": "^3.3.0",
     "locale-code": "^2.0.1",
     "lodash": "^4.17.4",
+    "memoize-one": "^4.0.0",
     "mime-types": "^2.1.17",
     "pluralize": "^7.0.0",
     "prop-types": "^15.6.0",
@@ -28,6 +29,7 @@
     "react-jss": "^8.6.1",
     "react-popper": "^0.9.1",
     "react-redux": "^5.0.6",
+    "react-rnd": "^7.4.0",
     "react-transition-group": "^2.2.1",
     "react-virtualized": "^9.19.1",
     "recharts": "^1.0.0-beta.10",
@@ -58,6 +60,7 @@
     "prepare": "cd .. && yarn patch-package"
   },
   "devDependencies": {
+    "@material-ui/lab": "^1.0.0-alpha.5",
     "@storybook/addon-knobs": "3.3.9",
     "@storybook/react": "v3.3.9",
     "babel-eslint": "^8.0.1",
@@ -83,6 +86,7 @@
     "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.8.2",
+    "faker": "^4.1.0",
     "http-server": "^0.11.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^21.2.1",

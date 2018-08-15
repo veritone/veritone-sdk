@@ -20,11 +20,11 @@ export default class IngestionJobNullstate extends React.Component {
             marginBottom: '30px'
           },
           src: NullstateImage,
-          alt: "https://static.veritone.com/veritone-ui/default-nullstate.svg"
+          alt: 'https://static.veritone.com/veritone-ui/default-nullstate.svg'
         }}
         titleText="No Ingestion Jobs"
         btnProps={{
-          text: "New Ingestion Job",
+          text: 'New Ingestion Job',
           onClick: this.props.onClick
         }}
       >

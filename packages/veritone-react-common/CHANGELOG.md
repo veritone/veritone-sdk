@@ -101,3 +101,14 @@
 
 ## 5.3.0
 * Exported the Interval class and defaultIntervals for use with date-handling components.
+
+## 6.0.0
+* (breaking) removed @withMuiTheme decorator which automatically provided the material-ui theme to each component. Direct users of react-common components need to follow the new instructions in the README to add VeritoneSDKThemeProvider to their apps.
+* Added withVeritoneSDKThemeProvider, VeritoneSDKThemeProvider, and defaultVSDKTheme, related to above change
+* FilePicker title can now be customized with props.title
+* Added BoundingPolyOverlay and OverlayPositioningProvider components
+* Added ContentTemplateForm and ContentTemplate components
+* Added SDOTable component
+* Added IngestionJobs-related components
+* Added SourceManagementForm and SourceManagement-related components
+* Added Switch component under formComponents
