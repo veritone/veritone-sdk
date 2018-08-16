@@ -11,6 +11,7 @@ import FullScreenDialog from 'components/FullScreenDialog';
 import ModalHeader from 'components/ModalHeader';
 import SourceConfiguration from 'components/SourceConfiguration';
 import ContentTemplates from 'components/ContentTemplates';
+import SharingConfiguration from 'components/SharingConfiguration';
 import { guid } from 'helpers/guid';
 
 import styles from './styles.scss';
@@ -54,6 +55,10 @@ export default class SourceManagementForm extends React.Component {
       })
     ),
     canShare: bool,
+    organizations: arrayOf(shape({
+      id: string.isRequired,
+      name: string.isRequired
+    })),
     onSubmit: func.isRequired,
     onClose: func,
     getFieldOptions: func.isRequired,
@@ -98,6 +103,12 @@ export default class SourceManagementForm extends React.Component {
         ...pick(this.props.source, ['name', 'thumbnailUrl', 'details']),
         sourceTypeId: this.props.source.sourceType.id
       };
+      if (this.props.canShare) {
+        newState.share = {
+          isPublic: this.props.source.isPublic,
+          acls: get(this.props.source, 'collaborators.records') || []
+        }
+      }
     } else {
       // If there is no source, then just pick the first available sourceType
       const fieldValues = {};
@@ -122,6 +133,12 @@ export default class SourceManagementForm extends React.Component {
           ...fieldValues
         }
       };
+      if (this.props.canShare) {
+        newState.share = {
+          isPublic: false,
+          acls: []
+        };
+      }
     }
 
     return this.setState(newState);
@@ -200,6 +217,28 @@ export default class SourceManagementForm extends React.Component {
     });
   };
 
+  handleAclsChange = acls => {
+    this.setState(prevState => {
+      return {
+        share: {
+          ...prevState.share,
+          acls
+        }
+      };
+    });
+  };
+
+  handleIsPublicChange = isPublic => {
+    this.setState(prevState => {
+      return {
+        share: {
+          ...prevState.share,
+          isPublic
+        }
+      }
+    })
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     const sourceTypeId = this.state.sourceConfig.sourceTypeId;
@@ -225,7 +264,8 @@ export default class SourceManagementForm extends React.Component {
         resultTemplates.forEach(template => delete template.guid);
         this.props.onSubmit({
           sourceConfiguration: this.state.sourceConfig,
-          contentTemplates: resultTemplates
+          contentTemplates: resultTemplates,
+          share: this.state.share
         });
       }
     });
@@ -295,8 +335,18 @@ export default class SourceManagementForm extends React.Component {
             )}
             {activeTab === 2 && (
               <div className={styles.shareContainer}>
-                <div className={styles.shareTitle}>Sharing</div>
-                <div className={styles.shareDescription}>Subtitle and description</div>
+                <SharingConfiguration
+                  acls={this.state.share.acls}
+                  organizations={this.props.organizations}
+                  isPublic={this.state.share.isPublic}
+                  defaultPermission="viewer"
+                  onAclsChange={this.handleAclsChange}
+                  showMakePublic
+                  onIsPublicChange={this.handleIsPublicChange}
+                  sharingSectionDescription="Share this source across organizations."
+                  aclGroupsSectionDescription="Grant organizations permission to this source and its contents."
+                  publicSectionDescription="Share this source and all of its content with all of Veritone."
+                />
               </div>
             )}
             <div className={styles['btn-container']}>

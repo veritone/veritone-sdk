@@ -53,7 +53,7 @@ export default class SourceTypeField extends React.Component {
       this.props.getFieldOptions(query).then(results => {
         const newState = {};
         if (isArray(results)) {
-          newState.options = results;
+          newState.options = results.map(result => isString(result) ? { id: result, name: result } : result);
         }
         this.setState(newState);
       });
@@ -161,7 +161,7 @@ SelectField.propTypes = {
   isDirty: bool
 };
 
-const DateTimeTypeField = ({ id, title, value, onChange, ...rest }) => {
+const DateTimeTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => {
   return (
     <FormControl fullWidth className={styles.dateTimeContainer}>
       <InputLabel className={styles.textFieldLabel} shrink htmlFor={id}>
@@ -188,7 +188,7 @@ DateTimeTypeField.propTypes = {
   onChange: func
 };
 
-const BoolTypeField = ({ id, title, value, onChange, ...rest }) => {
+const BoolTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => {
   return (
     <FormControlLabel
       label={title}
@@ -220,7 +220,7 @@ const NumberField = props => {
   return <BaseField {...props} type="number" />;
 };
 
-const BaseField = ({ id, title, ...rest }) => {
+const BaseField = ({ id, title, isDirty, ...rest }) => {
   const inputProps = {
     label: title || id,
     fullWidth: true,
