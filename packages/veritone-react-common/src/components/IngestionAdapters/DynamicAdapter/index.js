@@ -54,7 +54,8 @@ class DynamicAdapter extends React.Component {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {
       sourceId: get(this.props, 'configuration.sourceId'),
-      clusterId: get(this.props, 'configuration.clusterId')
+      clusterId: get(this.props, 'configuration.clusterId'),
+      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 60
     };
     if (isArray(fields)) {
       fields.forEach(field => {
@@ -274,6 +275,24 @@ class DynamicAdapter extends React.Component {
                 items={this.state._cluster.items}
                 pageSize={this.props.pageSize}
               />
+              <div>
+                <TextField
+                  type="number"
+                  label="Max Duration Length (Mins)"
+                  margin="normal"
+                  InputLabelProps={{
+                    className: styles.tdoDurationLabel
+                  }}
+                  inputProps={{
+                    className: styles.tdoDurationInput,
+                    min: 0,
+                    max: 60,
+                    step: 1
+                  }} 
+                  value={this.state.maxTDODuration}
+                  onChange={this.handleFieldChange('maxTDODuration')}
+                />
+              </div>
             </div>
             <div>
               <DynamicFieldForm
@@ -411,6 +430,10 @@ export default {
       configuration.clusterId = get(
         hydrateData,
         'allJobTemplates.records[0].clusterId'
+      );
+      configuration.maxTDODuration = get(
+        hydrateData,
+        'allJobTemplates.records[0].jobConfig.maxTDODuration'
       );
       let fields = get(adapterStep, 'fields');
       if (fields) {
