@@ -1,28 +1,14 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
+import BaseStory from '../../shared/BaseStory';
 import VeritoneApp from '../../shared/VeritoneApp';
 import { SchedulerWidget } from '.';
 
 class Story extends React.Component {
-  state = { lastResult: {} };
-
-  componentDidMount() {
-    this._scheduler = new SchedulerWidget({
-      elId: 'scheduler-widget',
-      initialValues: {
-        scheduleType: 'Recurring',
-        repeatEvery: {
-          number: '2',
-          period: 'day'
-        }
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    this._scheduler.destroy();
-  }
+  state = {
+    lastResult: {}
+  };
 
   handleSubmit = vals => {
     this.setState({
@@ -30,24 +16,32 @@ class Story extends React.Component {
     });
   };
 
-  submitForm = () => {
-    this._scheduler.submit(vals => {
-      this.handleSubmit(vals);
-      console.log('Form Submitted:', vals);
-    });
-  };
-
   render() {
     return (
       <div>
-        <span id="scheduler-widget"/>
-        <button type="button" onClick={this.submitForm}>
-          Submit
-        </button>
         <div>
           Last result:
           <pre>{JSON.stringify(this.state.lastResult, null, '\t')}</pre>
         </div>
+
+        <BaseStory
+          widget={SchedulerWidget}
+          widgetProps={{
+            initialValues: {
+              scheduleType: 'Recurring',
+              repeatEvery: {
+                number: '2',
+                period: 'day'
+              }
+            }
+          }}
+          widgetInstanceMethods={{
+            submit: instance =>
+              instance.submit(vals => {
+                this.handleSubmit(vals);
+              })
+          }}
+        />
       </div>
     );
   }
@@ -56,5 +50,5 @@ class Story extends React.Component {
 const app = VeritoneApp();
 
 storiesOf('Scheduler', module).add('Base', () => {
-  return <Story store={app._store}/>;
+  return <Story store={app._store} />;
 });
