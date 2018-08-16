@@ -112,3 +112,7 @@
 * Added IngestionJobs-related components
 * Added SourceManagementForm and SourceManagement-related components
 * Added Switch component under formComponents
+
+## 6.0.1
+* Support signedApplicationIconUrl field in the AppSwitcher
+* Update veritone icons font
