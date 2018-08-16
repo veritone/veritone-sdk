@@ -36,8 +36,12 @@ export default class SelectAclGroupDialog extends Component {
     onClose: func
   };
 
+  static defaultProps = {
+    acls: []
+  };
+
   state = {
-    selectedAcls: this.props.acls || [],
+    selectedAcls: this.props.acls,
     organizationsView: this.props.organizations || [],
     searchText: '',
     page: 0,
@@ -86,7 +90,9 @@ export default class SelectAclGroupDialog extends Component {
       const originalAcl = acls.find(
         acl => acl.organizationId === organizationId
       );
-      const permission = originalAcl ? originalAcl.permission : defaultPermission;
+      const permission = originalAcl
+        ? originalAcl.permission
+        : defaultPermission;
       newSelectedAcls = newSelectedAcls.concat(selectedAcls, {
         organizationId: organizationId,
         permission: permission

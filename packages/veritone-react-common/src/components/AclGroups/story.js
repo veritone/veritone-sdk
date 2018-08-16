@@ -26,14 +26,25 @@ const generateOrganizations = function(n) {
   return organizations;
 };
 
-storiesOf('Acl Groups', module).add('Base', () => (
-  <AclGroups
-    acls={generateAcls(2, 'viewer')}
-    organizations={generateOrganizations(21)}
-    defaultPermission={'viewer'}
-    onAclsChange={action('onAclsChange')}
-    description={
-      'Grant organizations permission to this program and its contents. Sharing programs will also share related Sources.'
-    }
-  />
-));
+storiesOf('Acl Groups', module)
+  .add('Base', () => (
+    <AclGroups
+      acls={generateAcls(2, 'viewer')}
+      organizations={generateOrganizations(21)}
+      defaultPermission={'viewer'}
+      onAclsChange={action('onAclsChange')}
+      description={
+        'Grant organizations permission to this program and its contents. Sharing programs will also share related Sources.'
+      }
+    />
+  ))
+  .add('No Initial ACLs', () => (
+    <AclGroups
+      organizations={generateOrganizations(21)}
+      defaultPermission={'viewer'}
+      onAclsChange={action('onAclsChange')}
+      description={
+        'Grant organizations permission to this program and its contents. Sharing programs will also share related Sources.'
+      }
+    />
+  ));

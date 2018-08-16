@@ -37,7 +37,7 @@ import styles from './styles.scss';
 class ProgramInfo extends React.Component {
   static propTypes = {
     program: shape({
-      id: string.isRequired,
+      id: string,
       name: string,
       imageUri: string,
       signedImageUri: string,
@@ -194,9 +194,7 @@ class ProgramInfo extends React.Component {
 
   prepareResultData() {
     return {
-      data: {
-        ...this.state.program
-      }
+      ...this.state.program
     };
   }
 
