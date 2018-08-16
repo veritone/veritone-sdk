@@ -75,8 +75,8 @@ class FullDataStory extends React.Component {
               program={{
                 id: '12345',
                 name: 'Test program',
-                imageUri: '',
-                liveImageUri: '',
+                programImage: '',
+                programLiveImage: '',
                 description: 'This is a test program data with description',
                 website: 'www.veritone.com',
                 format: 'live',
@@ -86,16 +86,7 @@ class FullDataStory extends React.Component {
                 isPublic: true,
                 affiliates: []
               }}
-              programFormats={[
-                {
-                  id: 'live',
-                  name: 'Live'
-                },
-                {
-                  id: 'recorded',
-                  name: 'Recorded'
-                }
-              ]}
+              programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
               affiliates={[]}
               onSubmit={this.handleSubmit}
@@ -141,16 +132,7 @@ class NoProgramDataStory extends React.Component {
             <ProgramInfo
               canShare
               canEditAffiliates
-              programFormats={[
-                {
-                  id: 'live',
-                  name: 'Live'
-                },
-                {
-                  id: 'recorded',
-                  name: 'Recorded'
-                }
-              ]}
+              programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
               affiliates={[]}
               onSubmit={this.handleSubmit}

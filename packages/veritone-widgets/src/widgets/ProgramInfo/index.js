@@ -20,12 +20,11 @@ import widget from '../../shared/widget';
 class ProgramInfoWidget extends React.Component {
   static propTypes = {
     program: shape({
-      id: string.isRequired,
       name: string,
-      imageUri: string,
-      signedImageUri: string,
-      liveImageUri: string,
-      signedLiveImageUri: string,
+      programImage: string,
+      signedProgramImage: string,
+      programLiveImage: string,
+      signedProgramLiveImage: string,
       description: string,
       website: string,
       format: string,
@@ -46,17 +45,12 @@ class ProgramInfoWidget extends React.Component {
         })
       )
     }),
-    programFormats: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
+    programFormats: arrayOf(string),
     canShare: bool,
     organizations: arrayOf(
       shape({
-        organizationId: string.isRequired,
-        organizationName: string.isRequired
+        id: string.isRequired,
+        name: string.isRequired
       })
     ),
     canEditAffiliates: bool,

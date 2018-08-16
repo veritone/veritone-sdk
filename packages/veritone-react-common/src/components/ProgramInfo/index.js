@@ -37,12 +37,11 @@ import styles from './styles.scss';
 class ProgramInfo extends React.Component {
   static propTypes = {
     program: shape({
-      id: string,
       name: string,
-      imageUri: string,
-      signedImageUri: string,
-      liveImageUri: string,
-      signedLiveImageUri: string,
+      programImage: string,
+      signedProgramImage: string,
+      liveProgramImage: string,
+      signedProgramLiveImage: string,
       description: string,
       website: string,
       format: string,
@@ -63,17 +62,12 @@ class ProgramInfo extends React.Component {
         })
       )
     }),
-    programFormats: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
+    programFormats: arrayOf(string),
     canShare: bool,
     organizations: arrayOf(
       shape({
-        organizationId: string.isRequired,
-        organizationName: string.isRequired
+        id: string.isRequired,
+        name: string.isRequired
       })
     ),
     canEditAffiliates: bool,
@@ -231,12 +225,13 @@ class ProgramInfo extends React.Component {
       canShare,
       canEditAffiliates,
       canBulkAddAffiliates,
-      programFormats
+      programFormats,
+      organizations
     } = this.props;
 
     // TODO: use when ready
     // eslint-disable-next-line no-unused-vars
-    const { organizations, affiliates } = this.props;
+    const { affiliates } = this.props;
 
     const { program } = this.state;
 
@@ -267,10 +262,10 @@ class ProgramInfo extends React.Component {
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 500x350 .jpg or .png
                   </div>
-                  {get(program, 'signedLiveImageUri.length') > 0 && (
+                  {get(program, 'signedProgramLiveImage.length') > 0 && (
                     <img className={styles.programInfoLiveImage} />
                   )}
-                  {!get(program, 'signedLiveImageUri.length') && (
+                  {!get(program, 'signedProgramLiveImage.length') && (
                     <div
                       className={styles.programInfoLiveImageNullState}
                       onClick={this.openFilePickerForLiveImage}
@@ -295,10 +290,10 @@ class ProgramInfo extends React.Component {
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 250x250 .jpg or .png
                   </div>
-                  {get(program, 'signedImageUri.length') > 0 && (
+                  {get(program, 'signedProgramImage.length') > 0 && (
                     <img className={styles.programInfoImage} />
                   )}
-                  {!get(program, 'signedImageUri.length') && (
+                  {!get(program, 'signedProgramImage.length') && (
                     <div
                       className={styles.programInfoImageNullState}
                       onClick={this.openFilePickerForImage}
@@ -356,7 +351,7 @@ class ProgramInfo extends React.Component {
                   Program Format
                 </InputLabel>
                 <Select
-                  value={program.format}
+                  value={program.format || ''}
                   onChange={this.handleFormatChange}
                   className={styles.programInfoSelect}
                   inputProps={{
@@ -367,10 +362,10 @@ class ProgramInfo extends React.Component {
                   {programFormats &&
                     programFormats.map(programFormatItem => (
                       <MenuItem
-                        key={programFormatItem.id}
-                        value={programFormatItem.id}
+                        key={programFormatItem}
+                        value={programFormatItem}
                       >
-                        {programFormatItem.name}
+                        {programFormatItem}
                       </MenuItem>
                     ))}
                 </Select>
