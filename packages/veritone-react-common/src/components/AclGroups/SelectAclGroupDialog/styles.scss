@@ -3,6 +3,7 @@
 .selectAclGroupDialogPaper {
   min-width: 640px;
   width: 640px;
+  min-height: 750px;
 }
 
 .dialogTitle {
@@ -37,8 +38,15 @@
   margin: 0 10px 0 25px;
 }
 
+.dialogContent {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .aclsViewSection {
   margin-top: 20px;
+  flex: 1 1 auto;
 }
 
 .aclsTable {
@@ -46,15 +54,32 @@
 }
 
 .tableCheckboxCell {
-  width: 20px;
+  width: 20px !important;
+}
+
+.tableOrganizationNameCell {
+  cursor: pointer !important;
+}
+
+.aclsViewPagination {
+  align-self: flex-end;
+}
+
+.noResultsMessage {
+  align-self: center;
+  cursor: pointer !important;
+  font-size: 32px !important;
+  color: $semi-black;
+  margin-top: 50%;
 }
 
 .selectAclGroupActionButtons {
-  padding: 16px;
+  padding: 0 16px 16px 16px;
 }
 
 .selectAclGroupActionButton {
   width: 80px;
+  margin-left: 30px !important;
 }
 
 .actionButtonLabel {

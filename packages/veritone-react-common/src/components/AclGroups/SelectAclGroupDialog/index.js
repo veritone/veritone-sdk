@@ -13,7 +13,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { debounce, isEqual } from 'lodash';
+import { debounce, isEqual, get } from 'lodash';
 import { string, arrayOf, func, shape } from 'prop-types';
 import styles from './styles.scss';
 
@@ -126,7 +126,7 @@ export default class SelectAclGroupDialog extends Component {
   };
 
   render() {
-    const { onClose } = this.props;
+    const { onClose, organizations } = this.props;
 
     const {
       searchText,
@@ -167,60 +167,72 @@ export default class SelectAclGroupDialog extends Component {
             </IconButton>
           </div>
         </DialogTitle>
-        <DialogContent>
-          <div className={styles.aclsViewSection}>
-            <Table className={styles.aclsTable} aria-labelledby="tableTitle">
-              <TableBody>
-                {organizationsView
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(organization => {
-                    const isSelected = this.isSelectedOrganization(
-                      organization.id
-                    );
-                    return (
-                      /* eslint-disable react/jsx-no-bind */
-                      <TableRow
-                        hover
-                        onClick={() =>
-                          this.handleSelectAclGroup(organization.id)
-                        }
-                        role="checkbox"
-                        aria-checked={isSelected}
-                        tabIndex={-1}
-                        key={organization.id}
-                        selected={isSelected}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          classes={{
-                            paddingCheckbox: styles.tableCheckboxCell
-                          }}
+        <DialogContent classes={{
+          root: styles.dialogContent
+        }}>
+          {get(organizationsView, 'length') > 0 &&
+            <div className={styles.aclsViewSection}>
+              <Table className={styles.aclsTable} aria-labelledby="tableTitle">
+                <TableBody>
+                  {organizationsView
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(organization => {
+                      const isSelected = this.isSelectedOrganization(
+                        organization.id
+                      );
+                      return (
+                        /* eslint-disable react/jsx-no-bind */
+                        <TableRow
+                          hover
+                          onClick={() =>
+                            this.handleSelectAclGroup(organization.id)
+                          }
+                          role="checkbox"
+                          aria-checked={isSelected}
+                          tabIndex={-1}
+                          key={organization.id}
+                          selected={isSelected}
                         >
-                          <Checkbox checked={isSelected} color="primary" />
-                        </TableCell>
-                        <TableCell component="th" scope="row" padding="none">
-                          {organization.name}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </div>
-          <TablePagination
-            component="div"
-            count={organizationsView.length}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            backIconButtonProps={{
-              'aria-label': 'Previous Page'
-            }}
-            nextIconButtonProps={{
-              'aria-label': 'Next Page'
-            }}
-            onChangePage={this.handleChangePage}
-            rowsPerPageOptions={rowsPerPageOptions}
-          />
+                          <TableCell
+                            padding="checkbox"
+                            classes={{
+                              paddingCheckbox: styles.tableCheckboxCell
+                            }}
+                          >
+                            <Checkbox checked={isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
+                            scope="row"
+                            padding="none"
+                            classes={{
+                              body: styles.tableOrganizationNameCell
+                            }}
+                          >
+                            {organization.name}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </div>}
+          {get(organizationsView, 'length') > 0 &&
+            <TablePagination
+              component="div"
+              count={organizationsView.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              backIconButtonProps={{
+                'aria-label': 'Previous Page'
+              }}
+              nextIconButtonProps={{
+                'aria-label': 'Next Page'
+              }}
+              onChangePage={this.handleChangePage}
+              rowsPerPageOptions={rowsPerPageOptions}
+            />}
+          {!get(organizationsView, 'length') && get(organizations, 'length') &&
+            <div className={styles.noResultsMessage}>No Data</div>}
         </DialogContent>
         <DialogActions
           classes={{
