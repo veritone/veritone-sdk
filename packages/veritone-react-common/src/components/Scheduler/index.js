@@ -10,11 +10,7 @@ import {
   omit,
   difference,
   keys,
-  constant,
-  includes,
-  findIndex,
-  intersection,
-  some
+  constant
 } from 'lodash';
 import { withProps } from 'recompose';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -30,38 +26,43 @@ import ContinuousSection from './ContinuousSection';
 
 const initDate = new Date();
 
-@withProps(props => {
+function getDefaultScheduleType(props) {
   // There may be inconsistencies in what scheduleType is currently selected and what's available
   // This logic selects the schedule type that's valid
-  let scheduleType = props.initialValues && props.initialValues.scheduleType;
-  if (get(props, 'supportedScheduleTypes.length')) {
-    if (props.supportedScheduleTypes[0] === 'Any') {
-      scheduleType = 'Recurring';
-    } else {
-      const availableSelections = intersection(
-        // using intersection to maintain ordering
-        ['Recurring', 'Continuous', 'Now', 'Once'],
-        props.supportedScheduleTypes
-      );
-      if (availableSelections.length) {
-        const selectIndex = findIndex(
-          availableSelections,
-          availableSelection => scheduleType === availableSelection
-        );
-        if (selectIndex !== -1) {
-          scheduleType = availableSelections[selectIndex];
-        } else {
-          scheduleType = availableSelections[0];
-        }
-      } else if (!scheduleType) {
-        scheduleType = 'Recurring';
-      }
-    }
-  } else if (!scheduleType) {
-    scheduleType = 'Recurring';
+  const scheduleType = props.initialValues && props.initialValues.scheduleType;
+
+  // if scheduleType exists and is included in the list of supported types,
+  // we're good
+  if (
+    scheduleType &&
+    ((props.supportedScheduleTypes || []).includes('Any') ||
+      (props.supportedScheduleTypes || []).includes(scheduleType))
+  ) {
+    return scheduleType;
   }
 
+  if (!scheduleType) {
+    // default to first supported type if not set
+    return props.supportedScheduleTypes.includes('Any')
+      ? 'Recurring' // recurring is default
+      : props.supportedScheduleTypes[0]; // must specify at least one
+  }
+
+  // ScheduleType isn't supported by the current
+  // supportedScheduleTypes list; fall back to the first supported type or
+  // recurring by default.
+  return get(props.supportedScheduleTypes, 0, 'Recurring');
+}
+
+@withProps(props => {
+  const scheduleType = getDefaultScheduleType(props);
+
   return {
+    // Handle empty array passed to supportedScheduleTypes
+    supportedScheduleTypes:
+      get(props.supportedScheduleTypes, 'length') === 0
+        ? ['Any']
+        : props.supportedScheduleTypes,
     initialValues: {
       // This provides defaults to the form. Shallow merged with
       // props.initialValues to allow overriding.
@@ -108,7 +109,7 @@ const initDate = new Date();
         ...get(props, 'initialValues.weekly')
       },
       // shallow-merge the properties we didn't have special merge logic for
-      ...omit(props.initialValues, ['start', 'end', 'weekly'])
+      ...omit(props.initialValues, ['start', 'end', 'weekly', 'scheduleType'])
     }
   };
 })
@@ -122,13 +123,7 @@ class Scheduler extends React.Component {
     onSubmit: func, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
     supportedScheduleTypes: arrayOf(
-      (propValue, key) =>
-        !some(
-          ['Recurring', 'Continuous', 'Now', 'Once', 'Any'],
-          type => propValue[key] === type
-        )
-          ? new Error('Invalid supportedScheduleTypes')
-          : undefined
+      oneOf(['Recurring', 'Continuous', 'Now', 'Once', 'Any'])
     )
   };
 
@@ -180,67 +175,9 @@ class Scheduler extends React.Component {
       Once: OnDemandSection
     }[this.props.scheduleType];
 
-    const RecurringSelection = (
-      <FormControlLabel
-        key="recurring"
-        value="Recurring"
-        control={<Radio color="primary" />}
-        label="Recurring"
-      />
+    const showAllScheduleTypes = this.props.supportedScheduleTypes.includes(
+      'Any'
     );
-
-    const ContinuousSelection = (
-      <FormControlLabel
-        key="continuous"
-        value="Continuous"
-        control={<Radio color="primary" />}
-        label="Continuous"
-      />
-    );
-
-    const ImmediateSelection = (
-      <FormControlLabel
-        key="immediate"
-        value="Now"
-        control={<Radio color="primary" />}
-        label="Immediate"
-      />
-    );
-
-    const OnDemandSelection = (
-      <FormControlLabel
-        key="ondemand"
-        value="Once"
-        control={<Radio color="primary" />}
-        label="On Demand"
-      />
-    );
-
-    const ScheduleTypeSelection = {
-      Recurring: RecurringSelection,
-      Continuous: ContinuousSelection,
-      Now: ImmediateSelection,
-      Once: OnDemandSelection
-    };
-
-    let ScheduleSelections;
-    if (includes(this.props.supportedScheduleTypes, 'Any')) {
-      ScheduleSelections = [
-        RecurringSelection,
-        ContinuousSelection,
-        ImmediateSelection,
-        OnDemandSelection
-      ];
-    } else {
-      ScheduleSelections = [];
-      ['Recurring', 'Continuous', 'Now', 'Once'].forEach(type => {
-        const showSection = some(
-          this.props.supportedScheduleTypes,
-          supportedType => supportedType === type
-        );
-        showSection && ScheduleSelections.push(ScheduleTypeSelection[type]);
-      });
-    }
 
     return (
       <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
@@ -249,7 +186,45 @@ class Scheduler extends React.Component {
           name="scheduleType"
           className={styles.scheduleTypeContainer}
         >
-          {ScheduleSelections}
+          {(showAllScheduleTypes ||
+            this.props.supportedScheduleTypes.includes('Recurring')) && (
+            <FormControlLabel
+              key="recurring"
+              value="Recurring"
+              control={<Radio color="primary" />}
+              label="Recurring"
+            />
+          )}
+
+          {(showAllScheduleTypes ||
+            this.props.supportedScheduleTypes.includes('Continuous')) && (
+            <FormControlLabel
+              key="continuous"
+              value="Continuous"
+              control={<Radio color="primary" />}
+              label="Continuous"
+            />
+          )}
+
+          {(showAllScheduleTypes ||
+            this.props.supportedScheduleTypes.includes('Now')) && (
+            <FormControlLabel
+              key="immediate"
+              value="Now"
+              control={<Radio color="primary" />}
+              label="Immediate"
+            />
+          )}
+
+          {(showAllScheduleTypes ||
+            this.props.supportedScheduleTypes.includes('Once')) && (
+            <FormControlLabel
+              key="ondemand"
+              value="Once"
+              control={<Radio color="primary" />}
+              label="On Demand"
+            />
+          )}
         </Field>
         <div className={styles.activeSectionContainer}>
           <ActiveSectionComponent />
