@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { noop } from 'lodash';
 import ListView from './ListView';
-import NullState from './Nullstate';
+import NullState from './NullState';
 
 const jobInfo = {
   data: {
