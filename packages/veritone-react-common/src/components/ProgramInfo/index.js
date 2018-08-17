@@ -40,7 +40,7 @@ class ProgramInfo extends React.Component {
       name: string,
       programImage: string,
       signedProgramImage: string,
-      liveProgramImage: string,
+      programLiveImage: string,
       signedProgramLiveImage: string,
       description: string,
       website: string,
