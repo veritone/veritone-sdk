@@ -14,7 +14,8 @@ class SourceListWidget extends React.Component {
     onCreateSource: func.isRequired,
     onSelectSource: func.isRequired,
     paginate: bool,
-    fetchData: func
+    fetchData: func,
+    onSelectLiveStream: func
   };
 
   state = {
@@ -57,6 +58,7 @@ class SourceListWidget extends React.Component {
         {...viewProps}
         sources={this.state.sources}
         onFetchData={this.handleFetchData}
+        onSelectLiveStream={this.props.onSelectLiveStream}
       />
     );
   }

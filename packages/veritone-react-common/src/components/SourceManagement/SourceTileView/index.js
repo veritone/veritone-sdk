@@ -68,7 +68,8 @@ export default class SourceTileView extends React.Component {
   };
 
   handleLiveStreamButton = (event, data) => {
-    this.props.onSelectLiveStream && this.props.onSelectLiveStream(data);
+    event.stopPropagation();
+    this.props.onSelectLiveStream && this.props.onSelectLiveStream(event, data);
   };
 
   renderCreatedDate = date => {

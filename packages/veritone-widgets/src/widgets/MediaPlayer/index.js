@@ -13,7 +13,10 @@ import {
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
-import { BoundingPolyOverlay, OverlayPositioningProvider } from 'veritone-react-common';
+import {
+  BoundingPolyOverlay,
+  OverlayPositioningProvider
+} from 'veritone-react-common';
 import VideoSource from './VideoSource';
 import { getPolysForTime } from './helpers';
 
@@ -52,6 +55,8 @@ class MediaPlayerComponent extends React.Component {
     onDeleteBoundingBox: func.isRequired,
     onChangeBoundingBox: func.isRequired,
     overlayBorderStyle: string,
+    overlayContentClassName: string,
+    reactPlayerClassName: string,
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -89,7 +94,13 @@ class MediaPlayerComponent extends React.Component {
   };
 
   render() {
-    const { src, streams, ...props } = this.props;
+    const {
+      src,
+      streams,
+      overlayContentClassName,
+      reactPlayerClassName,
+      ...props
+    } = this.props;
 
     const currentPolys = getPolysForTime(
       this.props.boundingPolySeries || [],
@@ -101,6 +112,7 @@ class MediaPlayerComponent extends React.Component {
         contentHeight={this.props.videoHeight}
         contentWidth={this.props.videoWidth}
         fixedWidth={!props.fluid}
+        contentClassName={overlayContentClassName}
       >
         {this.props.hasStarted && (
           <BoundingPolyOverlay
@@ -120,7 +132,7 @@ class MediaPlayerComponent extends React.Component {
           />
         )}
         <Player
-          className={styles.mediaPlayer}
+          className={styles.mediaPlayer + ' ' + reactPlayerClassName}
           ref={this.props.forwardedRef}
           store={this.context.store}
           {...props}

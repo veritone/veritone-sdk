@@ -112,6 +112,7 @@ const timeSeries = [
 
 import BaseStory from '../../shared/BaseStory';
 import { MediaPlayer } from './';
+import MediaPlayerLightbox from './Lightbox';
 import DefaultControlBar from './DefaultControlBar';
 
 const multipleStreams = [
@@ -331,6 +332,20 @@ storiesOf('MediaPlayer', module)
       }}
     />
   ))
+  .add('Lightbox Widget', () => {
+    return (
+      <BaseStory
+        widget={MediaPlayerLightbox}
+        widgetProps={{
+          live: true,
+          muted: true,
+          autoPlay: true,
+          streams: multipleStreams,
+          boundingPolySeries: timeSeries
+        }}
+      />
+    );
+  })
   .add('Editable', () => (
     <BaseStory
       componentClass={Story}

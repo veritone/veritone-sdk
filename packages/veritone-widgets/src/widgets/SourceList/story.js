@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
+import { action } from '@storybook/addon-actions';
 import { noop } from 'lodash';
 import VeritoneApp from '../../shared/VeritoneApp';
 import SourceListWidget from './';
@@ -22,6 +23,7 @@ const sourceResult = {
       sourceType: {
         id: '1',
         name: 'Audio',
+        isLive: true,
         sourceSchema: {
           id: 'schemaId1',
           definition: {
@@ -56,9 +58,10 @@ class Story extends React.Component {
       elId: 'src-list-widget',
       title: 'Source Management Widget',
       sources,
-      onSelectMenuItem: noop,
+      onSelectMenuItem: action('select menu'),
       onCreateSource: noop,
-      onSelectSource: noop
+      onSelectSource: action('select source'),
+      onSelectLiveStream: action('livestream')
     });
   }
 

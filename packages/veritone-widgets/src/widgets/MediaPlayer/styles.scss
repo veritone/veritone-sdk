@@ -1,4 +1,3 @@
-@import 'src/styles/modules/variables';
 .mediaPlayer {
   font-size: 12px !important;
   font-family: Roboto, sans-serif;
@@ -32,33 +31,5 @@
   .video-react-slider:focus {
     text-shadow: none;
     box-shadow: none;
-  }
-}
-
-.popupContainer {
-  width: 90vw;
-  height: 90vh;
-  margin: 0 auto;
-  background-color: $dark-black;
-  > div:first-child {
-    display: contents;
-  }
-
-  > .liveLabel {
-    top: 20px;
-    left: 20px;
-    position: absolute;
-    border-radius: 3px;
-    padding: 1px 8px;
-    font-size: 12px;
-    color: $fullWhite;
-    pointer-events: none;
-    background-color: $red500;
-  }
-
-  > .closeButton {
-    position: absolute;
-    right: 0px;
-    top: 0px;
   }
 }
