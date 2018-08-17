@@ -26,3 +26,4 @@ export EngineOutputExport, {
 export engineOutputExportReducer, * as engineOutputExportModule from './redux/modules/engineOutputExport';
 // export SDOTable from './widgets/SDOTable';
 // export IngestionJobsList from './widgets/IngestionJobsList';
+export { SchedulerWidget } from './widgets/Scheduler';
