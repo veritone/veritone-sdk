@@ -75,6 +75,7 @@ export default class SourceTileView extends React.Component {
         />
         <Column dataKey="name" header="Source Name" />
         <Column dataKey="sourceType.name" header="Source Type" />
+        <Column dataKey="organization.name" header="Owner" />
         <Column
           dataKey="createdDateTime"
           header="Created"
