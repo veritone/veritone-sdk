@@ -437,6 +437,7 @@ storiesOf('SourceManagementForm', module)
         getFieldOptions={getFieldOptions}
         canShare
         organizations={generateOrganizations(21)}
+        isReadOnly
       />
     );
   });

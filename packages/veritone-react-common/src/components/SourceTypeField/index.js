@@ -14,10 +14,9 @@ import {
   instanceOf,
   oneOfType,
   oneOf,
-  arrayOf,
-  shape
+  arrayOf
 } from 'prop-types';
-import { isFunction, isArray, get, isUndefined, isString } from 'lodash';
+import { isFunction, isArray, isUndefined, isString } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
 import styles from './styles.scss';
@@ -36,7 +35,8 @@ export default class SourceTypeField extends React.Component {
     query: string,
     peerSelection: arrayOf(any),
     getFieldOptions: func.isRequired,
-    isDirty: bool
+    isDirty: bool,
+    isReadOnly: bool
   };
 
   state = {
@@ -48,7 +48,7 @@ export default class SourceTypeField extends React.Component {
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
-    const { query, peerSelection } = this.props;
+    const { query } = this.props;
     if (query) {
       this.props.getFieldOptions(query).then(results => {
         const newState = {};
@@ -56,19 +56,20 @@ export default class SourceTypeField extends React.Component {
           newState.options = results.map(result => isString(result) ? { id: result, name: result } : result);
         }
         this.setState(newState);
+        return results;
       });
     }
   }
 
   handleChange = e => {
-    const { id, type, ...rest } = this.props;
+    const { id, type, onChange, ...rest } = this.props;
     if (isFunction(onChange)) {
       return onChange(e, id, { ...rest, type });
     }
   }
 
   render() {
-    const { id, type, query, options, peerSelection, getFieldOptions, ...rest } = this.props;
+    const { id, type, query, options, peerSelection, getFieldOptions, ...rest } = this.props; // eslint-disable-line no-unused-vars
     const supportedTypes = [
       'object',
       'string',
@@ -115,7 +116,7 @@ export default class SourceTypeField extends React.Component {
   }
 }
 
-const SelectField = ({ id, title, value, onChange, options, multiple, required, isDirty, error, ...rest }) => {
+const SelectField = ({ id, title, value, onChange, options, multiple, required, isDirty, error, isReadOnly, ...rest }) => {
   const inputProps = {
     name: title,
     id: 'schema-' + id,
@@ -135,11 +136,12 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
         disabled={!options || !options.length}
         {...inputProps}
         {...rest}
+        readOnly={isReadOnly}
       >
         {
           (!required && !multiple) ? 
           (
-            <MenuItem key="null"></MenuItem>
+            <MenuItem key="null" />
           ) : null
         }
         {isArray(options) && options.map(e => {
@@ -155,10 +157,14 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
 SelectField.propTypes = {
   id: string.isRequired,
   title: string,
-  value: any,
+  value: oneOfType(string, arrayOf(string)),
   onChange: func.isRequired,
   options: arrayOf(any).isRequired,
-  isDirty: bool
+  isDirty: bool,
+  multiple: bool,
+  required: bool,
+  error: bool,
+  isReadOnly: bool
 };
 
 const DateTimeTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => {
@@ -175,6 +181,7 @@ const DateTimeTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => 
           value: value ? new Date(value) : new Date(),
           onChange: onChange
         }}
+        readOnly={rest.isReadOnly}
         {...rest}
       />
     </FormControl>
@@ -185,10 +192,12 @@ DateTimeTypeField.propTypes = {
   id: string.isRequired,
   title: string,
   value: oneOfType([instanceOf(Date), oneOf([''])]),
-  onChange: func
+  onChange: func,
+  isDirty: bool,
+  isReadOnly: bool
 };
 
-const BoolTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => {
+const BoolTypeField = ({ id, title, value, onChange, isDirty, isReadOnly, ...rest }) => {
   return (
     <FormControlLabel
       label={title}
@@ -198,6 +207,7 @@ const BoolTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => {
           onChange={onChange}
           checked={value}
           color="primary"
+          disabled={isReadOnly}
           {...rest}
         />
       }
@@ -209,7 +219,9 @@ BoolTypeField.propTypes = {
   id: string.isRequired,
   title: string,
   value: oneOfType([bool, oneOf([''])]),
-  onChange: func
+  onChange: func,
+  isDirty: bool,
+  isReadOnly: bool
 };
 
 const GeoPointField = props => {
@@ -220,7 +232,7 @@ const NumberField = props => {
   return <BaseField {...props} type="number" />;
 };
 
-const BaseField = ({ id, title, isDirty, ...rest }) => {
+const BaseField = ({ id, title, isDirty, isReadOnly, ...rest }) => {
   const inputProps = {
     label: title || id,
     fullWidth: true,
@@ -234,6 +246,9 @@ const BaseField = ({ id, title, isDirty, ...rest }) => {
       key={id}
       InputLabelProps={{ className: styles.textFieldLabel }}
       {...inputProps}
+      inputProps={{
+        readOnly: isReadOnly
+      }}
       {...rest}
     />
   );
@@ -241,7 +256,9 @@ const BaseField = ({ id, title, isDirty, ...rest }) => {
 
 BaseField.propTypes = {
   id: string.isRequired,
-  title: string
+  title: string,
+  isDirty: bool,
+  isReadOnly: bool
 };
 
 const UnsupportedTypeField = ({ type, title }) => {
