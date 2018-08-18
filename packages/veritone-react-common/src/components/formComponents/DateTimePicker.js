@@ -58,7 +58,7 @@ export default class DateTimePicker extends React.Component {
   }
 }
 
-const DateSelector = ({ value, min, max, onChange, ...rest }) => {
+const DateSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
   return (
     <TextField
       type="date"
@@ -67,9 +67,8 @@ const DateSelector = ({ value, min, max, onChange, ...rest }) => {
       value={value}
       onChange={onChange}
       InputProps={{
-        readOnly: rest.readOnly
+        readOnly: readOnly
       }}
-      {...rest}
     />
   );
 };
@@ -81,7 +80,7 @@ DateSelector.propTypes = {
   onChange: func.isRequired
 };
 
-const TimeSelector = ({ value, min, max, onChange, ...rest }) => {
+const TimeSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
   return (
     <TextField
       type="time"
@@ -93,9 +92,8 @@ const TimeSelector = ({ value, min, max, onChange, ...rest }) => {
         shrink: true
       }}
       InputProps={{
-        readOnly: rest.readOnly
+        readOnly: readOnly
       }}
-      {...rest}
     />
   );
 };
@@ -115,7 +113,6 @@ const TimeZoneField = ({ value, ...rest }) => {
       InputProps={{
         disableUnderline: true
       }}
-      {...rest}
       disabled
     />
   ) : null;
