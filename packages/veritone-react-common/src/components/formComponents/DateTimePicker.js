@@ -15,7 +15,8 @@ export default class DateTimePicker extends React.Component {
     input: shape({
       value: instanceOf(Date).isRequired,
       onChange: func
-    }).isRequired
+    }).isRequired,
+    readOnly: bool
   };
 
   handleDateChange = ({ target }) => {
@@ -31,30 +32,33 @@ export default class DateTimePicker extends React.Component {
   };
 
   render() {
+    const { input, min, max, ...rest } = this.props;
     return (
       <div className={styles.container}>
         {this.props.showIcon && <Today className={styles.todayIcon} />}
         <DateSelector
-          min={this.props.min}
-          max={this.props.max}
-          value={getDateString(this.props.input.value)}
+          min={min}
+          max={max}
+          value={getDateString(input.value)}
           onChange={this.handleDateChange}
+          {...rest}
         />
         <TimeSelector
-          min={this.props.min}
-          max={this.props.max}
-          value={getTimeString(this.props.input.value)}
+          min={min}
+          max={max}
+          value={getTimeString(input.value)}
           onChange={this.handleTimeChange}
+          {...rest}
         />
         {this.props.showTimezone && (
-          <TimeZoneField value={getTimeZone(this.props.input.value)} />
+          <TimeZoneField value={getTimeZone(input.value)} {...rest} />
         )}
       </div>
     );
   }
 }
 
-const DateSelector = ({ value, min, max, onChange }) => {
+const DateSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
   return (
     <TextField
       type="date"
@@ -62,6 +66,9 @@ const DateSelector = ({ value, min, max, onChange }) => {
       max={max}
       value={value}
       onChange={onChange}
+      InputProps={{
+        readOnly: readOnly
+      }}
     />
   );
 };
@@ -73,7 +80,7 @@ DateSelector.propTypes = {
   onChange: func.isRequired
 };
 
-const TimeSelector = ({ value, min, max, onChange }) => {
+const TimeSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
   return (
     <TextField
       type="time"
@@ -83,6 +90,9 @@ const TimeSelector = ({ value, min, max, onChange }) => {
       onChange={onChange}
       InputLabelProps={{
         shrink: true
+      }}
+      InputProps={{
+        readOnly: readOnly
       }}
     />
   );
@@ -95,7 +105,7 @@ TimeSelector.propTypes = {
   onChange: func.isRequired
 };
 
-const TimeZoneField = ({ value }) => {
+const TimeZoneField = ({ value, ...rest }) => {
   return value ? (
     <TextField
       className={styles.dateTimeTZ}

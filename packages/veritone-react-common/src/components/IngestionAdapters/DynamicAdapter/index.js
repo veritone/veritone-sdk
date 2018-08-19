@@ -117,6 +117,24 @@ class DynamicAdapter extends React.Component {
     this.setState(stateUpdate, this.sendConfiguration);
   };
 
+  insertAndSelectSource = source => {
+    if (source) {
+      this.setState(prevState => {
+        const newSources = cloneDeep(prevState._source.items);
+        newSources.push(source);
+        const newState = {
+          _source: {
+            ...prevState._source,
+            items: newSources
+          }
+        };
+        return newState;
+      }, () => {
+        this.handleSourceChange(source);
+      });
+    }
+  }
+
   loadMoreSources = ({startIndex, stopIndex}) => {
     this.setState(prevState => {
       return Object.assign({}, prevState, {
@@ -201,7 +219,7 @@ class DynamicAdapter extends React.Component {
     if (this.props.openCreateSource) {
       customTriggers.push({
         label: 'Create New Source',
-        trigger: this.props.openCreateSource
+        trigger: this.props.openCreateSource(this.insertAndSelectSource)
       });
     }
     return (

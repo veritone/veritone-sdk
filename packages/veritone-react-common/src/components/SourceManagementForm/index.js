@@ -54,6 +54,7 @@ export default class SourceManagementForm extends React.Component {
         data: objectOf(any)
       })
     ),
+    isReadOnly: bool,
     canShare: bool,
     organizations: arrayOf(shape({
       id: string.isRequired,
@@ -273,12 +274,16 @@ export default class SourceManagementForm extends React.Component {
 
   render() {
     const { activeTab } = this.state;
+    let title = this.state.sourceConfig.name || 'New Source';
+    if (this.props.isReadOnly) {
+      title += ' (Read Only)';
+    }
 
     return (
       <FullScreenDialog open={this.state.openDialog}>
         <div className={styles['sm-form-wrapper']}>
           <ModalHeader
-            title={this.state.sourceConfig.name || 'New Source'}
+            title={title}
             icons={[
               <IconButton aria-label="exit" key="icon-3">
                 <Icon
@@ -320,6 +325,7 @@ export default class SourceManagementForm extends React.Component {
                 onInputChange={this.saveConfiguration}
                 getFieldOptions={this.props.getFieldOptions}
                 errorFields={this.state.formDirtyStates}
+                isReadOnly={this.props.isReadOnly}
                 onClose={this.handleCloseDialog}
               />
             )}
@@ -331,6 +337,7 @@ export default class SourceManagementForm extends React.Component {
                 onRemoveTemplate={this.removeFromTemplateList}
                 onInputChange={this.updateTemplateDetails}
                 getFieldOptions={this.props.getFieldOptions}
+                isReadOnly={this.props.isReadOnly}
               />
             )}
             {activeTab === 2 && (
@@ -346,15 +353,18 @@ export default class SourceManagementForm extends React.Component {
                   sharingSectionDescription="Share this source across organizations."
                   aclGroupsSectionDescription="Grant organizations permission to this source and its contents."
                   publicSectionDescription="Share this source and all of its content with all of Veritone."
+                  isReadOnly={this.props.isReadOnly}
                 />
               </div>
             )}
-            <div className={styles['btn-container']}>
-              <Button onClick={this.handleCloseDialog}>Cancel</Button>
-              <Button variant="raised" color="primary" type="submit">
-                {get(this.props, 'source.id') ? 'Save' : 'Create'}
-              </Button>
-            </div>
+            { !this.props.isReadOnly ? (
+              <div className={styles['btn-container']}>
+                <Button onClick={this.handleCloseDialog}>Cancel</Button>
+                <Button variant="raised" color="primary" type="submit">
+                  {get(this.props, 'source.id') ? 'Save' : 'Create'}
+                </Button>
+              </div>
+            ) : null }
           </form>
         </div>
       </FullScreenDialog>

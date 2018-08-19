@@ -1,17 +1,13 @@
 import React from 'react';
-import { has, includes, pick, get, isArray, isUndefined } from 'lodash';
+import { has, includes, get, isArray, isUndefined } from 'lodash';
 
 import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
-import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { DateTimePicker } from '../../formComponents';
 import SourceTypeField from '../../SourceTypeField';
 
 import styles from './styles.scss';
@@ -26,7 +22,8 @@ export default class DynamicSelect extends React.Component {
     fieldValues: objectOf(any),
     errorFields: objectOf(any),
     helperText: string,
-    selectLabel: string
+    selectLabel: string,
+    isReadOnly: bool
   };
   static defaultProps = {
     fieldValues: {}
@@ -97,6 +94,7 @@ export default class DynamicSelect extends React.Component {
           query={properties[fieldId].query || get(properties[fieldId], 'items.query' )}
           getFieldOptions={this.props.getFieldOptions}
           key={sourceSchema.id + fieldId}
+          isReadOnly={this.props.isReadOnly}
         />
       );
     });
@@ -130,6 +128,7 @@ export default class DynamicSelect extends React.Component {
             }}
             value={currentSourceType}
             onChange={this.handleSourceTypeChange}
+            readOnly={this.props.isReadOnly}
           >
             {sourceTypesMenu}
           </Select>

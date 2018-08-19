@@ -10,16 +10,16 @@ import Select from '../formComponents/Select';
 import LabeledInputGroup from './LabeledInputGroup';
 import styles from './styles.scss';
 
-const TimePeriodSelector = ({ name, label, number }) => (
+const TimePeriodSelector = ({ name, label, number, period }) => (
   <FormSection name={name}>
     <LabeledInputGroup label={label}>
       <FormGroup className={styles.inputsGroup}>
-        <Field
+        { period !== 'week' ? (<Field
           name="number"
           type="number"
           component={TextField}
           className={styles.leftInput}
-        />
+        />) : null }
         <Field
           component={Select}
           name="period"
@@ -41,5 +41,6 @@ TimePeriodSelector.propTypes = {
 };
 
 export default formValues(props => ({
+  period: `${props.name}.period`,
   number: `${props.name}.number`
 }))(TimePeriodSelector);
