@@ -5,6 +5,9 @@ import {
   MuiThemeProvider
 } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Dialog from '@material-ui/core/Dialog';
+import EditIcon from '@material-ui/icons/ModeEdit';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Icon from '@material-ui/core/Icon';
@@ -13,24 +16,16 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import {
-  func,
-  number,
-  string,
-  bool,
-  objectOf,
-  arrayOf,
-  any,
-  shape
-} from 'prop-types';
+import { func, number, string, bool, arrayOf, shape } from 'prop-types';
 import { reduxForm, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
 import { get } from 'lodash';
 import SharingConfiguration from '../SharingConfiguration';
+import FilePicker from '../FilePicker';
+import Affiliates from './Affiliates';
 
 import styles from './styles.scss';
 
-// TODO: either use form or state, not both. Get done when defcons rush is over.
 @reduxForm({
   form: 'programInfo'
 })
@@ -58,7 +53,24 @@ class ProgramInfo extends React.Component {
         shape({
           id: string.isRequired,
           name: string.isRequired,
-          schedule: objectOf(any).isRequired
+          schedule: shape({
+            scheduleType: string,
+            start: string,
+            end: string,
+            repeatEvery: shape({
+              number: string,
+              period: string
+            }),
+            daily: arrayOf(
+              shape({
+                start: string,
+                end: string
+              })
+            ),
+            weekly: shape({
+              selectedDays: arrayOf(string)
+            })
+          }).isRequired
         })
       )
     }),
@@ -75,7 +87,25 @@ class ProgramInfo extends React.Component {
     affiliates: arrayOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired
+        name: string.isRequired,
+        schedule: shape({
+          scheduleType: string,
+          start: string,
+          end: string,
+          repeatEvery: shape({
+            number: string,
+            period: string
+          }),
+          daily: arrayOf(
+            shape({
+              start: string,
+              end: string
+            })
+          ),
+          weekly: shape({
+            selectedDays: arrayOf(string)
+          })
+        }).isRequired
       })
     ),
     onSubmit: func.isRequired, // user-provided callback for result values
@@ -93,7 +123,8 @@ class ProgramInfo extends React.Component {
   state = {
     program: {
       ...this.props.program
-    }
+    },
+    openFilePicker: false
   };
 
   handleNameChange = event => {
@@ -106,14 +137,6 @@ class ProgramInfo extends React.Component {
         }
       };
     });
-  };
-
-  openFilePickerForLiveImage = event => {
-    console.log('start upload program live image');
-  };
-
-  openFilePickerForImage = event => {
-    console.log('start upload program image');
   };
 
   handleDescriptionChange = event => {
@@ -186,9 +209,22 @@ class ProgramInfo extends React.Component {
     });
   };
 
+  handleAffiliatesChange = affiliates => {
+    this.setState(prevState => {
+      return {
+        program: {
+          ...prevState.program,
+          affiliates
+        }
+      };
+    });
+  };
+
   prepareResultData() {
     return {
-      ...this.state.program
+      ...this.state.program,
+      programLiveImage: this.state.programLiveImageFile,
+      programImage: this.state.programImageFile
     };
   }
 
@@ -220,20 +256,75 @@ class ProgramInfo extends React.Component {
     return theme;
   };
 
+  handleFilesSelected = files => {
+    const fileReader = new FileReader();
+    console.log('handleFilesSelected');
+    fileReader.onload = () => {
+      this.setState((prevState, props) => {
+        console.log(fileReader.result);
+        console.log(files[0]);
+        console.log('handleFilesSelected set state');
+        return {
+          [prevState.selectImageType]: fileReader.result,
+          [prevState.selectImageType + 'File']: files[0],
+          openFilePicker: false,
+          selectImageType: null
+        };
+      });
+    };
+    console.log('handleFilesSelected before readAsDataURL');
+    fileReader.readAsDataURL(files[0]);
+  };
+
+  handleCloseFilePicker = () => {
+    this.setState({
+      selectImageType: null,
+      openFilePicker: false
+    });
+  };
+
+  handleRemoveImage = imageType => event => {
+    this.setState({
+      [imageType]: undefined,
+      [imageType + 'File']: undefined
+    });
+  };
+
+  handleStartPickFiles = fileType => event => {
+    //TODO: uncomment when handled image url change on file upload
+    // console.log('start handleStartPickFiles');
+    // this.setState({
+    //   selectImageType: fileType,
+    //   openFilePicker: true
+    // });
+    console.log('end handleStartPickFiles');
+  };
+
+  renderFilePicker = () => {
+    return (
+      <Dialog open={this.state.openFilePicker}>
+        <FilePicker
+          accept="image/*"
+          height={500}
+          width={500}
+          onRequestClose={this.handleCloseFilePicker}
+          onPickFiles={this.handleFilesSelected}
+        />
+      </Dialog>
+    );
+  };
+
   render() {
     const {
       canShare,
       canEditAffiliates,
       canBulkAddAffiliates,
       programFormats,
-      organizations
+      organizations,
+      affiliates
     } = this.props;
 
-    // TODO: use when ready
-    // eslint-disable-next-line no-unused-vars
-    const { affiliates } = this.props;
-
-    const { program } = this.state;
+    const { program, openFilePicker } = this.state;
 
     return (
       <MuiThemeProvider
@@ -242,6 +333,7 @@ class ProgramInfo extends React.Component {
           relativeSize: this.props.relativeSize
         })}
       >
+        {openFilePicker && this.renderFilePicker()}
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <div className={styles.activeSectionContainer}>
             <div className={styles.programInfoSection}>
@@ -262,13 +354,13 @@ class ProgramInfo extends React.Component {
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 500x350 .jpg or .png
                   </div>
-                  {get(program, 'signedProgramLiveImage.length') > 0 && (
+                  {get(program, 'programLiveImage.length') > 0 && (
                     <img className={styles.programInfoLiveImage} />
                   )}
-                  {!get(program, 'signedProgramLiveImage.length') && (
+                  {!get(program, 'programLiveImage.length') && (
                     <div
                       className={styles.programInfoLiveImageNullState}
-                      onClick={this.openFilePickerForLiveImage}
+                      onClick={this.handleStartPickFiles('programLiveImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
@@ -290,13 +382,30 @@ class ProgramInfo extends React.Component {
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 250x250 .jpg or .png
                   </div>
-                  {get(program, 'signedProgramImage.length') > 0 && (
-                    <img className={styles.programInfoImage} />
+                  {get(program, 'programImage.length') > 0 && (
+                    <img
+                      className={styles.programInfoImage}
+                      src={this.program.programImage}
+                    />
                   )}
-                  {!get(program, 'signedProgramImage.length') && (
+                  {get(program, 'programImage.length') > 0 && (
+                    <div className={styles.imageOverlay}>
+                      <EditIcon
+                        classes={{ root: styles.editProgramImageIcon }}
+                        className="icon-mode_edit2"
+                        onClick={this.handleStartPickFiles('programImage')}
+                      />
+                      <DeleteIcon
+                        classes={{ root: styles.editProgramImageIcon }}
+                        className="icon-trashcan"
+                        onClick={this.handleRemoveImage('programImage')}
+                      />
+                    </div>
+                  )}
+                  {!get(program, 'programImage.length') && (
                     <div
                       className={styles.programInfoImageNullState}
-                      onClick={this.openFilePickerForImage}
+                      onClick={this.handleStartPickFiles('programImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
@@ -389,7 +498,7 @@ class ProgramInfo extends React.Component {
 
             {canShare && <div className={styles.programInfoDivider} />}
             {canShare && (
-              <div className={styles.shareContainer}>
+              <div className={styles.shareSection}>
                 <SharingConfiguration
                   acls={program.acls}
                   organizations={organizations}
@@ -405,19 +514,17 @@ class ProgramInfo extends React.Component {
               </div>
             )}
 
-            {/*TODO: Affiliates part goes here*/}
-            {false &&
-              (canEditAffiliates || get(program, 'affiliates.length') > 0) && (
-                <div className={styles.programInfoDivider} />
-              )}
-            {false &&
-              (canEditAffiliates || get(program, 'affiliates.length') > 0) && (
-                <div className={styles.affiliatesContainer}>
-                  {canBulkAddAffiliates && (
-                    <div>Bulk Add Affiliates Button</div>
-                  )}
-                </div>
-              )}
+            {canEditAffiliates && <div className={styles.programInfoDivider} />}
+            {canEditAffiliates && (
+              <div className={styles.affiliatesSection}>
+                <Affiliates
+                  selectedAffiliates={program.affiliates}
+                  affiliates={affiliates}
+                  canBulkAddAffiliates={canBulkAddAffiliates}
+                  onAffiliatesChange={this.handleAffiliatesChange}
+                />
+              </div>
+            )}
           </div>
         </Form>
       </MuiThemeProvider>

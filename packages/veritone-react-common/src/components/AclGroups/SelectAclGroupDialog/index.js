@@ -167,10 +167,12 @@ export default class SelectAclGroupDialog extends Component {
             </IconButton>
           </div>
         </DialogTitle>
-        <DialogContent classes={{
-          root: styles.dialogContent
-        }}>
-          {get(organizationsView, 'length') > 0 &&
+        <DialogContent
+          classes={{
+            root: styles.dialogContent
+          }}
+        >
+          {get(organizationsView, 'length') > 0 && (
             <div className={styles.aclsViewSection}>
               <Table className={styles.aclsTable} aria-labelledby="tableTitle">
                 <TableBody>
@@ -215,8 +217,9 @@ export default class SelectAclGroupDialog extends Component {
                     })}
                 </TableBody>
               </Table>
-            </div>}
-          {get(organizationsView, 'length') > 0 &&
+            </div>
+          )}
+          {get(organizationsView, 'length') > 0 && (
             <TablePagination
               component="div"
               count={organizationsView.length}
@@ -230,9 +233,12 @@ export default class SelectAclGroupDialog extends Component {
               }}
               onChangePage={this.handleChangePage}
               rowsPerPageOptions={rowsPerPageOptions}
-            />}
-          {!get(organizationsView, 'length') && get(organizations, 'length') &&
-            <div className={styles.noResultsMessage}>No Data</div>}
+            />
+          )}
+          {!get(organizationsView, 'length') &&
+            get(organizations, 'length') && (
+              <div className={styles.noResultsMessage}>No Data</div>
+            )}
         </DialogContent>
         <DialogActions
           classes={{

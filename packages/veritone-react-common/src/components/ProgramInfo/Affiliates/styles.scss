@@ -1,0 +1,46 @@
+@import 'src/styles/modules/variables';
+
+.affiliatesContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.titleLabel {
+  font-weight: 500;
+  font-size: 14px;
+  color: $dark-black;
+}
+
+.titleDescription {
+  font-weight: normal;
+  font-size: 14px;
+  color: $light-black;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.affiliatesListSection {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.affiliateItem {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.addAffiliateActionButtons {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.addAffiliateButton {
+  margin-right: 20px !important;
+}
+
+.addAffiliateButtonLabel {
+  white-space: nowrap;
+}

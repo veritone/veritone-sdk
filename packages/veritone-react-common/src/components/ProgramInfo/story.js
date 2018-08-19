@@ -45,6 +45,35 @@ const generateOrganizations = function(n) {
   return organizations;
 };
 
+const generateAffiliates = function(n) {
+  const result = [];
+  for (let i = 1; i <= n; i++) {
+    result.push({
+      id: i,
+      name: 'Affiliate Station ' + i,
+      schedule: {
+        scheduleType: 'Recurring',
+        start: new Date('August 19, 2018 01:00:00').toString(),
+        end: new Date('August 19, 2019 01:00:00').toString(),
+        repeatEvery: {
+          number: '1',
+          period: 'day'
+        },
+        daily: [
+          {
+            start: '00:00',
+            end: '01:00'
+          }
+        ],
+        weekly: {
+          selectedDays: ['Monday', 'Wednesday', 'Friday', 'Sunday']
+        }
+      }
+    });
+  }
+  return result;
+};
+
 @connect(
   state => ({
     form: state.form.programInfo
@@ -72,6 +101,7 @@ class FullDataStory extends React.Component {
             <ProgramInfo
               canShare
               canEditAffiliates
+              canBulkAddAffiliates
               program={{
                 id: '12345',
                 name: 'Test program',
@@ -83,12 +113,12 @@ class FullDataStory extends React.Component {
                 language: 'en',
                 isNational: true,
                 acls: generateAcls(11, 'viewer'),
-                isPublic: true,
-                affiliates: []
+                isPublic: false,
+                affiliates: generateAffiliates(11)
               }}
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
-              affiliates={[]}
+              affiliates={generateAffiliates(21)}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>
@@ -132,9 +162,10 @@ class NoProgramDataStory extends React.Component {
             <ProgramInfo
               canShare
               canEditAffiliates
+              canBulkAddAffiliates
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
-              affiliates={[]}
+              affiliates={generateAffiliates(21)}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>

@@ -127,14 +127,15 @@
   margin: 10px 0;
 }
 
-.shareContainer {
+.shareSection {
   width: 850px;
   max-width: 850px;
   margin: 35px 0;
 }
 
-.affiliatesContainer {
-  margin: 35px 15px;
+.affiliatesSection {
+  margin: 30px 0;
+  max-width: 1100px;
 }
 
 .websitePrefix {
@@ -142,4 +143,14 @@
     font-size: 14px !important;
   }
   margin-right: 0 !important;
+}
+
+.imageOverlay {
+  height: 32px;
+}
+
+.editProgramImageIcon {
+  margin: 0 7px;
+  font-size: 20px;
+  opacity: 1;
 }
