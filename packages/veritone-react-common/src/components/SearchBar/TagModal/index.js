@@ -8,4 +8,4 @@ const getTagLabel = modalState => {
   };
 };
 
-export { getTagLabel }
+export { getTagLabel };

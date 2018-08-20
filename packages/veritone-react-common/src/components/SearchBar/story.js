@@ -157,7 +157,7 @@ storiesOf('SearchBar/EngineCategories', module).add('Transcript', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('Face', () => {
   const csp = {
-    'and': [
+    and: [
       {
         state: {
           exclude: false,
@@ -178,9 +178,16 @@ storiesOf('SearchBar/EngineCategories', module).add('Face', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('Fingerprint', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: { "exclude": false, "id": "21bb9c49-255b-480d-bc06-9be5e5ab8612", "type": "library", "label": "Horizon - Jingle Ball Test", "image": null, "description": "1 Item" },
+        state: {
+          exclude: false,
+          id: '21bb9c49-255b-480d-bc06-9be5e5ab8612',
+          type: 'library',
+          label: 'Horizon - Jingle Ball Test',
+          image: null,
+          description: '1 Item'
+        },
         engineCategoryId: '17d62b84-8b49-465b-a6be-fe3ea3bc8f05'
       }
     ]
@@ -191,9 +198,14 @@ storiesOf('SearchBar/EngineCategories', module).add('Fingerprint', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('Geolocation', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: { "latitude": 33.49171540729409, "longitude": -119.696044921875, "distance": 508089.89735746884, "units": "m" },
+        state: {
+          latitude: 33.49171540729409,
+          longitude: -119.696044921875,
+          distance: 508089.89735746884,
+          units: 'm'
+        },
         engineCategoryId: '203ad7c2-3dbd-45f9-95a6-855f911563d0'
       }
     ]
@@ -204,13 +216,13 @@ storiesOf('SearchBar/EngineCategories', module).add('Geolocation', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('Logo', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: { "exclude": false, "id": "espn", "type": "fullText", "label": "ESPN" },
+        state: { exclude: false, id: 'espn', type: 'fullText', label: 'ESPN' },
         engineCategoryId: '5a511c83-2cbd-4f2d-927e-cd03803a8a9c'
       },
       {
-        state: { "exclude": false, "id": "ESPN", "type": "custom", "label": "ESPN" },
+        state: { exclude: false, id: 'ESPN', type: 'custom', label: 'ESPN' },
         engineCategoryId: '5a511c83-2cbd-4f2d-927e-cd03803a8a9c'
       }
     ]
@@ -221,13 +233,23 @@ storiesOf('SearchBar/EngineCategories', module).add('Logo', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('Object', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: {"exclude":false,"id":"basketball","type":"fullText","label":"Basketball"},
+        state: {
+          exclude: false,
+          id: 'basketball',
+          type: 'fullText',
+          label: 'Basketball'
+        },
         engineCategoryId: '088a31be-9bd6-4628-a6f0-e4004e362ea0'
       },
       {
-        state: {"exclude":false,"id":"Basketball","type":"custom","label":"Basketball"},
+        state: {
+          exclude: false,
+          id: 'Basketball',
+          type: 'custom',
+          label: 'Basketball'
+        },
         engineCategoryId: '088a31be-9bd6-4628-a6f0-e4004e362ea0'
       }
     ]
@@ -238,9 +260,9 @@ storiesOf('SearchBar/EngineCategories', module).add('Object', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('OCR', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: {"search":"Lakers"},
+        state: { search: 'Lakers' },
         engineCategoryId: '3b4ac603-9bfa-49d3-96b3-25ca3b502325'
       }
     ]
@@ -251,9 +273,9 @@ storiesOf('SearchBar/EngineCategories', module).add('OCR', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('Sentiment', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: {"search":"positive"},
+        state: { search: 'positive' },
         engineCategoryId: 'f2554098-f14b-4d81-9be1-41d0f992a22f'
       }
     ]
@@ -264,9 +286,9 @@ storiesOf('SearchBar/EngineCategories', module).add('Sentiment', () => {
 
 storiesOf('SearchBar/EngineCategories', module).add('TagModal', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: {"exclude":false,"id":"test","type":"custom","label":"test"},
+        state: { exclude: false, id: 'test', type: 'custom', label: 'test' },
         engineCategoryId: 'tag-search-id'
       }
     ]
@@ -275,12 +297,18 @@ storiesOf('SearchBar/EngineCategories', module).add('TagModal', () => {
   return <SearchParameters parameters={searchParameters} />;
 });
 
-
 storiesOf('SearchBar/EngineCategories', module).add('TimeModal', () => {
   const csp = {
-    'and': [
+    and: [
       {
-        state: {"search":{"dayPartStartTime":"10:00","dayPartEndTime":"10:59","stationBroadcastTime":true,"selectedDays":[true,true,true,true,true,true,true]}},
+        state: {
+          search: {
+            dayPartStartTime: '10:00',
+            dayPartEndTime: '10:59',
+            stationBroadcastTime: true,
+            selectedDays: [true, true, true, true, true, true, true]
+          }
+        },
         engineCategoryId: 'time-search-id'
       }
     ]

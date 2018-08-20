@@ -9,4 +9,4 @@ const getFingerPrintLabel = modalState => {
   };
 };
 
-export { getFingerPrintLabel }
+export { getFingerPrintLabel };

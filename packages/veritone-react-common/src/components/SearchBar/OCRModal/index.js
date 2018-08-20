@@ -7,4 +7,4 @@ const getOCRLabel = modalState => {
   };
 };
 
-export { getOCRLabel }
+export { getOCRLabel };

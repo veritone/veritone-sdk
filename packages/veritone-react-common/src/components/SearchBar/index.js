@@ -1,5 +1,13 @@
 import React, { Fragment } from 'react';
-import { string, object, arrayOf, shape, oneOfType, number, bool } from 'prop-types';
+import {
+  string,
+  object,
+  arrayOf,
+  shape,
+  oneOfType,
+  number,
+  bool
+} from 'prop-types';
 
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
@@ -55,10 +63,16 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
     } else if (searchParameter.conditionType in engineCategories) {
       // render an engineCategory subpill
       const engine = engineCategories[searchParameter.conditionType];
-      const { abbreviation, exclude, full } = engine.getLabel(searchParameter.value);
+      const { abbreviation, exclude, full } = engine.getLabel(
+        searchParameter.value
+      );
 
       searchParameters.push(
-        <Tooltip title={full} placement="bottom" disableHoverListener={disableTooltip}>
+        <Tooltip
+          title={full}
+          placement="bottom"
+          disableHoverListener={disableTooltip}
+        >
           <div className={styles['tooltipContainer']}>
             <SearchPill
               key={searchParameter.id}
@@ -72,7 +86,11 @@ const SearchParameters = ({ parameters, level, disableTooltip }) => {
       );
     } else if (searchParameter.conditionType === 'join') {
       // render a joining operator
-      searchParameters.push(<span className={styles['joiningOperator']}>{searchParameter.value} </span>);
+      searchParameters.push(
+        <span className={styles['joiningOperator']}>
+          {searchParameter.value}{' '}
+        </span>
+      );
     } else if (searchParameter.conditionType !== 'group') {
       throw new SearchBarError('Invalid search parameter', searchParameter);
     }
@@ -125,7 +143,12 @@ class SearchBar extends React.Component {
     if (this.state.hasError) {
       return <div>Invalid searchQuery</div>;
     } else {
-      return <SearchParameters parameters={this.props.parameters} disableTooltip={this.props.disableTooltip} />;
+      return (
+        <SearchParameters
+          parameters={this.props.parameters}
+          disableTooltip={this.props.disableTooltip}
+        />
+      );
     }
   }
 }

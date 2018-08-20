@@ -209,7 +209,7 @@ describe('SearchBar Label Tests', function() {
   });
 
   it('gets a label from a Sentiment Modal', function() {
-    const sentimentModal = {"search":"positive"};
+    const sentimentModal = { search: 'positive' };
     const label = getSentimentLabel(sentimentModal);
     expect(label).toEqual({
       abbreviation: 'Positive',
@@ -218,7 +218,12 @@ describe('SearchBar Label Tests', function() {
   });
 
   it('gets a label from a Tag Modal', function() {
-    const tagModal = {"exclude":false,"id":"test","type":"custom","label":"test"};
+    const tagModal = {
+      exclude: false,
+      id: 'test',
+      type: 'custom',
+      label: 'test'
+    };
     const label = getTagLabel(tagModal);
     expect(label).toEqual({
       abbreviation: 'test',

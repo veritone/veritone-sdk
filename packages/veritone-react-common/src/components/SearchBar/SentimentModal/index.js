@@ -5,4 +5,4 @@ const getSentimentLabel = modalState => {
   };
 };
 
-export { getSentimentLabel }
+export { getSentimentLabel };

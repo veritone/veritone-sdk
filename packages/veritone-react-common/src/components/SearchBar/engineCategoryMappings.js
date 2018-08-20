@@ -29,12 +29,12 @@ const fingerprint = {
   name: 'Fingerprint',
   iconClass: 'icon-finger_print3',
   getLabel: getFingerPrintLabel
-}
+};
 const face = {
   name: 'Face',
   iconClass: 'icon-face',
   getLabel: getFaceLabel
-}
+};
 const obj = {
   name: 'Object',
   iconClass: 'icon-object_detection',
@@ -64,7 +64,7 @@ const geolocation = {
   name: 'Geolocation',
   iconClass: 'icon-gps',
   getLabel: getGeolocationLabel
-}
+};
 const engineCategories = {
   '67cd4dd0-2f75-445d-a6f0-2f297d6cd182': transcript,
   'f2554098-f14b-4d81-9be1-41d0f992a22f': sentiment,
@@ -76,6 +76,6 @@ const engineCategories = {
   'tag-search-id': tag,
   'time-search-id': time,
   '203ad7c2-3dbd-45f9-95a6-855f911563d0': geolocation,
-  'sdo-search-id' : sdo
-}
+  'sdo-search-id': sdo
+};
 export { engineCategories };

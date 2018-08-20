@@ -2,8 +2,8 @@ import { parse } from 'date-fns';
 import { truncate } from 'lodash';
 import format from 'date-fns/format';
 
-const fromUTCToLocal = (inputTime) => {
-  const converted = parse(new Date().toDateString() + ' ' + inputTime + ":00Z");
+const fromUTCToLocal = inputTime => {
+  const converted = parse(new Date().toDateString() + ' ' + inputTime + ':00Z');
   return format(converted, 'HH:mm');
 };
 
@@ -39,7 +39,6 @@ const daysOfTheWeek = [
   } // SUNDAY
 ];
 
-
 const getTimeLabel = modalState => {
   let label = '';
   if (modalState.search.dayPartStartTime && modalState.search.dayPartEndTime) {
@@ -50,8 +49,14 @@ const getTimeLabel = modalState => {
       dayPartStartTime = fromUTCToLocal(dayPartStartTime);
       dayPartEndTime = fromUTCToLocal(dayPartEndTime);
     }
-    const startTime = format(new Date().toDateString() + " " + dayPartStartTime, 'hh:mm A');
-    const endTime = format(new Date().toDateString() + " " + dayPartEndTime, 'hh:mm A');
+    const startTime = format(
+      new Date().toDateString() + ' ' + dayPartStartTime,
+      'hh:mm A'
+    );
+    const endTime = format(
+      new Date().toDateString() + ' ' + dayPartEndTime,
+      'hh:mm A'
+    );
 
     label = `${startTime}-${endTime}`;
     if (modalState.search.stationBroadcastTime) {
@@ -62,7 +67,7 @@ const getTimeLabel = modalState => {
         )
         .map(dayOfTheWeek => dayOfTheWeek.name)
         .join();
-        label += selectedDays.length ? ` (${selectedDays})` : '';
+      label += selectedDays.length ? ` (${selectedDays})` : '';
     }
   }
   return {
@@ -72,4 +77,4 @@ const getTimeLabel = modalState => {
   };
 };
 
-export { getTimeLabel }
+export { getTimeLabel };
