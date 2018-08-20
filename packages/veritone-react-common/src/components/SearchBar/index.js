@@ -1,13 +1,14 @@
 import React, { Fragment } from 'react';
-import { string, object, arrayOf, shape, oneOfType, number } from 'prop-types';
+import { string, object, arrayOf, shape, oneOfType, number, bool } from 'prop-types';
+
+import Tooltip from '@material-ui/core/Tooltip';
+import cx from 'classnames';
 
 import SearchPill from 'components/SearchPill';
-
-import cx from 'classnames';
-import styles from './styles.scss';
-
 import { getGroupsFromSearchParameters, SearchBarError } from './parser';
 import { engineCategories } from './engineCategoryMappings';
+
+import styles from './styles.scss';
 
 // need to look forward and backwards one search parameter, as well as take into the account the rendering level
 // because we render ((hello) and world ) as (hello) and world)
@@ -19,7 +20,7 @@ const getGroupStyling = ({ before, after, level }) => {
   });
 };
 
-const SearchParameters = ({ parameters, level }) => {
+const SearchParameters = ({ parameters, level, disableTooltip }) => {
   const groups = getGroupsFromSearchParameters(parameters);
   const searchParameters = [];
   for (let i = 0; i < parameters.length; i++) {
@@ -44,6 +45,7 @@ const SearchParameters = ({ parameters, level }) => {
             key={searchParameter.id}
             level={1 + level}
             parameters={parameters.slice(1 + i, group.endOfGroup)}
+            disableTooltip={disableTooltip}
           />
         </span>
       );
@@ -53,20 +55,24 @@ const SearchParameters = ({ parameters, level }) => {
     } else if (searchParameter.conditionType in engineCategories) {
       // render an engineCategory subpill
       const engine = engineCategories[searchParameter.conditionType];
-      const { abbreviation, exclude } = engine.getLabel(searchParameter.value);
+      const { abbreviation, exclude, full } = engine.getLabel(searchParameter.value);
 
       searchParameters.push(
-        <SearchPill
-          key={searchParameter.id}
-          label={abbreviation}
-          exclude={exclude}
-          engineCategoryIcon={engine.iconClass}
-          disabled
-        />
+        <Tooltip title={full} placement="bottom" disableHoverListener={disableTooltip}>
+          <div className={styles['tooltipContainer']}>
+            <SearchPill
+              key={searchParameter.id}
+              label={abbreviation}
+              exclude={exclude}
+              engineCategoryIcon={engine.iconClass}
+              disabled
+            />
+          </div>
+        </Tooltip>
       );
     } else if (searchParameter.conditionType === 'join') {
       // render a joining operator
-      searchParameters.push(<span>{searchParameter.value} </span>);
+      searchParameters.push(<span className={styles['joiningOperator']}>{searchParameter.value} </span>);
     } else if (searchParameter.conditionType !== 'group') {
       throw new SearchBarError('Invalid search parameter', searchParameter);
     }
@@ -83,7 +89,8 @@ SearchParameters.propTypes = {
       conditionType: string.isRequired
     })
   ),
-  level: number
+  level: number,
+  disableTooltip: bool
 };
 
 SearchParameters.defaultProps = {
@@ -98,7 +105,12 @@ class SearchBar extends React.Component {
         value: oneOfType([object, string]),
         conditionType: string.isRequired
       })
-    )
+    ),
+    disableTooltip: bool
+  };
+
+  static defaultProps = {
+    disableTooltip: false
   };
 
   state = {
@@ -113,7 +125,7 @@ class SearchBar extends React.Component {
     if (this.state.hasError) {
       return <div>Invalid searchQuery</div>;
     } else {
-      return <SearchParameters parameters={this.props.parameters} />;
+      return <SearchParameters parameters={this.props.parameters} disableTooltip={this.props.disableTooltip} />;
     }
   }
 }
