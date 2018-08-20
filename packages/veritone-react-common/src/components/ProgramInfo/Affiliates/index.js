@@ -129,7 +129,7 @@ export default class Affiliates extends React.Component {
         <div className={styles.titleLabel}>Affiliated Stations</div>
         <div className={styles.titleDescription}>
           Assign affiliated stations that also broadcast programming from this
-          ingestion source
+          ingestion source.
         </div>
         {get(selectedAffiliates, 'length') > 0 && (
           <div className={styles.affiliatesListSection}>

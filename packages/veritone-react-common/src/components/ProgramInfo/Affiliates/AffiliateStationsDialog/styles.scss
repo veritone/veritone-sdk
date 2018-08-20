@@ -1,9 +1,9 @@
 @import 'src/styles/modules/variables';
 
-.selectAclGroupDialogPaper {
+.addAffiliatesDialogPaper {
   min-width: 640px;
   width: 640px;
-  min-height: 750px;
+  min-height: 740px;
 }
 
 .dialogTitle {
@@ -45,25 +45,46 @@
   flex-direction: column;
 }
 
-.aclsViewSection {
+.affiliatesViewSection {
   margin-top: 20px;
   flex: 1 1 auto;
 }
 
-.aclsTable {
+.affiliatesTable {
   width: 100%;
 }
 
-.tableCheckboxCell {
-  width: 20px !important;
-}
-
-.tableOrganizationNameCell {
+.nameCell {
   cursor: pointer !important;
 }
 
-.aclsViewPagination {
+.nameCellContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.selectAffiliateButton {
+  margin-right: 10px;
+}
+
+.affiliatesViewPagination {
   align-self: center;
+}
+
+.actionButtons {
+  padding: 0 16px 16px;
+}
+
+.actionButton {
+  width: 80px;
+  margin-left: 30px !important;
+}
+
+.actionButtonLabel {
+  font-size: 14px;
 }
 
 .noResultsMessage {
@@ -72,17 +93,4 @@
   font-size: 32px !important;
   color: $semi-black;
   margin-top: 50%;
-}
-
-.selectAclGroupActionButtons {
-  padding: 0 16px 16px;
-}
-
-.selectAclGroupActionButton {
-  width: 80px;
-  margin-left: 30px !important;
-}
-
-.actionButtonLabel {
-  font-size: 14px;
 }

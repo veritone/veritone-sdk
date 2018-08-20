@@ -220,24 +220,26 @@ export default class SelectAclGroupDialog extends Component {
             </div>
           )}
           {get(organizationsView, 'length') > 0 && (
-            <TablePagination
-              component="div"
-              count={organizationsView.length}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              backIconButtonProps={{
-                'aria-label': 'Previous Page'
-              }}
-              nextIconButtonProps={{
-                'aria-label': 'Next Page'
-              }}
-              onChangePage={this.handleChangePage}
-              rowsPerPageOptions={rowsPerPageOptions}
-            />
+            <div className={styles.aclsViewPagination}>
+              <TablePagination
+                component="div"
+                count={organizationsView.length}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                backIconButtonProps={{
+                  'aria-label': 'Previous Page'
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'Next Page'
+                }}
+                onChangePage={this.handleChangePage}
+                rowsPerPageOptions={rowsPerPageOptions}
+              />
+            </div>
           )}
           {!get(organizationsView, 'length') &&
             get(organizations, 'length') && (
-              <div className={styles.noResultsMessage}>No Data</div>
+              <div className={styles.noResultsMessage}>No Results</div>
             )}
         </DialogContent>
         <DialogActions
