@@ -2,7 +2,7 @@ import React from 'react';
 import { arrayOf, objectOf, any, func, shape, string } from 'prop-types';
 import { pick } from 'lodash';
 import SourceManagementForm from '../SourceManagementForm';
-import SourceManagementNullState from './Nullstate';
+import SourceManagementNullState from './NullState';
 import SourceTileView from './SourceTileView';
 export NullState from './NullState';
 export SourceTileView from './SourceTileView';

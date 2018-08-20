@@ -65,12 +65,12 @@ export IngestionAdapters from './components/IngestionAdapters';
 export Scheduler from './components/Scheduler';
 export ProgramInfo from './components/ProgramInfo';
 
-export SourceNullState from './components/SourceManagement/Nullstate';
+export SourceNullState from './components/SourceManagement/NullState';
 export SourceTileView from './components/SourceManagement/SourceTileView';
 export SourceManagementOverview from './components/SourceManagement/';
 
 export IngestionJobTileView from './components/IngestionJobs/ListView';
-export IngestionJobNullstate from './components/IngestionJobs/Nullstate';
+export IngestionJobNullstate from './components/IngestionJobs/NullState';
 export StatusPill from './components/StatusPill';
 export SDOTable from './components/SDOTable';
 
