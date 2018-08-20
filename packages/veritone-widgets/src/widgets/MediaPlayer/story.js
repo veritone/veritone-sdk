@@ -112,7 +112,7 @@ const timeSeries = [
 
 import BaseStory from '../../shared/BaseStory';
 import { MediaPlayer } from './';
-import MediaPlayerLightbox from './Lightbox';
+import MediaPlayerLightbox, { MediaPlayerLightboxWidget } from './Lightbox';
 import DefaultControlBar from './DefaultControlBar';
 
 const multipleStreams = [
@@ -335,8 +335,16 @@ storiesOf('MediaPlayer', module)
   .add('Lightbox Widget', () => {
     return (
       <BaseStory
-        widget={MediaPlayerLightbox}
+        widget={MediaPlayerLightboxWidget}
         widgetProps={{
+          live: true,
+          muted: true,
+          autoPlay: true,
+          sourceId: '123',
+          boundingPolySeries: timeSeries
+        }}
+        componentClass={MediaPlayerLightbox}
+        componentProps={{
           live: true,
           muted: true,
           autoPlay: true,

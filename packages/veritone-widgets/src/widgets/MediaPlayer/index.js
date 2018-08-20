@@ -10,6 +10,7 @@ import {
   any,
   object
 } from 'prop-types';
+import { get } from 'lodash';
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
@@ -20,16 +21,25 @@ import {
 import VideoSource from './VideoSource';
 import { getPolysForTime } from './helpers';
 
+import * as Actions from '../../redux/modules/mediaPlayer/actionCreators';
+
 import styles from './styles.scss';
 
-@connect(state => ({
-  videoHeight: state.player.videoHeight,
-  videoWidth: state.player.videoWidth,
-  hasStarted: state.player.hasStarted,
-  isActive: state.player.isActive,
-  currentTime: state.player.currentTime,
-  paused: state.player.paused
-}))
+@connect(
+  state => ({
+    videoHeight: state.player.videoHeight,
+    videoWidth: state.player.videoWidth,
+    hasStarted: state.player.hasStarted,
+    isActive: state.player.isActive,
+    currentTime: state.player.currentTime,
+    paused: state.player.paused,
+    sourceStreams: get(state, [Actions.namespace, 'data', 'streams'], undefined)
+  }),
+  {
+    resetPlayer: Actions.resetMediaPlayer,
+    loadLivestreamData: Actions.loadLivestreamData
+  }
+)
 class MediaPlayerComponent extends React.Component {
   static propTypes = {
     src: string,
@@ -39,6 +49,15 @@ class MediaPlayerComponent extends React.Component {
         uri: string
       })
     ),
+    sourceId: string,
+    sourceStreams: arrayOf(
+      shape({
+        protocol: string,
+        uri: string
+      })
+    ),
+    resetPlayer: func,
+    loadLivestreamData: func,
     boundingPolySeries: arrayOf(
       shape({
         startTimeMs: number.isRequired,
@@ -89,6 +108,22 @@ class MediaPlayerComponent extends React.Component {
     fluid: true
   };
 
+  state = {};
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { sourceId, loadLivestreamData } = nextProps;
+    if (sourceId !== prevState.sourceId && loadLivestreamData) {
+      loadLivestreamData(sourceId);
+      return { sourceId: sourceId };
+    }
+
+    return null;
+  }
+
+  componentWillUnmount() {
+    this.props.resetPlayer && this.props.resetPlayer();
+  }
+
   handleAddBoundingBox = newBox => {
     this.props.onAddBoundingBox(newBox, this.props.currentTime * 1000);
   };
@@ -97,6 +132,7 @@ class MediaPlayerComponent extends React.Component {
     const {
       src,
       streams,
+      sourceStreams,
       overlayContentClassName,
       reactPlayerClassName,
       ...props
@@ -140,7 +176,11 @@ class MediaPlayerComponent extends React.Component {
           {/* prevent video-react from adding its own control bar */}
           <ControlBar autoHide className={styles.hiddenDummyControls} />
 
-          <VideoSource isVideoChild src={src} streams={streams} />
+          <VideoSource
+            isVideoChild
+            src={src}
+            streams={streams || sourceStreams}
+          />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
         </Player>
       </OverlayPositioningProvider>

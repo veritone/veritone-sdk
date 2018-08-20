@@ -36,6 +36,10 @@ import engineOutputExportReducer, {
   namespace as engineOutputExportNamespace
 } from './modules/engineOutputExport';
 
+import mediaPlayerReducer, {
+  namespace as mediaPlayerNamespace
+} from './modules/mediaPlayer';
+
 const {
   user: { reducer: userReducer, namespace: userNamespace },
   config: { reducer: configReducer, namespace: configNamespace },
@@ -67,6 +71,7 @@ export default function createReducer(asyncReducers) {
     [applicationNamespace]: applicationReducer,
     [savedSearchNamespace]: savedSearchReducer,
     [engineResultsNamespace]: engineResultsReducer,
+    [mediaPlayerNamespace]: mediaPlayerReducer,
     form: formReducer,
     player: playerReducer,
     operation: operationReducer,
