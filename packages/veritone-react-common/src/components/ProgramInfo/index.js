@@ -108,6 +108,7 @@ class ProgramInfo extends React.Component {
         }).isRequired
       })
     ),
+    readOnly: bool,
     onSubmit: func.isRequired, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
     relativeSize: number, // optional - used to scale text sizes from hosting app
@@ -291,6 +292,9 @@ class ProgramInfo extends React.Component {
   };
 
   handleStartPickFiles = fileType => event => {
+    if (this.props.readOnly) {
+      return;
+    }
     //TODO: uncomment when handled image url change on file upload
     // console.log('start handleStartPickFiles');
     // this.setState({
@@ -321,7 +325,8 @@ class ProgramInfo extends React.Component {
       canBulkAddAffiliates,
       programFormats,
       organizations,
-      affiliates
+      affiliates,
+      readOnly
     } = this.props;
 
     const { program, openFilePicker } = this.state;
@@ -343,6 +348,7 @@ class ProgramInfo extends React.Component {
                 margin="normal"
                 onChange={this.handleNameChange}
                 value={program.name}
+                disabled={readOnly}
               />
             </div>
             <div className={styles.programInfoSection}>
@@ -429,6 +435,7 @@ class ProgramInfo extends React.Component {
                 margin="normal"
                 value={program.description}
                 onChange={this.handleDescriptionChange}
+                disabled={readOnly}
               />
             </div>
             <div className={styles.programInfoSection}>
@@ -438,6 +445,7 @@ class ProgramInfo extends React.Component {
                 margin="normal"
                 value={program.website}
                 onChange={this.handleWebsiteChange}
+                disabled={readOnly}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment
@@ -463,6 +471,7 @@ class ProgramInfo extends React.Component {
                   value={program.format || ''}
                   onChange={this.handleFormatChange}
                   className={styles.programInfoSelect}
+                  disabled={readOnly}
                   inputProps={{
                     name: 'program-format',
                     id: 'program-format-simple'
@@ -489,6 +498,7 @@ class ProgramInfo extends React.Component {
                     onChange={this.toggleIsNational}
                     value="program.isNational"
                     color="primary"
+                    disabled={readOnly}
                   />
                 }
                 label="Is National"
@@ -496,8 +506,8 @@ class ProgramInfo extends React.Component {
               />
             </div>
 
-            {canShare && <div className={styles.programInfoDivider} />}
-            {canShare && (
+            {canShare && !readOnly && <div className={styles.programInfoDivider} />}
+            {canShare && !readOnly && (
               <div className={styles.shareSection}>
                 <SharingConfiguration
                   acls={program.acls}
@@ -514,8 +524,8 @@ class ProgramInfo extends React.Component {
               </div>
             )}
 
-            {canEditAffiliates && <div className={styles.programInfoDivider} />}
-            {canEditAffiliates && (
+            {canEditAffiliates && !readOnly && <div className={styles.programInfoDivider} />}
+            {canEditAffiliates && !readOnly && (
               <div className={styles.affiliatesSection}>
                 <Affiliates
                   selectedAffiliates={program.affiliates}

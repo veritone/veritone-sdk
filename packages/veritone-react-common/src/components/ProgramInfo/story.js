@@ -141,6 +141,68 @@ class FullDataStory extends React.Component {
   }),
   { submit }
 )
+class FullDataReadOnlyStory extends React.Component {
+  /* eslint-disable react/prop-types */
+  state = { lastResult: {} };
+  submit = () => {
+    this.props.submit('programInfo');
+  };
+
+  handleSubmit = values => {
+    this.setState({
+      lastResult: values
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <Provider store={store}>
+          <div>
+            <ProgramInfo
+              readOnly
+              canShare
+              canEditAffiliates
+              canBulkAddAffiliates
+              program={{
+                id: '12345',
+                name: 'Test program',
+                programImage: '',
+                programLiveImage: '',
+                description: 'This is a test program data with description',
+                website: 'www.veritone.com',
+                format: 'live',
+                language: 'en',
+                isNational: true,
+                acls: generateAcls(11, 'viewer'),
+                isPublic: false,
+                affiliates: generateAffiliates(11)
+              }}
+              programFormats={['live', 'recorded']}
+              organizations={generateOrganizations(21)}
+              affiliates={generateAffiliates(21)}
+              onSubmit={this.handleSubmit}
+            />
+            <button type="button" onClick={this.submit}>
+              Submit
+            </button>
+            <div>
+              Last result:
+              <pre>{JSON.stringify(this.state.lastResult, null, '\t')}</pre>
+            </div>
+          </div>
+        </Provider>
+      </div>
+    );
+  }
+}
+
+@connect(
+  state => ({
+    form: state.form.programInfo
+  }),
+  { submit }
+)
 class NoProgramDataStory extends React.Component {
   /* eslint-disable react/prop-types */
   state = { lastResult: {} };
@@ -223,6 +285,8 @@ class BaseStory extends React.Component {
 
 storiesOf('Program Info', module).add('Full data', () => (
   <FullDataStory store={store} />
+));storiesOf('Program Info', module).add('Full data readOnly', () => (
+  <FullDataReadOnlyStory store={store} />
 ));
 storiesOf('Program Info', module).add('No program data', () => (
   <NoProgramDataStory store={store} />
