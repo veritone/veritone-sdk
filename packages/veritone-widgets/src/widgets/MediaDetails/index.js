@@ -47,7 +47,7 @@ import {
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import EngineOutputExport from '../EngineOutputExport';
-import { ExportMenuItem } from './moreMenuItems';
+import { ExportMenuItem } from './MoreMenuItems';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
@@ -59,7 +59,7 @@ import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
-import moreMenuStyles from './moreMenuItems/styles.scss';
+import moreMenuStyles from './MoreMenuItems/styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
