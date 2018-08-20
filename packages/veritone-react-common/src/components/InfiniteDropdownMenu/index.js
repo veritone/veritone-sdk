@@ -36,7 +36,8 @@ export default class InfiniteDropdownMenu extends React.Component {
         trigger: func.isRequired
       })
     ),
-    pageSize: number
+    pageSize: number,
+    readOnly: bool
   };
 
   static defaultProps = {
@@ -52,7 +53,9 @@ export default class InfiniteDropdownMenu extends React.Component {
   }
 
   handleMenuClick = event => {
-    this.setState({ anchorEl: event.currentTarget });
+    if (!this.props.readOnly) {
+      this.setState({ anchorEl: event.currentTarget });
+    }
   };
 
   handleMenuClose = () => {
@@ -151,6 +154,7 @@ const ItemSelector = ({
   loadMoreRows,
   isRowLoaded,
   rowRenderer,
+  readOnly,
   openCustomTrigger,
   customTriggers
 }) => {

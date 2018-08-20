@@ -7,7 +7,7 @@ import DateTimePicker from '../formComponents/DateTimePicker';
 import LabeledInputGroup from './LabeledInputGroup';
 import styles from './styles.scss';
 
-const DateTimeSelector = ({ name, label, showIcon }) => (
+const DateTimeSelector = ({ name, label, showIcon, readOnly }) => (
   <LabeledInputGroup label={label} hasIconOffset={showIcon}>
     <FormGroup className={styles.inputsGroup}>
       <Field
@@ -16,6 +16,7 @@ const DateTimeSelector = ({ name, label, showIcon }) => (
         className={styles.leftInput}
         showTimezone
         showIcon={showIcon}
+        readOnly
       />
     </FormGroup>
   </LabeledInputGroup>

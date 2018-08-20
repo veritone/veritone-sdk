@@ -18,7 +18,7 @@ import {
   pick,
   find
 } from 'lodash';
-import { objectOf, any, func, number } from 'prop-types';
+import { objectOf, any, func, number, bool } from 'prop-types';
 
 import Image from '../../Image';
 import InfiniteDropdownMenu from '../../InfiniteDropdownMenu';
@@ -33,7 +33,8 @@ class DynamicAdapter extends React.Component {
     openCreateSource: func.isRequired,
     loadNextSources: func.isRequired,
     loadNextClusters: func.isRequired,
-    pageSize: number
+    pageSize: number,
+    readOnly: bool
   };
 
   state = {
@@ -55,7 +56,7 @@ class DynamicAdapter extends React.Component {
     const newState = {
       sourceId: get(this.props, 'configuration.sourceId'),
       clusterId: get(this.props, 'configuration.clusterId'),
-      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 60
+      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 180
     };
     if (isArray(fields)) {
       fields.forEach(field => {
@@ -215,6 +216,7 @@ class DynamicAdapter extends React.Component {
   };
 
   render() {
+    const MAX_DURATION_MINS = 180;
     const customTriggers = [];
     if (this.props.openCreateSource) {
       customTriggers.push({
@@ -244,6 +246,7 @@ class DynamicAdapter extends React.Component {
                 items={this.state._source.items}
                 pageSize={this.props.pageSize}
                 customTriggers={customTriggers}
+                readOnly={this.props.readOnly}
               />
             </div>
             <div className={styles.adapterDivider} />
@@ -292,11 +295,12 @@ class DynamicAdapter extends React.Component {
                 isNextPageLoading={this.state._cluster.isNextPageLoading}
                 items={this.state._cluster.items}
                 pageSize={this.props.pageSize}
+                readOnly={this.props.readOnly}
               />
               <div>
                 <TextField
                   type="number"
-                  label="Max Duration Length (Mins)"
+                  label="Max Duration Length"
                   margin="normal"
                   InputLabelProps={{
                     className: styles.tdoDurationLabel
@@ -304,9 +308,11 @@ class DynamicAdapter extends React.Component {
                   inputProps={{
                     className: styles.tdoDurationInput,
                     min: 0,
-                    max: 60,
-                    step: 1
+                    max: MAX_DURATION_MINS,
+                    step: 1,
+                    readOnly: this.props.readOnly
                   }} 
+                  helperText={`Max ${MAX_DURATION_MINS} minutes`}
                   value={this.state.maxTDODuration}
                   onChange={this.handleFieldChange('maxTDODuration')}
                 />
@@ -317,6 +323,7 @@ class DynamicAdapter extends React.Component {
                 fields={this.props.adapterConfig.fields}
                 configuration={this.state}
                 handleFieldChange={this.handleFieldChange}
+                readOnly={this.props.readOnly}
               />
             </div>
           </div>
@@ -326,7 +333,7 @@ class DynamicAdapter extends React.Component {
   }
 }
 
-function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
+function DynamicFieldForm({ fields = [], configuration, handleFieldChange, readOnly }) {
   return fields
     .map(field => {
       const inputId = field.name + 'DynamicField';
@@ -343,6 +350,7 @@ function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
               onChange={handleFieldChange(field.name)}
               autoWidth
               multiple={field.type === 'MultiPicklist'}
+              readOnly={readOnly}
               inputProps={{
                 name: field.name,
                 id: inputId
@@ -366,6 +374,9 @@ function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
               value={configuration[field.name]}
               onChange={handleFieldChange(field.name)}
               helperText={field.info}
+              inputProps={{
+                readOnly
+              }}
             />
           </FormControl>
         );
@@ -382,7 +393,8 @@ function DynamicFieldForm({ fields = [], configuration, handleFieldChange }) {
               inputProps={{
                 max: parseFloat(field.max),
                 min: parseFloat(field.min),
-                step: parseFloat(field.step)
+                step: parseFloat(field.step),
+                readOnly
               }}
             />
           </FormControl>

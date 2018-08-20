@@ -10,7 +10,7 @@ import Select from '../formComponents/Select';
 import LabeledInputGroup from './LabeledInputGroup';
 import styles from './styles.scss';
 
-const TimePeriodSelector = ({ name, label, number, period }) => (
+const TimePeriodSelector = ({ name, label, number, period, readOnly }) => (
   <FormSection name={name}>
     <LabeledInputGroup label={label}>
       <FormGroup className={styles.inputsGroup}>
@@ -19,11 +19,13 @@ const TimePeriodSelector = ({ name, label, number, period }) => (
           type="number"
           component={TextField}
           className={styles.leftInput}
+          inputProps={{ readOnly }}
         />) : null }
         <Field
           component={Select}
           name="period"
           className={styles.rightInput + ' ' + styles.periodSelect}
+          readOnly
         >
           <MenuItem value="hour">{pluralize('Hours', Number(number))}</MenuItem>
           <MenuItem value="day">{pluralize('Days', Number(number))}</MenuItem>
