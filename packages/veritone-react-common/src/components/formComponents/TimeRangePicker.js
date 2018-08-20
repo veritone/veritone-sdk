@@ -79,7 +79,7 @@ export default class TimeRangePicker extends React.Component {
 }
 
 const TimeSelector = ({ value, onChange }) => {
-  return <TextField type="time" value={value} onChange={onChange}/>;
+  return <TextField type="time" value={value} onChange={onChange} />;
 };
 
 TimeSelector.propTypes = {
