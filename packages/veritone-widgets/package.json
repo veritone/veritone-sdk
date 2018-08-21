@@ -19,7 +19,7 @@
     "veritone-oauth-helpers": "^2.1.0",
     "veritone-react-common": "^6.1.0",
     "veritone-redux-common": "^3.7.0",
-    "video-react": "^0.11.2"
+    "video-react": "^0.13.0"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
