@@ -45,7 +45,7 @@ const saga = util.reactReduxSaga.saga;
   null,
   { withRef: true }
 )
-export default class TranscriptEngineOutputWidget extends Component {
+export default class TranscriptEngineOutputContainer extends Component {
   static propTypes = {
     tdo: shape({
       id: string,
@@ -131,7 +131,8 @@ export default class TranscriptEngineOutputWidget extends Component {
 
     fetchEngineResults: func,
     isDisplayingUserEditedOutput: bool,
-    clearEngineResultsByEngineId: func
+    clearEngineResultsByEngineId: func,
+    moreMenuItems: arrayOf(node)
   };
 
   state = {
@@ -239,7 +240,8 @@ export default class TranscriptEngineOutputWidget extends Component {
       'mediaPlayerTimeMs',
       'mediaPlayerTimeIntervalMs',
       'outputNullState',
-      'bulkEditEnabled'
+      'bulkEditEnabled',
+      'moreMenuItems'
     ]);
 
     const alertTitle = 'Unsaved Transcript Changes';

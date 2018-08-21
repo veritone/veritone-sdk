@@ -1,6 +1,6 @@
 import { get, has, find, values, uniqBy, keyBy, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
-const { createReducer } = helpers;
+const { createReducer, callGraphQLApi } = helpers;
 
 export const LOAD_ENGINE_CATEGORIES_SUCCESS = 'LOAD_ENGINE_CATEGORIES_SUCCESS';
 export const LOAD_ENGINE_CATEGORIES_FAILURE = 'LOAD_ENGINE_CATEGORIES_FAILURE';
@@ -56,6 +56,9 @@ export const RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS =
   'RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS';
 export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE =
   'RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE';
+export const CREATE_QUICK_EXPORT = 'CREATE_QUICK_EXPORT';
+export const CREATE_QUICK_EXPORT_SUCCESS = 'CREATE_QUICK_EXPORT_SUCCESS';
+export const CREATE_QUICK_EXPORT_FAILURE = 'CREATE_QUICK_EXPORT_FAILURE';
 
 export const namespace = 'mediaDetails';
 
@@ -273,7 +276,6 @@ export default createReducer(defaultState, {
         tdoContentTemplates.push(contentTemplate);
       });
     }
-    console.log(tdoContentTemplates);
     return {
       ...state,
       [widgetId]: {
@@ -841,6 +843,8 @@ export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
 export const isSavingEngineResults = (state, widgetId) =>
   get(local(state), [widgetId, 'isSavingEngineResults']);
+export const categoryExportFormats = (state, widgetId) =>
+  get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
 
 export const initializeWidget = widgetId => ({
   type: INITIALIZE_WIDGET,
@@ -1082,3 +1086,61 @@ export const restoreOriginalEngineResultsSuccess = widgetId => ({
   type: RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS,
   meta: { widgetId }
 });
+
+export const createQuickExport = (
+  tdoId,
+  formatTypes,
+  engineId,
+  categoryId
+) => async (dispatch, getState) => {
+  const query = `
+    mutation createExportRequest(
+      $includeMedia: Boolean,
+      $tdoData: [CreateExportRequestForTDO!]!,
+      $outputConfigurations: [CreateExportRequestOutputConfig!]
+    ) {
+      createExportRequest(input: {
+        includeMedia: $includeMedia
+        tdoData: $tdoData
+        outputConfigurations: $outputConfigurations
+      }) {
+        id
+        status
+        organizationId
+        createdDateTime
+        modifiedDateTime
+        requestorId
+        assetUri
+      }
+    }
+  `;
+
+  const outputConfigurations = [
+    {
+      engineId,
+      categoryId,
+      formats: formatTypes.map(type => {
+        return {
+          extension: type,
+          options: {}
+        };
+      })
+    }
+  ];
+
+  return await callGraphQLApi({
+    actionTypes: [
+      CREATE_QUICK_EXPORT,
+      CREATE_QUICK_EXPORT_SUCCESS,
+      CREATE_QUICK_EXPORT_FAILURE
+    ],
+    query,
+    variables: {
+      includeMedia: false,
+      outputConfigurations,
+      tdoData: { tdoId }
+    },
+    dispatch,
+    getState
+  });
+};
