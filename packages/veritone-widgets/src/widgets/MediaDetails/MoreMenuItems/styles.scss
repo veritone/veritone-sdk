@@ -1,0 +1,35 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.moreMenuItem {
+  @include mui-text('body1');
+
+  .rightArrowIcon {
+    margin-left: 30px;
+  }
+}
+
+.exportFormatMenu {
+  min-width: 250px;
+
+  .subMenuTitle {
+    @include mui-text('body1');
+    color: $light-black;
+    padding-left: 16px;
+  }
+
+  .formatMenuItem {
+    @include mui-text('body1');
+
+    .formatLabel {
+      margin-left: 5px;
+      color: $light-black;
+    }
+  }
+
+  .subMenuActions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-evenly !important;
+  }
+}

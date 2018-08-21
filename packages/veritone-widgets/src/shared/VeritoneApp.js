@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
-import { modules, util,  helpers } from 'veritone-redux-common';
+import { modules, util, helpers } from 'veritone-redux-common';
 import { VeritoneSDKThemeProvider } from 'veritone-react-common';
 
 const { auth: authModule, config: configModule, user: userModule } = modules;

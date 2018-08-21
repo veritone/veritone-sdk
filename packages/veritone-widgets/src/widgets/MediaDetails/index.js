@@ -25,7 +25,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual } from 'lodash';
+import { find, get, some, includes, isEqual, isUndefined } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -45,17 +45,21 @@ import {
   AlertDialog
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
-import TranscriptEngineOutputWidget from '../TranscriptEngineOutputWidget';
+import TranscriptEngineOutput from '../TranscriptEngineOutput';
+import EngineOutputExport from '../EngineOutputExport';
+import { ExportMenuItem } from './MoreMenuItems';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
-  engineResults: engineResultsModule
+  engineResults: engineResultsModule,
+  user: userModule
 } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
+import moreMenuStyles from './MoreMenuItems/styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
@@ -90,7 +94,7 @@ const programLiveImageNullState =
     isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
-    schemasById: mediaDetailsModule.getSchemasById(state, id),
+    schemasById: mediaDetailsModule.getSchemasById(state),
     currentMediaPlayerTime: mediaDetailsModule.currentMediaPlayerTime(
       state,
       id
@@ -112,7 +116,9 @@ const programLiveImageNullState =
     isRestoringOriginalEngineResult: mediaDetailsModule.isRestoringOriginalEngineResult(
       state,
       id
-    )
+    ),
+    categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
+    betaFlagEnabled: userModule.hasFeature(state, 'beta')
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -133,7 +139,8 @@ const programLiveImageNullState =
       mediaDetailsModule.setShowTranscriptBulkEditSnackState,
     updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
     restoreOriginalEngineResults:
-      mediaDetailsModule.restoreOriginalEngineResults
+      mediaDetailsModule.restoreOriginalEngineResults,
+    createQuickExport: mediaDetailsModule.createQuickExport
   },
   null,
   { withRef: true }
@@ -333,7 +340,17 @@ class MediaDetailsWidget extends React.Component {
     showTranscriptBulkEditSnack: bool,
     updateMediaPlayerState: func,
     restoreOriginalEngineResults: func,
-    isRestoringOriginalEngineResult: bool
+    isRestoringOriginalEngineResult: bool,
+    categoryExportFormats: arrayOf(
+      shape({
+        format: string.isRequired,
+        label: string.isRequired,
+        types: arrayOf(string).isRequired
+      })
+    ),
+    createQuickExport: func.isRequired,
+    betaFlagEnabled: bool.isRequired,
+    onExport: func
   };
 
   static contextTypes = {
@@ -347,7 +364,8 @@ class MediaDetailsWidget extends React.Component {
 
   state = {
     isMenuOpen: false,
-    selectedTabValue: 'mediaDetails'
+    selectedTabValue: 'mediaDetails',
+    engineOutputExportOpen: false
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -777,6 +795,41 @@ class MediaDetailsWidget extends React.Component {
     this.props.closeConfirmModal(this.props.id);
   };
 
+  handleExportClicked = selectedFormats => {
+    const {
+      tdo,
+      selectedEngineId,
+      selectedEngineCategory,
+      createQuickExport
+    } = this.props;
+    createQuickExport(
+      tdo.id,
+      selectedFormats,
+      selectedEngineId,
+      selectedEngineCategory.id
+    ).then(response => {
+      this.props.onExport(get(response, 'createExportRequest'), tdo);
+      return get(response, 'createExportRequest');
+    });
+  };
+
+  openEngineOutputExport = () => {
+    this.setState({
+      engineOutputExportOpen: true
+    });
+  };
+
+  closeEngineOutputExport = () => {
+    this.setState({
+      engineOutputExportOpen: false
+    });
+  };
+
+  handleExportSuccess = response => {
+    this.props.onExport(response, this.props.tdo);
+    this.closeEngineOutputExport();
+  };
+
   render() {
     let {
       engineCategories,
@@ -798,7 +851,10 @@ class MediaDetailsWidget extends React.Component {
       widgetError,
       isSaveEnabled,
       isSavingEngineResults,
-      alertDialogConfig
+      alertDialogConfig,
+      categoryExportFormats,
+      betaFlagEnabled,
+      onExport
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -807,6 +863,33 @@ class MediaDetailsWidget extends React.Component {
       get(tdo, 'details.veritoneFile.mimetype')
     );
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
+
+    const moreMenuItems = [];
+    const selectedEngine = find(get(selectedEngineCategory, 'engines', []), {
+      id: selectedEngineId
+    });
+    if (!isEditModeEnabled && get(selectedEngine, 'hasUserEdits')) {
+      moreMenuItems.push(
+        <MenuItem
+          key="restore-original-output"
+          className={moreMenuStyles.moreMenuItem}
+          onClick={this.onRestoreOriginalClick}
+        >
+          Restore Original
+        </MenuItem>
+      );
+    }
+    if (onExport && categoryExportFormats.length && betaFlagEnabled) {
+      moreMenuItems.push(
+        <ExportMenuItem
+          key="quick-export"
+          label="Quick Export"
+          onExportClicked={this.handleExportClicked}
+          onMoreClicked={this.openEngineOutputExport}
+          categoryExportFormats={categoryExportFormats}
+        />
+      );
+    }
 
     return (
       <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
@@ -1182,7 +1265,7 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.engineCategoryView}>
                   {selectedEngineCategory &&
                     selectedEngineCategory.categoryType === 'transcript' && (
-                      <TranscriptEngineOutputWidget
+                      <TranscriptEngineOutput
                         tdo={tdo}
                         editMode={isEditModeEnabled}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
@@ -1197,7 +1280,7 @@ class MediaDetailsWidget extends React.Component {
                           get(this.props.kvp, 'features.bulkEditTranscript') ===
                           'enabled'
                         }
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        moreMenuItems={moreMenuItems}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1214,7 +1297,7 @@ class MediaDetailsWidget extends React.Component {
                           this.handleUpdateMediaPlayerTime
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
-                        onRestoreOriginalClick={this.onRestoreOriginalClick}
+                        moreMenuItems={moreMenuItems}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1357,6 +1440,15 @@ class MediaDetailsWidget extends React.Component {
 
           {this.renderTranscriptBulkEditSnack()}
         </Paper>
+        {!isUndefined(onExport) &&
+          !!tdo && (
+            <EngineOutputExport
+              open={this.state.engineOutputExportOpen}
+              tdos={[{ tdoId: tdo.id }]}
+              onExport={this.handleExportSuccess}
+              onCancel={this.closeEngineOutputExport}
+            />
+          )}
       </Dialog>
     );
   }

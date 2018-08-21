@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { util } from 'veritone-redux-common';
 import configureStore from '../../redux/configureStore';
 
-import TranscriptEngineOutputWidget from './';
+import TranscriptEngineOutput from './';
 import styles from './story.styles.scss';
 
 const Sagas = util.reactReduxSaga.Sagas;
@@ -132,8 +132,8 @@ storiesOf('Transcript Engine Output', module)
   ))
   .add('Widget', () => {
     return (
-      <div className={styles.transcriptEngineOutputWidget}>
-        <TranscriptEngineOutputWidget
+      <div className={styles.transcriptEngineOutput}>
+        <TranscriptEngineOutput
           editMode={boolean('Edit Mode', false)}
           data={mockData}
           mediaPlayerTimeMs={1000 * number('media player time', 0)}
