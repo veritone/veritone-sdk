@@ -41,7 +41,8 @@ class EngineOutputHeader extends Component {
   };
 
   static defaultProps = {
-    engines: []
+    engines: [],
+    moreMenuItems: []
   };
 
   state = {
@@ -65,57 +66,6 @@ class EngineOutputHeader extends Component {
     });
   };
 
-  renderMoreMenu = () => {
-    const { moreMenuItems } = this.props;
-    const { isMoreMenuOpen } = this.state;
-
-    const updatedMoreMenuItems = moreMenuItems.map(item => {
-      return cloneElement(item, {
-        onCloseMoreMenu: this.toggleIsMoreMenuOpen
-      });
-    });
-
-    return (
-      <Manager>
-        <Target>
-          <div ref={this.setMenuTarget}>
-            <IconButton
-              aria-label="More"
-              aria-haspopup="true"
-              aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
-              onClick={this.toggleIsMoreMenuOpen}
-              classes={{
-                root: styles.moreMenuButton
-              }}
-            >
-              <MoreVertIcon />
-            </IconButton>
-          </div>
-        </Target>
-        {isMoreMenuOpen &&
-          moreMenuItems && (
-            <Popper
-              className={styles.moreMenuPopperContent}
-              placement="bottom-end"
-              eventsEnabled={isMoreMenuOpen}
-            >
-              <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
-                <Grow
-                  in={isMoreMenuOpen}
-                  id="menu-list-grow"
-                  style={{ transformOrigin: '0 0 0' }}
-                >
-                  <Paper>
-                    <MenuList role="menu">{updatedMoreMenuItems}</MenuList>
-                  </Paper>
-                </Grow>
-              </ClickAwayListener>
-            </Popper>
-          )}
-      </Manager>
-    );
-  };
-
   render() {
     const {
       children,
@@ -127,6 +77,14 @@ class EngineOutputHeader extends Component {
       selectedEngineId,
       onExpandClick
     } = this.props;
+    const { isMoreMenuOpen } = this.state;
+
+    const updatedMoreMenuItems = moreMenuItems.map(item => {
+      return cloneElement(item, {
+        onCloseMoreMenu: this.toggleIsMoreMenuOpen
+      });
+    });
+
     return (
       <div className={styles.engineOutputHeader}>
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
@@ -165,7 +123,47 @@ class EngineOutputHeader extends Component {
               })}
             </Select>
           )}
-          {!!get(moreMenuItems, 'length') && this.renderMoreMenu()}
+          {!!get(moreMenuItems, 'length') && (
+            <Manager>
+              <Target>
+                <div ref={this.setMenuTarget}>
+                  <IconButton
+                    aria-label="More"
+                    aria-haspopup="true"
+                    aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
+                    onClick={this.toggleIsMoreMenuOpen}
+                    classes={{
+                      root: styles.moreMenuButton
+                    }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                </div>
+              </Target>
+              {isMoreMenuOpen &&
+                moreMenuItems && (
+                  <Popper
+                    className={styles.moreMenuPopperContent}
+                    placement="bottom-end"
+                    eventsEnabled={isMoreMenuOpen}
+                  >
+                    <ClickAwayListener onClickAway={this.toggleIsMoreMenuOpen}>
+                      <Grow
+                        in={isMoreMenuOpen}
+                        id="menu-list-grow"
+                        style={{ transformOrigin: '0 0 0' }}
+                      >
+                        <Paper>
+                          <MenuList role="menu">
+                            {updatedMoreMenuItems}
+                          </MenuList>
+                        </Paper>
+                      </Grow>
+                    </ClickAwayListener>
+                  </Popper>
+                )}
+            </Manager>
+          )}
         </div>
         {onExpandClick &&
           !hideExpandButton && <div className={styles.actionIconDivider} />}
