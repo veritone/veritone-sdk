@@ -11,7 +11,7 @@ import { string, arrayOf, func, shape } from 'prop-types';
 import Scheduler from '../../../Scheduler';
 import styles from './styles.scss';
 
-export default class EditAffiliatView extends Component {
+export default class EditAffiliateView extends Component {
   static propTypes = {
     affiliate: shape({
       id: string.isRequired,
