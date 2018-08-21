@@ -1,5 +1,5 @@
 import React from 'react';
-import { string } from 'prop-types';
+import { string, bool } from 'prop-types';
 import { Field, FormSection, formValues } from 'redux-form';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -39,7 +39,9 @@ const TimePeriodSelector = ({ name, label, number, period, readOnly }) => (
 TimePeriodSelector.propTypes = {
   name: string,
   label: string,
-  number: string
+  number: string,
+  period: string,
+  readOnly: bool
 };
 
 export default formValues(props => ({

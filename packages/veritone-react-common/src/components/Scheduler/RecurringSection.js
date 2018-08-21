@@ -127,5 +127,6 @@ const MultiTimeRange = ({ fields, readOnly }) => {
 };
 
 MultiTimeRange.propTypes = {
-  fields: objectOf(any)
+  fields: objectOf(any),
+  readOnly: bool
 };

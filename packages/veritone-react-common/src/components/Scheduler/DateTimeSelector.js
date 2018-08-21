@@ -25,7 +25,8 @@ const DateTimeSelector = ({ name, label, showIcon, readOnly }) => (
 DateTimeSelector.propTypes = {
   name: string,
   label: string,
-  showIcon: bool
+  showIcon: bool,
+  readOnly: bool
 };
 
 export default DateTimeSelector;

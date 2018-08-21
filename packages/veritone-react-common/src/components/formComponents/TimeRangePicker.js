@@ -89,5 +89,6 @@ const TimeSelector = ({ value, onChange, readOnly }) => {
 
 TimeSelector.propTypes = {
   value: string,
-  onChange: func
+  onChange: func,
+  readOnly: bool
 };

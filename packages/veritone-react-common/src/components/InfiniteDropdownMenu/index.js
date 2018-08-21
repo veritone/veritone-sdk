@@ -266,5 +266,6 @@ ItemSelector.propTypes = {
     label: string.isRequired,
     trigger: func.isRequired
   })),
-  openCustomTrigger: func
+  openCustomTrigger: func,
+  readOnly: bool
 };
