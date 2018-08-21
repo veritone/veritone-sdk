@@ -35,12 +35,7 @@ const TDO = {
     date: '2018-01-18T00:09:06.685Z',
     veritoneProgram: {
       programId: '-1',
-      programName: 'Upload',
-      programImage: '',
-      programLiveImage:
-        'https://s3.amazonaws.com/dev.inspirent/assets/400003025/4d498250-636a-4b69-8e0b-ab2d8cb6ceab.jpeg',
-      signedProgramLiveImage:
-        'https://s3.amazonaws.com/dev.inspirent/assets/400003025/4d498250-636a-4b69-8e0b-ab2d8cb6ceab.jpeg'
+      programName: 'Upload'
     },
     source: { ingestionType: 'upload' },
     veritonePermissions: {
@@ -58,8 +53,7 @@ const TDO = {
   security: {
     global: true
   },
-  thumbnailUrl:
-    'https://s3.amazonaws.com/dev.inspirent/assets/400003025/4d498250-636a-4b69-8e0b-ab2d8cb6ceab.jpeg',
+  thumbnailUrl: null,
   sourceImageUrl: null,
   primaryAsset: {
     id: '9926cdef-f848-4cbb-a1d5-de0b0ff035dd',
@@ -111,5 +105,6 @@ storiesOf('MediaInfoPanel', module).add('TDO Full Data', () => (
     kvp={KVP}
     onClose={action('onSaveMetadata')}
     onSaveMetadata={action('onSaveMetadata')}
+    canEditMedia={action('canEditMedia')}
   />
 ));
