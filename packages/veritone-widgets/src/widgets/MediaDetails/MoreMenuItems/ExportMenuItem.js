@@ -65,7 +65,7 @@ class ExportMenuItem extends Component {
       <Manager>
         <Target>
           <MenuItem
-            classes={{ root: styles.exportMainMenuItem }}
+            classes={{ root: styles.moreMenuItem }}
             onClick={this.toggleSubMenu}
           >
             {label}

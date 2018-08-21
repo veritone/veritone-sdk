@@ -872,7 +872,7 @@ class MediaDetailsWidget extends React.Component {
       moreMenuItems.push(
         <MenuItem
           key="restore-original-output"
-          className={moreMenuStyles.exportMainMenuItem}
+          className={moreMenuStyles.moreMenuItem}
           onClick={this.onRestoreOriginalClick}
         >
           Restore Original

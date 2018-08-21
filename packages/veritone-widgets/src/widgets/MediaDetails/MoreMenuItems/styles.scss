@@ -1,7 +1,7 @@
 @import 'src/styles/modules/muiTypography';
 @import 'src/styles/modules/variables';
 
-.exportMainMenuItem {
+.moreMenuItem {
   @include mui-text('body1');
 
   .rightArrowIcon {
