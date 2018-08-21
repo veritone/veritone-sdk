@@ -956,8 +956,8 @@ function* fetchEntities(widgetId, entityIds) {
   });
 }
 
-function* fetchSchemas(widgetId, schemaIds) {
-  yield put({ type: REQUEST_SCHEMAS, meta: { widgetId } });
+function* fetchSchemas(schemaIds) {
+  yield put({ type: REQUEST_SCHEMAS });
   let schemaQueries = schemaIds.map((id, index) => {
     return `
       schema${index}: schema(id:"${id}") {
@@ -996,14 +996,12 @@ function* fetchSchemas(widgetId, schemaIds) {
   if (response.errors) {
     return yield put({
       type: REQUEST_SCHEMAS_FAILURE,
-      error: 'Error thrown while fetching schemas',
-      meta: { widgetId }
+      error: 'Error thrown while fetching schemas'
     });
   }
   return yield put({
     type: REQUEST_SCHEMAS_SUCCESS,
-    payload: response.data,
-    meta: { widgetId }
+    payload: response.data
   });
 }
 
@@ -1191,7 +1189,7 @@ function* watchLoadEngineResultsComplete() {
       yield call(fetchEntities, action.meta.widgetId, uniq(entityIds));
     }
     if (schemaIds.length) {
-      yield call(fetchSchemas, action.meta.widgetId, uniq(schemaIds));
+      yield call(fetchSchemas, uniq(schemaIds));
     }
   });
 }

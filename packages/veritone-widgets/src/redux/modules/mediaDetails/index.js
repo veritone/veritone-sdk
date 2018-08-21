@@ -541,18 +541,14 @@ export default createReducer(defaultState, {
   [REQUEST_SCHEMAS_SUCCESS](
     state,
     {
-      payload,
-      meta: { widgetId }
+      payload
     }
   ) {
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        schemasById: {
-          ...state.schemasById,
-          ...keyBy(Object.values(payload), 'id')
-        }
+      schemasById: {
+        ...state.schemasById,
+        ...keyBy(Object.values(payload), 'id')
       }
     };
   },
@@ -828,8 +824,8 @@ export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
 export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
-export const getSchemasById = (state, widgetId) =>
-  get(local(state), [widgetId, 'schemasById']);
+export const getSchemasById = (state) =>
+  get(local(state), 'schemasById');
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);

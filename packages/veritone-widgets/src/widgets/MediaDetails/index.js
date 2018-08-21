@@ -90,7 +90,7 @@ const programLiveImageNullState =
     isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
     entities: mediaDetailsModule.getEntities(state, id),
-    schemasById: mediaDetailsModule.getSchemasById(state, id),
+    schemasById: mediaDetailsModule.getSchemasById(state),
     currentMediaPlayerTime: mediaDetailsModule.currentMediaPlayerTime(
       state,
       id
