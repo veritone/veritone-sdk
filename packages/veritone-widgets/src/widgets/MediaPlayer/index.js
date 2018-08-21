@@ -42,8 +42,8 @@ class MediaPlayerComponent extends React.Component {
       shape({
         startTimeMs: number.isRequired,
         stopTimeMs: number.isRequired,
-        id: string.isRequired,
         object: shape({
+          id: string.isRequired,
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
           ).isRequired
