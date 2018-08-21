@@ -13,6 +13,7 @@ import { noop } from 'lodash';
 import { submit } from 'redux-form';
 import { connect } from 'react-redux';
 import { ProgramInfo } from 'veritone-react-common';
+import FilePicker from '../FilePicker';
 
 import widget from '../../shared/widget';
 
@@ -66,8 +67,18 @@ class ProgramInfoWidget extends React.Component {
     submit: func.isRequired
   };
 
+
+  static defaultProps = {
+    program: {}
+  };
+
   state = {
-    submitCallback: noop
+    submitCallback: noop,
+    openFilePicker: false,
+    selectImageType: null,
+    program: {
+      ...this.props.program
+    }
   };
 
   submit = (submitCallback = noop) => {
@@ -79,8 +90,34 @@ class ProgramInfoWidget extends React.Component {
     );
   };
 
+  onUploadImage = fileType => event => {
+    console.log('open file picket widget');
+    this.setState({
+      selectImageType: fileType,
+      openFilePicker: true
+    });
+  };
+
+  onPick = files => {
+    console.log(files);
+    // TODO edit url in program
+  };
+
   render() {
-    return <ProgramInfo {...this.props} onSubmit={this.state.submitCallback} />;
+    return (
+      <div>
+        <ProgramInfo
+          {...this.props}
+          program={this.state.program}
+          onSubmit={this.state.submitCallback}
+          onUploadImage={this.onUploadImage}
+        />
+        {/*<FilePicker
+          open={this.state.openFilePicker}
+          onPick={this.onPick}
+        />*/}
+      </div>
+    );
   }
 }
 

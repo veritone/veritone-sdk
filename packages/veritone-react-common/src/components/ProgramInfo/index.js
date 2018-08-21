@@ -109,6 +109,7 @@ class ProgramInfo extends React.Component {
       })
     ),
     readOnly: bool,
+    onUploadImage: func,
     onSubmit: func.isRequired, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
     relativeSize: number, // optional - used to scale text sizes from hosting app
@@ -326,7 +327,8 @@ class ProgramInfo extends React.Component {
       programFormats,
       organizations,
       affiliates,
-      readOnly
+      readOnly,
+      onUploadImage
     } = this.props;
 
     const { program, openFilePicker } = this.state;
@@ -361,12 +363,29 @@ class ProgramInfo extends React.Component {
                     Recommended image size: 500x350 .jpg or .png
                   </div>
                   {get(program, 'programLiveImage.length') > 0 && (
-                    <img className={styles.programInfoLiveImage} />
+                    <img
+                      className={styles.programInfoLiveImage}
+                      src={program.programLiveImage}
+                    />
+                  )}
+                  {get(program, 'programLiveImage.length') > 0 && (
+                    <div className={styles.imageOverlay}>
+                      <EditIcon
+                        classes={{ root: styles.editProgramImageIcon }}
+                        className="icon-mode_edit2"
+                        onClick={() => onUploadImage('programLiveImage')}
+                      />
+                      <DeleteIcon
+                        classes={{ root: styles.editProgramImageIcon }}
+                        className="icon-trashcan"
+                        onClick={this.handleRemoveImage('programLiveImage')}
+                      />
+                    </div>
                   )}
                   {!get(program, 'programLiveImage.length') && (
                     <div
                       className={styles.programInfoLiveImageNullState}
-                      onClick={this.handleStartPickFiles('programLiveImage')}
+                      onClick={() => onUploadImage('programLiveImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
@@ -391,7 +410,7 @@ class ProgramInfo extends React.Component {
                   {get(program, 'programImage.length') > 0 && (
                     <img
                       className={styles.programInfoImage}
-                      src={this.program.programImage}
+                      src={program.programImage}
                     />
                   )}
                   {get(program, 'programImage.length') > 0 && (
@@ -399,7 +418,7 @@ class ProgramInfo extends React.Component {
                       <EditIcon
                         classes={{ root: styles.editProgramImageIcon }}
                         className="icon-mode_edit2"
-                        onClick={this.handleStartPickFiles('programImage')}
+                        onClick={() => onUploadImage('programImage')}
                       />
                       <DeleteIcon
                         classes={{ root: styles.editProgramImageIcon }}
@@ -411,7 +430,7 @@ class ProgramInfo extends React.Component {
                   {!get(program, 'programImage.length') && (
                     <div
                       className={styles.programInfoImageNullState}
-                      onClick={this.handleStartPickFiles('programImage')}
+                      onClick={() => onUploadImage('programImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
