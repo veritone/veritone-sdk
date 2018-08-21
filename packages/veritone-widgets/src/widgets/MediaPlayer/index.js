@@ -9,7 +9,8 @@ import {
   func,
   objectOf,
   any,
-  object
+  object,
+  oneOfType
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
@@ -62,8 +63,8 @@ class MediaPlayerComponent extends React.Component {
     readOnly: bool,
     addOnly: bool,
     autoCommit: bool,
-    width: number,
-    height: number,
+    width: oneOfType([string, number]),
+    height: oneOfType([string, number]),
     // fluid = 100% width by default, see video-react docs
     fluid: bool,
     videoHeight: number,
