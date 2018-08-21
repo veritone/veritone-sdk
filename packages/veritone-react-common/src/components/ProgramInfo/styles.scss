@@ -50,24 +50,32 @@
   margin: 8px 0;
 }
 
-.programInfoImagesSection {
+.programImagesSection {
   display: flex;
   flex-direction: row;
   margin-top: 15px;
 }
 
-.programInfoLiveImageSection {
+.programLiveImageSection {
   display: flex;
   flex-direction: column;
 }
 
-.programInfoLiveImage {
+.programLiveImageContainer {
+  text-align: center;
   height: 350px;
   width: 500px;
   margin-top: 15px;
 }
 
-.programInfoLiveImageNullState {
+.programLiveImage {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.programLiveImageNullState {
   height: 350px;
   width: 500px;
   margin-top: 15px;
@@ -77,19 +85,27 @@
   border: dashed 1px $faint-black;
 }
 
-.programInfoImageSection {
+.programImageSection {
   display: flex;
   flex-direction: column;
   margin-left: 40px;
 }
 
-.programInfoImage {
+.programImageContainer {
+  text-align: center;
   height: 250px;
   width: 250px;
   margin-top: 15px;
 }
 
-.programInfoImageNullState {
+.programImage {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.programImageNullState {
   height: 250px;
   width: 250px;
   margin-top: 15px;
@@ -113,6 +129,33 @@
   font-weight: normal;
   font-size: 12px !important;
   color: $light-black;
+}
+
+.imageOverlay {
+  height: 32px;
+}
+
+.imageOverlay {
+  width: 100%;
+  background-color: black;
+  opacity: 0.75;
+  bottom: 0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .editProgramImageIcon {
+    margin: 0 20px;
+    font-size: 20px;
+    opacity: 1;
+  }
+
+  .editProgramLiveImageIcon {
+    margin: 0 20px;
+    font-size: 20px;
+    opacity: 1;
+  }
 }
 
 .isNationalLabel {
@@ -143,14 +186,4 @@
     font-size: 14px !important;
   }
   margin-right: 0 !important;
-}
-
-.imageOverlay {
-  height: 32px;
-}
-
-.editProgramImageIcon {
-  margin: 0 7px;
-  font-size: 20px;
-  opacity: 1;
 }

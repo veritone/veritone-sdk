@@ -9,7 +9,7 @@ import {
   string,
   number
 } from 'prop-types';
-import { noop } from 'lodash';
+import { get, noop } from 'lodash';
 import { submit } from 'redux-form';
 import { connect } from 'react-redux';
 import { ProgramInfo } from 'veritone-react-common';
@@ -64,6 +64,8 @@ class ProgramInfoWidget extends React.Component {
         name: string.isRequired
       })
     ),
+    pick: func,
+    _widgetId: string,
     relativeSize: number, // optional - used to scale text sizes from hosting app
     color: string,
     submit: func.isRequired
@@ -76,7 +78,6 @@ class ProgramInfoWidget extends React.Component {
 
   state = {
     submitCallback: noop,
-    openFilePicker: false,
     selectImageType: null,
     program: {
       ...this.props.program
@@ -93,35 +94,69 @@ class ProgramInfoWidget extends React.Component {
   };
 
   onUploadImage = fileType => {
-    console.log('open file picker widget');
     this.props.pick(this.props._widgetId);
     this.setState({
       selectImageType: fileType
     });
   };
 
+  onRemoveImage = fileType => {
+    this.setState(prevState => {
+      const program = {
+        ...prevState.program
+      };
+      if (fileType === 'programImage') {
+        delete program.programImage;
+        delete program.signedProgramImage;
+      } else if (fileType === 'programLiveImage') {
+        delete program.programLiveImage;
+        delete program.signedProgramLiveImage;
+      }
+      return {
+        program
+      };
+    });
+  };
+
   onPick = files => {
-    console.log('on pick');
-    console.log(files);
-    // TODO edit url in program
+    const imageUri = get(files, '[0].unsignedUrl');
+    const signedImageUri = get(files, '[0].getUrl');
+    if (!signedImageUri) {
+      throw new Error('Image uri must be signed.');
+    }
+    this.setState(prevState => {
+      const program = {
+        ...prevState.program
+      };
+      if (prevState.selectImageType === 'programImage') {
+        program.programImage = imageUri;
+        program.signedProgramImage = signedImageUri;
+      } else if (prevState.selectImageType === 'programLiveImage') {
+        program.programLiveImage = imageUri;
+        program.signedProgramLiveImage = signedImageUri;
+      }
+      return {
+        program,
+        selectImageType: null
+      };
+    });
   };
 
   render() {
-    const { openFilePicker } = this.state;
-    console.log(openFilePicker);
     return (
       <div>
         <ProgramInfo
           {...this.props}
           program={this.state.program}
-          onSubmit={this.state.submitCallback}
           onUploadImage={this.onUploadImage}
+          onRemoveImage={this.onRemoveImage}
+          onSubmit={this.state.submitCallback}
         />
         <FilePicker
           id={this.props._widgetId}
           onPick={this.onPick}
           width={600}
-          height={600}
+          height={640}
         />
       </div>
     );

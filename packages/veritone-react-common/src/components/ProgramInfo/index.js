@@ -6,7 +6,6 @@ import {
 } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Dialog from '@material-ui/core/Dialog';
 import EditIcon from '@material-ui/icons/ModeEdit';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -21,7 +20,6 @@ import { reduxForm, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
 import { get } from 'lodash';
 import SharingConfiguration from '../SharingConfiguration';
-import FilePicker from '../FilePicker';
 import Affiliates from './Affiliates';
 
 import styles from './styles.scss';
@@ -110,6 +108,7 @@ class ProgramInfo extends React.Component {
     ),
     readOnly: bool,
     onUploadImage: func,
+    onRemoveImage: func,
     onSubmit: func.isRequired, // user-provided callback for result values
     handleSubmit: func.isRequired, // provided by redux-form
     relativeSize: number, // optional - used to scale text sizes from hosting app
@@ -125,8 +124,31 @@ class ProgramInfo extends React.Component {
   state = {
     program: {
       ...this.props.program
-    },
-    openFilePicker: false
+    }
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    if (get(props, 'program.programImage') !== get(state, 'program.programImage') ||
+        get(props, 'program.signedProgramImage') !== get(state, 'program.signedProgramImage')) {
+      return {
+        program: {
+          ...state.program,
+          programImage: get(props, 'program.programImage'),
+          signedProgramImage: get(props, 'program.signedProgramImage')
+        }
+      };
+    }
+    if (get(props, 'program.programLiveImage') !== get(state, 'program.programLiveImage') ||
+        get(props, 'program.signedProgramLiveImage') !== get(state, 'program.signedProgramLiveImage')) {
+      return {
+        program: {
+          ...state.program,
+          programLiveImage: get(props, 'program.programLiveImage'),
+          signedProgramLiveImage: get(props, 'program.signedProgramLiveImage')
+        }
+      };
+    }
+    return null;
   };
 
   handleNameChange = event => {
@@ -223,11 +245,12 @@ class ProgramInfo extends React.Component {
   };
 
   prepareResultData() {
-    return {
-      ...this.state.program,
-      programLiveImage: this.state.programLiveImageFile,
-      programImage: this.state.programImageFile
+    const program = {
+      ...this.state.program
     };
+    delete program.signedProgramLiveImage;
+    delete program.signedProgramImage;
+    return program;
   }
 
   handleSubmit = () => {
@@ -258,71 +281,6 @@ class ProgramInfo extends React.Component {
     return theme;
   };
 
-  handleFilesSelected = files => {
-    const fileReader = new FileReader();
-    console.log('handleFilesSelected');
-    fileReader.onload = () => {
-      this.setState((prevState, props) => {
-        console.log(fileReader.result);
-        console.log(files[0]);
-        console.log('handleFilesSelected set state');
-        return {
-          [prevState.selectImageType]: fileReader.result,
-          [prevState.selectImageType + 'File']: files[0],
-          openFilePicker: false,
-          selectImageType: null
-        };
-      });
-    };
-    console.log('handleFilesSelected before readAsDataURL');
-    fileReader.readAsDataURL(files[0]);
-  };
-
-  handleCloseFilePicker = () => {
-    this.setState({
-      selectImageType: null,
-      openFilePicker: false
-    });
-  };
-
-  handleRemoveImage = imageType => event => {
-    this.setState({
-      [imageType]: undefined,
-      [imageType + 'File']: undefined
-    });
-  };
-
-  handleStartPickFiles = fileType => event => {
-    if (this.props.readOnly) {
-      return;
-    }
-    //TODO: uncomment when handled image url change on file upload
-    // console.log('start handleStartPickFiles');
-    // this.setState({
-    //   selectImageType: fileType,
-    //   openFilePicker: true
-    // });
-    console.log('end handleStartPickFiles');
-  };
-
-  renderFilePicker = () => {
-    return (
-      <Dialog open={this.state.openFilePicker}>
-        <FilePicker
-          accept="image/*"
-          height={500}
-          width={500}
-          onRequestClose={this.handleCloseFilePicker}
-          onPickFiles={this.handleFilesSelected}
-        />
-      </Dialog>
-    );
-  };
-
-  handleOnUploadImage = fileName => {
-    this.props.onUploadImage(fileName);
-  };
-
   render() {
     const {
       canShare,
@@ -332,7 +290,8 @@ class ProgramInfo extends React.Component {
       organizations,
       affiliates,
       readOnly,
-      onUploadImage
+      onUploadImage,
+      onRemoveImage
     } = this.props;
 
     const { program, openFilePicker } = this.state;
@@ -358,38 +317,39 @@ class ProgramInfo extends React.Component {
               />
             </div>
             <div className={styles.programInfoSection}>
-              <div className={styles.programInfoImagesSection}>
-                <div className={styles.programInfoLiveImageSection}>
+              <div className={styles.programImagesSection}>
+                <div className={styles.programLiveImageSection}>
                   <div className={styles.programInfoFieldHeader}>
                     Program Live Image
                   </div>
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 500x350 .jpg or .png
                   </div>
-                  {get(program, 'programLiveImage.length') > 0 && (
-                    <img
-                      className={styles.programInfoLiveImage}
-                      src={program.programLiveImage}
-                    />
-                  )}
-                  {get(program, 'programLiveImage.length') > 0 && (
-                    <div className={styles.imageOverlay}>
-                      <EditIcon
-                        classes={{ root: styles.editProgramImageIcon }}
-                        className="icon-mode_edit2"
-                        onClick={() => this.handleOnUploadImage('programLiveImage')}
+                  {(get(program, 'signedProgramLiveImage.length') > 0 || get(program, 'programLiveImage.length') > 0) && (
+                    /* eslint-disable react/jsx-no-bind */
+                    <div className={styles.programLiveImageContainer}>
+                      <img
+                        className={styles.programLiveImage}
+                        src={program.signedProgramLiveImage || program.programLiveImage}
                       />
-                      <DeleteIcon
-                        classes={{ root: styles.editProgramImageIcon }}
-                        className="icon-trashcan"
-                        onClick={this.handleRemoveImage('programLiveImage')}
-                      />
+                      <div className={styles.imageOverlay}>
+                        <EditIcon
+                          classes={{ root: styles.editProgramLiveImageIcon }}
+                          className="icon-mode_edit2"
+                          onClick={() => onUploadImage('programLiveImage')}
+                        />
+                        <DeleteIcon
+                          classes={{ root: styles.editProgramLiveImageIcon }}
+                          className="icon-trashcan"
+                          onClick={() => onRemoveImage('programLiveImage')}
+                        />
+                      </div>
                     </div>
                   )}
-                  {!get(program, 'programLiveImage.length') && (
+                  {!get(program, 'signedProgramLiveImage.length') && !get(program, 'programLiveImage.length') && (
                     <div
-                      className={styles.programInfoLiveImageNullState}
-                      onClick={() => this.handleOnUploadImage('programLiveImage')}
+                      className={styles.programLiveImageNullState}
+                      onClick={() => onUploadImage('programLiveImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
@@ -404,37 +364,37 @@ class ProgramInfo extends React.Component {
                     </div>
                   )}
                 </div>
-                <div className={styles.programInfoImageSection}>
+                <div className={styles.programImageSection}>
                   <div className={styles.programInfoFieldHeader}>
                     Program Image
                   </div>
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 250x250 .jpg or .png
                   </div>
-                  {get(program, 'programImage.length') > 0 && (
-                    <img
-                      className={styles.programInfoImage}
-                      src={program.programImage}
-                    />
-                  )}
-                  {get(program, 'programImage.length') > 0 && (
-                    <div className={styles.imageOverlay}>
-                      <EditIcon
-                        classes={{ root: styles.editProgramImageIcon }}
-                        className="icon-mode_edit2"
-                        onClick={() => this.handleOnUploadImage('programImage')}
+                  {(get(program, 'signedProgramImage.length') > 0 || get(program, 'programImage.length') > 0) && (
+                    <div className={styles.programImageContainer}>
+                      <img
+                        className={styles.programImage}
+                        src={program.signedProgramImage || program.programImage}
                       />
-                      <DeleteIcon
-                        classes={{ root: styles.editProgramImageIcon }}
-                        className="icon-trashcan"
-                        onClick={this.handleRemoveImage('programImage')}
-                      />
+                      <div className={styles.imageOverlay}>
+                        <EditIcon
+                          classes={{ root: styles.editProgramImageIcon }}
+                          className="icon-mode_edit2"
+                          onClick={() => onUploadImage('programImage')}
+                        />
+                        <DeleteIcon
+                          classes={{ root: styles.editProgramImageIcon }}
+                          className="icon-trashcan"
+                          onClick={() => onRemoveImage('programImage')}
+                        />
+                      </div>
                     </div>
                   )}
-                  {!get(program, 'programImage.length') && (
+                  {!get(program, 'signedProgramImage.length') && !get(program, 'programImage.length') && (
                     <div
-                      className={styles.programInfoImageNullState}
-                      onClick={() => this.handleOnUploadImage('programImage')}
+                      className={styles.programImageNullState}
+                      onClick={() => onUploadImage('programImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
