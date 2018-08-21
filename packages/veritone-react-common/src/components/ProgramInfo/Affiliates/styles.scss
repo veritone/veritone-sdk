@@ -21,8 +21,7 @@
 
 .affiliatesListSection {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   margin-top: 20px;
 }
 
