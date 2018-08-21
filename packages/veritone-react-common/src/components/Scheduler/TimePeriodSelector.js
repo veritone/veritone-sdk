@@ -25,7 +25,7 @@ const TimePeriodSelector = ({ name, label, number, period, readOnly }) => (
           component={Select}
           name="period"
           className={styles.rightInput + ' ' + styles.periodSelect}
-          readOnly
+          readOnly={readOnly}
         >
           <MenuItem value="hour">{pluralize('Hours', Number(number))}</MenuItem>
           <MenuItem value="day">{pluralize('Days', Number(number))}</MenuItem>
