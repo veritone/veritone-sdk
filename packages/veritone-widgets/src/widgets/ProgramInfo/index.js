@@ -106,11 +106,11 @@ class ProgramInfoWidget extends React.Component {
         ...prevState.program
       };
       if (fileType === 'programImage') {
-        delete program.programImage;
-        delete program.signedProgramImage;
+        program.programImage = null;
+        program.signedProgramImage = null;
       } else if (fileType === 'programLiveImage') {
-        delete program.programLiveImage;
-        delete program.signedProgramLiveImage;
+        program.programLiveImage = null;
+        program.signedProgramLiveImage = null;
       }
       return {
         program
