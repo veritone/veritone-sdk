@@ -97,7 +97,7 @@ const MultiTimeRange = ({ fields, readOnly }) => {
     <div className={styles.multiTimeRange}>
       {fields.map((field, index) => (
         <div key={field} className={styles.row}>
-          <Field name={field} component={TimeRangePicker} readOnly />
+          <Field name={field} component={TimeRangePicker} readOnly={readOnly} />
           {(index > 0 || fields.length > 1) && (
             <IconButton
               onClick={() => fields.remove(index)}
@@ -127,5 +127,6 @@ const MultiTimeRange = ({ fields, readOnly }) => {
 };
 
 MultiTimeRange.propTypes = {
-  fields: objectOf(any)
+  fields: objectOf(any),
+  readOnly: bool
 };

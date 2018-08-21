@@ -77,7 +77,8 @@ DateSelector.propTypes = {
   min: instanceOf(Date),
   max: instanceOf(Date),
   value: string.isRequired,
-  onChange: func.isRequired
+  onChange: func.isRequired,
+  readOnly: bool
 };
 
 const TimeSelector = ({ value, min, max, onChange, readOnly, ...rest }) => {
@@ -102,7 +103,8 @@ TimeSelector.propTypes = {
   min: instanceOf(Date),
   max: instanceOf(Date),
   value: string.isRequired,
-  onChange: func.isRequired
+  onChange: func.isRequired,
+  readOnly: bool
 };
 
 const TimeZoneField = ({ value, ...rest }) => {

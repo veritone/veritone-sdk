@@ -16,7 +16,7 @@ const DateTimeSelector = ({ name, label, showIcon, readOnly }) => (
         className={styles.leftInput}
         showTimezone
         showIcon={showIcon}
-        readOnly
+        readOnly={readOnly}
       />
     </FormGroup>
   </LabeledInputGroup>
@@ -25,7 +25,8 @@ const DateTimeSelector = ({ name, label, showIcon, readOnly }) => (
 DateTimeSelector.propTypes = {
   name: string,
   label: string,
-  showIcon: bool
+  showIcon: bool,
+  readOnly: bool
 };
 
 export default DateTimeSelector;

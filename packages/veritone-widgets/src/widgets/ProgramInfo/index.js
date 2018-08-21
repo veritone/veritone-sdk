@@ -15,9 +15,11 @@ import { connect } from 'react-redux';
 import { ProgramInfo } from 'veritone-react-common';
 import FilePicker from '../FilePicker';
 
+import * as filePickerModule from '../../redux/modules/filePicker';
+
 import widget from '../../shared/widget';
 
-@connect(null, { submit }, null, { withRef: true })
+@connect(null, { submit, pick: filePickerModule.pick }, null, { withRef: true })
 class ProgramInfoWidget extends React.Component {
   static propTypes = {
     program: shape({
@@ -90,20 +92,23 @@ class ProgramInfoWidget extends React.Component {
     );
   };
 
-  onUploadImage = fileType => event => {
-    console.log('open file picket widget');
+  onUploadImage = fileType => {
+    console.log('open file picker widget');
+    this.props.pick(this.props._widgetId);
     this.setState({
-      selectImageType: fileType,
-      openFilePicker: true
+      selectImageType: fileType
     });
   };
 
   onPick = files => {
+    console.log('on pick');
     console.log(files);
     // TODO edit url in program
   };
 
   render() {
+    const { openFilePicker } = this.state;
+    console.log(openFilePicker);
     return (
       <div>
         <ProgramInfo
@@ -112,10 +117,12 @@ class ProgramInfoWidget extends React.Component {
           onSubmit={this.state.submitCallback}
           onUploadImage={this.onUploadImage}
         />
-        {/*<FilePicker
-          open={this.state.openFilePicker}
+        <FilePicker
+          id={this.props._widgetId}
           onPick={this.onPick}
-        />*/}
+          width={600}
+          height={600}
+        />
       </div>
     );
   }

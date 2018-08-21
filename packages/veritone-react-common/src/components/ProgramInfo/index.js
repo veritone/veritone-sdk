@@ -319,6 +319,10 @@ class ProgramInfo extends React.Component {
     );
   };
 
+  handleOnUploadImage = fileName => {
+    this.props.onUploadImage(fileName);
+  };
+
   render() {
     const {
       canShare,
@@ -373,7 +377,7 @@ class ProgramInfo extends React.Component {
                       <EditIcon
                         classes={{ root: styles.editProgramImageIcon }}
                         className="icon-mode_edit2"
-                        onClick={() => onUploadImage('programLiveImage')}
+                        onClick={() => this.handleOnUploadImage('programLiveImage')}
                       />
                       <DeleteIcon
                         classes={{ root: styles.editProgramImageIcon }}
@@ -385,7 +389,7 @@ class ProgramInfo extends React.Component {
                   {!get(program, 'programLiveImage.length') && (
                     <div
                       className={styles.programInfoLiveImageNullState}
-                      onClick={() => onUploadImage('programLiveImage')}
+                      onClick={() => this.handleOnUploadImage('programLiveImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
@@ -418,7 +422,7 @@ class ProgramInfo extends React.Component {
                       <EditIcon
                         classes={{ root: styles.editProgramImageIcon }}
                         className="icon-mode_edit2"
-                        onClick={() => onUploadImage('programImage')}
+                        onClick={() => this.handleOnUploadImage('programImage')}
                       />
                       <DeleteIcon
                         classes={{ root: styles.editProgramImageIcon }}
@@ -430,7 +434,7 @@ class ProgramInfo extends React.Component {
                   {!get(program, 'programImage.length') && (
                     <div
                       className={styles.programInfoImageNullState}
-                      onClick={() => onUploadImage('programImage')}
+                      onClick={() => this.handleOnUploadImage('programImage')}
                     >
                       <div className={styles.uploadImageIconSection}>
                         <Icon
