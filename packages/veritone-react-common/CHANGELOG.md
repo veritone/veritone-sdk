@@ -116,3 +116,9 @@
 ## 6.0.1
 * Support signedApplicationIconUrl field in the AppSwitcher
 * Update veritone icons font
+
+## 6.1.0
+* Add support for more engines in SearchBar
+* Add Scheduler component
+* Add better validation to DateTimePicker form component
+* Add TimeRangePicker form component
