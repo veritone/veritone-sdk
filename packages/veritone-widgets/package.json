@@ -16,10 +16,10 @@
     "redux-saga": "^0.15.6",
     "redux-thunk": "^2.2.0",
     "shaka-player": "^2.4.1",
-    "video-react": "^0.11.2",
     "veritone-oauth-helpers": "^2.1.0",
     "veritone-react-common": "^6.0.0",
-    "veritone-redux-common": "^3.7.0"
+    "veritone-redux-common": "^3.7.0",
+    "video-react": "^0.11.2"
   },
   "main": "dist/bundle-cjs.js",
   "module": "dist/bundle-es.js",
@@ -40,8 +40,7 @@
     "lint": "eslint src/** --ext .js --max-warnings 0",
     "clean:build": "rimraf dist",
     "prebuild": "yarn run clean:build",
-    "prepublishOnly": "yarn run test && yarn run lint && yarn run build",
-    "prepare": "cd .. && yarn patch-package"
+    "prepublishOnly": "yarn run test && yarn run lint && yarn run build"
   },
   "devDependencies": {
     "@storybook/addon-knobs": "3.3.9",
@@ -57,8 +56,8 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "cross-env": "^5.1.1",
-    "enzyme": "^3.3.0",
-    "enzyme-adapter-react-16": "^1.0.2",
+    "enzyme": "^3.4.4",
+    "enzyme-adapter-react-16.3": "1.0.0",
     "eslint": "^4.10.0",
     "eslint-config-prettier": "^2.7.0",
     "eslint-plugin-import": "^2.11.0",
@@ -68,7 +67,6 @@
     "faker": "^4.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^22.4.3",
-    "postinstall-prepare": "^1.0.1",
     "raf": "^3.4.0",
     "react-test-renderer": "^16.0.0",
     "redux-devtools": "^3.4.0",
