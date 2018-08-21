@@ -154,9 +154,10 @@ class DynamicAdapter extends React.Component {
           items: startIndex === 0 ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
         }
       }
-      const sourceToSelect = find(
+      const sourceId = this.state.sourceId;
+      const sourceToSelect = !isUndefined(sourceId) && find(
         newState._source.items,
-        ['id', this.state.sourceId]
+        ['id', sourceId.toString()]
       );
       if (sourceToSelect) {
         this.setState(newState, () => {
