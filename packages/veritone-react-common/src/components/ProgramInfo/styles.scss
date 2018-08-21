@@ -53,7 +53,7 @@
 .programImagesSection {
   display: flex;
   flex-direction: row;
-  margin: 15px 0;
+  margin-top: 15px;
 }
 
 .programLiveImageSection {
@@ -66,6 +66,7 @@
   height: 350px;
   width: 500px;
   margin-top: 15px;
+  margin-bottom: 30px;
 }
 
 .programLiveImage {
