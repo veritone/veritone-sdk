@@ -27,10 +27,7 @@ import {
   node
 } from 'prop-types';
 import styles from './styles.scss';
-import {
-  FaceEngineOutput,
-  AlertDialog
-} from 'veritone-react-common';
+import { FaceEngineOutput, AlertDialog } from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
@@ -171,7 +168,8 @@ class FaceEngineOutputContainer extends Component {
     closeConfirmationDialog: func,
     pendingUserEdits: bool,
     isDisplayingUserEditedOutput: bool,
-    clearEngineResultsByEngineId: func
+    clearEngineResultsByEngineId: func,
+    moreMenuItems: arrayOf(node)
   };
 
   state = {
@@ -544,6 +542,7 @@ class FaceEngineOutputContainer extends Component {
           onRemoveFaceDetection={this.handleRemoveFaceDetection}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
+          moreMenuItems={this.props.moreMenuItems}
         />
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}

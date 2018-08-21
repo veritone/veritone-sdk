@@ -129,6 +129,11 @@ const engineRunsQueryClause = `engineRuns(limit: 1000) {
             categoryType
             iconClass
             editable
+            exportFormats {
+              format
+              label
+              types
+            }
           }
         }
         status
@@ -956,8 +961,8 @@ function* fetchEntities(widgetId, entityIds) {
   });
 }
 
-function* fetchSchemas(widgetId, schemaIds) {
-  yield put({ type: REQUEST_SCHEMAS, meta: { widgetId } });
+function* fetchSchemas(schemaIds) {
+  yield put({ type: REQUEST_SCHEMAS });
   let schemaQueries = schemaIds.map((id, index) => {
     return `
       schema${index}: schema(id:"${id}") {
@@ -996,14 +1001,12 @@ function* fetchSchemas(widgetId, schemaIds) {
   if (response.errors) {
     return yield put({
       type: REQUEST_SCHEMAS_FAILURE,
-      error: 'Error thrown while fetching schemas',
-      meta: { widgetId }
+      error: 'Error thrown while fetching schemas'
     });
   }
   return yield put({
     type: REQUEST_SCHEMAS_SUCCESS,
-    payload: response.data,
-    meta: { widgetId }
+    payload: response.data
   });
 }
 
@@ -1052,19 +1055,22 @@ function* watchRestoreOriginalEngineResults() {
     } = action.payload;
 
     // these could be partial or fully retrieved data from assets
-    const fetchedEngineResultsToDelete = get(action.payload, 'engineResults', [])
-      .filter(
-        jsonData =>
-          jsonData.userEdited &&
-          !!jsonData.assetId
-      );
-    const fetchedAssetIdsToDelete = fetchedEngineResultsToDelete.map(jsonData => jsonData.assetId);
+    const fetchedEngineResultsToDelete = get(
+      action.payload,
+      'engineResults',
+      []
+    ).filter(jsonData => jsonData.userEdited && !!jsonData.assetId);
+    const fetchedAssetIdsToDelete = fetchedEngineResultsToDelete.map(
+      jsonData => jsonData.assetId
+    );
 
     // list all user edited vtn-standard assets for this tdo and engine
     let userEditedVtnAssetIdsToDelete = [];
     if (removeAllUserEdits) {
       try {
-        let engineIds = fetchedEngineResultsToDelete.map(engineResult => engineResult.sourceEngineId);
+        let engineIds = fetchedEngineResultsToDelete.map(
+          engineResult => engineResult.sourceEngineId
+        );
         if (engineId) {
           engineIds.push(engineId);
         }
@@ -1077,7 +1083,8 @@ function* watchRestoreOriginalEngineResults() {
         userEditedVtnAssetIdsToDelete = vtnStandardAssets
           .filter(
             asset =>
-              asset.isUserEdited && includes(engineIds, get(asset, 'sourceData.engineId'))
+              asset.isUserEdited &&
+              includes(engineIds, get(asset, 'sourceData.engineId'))
           )
           .map(asset => asset.id);
       } catch (error) {
@@ -1191,7 +1198,7 @@ function* watchLoadEngineResultsComplete() {
       yield call(fetchEntities, action.meta.widgetId, uniq(entityIds));
     }
     if (schemaIds.length) {
-      yield call(fetchSchemas, action.meta.widgetId, uniq(schemaIds));
+      yield call(fetchSchemas, uniq(schemaIds));
     }
   });
 }
