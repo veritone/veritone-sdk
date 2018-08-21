@@ -122,3 +122,7 @@
 * Add Scheduler component
 * Add better validation to DateTimePicker form component
 * Add TimeRangePicker form component
+
+## 6.1.1
+* Overlay:
+  * fix position of drawn boxes being out of sync with mouse position in some cases where the screen is scrolled.
