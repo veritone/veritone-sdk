@@ -19,7 +19,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.3.0",
     "react-addons-css-transition-group": "^15.6.2",
-	  "react-contenteditable": "^2.0.7",
+    "react-contenteditable": "^2.0.7",
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dnd-test-backend": "^2.5.4",
