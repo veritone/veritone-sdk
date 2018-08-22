@@ -300,7 +300,7 @@ class DynamicAdapter extends React.Component {
               <div>
                 <TextField
                   type="number"
-                  label="Max Duration Length"
+                  label="Segment Duration Length"
                   margin="normal"
                   InputLabelProps={{
                     className: styles.tdoDurationLabel
