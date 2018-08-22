@@ -340,12 +340,11 @@ storiesOf('MediaPlayer', module)
           live: true,
           muted: true,
           autoPlay: true,
-          sourceId: '123',
+          streams: hlsStream,
           boundingPolySeries: timeSeries
         }}
         componentClass={MediaPlayerLightbox}
         componentProps={{
-          live: true,
           muted: true,
           autoPlay: true,
           streams: multipleStreams,

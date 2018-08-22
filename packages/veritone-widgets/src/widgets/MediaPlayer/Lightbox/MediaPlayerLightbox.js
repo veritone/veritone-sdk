@@ -16,7 +16,6 @@ export default class MediaPlayerLightbox extends React.Component {
         uri: string
       })
     ),
-    sourceId: string,
     live: bool,
     open: bool,
     fullscreen: bool,
@@ -61,7 +60,15 @@ export default class MediaPlayerLightbox extends React.Component {
             onDeleteBoundingBox={this.handleOnDeleteBoundingBox}
             onChangeBoundingBox={this.handleOnChangeBoundingBox}
           />
-          <DefaultControlBar playerRef={this.playerRef} />
+          <DefaultControlBar 
+             btnRestart={!live}
+             btnReplay={!live}
+             btnForward={!live}
+             btnPlayToggle={!live}
+             ctrlProgress={!live}
+             displayTime={!live}
+            playerRef={this.playerRef}
+          />
           {live && <div className={styles.liveLabel}>LIVE</div>}
         </div>
       </Lightbox>
