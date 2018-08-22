@@ -77,7 +77,7 @@ const initDate = new Date();
         : subDays(initDate, 3),
       end: get(props, 'initialValues.end')
         ? new Date(props.initialValues.end)
-        : initDate,
+        : undefined,
       repeatEvery: {
         number: '1',
         period: 'day'
