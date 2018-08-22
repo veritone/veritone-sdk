@@ -211,6 +211,7 @@ export default class SourceConfiguration extends React.Component {
                   label="Source Name"
                   value={source.name}
                   onChange={this.handleNameChange}
+                  maxLength="40"
                   InputProps={{
                     readOnly: this.props.isReadOnly
                   }}

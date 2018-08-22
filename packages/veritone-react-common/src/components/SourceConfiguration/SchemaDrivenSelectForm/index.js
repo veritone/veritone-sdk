@@ -26,12 +26,12 @@ export default class DynamicSelect extends React.Component {
     isReadOnly: bool
   };
   static defaultProps = {
-    fieldValues: {}
+    fieldValues: {},
+    errorFields: {}
   };
 
   state = {
-    oneSourceType: false,
-    errorFields: this.props.errorFields
+    oneSourceType: false
   };
 
   // eslint-disable-next-line react/sort-comp

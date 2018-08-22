@@ -29,7 +29,7 @@ export default class ContentTemplates extends React.Component {
     onAddTemplate: func.isRequired,
     onRemoveTemplate: func.isRequired,
     onInputChange: func.isRequired,
-    getFieldOptions: func.isRequired,
+    getFieldOptions: func,
     isReadOnly: bool
   };
   static defaultProps = {

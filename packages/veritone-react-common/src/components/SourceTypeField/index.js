@@ -34,7 +34,7 @@ export default class SourceTypeField extends React.Component {
     options: arrayOf(any),
     query: string,
     peerSelection: arrayOf(any),
-    getFieldOptions: func.isRequired,
+    getFieldOptions: func,
     isDirty: bool,
     isReadOnly: bool
   };
@@ -49,7 +49,7 @@ export default class SourceTypeField extends React.Component {
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     const { query } = this.props;
-    if (query) {
+    if (query && isFunction(this.props.getFieldOptions)) {
       this.props.getFieldOptions(query).then(results => {
         const newState = {};
         if (isArray(results)) {
@@ -157,7 +157,7 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
 SelectField.propTypes = {
   id: string.isRequired,
   title: string,
-  value: oneOfType(string, arrayOf(string)),
+  value: oneOfType([string, arrayOf(string)]),
   onChange: func.isRequired,
   options: arrayOf(any).isRequired,
   isDirty: bool,

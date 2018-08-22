@@ -22,7 +22,7 @@ export default class TemplateForms extends React.Component {
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
     onRemoveTemplate: func.isRequired,
-    getFieldOptions: func.isRequired,
+    getFieldOptions: func,
     isReadOnly: bool
   };
   static defaultProps = {};

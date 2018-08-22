@@ -150,15 +150,15 @@ describe('DynamicAdapter', () => {
     };
     const DynamicAdapter = DynamicAdapterConfig.adapter;
     const UPDATE_CONFIGURATION = jest.fn();
-    const OPEN_CREATE_SOURCE = jest.fn();
-    const CLOSE_CREATE_SOURCE = jest.fn();
     const testFuncs = {
       loadNextSources: () => {
         return Promise.resolve(SOURCES);
       },
       loadNextClusters: () => {
         return Promise.resolve(CLUSTERS);
-      }
+      },
+      OPEN_CREATE_SOURCE: () => () => jest.fn(),
+      CLOSE_CREATE_SOURCE: jest.fn()
     };
     mount(
       <DynamicAdapter
@@ -166,8 +166,8 @@ describe('DynamicAdapter', () => {
         sources={SOURCES}
         configuration={CONFIGURATION}
         updateConfiguration={UPDATE_CONFIGURATION}
-        openCreateSource={OPEN_CREATE_SOURCE}
-        closeCreateSource={CLOSE_CREATE_SOURCE}
+        openCreateSource={testFuncs.OPEN_CREATE_SOURCE}
+        closeCreateSource={testFuncs.CLOSE_CREATE_SOURCE}
         loadNextSources={testFuncs.loadNextSources}
         loadNextClusters={testFuncs.loadNextClusters}
         pageSize={3}
@@ -185,7 +185,8 @@ describe('DynamicAdapter', () => {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
-      }
+      },
+      maxTDODuration: 180
     };
     expectedConfiguration[FIELDS[0].name] = FIELDS[0].defaultValue;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
@@ -205,15 +206,15 @@ describe('DynamicAdapter', () => {
     CONFIGURATION[FIELDS[0].name] = TEST_FIELD_VALUE;
     const DynamicAdapter = DynamicAdapterConfig.adapter;
     const UPDATE_CONFIGURATION = jest.fn();
-    const OPEN_CREATE_SOURCE = jest.fn();
-    const CLOSE_CREATE_SOURCE = jest.fn();
     const testFuncs = {
       loadNextSources: () => {
         return Promise.resolve(SOURCES);
       },
       loadNextClusters: () => {
         return Promise.resolve(CLUSTERS);
-      }
+      },
+      OPEN_CREATE_SOURCE: () => () => jest.fn(),
+      CLOSE_CREATE_SOURCE: jest.fn()
     };
     mount(
       <DynamicAdapter
@@ -222,8 +223,8 @@ describe('DynamicAdapter', () => {
         configuration={CONFIGURATION}
         updateConfiguration={UPDATE_CONFIGURATION}
         supportedSourceTypes={SUPPORTED_SOURCE_TYPES}
-        openCreateSource={OPEN_CREATE_SOURCE}
-        closeCreateSource={CLOSE_CREATE_SOURCE}
+        openCreateSource={testFuncs.OPEN_CREATE_SOURCE}
+        closeCreateSource={testFuncs.CLOSE_CREATE_SOURCE}
         loadNextSources={testFuncs.loadNextSources}
         loadNextClusters={testFuncs.loadNextClusters}
         pageSize={3}
@@ -241,7 +242,8 @@ describe('DynamicAdapter', () => {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
-      }
+      },
+      maxTDODuration: 180
     };
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
