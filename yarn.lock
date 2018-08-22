@@ -13282,7 +13282,7 @@ vfile@^2.0.0:
     unist-util-stringify-position "^1.0.0"
     vfile-message "^1.0.0"
 
-video-react@^0.13.0:
+video-react@~0.13.0:
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/video-react/-/video-react-0.13.0.tgz#13d73c6f889899e1275517b540e96cc3434015a9"
   dependencies:
