@@ -6,7 +6,7 @@ import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
 import Avatar from '@material-ui/core/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
-import { capitalize, omit, noop, get } from 'lodash';
+import { capitalize, omit, noop } from 'lodash';
 
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
@@ -45,7 +45,7 @@ export default class SourceTileView extends React.Component {
   };
 
   renderSourceName = (name, data) => {
-    const isLivestream = get(data, 'isLivestream', false);
+    const isLivestream = data.isLivestream;
     if (!isLivestream) {
       return name;
     } else {
