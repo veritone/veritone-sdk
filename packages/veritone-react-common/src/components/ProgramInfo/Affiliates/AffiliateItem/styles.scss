@@ -1,0 +1,41 @@
+@import 'src/styles/modules/variables';
+
+.affiliateContainer {
+  height: 65px;
+  width: 210px;
+  background-color: $barely-black;
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px;
+  cursor: pointer;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.name {
+  font-weight: 500;
+  font-size: 14px;
+  color: $dark-black;
+  margin-top: 15px;
+}
+
+.editButton {
+  height: 24px !important;
+  width: 24px !important;
+  margin-top: 10px !important;
+}
+
+.editButtonIcon {
+  font-size: 16px !important;
+}
+
+.schedule {
+  font-weight: normal;
+  font-size: 14px;
+  color: $light-black;
+  margin-top: 3px;
+}

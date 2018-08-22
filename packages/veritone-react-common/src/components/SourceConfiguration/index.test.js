@@ -78,6 +78,7 @@ describe('Source Configuration', function() {
           sourceTypes={sourceRecords}
           source={initialSource}
           onInputChange={noop}
+          getFieldOptions={noop}
         />
       );
 
@@ -94,6 +95,7 @@ describe('Source Configuration', function() {
           sourceTypes={sourceRecords}
           source={initialSource}
           onInputChange={noop}
+          getFieldOptions={noop}
         />
       );
 
@@ -125,6 +127,7 @@ describe('Source Configuration', function() {
           sourceTypes={sourceRecords}
           source={initialSource}
           onInputChange={noop}
+          getFieldOptions={noop}
         />
       );
 

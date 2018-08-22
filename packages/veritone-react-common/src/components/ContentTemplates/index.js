@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, arrayOf, objectOf, any, func } from 'prop-types';
+import { string, shape, arrayOf, objectOf, any, func, bool } from 'prop-types';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
@@ -28,7 +28,9 @@ export default class ContentTemplates extends React.Component {
     ),
     onAddTemplate: func.isRequired,
     onRemoveTemplate: func.isRequired,
-    onInputChange: func.isRequired
+    onInputChange: func.isRequired,
+    getFieldOptions: func,
+    isReadOnly: bool
   };
   static defaultProps = {
     selectedTemplateSchemas: []
@@ -44,6 +46,7 @@ export default class ContentTemplates extends React.Component {
           <TemplateList
             templates={this.props.templateData}
             addTemplate={this.props.onAddTemplate}
+            isReadOnly={this.props.isReadOnly}
           />
         </div>
         <div className={styles['content-templates']}>
@@ -54,6 +57,8 @@ export default class ContentTemplates extends React.Component {
               templates={selectedTemplateSchemas}
               onRemoveTemplate={this.props.onRemoveTemplate}
               onTemplateDetailsChange={this.props.onInputChange}
+              getFieldOptions={this.props.getFieldOptions}
+              isReadOnly={this.props.isReadOnly}
             />
           )}
         </div>

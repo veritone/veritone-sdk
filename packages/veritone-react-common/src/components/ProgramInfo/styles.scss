@@ -1,0 +1,187 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.activeSectionContainer {
+  display: flex;
+  flex-direction: column;
+
+  label,
+  span,
+  input {
+    font-weight: inherit;
+    font-size: 14px;
+  }
+}
+
+.programInfoSection {
+  margin-bottom: 20px;
+}
+
+.programInfoInputField {
+  min-width: 600px;
+  width: 600px;
+}
+
+.programInfoSelect {
+  min-width: 600px;
+
+  & > div > div {
+    font-size: 14px;
+    color: $dark-black;
+  }
+}
+
+.programInfoSelectLabel {
+  font-weight: normal;
+  font-size: 14px !important;
+  color: $light-black;
+}
+
+.programInfoFieldHeader {
+  font-weight: normal;
+  font-size: 16px !important;
+  color: $dark-black;
+}
+
+.programInfoFieldDescription {
+  font-weight: normal;
+  font-size: 12px !important;
+  color: $light-black;
+  margin: 8px 0;
+}
+
+.programImagesSection {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+}
+
+.programLiveImageSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.programLiveImageContainer {
+  text-align: center;
+  height: 350px;
+  width: 500px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.programLiveImage {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.programLiveImageNullState {
+  height: 350px;
+  width: 500px;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border: dashed 1px $faint-black;
+}
+
+.programImageSection {
+  display: flex;
+  flex-direction: column;
+  margin-left: 40px;
+}
+
+.programImageContainer {
+  text-align: center;
+  height: 250px;
+  width: 250px;
+  margin-top: 15px;
+}
+
+.programImage {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.programImageNullState {
+  height: 250px;
+  width: 250px;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border: dashed 1px $faint-black;
+}
+
+.uploadImageIconSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.uploadImageIcon {
+  font-size: 40px;
+}
+
+.uploadImageLabel {
+  font-weight: normal;
+  font-size: 12px !important;
+  color: $light-black;
+}
+
+.imageOverlay {
+  height: 32px;
+  width: 100%;
+  background-color: black;
+  opacity: 0.75;
+  bottom: 0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .editProgramImageIcon {
+    margin: 0 20px;
+    font-size: 20px;
+    opacity: 1;
+  }
+
+  .editProgramLiveImageIcon {
+    margin: 0 20px;
+    font-size: 20px;
+    opacity: 1;
+  }
+}
+
+.isNationalLabel {
+  font-size: 14px;
+  color: $dark-black;
+}
+
+.programInfoDivider {
+  height: 2px;
+  width: 100%;
+  background-color: $faint-black;
+  margin: 10px 0;
+}
+
+.shareSection {
+  width: 850px;
+  max-width: 850px;
+  margin: 35px 0;
+}
+
+.affiliatesSection {
+  margin: 30px 0;
+  max-width: 1100px;
+}
+
+.websitePrefix {
+  p {
+    font-size: 14px !important;
+  }
+  margin-right: 0 !important;
+}
