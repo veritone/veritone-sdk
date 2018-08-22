@@ -45,8 +45,8 @@ export default class SourceTileView extends React.Component {
   };
 
   renderSourceName = (name, data) => {
-    const isLive = get(data, 'sourceType.isLive', false);
-    if (!isLive) {
+    const isLivestream = get(data, 'isLivestream', false);
+    if (!isLivestream) {
       return name;
     } else {
       return (
