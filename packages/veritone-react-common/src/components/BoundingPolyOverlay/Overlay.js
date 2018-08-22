@@ -413,8 +413,7 @@ export default class Overlay extends React.Component {
                 onClick: this.handleClickBox
               }}
               style={{
-                backgroundColor: '#FF6464',
-                mixBlendMode: 'hard-light',
+                backgroundColor: 'rgba(255,100,100, .5)',
                 border: '1px solid #fff',
                 ...boundingBoxCommonStyles,
                 ...this.props.stylesByObjectType[overlayObjectType],
@@ -449,8 +448,7 @@ export default class Overlay extends React.Component {
           !this.props.readOnly && (
             <RndBox
               style={{
-                backgroundColor: '#FF6464',
-                mixBlendMode: 'hard-light',
+                backgroundColor: 'rgba(255,100,100, .5)',
                 border: '1px solid #fff',
                 ...boundingBoxCommonStyles,
                 ...this.props.stagedBoundingBoxStyles,

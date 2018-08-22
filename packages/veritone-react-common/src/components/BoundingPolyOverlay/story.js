@@ -162,12 +162,11 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
   const contentWidth = number('content width', 320);
   const contentHeight = number('content height', 240);
   const matteSize = number('matte size', 100);
-  const overlayBackgroundColor = text('Overlay background color', '#FF6464');
-  const overlayBorderStyle = text('Overlay border style', '1px solid #fff');
-  const overlayBackgroundBlendMode = text(
-    'Overlay background blend mode',
-    'hard-light'
+  const overlayBackgroundColor = text(
+    'Overlay background color',
+    'rgba(255, 100, 100, 0.5)'
   );
+  const overlayBorderStyle = text('Overlay border style', '1px solid #fff');
   const readOnly = boolean('Read only mode', false);
   const addOnly = boolean('Add only mode', false);
   const autoCommit = boolean('Auto commit mode', false);
@@ -185,18 +184,17 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
         matteSize={matteSize}
         stagedBoundingBoxStyles={{
           backgroundColor: overlayBackgroundColor,
-          border: overlayBorderStyle,
-          mixBlendMode: overlayBackgroundBlendMode
+          border: overlayBorderStyle
         }}
         stylesByObjectType={{
           a: {
-            backgroundColor: 'blue'
+            backgroundColor: 'rgba(40, 95, 255, 0.5)'
           },
           b: {
-            backgroundColor: 'green'
+            backgroundColor: 'rgba(80, 185, 60, 0.5)'
           },
           c: {
-            backgroundColor: 'orange'
+            backgroundColor: 'rgba(255, 140, 40, 0.5)'
           }
         }}
         readOnly={readOnly}
