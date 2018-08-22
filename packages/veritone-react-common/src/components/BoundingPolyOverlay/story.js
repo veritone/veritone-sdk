@@ -9,12 +9,15 @@ import { guid } from 'helpers/guid';
 import OverlayPositioningProvider from './OverlayPositioningProvider';
 import Overlay from './Overlay';
 
+const types = ['a', 'b', 'c'];
+
 function randomPolyBox() {
   const rand = faker.random.number;
   const options = { min: 0, max: 1, precision: 0.0001 };
 
   return {
     id: guid(),
+    overlayObjectType: faker.random.arrayElement(types),
     boundingPoly: Array(4)
       .fill()
       .map(() => ({
@@ -55,7 +58,8 @@ class Story extends React.Component {
         ...state.boundingBoxes,
         {
           ...newBox,
-          id: guid()
+          id: guid(),
+          overlayObjectType: faker.random.arrayElement(types)
         }
       ]
     }));
@@ -112,9 +116,8 @@ class Story extends React.Component {
             onAddBoundingBox={this.handleAddBoundingBox}
             onDeleteBoundingBox={this.handleDeleteBoundingBox}
             onChangeBoundingBox={this.handleChangeBoundingBox}
-            overlayBackgroundColor={this.props.overlayBackgroundColor}
-            overlayBorderStyle={this.props.overlayBorderStyle}
-            overlayBackgroundBlendMode={this.props.overlayBackgroundBlendMode}
+            stylesByObjectType={this.props.stylesByObjectType}
+            stagedBoundingBoxStyles={this.props.stagedBoundingBoxStyles}
             initialBoundingBoxPolys={this.state.boundingBoxes}
             actionMenuItems={this.actionMenuItems}
             readOnly={this.props.readOnly}
@@ -180,9 +183,22 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
         contentWidth={contentWidth}
         matteType={matteType}
         matteSize={matteSize}
-        overlayBackgroundColor={overlayBackgroundColor}
-        overlayBorderStyle={overlayBorderStyle}
-        overlayBackgroundBlendMode={overlayBackgroundBlendMode}
+        stagedBoundingBoxStyles={{
+          backgroundColor: overlayBackgroundColor,
+          border: overlayBorderStyle,
+          mixBlendMode: overlayBackgroundBlendMode
+        }}
+        stylesByObjectType={{
+          a: {
+            backgroundColor: 'blue'
+          },
+          b: {
+            backgroundColor: 'green'
+          },
+          c: {
+            backgroundColor: 'orange'
+          }
+        }}
         readOnly={readOnly}
         addOnly={addOnly}
         autoCommit={autoCommit}
