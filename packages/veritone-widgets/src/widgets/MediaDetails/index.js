@@ -122,7 +122,13 @@ const programLiveImageNullState =
     exportClosedCaptionsEnabled: userModule.hasFeature(
       state,
       'exportClosedCaptions'
-    )
+    ),
+    bulkEditEnabled: userModule.hasFeature(state, 'bulkEditTranscript'),
+    publicMediaDownloadEnabled: userModule.hasFeature(
+      state,
+      'downloadPublicMedia'
+    ),
+    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia')
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -355,7 +361,10 @@ class MediaDetailsWidget extends React.Component {
     createQuickExport: func.isRequired,
     betaFlagEnabled: bool.isRequired,
     onExport: func,
-    exportClosedCaptionsEnabled: bool
+    exportClosedCaptionsEnabled: bool,
+    bulkEditEnabled: bool,
+    publicMediaDownloadEnabled: bool,
+    downloadMediaEnabled: bool
   };
 
   static contextTypes = {
@@ -661,9 +670,7 @@ class MediaDetailsWidget extends React.Component {
     if (!this.isMediaPublic(this.props.tdo)) {
       return true;
     }
-    const publicMediaDownloadEnabled =
-      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
-    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
+    if (this.isOwnMedia() || this.props.publicMediaDownloadEnabled) {
       return true;
     }
     return false;
@@ -672,7 +679,7 @@ class MediaDetailsWidget extends React.Component {
   isDownloadMediaEnabled = () => {
     return (
       get(this.props.tdo, 'primaryAsset.signedUri.length') &&
-      get(this.props.kvp, 'features.downloadMedia') === 'enabled'
+      this.props.downloadMediaEnabled
     );
   };
 
@@ -860,7 +867,8 @@ class MediaDetailsWidget extends React.Component {
       categoryExportFormats,
       betaFlagEnabled,
       onExport,
-      exportClosedCaptionsEnabled
+      exportClosedCaptionsEnabled,
+      bulkEditEnabled
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -1283,10 +1291,7 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        bulkEditEnabled={
-                          get(this.props.kvp, 'features.bulkEditTranscript') ===
-                          'enabled'
-                        }
+                        bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
                       />
                     )}
