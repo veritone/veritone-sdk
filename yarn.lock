@@ -13282,9 +13282,9 @@ vfile@^2.0.0:
     unist-util-stringify-position "^1.0.0"
     vfile-message "^1.0.0"
 
-video-react@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/video-react/-/video-react-0.11.2.tgz#f7c608c66c0a6497439fb7968315f9ec446915f1"
+video-react@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/video-react/-/video-react-0.13.0.tgz#13d73c6f889899e1275517b540e96cc3434015a9"
   dependencies:
     classnames "^2.2.3"
     lodash.throttle "^4.1.1"
