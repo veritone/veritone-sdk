@@ -1,0 +1,55 @@
+@import 'src/styles/modules/variables';
+
+.sharingConfigurationContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.titleLabel {
+  color: $dark-black;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.titleDescription {
+  color: $light-black;
+  font-size: 14px;
+  line-height: 16px;
+  margin-top: 15px;
+}
+
+.selectAclGroupSection {
+  border: 1px solid $faint-black;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.makePublicSection {
+  background-color: $barely-black;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 20px;
+  margin-top: 20px;
+}
+
+.makePublicTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.makePublicTitleLabel {
+  font-weight: 500;
+  font-size: 14px;
+  color: $dark-black;
+}
+
+.makePublicTitleDescription {
+  color: $light-black;
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: 15px;
+}

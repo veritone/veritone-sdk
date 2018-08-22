@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, any, arrayOf, objectOf, func } from 'prop-types';
+import { string, shape, any, arrayOf, objectOf, func, bool } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray } from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
 import Icon from '@material-ui/core/Icon';
@@ -21,7 +21,9 @@ export default class TemplateForms extends React.Component {
       })
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
-    onRemoveTemplate: func.isRequired
+    onRemoveTemplate: func.isRequired,
+    getFieldOptions: func,
+    isReadOnly: bool
   };
   static defaultProps = {};
 
@@ -122,7 +124,7 @@ export default class TemplateForms extends React.Component {
   };
 
   render() {
-    const { templates } = this.props;
+    const { templates, ...rest } = this.props;
 
     return (
       <div className={styles.formsContainer}>
@@ -145,7 +147,9 @@ export default class TemplateForms extends React.Component {
                     onChange={this.handleFieldChange}
                     handleArrayElementAdd={this.handleArrayElementAdd}
                     handleArrayElementRemove={this.handleArrayElementRemove}
+                    getFieldOptions={this.props.getFieldOptions}
                     key={schemaProp}
+                    {...rest}
                   />
                 )
               );
@@ -158,6 +162,7 @@ export default class TemplateForms extends React.Component {
               fields={compact(formFields)}
               name={template.name}
               remove={this.handleRemoveTemplate}
+              isReadOnly={this.props.isReadOnly}
             />
           );
         })}
@@ -179,10 +184,11 @@ function BuildFormElements({
   depth = 0,
   handleArrayElementAdd,
   handleArrayElementRemove,
+  getFieldOptions,
   ...rest
 }) {
   if (!type) {
-    return undefined;
+    return null;
   }
 
   let element;
@@ -195,6 +201,7 @@ function BuildFormElements({
         title={title}
         value={value || ''}
         onChange={onChange(template, schemaProp, type)}
+        getFieldOptions={getFieldOptions}
         {...rest}
       />
     );
@@ -220,7 +227,7 @@ function BuildFormElements({
             onChange={onChange}
             key={`${schemaProp}.${'buildform' + index}`}
           />
-          {isArray(value) && value.length > 1 ? (
+          {isArray(value) && value.length > 1 && !rest.isReadOnly ? (
             <div className={styles.arrayRemove}>
               <IconButton
                 disableRipple
@@ -238,15 +245,17 @@ function BuildFormElements({
       <div className={styles.insetSection}>
         <span>{title}</span>
         {element}
-        <div className={styles.arrayAdd}>
-          <IconButton
-            className={styles.noHover}
-            disableRipple
-            onClick={handleArrayElementAdd(template, schemaProp)}
-          >
-            <AddIcon />
-          </IconButton>
-        </div>
+        {!rest.isReadOnly ? (
+          <div className={styles.arrayAdd}>
+            <IconButton
+              className={styles.noHover}
+              disableRipple
+              onClick={handleArrayElementAdd(template, schemaProp)}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
+        ) : null}
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { shape, string, objectOf, any } from 'prop-types';
+import { shape, string, objectOf, any, bool } from 'prop-types';
 import cx from 'classnames';
 import { formValues, Field, FieldArray } from 'redux-form';
 import { capitalize } from 'lodash';
@@ -31,18 +31,19 @@ export default class RecurringSection extends React.Component {
     repeatEvery: shape({
       number: string.isRequired,
       period: string.isRequired
-    }).isRequired
+    }).isRequired,
+    readOnly: bool
   };
 
   render() {
     return (
       <Fragment>
         <div className={styles.formSectionRow}>
-          <TimePeriodSelector name="repeatEvery" label="Repeat every" />
+          <TimePeriodSelector name="repeatEvery" label="Repeat every" readOnly={this.props.readOnly} />
         </div>
 
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="start" label="Starts" showIcon />
+          <DateTimeSelector name="start" label="Starts" readOnly={this.props.readOnly} showIcon />
         </div>
 
         {this.props.repeatEvery.period === 'day' && (
@@ -54,7 +55,7 @@ export default class RecurringSection extends React.Component {
               )}
             >
               <TimeIcon className={styles.timeIcon} />
-              <FieldArray name="daily" component={MultiTimeRange} />
+              <FieldArray name="daily" component={MultiTimeRange} readOnly={this.props.readOnly} />
             </div>
           </div>
         )}
@@ -74,28 +75,29 @@ export default class RecurringSection extends React.Component {
                     component={Checkbox}
                     name={`weekly.selectedDays.${d}`}
                     label={capitalize(d)}
+                    disabled={this.props.readOnly}
                   />
                 </div>
-                <FieldArray name={`weekly.${d}`} component={MultiTimeRange} />
+                <FieldArray name={`weekly.${d}`} component={MultiTimeRange} readOnly={this.props.readOnly} />
               </div>
             ))}
         </div>
 
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="end" label="Ends" showIcon />
+          <DateTimeSelector name="end" label="Ends" readOnly={this.props.readOnly} showIcon />
         </div>
       </Fragment>
     );
   }
 }
 
-const MultiTimeRange = ({ fields }) => {
+const MultiTimeRange = ({ fields, readOnly }) => {
   /* eslint-disable react/jsx-no-bind */
   return (
     <div className={styles.multiTimeRange}>
       {fields.map((field, index) => (
         <div key={field} className={styles.row}>
-          <Field name={field} component={TimeRangePicker} />
+          <Field name={field} component={TimeRangePicker} readOnly={readOnly} />
           {(index > 0 || fields.length > 1) && (
             <IconButton
               onClick={() => fields.remove(index)}
@@ -104,7 +106,7 @@ const MultiTimeRange = ({ fields }) => {
               <ClearIcon />
             </IconButton>
           )}
-          {index === fields.length - 1 && (
+          {!readOnly && index === fields.length - 1 && (
             <IconButton
               type="button"
               onClick={() =>
@@ -125,5 +127,6 @@ const MultiTimeRange = ({ fields }) => {
 };
 
 MultiTimeRange.propTypes = {
-  fields: objectOf(any)
+  fields: objectOf(any),
+  readOnly: bool
 };

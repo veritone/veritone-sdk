@@ -1,6 +1,6 @@
 import React from 'react';
 import { reject } from 'lodash';
-import { objectOf, arrayOf, any, func } from 'prop-types';
+import { objectOf, arrayOf, any, func, bool } from 'prop-types';
 import { ContentTemplate } from 'veritone-react-common';
 import { guid } from '../../shared/util';
 
@@ -10,7 +10,8 @@ class ContentTemplateWidget extends React.Component {
   static propTypes = {
     templateData: objectOf(any).isRequired,
     initialTemplates: arrayOf(any),
-    handleUpdateContentTemplates: func.isRequired
+    handleUpdateContentTemplates: func.isRequired,
+    isReadOnly: bool
   };
 
   static defaultProps = {
@@ -105,6 +106,7 @@ class ContentTemplateWidget extends React.Component {
         onAddTemplate={this.addToTemplateList}
         onRemoveTemplate={this.removeFromTemplateList}
         onInputChange={this.onInputChange}
+        isReadOnly={this.props.isReadOnly}
       />
     );
   }

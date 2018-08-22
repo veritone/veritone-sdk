@@ -1,6 +1,6 @@
 import React from 'react';
-import { string, shape, any, arrayOf, objectOf, func } from 'prop-types';
-import { get } from 'lodash';
+import { string, shape, any, arrayOf, objectOf, func, bool } from 'prop-types';
+import { get, isArray, cloneDeep } from 'lodash';
 
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -19,13 +19,15 @@ export default class SourceConfiguration extends React.Component {
       name: string,
       details: objectOf(any)
     }).isRequired, // the source if this is to edit a source
-    onInputChange: func.isRequired
+    onInputChange: func.isRequired,
+    getFieldOptions: func.isRequired,
+    errorFields: objectOf(any),
+    isReadOnly: bool
   };
   static defaultProps = {};
 
   state = {
     sourceTypeIndex: 0,
-    requiredFields: {},
     openFilePicker: false,
     thumbnailUrl: ''
   };
@@ -86,18 +88,39 @@ export default class SourceConfiguration extends React.Component {
         });
       }
 
-      return this.props.onInputChange({
-        sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
-        details: currentFields
+      this.setState({ sourceTypeIndex }, () => {
+        this.props.onInputChange({
+          sourceTypeId: this.props.sourceTypes[sourceTypeIndex].id,
+          details: currentFields
+        });
       });
     }
   };
 
   handleSourceDetailChange = formDetail => {
+    // Invalidate any unavailable peerEnumerations that may have been caused by this change
+    const cloneFormDetail = cloneDeep(formDetail);
+    const targetKey = Object.keys(formDetail)[0];
+    const targetValue = formDetail[targetKey];
+    const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === this.props.source.sourceTypeId);
+    const schemaProperties = get(selectedSourceType, 'sourceSchema.definition.properties');
+    if (schemaProperties) {
+      Object.keys(schemaProperties).forEach(propKey => {
+        const peerKey = schemaProperties[propKey].peerEnumKey;
+        if (peerKey && peerKey == targetKey) {
+          // Check if the current props value is invalidated because its peer enum has changed
+          const propValue = get(this.props.source, ['details', propKey]);
+          if (isArray(targetValue) && !targetValue.find(tVal => tVal == propValue)) {
+            cloneFormDetail[propKey] = '';
+          }
+        }
+      });
+    }
+
     this.props.onInputChange({
       details: {
         ...this.props.source.details,
-        ...formDetail
+        ...cloneFormDetail
       }
     });
   };
@@ -168,11 +191,16 @@ export default class SourceConfiguration extends React.Component {
                       img: styles['avatar-img']
                     }}
                   />
-                  <div className={styles['avatar-img-cta']}>
-                    <span id="openFilePicker" onClick={this.openFilePicker}>
-                      Edit
-                    </span>
-                  </div>
+                  {
+                    !this.props.isReadOnly ?
+                    (
+                      <div className={styles['avatar-img-cta']}>
+                        <span id="openFilePicker" onClick={this.openFilePicker}>
+                          Edit
+                        </span>
+                      </div>
+                    ) : null
+                  }
                 </div>
                 <TextField
                   className={styles.sourceName}
@@ -183,6 +211,10 @@ export default class SourceConfiguration extends React.Component {
                   label="Source Name"
                   value={source.name}
                   onChange={this.handleNameChange}
+                  maxLength="40"
+                  InputProps={{
+                    readOnly: this.props.isReadOnly
+                  }}
                 />
                 {this.state.openFilePicker && this.renderFilePicker()}
               </div>
@@ -192,9 +224,11 @@ export default class SourceConfiguration extends React.Component {
                 fieldValues={source.details}
                 onSelectChange={this.handleSourceChange}
                 onSourceDetailChange={this.handleSourceDetailChange}
-                errorFields={this.state.requiredFields}
+                errorFields={this.props.errorFields}
                 selectLabel="Select a Source Type"
                 helperText="NOTE: Source types available are dynamic based on your ingestion adapter"
+                getFieldOptions={this.props.getFieldOptions}
+                isReadOnly={this.props.isReadOnly}
               />
             </FormControl>
           </div>

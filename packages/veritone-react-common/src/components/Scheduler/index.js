@@ -4,7 +4,7 @@ import {
   createMuiTheme,
   MuiThemeProvider
 } from '@material-ui/core/styles';
-import { oneOf, func, number, string, arrayOf } from 'prop-types';
+import { oneOf, func, number, string, arrayOf, bool } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
 import {
@@ -137,6 +137,7 @@ class Scheduler extends React.Component {
           : undefined
     ),
     relativeSize: number, // optional - used to scale text sizes from hosting app
+    readOnly: bool,
     color: string
   };
 
@@ -144,7 +145,8 @@ class Scheduler extends React.Component {
     onSubmit: noop,
     relativeSize: 14,
     color: '#2196F3',
-    supportedScheduleTypes: ['Any']
+    supportedScheduleTypes: ['Any'],
+    readOnly: false
   };
 
   prepareResultData(formResult) {
@@ -220,6 +222,7 @@ class Scheduler extends React.Component {
         value="Recurring"
         control={<Radio />}
         label="Recurring"
+        disabled={this.props.readOnly}
       />
     );
 
@@ -229,6 +232,7 @@ class Scheduler extends React.Component {
         value="Continuous"
         control={<Radio />}
         label="Continuous"
+        disabled={this.props.readOnly}
       />
     );
 
@@ -238,6 +242,7 @@ class Scheduler extends React.Component {
         value="Now"
         control={<Radio />}
         label="Immediate"
+        disabled={this.props.readOnly}
       />
     );
 
@@ -247,6 +252,7 @@ class Scheduler extends React.Component {
         value="Once"
         control={<Radio />}
         label="On Demand"
+        disabled={this.props.readOnly}
       />
     );
 
@@ -292,7 +298,7 @@ class Scheduler extends React.Component {
             {ScheduleSelections}
           </Field>
           <div className={styles.activeSectionContainer}>
-            <ActiveSectionComponent />
+            <ActiveSectionComponent readOnly={this.props.readOnly} />
           </div>
         </Form>
       </MuiThemeProvider>

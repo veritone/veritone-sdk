@@ -1,14 +1,14 @@
 import React from 'react';
-import { has, includes, get } from 'lodash';
+import { has, includes, get, isArray, isUndefined } from 'lodash';
 
-import { any, arrayOf, objectOf, func, string, number } from 'prop-types';
+import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import SourceTypeField from 'components/SourceTypeField';
+import SourceTypeField from '../../SourceTypeField';
 
 import styles from './styles.scss';
 
@@ -18,13 +18,16 @@ export default class DynamicSelect extends React.Component {
     currentSourceType: number, // id of initial sourceType if there is a default
     onSelectChange: func.isRequired,
     onSourceDetailChange: func.isRequired,
+    getFieldOptions: func.isRequired,
     fieldValues: objectOf(any),
     errorFields: objectOf(any),
     helperText: string,
-    selectLabel: string
+    selectLabel: string,
+    isReadOnly: bool
   };
   static defaultProps = {
-    fieldValues: {}
+    fieldValues: {},
+    errorFields: {}
   };
 
   state = {
@@ -45,15 +48,13 @@ export default class DynamicSelect extends React.Component {
 
   handleDetailChange = fieldId => event => {
     this.props.onSourceDetailChange({
-      [fieldId]: event.target.value
+      [fieldId]: event.target.type === 'checkbox' ? event.target.checked : event.target.value
     });
   };
 
   renderFields = () => {
-    const definition = get(
-      this.props.sourceTypes[this.props.currentSourceType],
-      'sourceSchema.definition'
-    );
+    const sourceSchema = get(this.props.sourceTypes[this.props.currentSourceType], 'sourceSchema');
+    const definition = get(sourceSchema, 'definition');
     const properties = definition && definition.properties;
     const requiredFields = has(definition, 'required')
       ? definition.required
@@ -63,7 +64,16 @@ export default class DynamicSelect extends React.Component {
       return [];
     }
 
-    return Object.keys(this.props.fieldValues).map((fieldId, index) => {
+    return Object.keys(properties).map((fieldId) => {
+      const enums = (!isUndefined(properties[fieldId].enum) && get(properties[fieldId], 'enumNames.length') === get(properties[fieldId], 'enum.length')) ?
+        properties[fieldId].enum.map((value, index) => {
+          return {
+            id: value,
+            name: properties[fieldId].enumNames[index]
+          };
+        })
+      : properties[fieldId].enum;
+      isArray(enums) && enums.sort((a, b) => a.name < b.name ? -1 : 1);
       return (
         <SourceTypeField
           id={fieldId}
@@ -72,13 +82,19 @@ export default class DynamicSelect extends React.Component {
           value={this.props.fieldValues[fieldId]}
           onChange={this.handleDetailChange(fieldId)}
           title={properties[fieldId].title || ''}
-          error={
-            has(this.props.errorFields, fieldId) &&
-            this.props.errorFields[fieldId]
-              ? true
-              : false
+          isDirty={this.props.errorFields[fieldId]}
+          options={enums}
+          peerSelection={properties[fieldId].peerEnumKey
+            ? (isArray(this.props.fieldValues[properties[fieldId].peerEnumKey]) 
+              ? this.props.fieldValues[properties[fieldId].peerEnumKey] :
+              []
+            )
+            : undefined
           }
-          key={fieldId}
+          query={properties[fieldId].query || get(properties[fieldId], 'items.query' )}
+          getFieldOptions={this.props.getFieldOptions}
+          key={sourceSchema.id + fieldId}
+          isReadOnly={this.props.isReadOnly}
         />
       );
     });
@@ -112,6 +128,7 @@ export default class DynamicSelect extends React.Component {
             }}
             value={currentSourceType}
             onChange={this.handleSourceTypeChange}
+            readOnly={this.props.isReadOnly}
           >
             {sourceTypesMenu}
           </Select>
