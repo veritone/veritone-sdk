@@ -31,10 +31,6 @@ export default class Affiliates extends React.Component {
     onEdit: func
   };
 
-  handleOnEdit = affiliateId => {
-    this.props.onEdit(affiliateId);
-  };
-
   render() {
     const { affiliate, onEdit } = this.props;
     return (
@@ -45,7 +41,7 @@ export default class Affiliates extends React.Component {
           {onEdit && (
             <IconButton
               aria-label="Edit"
-              onClick={() => this.handleOnEdit(affiliate)}
+              onClick={() => onEdit(affiliate)}
               classes={{
                 root: styles.editButton
               }}

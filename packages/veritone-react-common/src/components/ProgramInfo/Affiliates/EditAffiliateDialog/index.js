@@ -6,12 +6,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
-import { get } from 'lodash';
 import { string, arrayOf, func, shape } from 'prop-types';
-import Scheduler from '../../../Scheduler';
 import styles from './styles.scss';
 
-export default class EditAffiliateView extends Component {
+export default class EditAffiliateDialog extends Component {
   static propTypes = {
     affiliate: shape({
       id: string.isRequired,
@@ -85,9 +83,7 @@ export default class EditAffiliateView extends Component {
           }}
         >
           <div className={styles.affiliateConfiguration}>
-            <Scheduler
-              scheduleType={get(affiliate, 'schedule.scheduleType')}
-            />
+            TODO: add schedule configuration
           </div>
         </DialogContent>
         <DialogActions

@@ -4,6 +4,8 @@ import { func, string, arrayOf, shape, bool } from 'prop-types';
 import { get } from 'lodash';
 import AffiliateItem from './AffiliateItem';
 import styles from './styles.scss';
+import AffiliateStationsDialog from "./AffiliateStationsDialog";
+import EditAffiliateDialog from "./EditAffiliateDialog";
 
 export default class Affiliates extends React.Component {
   static propTypes = {
@@ -60,7 +62,7 @@ export default class Affiliates extends React.Component {
   };
 
   state = {
-    isAddAffiliateDialogOpen: false,
+    isAffiliateStationsDialogOpen: false,
     isEditAffiliateDialogOpen: false,
     isBulkAddAffiliateDialogOpen: false,
     affiliateToEdit: null
@@ -73,15 +75,15 @@ export default class Affiliates extends React.Component {
     this.openEditAffiliateDialog();
   };
 
-  openAddAffiliateDialog = () => {
+  openAffiliateStationsDialog = () => {
     this.setState({
-      isAddAffiliateDialogOpen: true
+      isAffiliateStationsDialogOpen: true
     });
   };
 
-  closeAddAffiliateDialog = () => {
+  closeAffiliateStationsDialog = () => {
     this.setState({
-      isAddAffiliateDialogOpen: false
+      isAffiliateStationsDialogOpen: false
     });
   };
 
@@ -109,16 +111,19 @@ export default class Affiliates extends React.Component {
     });
   };
 
-  handleAddAffiliate = newAffiliates => {
+  handleAddAffiliateStations = newAffiliates => {
+    this.closeAffiliateStationsDialog();
     // TODO: implement
   };
 
   handleEditAffiliate = newAffiliate => {
+    this.closeEditAffiliateDialog();
     // TODO: implement
   };
 
   render() {
     const { selectedAffiliates, canBulkAddAffiliates } = this.props;
+    const { isAffiliateStationsDialogOpen, isEditAffiliateDialogOpen, affiliateToEdit } = this.state;
 
     // TODO: use when ready
     // eslint-disable-next-line no-unused-vars
@@ -149,7 +154,7 @@ export default class Affiliates extends React.Component {
           <Button
             variant="outlined"
             color="primary"
-            onClick={this.openAddAffiliateDialog}
+            onClick={this.openAffiliateStationsDialog}
             classes={{
               root: styles.addAffiliateButton,
               label: styles.addAffiliateButtonLabel
@@ -171,6 +176,20 @@ export default class Affiliates extends React.Component {
             </Button>
           )}
         </div>
+        {isAffiliateStationsDialogOpen && (
+          <AffiliateStationsDialog
+            affiliates={affiliates}
+            onClose={this.closeAffiliateStationsDialog}
+            onAdd={this.handleAddAffiliateStations}
+          />
+        )}
+        {isEditAffiliateDialogOpen && affiliateToEdit && (
+          <EditAffiliateDialog
+            affiliate={affiliateToEdit}
+            onClose={this.closeEditAffiliateDialog}
+            onAdd={this.handleEditAffiliate}
+          />
+        )}
       </div>
     );
   }

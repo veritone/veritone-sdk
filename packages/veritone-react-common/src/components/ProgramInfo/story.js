@@ -49,7 +49,7 @@ const generateAffiliates = function(n) {
   const result = [];
   for (let i = 1; i <= n; i++) {
     result.push({
-      id: i,
+      id: String(i),
       name: 'Affiliate Station ' + i,
       schedule: {
         scheduleType: 'Recurring',
