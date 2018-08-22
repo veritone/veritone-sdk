@@ -151,3 +151,7 @@ const MyPage = () => (
 * Add Scheduler widget
 * MediaPlayerComponent
   * Fix width/height propTypes to match video-react Player's (accept string or number)
+
+## 6.1.1
+* MediaPlayerComponent
+  * bump version and open up semver range to support changes from 6.1.0
