@@ -404,10 +404,7 @@ storiesOf('Form Components', module)
     <Provider store={store}>
       <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
         <FormControl>
-          <Field
-            component={Switch}
-            name="labelessSwitch"
-          />
+          <Field component={Switch} name="labelessSwitch" />
           <Field
             component={Switch}
             name="switchWithLabel"

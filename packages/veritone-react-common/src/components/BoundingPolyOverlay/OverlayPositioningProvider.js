@@ -1,5 +1,5 @@
 import React from 'react';
-import { node, number, bool } from 'prop-types';
+import { node, number, bool, string } from 'prop-types';
 import { isEqual } from 'lodash';
 import cx from 'classnames';
 import styles from './overlayPositioningProvider.styles.scss';
@@ -15,7 +15,8 @@ export default class OverlayPositioningProvider extends React.Component {
     contentHeight: number.isRequired,
     contentWidth: number.isRequired,
     fixedWidth: bool,
-    children: node
+    children: node,
+    contentClassName: string
   };
   static defaultProps = {};
 
@@ -97,6 +98,7 @@ export default class OverlayPositioningProvider extends React.Component {
       <OverlayPositioningContext.Provider value={this.state.overlayPosition}>
         <div className={cx({ [styles.clearfix]: this.props.fixedWidth })}>
           <div
+            className={cx(this.props.contentClassName)}
             style={{
               float: this.props.fixedWidth ? 'left' : 'none',
               position: 'relative',

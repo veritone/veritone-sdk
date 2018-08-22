@@ -112,3 +112,17 @@
 * Added IngestionJobs-related components
 * Added SourceManagementForm and SourceManagement-related components
 * Added Switch component under formComponents
+
+## 6.0.1
+* Support signedApplicationIconUrl field in the AppSwitcher
+* Update veritone icons font
+
+## 6.1.0
+* Add support for more engines in SearchBar
+* Add Scheduler component
+* Add better validation to DateTimePicker form component
+* Add TimeRangePicker form component
+
+## 6.1.1
+* Overlay:
+  * fix position of drawn boxes being out of sync with mouse position in some cases where the screen is scrolled.

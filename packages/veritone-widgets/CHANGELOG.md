@@ -142,3 +142,12 @@ const MyPage = () => (
 * Engine Selection widget
   * Added separate search and filter states for tabs + UX improvements
 * Themes can now be passed into VeritoneApp: `new VeritoneApp({ theme: { ... }}`
+
+## 6.0.1
+* MediaPlayer: Don't require props related to bounding poly overlay mode.
+
+## 6.1.0
+* Bump internal veritone-react-common dependency
+* Add Scheduler widget
+* MediaPlayerComponent
+  * Fix width/height propTypes to match video-react Player's (accept string or number)

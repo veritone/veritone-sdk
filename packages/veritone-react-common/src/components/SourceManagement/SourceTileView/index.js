@@ -8,11 +8,17 @@ import Avatar from '@material-ui/core/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
 import { capitalize, omit, noop } from 'lodash';
 
+import classNames from 'classnames';
+import Button from '@material-ui/core/Button';
+import ButtonWrapper from '../../share-components/buttons/ButtonWrapper';
+import styles from './styles.scss';
+
 export default class SourceTileView extends React.Component {
   static propTypes = {
     sources: arrayOf(objectOf(any)).isRequired, // an array of source objects
     onSelectSource: func,
     onSelectMenuItem: func,
+    onSelectLiveStream: func,
     paginate: bool,
     onFetchData: func
   };
@@ -36,6 +42,34 @@ export default class SourceTileView extends React.Component {
         }}
       />
     );
+  };
+
+  renderSourceName = (name, data) => {
+    const isLivestream = data.isLivestream;
+    if (!isLivestream) {
+      return name;
+    } else {
+      return (
+        <span className={classNames(styles.sourceTileViewCell)}>
+          {name}
+          <span className={classNames(styles.gap)} />
+          <ButtonWrapper data={data} onClick={this.handleLiveStreamButton}>
+            <Button
+              variant="outlined"
+              size="small"
+              className={classNames(styles.liveNowButton)}
+            >
+              Live Now
+            </Button>
+          </ButtonWrapper>
+        </span>
+      );
+    }
+  };
+
+  handleLiveStreamButton = (event, data) => {
+    event.stopPropagation();
+    this.props.onSelectLiveStream && this.props.onSelectLiveStream(event, data);
   };
 
   renderCreatedDate = date => {
@@ -73,7 +107,11 @@ export default class SourceTileView extends React.Component {
           cellRenderer={this.renderThumbnail}
           width={30}
         />
-        <Column dataKey="name" header="Source Name" />
+        <Column
+          dataKey="name"
+          header="Source Name"
+          cellRenderer={this.renderSourceName}
+        />
         <Column dataKey="sourceType.name" header="Source Type" />
         <Column
           dataKey="createdDateTime"
