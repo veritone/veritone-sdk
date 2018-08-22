@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { shape, arrayOf, string, func } from 'prop-types';
-import { includes, without } from 'lodash';
+import { shape, arrayOf, string, func, bool } from 'prop-types';
+import { includes, without, find } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import styles from './styles.scss';
 import MenuList from '@material-ui/core/MenuList';
@@ -22,7 +22,12 @@ class ExportMenuItem extends Component {
         label: string.isRequired
       })
     ).isRequired,
-    onCloseMoreMenu: func
+    onCloseMoreMenu: func,
+    exportClosedCaptionsEnabled: bool
+  };
+
+  static defaultProps = {
+    exportClosedCaptionsEnabled: false
   };
 
   state = {
@@ -58,8 +63,17 @@ class ExportMenuItem extends Component {
   };
 
   render() {
-    const { label, onMoreClicked, categoryExportFormats } = this.props;
+    const {
+      label,
+      onMoreClicked,
+      categoryExportFormats,
+      exportClosedCaptionsEnabled
+    } = this.props;
     const { showSubMenu, selectedFormats } = this.state;
+
+    const hasSubtitleFormats = !!find(categoryExportFormats, format =>
+      includes(format.types, 'subtitle')
+    );
 
     return (
       <Manager>
@@ -78,9 +92,18 @@ class ExportMenuItem extends Component {
               <Paper className={styles.exportFormatMenu}>
                 <MenuList>
                   <ListItem className={styles.subMenuTitle} disableGutters>
-                    TRANSCRIPTION & SUBTITLES
+                    TRANSCRIPTION{hasSubtitleFormats &&
+                    exportClosedCaptionsEnabled
+                      ? ' & SUBTITLES'
+                      : ''}
                   </ListItem>
                   {categoryExportFormats.map(format => {
+                    if (
+                      !exportClosedCaptionsEnabled &&
+                      includes(format.types, 'subtitle')
+                    ) {
+                      return null;
+                    }
                     return (
                       <MenuItem
                         key={`format-menu-item-${format.format}`}

@@ -118,7 +118,11 @@ const programLiveImageNullState =
       id
     ),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
-    betaFlagEnabled: userModule.hasFeature(state, 'beta')
+    betaFlagEnabled: userModule.hasFeature(state, 'beta'),
+    exportClosedCaptionsEnabled: userModule.hasFeature(
+      state,
+      'exportClosedCaptions'
+    )
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -350,7 +354,8 @@ class MediaDetailsWidget extends React.Component {
     ),
     createQuickExport: func.isRequired,
     betaFlagEnabled: bool.isRequired,
-    onExport: func
+    onExport: func,
+    exportClosedCaptionsEnabled: bool
   };
 
   static contextTypes = {
@@ -854,7 +859,8 @@ class MediaDetailsWidget extends React.Component {
       alertDialogConfig,
       categoryExportFormats,
       betaFlagEnabled,
-      onExport
+      onExport,
+      exportClosedCaptionsEnabled
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -887,6 +893,7 @@ class MediaDetailsWidget extends React.Component {
           onExportClicked={this.handleExportClicked}
           onMoreClicked={this.openEngineOutputExport}
           categoryExportFormats={categoryExportFormats}
+          exportClosedCaptionsEnabled={exportClosedCaptionsEnabled}
         />
       );
     }
