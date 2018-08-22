@@ -1,4 +1,5 @@
 import React from 'react';
+import { noop } from 'lodash';
 import {
   arrayOf,
   shape,
@@ -8,7 +9,8 @@ import {
   func,
   objectOf,
   any,
-  object
+  object,
+  oneOfType
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
@@ -45,17 +47,17 @@ class MediaPlayerComponent extends React.Component {
       shape({
         startTimeMs: number.isRequired,
         stopTimeMs: number.isRequired,
-        id: string.isRequired,
         object: shape({
+          id: string.isRequired,
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
           ).isRequired
         })
       })
     ),
-    onAddBoundingBox: func.isRequired,
-    onDeleteBoundingBox: func.isRequired,
-    onChangeBoundingBox: func.isRequired,
+    onAddBoundingBox: func,
+    onDeleteBoundingBox: func,
+    onChangeBoundingBox: func,
     overlayBorderStyle: string,
     overlayContentClassName: string,
     reactPlayerClassName: string,
@@ -68,8 +70,8 @@ class MediaPlayerComponent extends React.Component {
     readOnly: bool,
     addOnly: bool,
     autoCommit: bool,
-    width: number,
-    height: number,
+    width: oneOfType([string, number]),
+    height: oneOfType([string, number]),
     // fluid = 100% width by default, see video-react docs
     fluid: bool,
     videoHeight: number,
@@ -88,7 +90,10 @@ class MediaPlayerComponent extends React.Component {
   };
 
   static defaultProps = {
-    fluid: true
+    fluid: true,
+    onAddBoundingBox: noop,
+    onDeleteBoundingBox: noop,
+    onChangeBoundingBox: noop,
   };
 
   handleAddBoundingBox = newBox => {

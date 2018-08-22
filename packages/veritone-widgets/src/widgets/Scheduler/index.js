@@ -33,4 +33,4 @@ class Scheduler extends React.Component {
   }
 }
 
-export default widget(Scheduler);
+export const SchedulerWidget = widget(Scheduler);

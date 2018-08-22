@@ -74,6 +74,7 @@ export default class RecurringSection extends React.Component {
                     component={Checkbox}
                     name={`weekly.selectedDays.${d}`}
                     label={capitalize(d)}
+                    color="primary"
                   />
                 </div>
                 <FieldArray name={`weekly.${d}`} component={MultiTimeRange} />
