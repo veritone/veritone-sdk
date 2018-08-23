@@ -45,3 +45,16 @@
 //     }
 //   }
 // }
+
+.sourceTileViewCell {
+  .gap {
+    width: 1em;
+    height: 1px;
+    display: inline-block;
+  }
+
+  .liveNowButton {
+    color: red;
+    border-color: red;
+  }
+}
