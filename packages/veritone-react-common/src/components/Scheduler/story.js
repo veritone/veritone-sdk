@@ -54,7 +54,7 @@ class Story extends React.Component {
                 end: '2018-04-17T19:48:25.147Z',
                 repeatEvery: {
                   number: '1',
-                  period: 'week'
+                  period: 'day'
                 },
                 weekly: {
                   Thursday: [

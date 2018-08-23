@@ -1,0 +1,96 @@
+@import 'src/styles/modules/variables';
+
+.addAffiliatesDialogPaper {
+  min-width: 640px;
+  width: 640px;
+  min-height: 740px;
+}
+
+.dialogTitle {
+  h2 {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px !important;
+  }
+}
+
+.dialogTitleActions {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialogTitleSearchInput {
+  width: 250px;
+  max-width: 250px;
+
+  input {
+    font-size: 16px !important;
+  }
+}
+
+.dialogTitleSeparator {
+  width: 1px;
+  height: 32px;
+  border-right: 1px solid $light-black;
+  margin: 0 10px 0 25px;
+}
+
+.dialogContent {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.affiliatesViewSection {
+  margin-top: 20px;
+  flex: 1 1 auto;
+}
+
+.affiliatesTable {
+  width: 100%;
+}
+
+.nameCell {
+  cursor: pointer !important;
+}
+
+.nameCellContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.selectAffiliateButton {
+  margin-right: 10px;
+}
+
+.affiliatesViewPagination {
+  align-self: center;
+}
+
+.actionButtons {
+  padding: 0 16px 16px;
+}
+
+.actionButton {
+  width: 80px;
+  margin-left: 30px !important;
+}
+
+.actionButtonLabel {
+  font-size: 14px;
+}
+
+.noResultsMessage {
+  align-self: center;
+  cursor: pointer !important;
+  font-size: 32px !important;
+  color: $semi-black;
+  margin-top: 50%;
+}

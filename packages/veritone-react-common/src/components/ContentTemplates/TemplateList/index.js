@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, objectOf, func } from 'prop-types';
+import { string, shape, objectOf, func, bool } from 'prop-types';
 import cx from 'classnames';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,7 +14,8 @@ export default class TemplateList extends React.Component {
         name: string.isRequired
       })
     ).isRequired,
-    addTemplate: func.isRequired
+    addTemplate: func.isRequired,
+    isReadOnly: bool
   };
 
   addTemplate = schemaId => () => {
@@ -28,14 +29,18 @@ export default class TemplateList extends React.Component {
       return (
         <div className={styles.templateRow} key={schemaId}>
           <div className={cx(styles.name)}>{templates[schemaId].name}</div>
-          <IconButton
-            className={styles.trashIcon}
-            onClick={this.addTemplate(schemaId)}
-            aria-label="add"
-            disableRipple
-          >
-            <Icon className={'icon-zoom-in'} />
-          </IconButton>
+          {
+           !this.props.isReadOnly ? (
+              <IconButton
+                className={styles.trashIcon}
+                onClick={this.addTemplate(schemaId)}
+                aria-label="add"
+                disableRipple
+              >
+                <Icon className={'icon-zoom-in'} />
+              </IconButton>
+            ) : null
+          }
         </div>
       );
     });
