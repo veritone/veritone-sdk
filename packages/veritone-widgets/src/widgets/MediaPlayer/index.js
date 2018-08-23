@@ -58,6 +58,7 @@ class MediaPlayerComponent extends React.Component {
     onDeleteBoundingBox: func,
     onChangeBoundingBox: func,
 
+    defaultBoundingBoxStyles: objectOf(any),
     stagedBoundingBoxStyles: objectOf(any),
     stylesByObjectType: objectOf(objectOf(any)),
 
@@ -129,6 +130,7 @@ class MediaPlayerComponent extends React.Component {
             autoCommit={this.props.autoCommit}
             stagedBoundingBoxStyles={props.stagedBoundingBoxStyles}
             stylesByObjectType={props.stylesByObjectType}
+            defaultBoundingBoxStyles={props.defaultBoundingBoxStyles}
           />
         )}
         <Player

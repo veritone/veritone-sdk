@@ -49,9 +49,10 @@ export default class Overlay extends React.Component {
       height: number.isRequired
     }).isRequired,
     wrapperStyles: objectOf(any),
+    defaultBoundingBoxStyles: objectOf(any),
+    stagedBoundingBoxStyles: objectOf(any),
     stylesByObjectType: objectOf(objectOf(any)),
     toolBarOffset: number,
-    stagedBoundingBoxStyles: objectOf(any),
     onAddBoundingBox: func.isRequired,
     onDeleteBoundingBox: func.isRequired,
     onChangeBoundingBox: func.isRequired,
@@ -86,7 +87,11 @@ export default class Overlay extends React.Component {
     initialBoundingBoxPolys: [],
     toolBarOffset: 0,
     stagedBoundingBoxStyles: {},
-    stylesByObjectType: {}
+    stylesByObjectType: {},
+    defaultBoundingBoxStyles: {
+      backgroundColor: 'rgba(255,100,100, .5)',
+      border: '1px solid #fff'
+    }
   };
 
   state = {
@@ -112,13 +117,12 @@ export default class Overlay extends React.Component {
   /* eslint-disable-next-line react/sort-comp */
   static mapPolysToInternalFormat = memoize(
     (polys, width, height) =>
-      polys.map(({ boundingPoly, id, ...rest }) => ({
+      polys.map(({ boundingPoly, ...rest }) => ({
         boundingPoly: percentagePolyToPixelXYWidthHeight(
           boundingPoly,
           width,
           height
         ),
-        id,
         ...rest
       })),
     isEqual
@@ -413,9 +417,8 @@ export default class Overlay extends React.Component {
                 onClick: this.handleClickBox
               }}
               style={{
-                backgroundColor: 'rgba(255,100,100, .5)',
-                border: '1px solid #fff',
                 ...boundingBoxCommonStyles,
+                ...this.props.defaultBoundingBoxStyles,
                 ...this.props.stylesByObjectType[overlayObjectType],
                 // do not let this box interfere with mouse events as we draw out
                 // the initial bounding box
@@ -448,9 +451,8 @@ export default class Overlay extends React.Component {
           !this.props.readOnly && (
             <RndBox
               style={{
-                backgroundColor: 'rgba(255,100,100, .5)',
-                border: '1px solid #fff',
                 ...boundingBoxCommonStyles,
+                ...this.props.defaultBoundingBoxStyles,
                 ...this.props.stagedBoundingBoxStyles,
                 // do not let this box interfere with mouse events as we draw it out
                 pointerEvents: this.state.drawingInitialBoundingBox
