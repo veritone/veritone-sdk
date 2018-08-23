@@ -126,3 +126,10 @@
 ## 6.1.1
 * Overlay:
   * fix position of drawn boxes being out of sync with mouse position in some cases where the screen is scrolled.
+
+## 6.2.0
+* Overlay:
+  * Added the ability to style bounding boxes individually and as a group. Opened up styling so more than just background and border styles can be customized.
+    * props.stagedBoundingBoxStyles apply to new, unconfirmed bounding boxes
+    * props.stylesByObjectType apply to a bounding box if that box has a matching "overlayObjectType" key
+    * props.defaultBoundingBoxStyles apply to every box not covered by the above props
