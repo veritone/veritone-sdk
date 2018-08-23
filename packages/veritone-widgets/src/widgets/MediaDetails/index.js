@@ -1422,6 +1422,8 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         onExpandClick={this.toggleExpandedMode}
                         isExpandedMode={isExpandedMode}
+                        onSdoClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
