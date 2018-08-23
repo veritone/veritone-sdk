@@ -7,20 +7,13 @@ import {
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import { FormControl, FormControlLabel } from '@material-ui/core';
 import { Radio, RadioGroup } from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import { MenuList, MenuItem } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
-import Grid from '@material-ui/core/Grid';
-import { withTheme } from '@material-ui/core/styles';
+import { MenuItem } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 
 import Rx from 'rxjs/Rx';
-import {Observable} from "rxjs/Observable";
 import "rxjs/add/operator/take";
 import "rxjs/add/operator/takeUntil";
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -180,7 +173,7 @@ class StructuredDataModal extends React.Component {
     schemaResults.map( schemaResult => {
       if(!('errors' in schemaResult)) {
         schemas[ schemaResult.data.schema.id ].schema = schemaResult.data.schema.dataRegistry.name;
-        schemas[ schemaResult.data.schema.id ].author = schemaResult.data.schema.dataRegistry.createdBy.organization.name;
+        schemas[ schemaResult.data.schema.id ].author = schemaResult.data.schema.dataRegistry.organization.name;
         schemas[ schemaResult.data.schema.id ].version = `${schemaResult.data.schema.majorVersion}.${schemaResult.data.schema.minorVersion}`;
       } else {
         console.warn('Couldn\'t lookup schema', schemaResult.errors);
@@ -377,16 +370,16 @@ class StructuredDataModal extends React.Component {
                   renderValue: this.getSelectedOperatorLabel,
                   disableUnderline: true,
                 }
-              }
-            >
-              { operators.map( operator => (
-                  <MenuItem key={operator} value={operator} style={{ justifyContent: 'space-between'} }>
-                    <Typography variant={ 'headline' }>{ StructuredDataModal.OPERATOR_LABELS[operator] }</Typography>
-                    <Typography align="right" variant={ 'headline' }>{ StructuredDataModal.SYMBOL_LABELS[operator] }</Typography>
-                  </MenuItem>)
-                )
-              }
-          </TextField>
+              }>
+                { operators.map( operator => (
+                    <MenuItem key={operator} value={operator} style={{ justifyContent: 'space-between'} }>
+                      <Typography variant={ 'subheading' }>{ StructuredDataModal.OPERATOR_LABELS[operator] }</Typography>
+
+                      <Typography style={{ marginLeft: '1em' }} align="right" variant={ 'subheading' }>{ StructuredDataModal.SYMBOL_LABELS[operator] }</Typography>
+                    </MenuItem>)
+                  )
+                }
+            </TextField>
         </Fragment>
       );
     }
@@ -410,7 +403,7 @@ class StructuredDataModal extends React.Component {
 
   renderGeolocationLabel( geoPoint ) {
     if(!geoPoint) {
-      return;
+      return "";
     }
     return `${Number((geoPoint.distance).toFixed(0))} meters of ${Number((geoPoint.latitude).toFixed(2))}, ${Number((geoPoint.longitude).toFixed(2))}`;
   }

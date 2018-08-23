@@ -4,7 +4,7 @@ import Typography  from '@material-ui/core/Typography';
 
 export default withTheme()(( {value, theme, marginLeft, marginRight} ) => (
   <Typography
-    variant={ 'headline' }
+    variant={ 'subheading' }
     style={{
       paddingTop: theme.spacing.unit * 3,
       marginLeft: marginLeft ? '0.5em' : null,
