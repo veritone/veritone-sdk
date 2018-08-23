@@ -5,6 +5,12 @@ import { map, startCase, partial, omit } from 'lodash';
 import DotDotDot from 'react-dotdotdot';
 import { format } from 'date-fns';
 
+const IntegerFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 0
+});
+
+const NumberFormatter = new Intl.NumberFormat('en-US', {});
+
 export default class SDOTable extends React.Component {
   static propTypes = {
     data: arrayOf(object).isRequired,
@@ -33,6 +39,11 @@ export default class SDOTable extends React.Component {
       case 'geoPoint':
         formattedData = `[${data}]`;
         break;
+      case 'integer':
+        formattedData = Number.isInteger(data) ? IntegerFormatter.format(data) : data;
+        break;
+      case 'number':
+        formattedData = !Number.isNaN(data) ? NumberFormatter.format(data) : data;
       default:
         formattedData = data;
     }
