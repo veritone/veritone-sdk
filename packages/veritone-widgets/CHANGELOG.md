@@ -153,5 +153,9 @@ const MyPage = () => (
   * Fix width/height propTypes to match video-react Player's (accept string or number)
 
 ## 6.1.1
-* MediaPlayerComponent
+* MediaPlayer component
   * bump version and open up semver range to support changes from 6.1.0
+
+## 6.2.0
+* MediaPlayer component
+  * Support styling changes introduced in veritone-react-common v6.2.0
