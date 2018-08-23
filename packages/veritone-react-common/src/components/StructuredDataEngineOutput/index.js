@@ -10,7 +10,7 @@ import {
   func,
   node
 } from 'prop-types';
-import { get } from 'lodash';
+import { get, findIndex, isEqual } from 'lodash';
 import classNames from 'classnames';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -48,6 +48,8 @@ class StructuredDataEngineOutput extends Component {
     className: string,
     onExpandClick: func,
     isExpandedMode: bool,
+    onSdoClick: func,
+    mediaPlayerTimeMs: number,
     outputNullState: node
   };
 
@@ -58,7 +60,8 @@ class StructuredDataEngineOutput extends Component {
   state = {
     selectedSchemaId: null,
     flattenStructuredData: {},
-    engineSchemaIds: []
+    engineSchemaIds: [],
+    focusedSdoTableRow: null
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -68,8 +71,17 @@ class StructuredDataEngineOutput extends Component {
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.data) {
+    if (nextProps.data && !isEqual(nextProps.data, this.props.data)) {
       this.processStructuredData(nextProps.data);
+      return;
+    }
+    if (this.props.mediaPlayerTimeMs != nextProps.mediaPlayerTimeMs) {
+      this.setState(prevState => ({
+        focusedSdoTableRow: this.getFocusedSdoDataRowIndex(
+          prevState.selectedSchemaId,
+          prevState.flattenStructuredData
+        )
+      }));
     }
   }
 
@@ -86,13 +98,18 @@ class StructuredDataEngineOutput extends Component {
               if (!flattenStructuredData[schemaId]) {
                 flattenStructuredData[schemaId] = [];
               }
-              if (Array.isArray(structuredData[schemaId])) {
-                structuredData[schemaId].forEach(structuredDataItem =>
-                  flattenStructuredData[schemaId].push(structuredDataItem)
-                );
-              } else {
-                flattenStructuredData[schemaId].push(structuredData[schemaId]);
-              }
+              const structuredDataForSchema = Array.isArray(
+                structuredData[schemaId]
+              )
+                ? structuredData[schemaId]
+                : [structuredData[schemaId]];
+              structuredDataForSchema.forEach(structuredDataItem => {
+                flattenStructuredData[schemaId].push({
+                  ...structuredDataItem,
+                  startTimeMs: seriesItem.startTimeMs,
+                  stopTimeMs: seriesItem.stopTimeMs
+                });
+              });
             });
           }
         });
@@ -104,11 +121,44 @@ class StructuredDataEngineOutput extends Component {
       selectedSchemaId = engineSchemaIds[0];
     }
 
+    const focusedSdoTableRow = this.getFocusedSdoDataRowIndex(
+      selectedSchemaId,
+      flattenStructuredData
+    );
+
     this.setState({
       selectedSchemaId: selectedSchemaId,
       flattenStructuredData: flattenStructuredData,
-      engineSchemaIds: engineSchemaIds
+      engineSchemaIds: engineSchemaIds,
+      focusedSdoTableRow
     });
+  };
+
+  getFocusedSdoDataRowIndex = (selectedSchemaId, flattenStructuredData) => {
+    if (!selectedSchemaId || !flattenStructuredData) {
+      return null;
+    }
+    const { mediaPlayerTimeMs } = this.props;
+    const structuredData = flattenStructuredData[selectedSchemaId];
+    if (!get(structuredData, 'length')) {
+      return null;
+    }
+    if (
+      structuredData.some(
+        item =>
+          item.startTimeMs <= mediaPlayerTimeMs &&
+          item.stopTimeMs >= mediaPlayerTimeMs
+      )
+    ) {
+      const index = findIndex(
+        structuredData,
+        item =>
+          item.startTimeMs <= mediaPlayerTimeMs &&
+          item.stopTimeMs >= mediaPlayerTimeMs
+      );
+      return index;
+    }
+    return null;
   };
 
   getSchemaName = schemaId => {
@@ -120,9 +170,14 @@ class StructuredDataEngineOutput extends Component {
   };
 
   onSchemaChange = evt => {
-    this.setState({
-      selectedSchemaId: evt.target.value
-    });
+    const selectedSchemaId = evt.target.value;
+    this.setState(prevState => ({
+      selectedSchemaId,
+      focusedSdoTableRow: this.getFocusedSdoDataRowIndex(
+        selectedSchemaId,
+        this.state.flattenStructuredData
+      )
+    }));
   };
 
   handleEngineChange = engineId => {
@@ -132,9 +187,24 @@ class StructuredDataEngineOutput extends Component {
     this.setState({
       selectedSchemaId: null,
       flattenStructuredData: {},
-      engineSchemaIds: []
+      engineSchemaIds: [],
+      focusedSdoTableRow: null
     });
     this.props.onEngineChange(engineId);
+  };
+
+  handleOnCellClick = rowNum => {
+    const structuredData = this.state.flattenStructuredData[
+      this.state.selectedSchemaId
+    ];
+    const structuredDataItem = structuredData[rowNum];
+    this.props.onSdoClick(
+      structuredDataItem.startTimeMs,
+      structuredDataItem.stopTimeMs
+    );
+    this.setState({
+      focusedSdoTableRow: rowNum
+    });
   };
 
   render() {
@@ -151,7 +221,8 @@ class StructuredDataEngineOutput extends Component {
     const {
       selectedSchemaId,
       flattenStructuredData,
-      engineSchemaIds
+      engineSchemaIds,
+      focusedSdoTableRow
     } = this.state;
 
     return (
@@ -166,6 +237,7 @@ class StructuredDataEngineOutput extends Component {
         >
           {schemasById[selectedSchemaId] && (
             <Select
+              autoWidth
               value={selectedSchemaId}
               className={styles.schemaMenu}
               onChange={this.onSchemaChange}
@@ -200,6 +272,8 @@ class StructuredDataEngineOutput extends Component {
               <SDOTable
                 data={flattenStructuredData[selectedSchemaId]}
                 schema={schemasById[selectedSchemaId].definition.properties}
+                onCellClick={this.handleOnCellClick}
+                focusedRow={focusedSdoTableRow}
               />
             ))}
       </div>
