@@ -77,7 +77,8 @@ const initDate = new Date();
         : subDays(initDate, 3),
       end: get(props, 'initialValues.end')
         ? new Date(props.initialValues.end)
-        : undefined,
+        : initDate,
+      setEndDate: get(props, 'initialValues.end') ? true : false,
       repeatEvery: {
         number: '1',
         period: 'day'
@@ -161,19 +162,24 @@ class Scheduler extends React.Component {
       week: selectedDays.map(day => `weekly.${day}`)
     }[recurringPeriod];
 
-    const wantedFields = {
+    const fieldMapper = {
       Recurring: [
         'scheduleType',
         'start',
-        'end',
         'repeatEvery',
         ...recurringRepeatSectionFields
       ],
-      Continuous: ['scheduleType', 'start', 'end'],
+      Continuous: ['scheduleType', 'start'],
       Now: ['scheduleType'],
       Once: ['scheduleType']
-    }[formResult.scheduleType];
+    };
 
+    if (formResult.setEndDate) {
+      fieldMapper.Recurring.push('end');
+      fieldMapper.Continuous.push('end');
+    }
+
+    const wantedFields = fieldMapper[formResult.scheduleType];
     const result = pick(formResult, wantedFields);
     return result.scheduleType === 'Recurring'
       ? filterRecurringPeriods(result, recurringPeriod)
