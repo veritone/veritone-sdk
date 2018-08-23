@@ -49,10 +49,10 @@ export default class Overlay extends React.Component {
       height: number.isRequired
     }).isRequired,
     wrapperStyles: objectOf(any),
+    defaultBoundingBoxStyles: objectOf(any),
+    stagedBoundingBoxStyles: objectOf(any),
+    stylesByObjectType: objectOf(objectOf(any)),
     toolBarOffset: number,
-    overlayBackgroundColor: string,
-    overlayBorderStyle: string,
-    overlayBackgroundBlendMode: string,
     onAddBoundingBox: func.isRequired,
     onDeleteBoundingBox: func.isRequired,
     onChangeBoundingBox: func.isRequired,
@@ -60,6 +60,9 @@ export default class Overlay extends React.Component {
       shape({
         // unique ID
         id: string.isRequired,
+        // optional type for styles + future stuff maybe
+        // (corresponds to props.stylesByObjectType)
+        overlayObjectType: string,
         // vertices
         boundingPoly: arrayOf(
           shape({
@@ -83,9 +86,12 @@ export default class Overlay extends React.Component {
     addOnly: false,
     initialBoundingBoxPolys: [],
     toolBarOffset: 0,
-    overlayBackgroundColor: '#FF6464',
-    overlayBackgroundBlendMode: 'hard-light',
-    overlayBorderStyle: '1px solid #fff'
+    stagedBoundingBoxStyles: {},
+    stylesByObjectType: {},
+    defaultBoundingBoxStyles: {
+      backgroundColor: 'rgba(255,100,100, .5)',
+      border: '1px solid #fff'
+    }
   };
 
   state = {
@@ -111,13 +117,13 @@ export default class Overlay extends React.Component {
   /* eslint-disable-next-line react/sort-comp */
   static mapPolysToInternalFormat = memoize(
     (polys, width, height) =>
-      polys.map(({ boundingPoly, id }) => ({
+      polys.map(({ boundingPoly, ...rest }) => ({
         boundingPoly: percentagePolyToPixelXYWidthHeight(
           boundingPoly,
           width,
           height
         ),
-        id
+        ...rest
       })),
     isEqual
   );
@@ -170,12 +176,12 @@ export default class Overlay extends React.Component {
     });
 
     this.props.onChangeBoundingBox({
+      ...this.state.boundingBoxPositions[focusedIndex],
       boundingPoly: pixelXYWidthHeightToPercentagePoly(
         this.state.boundingBoxPositions[focusedIndex].boundingPoly,
         this.props.overlayPositioningContext.width,
         this.props.overlayPositioningContext.height
-      ),
-      id: focusedId
+      )
     });
 
     this.setState({
@@ -207,12 +213,12 @@ export default class Overlay extends React.Component {
     };
 
     this.props.onChangeBoundingBox({
+      ...this.state.boundingBoxPositions[focusedIndex],
       boundingPoly: pixelXYWidthHeightToPercentagePoly(
         draggedObject,
         this.props.overlayPositioningContext.width,
         this.props.overlayPositioningContext.height
-      ),
-      id: focusedId
+      )
     });
 
     this.setState({
@@ -379,11 +385,10 @@ export default class Overlay extends React.Component {
       !this.state.userActingOnBoundingBox &&
       !this.state.userMinimizedConfirmMenu;
 
-    const boundingBoxStyles = {
-      border: this.props.overlayBorderStyle,
-      backgroundColor: this.props.overlayBackgroundColor,
-      mixBlendMode: this.props.overlayBackgroundBlendMode,
-      willChange: 'left, top, width, height' // this seems to fix some rendering jank
+    const boundingBoxCommonStyles = {
+      // this seems to fix some rendering jank
+      // (half of overlay would not render sometimes)
+      willChange: 'left, top, width, height'
     };
 
     return (
@@ -400,7 +405,11 @@ export default class Overlay extends React.Component {
         }}
       >
         {this.state.boundingBoxPositions.map(
-          ({ id, boundingPoly: { x, y, width, height } }) => (
+          ({
+            id,
+            overlayObjectType,
+            boundingPoly: { x, y, width, height }
+          }) => (
             <RndBox
               key={id}
               extendsProps={{
@@ -408,7 +417,9 @@ export default class Overlay extends React.Component {
                 onClick: this.handleClickBox
               }}
               style={{
-                ...boundingBoxStyles,
+                ...boundingBoxCommonStyles,
+                ...this.props.defaultBoundingBoxStyles,
+                ...this.props.stylesByObjectType[overlayObjectType],
                 // do not let this box interfere with mouse events as we draw out
                 // the initial bounding box
                 pointerEvents:
@@ -440,7 +451,10 @@ export default class Overlay extends React.Component {
           !this.props.readOnly && (
             <RndBox
               style={{
-                ...boundingBoxStyles, // do not let this box interfere with mouse events as we draw it out
+                ...boundingBoxCommonStyles,
+                ...this.props.defaultBoundingBoxStyles,
+                ...this.props.stagedBoundingBoxStyles,
+                // do not let this box interfere with mouse events as we draw it out
                 pointerEvents: this.state.drawingInitialBoundingBox
                   ? 'none'
                   : 'auto'

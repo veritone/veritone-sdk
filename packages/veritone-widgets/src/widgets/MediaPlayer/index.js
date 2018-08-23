@@ -15,7 +15,10 @@ import {
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
-import { BoundingPolyOverlay, OverlayPositioningProvider } from 'veritone-react-common';
+import {
+  BoundingPolyOverlay,
+  OverlayPositioningProvider
+} from 'veritone-react-common';
 import VideoSource from './VideoSource';
 import { getPolysForTime } from './helpers';
 
@@ -44,6 +47,7 @@ class MediaPlayerComponent extends React.Component {
         stopTimeMs: number.isRequired,
         object: shape({
           id: string.isRequired,
+          overlayObjectType: string,
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
           ).isRequired
@@ -53,7 +57,11 @@ class MediaPlayerComponent extends React.Component {
     onAddBoundingBox: func,
     onDeleteBoundingBox: func,
     onChangeBoundingBox: func,
-    overlayBorderStyle: string,
+
+    defaultBoundingBoxStyles: objectOf(any),
+    stagedBoundingBoxStyles: objectOf(any),
+    stylesByObjectType: objectOf(objectOf(any)),
+
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -86,7 +94,7 @@ class MediaPlayerComponent extends React.Component {
     fluid: true,
     onAddBoundingBox: noop,
     onDeleteBoundingBox: noop,
-    onChangeBoundingBox: noop,
+    onChangeBoundingBox: noop
   };
 
   handleAddBoundingBox = newBox => {
@@ -113,8 +121,6 @@ class MediaPlayerComponent extends React.Component {
             onAddBoundingBox={this.handleAddBoundingBox}
             onDeleteBoundingBox={this.props.onDeleteBoundingBox}
             onChangeBoundingBox={this.props.onChangeBoundingBox}
-            overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
-            overlayBorderStyle={this.props.overlayBorderStyle}
             initialBoundingBoxPolys={
               this.props.boundingPolySeries ? currentPolys : undefined
             }
@@ -122,6 +128,9 @@ class MediaPlayerComponent extends React.Component {
             addOnly={this.props.addOnly}
             readOnly={this.props.readOnly || !this.props.paused}
             autoCommit={this.props.autoCommit}
+            stagedBoundingBoxStyles={props.stagedBoundingBoxStyles}
+            stylesByObjectType={props.stylesByObjectType}
+            defaultBoundingBoxStyles={props.defaultBoundingBoxStyles}
           />
         )}
         <Player

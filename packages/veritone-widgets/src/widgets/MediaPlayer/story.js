@@ -24,6 +24,7 @@ const timeSeries = [
     startTimeMs: 0,
     object: {
       id: guid(),
+      overlayObjectType: 'a',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 5000
@@ -32,6 +33,7 @@ const timeSeries = [
     startTimeMs: 2000,
     object: {
       id: guid(),
+      overlayObjectType: 'a',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 8000
@@ -40,6 +42,7 @@ const timeSeries = [
     startTimeMs: 8000,
     object: {
       id: guid(),
+      overlayObjectType: 'b',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 12000
@@ -48,6 +51,7 @@ const timeSeries = [
     startTimeMs: 9000,
     object: {
       id: guid(),
+      overlayObjectType: 'c',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 14000
@@ -56,6 +60,7 @@ const timeSeries = [
     startTimeMs: 10000,
     object: {
       id: guid(),
+      overlayObjectType: 'a',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 14000
@@ -64,6 +69,7 @@ const timeSeries = [
     startTimeMs: 17000,
     object: {
       id: guid(),
+      overlayObjectType: 'c',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 19000
@@ -72,6 +78,7 @@ const timeSeries = [
     startTimeMs: 20000,
     object: {
       id: guid(),
+      overlayObjectType: 'b',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 25000
@@ -80,6 +87,7 @@ const timeSeries = [
     startTimeMs: 21000,
     object: {
       id: guid(),
+      overlayObjectType: 'b',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 24000
@@ -88,6 +96,7 @@ const timeSeries = [
     startTimeMs: 21000,
     object: {
       id: guid(),
+      overlayObjectType: 'a',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 25000
@@ -96,6 +105,7 @@ const timeSeries = [
     startTimeMs: 25000,
     object: {
       id: guid(),
+      overlayObjectType: 'c',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 30000
@@ -104,6 +114,7 @@ const timeSeries = [
     startTimeMs: 28000,
     object: {
       id: guid(),
+      overlayObjectType: 'a',
       boundingPoly: randomPolyBox()
     },
     stopTimeMs: 30000
@@ -220,6 +231,17 @@ class Story extends React.Component {
           onAddBoundingBox={this.handleAddBoundingBox}
           onDeleteBoundingBox={this.handleDeleteBoundingBox}
           onChangeBoundingBox={this.handleChangeBoundingBox}
+          stylesByObjectType={{
+            a: {
+              backgroundColor: 'rgba(40, 95, 255, 0.5)'
+            },
+            b: {
+              backgroundColor: 'rgba(80, 185, 60, 0.5)'
+            },
+            c: {
+              backgroundColor: 'rgba(255, 140, 40, 0.5)'
+            }
+          }}
           ref={this.playerRef}
         />
         <DefaultControlBar playerRef={this.playerRef} />
