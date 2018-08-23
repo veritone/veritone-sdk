@@ -175,7 +175,7 @@ class StructuredDataEngineOutput extends Component {
       selectedSchemaId,
       focusedSdoTableRow: this.getFocusedSdoDataRowIndex(
         selectedSchemaId,
-        this.state.flattenStructuredData
+        prevState.flattenStructuredData
       )
     }));
   };
