@@ -67,6 +67,7 @@ export default class MediaPlayerLightbox extends React.Component {
              btnPlayToggle={!live}
              ctrlProgress={!live}
              displayTime={!live}
+             btnFullscreenToggle={false}
             playerRef={this.playerRef}
           />
           {live && <div className={styles.liveLabel}>LIVE</div>}
