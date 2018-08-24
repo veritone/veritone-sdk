@@ -10,7 +10,12 @@ import {
   ForwardControl,
   PlayToggle,
   playerActions,
-  videoActions
+  videoActions,
+  CurrentTimeDisplay,
+  TimeDivider,
+  DurationDisplay,
+  ProgressControl,
+  FullscreenToggle
 } from 'video-react';
 import { shape, objectOf, any, bool } from 'prop-types';
 
@@ -34,9 +39,26 @@ export default class DefaultControlBar extends React.Component {
     playerRef: shape({
       current: objectOf(any)
     }),
-    hasStarted: bool
+    hasStarted: bool,
+    btnRestart: bool,
+    btnReplay: bool,
+    btnForward: bool,
+    btnPlayToggle: bool,
+    btnVolume: bool,
+    btnFullscreenToggle: bool,
+    ctrlProgress: bool,
+    displayTime: bool
   };
-  static defaultProps = {};
+  static defaultProps = {
+    btnRestart: true,
+    btnReplay: true,
+    btnForward: true,
+    btnPlayToggle: true,
+    btnVolume: true,
+    btnFullscreenToggle: true,
+    ctrlProgress: true,
+    displayTime: true
+  };
 
   render() {
     const manager = get(this.props.playerRef, 'current.manager');
@@ -51,10 +73,22 @@ export default class DefaultControlBar extends React.Component {
       return null;
     }
 
+    const {
+      hasStarted,
+      btnRestart,
+      btnReplay,
+      btnForward,
+      btnPlayToggle,
+      btnVolume,
+      btnFullscreenToggle,
+      ctrlProgress,
+      displayTime
+    } = this.props;
+
     return (
       <div
         className={cx('video-react', {
-          'video-react-has-started': this.props.hasStarted
+          'video-react-has-started': hasStarted
         })}
         style={{ position: 'static' }}
       >
@@ -62,16 +96,23 @@ export default class DefaultControlBar extends React.Component {
           className={cx(styles.mediaPlayer)}
           // need to provide these manually because ControlBar is
           // supposed to be a child of Player and get them automatically
+          autoHide
           player={player}
           manager={manager}
           actions={actions}
           store={store}
+          disableDefaultControls
         >
-          <RestartMediaButton order={1.1} />
-          <ReplayControl seconds={10} order={1.2} />
-          <ForwardControl seconds={10} order={1.3} />
-          <PlayToggle order={2} />
-          <VolumeMenuButton vertical order={7} />
+          { btnRestart && (<RestartMediaButton order={1.1} />) }
+          { btnReplay && (<ReplayControl seconds={10} order={1.2} />) } 
+          { btnForward && (<ForwardControl seconds={10} order={1.3} />) }
+          { btnPlayToggle && (<PlayToggle order={2} />) }
+          { displayTime && (<CurrentTimeDisplay player={player} order={3.1}/>) }
+          { displayTime && (<TimeDivider order={3.2}/>) }
+          { displayTime && (<DurationDisplay player={player} order={3.3}/>) }
+          { ctrlProgress && (<ProgressControl order={6}/>) }
+          { btnVolume && (<VolumeMenuButton vertical={ctrlProgress} order={7} />) }
+          { btnFullscreenToggle && (<FullscreenToggle order={8} />) }
         </ControlBar>
       </div>
     );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { noop } from 'lodash';
 import {
   arrayOf,
   shape,
@@ -8,25 +9,31 @@ import {
   func,
   objectOf,
   any,
-  object
+  object,
+  oneOfType
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 
-import { BoundingPolyOverlay, OverlayPositioningProvider } from 'veritone-react-common';
+import {
+  BoundingPolyOverlay,
+  OverlayPositioningProvider
+} from 'veritone-react-common';
 import VideoSource from './VideoSource';
 import { getPolysForTime } from './helpers';
 
 import styles from './styles.scss';
 
-@connect(state => ({
-  videoHeight: state.player.videoHeight,
-  videoWidth: state.player.videoWidth,
-  hasStarted: state.player.hasStarted,
-  isActive: state.player.isActive,
-  currentTime: state.player.currentTime,
-  paused: state.player.paused
-}))
+@connect(
+  state => ({
+    videoHeight: state.player.videoHeight,
+    videoWidth: state.player.videoWidth,
+    hasStarted: state.player.hasStarted,
+    isActive: state.player.isActive,
+    currentTime: state.player.currentTime,
+    paused: state.player.paused,
+  })
+)
 class MediaPlayerComponent extends React.Component {
   static propTypes = {
     src: string,
@@ -40,18 +47,20 @@ class MediaPlayerComponent extends React.Component {
       shape({
         startTimeMs: number.isRequired,
         stopTimeMs: number.isRequired,
-        id: string.isRequired,
         object: shape({
+          id: string.isRequired,
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
           ).isRequired
         })
       })
     ),
-    onAddBoundingBox: func.isRequired,
-    onDeleteBoundingBox: func.isRequired,
-    onChangeBoundingBox: func.isRequired,
+    onAddBoundingBox: func,
+    onDeleteBoundingBox: func,
+    onChangeBoundingBox: func,
     overlayBorderStyle: string,
+    overlayContentClassName: string,
+    reactPlayerClassName: string,
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -61,8 +70,8 @@ class MediaPlayerComponent extends React.Component {
     readOnly: bool,
     addOnly: bool,
     autoCommit: bool,
-    width: number,
-    height: number,
+    width: oneOfType([string, number]),
+    height: oneOfType([string, number]),
     // fluid = 100% width by default, see video-react docs
     fluid: bool,
     videoHeight: number,
@@ -81,7 +90,10 @@ class MediaPlayerComponent extends React.Component {
   };
 
   static defaultProps = {
-    fluid: true
+    fluid: true,
+    onAddBoundingBox: noop,
+    onDeleteBoundingBox: noop,
+    onChangeBoundingBox: noop,
   };
 
   handleAddBoundingBox = newBox => {
@@ -89,7 +101,13 @@ class MediaPlayerComponent extends React.Component {
   };
 
   render() {
-    const { src, streams, ...props } = this.props;
+    const {
+      src,
+      streams,
+      overlayContentClassName,
+      reactPlayerClassName,
+      ...props
+    } = this.props;
 
     const currentPolys = getPolysForTime(
       this.props.boundingPolySeries || [],
@@ -101,6 +119,7 @@ class MediaPlayerComponent extends React.Component {
         contentHeight={this.props.videoHeight}
         contentWidth={this.props.videoWidth}
         fixedWidth={!props.fluid}
+        contentClassName={overlayContentClassName}
       >
         {this.props.hasStarted && (
           <BoundingPolyOverlay
@@ -120,7 +139,7 @@ class MediaPlayerComponent extends React.Component {
           />
         )}
         <Player
-          className={styles.mediaPlayer}
+          className={styles.mediaPlayer + ' ' + reactPlayerClassName}
           ref={this.props.forwardedRef}
           store={this.context.store}
           {...props}
@@ -128,7 +147,11 @@ class MediaPlayerComponent extends React.Component {
           {/* prevent video-react from adding its own control bar */}
           <ControlBar autoHide className={styles.hiddenDummyControls} />
 
-          <VideoSource isVideoChild src={src} streams={streams} />
+          <VideoSource
+            isVideoChild
+            src={src}
+            streams={streams}
+          />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
         </Player>
       </OverlayPositioningProvider>
