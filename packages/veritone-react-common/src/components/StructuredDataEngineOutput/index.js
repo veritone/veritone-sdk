@@ -103,16 +103,13 @@ class StructuredDataEngineOutput extends Component {
               )
                 ? structuredData[schemaId]
                 : [structuredData[schemaId]];
-              structuredDataForSchema.forEach(structuredDataItem => {
-                for (let i = 0; i < 30; i++) {
-                  flattenStructuredData[schemaId].push({
-                    ...structuredDataItem,
-                    startTimeMs: seriesItem.startTimeMs,
-                    stopTimeMs: seriesItem.stopTimeMs
-                  });
-                }
-
-              });
+              structuredDataForSchema.forEach(structuredDataItem =>
+                flattenStructuredData[schemaId].push({
+                  ...structuredDataItem,
+                  startTimeMs: seriesItem.startTimeMs,
+                  stopTimeMs: seriesItem.stopTimeMs
+                })
+              );
             });
           }
         });
