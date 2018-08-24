@@ -104,11 +104,14 @@ class StructuredDataEngineOutput extends Component {
                 ? structuredData[schemaId]
                 : [structuredData[schemaId]];
               structuredDataForSchema.forEach(structuredDataItem => {
-                flattenStructuredData[schemaId].push({
-                  ...structuredDataItem,
-                  startTimeMs: seriesItem.startTimeMs,
-                  stopTimeMs: seriesItem.stopTimeMs
-                });
+                for (let i = 0; i < 30; i++) {
+                  flattenStructuredData[schemaId].push({
+                    ...structuredDataItem,
+                    startTimeMs: seriesItem.startTimeMs,
+                    stopTimeMs: seriesItem.stopTimeMs
+                  });
+                }
+
               });
             });
           }
@@ -269,12 +272,14 @@ class StructuredDataEngineOutput extends Component {
         {outputNullState ||
           (schemasById[selectedSchemaId] &&
             flattenStructuredData[selectedSchemaId] && (
-              <SDOTable
-                data={flattenStructuredData[selectedSchemaId]}
-                schema={schemasById[selectedSchemaId].definition.properties}
-                onCellClick={this.handleOnCellClick}
-                focusedRow={focusedSdoTableRow}
-              />
+              <div className={styles.sdoTableContainer}>
+                <SDOTable
+                  data={flattenStructuredData[selectedSchemaId]}
+                  schema={schemasById[selectedSchemaId].definition.properties}
+                  onCellClick={this.handleOnCellClick}
+                  focusedRow={focusedSdoTableRow}
+                />
+              </div>
             ))}
       </div>
     );
