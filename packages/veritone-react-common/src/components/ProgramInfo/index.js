@@ -30,7 +30,6 @@ import styles from './styles.scss';
 class ProgramInfo extends React.Component {
   static propTypes = {
     program: shape({
-      name: string,
       programImage: string,
       signedProgramImage: string,
       programLiveImage: string,
@@ -149,18 +148,6 @@ class ProgramInfo extends React.Component {
       };
     }
     return null;
-  };
-
-  handleNameChange = event => {
-    const newValue = event.target.value;
-    this.setState(prevState => {
-      return {
-        program: {
-          ...prevState.program,
-          name: newValue
-        }
-      };
-    });
   };
 
   handleDescriptionChange = event => {
@@ -306,16 +293,6 @@ class ProgramInfo extends React.Component {
         {openFilePicker && this.renderFilePicker()}
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <div className={styles.activeSectionContainer}>
-            <div className={styles.programInfoSection}>
-              <TextField
-                label="Program Name"
-                className={styles.programInfoInputField}
-                margin="normal"
-                onChange={this.handleNameChange}
-                value={program.name}
-                disabled={readOnly}
-              />
-            </div>
             <div className={styles.programInfoSection}>
               <div className={styles.programImagesSection}>
                 <div className={styles.programLiveImageSection}>
