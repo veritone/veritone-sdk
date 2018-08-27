@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { forEach, get } from 'lodash';
+import { forEach, get, includes, find } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -104,10 +104,15 @@ export default class EngineCategoryConfig extends Component {
       initialSubtitleConfig
     } = this.props;
 
-    let hasFormatsSelected = false;
+    let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {
       if (get(config, 'formats.length')) {
-        hasFormatsSelected = true;
+        forEach(config.formats, format => {
+          const exportFormat = find(category.exportFormats, {format: format.extension});
+          if (exportFormat && includes(exportFormat.types, 'subtitle')) {
+            hasSubtitleFormatsSelected = true;
+          }
+        })
       }
     });
 
@@ -149,7 +154,7 @@ export default class EngineCategoryConfig extends Component {
                 />
               );
             })}
-            {hasFormatsSelected && (
+            {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
                   <ClosedCaptionIcon className={styles.closedCaptionIcon} />
