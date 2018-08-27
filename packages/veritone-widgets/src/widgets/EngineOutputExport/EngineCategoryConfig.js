@@ -48,7 +48,7 @@ export default class EngineCategoryConfig extends Component {
     }).isRequired,
     engineCategoryConfigs: arrayOf(
       shape({
-        engineId: string.isRequired,
+        engineId: string,
         categoryId: string,
         formats: arrayOf(
           shape({
