@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { includes, get } from 'lodash';
+import cx from 'classnames';
 import { modules } from 'veritone-redux-common';
 const { user: userModule } = modules;
 
@@ -82,7 +83,7 @@ export default class EngineConfigItem extends Component {
       <ListItem className={styles.engineListItem}>
         {engine && engine.signedIconPath ? (
             <img className={styles.engineLogo} src={engine.signedIconPath} />
-          ) : <Icon className={'icon-engines'}/>}
+          ) : <Icon className={cx(styles['default-engine-icon'], 'icon-engines')}/>}
         <ListItemText
           classes={{ primary: styles.engineNameText }}
           primary={

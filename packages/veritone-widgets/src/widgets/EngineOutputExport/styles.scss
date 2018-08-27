@@ -75,6 +75,10 @@
     background-color: $grey-3;
   }
 
+  .default-engine-icon {
+    margin-left: 30px;
+  }
+
   .engineNameText {
     @include mui-text('body1');
     align-items: center;
