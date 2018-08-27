@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { includes } from 'lodash';
+import { includes, get } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { user: userModule } = modules;
 
@@ -106,7 +106,7 @@ export default class EngineConfigItem extends Component {
           value={selectedFileExtensions}
           // eslint-disable-next-line
           onChange={evt =>
-            selectFileType(evt.target.value, categoryId, engineId, !engine)
+            selectFileType(evt.target.value, categoryId || get(engine, 'category.id'), engineId)
           }
           // eslint-disable-next-line
           renderValue={value => `.${value.join(', .')}`}

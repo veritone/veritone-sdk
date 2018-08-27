@@ -38,7 +38,8 @@ export default class EngineCategoryConfigList extends Component {
   static propTypes = {
     tdos: arrayOf(
       shape({
-        tdoId: string.isRequired,
+        tdoId: string,
+        mentionId: string,
         startOffsetMs: number,
         stopOffsetMs: number
       })
@@ -63,11 +64,10 @@ export default class EngineCategoryConfigList extends Component {
 
   render() {
     const {
-      tdos,
       fetchingEngineRuns,
       outputConfigsByCategoryId,
       expandedCategories,
-      toggleConfigExpand
+      toggleConfigExpand,
     } = this.props;
 
     return (
@@ -80,7 +80,6 @@ export default class EngineCategoryConfigList extends Component {
                   categoryId={key}
                   engineCategoryConfigs={outputConfigsByCategoryId[key]}
                   expanded={expandedCategories[key]}
-                  bulkExportEnabled={tdos.length > 1}
                   onExpandConfigs={toggleConfigExpand}
                 />
                 {index !==
