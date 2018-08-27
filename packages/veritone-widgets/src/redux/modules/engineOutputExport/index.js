@@ -279,9 +279,12 @@ export const outputConfigsByCategoryId = state => {
         outputConfigsByCategoryId[config.categoryId] = [];
       }
       outputConfigsByCategoryId[config.categoryId].push(config);
-    } else if(config.engineId) {
+    } else if (config.engineId) {
       // Look up engine category id using engineId
-      const categoryId = get(getEngineById(state, config.engineId), 'category.id');
+      const categoryId = get(
+        getEngineById(state, config.engineId),
+        'category.id'
+      );
       if (!outputConfigsByCategoryId[categoryId]) {
         outputConfigsByCategoryId[categoryId] = [];
       }
@@ -308,7 +311,7 @@ export const fetchEngineRunsFailed = state =>
   get(local(state), 'fetchEngineRunsFailed');
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
-export const isBulkExport = (state) => get(local(state), 'isBulkExport');
+export const isBulkExport = state => get(local(state), 'isBulkExport');
 
 export const fetchEngineRuns = tdos => async (dispatch, getState) => {
   // TODO: Update the temporalDataObjects query to accept multiple ids.
@@ -418,11 +421,7 @@ export const toggleConfigExpand = categoryId => {
   };
 };
 
-export const selectFileType = (
-  selectedFileTypes,
-  categoryId,
-  engineId
-) => {
+export const selectFileType = (selectedFileTypes, categoryId, engineId) => {
   return {
     type: UPDATE_SELECTED_FILE_TYPES,
     payload: {

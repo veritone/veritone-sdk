@@ -82,8 +82,10 @@ export default class EngineConfigItem extends Component {
     return (
       <ListItem className={styles.engineListItem}>
         {engine && engine.signedIconPath ? (
-            <img className={styles.engineLogo} src={engine.signedIconPath} />
-          ) : <Icon className={cx(styles['default-engine-icon'], 'icon-engines')}/>}
+          <img className={styles.engineLogo} src={engine.signedIconPath} />
+        ) : (
+          <Icon className={cx(styles['default-engine-icon'], 'icon-engines')} />
+        )}
         <ListItemText
           classes={{ primary: styles.engineNameText }}
           primary={
@@ -108,7 +110,11 @@ export default class EngineConfigItem extends Component {
           value={selectedFileExtensions}
           // eslint-disable-next-line
           onChange={evt =>
-            selectFileType(evt.target.value, categoryId || get(engine, 'category.id'), engineId)
+            selectFileType(
+              evt.target.value,
+              categoryId || get(engine, 'category.id'),
+              engineId
+            )
           }
           // eslint-disable-next-line
           renderValue={value => `.${value.join(', .')}`}

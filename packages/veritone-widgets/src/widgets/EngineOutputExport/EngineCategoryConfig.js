@@ -108,11 +108,13 @@ export default class EngineCategoryConfig extends Component {
     forEach(engineCategoryConfigs, config => {
       if (get(config, 'formats.length')) {
         forEach(config.formats, format => {
-          const exportFormat = find(category.exportFormats, {format: format.extension});
+          const exportFormat = find(category.exportFormats, {
+            format: format.extension
+          });
           if (exportFormat && includes(exportFormat.types, 'subtitle')) {
             hasSubtitleFormatsSelected = true;
           }
-        })
+        });
       }
     });
 
@@ -147,7 +149,8 @@ export default class EngineCategoryConfig extends Component {
             {engineCategoryConfigs.map(config => {
               return (
                 <EngineConfigItem
-                  key={`engine-config-item-${config.engineId || config.categoryId}`}
+                  key={`engine-config-item-${config.engineId ||
+                    config.categoryId}`}
                   engineId={config.engineId}
                   categoryId={category.id}
                   formats={config.formats}

@@ -67,7 +67,7 @@ export default class EngineCategoryConfigList extends Component {
       fetchingEngineRuns,
       outputConfigsByCategoryId,
       expandedCategories,
-      toggleConfigExpand,
+      toggleConfigExpand
     } = this.props;
 
     return (
