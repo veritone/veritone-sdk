@@ -11,64 +11,118 @@ const sourceTypes = {
         id: 'audio',
         sourceSchema: {
           definition: {
-            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId"],
-            "properties": {
-              "description": {
-                "type": "string",
-                "title": "Description"
+            required: [
+              'stationCallSign',
+              'liveTimezone',
+              'radioStreamUrl',
+              'stationBand',
+              'stationChannel',
+              'mediaSourceFormatId'
+            ],
+            properties: {
+              description: {
+                type: 'string',
+                title: 'Description'
               },
-              "radioStreamUrl": {
-                "type": "string",
-                "title": "Radio Stream Url"
+              radioStreamUrl: {
+                type: 'string',
+                title: 'Radio Stream Url'
               },
-              "liveTimezone": {
-                "type": "string",
-                "title": "Live Time Zone",
-                "query": "query { results: timeZones { id:name, name } }"
+              liveTimezone: {
+                type: 'string',
+                title: 'Live Time Zone',
+                query: 'query { results: timeZones { id:name, name } }'
               },
-              "network": {
-                "type": "array",
-                "title": "Network",
-                "items": {
-                  "type": "integer",
-                  "query": "query { dataRegistries (name: \"Veritone Network\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } } } } }"
+              network: {
+                type: 'array',
+                title: 'Network',
+                items: {
+                  type: 'integer',
+                  query:
+                    'query { dataRegistries (name: "Veritone Network" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: "networkId") name: data(path: "networkName") } } } } } }'
                 }
               },
-              "stationCallSign": {
-                "type": "string",
-                "title": "Call Sign"
+              stationCallSign: {
+                type: 'string',
+                title: 'Call Sign'
               },
-              "stationBand": {
-                "type": "string",
-                "title": "Band"
+              stationBand: {
+                type: 'string',
+                title: 'Band'
               },
-              "stationChannel": {
-                "type": "string",
-                "title": "Station Channel (Frequency)"
+              stationChannel: {
+                type: 'string',
+                title: 'Station Channel (Frequency)'
               },
-              "webSiteUrl": {
-                "type": "string",
-                "title": "Web Site"
+              webSiteUrl: {
+                type: 'string',
+                title: 'Web Site'
               },
-              "mediaSourceFormatId": {
-                "type": "integer",
-                "title": "Genre (Format)",
-                "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],
-                "enumNames": ["Country","Urban","Oldies","News","Dark - Not on air","Easy Listening/Beautiful Music","Ethnic","Contemporary Hit Radio/Top 40","Spanish","Jazz/New Age","Public/Educational Station","Nostalgia/Big Band","Religion","Sports","Rock","Adult Contemporary","Album Oriented Rock/Classic Rock","Classical","Middle of the Road","Talk","Miscellaneous"]
+              mediaSourceFormatId: {
+                type: 'integer',
+                title: 'Genre (Format)',
+                enum: [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  20,
+                  21
+                ],
+                enumNames: [
+                  'Country',
+                  'Urban',
+                  'Oldies',
+                  'News',
+                  'Dark - Not on air',
+                  'Easy Listening/Beautiful Music',
+                  'Ethnic',
+                  'Contemporary Hit Radio/Top 40',
+                  'Spanish',
+                  'Jazz/New Age',
+                  'Public/Educational Station',
+                  'Nostalgia/Big Band',
+                  'Religion',
+                  'Sports',
+                  'Rock',
+                  'Adult Contemporary',
+                  'Album Oriented Rock/Classic Rock',
+                  'Classical',
+                  'Middle of the Road',
+                  'Talk',
+                  'Miscellaneous'
+                ]
               },
-              "markets": {
-                "type": "array",
-                "title": "Markets",
-                "items": {
-                  "type": "integer",
-                  "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
+              markets: {
+                type: 'array',
+                title: 'Markets',
+                items: {
+                  type: 'integer',
+                  query:
+                    'query { dataRegistries (name: "Veritone Market" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: "marketId") name: data(path: "marketName") } } } } } }'
                 }
               },
-              "homeMarketId": {
-                "type": "integer",
-                "title": "Home Market",
-                "peerEnumKey": "markets",
-                "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
+              homeMarketId: {
+                type: 'integer',
+                title: 'Home Market',
+                peerEnumKey: 'markets',
+                query:
+                  'query { dataRegistries (name: "Veritone Market" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: "marketId") name: data(path: "marketName") } } } } } }'
               }
             }
           }
@@ -79,67 +133,77 @@ const sourceTypes = {
         id: 'tv',
         sourceSchema: {
           definition: {
-            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId"],
-            "properties": {
-              "description": {
-                "type": "string",
-                "title": "Description"
+            required: [
+              'stationCallSign',
+              'liveTimezone',
+              'radioStreamUrl',
+              'stationBand',
+              'stationChannel',
+              'mediaSourceFormatId'
+            ],
+            properties: {
+              description: {
+                type: 'string',
+                title: 'Description'
               },
-              "radioStreamUrl": {
-                "type": "string",
-                "title": "Stream Url"
+              radioStreamUrl: {
+                type: 'string',
+                title: 'Stream Url'
               },
-              "isNational": {
-                "type": "boolean",
-                "title": "Is National"
+              isNational: {
+                type: 'boolean',
+                title: 'Is National'
               },
-              "liveTimezone": {
-                "type": "string",
-                "title": "Live Time Zone",
-                "query": "query { schema: timeZones { id:name, name } }"
+              liveTimezone: {
+                type: 'string',
+                title: 'Live Time Zone',
+                query: 'query { schema: timeZones { id:name, name } }'
               },
-              "network": {
-                "type": "array",
-                "title": "Network",
-                "items": {
-                  "type": "integer",
-                  "query": "query { schema(id: \"eb101933-f931-4e63-8733-2fae48ef6df8\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } }}"
+              network: {
+                type: 'array',
+                title: 'Network',
+                items: {
+                  type: 'integer',
+                  query:
+                    'query { schema(id: "eb101933-f931-4e63-8733-2fae48ef6df8") { results: structuredDataObjects(limit: 10000) { records { id: data(path: "networkId") name: data(path: "networkName") } } }}'
                 }
               },
-              "stationCallSign": {
-                "type": "string",
-                "title": "Call Sign"
+              stationCallSign: {
+                type: 'string',
+                title: 'Call Sign'
               },
-              "stationBand": {
-                "type": "string",
-                "title": "Band"
+              stationBand: {
+                type: 'string',
+                title: 'Band'
               },
-              "stationChannel": {
-                "type": "string",
-                "title": "Station Channel (Frequency)"
+              stationChannel: {
+                type: 'string',
+                title: 'Station Channel (Frequency)'
               },
-              "webSiteUrl": {
-                "type": "string",
-                "title": "Web Site"
+              webSiteUrl: {
+                type: 'string',
+                title: 'Web Site'
               },
-              "mediaSourceFormatId": {
-                "type": "integer",
-                "title": "Genre (Format)",
-                "query": "query { mediaSourceFormats { records { id name } } }"
+              mediaSourceFormatId: {
+                type: 'integer',
+                title: 'Genre (Format)',
+                query: 'query { mediaSourceFormats { records { id name } } }'
               },
-              "markets": {
-                "type": "array",
-                "title": "Markets",
-                "items": {
-                  "type": "integer",
-                  "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
+              markets: {
+                type: 'array',
+                title: 'Markets',
+                items: {
+                  type: 'integer',
+                  query:
+                    'query { schema(id: "f9e9e760-0d24-40bc-ac79-540408c59de1") { results: structuredDataObjects(limit: 10000) { records { id: data(path: "marketId") name: data(path: "marketName") } } }}'
                 }
               },
-              "homeMarketId": {
-                "type": "integer",
-                "title": "Home Market",
-                "peerEnumKey": "markets",
-                "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
+              homeMarketId: {
+                type: 'integer',
+                title: 'Home Market',
+                peerEnumKey: 'markets',
+                query:
+                  'query { schema(id: "f9e9e760-0d24-40bc-ac79-540408c59de1") { results: structuredDataObjects(limit: 10000) { records { id: data(path: "marketId") name: data(path: "marketName") } } }}'
               }
             }
           }
@@ -394,21 +458,25 @@ function displayForm(form) {
   console.log(form);
 }
 
-const fakeSchemaOptions = [{
-  name: 'name0',
-  id: 0
-}, {
-  name: 'name1',
-  id: 1
-}, {
-  name: 'name2',
-  id: 2
-}]
+const fakeSchemaOptions = [
+  {
+    name: 'name0',
+    id: 0
+  },
+  {
+    name: 'name1',
+    id: 1
+  },
+  {
+    name: 'name2',
+    id: 2
+  }
+];
 
 const getFieldOptions = query => {
   console.log('Executed Query: ' + query);
   return Promise.resolve(fakeSchemaOptions);
-}
+};
 
 storiesOf('SourceManagementForm', module)
   .add('Create Source', () => {

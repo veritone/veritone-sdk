@@ -24,7 +24,7 @@ export default class FormCard extends React.Component {
     return (
       <div className={styles.formCard}>
         <div className={styles.name}>{name}</div>
-        { !this.props.isReadOnly ? (
+        {!this.props.isReadOnly ? (
           <IconButton
             className={styles.trashIcon}
             onClick={this.handleClick}
@@ -32,8 +32,7 @@ export default class FormCard extends React.Component {
           >
             <Icon className={'icon-trash'} />
           </IconButton>
-          ) : null
-        }
+        ) : null}
         {fields.map((field, index) => {
           return React.cloneElement(field, {
             key: `${name}-field-${index}`, // eslint-disable-line

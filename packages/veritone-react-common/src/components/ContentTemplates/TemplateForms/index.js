@@ -130,29 +130,28 @@ export default class TemplateForms extends React.Component {
       <div className={styles.formsContainer}>
         {templates.map(template => {
           const schemaProps = template.definition.properties;
-          const formFields = Object.keys(schemaProps).map(
-            schemaProp => {
-              const { type, items } = schemaProps[schemaProp];
-              return (
-                type && (
-                  <BuildFormElements
-                    fieldId={`${schemaProp}-${template.guid || template.id}`}
-                    template={template}
-                    schemaProp={schemaProp}
-                    type={type}
-                    items={items}
-                    value={template.data[schemaProp]}
-                    title={schemaProps[schemaProp].title || schemaProp}
-                    objectProperties={schemaProps[schemaProp].properties}
-                    onChange={this.handleFieldChange}
-                    handleArrayElementAdd={this.handleArrayElementAdd}
-                    handleArrayElementRemove={this.handleArrayElementRemove}
-                    getFieldOptions={this.props.getFieldOptions}
-                    key={schemaProp}
-                    {...rest}
-                  />
-                )
-              );
+          const formFields = Object.keys(schemaProps).map(schemaProp => {
+            const { type, items } = schemaProps[schemaProp];
+            return (
+              type && (
+                <BuildFormElements
+                  fieldId={`${schemaProp}-${template.guid || template.id}`}
+                  template={template}
+                  schemaProp={schemaProp}
+                  type={type}
+                  items={items}
+                  value={template.data[schemaProp]}
+                  title={schemaProps[schemaProp].title || schemaProp}
+                  objectProperties={schemaProps[schemaProp].properties}
+                  onChange={this.handleFieldChange}
+                  handleArrayElementAdd={this.handleArrayElementAdd}
+                  handleArrayElementRemove={this.handleArrayElementRemove}
+                  getFieldOptions={this.props.getFieldOptions}
+                  key={schemaProp}
+                  {...rest}
+                />
+              )
+            );
           });
 
           return (

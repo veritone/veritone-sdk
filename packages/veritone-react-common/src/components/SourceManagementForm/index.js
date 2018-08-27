@@ -56,10 +56,12 @@ export default class SourceManagementForm extends React.Component {
     ),
     isReadOnly: bool,
     canShare: bool,
-    organizations: arrayOf(shape({
-      id: string.isRequired,
-      name: string.isRequired
-    })),
+    organizations: arrayOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired
+      })
+    ),
     onSubmit: func.isRequired,
     onClose: func,
     getFieldOptions: func.isRequired,
@@ -108,7 +110,7 @@ export default class SourceManagementForm extends React.Component {
         newState.share = {
           isPublic: this.props.source.isPublic,
           acls: get(this.props.source, 'collaborators.records') || []
-        }
+        };
       }
     } else {
       // If there is no source, then just pick the first available sourceType
@@ -236,22 +238,31 @@ export default class SourceManagementForm extends React.Component {
           ...prevState.share,
           isPublic
         }
-      }
-    })
-  }
+      };
+    });
+  };
 
   handleSubmit = e => {
     e.preventDefault();
     const sourceTypeId = this.state.sourceConfig.sourceTypeId;
-    const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === sourceTypeId);
-    const schemaProps = get(selectedSourceType, 'sourceSchema.definition.properties');
-    const formDirtyStates = Object.keys(schemaProps || []).reduce((acc, curVal) => {
-      acc[curVal] = true;
-      return acc;
-    }, {});
+    const selectedSourceType = this.props.sourceTypes.find(
+      sourceType => sourceType.id === sourceTypeId
+    );
+    const schemaProps = get(
+      selectedSourceType,
+      'sourceSchema.definition.properties'
+    );
+    const formDirtyStates = Object.keys(schemaProps || []).reduce(
+      (acc, curVal) => {
+        acc[curVal] = true;
+        return acc;
+      },
+      {}
+    );
     // Determine if any required fields are undefined and prevent submission if invalid
     const formValues = this.state.sourceConfig.details;
-    const requiredFields = get(selectedSourceType, 'sourceSchema.definition.required') || [];
+    const requiredFields =
+      get(selectedSourceType, 'sourceSchema.definition.required') || [];
     let isValidForm = true;
     requiredFields.forEach(requiredField => {
       const value = formValues[requiredField];
@@ -306,15 +317,9 @@ export default class SourceManagementForm extends React.Component {
                 label="Content Templates"
                 classes={{ label: styles['form-tab'] }}
               />
-              {
-                this.props.canShare ?
-                (
-                  <Tab
-                    label="Sharing"
-                    classes={{ label: styles['form-tab'] }}
-                  />
-                ) : null
-              }
+              {this.props.canShare ? (
+                <Tab label="Sharing" classes={{ label: styles['form-tab'] }} />
+              ) : null}
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit} className={styles['form-scroll']}>
@@ -357,14 +362,14 @@ export default class SourceManagementForm extends React.Component {
                 />
               </div>
             )}
-            { !this.props.isReadOnly ? (
+            {!this.props.isReadOnly ? (
               <div className={styles['btn-container']}>
                 <Button onClick={this.handleCloseDialog}>Cancel</Button>
                 <Button variant="raised" color="primary" type="submit">
                   {get(this.props, 'source.id') ? 'Save' : 'Create'}
                 </Button>
               </div>
-            ) : null }
+            ) : null}
           </form>
         </div>
       </FullScreenDialog>
