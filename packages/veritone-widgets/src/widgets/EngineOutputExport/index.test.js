@@ -24,7 +24,7 @@ const mockStore = configureMockStore();
 const testEngine = {
   id: 'testEngineId',
   name: 'Test Engine',
-  signedLogoPath:
+  signedIconPath:
     'https://static.veritone.com/assets/favicon/favicon-32x32.png?v=lkgpRBRLYl',
   category: {
     id: 'testCategoryId',

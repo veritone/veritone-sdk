@@ -11,6 +11,7 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
+import Icon from '@material-ui/core/Icon';
 import InfoIcon from '@material-ui/icons/Info';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -39,7 +40,7 @@ export default class EngineConfigItem extends Component {
     engine: shape({
       id: string,
       name: string.isRequired,
-      signedLogoPath: string
+      signedIconPath: string
     }),
     category: shape({
       exportFormats: arrayOf(
@@ -79,9 +80,9 @@ export default class EngineConfigItem extends Component {
 
     return (
       <ListItem className={styles.engineListItem}>
-        {engine && (
-          <img className={styles.engineLogo} src={engine.signedLogoPath} />
-        )}
+        {engine && engine.signedIconPath ? (
+            <img className={styles.engineLogo} src={engine.signedIconPath} />
+          ) : <Icon className={'icon-engines'}/>}
         <ListItemText
           classes={{ primary: styles.engineNameText }}
           primary={

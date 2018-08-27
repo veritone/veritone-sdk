@@ -321,7 +321,7 @@ export const fetchEngineRuns = tdos => async (dispatch, getState) => {
             engine {
               id
               name
-              signedLogoPath
+              signedIconPath
               iconPath
               category {
                 id
