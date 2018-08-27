@@ -50,7 +50,8 @@ class EngineOutputExport extends Component {
   static propTypes = {
     tdos: arrayOf(
       shape({
-        tdoId: string.isRequired,
+        tdoId: string,
+        mentionId: string,
         startOffsetMs: number,
         stopOffsetMs: number
       })
