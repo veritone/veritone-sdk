@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, objectOf, any, func } from 'prop-types';
+import { string, shape, arrayOf, objectOf, any, func, bool } from 'prop-types';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
@@ -16,9 +16,10 @@ export default class ContentTemplates extends React.Component {
         definition: objectOf(any)
       })
     ).isRequired,
-    selectedTemplateSchemas: objectOf(
+    selectedTemplateSchemas: arrayOf(
       shape({
         id: string,
+        guid: string,
         name: string.isRequired,
         status: string,
         definition: objectOf(any),
@@ -27,24 +28,25 @@ export default class ContentTemplates extends React.Component {
     ),
     onAddTemplate: func.isRequired,
     onRemoveTemplate: func.isRequired,
-    onInputChange: func.isRequired
+    onInputChange: func.isRequired,
+    getFieldOptions: func,
+    isReadOnly: bool
   };
   static defaultProps = {
-    selectedTemplateSchemas: {}
+    selectedTemplateSchemas: []
   };
 
   render() {
     const { selectedTemplateSchemas } = this.props;
-    const showNullstate = !Object.keys(selectedTemplateSchemas).length;
+    const showNullstate = !selectedTemplateSchemas.length;
 
     return (
       <div className={styles.templatePage}>
         <div className={styles['template-list-container']}>
           <TemplateList
             templates={this.props.templateData}
-            selectedTemplates={selectedTemplateSchemas}
             addTemplate={this.props.onAddTemplate}
-            removeTemplate={this.props.onRemoveTemplate}
+            isReadOnly={this.props.isReadOnly}
           />
         </div>
         <div className={styles['content-templates']}>
@@ -55,6 +57,8 @@ export default class ContentTemplates extends React.Component {
               templates={selectedTemplateSchemas}
               onRemoveTemplate={this.props.onRemoveTemplate}
               onTemplateDetailsChange={this.props.onInputChange}
+              getFieldOptions={this.props.getFieldOptions}
+              isReadOnly={this.props.isReadOnly}
             />
           )}
         </div>

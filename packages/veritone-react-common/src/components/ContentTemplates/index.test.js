@@ -74,7 +74,8 @@ describe('Content Templates', () => {
     expect(formCardContainer).toHaveLength(1);
 
     wrapper
-      .find(TemplateList)
+      .find(TemplateForms)
+      .find(FormCard)
       .find('.icon-trash')
       .first()
       .simulate('click');
@@ -105,7 +106,6 @@ describe('Content Templates', () => {
     );
 
     const formCard = wrapper.find(TemplateForms).find(FormCard);
-    const formCardId = formCard.prop('id');
     const inputVal = 'Hello';
 
     const formField = formCard.find('input[type="text"]').at(0);
@@ -114,8 +114,10 @@ describe('Content Templates', () => {
     formField.simulate('change', { target: { value: inputVal } });
     wrapper.find('button[type="submit"]').simulate('submit');
 
-    expect(testFn.mock.calls[0][0]).toHaveProperty(
-      `contentTemplates.${formCardId}.data.${formFieldName}`,
+    expect(testFn.mock.calls[0][0]).toHaveProperty('contentTemplates');
+    const requestContentTemplates = testFn.mock.calls[0][0].contentTemplates;
+    expect(requestContentTemplates[0]).toHaveProperty(
+      `data.${formFieldName}`,
       inputVal
     );
   });

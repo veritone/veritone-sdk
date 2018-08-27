@@ -1,5 +1,5 @@
 import React from 'react';
-import { any, arrayOf, func, string } from 'prop-types';
+import { any, arrayOf, func, string, bool } from 'prop-types';
 
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -10,7 +10,8 @@ export default class FormCard extends React.Component {
     fields: arrayOf(any), // take in an array of field elements, i.e. <TextField/>; styling of form elements is intended to be done by the parent
     name: string.isRequired,
     remove: func.isRequired,
-    id: string.isRequired
+    id: string.isRequired,
+    isReadOnly: bool
   };
 
   handleClick = () => {
@@ -23,13 +24,16 @@ export default class FormCard extends React.Component {
     return (
       <div className={styles.formCard}>
         <div className={styles.name}>{name}</div>
-        <IconButton
-          className={styles.trashIcon}
-          onClick={this.handleClick}
-          aria-label="trash"
-        >
-          <Icon className={'icon-trash'} />
-        </IconButton>
+        { !this.props.isReadOnly ? (
+          <IconButton
+            className={styles.trashIcon}
+            onClick={this.handleClick}
+            aria-label="trash"
+          >
+            <Icon className={'icon-trash'} />
+          </IconButton>
+          ) : null
+        }
         {fields.map((field, index) => {
           return React.cloneElement(field, {
             key: `${name}-field-${index}`, // eslint-disable-line

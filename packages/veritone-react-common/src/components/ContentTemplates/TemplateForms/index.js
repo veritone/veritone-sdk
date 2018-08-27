@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, any, objectOf, func } from 'prop-types';
+import { string, shape, any, arrayOf, objectOf, func, bool } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray } from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
 import Icon from '@material-ui/core/Icon';
@@ -11,24 +11,27 @@ import styles from './styles.scss';
 
 export default class TemplateForms extends React.Component {
   static propTypes = {
-    templates: objectOf(
+    templates: arrayOf(
       shape({
         id: string.isRequired,
+        guid: string,
         name: string.isRequired,
         definition: objectOf(any),
         data: objectOf(any)
       })
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
-    onRemoveTemplate: func.isRequired
+    onRemoveTemplate: func.isRequired,
+    getFieldOptions: func,
+    isReadOnly: bool
   };
   static defaultProps = {};
 
-  handleRemoveTemplate = schemaId => {
-    this.props.onRemoveTemplate(schemaId);
+  handleRemoveTemplate = templateId => {
+    this.props.onRemoveTemplate(templateId);
   };
 
-  handleFieldChange = (schemaId, fieldId, type) => event => {
+  handleFieldChange = (template, fieldId, type) => event => {
     const GEO_REGEX = /^-{0,1}[0-9]+\.[0-9]+, -{0,1}[0-9]+\.[0-9]+$/;
     // fieldId can be object/array prop accessors. eg. 'wind.windSpeed' or 'tags.0'
     let currentValue; // Maintain root object reference
@@ -54,14 +57,9 @@ export default class TemplateForms extends React.Component {
     if (fields.length > 1) {
       let objectTraverse = fields.slice(1 - fields.length);
       if (!!parseInt(objectTraverse[0]) || objectTraverse[0] === '0') {
-        currentValue = cloneDeep(
-          this.props.templates[schemaId].data[rootObject] || ['']
-        );
+        currentValue = cloneDeep(template.data[rootObject] || ['']);
       } else {
-        currentValue = Object.assign(
-          {},
-          this.props.templates[schemaId].data[rootObject]
-        );
+        currentValue = Object.assign({}, template.data[rootObject]);
       }
       pointer = currentValue;
       objectTraverse.forEach((field, index) => {
@@ -81,25 +79,33 @@ export default class TemplateForms extends React.Component {
       currentValue = this.parseType(type, eventValue);
     }
     return this.props.onTemplateDetailsChange(
-      schemaId,
+      template.guid || template.id,
       rootObject,
       currentValue
     );
   };
 
-  handleArrayElementAdd = (schemaId, fieldId) => $event => {
-    let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
+  handleArrayElementAdd = (template, fieldId) => $event => {
+    let curArray = cloneDeep(template.data[fieldId]);
     if (isArray(curArray)) {
       curArray.push('');
-      this.props.onTemplateDetailsChange(schemaId, fieldId, curArray);
+      this.props.onTemplateDetailsChange(
+        template.guid || template.id,
+        fieldId,
+        curArray
+      );
     }
   };
 
-  handleArrayElementRemove = (schemaId, fieldId, index) => $event => {
-    let curArray = cloneDeep(this.props.templates[schemaId].data[fieldId]);
+  handleArrayElementRemove = (template, fieldId, index) => $event => {
+    let curArray = cloneDeep(template.data[fieldId]);
     if (isArray(curArray)) {
       curArray.splice(index, 1);
-      this.props.onTemplateDetailsChange(schemaId, fieldId, curArray);
+      this.props.onTemplateDetailsChange(
+        template.guid || template.id,
+        fieldId,
+        curArray
+      );
     }
   };
 
@@ -118,44 +124,45 @@ export default class TemplateForms extends React.Component {
   };
 
   render() {
-    const { templates } = this.props;
+    const { templates, ...rest } = this.props;
 
     return (
       <div className={styles.formsContainer}>
-        {Object.keys(templates).map((schemaId, index) => {
-          const schemaProps = templates[schemaId].definition.properties;
+        {templates.map(template => {
+          const schemaProps = template.definition.properties;
           const formFields = Object.keys(schemaProps).map(
-            (schemaProp, propIdx) => {
+            schemaProp => {
               const { type, items } = schemaProps[schemaProp];
-
               return (
                 type && (
                   <BuildFormElements
-                    fieldId={`${schemaProp}-${schemaId}`}
-                    schemaId={schemaId}
+                    fieldId={`${schemaProp}-${template.guid || template.id}`}
+                    template={template}
                     schemaProp={schemaProp}
                     type={type}
                     items={items}
-                    value={templates[schemaId].data[schemaProp]}
+                    value={template.data[schemaProp]}
                     title={schemaProps[schemaProp].title || schemaProp}
                     objectProperties={schemaProps[schemaProp].properties}
                     onChange={this.handleFieldChange}
                     handleArrayElementAdd={this.handleArrayElementAdd}
                     handleArrayElementRemove={this.handleArrayElementRemove}
+                    getFieldOptions={this.props.getFieldOptions}
                     key={schemaProp}
+                    {...rest}
                   />
                 )
               );
-            }
-          );
+          });
 
           return (
             <FormCard
-              key={schemaId}
-              id={schemaId}
+              key={template.guid || template.id}
+              id={template.guid || template.id}
               fields={compact(formFields)}
-              name={templates[schemaId].name}
+              name={template.name}
               remove={this.handleRemoveTemplate}
+              isReadOnly={this.props.isReadOnly}
             />
           );
         })}
@@ -166,7 +173,7 @@ export default class TemplateForms extends React.Component {
 
 function BuildFormElements({
   fieldId,
-  schemaId,
+  template,
   schemaProp,
   type,
   items,
@@ -177,10 +184,11 @@ function BuildFormElements({
   depth = 0,
   handleArrayElementAdd,
   handleArrayElementRemove,
+  getFieldOptions,
   ...rest
 }) {
   if (!type) {
-    return undefined;
+    return null;
   }
 
   let element;
@@ -192,7 +200,8 @@ function BuildFormElements({
         type={type}
         title={title}
         value={value || ''}
-        onChange={onChange(schemaId, schemaProp, type)}
+        onChange={onChange(template, schemaProp, type)}
+        getFieldOptions={getFieldOptions}
         {...rest}
       />
     );
@@ -208,7 +217,7 @@ function BuildFormElements({
           <BuildFormElements
             {...rest}
             fieldId={`${fieldId}.${index}`}
-            schemaId={schemaId}
+            template={template}
             schemaProp={`${schemaProp}.${index}`}
             type={items.type}
             value={elem}
@@ -218,12 +227,12 @@ function BuildFormElements({
             onChange={onChange}
             key={`${schemaProp}.${'buildform' + index}`}
           />
-          {isArray(value) && value.length > 1 ? (
+          {isArray(value) && value.length > 1 && !rest.isReadOnly ? (
             <div className={styles.arrayRemove}>
               <IconButton
                 disableRipple
                 className={styles.noHover}
-                onClick={handleArrayElementRemove(schemaId, schemaProp, index)}
+                onClick={handleArrayElementRemove(template, schemaProp, index)}
               >
                 <Icon className={'icon-trash'} />
               </IconButton>
@@ -236,15 +245,17 @@ function BuildFormElements({
       <div className={styles.insetSection}>
         <span>{title}</span>
         {element}
-        <div className={styles.arrayAdd}>
-          <IconButton
-            className={styles.noHover}
-            disableRipple
-            onClick={handleArrayElementAdd(schemaId, schemaProp)}
-          >
-            <AddIcon />
-          </IconButton>
-        </div>
+        {!rest.isReadOnly ? (
+          <div className={styles.arrayAdd}>
+            <IconButton
+              className={styles.noHover}
+              disableRipple
+              onClick={handleArrayElementAdd(template, schemaProp)}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -255,7 +266,7 @@ function BuildFormElements({
         <BuildFormElements
           {...rest}
           fieldId={`${fieldId}.${objProp}`}
-          schemaId={schemaId}
+          template={template}
           schemaProp={`${schemaProp}.${objProp}`}
           type={objectProperties[objProp].type}
           value={(value && value[objProp]) || ''}
@@ -277,6 +288,10 @@ function BuildFormElements({
 
   if (depth) {
     element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>; // eslint-disable-line
+  }
+
+  if (!element) {
+    return null;
   }
 
   return element;

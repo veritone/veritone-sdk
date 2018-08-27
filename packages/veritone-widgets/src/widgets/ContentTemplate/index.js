@@ -1,60 +1,55 @@
 import React from 'react';
-import { get } from 'lodash';
-import { objectOf, any, func } from 'prop-types';
+import { reject } from 'lodash';
+import { objectOf, arrayOf, any, func, bool } from 'prop-types';
 import { ContentTemplate } from 'veritone-react-common';
+import { guid } from '../../shared/util';
 
 import widget from '../../shared/widget';
 
 class ContentTemplateWidget extends React.Component {
   static propTypes = {
     templateData: objectOf(any).isRequired,
-    initialTemplates: objectOf(any),
-    handleUpdateContentTemplates: func.isRequired
+    initialTemplates: arrayOf(any),
+    handleUpdateContentTemplates: func.isRequired,
+    isReadOnly: bool
   };
 
   static defaultProps = {
-    initialTemplates: {}
+    initialTemplates: []
   };
 
   state = {
-    contentTemplates: {}
+    contentTemplates: []
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     const newState = {
-      contentTemplates: { ...this.props.initialTemplates }
+      contentTemplates: [...this.props.initialTemplates]
     };
-
+    newState.contentTemplates.forEach(template => (template.guid = guid()));
     this.setState(newState);
   }
 
   addToTemplateList = templateSchemaId => {
-    const { templateData, initialTemplates } = this.props;
+    const { templateData } = this.props;
     const data = {};
-
     Object.keys(templateData[templateSchemaId].definition.properties).reduce(
       (fields, schemaDefProp) => {
-        const value = get(initialTemplates, [
-          templateSchemaId,
-          'data',
-          schemaDefProp
-        ]);
-        if (value) {
-          data[schemaDefProp] = value;
-        }
+        data[schemaDefProp] = data[schemaDefProp];
       },
       data
     );
 
     const newState = {
-      contentTemplates: {
-        ...this.state.contentTemplates,
-        [templateSchemaId]: {
+      contentTemplates: [
+        {
           ...templateData[templateSchemaId],
-          data
-        }
-      }
+          data,
+          guid: guid()
+        },
+        ...this.state.contentTemplates
+      ]
     };
 
     this.setState(newState, () => {
@@ -62,49 +57,45 @@ class ContentTemplateWidget extends React.Component {
     });
   };
 
-  removeFromTemplateList = templateSchemaId => {
-    if (this.state.contentTemplates[templateSchemaId]) {
-      const contentTemplates = { ...this.state.contentTemplates };
-      delete contentTemplates[templateSchemaId];
-
-      const newState = { contentTemplates };
-
+  removeFromTemplateList = templateId => {
+    if (
+      this.state.contentTemplates.some(template => template.guid === templateId)
+    ) {
+      const newState = {
+        contentTemplates: reject([...this.state.contentTemplates], {
+          guid: templateId
+        })
+      };
       this.setState(newState, () => {
         this.props.handleUpdateContentTemplates(newState.contentTemplates);
       });
     }
   };
 
-  onInputChange = (templateSchemaId, fieldId, value) => {
-    let newState;
-    const { contentTemplates } = this.state;
-
-    this.setState(
-      prevState => {
-        newState = {
-          contentTemplates: {
-            ...contentTemplates,
-            [templateSchemaId]: {
-              ...contentTemplates[templateSchemaId],
-              data: {
-                ...contentTemplates[templateSchemaId].data
-              }
-            }
-          }
-        };
-
-        if (value) {
-          newState.contentTemplates[templateSchemaId].data[fieldId] = value;
-        } else {
-          delete newState.contentTemplates[templateSchemaId].data[fieldId];
+  onInputChange = (templateId, fieldId, value) => {
+    if (
+      this.state.contentTemplates.some(template => template.guid === templateId)
+    ) {
+      const newState = {
+        contentTemplates: [...this.state.contentTemplates]
+      };
+      const templateIndex = newState.contentTemplates.findIndex(
+        template => template.guid === templateId
+      );
+      newState.contentTemplates[templateIndex] = {
+        ...newState.contentTemplates[templateIndex],
+        data: {
+          ...newState.contentTemplates[templateIndex].data,
+          [fieldId]: value
         }
-
-        return newState;
-      },
-      () => {
-        this.props.handleUpdateContentTemplates(newState.contentTemplates);
+      };
+      if (!value) {
+        delete newState.contentTemplates[templateIndex].data[fieldId];
       }
-    );
+      this.setState(newState, () => {
+        this.props.handleUpdateContentTemplates(newState.contentTemplates);
+      });
+    }
   };
 
   render() {
@@ -115,6 +106,7 @@ class ContentTemplateWidget extends React.Component {
         onAddTemplate={this.addToTemplateList}
         onRemoveTemplate={this.removeFromTemplateList}
         onInputChange={this.onInputChange}
+        isReadOnly={this.props.isReadOnly}
       />
     );
   }

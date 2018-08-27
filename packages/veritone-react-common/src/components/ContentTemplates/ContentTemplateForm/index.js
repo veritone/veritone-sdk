@@ -1,8 +1,9 @@
 import React from 'react';
-import { string, shape, objectOf, any, func } from 'prop-types';
+import { string, shape, objectOf, any, func, arrayOf } from 'prop-types';
 import Button from '@material-ui/core/Button';
-import { get } from 'lodash';
+import { reject, cloneDeep } from 'lodash';
 import ContentTemplates from 'components/ContentTemplates';
+import { guid } from 'helpers/guid';
 
 import styles from './styles.scss';
 
@@ -16,7 +17,7 @@ export default class ContentTemplateForm extends React.Component {
         definition: objectOf(any)
       })
     ).isRequired,
-    initialTemplates: objectOf(
+    initialTemplates: arrayOf(
       shape({
         id: string,
         name: string.isRequired,
@@ -29,78 +30,82 @@ export default class ContentTemplateForm extends React.Component {
   };
 
   static defaultProps = {
-    initialTemplates: {}
+    initialTemplates: []
   };
 
   state = {
-    contentTemplates: {}
+    contentTemplates: []
   };
 
   // eslint-disable-next-line react/sort-comp
   UNSAFE_componentWillMount() {
     const newState = {
-      contentTemplates: { ...this.props.initialTemplates }
+      contentTemplates: [...this.props.initialTemplates]
     };
-
+    newState.contentTemplates.forEach(template => (template.guid = guid()));
     this.setState(newState);
   }
 
   addToTemplateList = templateSchemaId => {
-    const { templateData, initialTemplates } = this.props;
+    const { templateData } = this.props;
     const data = {};
-
     Object.keys(templateData[templateSchemaId].definition.properties).reduce(
       (fields, schemaDefProp) => {
-        data[schemaDefProp] = get(
-          initialTemplates,
-          [templateSchemaId, 'data', schemaDefProp],
-          ''
-        );
+        data[schemaDefProp] = data[schemaDefProp];
       },
       data
     );
-
     this.setState(prevState => ({
-      contentTemplates: {
-        [templateSchemaId]: {
+      contentTemplates: [
+        {
           ...templateData[templateSchemaId],
-          data
+          data,
+          guid: guid()
         },
         ...prevState.contentTemplates
-      }
+      ]
     }));
   };
 
-  removeFromTemplateList = templateSchemaId => {
-    if (this.state.contentTemplates[templateSchemaId]) {
-      return this.setState(prevState => {
-        const contentTemplates = { ...prevState.contentTemplates };
-        delete contentTemplates[templateSchemaId];
-
-        return { contentTemplates };
-      });
-    }
+  removeFromTemplateList = templateId => {
+    return this.setState(prevState => {
+      return {
+        contentTemplates: reject([...prevState.contentTemplates], {
+          guid: templateId
+        })
+      };
+    });
   };
 
-  updateTemplateDetails = (templateSchemaId, fieldId, value) => {
-    this.setState(prevState => ({
-      contentTemplates: {
-        ...prevState.contentTemplates,
-        [templateSchemaId]: {
-          ...prevState.contentTemplates[templateSchemaId],
+  updateTemplateDetails = (templateId, fieldId, value) => {
+    this.setState(prevState => {
+      if (
+        prevState.contentTemplates.some(
+          template => template.guid === templateId
+        )
+      ) {
+        const contentTemplates = [...prevState.contentTemplates];
+        const templateIndex = contentTemplates.findIndex(
+          template => template.guid === templateId
+        );
+        contentTemplates[templateIndex] = {
+          ...contentTemplates[templateIndex],
           data: {
-            ...prevState.contentTemplates[templateSchemaId].data,
+            ...contentTemplates[templateIndex].data,
             [fieldId]: value
           }
-        }
+        };
+        return { contentTemplates };
       }
-    }));
+    });
   };
 
   handleSubmit = e => {
     e.preventDefault();
+    const resultTemplates = cloneDeep(this.state.contentTemplates);
+    resultTemplates.forEach(template => delete template.guid);
     return this.props.onSubmit({
-      contentTemplates: this.state.contentTemplates
+      contentTemplates: resultTemplates
     });
   };
 

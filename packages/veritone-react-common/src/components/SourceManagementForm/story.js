@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { has, noop } from 'lodash';
+import { has, noop, cloneDeep } from 'lodash';
 import SourceManagementForm from './';
 
 const sourceTypes = {
@@ -8,43 +8,138 @@ const sourceTypes = {
     records: [
       {
         name: 'Audio',
-        id: 'audio_1',
+        id: 'audio',
         sourceSchema: {
           definition: {
-            properties: {
-              url: {
-                type: 'string'
+            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId"],
+            "properties": {
+              "description": {
+                "type": "string",
+                "title": "Description"
               },
-              username: {
-                type: 'string',
-                title: 'username'
+              "radioStreamUrl": {
+                "type": "string",
+                "title": "Radio Stream Url"
               },
-              password: {
-                type: 'string'
+              "liveTimezone": {
+                "type": "string",
+                "title": "Live Time Zone",
+                "query": "query { results: timeZones { id:name, name } }"
+              },
+              "network": {
+                "type": "array",
+                "title": "Network",
+                "items": {
+                  "type": "integer",
+                  "query": "query { dataRegistries (name: \"Veritone Network\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } } } } }"
+                }
+              },
+              "stationCallSign": {
+                "type": "string",
+                "title": "Call Sign"
+              },
+              "stationBand": {
+                "type": "string",
+                "title": "Band"
+              },
+              "stationChannel": {
+                "type": "string",
+                "title": "Station Channel (Frequency)"
+              },
+              "webSiteUrl": {
+                "type": "string",
+                "title": "Web Site"
+              },
+              "mediaSourceFormatId": {
+                "type": "integer",
+                "title": "Genre (Format)",
+                "enum": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],
+                "enumNames": ["Country","Urban","Oldies","News","Dark - Not on air","Easy Listening/Beautiful Music","Ethnic","Contemporary Hit Radio/Top 40","Spanish","Jazz/New Age","Public/Educational Station","Nostalgia/Big Band","Religion","Sports","Rock","Adult Contemporary","Album Oriented Rock/Classic Rock","Classical","Middle of the Road","Talk","Miscellaneous"]
+              },
+              "markets": {
+                "type": "array",
+                "title": "Markets",
+                "items": {
+                  "type": "integer",
+                  "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
+                }
+              },
+              "homeMarketId": {
+                "type": "integer",
+                "title": "Home Market",
+                "peerEnumKey": "markets",
+                "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
               }
-            },
-            required: ['url', 'username', 'password']
+            }
           }
         }
       },
       {
-        name: 'Audio2',
-        id: 'audio_2',
+        name: 'Broadcast TV',
+        id: 'tv',
         sourceSchema: {
           definition: {
-            properties: {
-              url: {
-                type: 'string'
+            "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "mediaSourceFormatId"],
+            "properties": {
+              "description": {
+                "type": "string",
+                "title": "Description"
               },
-              username: {
-                type: 'string',
-                title: 'username 2'
+              "radioStreamUrl": {
+                "type": "string",
+                "title": "Stream Url"
               },
-              password: {
-                type: 'string'
+              "isNational": {
+                "type": "boolean",
+                "title": "Is National"
               },
-              days: {
-                type: 'number'
+              "liveTimezone": {
+                "type": "string",
+                "title": "Live Time Zone",
+                "query": "query { schema: timeZones { id:name, name } }"
+              },
+              "network": {
+                "type": "array",
+                "title": "Network",
+                "items": {
+                  "type": "integer",
+                  "query": "query { schema(id: \"eb101933-f931-4e63-8733-2fae48ef6df8\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } }}"
+                }
+              },
+              "stationCallSign": {
+                "type": "string",
+                "title": "Call Sign"
+              },
+              "stationBand": {
+                "type": "string",
+                "title": "Band"
+              },
+              "stationChannel": {
+                "type": "string",
+                "title": "Station Channel (Frequency)"
+              },
+              "webSiteUrl": {
+                "type": "string",
+                "title": "Web Site"
+              },
+              "mediaSourceFormatId": {
+                "type": "integer",
+                "title": "Genre (Format)",
+                "query": "query { mediaSourceFormats { records { id name } } }"
+              },
+              "markets": {
+                "type": "array",
+                "title": "Markets",
+                "items": {
+                  "type": "integer",
+                  "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
+                }
+              },
+              "homeMarketId": {
+                "type": "integer",
+                "title": "Home Market",
+                "peerEnumKey": "markets",
+                "query": "query { schema(id: \"f9e9e760-0d24-40bc-ac79-540408c59de1\") { results: structuredDataObjects(limit: 10000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } }}"
               }
             }
           }
@@ -236,6 +331,17 @@ const dataSchemas = {
   }
 };
 
+const generateOrganizations = function(n) {
+  const organizations = [];
+  for (let i = 1; i <= n; i++) {
+    organizations.push({
+      id: 'orgId' + i,
+      name: 'Organization ' + i
+    });
+  }
+  return organizations;
+};
+
 function createTemplateData(dataSchemas) {
   const templateSchemas = {};
   // array of data registries containing an array of schemas
@@ -258,19 +364,19 @@ function createTemplateData(dataSchemas) {
 }
 
 function createInitialTemplates(templateSources) {
-  const selectedTemplateSchemas = {};
+  const selectedTemplateSchemas = [];
 
   const templateSchemas = createTemplateData(
     dataSchemas.data.dataRegistries.records
   );
   templateSources.forEach(template => {
     if (has(templateSchemas, template.schemaId)) {
-      selectedTemplateSchemas[template.schemaId] =
-        templateSchemas[template.schemaId];
+      const selectedTemplate = cloneDeep(templateSchemas[template.schemaId]);
       if (template.data) {
         // if we need to fill out the form with pre-data
-        selectedTemplateSchemas[template.schemaId].data = template.data;
+        selectedTemplate.data = template.data;
       }
+      selectedTemplateSchemas.push(selectedTemplate);
     }
   });
 
@@ -288,6 +394,22 @@ function displayForm(form) {
   console.log(form);
 }
 
+const fakeSchemaOptions = [{
+  name: 'name0',
+  id: 0
+}, {
+  name: 'name1',
+  id: 1
+}, {
+  name: 'name2',
+  id: 2
+}]
+
+const getFieldOptions = query => {
+  console.log('Executed Query: ' + query);
+  return Promise.resolve(fakeSchemaOptions);
+}
+
 storiesOf('SourceManagementForm', module)
   .add('Create Source', () => {
     return (
@@ -297,6 +419,9 @@ storiesOf('SourceManagementForm', module)
         initialTemplates={initialTemplates}
         onSubmit={displayForm}
         onClose={noop}
+        getFieldOptions={getFieldOptions}
+        canShare
+        organizations={generateOrganizations(21)}
       />
     );
   })
@@ -309,6 +434,10 @@ storiesOf('SourceManagementForm', module)
         initialTemplates={initialTemplates}
         onSubmit={displayForm}
         onClose={noop}
+        getFieldOptions={getFieldOptions}
+        canShare
+        organizations={generateOrganizations(21)}
+        isReadOnly
       />
     );
   });
