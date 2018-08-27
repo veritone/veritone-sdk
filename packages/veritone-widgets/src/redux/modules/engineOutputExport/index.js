@@ -1,4 +1,4 @@
-import { forEach, get, uniqWith, groupBy } from 'lodash';
+import { forEach, get, uniqWith } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer, callGraphQLApi } = helpers;
 
@@ -35,7 +35,8 @@ const defaultState = {
   outputConfigurations: [],
   errorSnackBars: [],
   fetchEngineRunsFailed: false,
-  exportAndDownloadFailed: false
+  exportAndDownloadFailed: false,
+  isBulkExport: false
 };
 
 export default createReducer(defaultState, {
@@ -50,6 +51,7 @@ export default createReducer(defaultState, {
     let newOutputConfigurations = [];
     const categoryLookup = {};
     const expandedCategories = {};
+    const isBulkExport = Object.keys(payload).length > 1;
     const enginesRan = Object.values(payload).reduce((accumulator, tdo) => {
       const engines = get(tdo, 'engineRuns.records');
       if (engines) {
@@ -63,13 +65,21 @@ export default createReducer(defaultState, {
     }, {});
     forEach(enginesRan, engineRun => {
       if (get(engineRun, 'category.exportFormats.length')) {
+        if (isBulkExport) {
+          if (!categoryLookup[engineRun.category.id]) {
+            newOutputConfigurations.push({
+              categoryId: engineRun.category.id,
+              formats: []
+            });
+          }
+        } else {
+          newOutputConfigurations.push({
+            engineId: engineRun.id,
+            formats: []
+          });
+        }
         categoryLookup[engineRun.category.id] = engineRun.category;
         expandedCategories[engineRun.category.id] = false;
-        newOutputConfigurations.push({
-          engineId: engineRun.id,
-          categoryId: engineRun.category.id,
-          formats: []
-        });
       }
     });
     newOutputConfigurations = uniqWith(
@@ -96,6 +106,7 @@ export default createReducer(defaultState, {
       subtitleConfigCache: {},
       outputConfigurations: newOutputConfigurations,
       expandedCategories: expandedCategories,
+      isBulkExport,
       fetchEngineRunsFailed: false,
       includeMedia: false
     };
@@ -139,15 +150,15 @@ export default createReducer(defaultState, {
   [UPDATE_SELECTED_FILE_TYPES](
     state,
     {
-      payload: { engineId, categoryId, applyAll, selectedFileTypes }
+      payload: { engineId, categoryId, selectedFileTypes }
     }
   ) {
     return {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
         if (
-          (config.engineId === engineId && config.categoryId === categoryId) ||
-          (config.categoryId === categoryId && applyAll)
+          (engineId && config.engineId === engineId) ||
+          config.categoryId === categoryId
         ) {
           const storedSubtitleConfig = get(state, [
             'subtitleConfigCache',
@@ -260,8 +271,25 @@ function local(state) {
 }
 
 export const getIncludeMedia = state => get(local(state), 'includeMedia');
-export const outputConfigsByCategoryId = state =>
-  groupBy(get(local(state), 'outputConfigurations'), 'categoryId');
+export const outputConfigsByCategoryId = state => {
+  const outputConfigsByCategoryId = {};
+  forEach(get(local(state), 'outputConfigurations'), config => {
+    if (config.categoryId) {
+      if (!outputConfigsByCategoryId[config.categoryId]) {
+        outputConfigsByCategoryId[config.categoryId] = [];
+      }
+      outputConfigsByCategoryId[config.categoryId].push(config);
+    } else if(config.engineId) {
+      // Look up engine category id using engineId
+      const categoryId = get(getEngineById(state, config.engineId), 'category.id');
+      if (!outputConfigsByCategoryId[categoryId]) {
+        outputConfigsByCategoryId[categoryId] = [];
+      }
+      outputConfigsByCategoryId[categoryId].push(config);
+    }
+  });
+  return outputConfigsByCategoryId;
+};
 export const getCategoryById = (state, categoryId) => {
   return get(local(state), ['categoryLookup', categoryId]);
 };
@@ -280,6 +308,7 @@ export const fetchEngineRunsFailed = state =>
   get(local(state), 'fetchEngineRunsFailed');
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
+export const isBulkExport = (state) => get(local(state), 'isBulkExport');
 
 export const fetchEngineRuns = tdos => async (dispatch, getState) => {
   // TODO: Update the temporalDataObjects query to accept multiple ids.
@@ -392,16 +421,14 @@ export const toggleConfigExpand = categoryId => {
 export const selectFileType = (
   selectedFileTypes,
   categoryId,
-  engineId,
-  applyAll = false
+  engineId
 ) => {
   return {
     type: UPDATE_SELECTED_FILE_TYPES,
     payload: {
       selectedFileTypes,
       categoryId,
-      engineId,
-      applyAll
+      engineId
     }
   };
 };
