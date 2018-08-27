@@ -113,7 +113,7 @@ export default class EngineCategoryConfig extends Component {
 
     const defaultSubtitleConfig = {
       linesPerScreen: 2,
-      maxLinesPerCaptionLine: 32,
+      maxCharacterPerLine: 32,
       newLineOnPunctuation: false
     };
 
