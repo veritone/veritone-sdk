@@ -114,9 +114,7 @@ class EngineOutputExport extends Component {
               }Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
-                export below based on your selection. Please note that larger
-                exports will be available through a download link sent to your
-                account email.
+                export below based on your selection.
               </div>
             </Grid>
             <Grid item xs={1}>
