@@ -1,5 +1,7 @@
 import '../src/styles/global.scss';
 
+export AclGroups from './components/AclGroups';
+export SelectAclGroupDialog from './components/AclGroups/SelectAclGroupDialog';
 export AppBar, { appBarHeight } from './components/AppBar';
 export AppFooter, {
   appFooterHeightShort,
@@ -49,3 +51,4 @@ export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
 export Scheduler from './components/Scheduler';
+export SharingConfiguration from './components/SharingConfiguration';
