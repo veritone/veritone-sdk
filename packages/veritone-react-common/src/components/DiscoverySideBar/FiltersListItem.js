@@ -1,6 +1,6 @@
 import React from 'react';
-import CloseIcon from 'material-ui-icons/Close';
-import IconButton from 'material-ui/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import { func, string, number } from 'prop-types';
 
 import styles from './styles/filtersList.scss';
@@ -9,7 +9,7 @@ export default class FiltersListItem extends React.Component {
   static propTypes = {
     id: string.isRequired,
     label: string.isRequired,
-    number: number.isRequired,
+    number: number,
     onClearFilter: func.isRequired
   };
   static defaultProps = {};
@@ -33,7 +33,7 @@ export default class FiltersListItem extends React.Component {
           className={styles.filterItemLink}
           onClick={this.handleClear}
         >
-          {this.props.label} ({this.props.number})
+          {this.props.label} {this.props.number && `(${this.props.number})`}
         </a>
       </div>
     );

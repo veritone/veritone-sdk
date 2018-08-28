@@ -9,9 +9,8 @@ import {
   element,
   object
 } from 'prop-types';
-import IconButton from 'material-ui/IconButton';
-import ClearFiltersIconFixme from 'material-ui-icons/FormatClear';
-import withMuiThemeProvider from '../../helpers/withMuiThemeProvider';
+import IconButton from '@material-ui/core/IconButton';
+import ClearFiltersIconFixme from '@material-ui/icons/FormatClear';
 
 import styles from './styles/container.scss';
 import Header from './header/Header';
@@ -94,7 +93,6 @@ export class DiscoverySideBarContainerPure extends React.Component {
 }
 
 // state provider for top level sidebar state-- selected tabs, sections etc.
-@withMuiThemeProvider
 export default class DiscoverySideBarContainer extends React.Component {
   static propTypes = {
     tabs: arrayOf(string)

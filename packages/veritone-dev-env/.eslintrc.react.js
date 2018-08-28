@@ -21,6 +21,7 @@ module.exports = {
     'no-param-reassign': 'warn',
     curly: 'warn',
     'no-tabs': 'warn',
+    'require-await': 'warn',
 
     'react/jsx-no-bind': 'warn',
     'react/jsx-boolean-value': 'warn',

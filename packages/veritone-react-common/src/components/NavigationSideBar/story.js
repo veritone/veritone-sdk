@@ -1,5 +1,5 @@
 import React from 'react';
-import AttachMoneyIcon from 'material-ui-icons/Apps';
+import AttachMoneyIcon from '@material-ui/icons/Apps';
 import { storiesOf } from '@storybook/react';
 
 import styles from './story.styles.scss';

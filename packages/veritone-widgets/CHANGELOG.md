@@ -70,3 +70,92 @@
 
 ## 4.2.0
 * Added Table widget
+
+## 5.0.0
+With this release, the package's components have been restructured to provide both framework-agnostic widgets (as before) and React smart components. Apps built with React can now import and use widgets with far less trouble.
+
+In order to make this possible, the exports have been slightly changed:
+
+### Before
+```javascript
+// previously, all imports were widgets.
+import { AppBar, FilePicker } from 'veritone-widgets';
+// ...
+new AppBar(/*...*/)
+```
+
+### After
+```javascript
+// Now, widgets are named <thing>Widget...
+import { AppBarWidget, FilePickerWidget } from 'veritone-widgets';
+
+new AppBarWidget(/*...*/);
+new FilePickerWidget(/*...*/);
+
+
+// ...and smart components keep the old "plain" names
+import { AppBar, FilePicker } from 'veritone-widgets';
+
+const MyPage = () => (
+  <div>
+    <AppBar/>
+    <FilePicker/>
+  </div>
+);
+```
+
+### Other changes:
+* Updated to Material-UI v1.0.0!
+* VeritoneApp.login() no longer requires a token (for internal Veritone apps where a cookie is present). Most users will not be affected by this change.
+* VeritoneApp.login() now returns a promise which will be resolved or rejected when the login flow is complete.
+* Refactored stories in dev to use a common BaseStory component.
+* Script tag builds:
+  * The VeritoneApp singleton is now stored on `window`, which should fix issues with it not being found.
+  * (Breaking) Because of the new export scheme described above, script tag globals are now objects rather than direct widget exports, and must be used as follows:
+    * Before: `const app = VeritoneApp(); const appBar = new AppBar();`
+    * After: `const app = VeritoneApp.default(); const appBar = new AppBar.AppBarWidget()`
+
+## 5.1.0
+* Added Engine Selection widget
+
+## 5.2.0
+* Added MediaPlayer component.
+* Fixed Redux devtools extension crashing.
+* Engine Selection widget
+  *  Fix initial selected engines not reinitializing across widgets.
+  *  Optimized search by sharing search results state across widgets.
+
+## 5.2.1
+* Moved Video-React from a peer dependency to a dependency
+* Bumped Redux to 4.0
+
+## 5.2.2
+* Bumped internal veritone-redux-common dependency.
+* Import `fetchGraphQLApi` from veritone-redux-common and remove own internal version.
+
+## 6.0.0
+* Bumped internal veritone-react-common dependency
+* Exported reducers and modules from various widgets so they can actually be used as smart components
+* Added MediaPlayerControlBar
+* (breaking) Reworked MediaPlayer to add support for bounding poly overlays
+* Added EngineOutputExport/widget/module/reducer
+* Engine Selection widget
+  * Added separate search and filter states for tabs + UX improvements
+* Themes can now be passed into VeritoneApp: `new VeritoneApp({ theme: { ... }}`
+
+## 6.0.1
+* MediaPlayer: Don't require props related to bounding poly overlay mode.
+
+## 6.1.0
+* Bump internal veritone-react-common dependency
+* Add Scheduler widget
+* MediaPlayerComponent
+  * Fix width/height propTypes to match video-react Player's (accept string or number)
+
+## 6.1.1
+* MediaPlayer component
+  * bump version and open up semver range to support changes from 6.1.0
+
+## 6.2.0
+* MediaPlayer component
+  * Support styling changes introduced in veritone-react-common v6.2.0

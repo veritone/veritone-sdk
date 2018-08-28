@@ -1,13 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
-import Paper from 'material-ui/Paper';
-import IconButton from 'material-ui/IconButton';
-import ArrowRightIcon from 'material-ui-icons/KeyboardArrowRight';
-import EditIcon from 'material-ui-icons/ModeEdit';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import EditIcon from '@material-ui/icons/ModeEdit';
 
 import { func, oneOf, string, objectOf, any } from 'prop-types';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import styles from './styles.scss';
 
 const RaisedTextField = ({
@@ -55,4 +54,4 @@ RaisedTextField.propTypes = {
   onClickAction: func
 };
 
-export default withMuiThemeProvider(RaisedTextField);
+export default RaisedTextField;

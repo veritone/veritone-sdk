@@ -19,6 +19,7 @@ This allows redux-common to use more than one version of the API.
 
 * *Required change in user code*: config.apiRoot must not specify the api version.
 
+
 > Previously: apiRoot: 'https://api.veritone.com/v1'
 
 > Now: apiRoot: 'https://api.veritone.com‘
@@ -49,3 +50,28 @@ This allows redux-common to use more than one version of the API.
 
 ## 3.2.0
 * The CJS bundle is now transpiled to >0.5% in babel-preset-env (compared to >5% previously), for wider compatibility with old browsers and tools.
+
+## 3.3.0
+* Bumped React and React DOM to 16.3.0
+* Add `promiseMiddleware`, a middleware for promisifying Redux actions.
+
+## 3.4.0
+* Added engine module
+
+## 3.5.0
+* Added regeneratorRuntime to the bundle to prevent build errors.
+
+## 3.6.0
+* Added Redux as a peer dependency
+* Added `callGraphQLApi` helper for calling the veritone API with a graphql query within a thunk.
+* Renamed existing internal `callGraphQLApi` helper to `fetchGraphQLApi`
+
+## 3.6.1
+* Fix export of `callGraphQLApi` in 3.6.0 due to babel bug (cannot `export default async function`)
+
+## 3.7.0
+* Bolster error handling in the OAuth flow
+* Change credentials mode for API calls based on whether we're in a veritone-internal host
+* Add engine module action to fetch engine categories + related selectors
+* Always clear user state after logout
+* Add selectors to user module: selectUserOrganizationID and hasFeature

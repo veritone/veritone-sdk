@@ -1,8 +1,9 @@
 import React from 'react';
 import cx from 'classnames';
 import { objectOf, any, func } from 'prop-types';
-import { MenuItem } from 'material-ui/Menu';
-import { ListItemIcon, ListItemText } from 'material-ui/List';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import styles from './styles.scss';
 
@@ -31,10 +32,16 @@ export default class AppSwitcherItem extends React.Component {
         onClick={this.handleSwitchApp}
       >
         <ListItemIcon>
-          {app.applicationIconUrl || app.applicationIconSvg ? (
+          {app.signedApplicationIconUrl ||
+          app.applicationIconUrl ||
+          app.applicationIconSvg ? (
             <img
               className={appListButtonIconClasses}
-              src={app.applicationIconUrl || app.applicationIconSvg}
+              src={
+                app.signedApplicationIconUrl ||
+                app.applicationIconUrl ||
+                app.applicationIconSvg
+              }
             />
           ) : (
             <span

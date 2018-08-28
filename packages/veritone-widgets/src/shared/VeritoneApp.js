@@ -6,6 +6,8 @@ import * as appModule from '../redux/modules/veritoneApp';
 import appConfig from '../../config.json';
 import configureStore from '../redux/configureStore';
 import { modules, helpers } from 'veritone-redux-common';
+import { VeritoneSDKThemeProvider } from 'veritone-react-common';
+
 const { auth: authModule, config: configModule, user: userModule } = modules;
 const { promiseMiddleware } = helpers;
 const {
@@ -20,6 +22,7 @@ class _VeritoneApp {
 
   constructor(config) {
     this._store.dispatch(configModule.setConfig({ ...appConfig, ...config }));
+    this._theme = config && config.theme;
   }
 
   _register(widget) {
@@ -104,44 +107,46 @@ class _VeritoneApp {
     }
 
     ReactDOM.render(
-      <Provider store={this._store}>
-        <div>
-          {appModule.widgets(this._store.getState()).map(w => {
-            if (!w._elId) {
-              console.warn(
-                'The widget',
-                w,
-                'needs to specify an elId that references an existing dom node.'
-              );
-              return null;
-            }
+      <VeritoneSDKThemeProvider theme={this._theme}>
+        <Provider store={this._store}>
+          <div>
+            {appModule.widgets(this._store.getState()).map(w => {
+              if (!w._elId) {
+                console.warn(
+                  'The widget',
+                  w,
+                  'needs to specify an elId that references an existing dom node.'
+                );
+                return null;
+              }
 
-            if (document.getElementById(w._elId)) {
-              return ReactDOM.createPortal(
-                <w.Component
-                  {...w.props}
-                  // bind is OK because this isn't a component -- only renders
-                  // when mount() is called.
-                  // eslint-disable-next-line
-                  ref={this.setWidgetRef.bind(this, w)}
-                />,
-                document.getElementById(w._elId)
-              );
-            }
-          })}
-        </div>
-      </Provider>,
+              if (document.getElementById(w._elId)) {
+                return ReactDOM.createPortal(
+                  <w.Component
+                    {...w.props}
+                    // bind is OK because this isn't a component -- only renders
+                    // when mount() is called.
+                    // eslint-disable-next-line
+                    ref={this.setWidgetRef.bind(this, w)}
+                  />,
+                  document.getElementById(w._elId)
+                );
+              }
+            })}
+          </div>
+        </Provider>
+      </VeritoneSDKThemeProvider>,
       this._containerEl
     );
   }
 }
 
-let _appSingleton;
+let global = window || {};
 export default function VeritoneApp(config, { _isWidget } = {}) {
   // client calls this on init to configure the app:
   // import VeritoneApp from 'veritone-widgets';
   // VeritoneApp({ ...myConfig })
-  if (!_appSingleton) {
+  if (!global.__veritoneAppSingleton) {
     if (_isWidget) {
       console.warn(
         `A widget was registered to an app which hasn't yet been initialized. Import and call VeritoneApp before constructing any widgets.`
@@ -149,8 +154,8 @@ export default function VeritoneApp(config, { _isWidget } = {}) {
       return;
     }
 
-    _appSingleton = new _VeritoneApp(config);
+    global.__veritoneAppSingleton = new _VeritoneApp(config);
   }
 
-  return _appSingleton;
+  return global.__veritoneAppSingleton;
 }

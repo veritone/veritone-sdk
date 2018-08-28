@@ -8,3 +8,7 @@
 
 ## 1.0.5
 * Fixes `job.getJobsForRecording()` to use the correct token type
+
+# 1.1.0
+* No longer requires a token to be provided at startup. If no token is provided, API calls will not include an Authorization header
+* Ran prettier over the codebase with our common settings.

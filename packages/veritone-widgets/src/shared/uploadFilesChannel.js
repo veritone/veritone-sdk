@@ -37,9 +37,7 @@ export default function uploadFilesChannel(
   };
 
   const onXHRError = (file, descriptor, e) => {
-    // todo: does this need to go onto the channel, or do we always handle
-    // via onStatusCodeFailure?
-    console.log('xhr error', e);
+    chan.put({ error: new Error('File upload error'), file, descriptor });
   };
 
   const onFileReadyStateChange = (

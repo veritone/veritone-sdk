@@ -1,4 +1,4 @@
-import { RadioGroup } from 'material-ui/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import { createComponent } from './redux-form-material-ui';
 
 import styles from './styles/radioGroup.scss';

@@ -1,16 +1,14 @@
 import React from 'react';
-import Menu from 'material-ui/Menu';
-import AppsIcon from 'material-ui-icons/Apps';
-import IconButton from 'material-ui/IconButton';
+import Menu from '@material-ui/core/Menu';
+import AppsIcon from '@material-ui/icons/Apps';
+import IconButton from '@material-ui/core/IconButton';
 import { string, arrayOf, shape, bool, func } from 'prop-types';
 
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import AppSwitcherList from './AppSwitcherList';
 import AppSwitcherErrorState from './AppSwitcherErrorState';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class AppSwitcher extends React.Component {
   static propTypes = {
     currentAppName: string,
@@ -19,7 +17,8 @@ export default class AppSwitcher extends React.Component {
         applicationId: string,
         applicationName: string,
         applicationIconSvg: string,
-        applicationIconUrl: string
+        applicationIconUrl: string,
+        signedApplicationIconUrl: string
       })
     ),
     enabledAppsFailedLoading: bool,

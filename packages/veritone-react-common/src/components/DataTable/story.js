@@ -3,7 +3,9 @@ import { storiesOf } from '@storybook/react';
 import faker from 'faker';
 import { flow, map, range, startCase, truncate, upperFirst } from 'lodash';
 import { arrayOf, object, func } from 'prop-types';
-import MuiTable, { TableBody, TableRow } from 'material-ui/Table';
+import MuiTable from '@material-ui/core/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableBody from '@material-ui/core/TableBody';
 
 import MenuColumn from './MenuColumn';
 import { Table, Column, PaginatedTable } from './';

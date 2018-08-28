@@ -1,7 +1,7 @@
 import React from 'react';
-import Paper from 'material-ui/Paper';
-import IconButton from 'material-ui/IconButton';
-import CloseIcon from 'material-ui-icons/Close';
+import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 import {
   objectOf,
@@ -49,7 +49,7 @@ export default class AppBar extends React.Component {
     onClose: func,
     enabledAppsFailedLoading: bool,
     isFetchingApps: bool,
-    logout: func,
+    onLogout: func,
     fetchEnabledApps: func,
     user: objectOf(any),
     onSwitchApp: func
@@ -60,7 +60,7 @@ export default class AppBar extends React.Component {
     backgroundColor: '#4caf50',
     rightActions: [],
     elevation: 2,
-    logout: () => {},
+    onLogout: () => {},
     fetchEnabledApps: () => {},
     onSwitchApp: () => {}
   };
@@ -116,7 +116,7 @@ export default class AppBar extends React.Component {
             {this.props.profileMenu && (
               <div className={styles['iconGroup__icon']}>
                 <ProfileMenu
-                  onLogout={this.props.logout}
+                  onLogout={this.props.onLogout}
                   user={this.props.user}
                 />
               </div>

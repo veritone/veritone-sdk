@@ -3,20 +3,19 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import { reducer as formReducer, reduxForm, Field } from 'redux-form';
 import { storiesOf } from '@storybook/react';
-import { InputLabel, InputAdornment } from 'material-ui/Input';
-import {
-  FormHelperText,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  FormGroup
-} from 'material-ui/Form';
-import Radio from 'material-ui/Radio';
-import { MenuItem } from 'material-ui/Menu';
-import Visibility from 'material-ui-icons/Visibility';
-import InfoIcon from 'material-ui-icons/Info';
-import IconButton from 'material-ui/IconButton';
-import Tooltip from 'material-ui/Tooltip';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Radio from '@material-ui/core/Radio';
+import MenuItem from '@material-ui/core/MenuItem';
+import Visibility from '@material-ui/icons/Visibility';
+import InfoIcon from '@material-ui/icons/Info';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { defaultIntervals } from 'helpers/date';
 import TextField from './TextField';
@@ -26,6 +25,8 @@ import Checkbox from './Checkbox';
 import RadioGroup from './RadioGroup';
 import DateIntervalSelect from './DateIntervalSelect';
 import DateRangePicker from './DateRangePicker';
+import DateTimePicker from './DateTimePicker';
+import Switch from './Switch';
 
 const store = createStore(
   combineReducers({
@@ -338,6 +339,58 @@ storiesOf('Form Components', module)
     <Provider store={store}>
       <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
         <Field component={DateRangePicker} name="date" />
+      </StoryForm>
+    </Provider>
+  ))
+  .add('DateTimePicker', () => {
+    return (
+      <Provider store={store}>
+        <StoryForm
+          onSubmit={values => alert(JSON.stringify(values))}
+          initialValues={{
+            dateTime: new Date(),
+            dateTimeIcon: new Date(),
+            dateTimeClearable: new Date(),
+            dateTimeTimezone: new Date()
+          }}
+        >
+          <Field component={DateTimePicker} name="dateTime" />
+          <br />
+          <Field component={DateTimePicker} name="dateTimeIcon" showIcon />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="dateTimeClearable"
+            clearable
+          />
+          <br />
+          <Field
+            component={DateTimePicker}
+            name="dateTimeTimezone"
+            clearable
+            showTimezone
+          />
+        </StoryForm>
+      </Provider>
+    );
+  })
+  .add('Switch', () => (
+    <Provider store={store}>
+      <StoryForm onSubmit={values => alert(JSON.stringify(values))}>
+        <FormControl>
+          <Field component={Switch} name="labelessSwitch" />
+          <Field
+            component={Switch}
+            name="switchWithLabel"
+            label="Switch With Label"
+          />
+          <Field
+            component={Switch}
+            name="disabledSwitch"
+            label="Disabled Switch"
+            disabled
+          />
+        </FormControl>
       </StoryForm>
     </Provider>
   ));

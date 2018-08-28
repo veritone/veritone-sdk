@@ -1,15 +1,14 @@
 import React from 'react';
 import cx from 'classnames';
-import { CSSTransitionGroup } from 'react-transition-group';
+import CSSTransitionGroup from 'react-addons-css-transition-group';
 import { omit, noop, range, isFunction, isNumber, get } from 'lodash';
-import MuiTable, {
-  TableBody as MuiTableBody,
-  TableFooter,
-  TableHead as MuiTableHead,
-  TableRow,
-  TableCell
-} from 'material-ui/Table';
-import Paper from 'material-ui/Paper';
+import MuiTable from '@material-ui/core/Table';
+import MuiTableBody from '@material-ui/core/TableBody';
+import TableFooter from '@material-ui/core/TableFooter';
+import MuiTableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import Paper from '@material-ui/core/Paper';
 
 import { injectInto } from 'helpers/react';
 import {

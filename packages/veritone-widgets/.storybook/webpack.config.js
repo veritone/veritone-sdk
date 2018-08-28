@@ -23,7 +23,16 @@ module.exports = {
           },
           'sass-loader'
         ],
-        include: path.resolve('./src')
+        include: [
+          path.resolve('./src'),
+          path.resolve('./node_modules'),
+          path.resolve('../../node_modules')
+        ]
+      },
+      {
+        // global css (from other packages) in .css files
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,

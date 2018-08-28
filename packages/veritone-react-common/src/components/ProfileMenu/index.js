@@ -1,14 +1,12 @@
 import React from 'react';
-import AccountIcon from 'material-ui-icons/AccountCircle';
-import Menu from 'material-ui/Menu';
-import IconButton from 'material-ui/IconButton';
+import { get } from 'lodash';
+import Menu from '@material-ui/core/Menu';
+import IconButton from '@material-ui/core/IconButton';
+import Avatar from '@material-ui/core/Avatar';
 import { string, func, shape } from 'prop-types';
-
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import InnerProfileMenu from './InnerProfileMenu';
 
-@withMuiThemeProvider
 export default class ProfileMenu extends React.Component {
   static propTypes = {
     className: string,
@@ -52,7 +50,14 @@ export default class ProfileMenu extends React.Component {
     return (
       <div>
         <IconButton className={this.props.className} onClick={this.openMenu}>
-          <AccountIcon nativeColor="white" />
+          <Avatar
+            src={get(
+              this.props.user,
+              'kvp.image',
+              '//static.veritone.com/veritone-ui/default-avatar-2.png'
+            )}
+            style={{ height: 35, width: 35 }}
+          />
         </IconButton>
         <Menu
           open={this.state.open}

@@ -13,9 +13,10 @@ import { isArray, noop } from 'lodash';
 import { modules } from 'veritone-redux-common';
 const { auth: authModule, config: configModule } = modules;
 
-import callGraphQLApi from '../../../shared/callGraphQLApi';
+import { helpers } from 'veritone-redux-common';
+const { fetchGraphQLApi } = helpers;
 import uploadFilesChannel from '../../../shared/uploadFilesChannel';
-import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from '.';
+import { UPLOAD_REQUEST, uploadProgress, uploadComplete, endPick } from './';
 
 function* finishUpload(id, result, { warning, error }, callback) {
   yield put(uploadComplete(id, result, { warning, error }));
@@ -41,19 +42,20 @@ function* uploadFileSaga(id, fileOrFiles, callback = noop) {
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
+  const sessionToken = yield select(authModule.selectSessionToken);
+  const oauthToken = yield select(authModule.selectOAuthToken);
 
   // get a signed URL for each object to be uploaded
   let signedWritableUrlResponses;
   try {
     signedWritableUrlResponses = yield all(
       files.map(({ name }) =>
-        call(callGraphQLApi, {
+        call(fetchGraphQLApi, {
           endpoint: graphQLUrl,
           query: getUrlQuery,
           // todo: add uuid to $name to prevent naming conflicts
           variables: { name },
-          token
+          token: sessionToken || oauthToken
         })
       )
     );

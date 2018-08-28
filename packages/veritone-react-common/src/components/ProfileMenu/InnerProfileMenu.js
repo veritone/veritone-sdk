@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react';
 import { get } from 'lodash';
-import PowerIcon from 'material-ui-icons/PowerSettingsNew';
-import { MenuItem } from 'material-ui/Menu';
-import { ListItemIcon, ListItemText } from 'material-ui/List';
-import Button from 'material-ui/Button';
-import Avatar from 'material-ui/Avatar';
-import ListSubheader from 'material-ui/List/ListSubheader';
+import PowerIcon from '@material-ui/icons/PowerSettingsNew';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { string, func, shape } from 'prop-types';
 
 import styles from './styles.scss';
