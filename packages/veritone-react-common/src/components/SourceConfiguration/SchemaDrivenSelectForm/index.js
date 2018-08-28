@@ -77,7 +77,7 @@ export default class DynamicSelect extends React.Component {
       return (
         <SourceTypeField
           id={fieldId}
-          type={properties[fieldId].type.toLowerCase()}
+          type={properties[fieldId].type}
           required={includes(requiredFields, fieldId)}
           value={this.props.fieldValues[fieldId]}
           onChange={this.handleDetailChange(fieldId)}
@@ -147,7 +147,9 @@ export default class DynamicSelect extends React.Component {
           !this.state.oneSourceType && (
             <FormHelperText>{this.props.helperText}</FormHelperText>
           )}
-        {this.renderFields()}
+        <div className={styles.sourceTypeSchemaContainer}>
+          {this.renderFields()}
+        </div>
       </FormControl>
     );
   }

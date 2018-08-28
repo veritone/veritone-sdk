@@ -10,23 +10,28 @@ import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
 import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
-import { objectOf, any, func, arrayOf, string, bool, number, shape } from 'prop-types';
-import { get, noop, isArray } from 'lodash';
+import { objectOf, any, func, arrayOf, string, bool, number, shape, oneOfType } from 'prop-types';
+import { get, noop, isArray, isFunction } from 'lodash';
 
 import styles from './styles.scss';
 
 export default class InfiniteDropdownMenu extends React.Component {
   static propTypes = {
-    id: string,
+    value: oneOfType([
+      oneOfType([string, number]),
+      arrayOf(string),
+      arrayOf(number)
+    ]),
     label: string,
     secondaryNameKey: string,
     handleSelectionChange: func.isRequired,
-    loadNextPage: func.isRequired,
-    hasNextPage: bool.isRequired,
-    isNextPageLoading: bool.isRequired,
+    loadNextPage: func,
+    hasNextPage: bool,
+    isNextPageLoading: bool,
+    multiple: bool,
     items: arrayOf(
       shape({
-        id: string,
+        id: oneOfType([string, number]),
         name: string
       })
     ),
@@ -49,7 +54,9 @@ export default class InfiniteDropdownMenu extends React.Component {
   };
 
   UNSAFE_componentWillMount() {
-    this.props.loadNextPage({ startIndex: 0, stopIndex: this.props.pageSize });
+    if (isFunction(this.props.loadNextPage)) {
+      this.props.loadNextPage({ startIndex: 0, stopIndex: this.props.pageSize });
+    }
   }
 
   handleMenuClick = event => {
@@ -81,6 +88,11 @@ export default class InfiniteDropdownMenu extends React.Component {
       this.handleMenuClose();
     };
 
+    const isSelected = this.props.multiple ?
+      (isArray(this.props.value)
+        && this.props.value.some(val => val === item.id)
+      ) : item.id === this.props.value
+
     return (
       <div
         key={key}
@@ -89,10 +101,10 @@ export default class InfiniteDropdownMenu extends React.Component {
         <MenuItem
           key={item.id}
           value={item.id}
-          selected={item.id === this.props.id}
+          selected={isSelected}
           onClick={handleItemClick(item)}
         >
-          {item.id === this.props.id ? (
+          {isSelected ? (
             <span className={styles.menuIconSpacer}>
               <CheckIcon />
             </span>
@@ -114,18 +126,25 @@ export default class InfiniteDropdownMenu extends React.Component {
     this.setState({ anchorEl: null }, trigger);
   }
 
+  // To suppress InfiniteLoader warnings
+  dummyLoadNextPage = ({startIndex, stopIndex}) => {
+    return Promise.resolve([]);
+  }
+
   render() {
+    const list = this.props.items || [];
     const rowCount = this.props.hasNextPage
-      ? this.props.items.length + this.props.pageSize
-      : this.props.items.length;
+      ? list.length + this.props.pageSize
+      : list.length;
     const loadMoreRows = this.props.isNextPageLoading
       ? noop
-      : this.props.loadNextPage;
+      : (this.props.loadNextPage || this.dummyLoadNextPage);
 
     return (
       <ItemSelector
-        initialValue={this.props.id}
-        items={this.props.items}
+        initialValue={this.props.value}
+        multiple={this.props.multiple}
+        items={list}
         handleSelectionChange={this.props.handleSelectionChange}
         handleMenuClose={this.handleMenuClose}
         handleMenuClick={this.handleMenuClick}
@@ -144,6 +163,7 @@ export default class InfiniteDropdownMenu extends React.Component {
 
 const ItemSelector = ({
   initialValue,
+  multiple,
   items,
   handleSelectionChange,
   selectLabel,
@@ -160,7 +180,9 @@ const ItemSelector = ({
 }) => {
   const menuId = 'long-menu';
   const dummyItem = 'dummy-item';
-  const selectedItem = items.find(item => item.id === initialValue);
+  const selectedValue = multiple ?
+    items.filter(item => initialValue.find(id => item.id)) :
+    items.find(item => item.id === initialValue);
 
   return (
     <FormControl>
@@ -181,7 +203,11 @@ const ItemSelector = ({
         }}
       >
         <MenuItem key={dummyItem} value={initialValue || dummyItem}>
-          {selectedItem ? selectedItem.name : '---'}
+          {
+            multiple ?
+              selectedValue.map(option => option.name).join(', ') :
+              (selectedValue ? selectedValue.name : '---')
+          }
         </MenuItem>
       </Select>
       <Menu
@@ -246,10 +272,14 @@ const ItemSelector = ({
 };
 
 ItemSelector.propTypes = {
-  initialValue: string,
+  initialValue: oneOfType([
+    oneOfType([string, number]),
+    arrayOf(string),
+    arrayOf(number)
+  ]),
   items: arrayOf(
     shape({
-      id: string,
+      id: oneOfType([number, string]),
       name: string
     })
   ).isRequired,

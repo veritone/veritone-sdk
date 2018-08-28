@@ -4,13 +4,22 @@
   font-weight: normal !important;
 }
 
+.selectFieldLabel {
+  margin-top: -16px;
+}
+
 .dateTimeContainer {
   padding-top: 18px !important;
 }
 
 .selectContainer {
-  margin-top: 16px !important;
+  display: block !important;
+  margin-top: 36px !important;
   margin-bottom: 8px !important;
+}
+
+.forceBlockDisplay {
+  display: block !important;
 }
 
 .unsupportedMsg {

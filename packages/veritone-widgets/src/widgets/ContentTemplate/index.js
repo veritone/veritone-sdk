@@ -11,6 +11,7 @@ class ContentTemplateWidget extends React.Component {
     templateData: objectOf(any).isRequired,
     initialTemplates: arrayOf(any),
     handleUpdateContentTemplates: func.isRequired,
+    getFieldOptions: func,
     isReadOnly: bool
   };
 
@@ -106,6 +107,7 @@ class ContentTemplateWidget extends React.Component {
         onAddTemplate={this.addToTemplateList}
         onRemoveTemplate={this.removeFromTemplateList}
         onInputChange={this.onInputChange}
+        getFieldOptions={this.props.getFieldOptions}
         isReadOnly={this.props.isReadOnly}
       />
     );

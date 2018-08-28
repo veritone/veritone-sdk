@@ -26,6 +26,7 @@ export default class ContentTemplateForm extends React.Component {
         data: objectOf(any)
       })
     ),
+    getFieldOptions: func,
     onSubmit: func.isRequired
   };
 
@@ -51,7 +52,7 @@ export default class ContentTemplateForm extends React.Component {
     const data = {};
     Object.keys(templateData[templateSchemaId].definition.properties).reduce(
       (fields, schemaDefProp) => {
-        data[schemaDefProp] = data[schemaDefProp];
+        data[schemaDefProp] = data[schemaDefProp] || '';
       },
       data
     );
@@ -121,6 +122,7 @@ export default class ContentTemplateForm extends React.Component {
           onAddTemplate={this.addToTemplateList}
           onRemoveTemplate={this.removeFromTemplateList}
           onInputChange={this.updateTemplateDetails}
+          getFieldOptions={this.props.getFieldOptions}
         />
         <div className={styles['btn-container']}>
           <Button variant="raised" color="primary" type="submit">

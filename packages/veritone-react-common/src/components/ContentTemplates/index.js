@@ -23,7 +23,8 @@ export default class ContentTemplates extends React.Component {
         name: string.isRequired,
         status: string,
         definition: objectOf(any),
-        data: objectOf(any)
+        data: objectOf(any),
+        dirtyState: objectOf(any)
       })
     ),
     onAddTemplate: func.isRequired,

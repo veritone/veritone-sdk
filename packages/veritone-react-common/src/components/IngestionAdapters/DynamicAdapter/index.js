@@ -56,7 +56,7 @@ class DynamicAdapter extends React.Component {
     const newState = {
       sourceId: get(this.props, 'configuration.sourceId'),
       clusterId: get(this.props, 'configuration.clusterId'),
-      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 180
+      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 60
     };
     if (isArray(fields)) {
       fields.forEach(field => {
@@ -216,7 +216,7 @@ class DynamicAdapter extends React.Component {
   };
 
   render() {
-    const MAX_DURATION_MINS = 180;
+    const MAX_DURATION_MINS = 60;
     const customTriggers = [];
     if (this.props.openCreateSource) {
       customTriggers.push({
@@ -237,7 +237,7 @@ class DynamicAdapter extends React.Component {
             <div className={styles.adapterContainer}>
               <InfiniteDropdownMenu
                 label="Select a Source*"
-                id={this.state.sourceId}
+                value={this.state.sourceId}
                 secondaryNameKey="sourceType.name"
                 handleSelectionChange={this.handleSourceChange}
                 loadNextPage={this.loadMoreSources}
@@ -288,7 +288,7 @@ class DynamicAdapter extends React.Component {
             <div className={styles.adapterContainer}>
               <InfiniteDropdownMenu
                 label="Select a Cluster"
-                id={this.state.clusterId}
+                value={this.state.clusterId}
                 handleSelectionChange={this.handleClusterChange}
                 loadNextPage={this.loadMoreClusters}
                 hasNextPage={this.state._cluster.hasNextPage}

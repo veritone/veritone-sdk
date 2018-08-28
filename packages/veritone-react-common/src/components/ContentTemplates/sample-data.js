@@ -87,17 +87,68 @@ const dataSchemas = {
                 //   name: 'Twitter Schema 2'
                 // },
                 definition: {
-                  properties: {
-                    url: {
-                      type: 'string'
+                  "type": "object",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "required": ["stationCallSign", "liveTimezone", "radioStreamUrl", "stationBand", "stationChannel", "sourceFormat"],
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "title": "Description"
                     },
-                    username: {
-                      type: 'string'
+                    "radioStreamUrl": {
+                      "type": "string",
+                      "title": "Radio Stream Url"
                     },
-                    password: {
-                      type: 'string'
+                    "liveTimezone": {
+                      "type": "string",
+                      "title": "Live Time Zone",
+                      "query": "query { results: timeZones { id:name, name } }"
+                    },
+                    "networkIds": {
+                      "type": "array",
+                      "title": "Network",
+                      "items": {
+                        "type": "integer",
+                        "query": "query { dataRegistries (name: \"Veritone Network\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"networkId\") name: data(path: \"networkName\") } } } } } }"
+                      }
+                    },
+                    "stationCallSign": {
+                      "type": "string",
+                      "title": "Call Sign"
+                    },
+                    "stationBand": {
+                      "type": "string",
+                      "title": "Band"
+                    },
+                    "stationChannel": {
+                      "type": "string",
+                      "title": "Station Channel (Frequency)"
+                    },
+                    "webSiteUrl": {
+                      "type": "string",
+                      "title": "Web Site"
+                    },
+                    "sourceFormat": {
+                      "type": "string",
+                      "title": "Genre (Format)",
+                      "query": "query { results: sourceType (id: \"1\") { records: sourceFormats } }"
+                    },
+                    "marketIds": {
+                      "type": "array",
+                      "title": "Markets",
+                      "items": {
+                        "type": "integer",
+                        "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
+                      }
+                    },
+                    "homeMarketId": {
+                      "type": "integer",
+                      "title": "Home Market",
+                      "peerEnumKey": "marketIds",
+                      "query": "query { dataRegistries (name: \"Veritone Market\" nameMatch: startsWith limit: 1000) { records { id name publishedSchema { structuredDataObjects (limit:1000) { records { id: data(path: \"marketId\") name: data(path: \"marketName\") } } } } } }"
                     }
-                  }
+                  },
+                  "definitions": {}
                 }
               },
               {
