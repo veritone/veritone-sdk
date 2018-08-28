@@ -12,7 +12,7 @@ import PersonalInfo from './PersonalInfo/PersonalInfo';
 import Password from './Password/Password';
 import ChangeName from './Modals/ChangeName/ChangeName';
 import ResetPassword from './Modals/ResetPassword/ResetPassword';
-import Notification from './Notification/Notification';
+import Notification from './Notifications/Notifications';
 
 import classes from './styles.scss';
 
@@ -94,7 +94,7 @@ export default class UserProfile extends React.Component {
   showNotification = messageKey =>
     this.setState({ notificationToShow: messageKey });
 
-  hideNotificaiton = () => {
+  hideNotification = () => {
     if (this.state.notificationToShow) {
       this.setState({ notificationToShow: null });
     }
@@ -102,14 +102,12 @@ export default class UserProfile extends React.Component {
 
   handleNameChangeSubmit = () => {
     const success = () => {
-      const firstName = this.state.firstNameDirty;
-      const lastName = this.state.lastNameDirty;
-      this.setState({
-        firstName: firstName,
-        lastName: lastName,
+      this.setState(state => ({
+        firstName: state.firstNameDirty,
+        lastName: state.lastNameDirty,
         notificationToShow: 'nameChanged',
         changeNameModalOpen: false
-      });
+      }));
     };
 
     const failure = err => {
@@ -166,7 +164,7 @@ export default class UserProfile extends React.Component {
           closeHandler={this.handleRequestResetModalToggle}
         />
         <Notification
-          onClose={this.hideNotificaiton}
+          onClose={this.hideNotification}
           messageKey={this.state.notificationToShow}
         />
       </div>

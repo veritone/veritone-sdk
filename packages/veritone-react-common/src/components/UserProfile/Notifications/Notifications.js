@@ -1,7 +1,7 @@
 import React from 'react';
 import { string, func } from 'prop-types';
 
-import Snackbar from 'material-ui/Snackbar';
+import Snackbar from '@material-ui/core/Snackbar';
 
 const Notifications = ({ messageKey, onClose }) => {
   const messages = {
@@ -12,7 +12,7 @@ const Notifications = ({ messageKey, onClose }) => {
   };
   const messageToDisplay = messages[messageKey];
 
-  const shouldShow = messageKey ? true : false;
+  const shouldShow = !!messageKey;
 
   return (
     <Snackbar
@@ -24,7 +24,7 @@ const Notifications = ({ messageKey, onClose }) => {
   );
 };
 
-Notifications.proptypes = {
+Notifications.propTypes = {
   messageKey: string,
   onClose: func.isRequired
 };

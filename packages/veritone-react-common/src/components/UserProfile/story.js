@@ -3,10 +3,10 @@ import { storiesOf } from '@storybook/react';
 import { boolean, select as selectKnob } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 
-import UserProfile from './';
 import ChangeName from './Modals/ChangeName/ChangeName';
 import ResetPassword from './Modals/ResetPassword/ResetPassword';
-import Notification from './Notification/Notification';
+import Notification from './Notifications/Notifications';
+import UserProfile from './';
 
 storiesOf('UserProfile', module)
   .add('Base', () => (
@@ -23,10 +23,8 @@ storiesOf('UserProfile', module)
   .add('Change Name Modal', () => {
     const openModal = boolean('openNameModal', true);
     const closeHandler = action('Close Name Change Modal');
-    const handleFirstNameChange = event =>
-      action(`new first name will be changed to`)(event.target.value);
-    const handleLastNameChange = event =>
-      action(`new last name will be changed to`)(event.target.value);
+    const handleFirstNameChange = action(`new first name will be changed to`);
+    const handleLastNameChange = action(`new last name will be changed to`);
     const handleSubmit = action('Name Change Submitted');
     const handleClose = action('Name Change Closed');
 
@@ -63,7 +61,7 @@ storiesOf('UserProfile', module)
       error: 'error'
     };
 
-    const onClose = () => action('Notification Closed');
+    const onClose = action('Notification Closed');
     const message = selectKnob('message to show', selectOptions, 'changedName');
 
     return <Notification onClose={onClose} message={message} />;

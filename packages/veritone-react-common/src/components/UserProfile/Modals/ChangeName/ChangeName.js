@@ -1,12 +1,15 @@
 import React from 'react';
-import { string, bool, func } from 'prop-types';
+import { bool, func, string } from 'prop-types';
 
-import Dialog from 'material-ui/Dialog';
-import Input from 'material-ui/Input';
-import { DialogContent, DialogTitle, DialogActions } from 'material-ui/Dialog';
-import { InputLabel } from 'material-ui/Input';
-import { FormControl } from 'material-ui/Form';
-import Button from 'material-ui/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+import Input  from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
 
 import classes from './styles.scss';
 
@@ -19,9 +22,6 @@ const ChangeName = ({
   handleSubmit,
   handleClose
 }) => {
-  let firstNameDirty = firstName;
-  let lastNameDirty = lastName;
-
   return (
     <Dialog open={open} className={classes.modal}>
       <DialogTitle className={classes.header}>
@@ -44,7 +44,7 @@ const ChangeName = ({
           </InputLabel>
           <Input
             id="first-name-text"
-            value={firstNameDirty}
+            value={firstName}
             onChange={handleFirstNameChange}
             autoFocus
             classes={{ focused: classes.underline }}
@@ -79,8 +79,8 @@ const ChangeName = ({
         <Button
           className={`${classes.actionBtn} ${classes.btn}`}
           onClick={handleSubmit.bind(this, {
-            firstName: firstNameDirty,
-            lastName: lastNameDirty
+            firstName: firstName,
+            lastName: lastName
           })}
         >
           Done
