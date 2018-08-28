@@ -1,5 +1,17 @@
-.content {
+@import 'src/styles/modules/_variables';
+
+.container {
   background-color: #fafafa;
   height: 1000px;
   width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.greeting {
+  margin-top: 13px;
+  color: $light-black;
 }

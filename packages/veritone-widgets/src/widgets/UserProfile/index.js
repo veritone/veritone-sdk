@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { isBoolean } from 'lodash';
+import React from 'react';
+import { isBoolean, startCase } from 'lodash';
 import { string, func, bool } from 'prop-types';
 import { format as libFormat } from 'date-fns';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,24 +10,28 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 
-import Profile from './Profile/Profile';
+import { Avatar } from 'veritone-react-common';
 import PersonalInfo from './PersonalInfo/PersonalInfo';
 import Password from './Password/Password';
 import ChangeName from './Modals/ChangeName/ChangeName';
 import ResetPassword from './Modals/ResetPassword/ResetPassword';
 import Notification from './Notifications/Notifications';
 
-// import classes from './styles.scss';
+import styles from './styles.scss';
 
 export class UserProfile extends React.Component {
   static propTypes = {
     firstName: string,
     lastName: string,
     email: string.isRequired,
-    passwordLastUpdated: string,
+    imageUrl: string,
+    passwordUpdatedDateTime: string,
     handleNameChangeRequest: func.isRequired,
-    handlePasswordResetRequest: func.isRequired,
-    close: func.isRequired
+    handlePasswordResetRequest: func.isRequired
+  };
+
+  static defaultProps = {
+    imageUrl: '//static.veritone.com/veritone-ui/default-avatar-2.png'
   };
 
   state = {
@@ -90,7 +94,7 @@ export class UserProfile extends React.Component {
     }
   };
 
-  handleFilePickerOpen = () => {
+  handleChangeAvatar = () => {
     console.log('file picker open');
   };
 
@@ -132,14 +136,23 @@ export class UserProfile extends React.Component {
       .catch(() => failure());
   };
 
+  getUserName = () => {
+    return startCase(`${this.props.firstName} ${this.props.lastName}`);
+  };
+
   render() {
     return (
-      <Fragment>
-        <Profile
-          firstName={this.state.firstName}
-          lastName={this.state.lastName}
-          filePickerHandler={this.handleFilePickerOpen}
+      <div className={styles.container}>
+        <Avatar
+          src={this.props.imageUrl}
+          label="Change"
+          onClick={this.handleChangeAvatar}
         />
+
+        <Typography variant="subheading" className={styles.greeting}>
+          Welcome, {this.getUserName()}
+        </Typography>
+
         <PersonalInfo
           firstName={this.state.firstName}
           lastName={this.state.lastName}
@@ -169,7 +182,7 @@ export class UserProfile extends React.Component {
           onClose={this.hideNotification}
           messageKey={this.state.notificationToShow}
         />
-      </Fragment>
+      </div>
     );
   }
 }
