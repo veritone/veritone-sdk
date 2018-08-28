@@ -1,12 +1,15 @@
-import React from 'react';
-import { string, func } from 'prop-types';
-import { format as libFormat } from 'date-fns';
-
-// import FilePicker from 'components/FilePicker';
-
+import React, { Fragment } from 'react';
 import { isBoolean } from 'lodash';
+import { string, func, bool } from 'prop-types';
+import { format as libFormat } from 'date-fns';
+import Dialog from '@material-ui/core/Dialog';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import Slide from '@material-ui/core/Slide';
 
-import Header from './HeaderBar/Header';
 import Profile from './Profile/Profile';
 import PersonalInfo from './PersonalInfo/PersonalInfo';
 import Password from './Password/Password';
@@ -14,9 +17,9 @@ import ChangeName from './Modals/ChangeName/ChangeName';
 import ResetPassword from './Modals/ResetPassword/ResetPassword';
 import Notification from './Notifications/Notifications';
 
-import classes from './styles.scss';
+// import classes from './styles.scss';
 
-export default class UserProfile extends React.Component {
+export class UserProfile extends React.Component {
   static propTypes = {
     firstName: string,
     lastName: string,
@@ -131,8 +134,7 @@ export default class UserProfile extends React.Component {
 
   render() {
     return (
-      <div className={classes.content}>
-        <Header close={this.props.close} />
+      <Fragment>
         <Profile
           firstName={this.state.firstName}
           lastName={this.state.lastName}
@@ -167,7 +169,36 @@ export default class UserProfile extends React.Component {
           onClose={this.hideNotification}
           messageKey={this.state.notificationToShow}
         />
-      </div>
+      </Fragment>
     );
   }
 }
+
+function SlideDown(props) {
+  return <Slide direction="down" {...props} />;
+}
+
+const UserProfileDialog = ({ open, title, onClose, ...profileProps }) => (
+  <Dialog fullScreen open={open} TransitionComponent={SlideDown}>
+    <AppBar position="static">
+      <Toolbar>
+        <IconButton color="inherit" onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+        <Typography variant="title" color="inherit">
+          {title}
+        </Typography>
+      </Toolbar>
+    </AppBar>
+
+    <UserProfile {...profileProps} />
+  </Dialog>
+);
+
+UserProfileDialog.propTypes = {
+  open: bool,
+  title: string,
+  onClose: func
+};
+
+export default UserProfileDialog;
