@@ -1,52 +1,51 @@
 .header {
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: 0.71px;
-    line-height: 24px;
-    h2 {
-        display: flex;
-        justify-content: space-between;
-    }
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.71px;
+  line-height: 24px;
+  h2 {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .iconHolder {
-    i {
-        color: rgb(117, 117, 117)
-    }
+  i {
+    color: rgb(117, 117, 117);
+  }
 }
 
 .inputGroup {
-    margin: 13px 0 !important;
+  margin: 13px 0 !important;
 }
 
 .focusedInput {
-    color: #368BF7 !important;
-    
+  color: #368bf7 !important;
 }
 .underline {
-    &::after {
-        background-color: #368BF7 !important;
-    }
+  &::after {
+    background-color: #368bf7 !important;
+  }
 }
 
 .btnGroup {
-    margin: 0 0 20px !important;
+  margin: 0 0 20px !important;
 }
 
 .btn {
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.5px !important;
-    line-height: 16px !important;
-    &:hover {
-        background-color: rgba(0, 0, 0, 0) !important;
-    }
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.5px !important;
+  line-height: 16px !important;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
 }
 
 .actionBtn {
-    color: #368BF7 !important;
+  color: #368bf7 !important;
 }
 
 .cancelBtn {
-    color: #000000 !important;
+  color: #000000 !important;
 }
