@@ -174,7 +174,7 @@ class Scheduler extends React.Component {
       Once: ['scheduleType']
     };
 
-    if (formResult.setEndDate) {
+    if (formResult.setEndDate || formResult.scheduleType === 'Continuous') {
       fieldMapper.Recurring.push('end');
       fieldMapper.Continuous.push('end');
     }

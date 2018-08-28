@@ -6,7 +6,6 @@ import DateTimeSelector from './DateTimeSelector';
 import Checkbox from '../formComponents/Checkbox';
 import styles from './styles.scss';
 
-@formValues('setEndDate')
 export default class ContinuousSection extends React.Component {
   static propTypes = {
     readOnly: bool
@@ -18,19 +17,9 @@ export default class ContinuousSection extends React.Component {
         <div className={styles.formSectionRow}>
           <DateTimeSelector name="start" label="Starts" showIcon readOnly={this.props.readOnly} />
         </div>
-        <div style={{ width: 150 }}>
-          <Field
-            component={Checkbox}
-            name="setEndDate"
-            label="Set End Date"
-            disabled={this.props.readOnly}
-          />
+        <div className={styles.formSectionRow}>
+          <DateTimeSelector name="end" label="Ends" showIcon readOnly={this.props.readOnly} />
         </div>
-        {
-          this.props.setEndDate ? (<div className={styles.formSectionRow}>
-            <DateTimeSelector name="end" label="Ends" showIcon readOnly={this.props.readOnly} />
-          </div>) : null
-        }
       </Fragment>
     );
   }
