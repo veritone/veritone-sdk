@@ -24,7 +24,11 @@ function* watchErrors() {
             }
             break;
           case EXPORT_AND_DOWNLOAD_FAILURE:
-            message = 'Failed to export.';
+            if (get(action, 'payload.name') === 'no_formats_selected') {
+              message = get(action, 'payload.message');
+            } else {
+              message = 'Failed to export.';
+            }
             break;
           default:
             message = action.payload.message;

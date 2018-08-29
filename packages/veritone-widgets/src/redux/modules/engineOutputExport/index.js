@@ -312,6 +312,9 @@ export const fetchEngineRunsFailed = state =>
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
 export const isBulkExport = state => get(local(state), 'isBulkExport');
+export const selectedFormats = state => get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
+  return [...accumulator, ...configObj.formats];
+}, []);
 
 export const fetchEngineRuns = tdos => async (dispatch, getState) => {
   // TODO: Update the temporalDataObjects query to accept multiple ids.
@@ -385,6 +388,26 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
       }
     }
   `;
+
+  if (!selectedFormats(getState()).length) {
+    const e = {
+      name: 'no_formats_selected',
+      message: 'Please select from at least one option'
+    };
+
+    console.log(e);
+    dispatch({
+      type: EXPORT_AND_DOWNLOAD_FAILURE,
+      error: true,
+      payload: e
+    });
+
+    let error = new Error('No file formats selected');
+    // wrap this single error for consistency with graphQL errors, which are always
+    // wrapped.
+    error.errors = [e];
+    throw error;
+  }
 
   return await callGraphQLApi({
     actionTypes: [
