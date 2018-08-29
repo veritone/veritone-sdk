@@ -191,7 +191,19 @@ export default createReducer(defaultState, {
     return {
       ...state,
       outputConfigurations: state.outputConfigurations.map(config => {
-        if (config.categoryId === categoryId) {
+        let engineCategoryId;
+        if (!config.categoryId && config.engineId) {
+          engineCategoryId = get(state, [
+            'enginesRan',
+            config.engineId,
+            'category',
+            'id'
+          ]);
+        }
+        if (
+          config.categoryId === categoryId ||
+          engineCategoryId === categoryId
+        ) {
           return {
             ...config,
             formats: config.formats.map(format => {
@@ -312,9 +324,10 @@ export const fetchEngineRunsFailed = state =>
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
 export const isBulkExport = state => get(local(state), 'isBulkExport');
-export const selectedFormats = state => get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
-  return [...accumulator, ...configObj.formats];
-}, []);
+export const selectedFormats = state =>
+  get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
+    return [...accumulator, ...configObj.formats];
+  }, []);
 
 export const fetchEngineRuns = tdos => async (dispatch, getState) => {
   // TODO: Update the temporalDataObjects query to accept multiple ids.
@@ -395,7 +408,6 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
       message: 'Please select from at least one option'
     };
 
-    console.log(e);
     dispatch({
       type: EXPORT_AND_DOWNLOAD_FAILURE,
       error: true,
