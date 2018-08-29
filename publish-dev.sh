@@ -6,6 +6,13 @@ rootDir=`pwd`
 filename=$1-$(date +%Y%m%d-%H%M%S).tar.gz
 packageDir=packages/$1
 
+# REQUIREMENTS:
+# - `brew install jq`
+# - Setup your aws veritone profile. Add the file `USER/.aws/config` with the following contents:
+#     [profile veritone]
+#     region=us-east-1
+#     output=text
+
 # veritone-widgets is a special case
 #   veritone-react/redux-common packages need to be built, uploaded, and
 #   linked into veritone-widgets, which will then be built itself and uploaded.
