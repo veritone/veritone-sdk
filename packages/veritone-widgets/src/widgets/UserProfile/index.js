@@ -1,7 +1,10 @@
 import React from 'react';
-import { isBoolean, startCase } from 'lodash';
+import { connect } from 'react-redux';
+import { startCase } from 'lodash';
 import { string, func, bool } from 'prop-types';
-import { format as libFormat } from 'date-fns';
+import { withProps } from 'recompose';
+import { reduxForm, reset } from 'redux-form';
+
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,14 +14,24 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 
 import { Avatar } from 'veritone-react-common';
-import PersonalInfo from './PersonalInfo/PersonalInfo';
-import Password from './Password/Password';
-import ChangeName from './Modals/ChangeName/ChangeName';
-import ResetPassword from './Modals/ResetPassword/ResetPassword';
-import Notification from './Notifications/Notifications';
+import PersonalInfoField from './PersonalInfoField';
+import PasswordField from './PasswordField';
+import ChangeNameModal from './Modals/ChangeName';
+import ResetPasswordModal from './Modals/ResetPassword';
 
 import styles from './styles.scss';
 
+@connect(null, { reset })
+@withProps(props => ({
+  initialValues: {
+    firstName: props.firstName,
+    lastName: props.lastName,
+    email: props.email
+  }
+}))
+@reduxForm({
+  form: 'userProfile'
+})
 export class UserProfile extends React.Component {
   static propTypes = {
     firstName: string,
@@ -26,8 +39,7 @@ export class UserProfile extends React.Component {
     email: string.isRequired,
     imageUrl: string,
     passwordUpdatedDateTime: string,
-    handleNameChangeRequest: func.isRequired,
-    handlePasswordResetRequest: func.isRequired
+    reset: func.isRequired
   };
 
   static defaultProps = {
@@ -35,153 +47,126 @@ export class UserProfile extends React.Component {
   };
 
   state = {
-    firstName: this.props.firstName,
-    firstNameDirty: this.props.firstName,
-    lastName: this.props.lastName,
-    lastNameDirty: this.props.lastName,
-    lastUpdated: libFormat(this.props.passwordLastUpdated, 'MMMM DD, YYYY'),
-    changeNameModalOpen: false,
-    requestPasswordRestModalOpen: false,
-    filePickerOpen: false,
-    notificationToShow: false
+    currentModal: null
   };
 
-  handleFirstNameChange = event => {
-    this.setState({ firstNameDirty: event.target.value });
+  openChangeNameModal = () => {
+    this.setState({
+      currentModal: 'changeName'
+    });
   };
 
-  handleLastNameChange = event => {
-    this.setState({ lastNameDirty: event.target.value });
+  openChangeEmailModal = () => {
+    this.setState({
+      currentModal: 'changeEmail'
+    });
   };
 
-  handlePasswordResetRequest = () => {
-    const success = () =>
-      this.setState({
-        requestPasswordRestModalOpen: false,
-        notificationToShow: 'passwordRequestSent'
-      });
-
-    const failure = err => {
-      console.error('Password reset call error:', err);
-      this.setState({
-        requestPasswordRestModalOpen: 'error',
-        changeNameModalOpen: false
-      });
-    };
-
-    Promise.resolve()
-      .then(this.props.handlePasswordResetRequest())
-      .then(() => success())
-      .catch(() => failure());
+  openChangePasswordModal = () => {
+    this.setState({
+      currentModal: 'changePassword'
+    });
   };
 
-  handleChangeModalToggle = setState => {
-    const current = this.state.changeNameModalOpen;
-
-    if (isBoolean(setState)) {
-      this.setState({ changeNameModalOpen: setState });
-    } else {
-      this.setState({ changeNameModalOpen: !current });
-    }
+  closeModal = () => {
+    this.setState({
+      currentModal: null
+    });
   };
 
-  handleRequestResetModalToggle = setState => {
-    if (isBoolean(setState)) {
-      this.setState({ requestPasswordRestModalOpen: setState });
-    } else {
-      const current = this.state.requestPasswordRestModalOpen;
-      this.setState({ requestPasswordRestModalOpen: !current });
-    }
+  cancelChanges = () => {
+    this.closeModal();
+    this.props.reset();
   };
 
-  handleChangeAvatar = () => {
-    console.log('file picker open');
+  confirmChanges = () => {
+    console.log('changes confirmed');
   };
 
-  showNotification = messageKey =>
-    this.setState({ notificationToShow: messageKey });
-
-  hideNotification = () => {
-    if (this.state.notificationToShow) {
-      this.setState({ notificationToShow: null });
-    }
+  handleResetPassword = () => {
+    console.log('reset password');
   };
 
-  handleNameChangeSubmit = () => {
-    const success = () => {
-      this.setState(state => ({
-        firstName: state.firstNameDirty,
-        lastName: state.lastNameDirty,
-        notificationToShow: 'nameChanged',
-        changeNameModalOpen: false
-      }));
-    };
-
-    const failure = err => {
-      console.error('Change Name call faile with error:', err);
-      this.setState({
-        notificationToShow: 'error',
-        changeNameModalOpen: false
-      });
-    };
-
-    Promise.resolve()
-      .then(() =>
-        this.props.handleNameChangeRequest({
-          firstName: this.state.firstNameDirty,
-          lastName: this.state.lastNameDirty
-        })
-      )
-      .then(() => success())
-      .catch(() => failure());
-  };
-
-  getUserName = () => {
+  getUserFullName = () => {
     return startCase(`${this.props.firstName} ${this.props.lastName}`);
   };
 
   render() {
     return (
       <div className={styles.container}>
-        <Avatar
-          src={this.props.imageUrl}
-          label="Change"
-          onClick={this.handleChangeAvatar}
-        />
+        <div className={styles.column}>
+          <div className={styles.section}>
+            <Avatar
+              src={this.props.imageUrl}
+              label="Change"
+              onClick={this.handleChangeAvatar}
+            />
 
-        <Typography variant="subheading" className={styles.greeting}>
-          Welcome, {this.getUserName()}
-        </Typography>
+            <Typography variant="subheading" className={styles.greeting}>
+              Welcome, {this.getUserFullName()}
+            </Typography>
+          </div>
 
-        <PersonalInfo
-          firstName={this.state.firstName}
-          lastName={this.state.lastName}
-          email={this.props.email}
-          handleChangeModalToggle={this.handleChangeModalToggle}
-          handleNameChangeSubmit={this.handleNameChangeSubmit}
-        />
-        <Password
-          lastUpdated={this.state.lastUpdated}
-          handleRequestResetModalToggle={this.handleRequestResetModalToggle}
-        />
-        <ChangeName
-          firstName={this.state.firstNameDirty}
-          lastName={this.state.lastNameDirty}
-          open={this.state.changeNameModalOpen}
-          handleFirstNameChange={this.handleFirstNameChange}
-          handleLastNameChange={this.handleLastNameChange}
-          handleSubmit={this.handleNameChangeSubmit}
-          handleClose={this.handleChangeModalToggle}
-        />
-        <ResetPassword
-          open={this.state.requestPasswordRestModalOpen}
-          requestReset={this.handlePasswordResetRequest}
-          closeHandler={this.handleRequestResetModalToggle}
-        />
-        <Notification
-          onClose={this.hideNotification}
-          messageKey={this.state.notificationToShow}
-        />
+          <div className={styles.section}>
+            <Typography
+              variant="title"
+              gutterBottom
+              classes={{ root: styles.title }}
+            >
+              Your Personal Info
+            </Typography>
+            <Typography
+              variant="subheading"
+              gutterBottom
+              classes={{ root: styles.subheading }}
+            >
+              Manage this basic information - your name and email.
+            </Typography>
+
+            <PersonalInfoField
+              name={this.getUserFullName()}
+              email={this.props.email}
+              onEditName={this.openChangeNameModal}
+              onEditEmail={this.openChangeEmailModal}
+            />
+          </div>
+
+          <div className={styles.section}>
+            <Typography
+              variant="title"
+              gutterBottom
+              classes={{ root: styles.title }}
+            >
+              Signing in to Veritone
+            </Typography>
+            <Typography
+              variant="subheading"
+              gutterBottom
+              classes={{ root: styles.subheading }}
+            >
+              Control your password and account access.
+            </Typography>
+
+            <PasswordField
+              lastUpdated={this.props.passwordUpdatedDateTime}
+              onEdit={this.openChangePasswordModal}
+            />
+          </div>
+
+          <ChangeNameModal
+            open={this.state.currentModal === 'changeName'}
+            firstName={this.props.firstName}
+            lastName={this.props.lastName}
+            onConfirm={this.confirmChanges}
+            onCancel={this.cancelChanges}
+          />
+
+          <ResetPasswordModal
+            open={this.state.currentModal === 'changePassword'}
+            onConfirm={this.handleResetPassword}
+            onCancel={this.cancelChanges}
+          />
+        </div>
       </div>
     );
   }
@@ -193,7 +178,7 @@ function SlideDown(props) {
 
 const UserProfileDialog = ({ open, title, onClose, ...profileProps }) => (
   <Dialog fullScreen open={open} TransitionComponent={SlideDown}>
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Toolbar>
         <IconButton color="inherit" onClick={onClose}>
           <CloseIcon />

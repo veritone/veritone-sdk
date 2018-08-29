@@ -1,17 +1,37 @@
 @import 'src/styles/modules/_variables';
 
 .container {
-  background-color: #fafafa;
-  height: 1000px;
+  padding-top: 64px; // clear appbar
+  background-color: $grey-1;
+  height: 100%;
   width: 100%;
-
+  min-height: 700px;
   display: flex;
   justify-content: center;
-  align-items: center;
+}
+
+.column {
+  height: 100%;
+  max-width: 50rem;
+  padding: 0 1rem;
+  width: 100%;
+  display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  width: 100%;
+}
+
+.subheading {
+  color: $light-black !important;
 }
 
 .greeting {
-  margin-top: 13px;
-  color: $light-black;
+  margin-top: 13px !important;
 }
