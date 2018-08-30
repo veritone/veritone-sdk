@@ -11,7 +11,6 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Icon from '@material-ui/core/Icon';
 import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
@@ -405,17 +404,8 @@ class ProgramInfo extends React.Component {
                 margin="normal"
                 value={program.website}
                 onChange={this.handleWebsiteChange}
+                placeholder="http://"
                 disabled={readOnly}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment
-                      position="start"
-                      classes={{ positionStart: styles.websitePrefix }}
-                    >
-                      http://
-                    </InputAdornment>
-                  )
-                }}
               />
             </div>
 
