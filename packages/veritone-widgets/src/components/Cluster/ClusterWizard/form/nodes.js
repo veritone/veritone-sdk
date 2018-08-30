@@ -12,7 +12,7 @@ import {
 } from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm, Field, formValueSelector } from 'redux-form';
-import { formComponents, NullState, withMuiThemeProvider, Table, Column, DualStateIcon } from 'veritone-react-common';
+import { formComponents, NullState, Table, Column, DualStateIcon } from 'veritone-react-common';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -47,7 +47,7 @@ const configFields = [
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true
 })
-@withMuiThemeProvider
+// @withMuiThemeProvider
 export default class ClusterNodes extends React.Component {
   static propTypes = {
     fields: shape({

@@ -29,12 +29,19 @@ export AppContainer from './components/AppContainer';
 export OAuthLoginButton from './components/OAuthLoginButton';
 export { Table, PaginatedTable, Column, LOADING } from './components/DataTable';
 export MenuColumn from './components/DataTable/MenuColumn';
-export withMuiThemeProvider from './helpers/withMuiThemeProvider';
+export {
+  withVeritoneSDKThemeProvider,
+  VeritoneSDKThemeProvider,
+  defaultVSDKTheme
+} from './helpers/withVeritoneSDKThemeProvider';
 export SearchPill from './components/SearchPill';
 export HorizontalScroll from './components/HorizontalScroll';
 export GeoPicker from './components/GeoPicker';
 export ExpandableInputField from './components/ExpandableInputField';
 export SearchBar from './components/SearchBar';
+export BoundingPolyOverlay from './components/BoundingPolyOverlay/Overlay';
+export OverlayPositioningProvider from './components/BoundingPolyOverlay/OverlayPositioningProvider';
+export SDOTable from './components/SDOTable';
 export * as IngestionJobs from './components/IngestionJobs';
 export ContentTemplateForm from './components/ContentTemplates/ContentTemplateForm';
 export ContentTemplate from './components/ContentTemplates';
@@ -44,3 +51,5 @@ export ModalHeader from './components/ModalHeader';
 export NullState from './components/NullState';
 export NullStateCard from './components/NullState/NullStateCard';
 export DualStateIcon from './components/DualStateIcon';
+export { Interval, defaultIntervals } from 'helpers/date';
+export Scheduler from './components/Scheduler';

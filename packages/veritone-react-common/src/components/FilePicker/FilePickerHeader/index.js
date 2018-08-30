@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Tabs  from '@material-ui/core/Tabs';
+import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import IconButton from '@material-ui/core/IconButton';
 import { string, func, bool } from 'prop-types';
@@ -11,7 +11,12 @@ class FilePickerHeader extends Component {
     selectedTab: string,
     onSelectTab: func,
     onClose: func,
-    allowUrlUpload: bool
+    allowUrlUpload: bool,
+    title: string
+  };
+
+  static defaultProps = {
+    title: 'File Picker'
   };
 
   handleTabChange = (event, value) => {
@@ -21,7 +26,7 @@ class FilePickerHeader extends Component {
   render() {
     return (
       <div className={styles.filePickerHeader}>
-        <span className={styles.filePickerTitle}>File Picker</span>
+        <span className={styles.filePickerTitle}>{this.props.title}</span>
         <IconButton
           classes={{
             root: styles.filePickerCloseButton

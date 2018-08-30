@@ -1,12 +1,10 @@
 import React from 'react';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { func } from 'prop-types';
 import NullstateImage from 'images/cms-sources-null.svg';
 import NullState from 'components/NullState';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class SourceManagementNullState extends React.Component {
   static propTypes = {
     onClick: func.isRequired
@@ -19,7 +17,7 @@ export default class SourceManagementNullState extends React.Component {
       <NullState
         imgProps={{
           src: NullstateImage,
-          alt: "https://static.veritone.com/veritone-ui/default-nullstate.svg",
+          alt: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
           style: {
             fontSize: '100px',
             marginBottom: '30px'
@@ -28,7 +26,7 @@ export default class SourceManagementNullState extends React.Component {
         titleText="No Sources"
         btnProps={{
           onClick,
-          text: "Create a Source"
+          text: 'Create a Source'
         }}
       >
         <div className={styles.greyText}>

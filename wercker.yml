@@ -17,14 +17,14 @@ build:
         HOME=$YARN_CACHE yarn
 
     - script:
-      name: lint all packages
-      code: |
-        yarn run lintall
-
-    - script:
       name: build all packages
       code: |
         yarn run buildall
+
+    - script:
+      name: lint all packages
+      code: |
+        yarn run lintall
 
     - script:
       name: test all packages

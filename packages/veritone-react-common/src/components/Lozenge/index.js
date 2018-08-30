@@ -4,7 +4,14 @@ import indigo from '@material-ui/core/colors/indigo';
 
 import styles from './styles.scss';
 
-const Lozenge = ({ children, iconClassName, backgroundColor, textColor, border, className }) => {
+const Lozenge = ({
+  children,
+  iconClassName,
+  backgroundColor,
+  textColor,
+  border,
+  className
+}) => {
   return (
     <div
       className={className || styles.lozenge}
@@ -26,7 +33,7 @@ Lozenge.propTypes = {
   backgroundColor: string,
   textColor: string,
   border: string,
-  className: string,
+  className: string
 };
 
 export default Lozenge;

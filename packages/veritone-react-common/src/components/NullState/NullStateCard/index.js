@@ -3,12 +3,12 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
+// import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import { shape, string, bool, func, node, objectOf, any } from 'prop-types';
 
 import styles from './styles.scss';
 
-@withMuiThemeProvider
+// @withMuiThemeProvider
 export default class NullStateCard extends React.Component {
   static propTypes = {
     imgSrc: string.isRequired,

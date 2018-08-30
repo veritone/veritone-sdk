@@ -1,13 +1,11 @@
 import React from 'react';
 import { string, shape, objectOf, any, func } from 'prop-types';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
 import ContentTemplatesNullState from './NullState';
 import styles from './styles.scss';
 
-@withMuiThemeProvider
 export default class ContentTemplates extends React.Component {
   static propTypes = {
     templateData: objectOf(
@@ -53,12 +51,12 @@ export default class ContentTemplates extends React.Component {
           {showNullstate ? (
             <ContentTemplatesNullState />
           ) : (
-              <TemplateForms
-                templates={selectedTemplateSchemas}
-                onRemoveTemplate={this.props.onRemoveTemplate}
-                onTemplateDetailsChange={this.props.onInputChange}
-              />
-            )}
+            <TemplateForms
+              templates={selectedTemplateSchemas}
+              onRemoveTemplate={this.props.onRemoveTemplate}
+              onTemplateDetailsChange={this.props.onInputChange}
+            />
+          )}
         </div>
       </div>
     );

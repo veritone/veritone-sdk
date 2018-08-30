@@ -98,3 +98,38 @@
 * Added SourceTypeField component
 * Added export for DateTimePicker component
 * Bumped Redux to 4.0
+
+## 5.3.0
+* Exported the Interval class and defaultIntervals for use with date-handling components.
+
+## 6.0.0
+* (breaking) removed @withMuiTheme decorator which automatically provided the material-ui theme to each component. Direct users of react-common components need to follow the new instructions in the README to add VeritoneSDKThemeProvider to their apps.
+* Added withVeritoneSDKThemeProvider, VeritoneSDKThemeProvider, and defaultVSDKTheme, related to above change
+* FilePicker title can now be customized with props.title
+* Added BoundingPolyOverlay and OverlayPositioningProvider components
+* Added ContentTemplateForm and ContentTemplate components
+* Added SDOTable component
+* Added IngestionJobs-related components
+* Added SourceManagementForm and SourceManagement-related components
+* Added Switch component under formComponents
+
+## 6.0.1
+* Support signedApplicationIconUrl field in the AppSwitcher
+* Update veritone icons font
+
+## 6.1.0
+* Add support for more engines in SearchBar
+* Add Scheduler component
+* Add better validation to DateTimePicker form component
+* Add TimeRangePicker form component
+
+## 6.1.1
+* Overlay:
+  * fix position of drawn boxes being out of sync with mouse position in some cases where the screen is scrolled.
+
+## 6.2.0
+* Overlay:
+  * Added the ability to style bounding boxes individually and as a group. Opened up styling so more than just background and border styles can be customized.
+    * props.stagedBoundingBoxStyles apply to new, unconfirmed bounding boxes
+    * props.stylesByObjectType apply to a bounding box if that box has a matching "overlayObjectType" key
+    * props.defaultBoundingBoxStyles apply to every box not covered by the above props

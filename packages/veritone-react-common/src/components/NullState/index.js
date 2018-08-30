@@ -1,5 +1,4 @@
 import React from 'react';
-import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from '@material-ui/core/Button';
 import { string, func, shape, node, objectOf, any } from 'prop-types';
 
@@ -19,7 +18,7 @@ const NullState = ({ imgSrc, imgProps, titleText, btnProps, children }) => {
         </div>
       }
       {children}
-      {btnProps &&
+      {btnProps && (
         <Button
           className={styles.buttonStyle}
           variant="raised"
@@ -27,11 +26,11 @@ const NullState = ({ imgSrc, imgProps, titleText, btnProps, children }) => {
           onClick={btnProps.onClick}
         >
           {btnProps.text}
-        </Button>}
+        </Button>
+      )}
     </div>
   );
-}
-
+};
 
 NullState.propTypes = {
   imgSrc: string.isRequired,
@@ -44,4 +43,4 @@ NullState.propTypes = {
   children: node
 };
 
-export default withMuiThemeProvider(NullState);
+export default NullState;

@@ -32,10 +32,16 @@ export default class AppSwitcherItem extends React.Component {
         onClick={this.handleSwitchApp}
       >
         <ListItemIcon>
-          {app.applicationIconUrl || app.applicationIconSvg ? (
+          {app.signedApplicationIconUrl ||
+          app.applicationIconUrl ||
+          app.applicationIconSvg ? (
             <img
               className={appListButtonIconClasses}
-              src={app.applicationIconUrl || app.applicationIconSvg}
+              src={
+                app.signedApplicationIconUrl ||
+                app.applicationIconUrl ||
+                app.applicationIconSvg
+              }
             />
           ) : (
             <span

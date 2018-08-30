@@ -132,3 +132,30 @@ const MyPage = () => (
 ## 5.2.2
 * Bumped internal veritone-redux-common dependency.
 * Import `fetchGraphQLApi` from veritone-redux-common and remove own internal version.
+
+## 6.0.0
+* Bumped internal veritone-react-common dependency
+* Exported reducers and modules from various widgets so they can actually be used as smart components
+* Added MediaPlayerControlBar
+* (breaking) Reworked MediaPlayer to add support for bounding poly overlays
+* Added EngineOutputExport/widget/module/reducer
+* Engine Selection widget
+  * Added separate search and filter states for tabs + UX improvements
+* Themes can now be passed into VeritoneApp: `new VeritoneApp({ theme: { ... }}`
+
+## 6.0.1
+* MediaPlayer: Don't require props related to bounding poly overlay mode.
+
+## 6.1.0
+* Bump internal veritone-react-common dependency
+* Add Scheduler widget
+* MediaPlayerComponent
+  * Fix width/height propTypes to match video-react Player's (accept string or number)
+
+## 6.1.1
+* MediaPlayer component
+  * bump version and open up semver range to support changes from 6.1.0
+
+## 6.2.0
+* MediaPlayer component
+  * Support styling changes introduced in veritone-react-common v6.2.0

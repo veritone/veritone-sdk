@@ -9,7 +9,7 @@ export default class ContentTemplatesNullState extends React.Component {
       <NullState
         imgProps={{
           src: NullstateImage,
-          alt: "https://static.veritone.com/veritone-ui/default-nullstate.svg",
+          alt: 'https://static.veritone.com/veritone-ui/default-nullstate.svg',
           style: {
             fontSize: '80px',
             marginBottom: '30px'

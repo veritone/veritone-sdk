@@ -1,5 +1,5 @@
 ## Quick Start
-As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. 
+As of v5.0.0, this package exports both React "smart components" and framework agnostic "widgets" for most components. When both are available, the smart component is the default export and the widget is a named export. For example, `import FilePicker, { FilePickerWidget } from 'veritone-widgets'` imports the smart component as FilePicker and the widget as FilePickerWidget. Smart components usually require redux reducers and sagas to be imported as well, see [Using Smart Components](#using-smart-components)
 
 ### Widgets (framework agnostic)
 ```javascript
@@ -41,7 +41,39 @@ render(
 )
 ```
 
-## Use (widgets)
+## Using Smart Components
+Because smart components are not rendered within the VeritoneApp widget framework, they require the user's app to have its own redux store with the components' reducers installed. Often, [sagas](https://redux-saga.js.org/) are also included and must be started as part of the app's root saga.
+
+### Smart component reducer/saga requirements
+#### FilePicker
+* reducer:
+`import {filePickerReducer} from 'veritone-widgets'`
+
+* saga:
+`import {filePickerSaga} from 'veritone-widgets'`
+
+#### Notifications
+* reducer:
+`import {notificationsReducer} from 'veritone-widgets'`
+
+#### EngineOutputExport
+* reducer:
+`import {engineOutputExportReducer} from 'veritone-widgets'`
+
+#### OAuthLoginButton
+* reducers:
+veritone-redux-common `User`, `Auth` and `Config` reducers
+
+### Smart component theme wrapper requirements
+In your app, import the `VeritoneSDKThemeProvider` from `veritone-react-common`:
+```
+import {VeritoneSDKThemeProvider } from 'veritone-react-common'
+```
+then wrap your root component with `<VeritoneSDKThemeProvider>`. If this is not possible, the `@withVeritoneSDKThemeProvider` decorator is provided to wrap individual components.
+
+Components can be customized using [material-ui themes](https://material-ui.com/customization/themes/) by passing a theme into the `theme` prop of the provider. Passed-in themes will be merged with the default Veritone theme.
+
+## Using Widgets
 ### 1. Create an instance of VeritoneApp
 `VeritoneApp` is a container for all the widgets and widget data in an app. Before using any widgets, you need to import and call it. Typically this will be done when your application is loaded and initialized.
 
@@ -283,6 +315,26 @@ A Veritone table to display data.
 * onRefreshPageData: function, specifies how to refresh data (if needed)
   * signature: `() => {}`
 * emptyMessage: string, text to display when table has no data
+
+**EngineOutputExport**
+
+The Veritone export engine outputs full screen dialog. This will fetch the engines ran on a tdo/recording and allow the user to configure what file types are included in the export
+
+*Options:*
+
+* tdos: arrayOf(shape), array of tdo data objects that engine outputs will be exported for
+  * shape: object with the following keys:
+    * tdoId: string (required), the unique id of a tdo you want to export engine outputs for
+    * startOffsetMs: number, an integer representing the number of milliseconds from the start of the tdo where the exported engine outputs will begin
+    * stopOffsetMs: number, an integer representing the number of milliseconds from the start of the tdo where the exported engine outputs will end
+* onExport: func, specifies action to take when export button is clicked
+  * signature: `(response) => {}`
+* onCancel: func, specifies action to take when cancel button is clicked
+  * signature: `() => {}`
+
+*Instance methods*
+
+* open(): opens the export engine output dialog.
 
 ## Running the development environment (storybook)
 1. Set up your local clone of veritone-sdk, following the instructions in the [main readme](https://github.com/veritone/veritone-sdk#development)

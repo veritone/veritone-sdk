@@ -6,3 +6,4 @@ export RadioGroup from './RadioGroup';
 export Select from './Select';
 export TextField from './TextField';
 export DateTimePicker from './DateTimePicker';
+export Switch from './Switch';

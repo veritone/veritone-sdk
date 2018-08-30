@@ -52,10 +52,7 @@ class ExpandableInputField extends React.Component {
   };
 
   onKeyPress = evt => {
-    if (
-      evt.key === 'Enter' &&
-      this.props.onSearch
-    ) {
+    if (evt.key === 'Enter' && this.props.onSearch) {
       this.props.onSearch(evt.target.value);
     }
   };

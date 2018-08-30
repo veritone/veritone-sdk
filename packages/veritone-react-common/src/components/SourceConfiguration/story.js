@@ -65,20 +65,20 @@ class SourceConfigWrapper extends React.Component {
       password: ''
     },
     thumbnailFile: null
-  }
+  };
 
   saveConfiguration = config => {
     return this.setState(prevState => ({
       ...prevState.sourceConfig,
       ...config
     }));
-  }
+  };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
 
     console.log('Form Values:', this.state);
-  }
+  };
 
   render() {
     return (
@@ -94,9 +94,6 @@ class SourceConfigWrapper extends React.Component {
   }
 }
 
-
-
-storiesOf('Source Configuration', module)
-  .add('Base', () => (
-    <SourceConfigWrapper />
-  ))
+storiesOf('Source Configuration', module).add('Base', () => (
+  <SourceConfigWrapper />
+));

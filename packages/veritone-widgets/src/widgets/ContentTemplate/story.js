@@ -157,7 +157,7 @@ class Story extends React.Component {
       title: 'Content Template Widget',
       templateData,
       initialTemplates,
-      handleUpdateContentTemplates: function (data) {
+      handleUpdateContentTemplates: function(data) {
         console.log('data:', data);
       }
     });
