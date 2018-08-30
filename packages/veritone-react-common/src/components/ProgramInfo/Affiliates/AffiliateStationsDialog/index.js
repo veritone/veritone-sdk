@@ -12,8 +12,9 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { debounce, get } from 'lodash';
-import { string, arrayOf, func, shape } from 'prop-types';
+import { debounce, get, reject } from 'lodash';
+import { string, arrayOf, func, shape, objectOf, bool } from 'prop-types';
+import EditAffiliateDialog from '../EditAffiliateDialog';
 import styles from './styles.scss';
 
 export default class AffiliateStationsDialog extends Component {
@@ -30,14 +31,8 @@ export default class AffiliateStationsDialog extends Component {
             number: string,
             period: string
           }),
-          daily: arrayOf(
-            shape({
-              start: string,
-              end: string
-            })
-          ),
           weekly: shape({
-            selectedDays: arrayOf(string)
+            selectedDays: objectOf(bool)
           })
         }).isRequired
       })
@@ -90,10 +85,22 @@ export default class AffiliateStationsDialog extends Component {
     });
   };
 
-  handleSaveAffiliate = affiliate => {
-    this.props.onAdd(affiliate);
+  closeEditAffiliateDialog = () => {
     this.setState({
       selectedAffiliate: null
+    });
+  };
+
+  handleSaveAffiliate = affiliate => {
+    this.closeEditAffiliateDialog();
+    this.props.onAdd(affiliate);
+    this.setState(prevState => {
+      const affiliatesView = reject(prevState.affiliatesView, {
+        id: affiliate.id
+      });
+      return {
+        affiliatesView
+      };
     });
   };
 
@@ -102,133 +109,145 @@ export default class AffiliateStationsDialog extends Component {
   };
 
   render() {
-    const { onClose, affiliates } = this.props;
+    const { onClose } = this.props;
 
     const {
       searchText,
       affiliatesView,
       page,
       rowsPerPage,
-      rowsPerPageOptions
+      rowsPerPageOptions,
+      selectedAffiliate
     } = this.state;
 
     return (
-      <Dialog
-        open
-        onClose={onClose}
-        disableBackdropClick
-        aria-labelledby="add-affiliates-dialog"
-        classes={{
-          paper: styles.addAffiliatesDialogPaper
-        }}
-      >
-        <DialogTitle
+      <div>
+        <Dialog
+          open
+          onClose={onClose}
+          disableBackdropClick
+          aria-labelledby="add-affiliates-dialog"
           classes={{
-            root: styles.dialogTitle
+            paper: styles.addAffiliatesDialogPaper
           }}
         >
-          <div>Affiliated Stations</div>
-          <div className={styles.dialogTitleActions}>
-            <TextField
-              id="search"
-              type="search"
-              placeholder="Filter by name"
-              className={styles.dialogTitleSearchInput}
-              value={searchText}
-              onChange={this.onSearchTextChange}
-            />
-            <div className={styles.dialogTitleSeparator} />
-            <IconButton onClick={onClose} aria-label="Close">
-              <Icon className="icon-close-exit" />
-            </IconButton>
-          </div>
-        </DialogTitle>
-        <DialogContent
-          classes={{
-            root: styles.dialogContent
-          }}
-        >
-          {get(affiliatesView, 'length') > 0 && (
-            <div className={styles.affiliatesViewSection}>
-              <Table
-                className={styles.affiliatesTable}
-                aria-labelledby="tableTitle"
-              >
-                <TableBody>
-                  {affiliatesView
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(affiliate => {
-                      return (
-                        /* eslint-disable react/jsx-no-bind */
-                        <TableRow hover tabIndex={-1} key={affiliate.id}>
-                          <TableCell
-                            scope="row"
-                            padding="none"
-                            classes={{
-                              body: styles.nameCell
-                            }}
-                          >
-                            <div className={styles.nameCellContent}>
-                              <div>{affiliate.name}</div>
-                              <div className={styles.selectAffiliateButton}>
-                                <Button
-                                  color="primary"
-                                  onClick={() =>
-                                    this.handleSelectAffiliate(affiliate)
-                                  }
-                                >
-                                  SELECT
-                                </Button>
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-          {get(affiliatesView, 'length') > 0 && (
-            <div className={styles.affiliatesViewPagination}>
-              <TablePagination
-                component="div"
-                count={affiliatesView.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                backIconButtonProps={{
-                  'aria-label': 'Previous Page'
-                }}
-                nextIconButtonProps={{
-                  'aria-label': 'Next Page'
-                }}
-                onChangePage={this.handleChangePage}
-                rowsPerPageOptions={rowsPerPageOptions}
-              />
-            </div>
-          )}
-          {!get(affiliatesView, 'length') &&
-            get(affiliates, 'length') && (
-              <div className={styles.noResultsMessage}>No Results</div>
-            )}
-        </DialogContent>
-        <DialogActions
-          classes={{
-            root: styles.actionButtons,
-            action: styles.actionButton
-          }}
-        >
-          <Button
-            onClick={onClose}
-            color="primary"
+          <DialogTitle
             classes={{
-              label: styles.actionButtonLabel
+              root: styles.dialogTitle
             }}
           >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <div>Affiliated Stations</div>
+            <div className={styles.dialogTitleActions}>
+              <TextField
+                id="search"
+                type="search"
+                placeholder="Filter by name"
+                className={styles.dialogTitleSearchInput}
+                value={searchText}
+                onChange={this.onSearchTextChange}
+              />
+              <div className={styles.dialogTitleSeparator} />
+              <IconButton onClick={onClose} aria-label="Close">
+                <Icon className="icon-close-exit" />
+              </IconButton>
+            </div>
+          </DialogTitle>
+          <DialogContent
+            classes={{
+              root: styles.dialogContent
+            }}
+          >
+            {get(affiliatesView, 'length') > 0 && (
+              <div className={styles.affiliatesViewSection}>
+                <Table
+                  className={styles.affiliatesTable}
+                  aria-labelledby="tableTitle"
+                >
+                  <TableBody>
+                    {affiliatesView
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map(affiliate => {
+                        return (
+                          /* eslint-disable react/jsx-no-bind */
+                          <TableRow hover tabIndex={-1} key={affiliate.id}>
+                            <TableCell
+                              scope="row"
+                              padding="none"
+                              classes={{
+                                body: styles.nameCell
+                              }}
+                            >
+                              <div className={styles.nameCellContent}>
+                                <div>{affiliate.name}</div>
+                                <div className={styles.selectAffiliateButton}>
+                                  <Button
+                                    color="primary"
+                                    onClick={() =>
+                                      this.handleSelectAffiliate(affiliate)
+                                    }
+                                  >
+                                    SELECT
+                                  </Button>
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+            {get(affiliatesView, 'length') > 0 && (
+              <div className={styles.affiliatesViewPagination}>
+                <TablePagination
+                  component="div"
+                  count={affiliatesView.length}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  backIconButtonProps={{
+                    'aria-label': 'Previous Page'
+                  }}
+                  nextIconButtonProps={{
+                    'aria-label': 'Next Page'
+                  }}
+                  onChangePage={this.handleChangePage}
+                  rowsPerPageOptions={rowsPerPageOptions}
+                />
+              </div>
+            )}
+            {!get(affiliatesView, 'length') && (
+              <div className={styles.noResultsMessage}>No Results</div>
+            )}
+          </DialogContent>
+          <DialogActions
+            classes={{
+              root: styles.actionButtons,
+              action: styles.actionButton
+            }}
+          >
+            <Button
+              onClick={onClose}
+              color="primary"
+              classes={{
+                label: styles.actionButtonLabel
+              }}
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {selectedAffiliate && (
+          <EditAffiliateDialog
+            affiliate={selectedAffiliate}
+            onClose={this.closeEditAffiliateDialog}
+            onSave={this.handleSaveAffiliate}
+          />
+        )}
+      </div>
     );
   }
 }

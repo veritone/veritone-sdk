@@ -1,11 +1,11 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { func, string, arrayOf, shape, bool } from 'prop-types';
-import { get } from 'lodash';
+import { func, string, arrayOf, shape, bool, objectOf } from 'prop-types';
+import { get, concat, findIndex, reject, differenceBy } from 'lodash';
 import AffiliateItem from './AffiliateItem';
 import styles from './styles.scss';
-import AffiliateStationsDialog from "./AffiliateStationsDialog";
-import EditAffiliateDialog from "./EditAffiliateDialog";
+import AffiliateStationsDialog from './AffiliateStationsDialog';
+import EditAffiliateDialog from './EditAffiliateDialog';
 
 export default class Affiliates extends React.Component {
   static propTypes = {
@@ -21,14 +21,8 @@ export default class Affiliates extends React.Component {
             number: string,
             period: string
           }),
-          daily: arrayOf(
-            shape({
-              start: string,
-              end: string
-            })
-          ),
           weekly: shape({
-            selectedDays: arrayOf(string)
+            selectedDays: objectOf(bool)
           })
         }).isRequired
       })
@@ -45,14 +39,8 @@ export default class Affiliates extends React.Component {
             number: string,
             period: string
           }),
-          daily: arrayOf(
-            shape({
-              start: string,
-              end: string
-            })
-          ),
           weekly: shape({
-            selectedDays: arrayOf(string)
+            selectedDays: objectOf(bool)
           })
         }).isRequired
       })
@@ -63,7 +51,6 @@ export default class Affiliates extends React.Component {
 
   state = {
     isAffiliateStationsDialogOpen: false,
-    isEditAffiliateDialogOpen: false,
     isBulkAddAffiliateDialogOpen: false,
     affiliateToEdit: null
   };
@@ -72,7 +59,6 @@ export default class Affiliates extends React.Component {
     this.setState({
       affiliateToEdit: affiliate
     });
-    this.openEditAffiliateDialog();
   };
 
   openAffiliateStationsDialog = () => {
@@ -87,15 +73,9 @@ export default class Affiliates extends React.Component {
     });
   };
 
-  openEditAffiliateDialog = () => {
-    this.setState({
-      isEditAffiliateDialogOpen: true
-    });
-  };
-
   closeEditAffiliateDialog = () => {
     this.setState({
-      isEditAffiliateDialogOpen: false
+      affiliateToEdit: null
     });
   };
 
@@ -111,23 +91,32 @@ export default class Affiliates extends React.Component {
     });
   };
 
-  handleAddAffiliateStations = newAffiliates => {
-    this.closeAffiliateStationsDialog();
-    // TODO: implement
+  handleAddAffiliateStation = newAffiliate => {
+    this.props.onAffiliatesChange(
+      concat(this.props.selectedAffiliates, newAffiliate)
+    );
   };
 
   handleEditAffiliate = newAffiliate => {
     this.closeEditAffiliateDialog();
-    // TODO: implement
+    const newAffiliates = [...this.props.selectedAffiliates];
+    const affiliateIndex = findIndex(newAffiliates, { id: newAffiliate.id });
+    if (affiliateIndex >= 0) {
+      newAffiliates[affiliateIndex] = newAffiliate;
+      this.props.onAffiliatesChange(newAffiliates);
+    }
+  };
+
+  handleRemoveAffiliate = affiliate => {
+    this.closeEditAffiliateDialog();
+    this.props.onAffiliatesChange(
+      reject(this.props.selectedAffiliates, { id: affiliate.id })
+    );
   };
 
   render() {
-    const { selectedAffiliates, canBulkAddAffiliates } = this.props;
-    const { isAffiliateStationsDialogOpen, isEditAffiliateDialogOpen, affiliateToEdit } = this.state;
-
-    // TODO: use when ready
-    // eslint-disable-next-line no-unused-vars
-    const { affiliates, onAffiliatesChange } = this.props;
+    const { selectedAffiliates, canBulkAddAffiliates, affiliates } = this.props;
+    const { isAffiliateStationsDialogOpen, affiliateToEdit } = this.state;
 
     return (
       <div className={styles.affiliatesContainer}>
@@ -178,16 +167,17 @@ export default class Affiliates extends React.Component {
         </div>
         {isAffiliateStationsDialogOpen && (
           <AffiliateStationsDialog
-            affiliates={affiliates}
+            affiliates={differenceBy(affiliates, selectedAffiliates, 'id')}
             onClose={this.closeAffiliateStationsDialog}
-            onAdd={this.handleAddAffiliateStations}
+            onAdd={this.handleAddAffiliateStation}
           />
         )}
-        {isEditAffiliateDialogOpen && affiliateToEdit && (
+        {affiliateToEdit && (
           <EditAffiliateDialog
             affiliate={affiliateToEdit}
             onClose={this.closeEditAffiliateDialog}
-            onAdd={this.handleEditAffiliate}
+            onSave={this.handleEditAffiliate}
+            onRemove={this.handleRemoveAffiliate}
           />
         )}
       </div>

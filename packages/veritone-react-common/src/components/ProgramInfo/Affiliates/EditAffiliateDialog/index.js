@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
-import { string, arrayOf, func, shape } from 'prop-types';
+import { get, mapValues, omit, difference, keys, constant } from 'lodash';
+import { subDays, format } from 'date-fns';
+import { string, func, shape, objectOf, bool } from 'prop-types';
+import EditAffiliateForm from './EditAffiliateForm.js';
 import styles from './styles.scss';
+
+const initDate = new Date();
 
 export default class EditAffiliateDialog extends Component {
   static propTypes = {
@@ -22,19 +25,13 @@ export default class EditAffiliateDialog extends Component {
           number: string,
           period: string
         }),
-        daily: arrayOf(
-          shape({
-            start: string,
-            end: string
-          })
-        ),
         weekly: shape({
-          selectedDays: arrayOf(string)
+          selectedDays: objectOf(bool)
         })
       }).isRequired
     }),
-    onSave: func,
-    onClose: func
+    onSave: func.isRequired,
+    onClose: func.isRequired
   };
 
   static defaultProps = {
@@ -43,17 +40,63 @@ export default class EditAffiliateDialog extends Component {
 
   state = {
     affiliate: {
-      ...this.props.affiliate
+      ...this.props.affiliate,
+      schedule: {
+        // This provides defaults to the form. Shallow merged with
+        // props.initialValues to allow overriding.
+        scheduleType: get(
+          this.props.affiliate.schedule,
+          'scheduleType',
+          'Recurring'
+        ),
+        start: get(this.props.affiliate.schedule, 'start')
+          ? format(new Date(this.props.affiliate.schedule.start), 'YYYY-MM-DD')
+          : format(subDays(initDate, 3), 'YYYY-MM-DD'),
+        end: get(this.props.affiliate.schedule, 'end')
+          ? format(new Date(this.props.affiliate.schedule.end), 'YYYY-MM-DD')
+          : format(initDate, 'YYYY-MM-DD'),
+        repeatEvery: {
+          number: '1',
+          period: 'week'
+        },
+        weekly: {
+          // make sure we set a default start/end for any days which aren't given
+          // explicit default values in props.initialValues.weekly
+          ...difference(
+            // for days not given explicit initial values in props,..
+            [
+              'Monday',
+              'Tuesday',
+              'Wednesday',
+              'Thursday',
+              'Friday',
+              'Saturday',
+              'Sunday'
+            ],
+            keys(get(this.props.affiliate.schedule, 'weekly'))
+            // ... provide them with default start/end ranges
+          ).reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
+          // and assume any days given explicit initial values should be selected
+          selectedDays: mapValues(
+            get(this.props.affiliate.schedule, 'weekly'),
+            constant(true)
+          ),
+          // then merge back with the days given explicit initial values in props
+          ...get(this.props.affiliate.schedule, 'weekly')
+        },
+        // shallow-merge the properties we didn't have special merge logic for
+        ...omit(this.props.affiliate.schedule, ['start', 'end', 'weekly'])
+      }
     }
+  };
+
+  handleOnSubmit = affiliate => {
+    this.props.onSave(affiliate);
   };
 
   render() {
     const { onClose } = this.props;
     const { affiliate } = this.state;
-
-    // TODO: use when ready
-    // eslint-disable-next-line no-unused-vars
-    const { onSave } = this.props;
 
     return (
       <Dialog
@@ -82,36 +125,12 @@ export default class EditAffiliateDialog extends Component {
             root: styles.dialogContent
           }}
         >
-          <div className={styles.affiliateConfiguration}>
-            TODO: add schedule configuration
-          </div>
+          <EditAffiliateForm
+            initialValues={affiliate}
+            onSubmit={this.handleOnSubmit}
+            onCancel={onClose}
+          />
         </DialogContent>
-        <DialogActions
-          classes={{
-            root: styles.actionButtons,
-            action: styles.actionButton
-          }}
-        >
-          <Button
-            onClick={onClose}
-            color="primary"
-            classes={{
-              label: styles.actionButtonLabel
-            }}
-          >
-            CANCEL
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.handleSaveButtonClick}
-            classes={{
-              label: styles.actionButtonLabel
-            }}
-          >
-            SAVE
-          </Button>
-        </DialogActions>
       </Dialog>
     );
   }

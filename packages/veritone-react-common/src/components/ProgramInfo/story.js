@@ -53,20 +53,33 @@ const generateAffiliates = function(n) {
       name: 'Affiliate Station ' + i,
       schedule: {
         scheduleType: 'Recurring',
-        start: new Date('August 19, 2018 01:00:00').toString(),
-        end: new Date('August 19, 2019 01:00:00').toString(),
+        start: '2018-04-14T19:48:25.147Z',
+        end: '2018-04-17T19:48:25.147Z',
         repeatEvery: {
           number: '1',
-          period: 'day'
+          period: 'week'
         },
-        daily: [
-          {
-            start: '00:00',
-            end: '01:00'
-          }
-        ],
         weekly: {
-          selectedDays: ['Monday', 'Wednesday', 'Friday', 'Sunday']
+          Wednesday: [
+            {
+              start: '16:33',
+              end: '17:21'
+            }
+          ],
+          Thursday: [
+            {
+              start: '12:33',
+              end: '03:21'
+            },
+            {
+              start: '01:00',
+              end: '01:00'
+            }
+          ],
+          selectedDays: {
+            Wednesday: true,
+            Thursday: true
+          }
         }
       }
     });
@@ -285,7 +298,8 @@ class BaseStory extends React.Component {
 
 storiesOf('Program Info', module).add('Full data', () => (
   <FullDataStory store={store} />
-));storiesOf('Program Info', module).add('Full data readOnly', () => (
+));
+storiesOf('Program Info', module).add('Full data readOnly', () => (
   <FullDataReadOnlyStory store={store} />
 ));
 storiesOf('Program Info', module).add('No program data', () => (

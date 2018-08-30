@@ -21,6 +21,10 @@
   font-size: 14px;
   color: $dark-black;
   margin-top: 15px;
+  width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .editButton {
@@ -38,4 +42,8 @@
   font-size: 14px;
   color: $light-black;
   margin-top: 3px;
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

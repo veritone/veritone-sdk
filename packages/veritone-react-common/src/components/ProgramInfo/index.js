@@ -15,7 +15,15 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import { func, number, string, bool, arrayOf, shape } from 'prop-types';
+import {
+  func,
+  number,
+  string,
+  bool,
+  arrayOf,
+  shape,
+  objectOf
+} from 'prop-types';
 import { reduxForm, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
 import { get } from 'lodash';
@@ -59,14 +67,8 @@ class ProgramInfo extends React.Component {
               number: string,
               period: string
             }),
-            daily: arrayOf(
-              shape({
-                start: string,
-                end: string
-              })
-            ),
             weekly: shape({
-              selectedDays: arrayOf(string)
+              selectedDays: objectOf(bool)
             })
           }).isRequired
         })
@@ -94,14 +96,8 @@ class ProgramInfo extends React.Component {
             number: string,
             period: string
           }),
-          daily: arrayOf(
-            shape({
-              start: string,
-              end: string
-            })
-          ),
           weekly: shape({
-            selectedDays: arrayOf(string)
+            selectedDays: objectOf(bool)
           })
         }).isRequired
       })
@@ -128,8 +124,12 @@ class ProgramInfo extends React.Component {
   };
 
   static getDerivedStateFromProps(props, state) {
-    if (get(props, 'program.programImage') !== get(state, 'program.programImage') ||
-        get(props, 'program.signedProgramImage') !== get(state, 'program.signedProgramImage')) {
+    if (
+      get(props, 'program.programImage') !==
+        get(state, 'program.programImage') ||
+      get(props, 'program.signedProgramImage') !==
+        get(state, 'program.signedProgramImage')
+    ) {
       return {
         program: {
           ...state.program,
@@ -138,8 +138,12 @@ class ProgramInfo extends React.Component {
         }
       };
     }
-    if (get(props, 'program.programLiveImage') !== get(state, 'program.programLiveImage') ||
-        get(props, 'program.signedProgramLiveImage') !== get(state, 'program.signedProgramLiveImage')) {
+    if (
+      get(props, 'program.programLiveImage') !==
+        get(state, 'program.programLiveImage') ||
+      get(props, 'program.signedProgramLiveImage') !==
+        get(state, 'program.signedProgramLiveImage')
+    ) {
       return {
         program: {
           ...state.program,
@@ -149,7 +153,7 @@ class ProgramInfo extends React.Component {
       };
     }
     return null;
-  };
+  }
 
   handleNameChange = event => {
     const newValue = event.target.value;
@@ -325,12 +329,16 @@ class ProgramInfo extends React.Component {
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 500x350 .jpg or .png
                   </div>
-                  {(get(program, 'signedProgramLiveImage.length') > 0 || get(program, 'programLiveImage.length') > 0) && (
+                  {(get(program, 'signedProgramLiveImage.length') > 0 ||
+                    get(program, 'programLiveImage.length') > 0) && (
                     /* eslint-disable react/jsx-no-bind */
                     <div className={styles.programLiveImageContainer}>
                       <img
                         className={styles.programLiveImage}
-                        src={program.signedProgramLiveImage || program.programLiveImage}
+                        src={
+                          program.signedProgramLiveImage ||
+                          program.programLiveImage
+                        }
                       />
                       <div className={styles.imageOverlay}>
                         <EditIcon
@@ -346,23 +354,24 @@ class ProgramInfo extends React.Component {
                       </div>
                     </div>
                   )}
-                  {!get(program, 'signedProgramLiveImage.length') && !get(program, 'programLiveImage.length') && (
-                    <div
-                      className={styles.programLiveImageNullState}
-                      onClick={() => onUploadImage('programLiveImage')}
-                    >
-                      <div className={styles.uploadImageIconSection}>
-                        <Icon
-                          className={'icon-cloud_upload'}
-                          color="disabled"
-                          style={{ fontSize: 40 }}
-                        />
-                        <div className={styles.uploadImageLabel}>
-                          Browse to upload
+                  {!get(program, 'signedProgramLiveImage.length') &&
+                    !get(program, 'programLiveImage.length') && (
+                      <div
+                        className={styles.programLiveImageNullState}
+                        onClick={() => onUploadImage('programLiveImage')}
+                      >
+                        <div className={styles.uploadImageIconSection}>
+                          <Icon
+                            className={'icon-cloud_upload'}
+                            color="disabled"
+                            style={{ fontSize: 40 }}
+                          />
+                          <div className={styles.uploadImageLabel}>
+                            Browse to upload
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
                 <div className={styles.programImageSection}>
                   <div className={styles.programInfoFieldHeader}>
@@ -371,7 +380,8 @@ class ProgramInfo extends React.Component {
                   <div className={styles.programInfoFieldDescription}>
                     Recommended image size: 250x250 .jpg or .png
                   </div>
-                  {(get(program, 'signedProgramImage.length') > 0 || get(program, 'programImage.length') > 0) && (
+                  {(get(program, 'signedProgramImage.length') > 0 ||
+                    get(program, 'programImage.length') > 0) && (
                     <div className={styles.programImageContainer}>
                       <img
                         className={styles.programImage}
@@ -391,23 +401,24 @@ class ProgramInfo extends React.Component {
                       </div>
                     </div>
                   )}
-                  {!get(program, 'signedProgramImage.length') && !get(program, 'programImage.length') && (
-                    <div
-                      className={styles.programImageNullState}
-                      onClick={() => onUploadImage('programImage')}
-                    >
-                      <div className={styles.uploadImageIconSection}>
-                        <Icon
-                          className={'icon-cloud_upload'}
-                          color="disabled"
-                          style={{ fontSize: 40 }}
-                        />
-                        <div className={styles.uploadImageLabel}>
-                          Browse to upload
+                  {!get(program, 'signedProgramImage.length') &&
+                    !get(program, 'programImage.length') && (
+                      <div
+                        className={styles.programImageNullState}
+                        onClick={() => onUploadImage('programImage')}
+                      >
+                        <div className={styles.uploadImageIconSection}>
+                          <Icon
+                            className={'icon-cloud_upload'}
+                            color="disabled"
+                            style={{ fontSize: 40 }}
+                          />
+                          <div className={styles.uploadImageLabel}>
+                            Browse to upload
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             </div>
@@ -489,35 +500,39 @@ class ProgramInfo extends React.Component {
               />
             </div>
 
-            {canShare && !readOnly && <div className={styles.programInfoDivider} />}
-            {canShare && !readOnly && (
-              <div className={styles.shareSection}>
-                <SharingConfiguration
-                  acls={program.acls}
-                  organizations={organizations}
-                  isPublic={program.isPublic}
-                  defaultPermission="viewer"
-                  onAclsChange={this.handleAclsChange}
-                  showMakePublic
-                  onIsPublicChange={this.handleIsPublicChange}
-                  sharingSectionDescription="Share this program across organizations."
-                  aclGroupsSectionDescription="Grant organizations permission to this program and its contents. Sharing programs will also share related Sources."
-                  publicSectionDescription="Share this program and all of its content with all of Veritone."
-                />
-              </div>
-            )}
+            {canShare &&
+              !readOnly && <div className={styles.programInfoDivider} />}
+            {canShare &&
+              !readOnly && (
+                <div className={styles.shareSection}>
+                  <SharingConfiguration
+                    acls={program.acls}
+                    organizations={organizations}
+                    isPublic={program.isPublic}
+                    defaultPermission="viewer"
+                    onAclsChange={this.handleAclsChange}
+                    showMakePublic
+                    onIsPublicChange={this.handleIsPublicChange}
+                    sharingSectionDescription="Share this program across organizations."
+                    aclGroupsSectionDescription="Grant organizations permission to this program and its contents. Sharing programs will also share related Sources."
+                    publicSectionDescription="Share this program and all of its content with all of Veritone."
+                  />
+                </div>
+              )}
 
-            {canEditAffiliates && !readOnly && <div className={styles.programInfoDivider} />}
-            {canEditAffiliates && !readOnly && (
-              <div className={styles.affiliatesSection}>
-                <Affiliates
-                  selectedAffiliates={program.affiliates}
-                  affiliates={affiliates}
-                  canBulkAddAffiliates={canBulkAddAffiliates}
-                  onAffiliatesChange={this.handleAffiliatesChange}
-                />
-              </div>
-            )}
+            {canEditAffiliates &&
+              !readOnly && <div className={styles.programInfoDivider} />}
+            {canEditAffiliates &&
+              !readOnly && (
+                <div className={styles.affiliatesSection}>
+                  <Affiliates
+                    selectedAffiliates={program.affiliates}
+                    affiliates={affiliates}
+                    canBulkAddAffiliates={canBulkAddAffiliates}
+                    onAffiliatesChange={this.handleAffiliatesChange}
+                  />
+                </div>
+              )}
           </div>
         </Form>
       </MuiThemeProvider>
