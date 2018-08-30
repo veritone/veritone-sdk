@@ -33,6 +33,7 @@ class DynamicAdapter extends React.Component {
     openCreateSource: func.isRequired,
     loadNextSources: func.isRequired,
     loadNextClusters: func.isRequired,
+    populateSelectedSource: func,
     pageSize: number,
     readOnly: bool
   };
@@ -75,6 +76,11 @@ class DynamicAdapter extends React.Component {
       });
     }
     this.setState(newState, this.sendConfiguration);
+    if (newState.sourceId) {
+      this.props.populateSelectedSource(newState.sourceId).then(source => {
+        this.insertAndSelectSource(source);
+      });
+    }
   }
 
   sendConfiguration = () => {
@@ -147,11 +153,12 @@ class DynamicAdapter extends React.Component {
       });
     });
     return this.props.loadNextSources({startIndex, stopIndex}).then(nextPage => {
+      const hasPreselectedSource = this.state._source.items.length === 1;
       const newState = {
         _source: {
           hasNextPage: !!get(nextPage, 'length'),
           isNextPageLoading: false,
-          items: startIndex === 0 ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
+          items: (!hasPreselectedSource && startIndex === 0) ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
         }
       }
       const sourceToSelect = find(
