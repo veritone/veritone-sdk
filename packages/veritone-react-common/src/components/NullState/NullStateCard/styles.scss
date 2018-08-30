@@ -1,0 +1,34 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.null-state-card {
+  width: 350px;
+  height: 375px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px;
+
+  .card-title {
+    @include mui-text('title');
+
+    color: $dark-black;
+  }
+}
+
+.null-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-basis: 100%;
+  padding: 0 !important;
+}
+
+.card-desc-text {
+  @include mui-text('body1');
+
+  color: $light-black;
+  text-align: center;
+}

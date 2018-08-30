@@ -204,7 +204,7 @@ export default class SourceManagementForm extends React.Component {
           <ModalHeader
             title={this.state.sourceConfig.name || 'New Source'}
             icons={[
-              <IconButton aria-label="exit" key="icon-3">
+              <IconButton aria-label="exit" key="icon-3" color="inherit">
                 <Icon
                   className="icon-close-exit"
                   onClick={this.handleCloseDialog}

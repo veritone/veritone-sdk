@@ -1,0 +1,14 @@
+@import 'src/styles/modules/muiTypography';
+@import 'src/styles/modules/variables';
+
+.dsi-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dsi-caption {
+  @include mui-text('caption');
+  color: $light-black;
+  margin-top: 5px;
+}

@@ -1,0 +1,84 @@
+@import 'src/styles/modules/_variables';
+@import 'src/styles/modules/_muiTypography';
+
+.cluster-wizard-view {
+  padding: 40px 20px 0 40px;
+
+  > div:not(:first-child) {
+    padding-top: 40px;
+  }
+}
+
+.cluster-heading {
+  display: flex;
+  justify-content: space-between;
+
+  .help-text {
+    @include mui-text('body1');
+    color: $light-black;
+    display: flex;
+    align-items: baseline;
+  }
+}
+
+.cluster-subheading, .cluster-headline {
+  margin: 0;
+}
+
+.cluster-text {
+  @include mui-text('body1');
+
+  color: $light-black;
+}
+
+.toggle-field-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.edit-icon {
+  font-size: 14px !important;
+  color: $min-black;
+  margin-left: 10px
+}
+
+/* DETAILS */
+.cluster-details-metrics {
+  $color: $light-black
+}
+
+.cluster-details-metric {
+  color: $light-black !important;
+}
+
+/* NODES */
+.cluster-headline {
+  @include mui-text('headline');
+}
+
+.cluster-add-node {
+  padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.size-select {
+  width: 90px !important;
+}
+
+.node-config {
+  display: flex;
+  justify-content: space-evenly;
+}
+.activeClass {
+  color: $greenA700;
+}
+.inActiveClass {
+  color: $min-black;
+}
+
+.text-toggle-field {
+  @include mui-text('menu');
+  color: $dark-black;
+}

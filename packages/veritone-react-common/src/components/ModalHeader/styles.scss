@@ -1,16 +1,7 @@
-@import 'src/styles/modules/variables';
 @import 'src/styles/modules/muiTypography';
 
-.modalHeader {
-  background-color: #1f2532;
-
-  span {
-    color: $grey-1;
-  }
-}
-
 .fullScreenTopBar {
-  padding: 10px 20px 0;
+  padding: 20px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -18,7 +9,6 @@
   .topBarTitle {
     @include mui-text('title');
 
-    color: $grey-1;
     align-self: center;
   }
 
@@ -29,6 +19,9 @@
   }
 }
 
-.icon {
-  color: $fullWhite;
+.separator {
+  align-self: center;
+  border-right: 1px solid;
+  height: 27px;
+  margin: 0 10px;
 }

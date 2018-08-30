@@ -1,20 +1,17 @@
 import React from 'react';
 import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
 import Button from '@material-ui/core/Button';
-import { string, func, shape, node } from 'prop-types';
+import { string, func, shape, node, objectOf, any } from 'prop-types';
 
 import styles from './styles.scss';
 
-const NullState = ({ imgProps, titleText, btnProps, children }) => {
-  const { src, alt, ...restProps } = imgProps;
-
+const NullState = ({ imgSrc, imgProps, titleText, btnProps, children }) => {
   return (
     <div className={styles.nullStateView}>
-      {imgProps &&
+      {imgSrc &&
       <img
-        src={src}
-        alt={alt}
-        {...restProps}
+        src={imgSrc}
+        {...imgProps}
       />}
       {titleText &&
         <div className={styles.titleText}>
@@ -37,10 +34,8 @@ const NullState = ({ imgProps, titleText, btnProps, children }) => {
 
 
 NullState.propTypes = {
-  imgProps: shape({
-    src: string.isRequired,
-    alt: string
-  }),
+  imgSrc: string.isRequired,
+  imgProps: objectOf(any),
   titleText: string,
   btnProps: shape({
     onClick: func.isRequired,

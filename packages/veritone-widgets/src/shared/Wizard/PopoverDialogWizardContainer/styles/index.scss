@@ -1,0 +1,71 @@
+@import 'src/styles/modules/variables';
+
+$footer-height: 60px;
+$footer-height-stacked-buttons: 150px;
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepperContainer {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  background: white;
+  box-shadow:
+    rgba(0, 0, 0, 0.117647) 0 1px 6px,
+    rgba(0, 0, 0, 0.117647) 0 1px 4px;
+
+  > div {
+    width: 100%;
+    max-width: 70rem; // grid container size + 5
+  }
+}
+
+.wizardPageContainer {
+  padding-top: 16px;
+  height: 100%;
+  overflow-y: scroll;
+
+  // make sure page can always scroll past footer buttons
+  &::after {
+    content: " ";
+    display: block;
+    height: $footer-height;
+
+    @media only screen and (max-width: $breakpoint-small) {
+      height: $footer-height-stacked-buttons;
+    }
+  }
+}
+
+.footer {
+  position: absolute;
+  height: $footer-height;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  @media only screen and (max-width: $breakpoint-small) {
+    display: block;
+    height: $footer-height-stacked-buttons;
+
+    .footer__button { // floating button
+      display: block !important;
+      width: 100% !important;
+    }
+  }
+}
+
+.footer__button {
+  margin: 10px !important;
+
+  @media only screen and (max-width: $breakpoint-small) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
