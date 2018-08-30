@@ -31,6 +31,7 @@ export default class EditAffiliateDialog extends Component {
       }).isRequired
     }),
     onSave: func.isRequired,
+    onDelete: func,
     onClose: func.isRequired
   };
 
@@ -95,7 +96,7 @@ export default class EditAffiliateDialog extends Component {
   };
 
   render() {
-    const { onClose } = this.props;
+    const { onDelete, onClose } = this.props;
     const { affiliate } = this.state;
 
     return (
@@ -128,6 +129,7 @@ export default class EditAffiliateDialog extends Component {
           <EditAffiliateForm
             initialValues={affiliate}
             onSubmit={this.handleOnSubmit}
+            onDelete={onDelete}
             onCancel={onClose}
           />
         </DialogContent>

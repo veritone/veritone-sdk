@@ -107,11 +107,18 @@ export default class Affiliates extends React.Component {
     }
   };
 
-  handleRemoveAffiliate = affiliate => {
+  handleDeleteAffiliate = affiliate => {
     this.closeEditAffiliateDialog();
     this.props.onAffiliatesChange(
       reject(this.props.selectedAffiliates, { id: affiliate.id })
     );
+  };
+
+  handleDeleteEditedAffiliate = () => {
+    this.props.onAffiliatesChange(
+      reject(this.props.selectedAffiliates, { id: this.state.affiliateToEdit.id })
+    );
+    this.closeEditAffiliateDialog();
   };
 
   render() {
@@ -132,6 +139,7 @@ export default class Affiliates extends React.Component {
                 <div key={affiliate.id} className={styles.affiliateItem}>
                   <AffiliateItem
                     affiliate={affiliate}
+                    onDelete={this.handleDeleteAffiliate}
                     onEdit={this.handleOnEditAffiliateClick}
                   />
                 </div>
@@ -177,7 +185,7 @@ export default class Affiliates extends React.Component {
             affiliate={affiliateToEdit}
             onClose={this.closeEditAffiliateDialog}
             onSave={this.handleEditAffiliate}
-            onRemove={this.handleRemoveAffiliate}
+            onDelete={this.handleDeleteEditedAffiliate}
           />
         )}
       </div>

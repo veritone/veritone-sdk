@@ -95,7 +95,7 @@
 
 .actionButtons {
   padding: 0 !important;
-  margin: 0 !important;
+  margin: 20px 0 0 !important;
 }
 
 .actionButton {
@@ -104,6 +104,17 @@
   margin-right: 0 !important;
 }
 
+.deleteActionButton {
+  width: 160px;
+  margin-left: 0 !important;
+  margin-right: 210px !important;
+}
+
+.containedSecondaryColorOverride {
+  background-color: rgb(225, 0, 80) !important;
+}
+
 .actionButtonLabel {
   font-size: 14px;
+  white-space: nowrap;
 }

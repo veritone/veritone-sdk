@@ -83,6 +83,7 @@ class FullDataStory extends React.Component {
                 }
               }}
               onSave={this.handleSubmit}
+              onDelete={action('onDelete')}
               onClose={action('onClose')}
             />
             <button type="button" onClick={this.submit}>

@@ -41,6 +41,7 @@ storiesOf('Affiliate Item', module).add('With Daily schedule', () => (
         }
       }
     }}
+    onDelete={action('onAffiliateDelete')}
     onEdit={action('onAffiliateChange')}
   />
 ));

@@ -12,7 +12,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { debounce, get, reject } from 'lodash';
+import { debounce, get } from 'lodash';
 import { string, arrayOf, func, shape, objectOf, bool } from 'prop-types';
 import EditAffiliateDialog from '../EditAffiliateDialog';
 import styles from './styles.scss';
@@ -94,14 +94,7 @@ export default class AffiliateStationsDialog extends Component {
   handleSaveAffiliate = affiliate => {
     this.closeEditAffiliateDialog();
     this.props.onAdd(affiliate);
-    this.setState(prevState => {
-      const affiliatesView = reject(prevState.affiliatesView, {
-        id: affiliate.id
-      });
-      return {
-        affiliatesView
-      };
-    });
+    this.props.onClose();
   };
 
   handleChangePage = (event, page) => {
@@ -231,7 +224,6 @@ export default class AffiliateStationsDialog extends Component {
           >
             <Button
               onClick={onClose}
-              color="primary"
               classes={{
                 label: styles.actionButtonLabel
               }}

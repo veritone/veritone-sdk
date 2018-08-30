@@ -26,7 +26,7 @@ const days = [
 const EditAffiliateForm = reduxForm({
   form: 'affiliate',
   initialValues: {}
-})(({ handleSubmit, onCancel, children, submitting, invalid }) => (
+})(({ handleSubmit, onDelete, onCancel, children, submitting, invalid }) => (
   <form onSubmit={handleSubmit}>
     <div className={styles.scheduleConfig}>
       <div className={styles.scheduleDateFieldSection}>
@@ -55,11 +55,6 @@ const EditAffiliateForm = reduxForm({
           type="date"
           name="schedule.end"
           component={TextField}
-          InputProps={{
-            classes: {
-              input: styles.dateFieldInput
-            }
-          }}
         />
       </div>
       <div className={styles.scheduleTitle}>Schedule</div>
@@ -89,13 +84,28 @@ const EditAffiliateForm = reduxForm({
     <br />
     <DialogActions
       classes={{
-        root: styles.actionButtons,
-        action: styles.actionButton
+        root: styles.actionButtons
       }}
     >
+      {onDelete && (
+        <Button
+          color="secondary"
+          variant="contained"
+          disabled={submitting}
+          onClick={onDelete}
+          classes={{
+            label: styles.actionButtonLabel,
+            root: styles.deleteActionButton,
+            containedSecondary: styles.containedSecondaryColorOverride
+          }}
+        >
+          Delete Affiliate
+        </Button>
+      )}
       <Button
         classes={{
-          label: styles.actionButtonLabel
+          label: styles.actionButtonLabel,
+          root: styles.actionButton
         }}
         onClick={onCancel}
       >
@@ -104,9 +114,11 @@ const EditAffiliateForm = reduxForm({
       <Button
         type="submit"
         color="primary"
+        variant="contained"
         disabled={submitting || invalid}
         classes={{
-          label: styles.actionButtonLabel
+          label: styles.actionButtonLabel,
+          root: styles.actionButton
         }}
       >
         Save

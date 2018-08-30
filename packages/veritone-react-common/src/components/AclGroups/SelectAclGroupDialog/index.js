@@ -250,7 +250,6 @@ export default class SelectAclGroupDialog extends Component {
         >
           <Button
             onClick={onClose}
-            color="primary"
             classes={{
               label: styles.actionButtonLabel
             }}

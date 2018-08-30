@@ -1,8 +1,8 @@
 @import 'src/styles/modules/variables';
 
 .affiliateContainer {
-  height: 65px;
-  width: 210px;
+  height: 75px;
+  width: 250px;
   background-color: $barely-black;
   display: flex;
   flex-direction: column;
@@ -27,13 +27,14 @@
   text-overflow: ellipsis;
 }
 
-.editButton {
+.actionButton {
   height: 24px !important;
   width: 24px !important;
   margin-top: 10px !important;
+  margin-left: 5px !important;
 }
 
-.editButtonIcon {
+.actionButtonIcon {
   font-size: 16px !important;
 }
 
@@ -41,8 +42,8 @@
   font-weight: normal;
   font-size: 14px;
   color: $light-black;
-  margin-top: 3px;
-  width: 180px;
+  margin-top: 13px;
+  width: 210px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
