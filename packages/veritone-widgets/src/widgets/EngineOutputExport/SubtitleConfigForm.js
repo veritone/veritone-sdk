@@ -25,7 +25,7 @@ const SubtitleConfigForm = reduxForm({
           <Grid item>
             <Field
               type="number"
-              name="maxLinesPerCaptionLine"
+              name="maxCharacterPerLine"
               style={{ width: 50 }}
               component={formComponents.TextField}
               // eslint-disable-next-line

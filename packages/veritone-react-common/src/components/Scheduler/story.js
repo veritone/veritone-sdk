@@ -48,13 +48,14 @@ class Story extends React.Component {
         <Provider store={store}>
           <div>
             <Scheduler
+              supportedScheduleTypes={['Any']}
               initialValues={{
                 scheduleType: 'Recurring',
                 start: '2018-04-14T19:48:25.147Z',
                 end: '2018-04-17T19:48:25.147Z',
                 repeatEvery: {
                   number: '1',
-                  period: 'day'
+                  period: 'week'
                 },
                 weekly: {
                   Thursday: [

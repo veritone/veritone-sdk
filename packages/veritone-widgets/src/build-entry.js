@@ -34,5 +34,5 @@ export ContentTemplateForm from './widgets/ContentTemplateForm';
 export SDOTable from './widgets/SDOTable';
 export IngestionJobsList from './widgets/IngestionJobsList';
 export IngestionAdapters from './widgets/IngestionAdapters';
-export Scheduler from './widgets/Scheduler';
+export { SchedulerWidget } from './widgets/Scheduler';
 export ProgramInfo from './widgets/ProgramInfo';

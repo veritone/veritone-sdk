@@ -9,12 +9,15 @@ import { guid } from 'helpers/guid';
 import OverlayPositioningProvider from './OverlayPositioningProvider';
 import Overlay from './Overlay';
 
+const types = ['a', 'b', 'c'];
+
 function randomPolyBox() {
   const rand = faker.random.number;
   const options = { min: 0, max: 1, precision: 0.0001 };
 
   return {
     id: guid(),
+    overlayObjectType: faker.random.arrayElement(types),
     boundingPoly: Array(4)
       .fill()
       .map(() => ({
@@ -55,7 +58,8 @@ class Story extends React.Component {
         ...state.boundingBoxes,
         {
           ...newBox,
-          id: guid()
+          id: guid(),
+          overlayObjectType: faker.random.arrayElement(types)
         }
       ]
     }));
@@ -112,9 +116,8 @@ class Story extends React.Component {
             onAddBoundingBox={this.handleAddBoundingBox}
             onDeleteBoundingBox={this.handleDeleteBoundingBox}
             onChangeBoundingBox={this.handleChangeBoundingBox}
-            overlayBackgroundColor={this.props.overlayBackgroundColor}
-            overlayBorderStyle={this.props.overlayBorderStyle}
-            overlayBackgroundBlendMode={this.props.overlayBackgroundBlendMode}
+            stylesByObjectType={this.props.stylesByObjectType}
+            stagedBoundingBoxStyles={this.props.stagedBoundingBoxStyles}
             initialBoundingBoxPolys={this.state.boundingBoxes}
             actionMenuItems={this.actionMenuItems}
             readOnly={this.props.readOnly}
@@ -159,12 +162,11 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
   const contentWidth = number('content width', 320);
   const contentHeight = number('content height', 240);
   const matteSize = number('matte size', 100);
-  const overlayBackgroundColor = text('Overlay background color', '#FF6464');
-  const overlayBorderStyle = text('Overlay border style', '1px solid #fff');
-  const overlayBackgroundBlendMode = text(
-    'Overlay background blend mode',
-    'hard-light'
+  const overlayBackgroundColor = text(
+    'Overlay background color',
+    'rgba(255, 100, 100, 0.5)'
   );
+  const overlayBorderStyle = text('Overlay border style', '1px solid #fff');
   const readOnly = boolean('Read only mode', false);
   const addOnly = boolean('Add only mode', false);
   const autoCommit = boolean('Auto commit mode', false);
@@ -180,9 +182,21 @@ storiesOf('BoundingPolyOverlay', module).add('Base', () => {
         contentWidth={contentWidth}
         matteType={matteType}
         matteSize={matteSize}
-        overlayBackgroundColor={overlayBackgroundColor}
-        overlayBorderStyle={overlayBorderStyle}
-        overlayBackgroundBlendMode={overlayBackgroundBlendMode}
+        stagedBoundingBoxStyles={{
+          backgroundColor: overlayBackgroundColor,
+          border: overlayBorderStyle
+        }}
+        stylesByObjectType={{
+          a: {
+            backgroundColor: 'rgba(40, 95, 255, 0.5)'
+          },
+          b: {
+            backgroundColor: 'rgba(80, 185, 60, 0.5)'
+          },
+          c: {
+            backgroundColor: 'rgba(255, 140, 40, 0.5)'
+          }
+        }}
         readOnly={readOnly}
         addOnly={addOnly}
         autoCommit={autoCommit}

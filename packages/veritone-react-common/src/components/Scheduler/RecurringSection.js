@@ -76,6 +76,7 @@ export default class RecurringSection extends React.Component {
                     component={Checkbox}
                     name={`weekly.selectedDays.${d}`}
                     label={capitalize(d)}
+                    color="primary"
                     disabled={this.props.readOnly}
                   />
                 </div>
@@ -88,6 +89,7 @@ export default class RecurringSection extends React.Component {
             component={Checkbox}
             name="setEndDate"
             label="Set End Date"
+            color="primary"
             disabled={this.props.readOnly}
           />
         </div>

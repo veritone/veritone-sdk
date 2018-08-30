@@ -24,7 +24,7 @@ const mockStore = configureMockStore();
 const testEngine = {
   id: 'testEngineId',
   name: 'Test Engine',
-  signedLogoPath:
+  signedIconPath:
     'https://static.veritone.com/assets/favicon/favicon-32x32.png?v=lkgpRBRLYl',
   category: {
     id: 'testCategoryId',
@@ -256,7 +256,6 @@ describe('EngineConfigItem', () => {
           payload: {
             selectedFileTypes: ['vlf'],
             categoryId: testEngine.category.id,
-            applyAll: false,
             engineId: testEngine.id
           }
         }
@@ -291,7 +290,7 @@ describe('EngineConfigItem', () => {
       expect(wrapper.find(ListItemText).html()).toMatch(/All Engines/);
     });
 
-    it('should call selectFileType with applyAll equal to true when file type is selected', () => {
+    it('should call selectFileType when file type is selected', () => {
       wrapper.find(Select).prop('onChange')({ target: { value: ['vlf'] } });
 
       const actions = store.getActions();
@@ -301,7 +300,7 @@ describe('EngineConfigItem', () => {
           payload: {
             selectedFileTypes: ['vlf'],
             categoryId: testEngine.category.id,
-            applyAll: true
+            engineId: undefined
           }
         }
       ];

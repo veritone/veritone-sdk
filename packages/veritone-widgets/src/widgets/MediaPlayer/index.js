@@ -24,16 +24,14 @@ import { getPolysForTime } from './helpers';
 
 import styles from './styles.scss';
 
-@connect(
-  state => ({
-    videoHeight: state.player.videoHeight,
-    videoWidth: state.player.videoWidth,
-    hasStarted: state.player.hasStarted,
-    isActive: state.player.isActive,
-    currentTime: state.player.currentTime,
-    paused: state.player.paused,
-  })
-)
+@connect(state => ({
+  videoHeight: state.player.videoHeight,
+  videoWidth: state.player.videoWidth,
+  hasStarted: state.player.hasStarted,
+  isActive: state.player.isActive,
+  currentTime: state.player.currentTime,
+  paused: state.player.paused
+}))
 class MediaPlayerComponent extends React.Component {
   static propTypes = {
     src: string,
@@ -49,6 +47,7 @@ class MediaPlayerComponent extends React.Component {
         stopTimeMs: number.isRequired,
         object: shape({
           id: string.isRequired,
+          overlayObjectType: string,
           boundingPoly: arrayOf(
             shape({ x: number.isRequired, y: number.isRequired })
           ).isRequired
@@ -58,9 +57,11 @@ class MediaPlayerComponent extends React.Component {
     onAddBoundingBox: func,
     onDeleteBoundingBox: func,
     onChangeBoundingBox: func,
-    overlayBorderStyle: string,
-    overlayContentClassName: string,
-    reactPlayerClassName: string,
+
+    defaultBoundingBoxStyles: objectOf(any),
+    stagedBoundingBoxStyles: objectOf(any),
+    stylesByObjectType: objectOf(objectOf(any)),
+
     actionMenuItems: arrayOf(
       shape({
         label: string.isRequired,
@@ -93,7 +94,7 @@ class MediaPlayerComponent extends React.Component {
     fluid: true,
     onAddBoundingBox: noop,
     onDeleteBoundingBox: noop,
-    onChangeBoundingBox: noop,
+    onChangeBoundingBox: noop
   };
 
   handleAddBoundingBox = newBox => {
@@ -127,8 +128,6 @@ class MediaPlayerComponent extends React.Component {
             onAddBoundingBox={this.handleAddBoundingBox}
             onDeleteBoundingBox={this.props.onDeleteBoundingBox}
             onChangeBoundingBox={this.props.onChangeBoundingBox}
-            overlayBackgroundColor="rgba(238, 110, 105, 0.5)"
-            overlayBorderStyle={this.props.overlayBorderStyle}
             initialBoundingBoxPolys={
               this.props.boundingPolySeries ? currentPolys : undefined
             }
@@ -136,6 +135,9 @@ class MediaPlayerComponent extends React.Component {
             addOnly={this.props.addOnly}
             readOnly={this.props.readOnly || !this.props.paused}
             autoCommit={this.props.autoCommit}
+            stagedBoundingBoxStyles={props.stagedBoundingBoxStyles}
+            stylesByObjectType={props.stylesByObjectType}
+            defaultBoundingBoxStyles={props.defaultBoundingBoxStyles}
           />
         )}
         <Player
