@@ -61,13 +61,13 @@ export default class MediaPlayerLightbox extends React.Component {
             onChangeBoundingBox={this.handleOnChangeBoundingBox}
           />
           <DefaultControlBar 
-             btnRestart={!live}
-             btnReplay={!live}
-             btnForward={!live}
-             btnPlayToggle={!live}
-             ctrlProgress={!live}
-             displayTime={!live}
-             btnFullscreenToggle={false}
+            btnRestart={!live}
+            btnReplay={!live}
+            btnForward={!live}
+            btnPlayToggle={!live}
+            ctrlProgress={!live}
+            displayTime={!live}
+            btnFullscreenToggle={false}
             playerRef={this.playerRef}
           />
           {live && <div className={styles.liveLabel}>LIVE</div>}

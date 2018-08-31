@@ -41,6 +41,8 @@ class MediaPlayerComponent extends React.Component {
         uri: string
       })
     ),
+    overlayContentClassName: string,
+    reactPlayerClassName: string,
     boundingPolySeries: arrayOf(
       shape({
         startTimeMs: number.isRequired,
