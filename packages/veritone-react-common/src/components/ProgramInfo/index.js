@@ -87,19 +87,7 @@ class ProgramInfo extends React.Component {
     affiliates: arrayOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired,
-        schedule: shape({
-          scheduleType: string,
-          start: string,
-          end: string,
-          repeatEvery: shape({
-            number: string,
-            period: string
-          }),
-          weekly: shape({
-            selectedDays: objectOf(bool)
-          })
-        }).isRequired
+        name: string.isRequired
       })
     ),
     readOnly: bool,

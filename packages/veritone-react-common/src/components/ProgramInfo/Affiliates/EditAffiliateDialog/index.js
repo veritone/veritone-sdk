@@ -6,7 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import { get, mapValues, omit, difference, keys, constant } from 'lodash';
 import { subDays, format } from 'date-fns';
-import { string, func, shape, objectOf, bool } from 'prop-types';
+import { string, func, shape } from 'prop-types';
 import EditAffiliateForm from './EditAffiliateForm.js';
 import styles from './styles.scss';
 
@@ -16,19 +16,7 @@ export default class EditAffiliateDialog extends Component {
   static propTypes = {
     affiliate: shape({
       id: string.isRequired,
-      name: string.isRequired,
-      schedule: shape({
-        scheduleType: string,
-        start: string,
-        end: string,
-        repeatEvery: shape({
-          number: string,
-          period: string
-        }),
-        weekly: shape({
-          selectedDays: objectOf(bool)
-        })
-      }).isRequired
+      name: string.isRequired
     }),
     onSave: func.isRequired,
     onDelete: func,

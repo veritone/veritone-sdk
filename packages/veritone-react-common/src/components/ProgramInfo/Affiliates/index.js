@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import { func, string, arrayOf, shape, bool, objectOf } from 'prop-types';
-import { get, concat, findIndex, reject, differenceBy } from 'lodash';
+import { get, concat, findIndex, reject, intersectionBy, differenceBy } from 'lodash';
 import AffiliateItem from './AffiliateItem';
 import styles from './styles.scss';
 import AffiliateStationsDialog from './AffiliateStationsDialog';
@@ -31,19 +31,7 @@ export default class Affiliates extends React.Component {
     affiliates: arrayOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired,
-        schedule: shape({
-          scheduleType: string,
-          start: string,
-          end: string,
-          repeatEvery: shape({
-            number: string,
-            period: string
-          }),
-          weekly: shape({
-            selectedDays: objectOf(bool)
-          })
-        }).isRequired
+        name: string.isRequired
       })
     ),
     onAffiliatesChange: func.isRequired,
@@ -96,6 +84,27 @@ export default class Affiliates extends React.Component {
     this.props.onAffiliatesChange(
       concat(this.props.selectedAffiliates, newAffiliate)
     );
+  };
+
+  handleBulkAddAffiliates = newAffiliates => {
+    this.closeBulkAddAffiliateDialog();
+    const result = [];
+    // TODO: optimize this by using affiliates map as a component and callback inputs.
+    const affiliatesToKeep = differenceBy(this.props.selectedAffiliates, newAffiliates, 'id');
+    affiliatesToKeep.forEach(affiliate => result.push(affiliate));
+    const affiliatesToMerge = intersectionBy(newAffiliates, this.props.selectedAffiliates, 'id');
+    affiliatesToMerge.forEach(affiliate => {
+      const index = findIndex(this.props.selectedAffiliates, { id: affiliate.id });
+      const mergedAffiliate = {
+        ...affiliate
+      };
+      mergedAffiliate.schedule.start = this.props.selectedAffiliates[index].schedule.start;
+      mergedAffiliate.schedule.end = this.props.selectedAffiliates[index].schedule.end;
+      result.push(mergedAffiliate);
+    });
+    const affiliatesToAdd = differenceBy(newAffiliates, this.props.selectedAffiliates, 'id');
+    affiliatesToAdd.forEach(affiliate => result.push(affiliate));
+    this.props.onAffiliatesChange(result);
   };
 
   handleEditAffiliate = newAffiliate => {
@@ -190,11 +199,10 @@ export default class Affiliates extends React.Component {
           />
         )}
         {isBulkAddAffiliateDialogOpen && (
-          /* Bulk adding affiliates should add and|or override affiliate schedule */
           <BulkAddAffiliatesDialog
             affiliates={affiliates}
             onClose={this.closeBulkAddAffiliateDialog}
-            onAdd={this.openBulkAddAffiliateDialog}
+            onAdd={this.handleBulkAddAffiliates}
           />
         )}
       </div>

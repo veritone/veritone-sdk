@@ -4,19 +4,21 @@ import { action } from '@storybook/addon-actions';
 
 import Affiliates from './';
 
-const generateAffiliates = function(n) {
+const generateAffiliates = function(n, setSchedule) {
   const result = [];
   for (let i = 1; i <= n; i++) {
-    result.push({
+    const affiliate = {
       id: String(i),
-      name: 'Affiliate Station ' + i,
-      schedule: {
+      name: 'Affiliate Station ' + i
+    };
+    if (setSchedule) {
+      affiliate.schedule = {
         scheduleType: 'Recurring',
-        start: '2018-04-14T19:48:25.147Z',
-        end: '2018-04-17T19:48:25.147Z',
-        repeatEvery: {
+          start: '2018-04-14T19:48:25.147Z',
+          end: '2018-04-17T19:48:25.147Z',
+          repeatEvery: {
           number: '1',
-          period: 'week'
+            period: 'week'
         },
         weekly: {
           Wednesday: [
@@ -25,7 +27,7 @@ const generateAffiliates = function(n) {
               end: '17:21'
             }
           ],
-          Thursday: [
+            Thursday: [
             {
               start: '12:33',
               end: '03:21'
@@ -35,13 +37,14 @@ const generateAffiliates = function(n) {
               end: '01:00'
             }
           ],
-          selectedDays: {
+            selectedDays: {
             Wednesday: true,
-            Thursday: true
+              Thursday: true
           }
         }
-      }
-    });
+      };
+    }
+    result.push(affiliate);
   }
   return result;
 };
@@ -50,7 +53,7 @@ storiesOf('Affiliates', module)
   .add('Base', () => (
     <Affiliates
       affiliates={generateAffiliates(51)}
-      selectedAffiliates={generateAffiliates(11)}
+      selectedAffiliates={generateAffiliates(11, true)}
       onAffiliateChange={action('onAffiliateChange')}
       canBulkAddAffiliates
     />

@@ -13,7 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { debounce, get } from 'lodash';
-import { string, arrayOf, func, shape, objectOf, bool } from 'prop-types';
+import { string, arrayOf, func, shape } from 'prop-types';
 import EditAffiliateDialog from '../EditAffiliateDialog';
 import styles from './styles.scss';
 
@@ -22,19 +22,7 @@ export default class AffiliateStationsDialog extends Component {
     affiliates: arrayOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired,
-        schedule: shape({
-          scheduleType: string,
-          start: string,
-          end: string,
-          repeatEvery: shape({
-            number: string,
-            period: string
-          }),
-          weekly: shape({
-            selectedDays: objectOf(bool)
-          })
-        }).isRequired
+        name: string.isRequired
       })
     ),
     onAdd: func,
