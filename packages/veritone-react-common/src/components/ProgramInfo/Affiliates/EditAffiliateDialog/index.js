@@ -5,7 +5,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import { get, mapValues, omit, difference, keys, constant } from 'lodash';
-import { subDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { string, func, shape } from 'prop-types';
 import EditAffiliateForm from './EditAffiliateForm.js';
 import styles from './styles.scss';
@@ -40,9 +40,6 @@ export default class EditAffiliateDialog extends Component {
         ),
         start: get(this.props.affiliate.schedule, 'start')
           ? format(new Date(this.props.affiliate.schedule.start), 'YYYY-MM-DD')
-          : format(subDays(initDate, 3), 'YYYY-MM-DD'),
-        end: get(this.props.affiliate.schedule, 'end')
-          ? format(new Date(this.props.affiliate.schedule.end), 'YYYY-MM-DD')
           : format(initDate, 'YYYY-MM-DD'),
         repeatEvery: {
           number: '1',

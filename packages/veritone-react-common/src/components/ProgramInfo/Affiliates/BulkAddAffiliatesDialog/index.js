@@ -50,6 +50,19 @@ export default class BulkAddAffiliatesDialog extends Component {
   };
 
   csvToAffiliateSchedulesMap = csvContent => {
+    /* TODO: handle usecases like
+      W/ W/o CSV header:
+        KXIA-FM	MF12M5:30A+SAT12M6A+SUN12M5A/1
+        KBFM-FM	SAT6A10A/1
+                MFSA12M6A+SUN12M5A/1
+                MS12M6A/1
+                SS9P5A/1
+                SUN10P3A/1
+                MF10A12N+MF1P2P/1
+                MF10A12N/1
+                MF12N3P/1
+                "Th2P4P,Su10A12P"
+     */
     const scheduleByLowerCaseAffiliateName = {};
     const allLines = csvContent.split(/\r\n|\n/);
     allLines.forEach(csvLine => {

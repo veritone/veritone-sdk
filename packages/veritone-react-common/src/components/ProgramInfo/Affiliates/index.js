@@ -109,6 +109,12 @@ export default class Affiliates extends React.Component {
 
   handleEditAffiliate = newAffiliate => {
     this.closeEditAffiliateDialog();
+    for(let selectedDay in Object.keys(get(newAffiliate, 'schedule.weekly.selectedDays', {}))) {
+      if (newAffiliate.schedule.weekly.selectedDays[selectedDay]) {
+        delete newAffiliate.schedule.weekly.selectedDays[selectedDay];
+        delete newAffiliate.schedule.weekly[selectedDay];
+      }
+    }
     const newAffiliates = [...this.props.selectedAffiliates];
     const affiliateIndex = findIndex(newAffiliates, { id: newAffiliate.id });
     if (affiliateIndex >= 0) {

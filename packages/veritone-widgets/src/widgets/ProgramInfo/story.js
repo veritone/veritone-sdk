@@ -26,13 +26,15 @@ const generateOrganizations = function(n) {
   return organizations;
 };
 
-const generateAffiliates = function(n) {
+const generateAffiliates = function(n, setSchedule) {
   const result = [];
   for (let i = 1; i <= n; i++) {
-    result.push({
+    const affiliate = {
       id: String(i),
-      name: 'Affiliate Station ' + i,
-      schedule: {
+      name: 'Affiliate Station ' + i
+    };
+    if (setSchedule) {
+      affiliate.schedule = {
         scheduleType: 'Recurring',
         start: '2018-04-14T19:48:25.147Z',
         end: '2018-04-17T19:48:25.147Z',
@@ -62,8 +64,9 @@ const generateAffiliates = function(n) {
             Thursday: true
           }
         }
-      }
-    });
+      };
+    }
+    result.push(affiliate);
   }
   return result;
 };
@@ -132,7 +135,7 @@ class FullDataStory extends React.Component {
         isNational: true,
         acls: generateAcls(11, 'viewer'),
         isPublic: false,
-        affiliates: generateAffiliates(11)
+        affiliates: generateAffiliates(11, true)
       },
       programFormats: ['live', 'recorded'],
       organizations: generateOrganizations(21),
