@@ -240,7 +240,7 @@ class NoProgramDataStory extends React.Component {
               canBulkAddAffiliates
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(21)}
+              affiliates={generateAffiliates(51)}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>

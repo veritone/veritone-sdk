@@ -2,13 +2,14 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import AffiliateItem from './';
+import BulkAddAffiliatesDialog from './';
 
-storiesOf('Affiliate Item', module).add('With Daily schedule', () => (
-  <AffiliateItem
-    affiliate={{
-      id: 'stationId',
-      name: 'Affiliate Station with a very long name',
+const generateAffiliates = function(n) {
+  const result = [];
+  for (let i = 1; i <= n; i++) {
+    result.push({
+      id: String(i),
+      name: 'Affiliate Station ' + i,
       schedule: {
         scheduleType: 'Recurring',
         start: '2018-04-14T19:48:25.147Z',
@@ -40,8 +41,15 @@ storiesOf('Affiliate Item', module).add('With Daily schedule', () => (
           }
         }
       }
-    }}
-    onDelete={action('onAffiliateDelete')}
-    onEdit={action('onAffiliateChange')}
+    });
+  }
+  return result;
+};
+
+storiesOf('Bulk Add Affiliates Dialog', module).add('Base', () => (
+  <BulkAddAffiliatesDialog
+    affiliates={generateAffiliates(51)}
+    onAdd={action('onAdd')}
+    onClose={action('onClose')}
   />
 ));

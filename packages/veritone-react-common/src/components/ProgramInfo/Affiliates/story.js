@@ -49,7 +49,7 @@ const generateAffiliates = function(n) {
 storiesOf('Affiliates', module)
   .add('Base', () => (
     <Affiliates
-      affiliates={generateAffiliates(21)}
+      affiliates={generateAffiliates(51)}
       selectedAffiliates={generateAffiliates(11)}
       onAffiliateChange={action('onAffiliateChange')}
       canBulkAddAffiliates
@@ -57,7 +57,7 @@ storiesOf('Affiliates', module)
   ))
   .add('No Initial Affiliates', () => (
     <Affiliates
-      affiliates={generateAffiliates(21)}
+      affiliates={generateAffiliates(51)}
       onAffiliateChange={action('onAffiliateChange')}
       canBulkAddAffiliates
     />

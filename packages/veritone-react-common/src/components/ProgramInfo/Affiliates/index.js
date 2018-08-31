@@ -6,6 +6,7 @@ import AffiliateItem from './AffiliateItem';
 import styles from './styles.scss';
 import AffiliateStationsDialog from './AffiliateStationsDialog';
 import EditAffiliateDialog from './EditAffiliateDialog';
+import BulkAddAffiliatesDialog from './BulkAddAffiliatesDialog';
 
 export default class Affiliates extends React.Component {
   static propTypes = {
@@ -123,7 +124,7 @@ export default class Affiliates extends React.Component {
 
   render() {
     const { selectedAffiliates, canBulkAddAffiliates, affiliates } = this.props;
-    const { isAffiliateStationsDialogOpen, affiliateToEdit } = this.state;
+    const { isAffiliateStationsDialogOpen, isBulkAddAffiliateDialogOpen, affiliateToEdit } = this.state;
 
     return (
       <div className={styles.affiliatesContainer}>
@@ -186,6 +187,14 @@ export default class Affiliates extends React.Component {
             onClose={this.closeEditAffiliateDialog}
             onSave={this.handleEditAffiliate}
             onDelete={this.handleDeleteEditedAffiliate}
+          />
+        )}
+        {isBulkAddAffiliateDialogOpen && (
+          /* Bulk adding affiliates should add and|or override affiliate schedule */
+          <BulkAddAffiliatesDialog
+            affiliates={affiliates}
+            onClose={this.closeBulkAddAffiliateDialog}
+            onAdd={this.openBulkAddAffiliateDialog}
           />
         )}
       </div>

@@ -50,5 +50,6 @@ storiesOf('Affiliate Stations Dialog', module).add('Base', () => (
   <AffiliateStationsDialog
     affiliates={generateAffiliates(51)}
     onAdd={action('onAdd')}
+    onClose={action('onClose')}
   />
 ));
