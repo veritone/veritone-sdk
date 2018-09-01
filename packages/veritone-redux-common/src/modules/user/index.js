@@ -6,12 +6,35 @@ import {
 } from 'veritone-functional-permissions';
 
 import { commonHeaders, getCredentialsMode } from 'helpers/api';
-import { createReducer } from 'helpers/redux';
+import callGraphQLApi from 'helpers/api/callGraphQLApi';
+import { createReducer, reduceReducers } from 'helpers/redux';
+import handleApiCall from 'helpers/redux/handleApiCall';
 import { getConfig } from 'modules/config';
 import { selectSessionToken } from 'modules/auth';
 
 import * as constants from './constants';
 export const namespace = 'user';
+
+const {
+  reducer: resetUserPasswordReducer,
+  selectors: {
+    isFetching: resetUserPasswordIsFetching,
+    fetchingFailed: resetUserPasswordFailed,
+    fetchingFailureMessage: resetUserPasswordFailureMessage
+  }
+} = handleApiCall({
+  types: [
+    constants.RESET_USER_PASSWORD,
+    constants.RESET_USER_PASSWORD_SUCCESS,
+    constants.RESET_USER_PASSWORD_FAILURE
+  ]
+});
+
+export {
+  resetUserPasswordIsFetching,
+  resetUserPasswordFailed,
+  resetUserPasswordFailureMessage
+};
 
 const defaultState = {
   user: {},
@@ -29,143 +52,146 @@ const defaultState = {
   enabledApps: []
 };
 
-const reducer = createReducer(defaultState, {
-  [constants.FETCH_USER](state, action) {
-    const requestSuccessState = {
-      ...state,
-      isFetching: true,
-      fetchingFailed: false
-    };
+const reducer = reduceReducers(
+  resetUserPasswordReducer,
+  createReducer(defaultState, {
+    [constants.FETCH_USER](state, action) {
+      const requestSuccessState = {
+        ...state,
+        isFetching: true,
+        fetchingFailed: false
+      };
 
-    return action.error
-      ? // handle requestError ie. offline
-        this[constants.FETCH_USER_FAILURE](state, action)
-      : requestSuccessState;
-  },
+      return action.error
+        ? // handle requestError ie. offline
+          this[constants.FETCH_USER_FAILURE](state, action)
+        : requestSuccessState;
+    },
 
-  [constants.FETCH_USER_SUCCESS](state, action) {
-    return {
-      ...state,
-      isFetching: false,
-      fetchingFailed: false,
-      user: action.payload
-    };
-  },
+    [constants.FETCH_USER_SUCCESS](state, action) {
+      return {
+        ...state,
+        isFetching: false,
+        fetchingFailed: false,
+        user: action.payload
+      };
+    },
 
-  [constants.FETCH_USER_FAILURE](state, action) {
-    return {
-      ...state,
-      isFetching: false,
-      fetchingFailed: true,
-      user: {}
-    };
-  },
+    [constants.FETCH_USER_FAILURE](state, action) {
+      return {
+        ...state,
+        isFetching: false,
+        fetchingFailed: true,
+        user: {}
+      };
+    },
 
-  [constants.LOGIN](state, action) {
-    const requestSuccessState = {
-      ...state,
-      isLoggingIn: true,
-      loginFailed: false,
-      loginFailureMessage: null
-    };
+    [constants.LOGIN](state, action) {
+      const requestSuccessState = {
+        ...state,
+        isLoggingIn: true,
+        loginFailed: false,
+        loginFailureMessage: null
+      };
 
-    return action.error
-      ? this[constants.LOGIN_FAILURE](state, action)
-      : requestSuccessState;
-  },
+      return action.error
+        ? this[constants.LOGIN_FAILURE](state, action)
+        : requestSuccessState;
+    },
 
-  [constants.LOGIN_SUCCESS](state, action) {
-    return {
-      ...state,
-      isLoggingIn: false,
-      loginFailed: false,
-      user: action.payload,
-      loginFailureMessage: null
-    };
-  },
+    [constants.LOGIN_SUCCESS](state, action) {
+      return {
+        ...state,
+        isLoggingIn: false,
+        loginFailed: false,
+        user: action.payload,
+        loginFailureMessage: null
+      };
+    },
 
-  [constants.LOGIN_FAILURE](state, action) {
-    const statusErrors = {
-      404: "Couldn't login, please double check your username and password.",
-      default: "Couldn't login, please try again."
-    };
+    [constants.LOGIN_FAILURE](state, action) {
+      const statusErrors = {
+        404: "Couldn't login, please double check your username and password.",
+        default: "Couldn't login, please try again."
+      };
 
-    const failureMessage =
-      action.payload.name === 'ApiError'
-        ? statusErrors[action.payload.status] || statusErrors.default
-        : action.payload.name === 'RequestError'
-          ? 'There was an error while logging in, please try again.'
-          : statusErrors.default;
+      const failureMessage =
+        action.payload.name === 'ApiError'
+          ? statusErrors[action.payload.status] || statusErrors.default
+          : action.payload.name === 'RequestError'
+            ? 'There was an error while logging in, please try again.'
+            : statusErrors.default;
 
-    return {
-      ...state,
-      isLoggingIn: false,
-      loginFailed: true,
-      loginFailureMessage: failureMessage,
-      user: {}
-    };
-  },
+      return {
+        ...state,
+        isLoggingIn: false,
+        loginFailed: true,
+        loginFailureMessage: failureMessage,
+        user: {}
+      };
+    },
 
-  [constants.LOGOUT_SUCCESS](state) {
-    return {
-      ...state,
-      user: {}
-    };
-  },
+    [constants.LOGOUT_SUCCESS](state) {
+      return {
+        ...state,
+        user: {}
+      };
+    },
 
-  [constants.FETCH_USER_APPLICATIONS](state, action) {
-    const requestSuccessState = {
-      ...state,
-      isFetchingApplications: true,
-      fetchApplicationsFailed: false,
-      fetchApplicationsFailureMessage: null,
-      enabledApps: []
-    };
+    [constants.FETCH_USER_APPLICATIONS](state, action) {
+      const requestSuccessState = {
+        ...state,
+        isFetchingApplications: true,
+        fetchApplicationsFailed: false,
+        fetchApplicationsFailureMessage: null,
+        enabledApps: []
+      };
 
-    return action.error
-      ? this[constants.FETCH_USER_APPLICATIONS_FAILURE](state, action)
-      : requestSuccessState;
-  },
+      return action.error
+        ? this[constants.FETCH_USER_APPLICATIONS_FAILURE](state, action)
+        : requestSuccessState;
+    },
 
-  [constants.FETCH_USER_APPLICATIONS_SUCCESS](state, action) {
-    return {
-      ...state,
-      isFetchingApplications: false,
-      fetchApplicationsFailed: false,
-      enabledApps: action.payload.results,
-      fetchApplicationsFailureMessage: null
-    };
-  },
+    [constants.FETCH_USER_APPLICATIONS_SUCCESS](state, action) {
+      return {
+        ...state,
+        isFetchingApplications: false,
+        fetchApplicationsFailed: false,
+        enabledApps: action.payload.results,
+        fetchApplicationsFailureMessage: null
+      };
+    },
 
-  [constants.FETCH_USER_APPLICATIONS_FAILURE](state, action) {
-    const statusErrors = {
-      404: "Couldn't get application list.",
-      default: "Couldn't get application list. Please login."
-    };
+    [constants.FETCH_USER_APPLICATIONS_FAILURE](state, action) {
+      const statusErrors = {
+        404: "Couldn't get application list.",
+        default: "Couldn't get application list. Please login."
+      };
 
-    const failureMessage =
-      action.payload.name === 'ApiError'
-        ? statusErrors[action.payload.status] || statusErrors.default
-        : action.payload.name === 'RequestError'
-          ? 'There was an error when fetching application list, please try again.'
-          : statusErrors.default;
+      const failureMessage =
+        action.payload.name === 'ApiError'
+          ? statusErrors[action.payload.status] || statusErrors.default
+          : action.payload.name === 'RequestError'
+            ? 'There was an error when fetching application list, please try again.'
+            : statusErrors.default;
 
-    return {
-      ...state,
-      isFetchingApplications: false,
-      fetchApplicationsFailed: true,
-      fetchApplicationsFailureMessage: failureMessage,
-      enabledApps: []
-    };
-  },
+      return {
+        ...state,
+        isFetchingApplications: false,
+        fetchApplicationsFailed: true,
+        fetchApplicationsFailureMessage: failureMessage,
+        enabledApps: []
+      };
+    },
 
-  [constants.REFRESH_TOKEN_SUCCESS](state, action) {
-    return {
-      ...state,
-      user: action.payload
-    };
-  }
-});
+    [constants.REFRESH_TOKEN_SUCCESS](state, action) {
+      return {
+        ...state,
+        user: action.payload
+      };
+    }
+  })
+);
 
 export default reducer;
 
@@ -261,6 +287,32 @@ export function fetchEnabledApps() {
     }
   };
 }
+
+export const resetUserPassword = email => (dispatch, getState) => {
+  const query = `
+    mutation updateUser($email: String!) {
+      createPasswordResetRequest(input: { userName: $email }) {
+        message
+      }
+    }
+  `;
+
+  const emailToReset = email || selectUser(getState()).email;
+
+  return callGraphQLApi({
+    actionTypes: [
+      constants.RESET_USER_PASSWORD,
+      constants.RESET_USER_PASSWORD_SUCCESS,
+      constants.RESET_USER_PASSWORD_FAILURE
+    ],
+    query,
+    variables: {
+      email: emailToReset
+    },
+    dispatch,
+    getState
+  });
+};
 
 export function isLoggingIn(state) {
   return local(state).isLoggingIn;

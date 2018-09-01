@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { startCase } from 'lodash';
 import { string, func, bool } from 'prop-types';
 import { withProps } from 'recompose';
-import { reduxForm, reset } from 'redux-form';
+import { reduxForm, reset as resetForm } from 'redux-form';
 
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
@@ -14,6 +14,11 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 
 import { Avatar } from 'veritone-react-common';
+import { modules } from 'veritone-redux-common';
+const {
+  user: { resetUserPassword, fetchUser }
+} = modules;
+import { showNotification } from '../../redux/modules/notifications';
 import PersonalInfoField from './PersonalInfoField';
 import PasswordField from './PasswordField';
 import ChangeNameModal from './Modals/ChangeName';
@@ -21,7 +26,7 @@ import ResetPasswordModal from './Modals/ResetPassword';
 
 import styles from './styles.scss';
 
-@connect(null, { reset })
+@connect(null, { resetForm, resetUserPassword, fetchUser, showNotification })
 @withProps(props => ({
   initialValues: {
     firstName: props.firstName,
@@ -39,7 +44,10 @@ export class UserProfile extends React.Component {
     email: string.isRequired,
     imageUrl: string,
     passwordUpdatedDateTime: string,
-    reset: func.isRequired
+    resetForm: func.isRequired,
+    resetUserPassword: func.isRequired,
+    showNotification: func.isRequired,
+    fetchUser: func.isRequired
   };
 
   static defaultProps = {
@@ -76,7 +84,7 @@ export class UserProfile extends React.Component {
 
   cancelChanges = () => {
     this.closeModal();
-    this.props.reset();
+    this.props.resetForm();
   };
 
   confirmChanges = () => {
@@ -84,7 +92,18 @@ export class UserProfile extends React.Component {
   };
 
   handleResetPassword = () => {
-    console.log('reset password');
+    this.props
+      .resetUserPassword()
+      .then(() => this.afterChange('Password reset email was sent.'))
+      .catch(() =>
+        this.afterChange('Password reset failed. Please try again.')
+      );
+  };
+
+  afterChange = message => {
+    this.props.fetchUser();
+    this.props.showNotification(message);
+    this.closeModal();
   };
 
   getUserFullName = () => {

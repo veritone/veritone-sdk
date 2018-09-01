@@ -12,6 +12,10 @@ const { user } = modules;
 import VeritoneApp from './VeritoneApp';
 import devConfig from '../../config.dev.json';
 import { OAuthLoginButtonWidget } from '../widgets/OAuthLoginButton';
+import {
+  GlobalSnackBar,
+  GlobalNotificationDialog
+} from '../widgets/Notifications';
 
 const app = VeritoneApp();
 
@@ -163,6 +167,9 @@ export default class BaseStory extends React.Component {
                 </p>
               </div>
             )}
+
+            <GlobalNotificationDialog />
+            <GlobalSnackBar />
           </AppContainer>
         </div>
       </Provider>
