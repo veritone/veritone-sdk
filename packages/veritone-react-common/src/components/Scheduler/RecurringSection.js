@@ -33,6 +33,7 @@ export default class RecurringSection extends React.Component {
       number: string.isRequired,
       period: string.isRequired
     }).isRequired,
+    setEndDate: bool,
     readOnly: bool
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { oneOf, func, number, string, arrayOf, bool } from 'prop-types';
+import { oneOf, func, arrayOf, bool } from 'prop-types';
 import { reduxForm, Field, formValues, Form } from 'redux-form';
 import {
   noop,
@@ -11,10 +11,8 @@ import {
   difference,
   keys,
   constant,
-  includes,
   findIndex,
-  intersection,
-  some
+  intersection
 } from 'lodash';
 import { withProps } from 'recompose';
 import FormControlLabel from '@material-ui/core/FormControlLabel';

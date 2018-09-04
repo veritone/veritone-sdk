@@ -1,6 +1,5 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { noop } from 'lodash';
 import InfiniteDropdownMenu from 'components/InfiniteDropdownMenu';
 
 const fakeStaticOptions = [{
@@ -15,7 +14,7 @@ const fakeStaticOptions = [{
 }];
 
 const getFieldOptions = query => {
-  console.log('Executed Query: ' + query);
+  console.log('Executed Query');
   return Promise.resolve(fakeStaticOptions);
 };
 
@@ -55,6 +54,7 @@ storiesOf('InfiniteDropdownMenu', module)
     <InfiniteDropdownMenu
       label="Dynamic List"
       handleSelectionChange={logData}
+      loadNextPage={getFieldOptions}
     />
   ))
   .add('Custom Trigger', () => (

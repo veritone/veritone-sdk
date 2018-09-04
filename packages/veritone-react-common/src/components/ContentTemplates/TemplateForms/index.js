@@ -1,9 +1,6 @@
 import React from 'react';
 import { string, shape, any, arrayOf, objectOf, func, bool } from 'prop-types';
 import { isObject, compact, cloneDeep, isArray, includes, isUndefined, get } from 'lodash';
-import AddIcon from '@material-ui/icons/Add';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
 
 import SourceTypeField from 'components/SourceTypeField';
 import FormCard from '../FormCard';
@@ -147,7 +144,7 @@ export default class TemplateForms extends React.Component {
   };
 
   render() {
-    const { templates, ...rest } = this.props;
+    const { templates } = this.props;
 
     return (
       <div className={styles.formsContainer}>
@@ -156,7 +153,7 @@ export default class TemplateForms extends React.Component {
           const requiredProps = template.definition.required || [];
           const formFields = Object.keys(schemaProps).map(
             schemaProp => {
-              const { type, items } = schemaProps[schemaProp];
+              const { type } = schemaProps[schemaProp];
               const required = includes(requiredProps, schemaProp);
               const enums = (!isUndefined(schemaProps[schemaProp].enum) && get(schemaProps[schemaProp], 'enumNames.length') === get(schemaProps[schemaProp], 'enum.length')) ?
                 schemaProps[schemaProp].enum.map((value, index) => {

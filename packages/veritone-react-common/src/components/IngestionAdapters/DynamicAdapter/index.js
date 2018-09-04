@@ -79,6 +79,7 @@ class DynamicAdapter extends React.Component {
     if (newState.sourceId) {
       this.props.populateSelectedSource(newState.sourceId).then(source => {
         this.insertAndSelectSource(source);
+        return source;
       });
     }
   }

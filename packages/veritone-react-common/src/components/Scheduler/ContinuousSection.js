@@ -1,9 +1,7 @@
 import React, { Fragment } from 'react';
-import { formValues, Field } from 'redux-form';
 import { bool } from 'prop-types';
 
 import DateTimeSelector from './DateTimeSelector';
-import Checkbox from '../formComponents/Checkbox';
 import styles from './styles.scss';
 
 export default class ContinuousSection extends React.Component {

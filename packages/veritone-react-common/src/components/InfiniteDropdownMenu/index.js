@@ -28,7 +28,7 @@ export default class InfiniteDropdownMenu extends React.Component {
     loadNextPage: func,
     hasNextPage: bool,
     isNextPageLoading: bool,
-    multiple: bool,
+    multiple: bool,   // Don't use this... it's not completely flushed out
     items: arrayOf(
       shape({
         id: oneOfType([string, number]),
@@ -297,5 +297,6 @@ ItemSelector.propTypes = {
     trigger: func.isRequired
   })),
   openCustomTrigger: func,
+  multiple: bool,
   readOnly: bool
 };
