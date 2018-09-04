@@ -18,6 +18,7 @@ export default class MediaPlayerLightbox extends React.Component {
     ),
     live: bool,
     open: bool,
+    autoPlay: bool,
     fullscreen: bool,
     onClose: func,
     readOnly: bool,
@@ -30,6 +31,14 @@ export default class MediaPlayerLightbox extends React.Component {
     fullscreen: true,
     readOnly: true
   };
+  
+  componentDidMount() {
+    if (this.props.autoPlay) {
+      setTimeout(() => {
+        (this.playerRef) && this.playerRef.current.actions.play();
+      });
+    }
+  }
 
   playerRef = React.createRef();
 
@@ -61,13 +70,13 @@ export default class MediaPlayerLightbox extends React.Component {
             onChangeBoundingBox={this.handleOnChangeBoundingBox}
           />
           <DefaultControlBar 
-             btnRestart={!live}
-             btnReplay={!live}
-             btnForward={!live}
-             btnPlayToggle={!live}
-             ctrlProgress={!live}
-             displayTime={!live}
-             btnFullscreenToggle={false}
+            btnRestart={!live}
+            btnReplay={!live}
+            btnForward={!live}
+            btnPlayToggle={!live}
+            ctrlProgress={!live}
+            displayTime={!live}
+            btnFullscreenToggle={false}
             playerRef={this.playerRef}
           />
           {live && <div className={styles.liveLabel}>LIVE</div>}

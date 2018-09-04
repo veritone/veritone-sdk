@@ -69,6 +69,12 @@ export default class VideoSource extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    if (this.player) {
+      this.player.unload();
+    }
+  }
+
   getStreamUri(streams, protocol) {
     const stream = find(streams, { protocol });
     return get(stream, 'uri');
