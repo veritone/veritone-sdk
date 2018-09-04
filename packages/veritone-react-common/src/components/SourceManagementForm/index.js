@@ -246,42 +246,48 @@ export default class SourceManagementForm extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const sourceTypeId = this.state.sourceConfig.sourceTypeId;
-    const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === sourceTypeId);
-    const schemaProps = get(selectedSourceType, 'sourceSchema.definition.properties');
-    const formDirtyStates = Object.keys(schemaProps || []).reduce((acc, curVal) => {
-      acc[curVal] = true;
-      return acc;
-    }, {});
-    // Determine if any required fields are undefined and prevent submission if invalid
-    const formValues = this.state.sourceConfig.details;
-    const requiredFields = get(selectedSourceType, 'sourceSchema.definition.required') || [];
     let isValidForm = true;
-    requiredFields.forEach(requiredField => {
-      const value = formValues[requiredField];
-      if (isUndefined(value) || value === '') {
-        isValidForm = false;
-      }
-    });
-    // Also determine if contentTemplates had any invalid inputs
-    const resultTemplates = cloneDeep(this.state.contentTemplates);
-    resultTemplates.forEach(template => {
-      template.dirtyState = {};
-      if (template.definition) {
-        const requiredCTFields = template.definition.required || [];
-        if (template.definition.properties) {
-          Object.keys(template.definition.properties).reduce((acc, cur) => {
-            const isRequiredInput = requiredCTFields.some(field => field === cur);
-            if (isRequiredInput && isUndefined(template.data[cur])) {
-              isValidForm = false;
-            }
-            acc[cur] = true;
-            return acc;
-          }, template.dirtyState);
+    let resultTemplates = [];
+    this.setState(prevState => {
+      const sourceTypeId = prevState.sourceConfig.sourceTypeId;
+      const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === sourceTypeId);
+      const schemaProps = get(selectedSourceType, 'sourceSchema.definition.properties');
+      const formDirtyStates = Object.keys(schemaProps || []).reduce((acc, curVal) => {
+        acc[curVal] = true;
+        return acc;
+      }, {});
+      // Determine if any required fields are undefined and prevent submission if invalid
+      const formValues = prevState.sourceConfig.details;
+      const requiredFields = get(selectedSourceType, 'sourceSchema.definition.required') || [];
+      requiredFields.forEach(requiredField => {
+        const value = formValues[requiredField];
+        if (isUndefined(value) || value === '') {
+          isValidForm = false;
         }
-      }
-    });
-    this.setState({ formDirtyStates, contentTemplates: resultTemplates }, () => {
+      });
+      // Also determine if contentTemplates had any invalid inputs
+      resultTemplates = cloneDeep(prevState.contentTemplates) || resultTemplates;
+      resultTemplates.forEach(template => {
+        template.dirtyState = {};
+        if (template.definition) {
+          const requiredCTFields = template.definition.required || [];
+          if (template.definition.properties) {
+            Object.keys(template.definition.properties).reduce((acc, cur) => {
+              const isRequiredInput = requiredCTFields.some(field => field === cur);
+              if (isRequiredInput && isUndefined(template.data[cur])) {
+                isValidForm = false;
+              }
+              acc[cur] = true;
+              return acc;
+            }, template.dirtyState);
+          }
+        }
+      });
+      return {
+        formDirtyStates,
+        contentTemplates: resultTemplates
+      };
+    }, () => {
       if (isValidForm) {
         const cloneCTs = cloneDeep(resultTemplates);
         cloneCTs.forEach(template => delete template.guid);
