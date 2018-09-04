@@ -50,7 +50,7 @@ export default class SelectAclGroupDialog extends Component {
   };
 
   onSearchTextChange = event => {
-    const searchText = event.target.value ? event.target.value : '';
+    const searchText = event.target.value;
     this.setState({
       searchText: searchText,
       page: 0

@@ -28,6 +28,7 @@ export ProgressDialog from './components/ProgressDialog';
 export * as formComponents from './components/formComponents';
 export video from './components/Video';
 export MediaPlayer from './components/Video/MediaPlayer';
+export Lightbox from './components/share-components/Lightbox';
 export AppContainer from './components/AppContainer';
 
 export RefreshButton from './components/RefreshButton';
@@ -85,5 +86,4 @@ export ContentTemplate from './components/ContentTemplates';
 export SourceManagementForm from './components/SourceManagementForm';
 export * as SourceManagement from './components/SourceManagement';
 export { Interval, defaultIntervals } from 'helpers/date';
-
 export SharingConfiguration from './components/SharingConfiguration';

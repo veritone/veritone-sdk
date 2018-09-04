@@ -20,8 +20,17 @@ export default class DateTimePicker extends React.Component {
   };
 
   handleDateChange = ({ target }) => {
+    const newDate = target.value;
+
+    if (
+      !dateFns.isValid(new Date(newDate)) ||
+      dateFns.getYear(newDate) > 9999
+    ) {
+      return;
+    }
+
     this.props.input.onChange(
-      consolidate(target.value, getTimeString(this.props.input.value))
+      consolidate(newDate, getTimeString(this.props.input.value))
     );
   };
 

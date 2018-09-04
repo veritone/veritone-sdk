@@ -33,6 +33,7 @@ class DynamicAdapter extends React.Component {
     openCreateSource: func.isRequired,
     loadNextSources: func.isRequired,
     loadNextClusters: func.isRequired,
+    populateSelectedSource: func,
     pageSize: number,
     readOnly: bool
   };
@@ -56,7 +57,7 @@ class DynamicAdapter extends React.Component {
     const newState = {
       sourceId: get(this.props, 'configuration.sourceId'),
       clusterId: get(this.props, 'configuration.clusterId'),
-      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 180
+      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 60
     };
     if (isArray(fields)) {
       fields.forEach(field => {
@@ -75,6 +76,12 @@ class DynamicAdapter extends React.Component {
       });
     }
     this.setState(newState, this.sendConfiguration);
+    if (newState.sourceId) {
+      this.props.populateSelectedSource(newState.sourceId).then(source => {
+        this.insertAndSelectSource(source);
+        return source;
+      });
+    }
   }
 
   sendConfiguration = () => {
@@ -147,11 +154,12 @@ class DynamicAdapter extends React.Component {
       });
     });
     return this.props.loadNextSources({startIndex, stopIndex}).then(nextPage => {
+      const hasPreselectedSource = this.state._source.items.length === 1;
       const newState = {
         _source: {
           hasNextPage: !!get(nextPage, 'length'),
           isNextPageLoading: false,
-          items: startIndex === 0 ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
+          items: (!hasPreselectedSource && startIndex === 0) ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
         }
       }
       const sourceToSelect = find(
@@ -216,7 +224,7 @@ class DynamicAdapter extends React.Component {
   };
 
   render() {
-    const MAX_DURATION_MINS = 180;
+    const MAX_DURATION_MINS = 60;
     const customTriggers = [];
     if (this.props.openCreateSource) {
       customTriggers.push({
@@ -237,7 +245,7 @@ class DynamicAdapter extends React.Component {
             <div className={styles.adapterContainer}>
               <InfiniteDropdownMenu
                 label="Select a Source*"
-                id={this.state.sourceId}
+                value={this.state.sourceId}
                 secondaryNameKey="sourceType.name"
                 handleSelectionChange={this.handleSourceChange}
                 loadNextPage={this.loadMoreSources}
@@ -288,7 +296,7 @@ class DynamicAdapter extends React.Component {
             <div className={styles.adapterContainer}>
               <InfiniteDropdownMenu
                 label="Select a Cluster"
-                id={this.state.clusterId}
+                value={this.state.clusterId}
                 handleSelectionChange={this.handleClusterChange}
                 loadNextPage={this.loadMoreClusters}
                 hasNextPage={this.state._cluster.hasNextPage}

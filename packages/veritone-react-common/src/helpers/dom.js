@@ -31,8 +31,15 @@ export function getMousePosition(e) {
     el = el.offsetParent;
   }
 
-  x = e.pageX;
-  y = e.pageY;
+  el = e.target;
+  while (el.parentNode) {
+    el_left -= el.scrollLeft;
+    el_top -= el.scrollTop;
+    el = el.parentNode;
+  }
+
+  x = e.clientX;
+  y = e.clientY;
 
   x -= el_left;
   y -= el_top;

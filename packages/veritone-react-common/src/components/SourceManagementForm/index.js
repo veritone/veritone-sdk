@@ -211,6 +211,10 @@ export default class SourceManagementForm extends React.Component {
           data: {
             ...contentTemplates[templateIndex].data,
             [fieldId]: value
+          },
+          dirtyState: {
+            ...contentTemplates[templateIndex].dirtyState,
+            [fieldId]: true
           }
         };
         return { contentTemplates };
@@ -259,13 +263,31 @@ export default class SourceManagementForm extends React.Component {
         isValidForm = false;
       }
     });
-    this.setState({ formDirtyStates }, () => {
+    // Also determine if contentTemplates had any invalid inputs
+    const resultTemplates = cloneDeep(this.state.contentTemplates);
+    resultTemplates.forEach(template => {
+      template.dirtyState = {};
+      if (template.definition) {
+        const requiredCTFields = template.definition.required || [];
+        if (template.definition.properties) {
+          Object.keys(template.definition.properties).reduce((acc, cur) => {
+            const isRequiredInput = requiredCTFields.some(field => field === cur);
+            if (isRequiredInput && isUndefined(template.data[cur])) {
+              isValidForm = false;
+            }
+            acc[cur] = true;
+            return acc;
+          }, template.dirtyState);
+        }
+      }
+    });
+    this.setState({ formDirtyStates, contentTemplates: resultTemplates }, () => {
       if (isValidForm) {
-        const resultTemplates = cloneDeep(this.state.contentTemplates);
-        resultTemplates.forEach(template => delete template.guid);
+        const cloneCTs = cloneDeep(resultTemplates);
+        cloneCTs.forEach(template => delete template.guid);
         this.props.onSubmit({
           sourceConfiguration: this.state.sourceConfig,
-          contentTemplates: resultTemplates,
+          contentTemplates: cloneCTs,
           share: this.state.share
         });
       }

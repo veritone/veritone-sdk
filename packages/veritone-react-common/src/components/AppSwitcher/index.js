@@ -17,7 +17,8 @@ export default class AppSwitcher extends React.Component {
         applicationId: string,
         applicationName: string,
         applicationIconSvg: string,
-        applicationIconUrl: string
+        applicationIconUrl: string,
+        signedApplicationIconUrl: string
       })
     ),
     enabledAppsFailedLoading: bool,

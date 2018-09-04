@@ -1,9 +1,6 @@
 import React from 'react';
 import { string, shape, any, arrayOf, objectOf, func, bool } from 'prop-types';
-import { isObject, compact, cloneDeep, isArray } from 'lodash';
-import AddIcon from '@material-ui/icons/Add';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
+import { isObject, compact, cloneDeep, isArray, includes, isUndefined, get } from 'lodash';
 
 import SourceTypeField from 'components/SourceTypeField';
 import FormCard from '../FormCard';
@@ -17,7 +14,8 @@ export default class TemplateForms extends React.Component {
         guid: string,
         name: string.isRequired,
         definition: objectOf(any),
-        data: objectOf(any)
+        data: objectOf(any),
+        dirtyState: objectOf(any)
       })
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
@@ -29,6 +27,28 @@ export default class TemplateForms extends React.Component {
 
   handleRemoveTemplate = templateId => {
     this.props.onRemoveTemplate(templateId);
+  };
+
+  handleSchemaFieldChange = (template, fieldId, type) => event => {
+    const GEO_REGEX = /^-{0,1}[0-9]+\.[0-9]+, -{0,1}[0-9]+\.[0-9]+$/;
+    let value;
+    if (type === 'boolean') {
+      value = event.target.checked;
+    } else if (type === 'dateTime') {
+      value = event;
+    } else {
+      value = event.target.value;
+    }
+
+    if (type === 'geoPoint' && !GEO_REGEX.test(value)) {
+      value = '0.0, 0.0';
+    }
+
+    this.props.onTemplateDetailsChange(
+      template.guid || template.id,
+      fieldId,
+      value
+    );
   };
 
   handleFieldChange = (template, fieldId, type) => event => {
@@ -124,32 +144,49 @@ export default class TemplateForms extends React.Component {
   };
 
   render() {
-    const { templates, ...rest } = this.props;
+    const { templates } = this.props;
 
     return (
       <div className={styles.formsContainer}>
         {templates.map(template => {
           const schemaProps = template.definition.properties;
+          const requiredProps = template.definition.required || [];
           const formFields = Object.keys(schemaProps).map(
             schemaProp => {
-              const { type, items } = schemaProps[schemaProp];
+              const { type } = schemaProps[schemaProp];
+              const required = includes(requiredProps, schemaProp);
+              const enums = (!isUndefined(schemaProps[schemaProp].enum) && get(schemaProps[schemaProp], 'enumNames.length') === get(schemaProps[schemaProp], 'enum.length')) ?
+                schemaProps[schemaProp].enum.map((value, index) => {
+                  return {
+                    id: value,
+                    name: schemaProps[schemaProp].enumNames[index]
+                  };
+                })
+              : schemaProps[schemaProp].enum;
+              isArray(enums) && enums.sort((a, b) => a.name < b.name ? -1 : 1);
+
               return (
                 type && (
-                  <BuildFormElements
-                    fieldId={`${schemaProp}-${template.guid || template.id}`}
-                    template={template}
-                    schemaProp={schemaProp}
-                    type={type}
-                    items={items}
+                  <SourceTypeField
+                    id={`${schemaProp}-${template.guid || template.id}`}
+                    type={type.toLowerCase()}
+                    required={required}
                     value={template.data[schemaProp]}
+                    onChange={this.handleSchemaFieldChange(template, schemaProp, type)}
                     title={schemaProps[schemaProp].title || schemaProp}
-                    objectProperties={schemaProps[schemaProp].properties}
-                    onChange={this.handleFieldChange}
-                    handleArrayElementAdd={this.handleArrayElementAdd}
-                    handleArrayElementRemove={this.handleArrayElementRemove}
+                    options={enums}
+                    peerSelection={schemaProps[schemaProp].peerEnumKey
+                      ? (isArray(template.data[schemaProps[schemaProp].peerEnumKey])
+                        ? template.data[schemaProps[schemaProp].peerEnumKey] :
+                        []
+                      )
+                      : undefined
+                    }
+                    query={schemaProps[schemaProp].query || get(schemaProps[schemaProp], 'items.query')}
                     getFieldOptions={this.props.getFieldOptions}
-                    key={schemaProp}
-                    {...rest}
+                    key={template.id + schemaProp}
+                    isDirty={get(template, ['dirtyState', schemaProp])}
+                    isReadOnly={this.props.isReadOnly}
                   />
                 )
               );
@@ -169,130 +206,4 @@ export default class TemplateForms extends React.Component {
       </div>
     );
   }
-}
-
-function BuildFormElements({
-  fieldId,
-  template,
-  schemaProp,
-  type,
-  items,
-  title,
-  value,
-  objectProperties,
-  onChange,
-  depth = 0,
-  handleArrayElementAdd,
-  handleArrayElementRemove,
-  getFieldOptions,
-  ...rest
-}) {
-  if (!type) {
-    return null;
-  }
-
-  let element;
-
-  if (!type.includes('object') && !type.includes('array')) {
-    element = (
-      <SourceTypeField
-        id={fieldId}
-        type={type}
-        title={title}
-        value={value || ''}
-        onChange={onChange(template, schemaProp, type)}
-        getFieldOptions={getFieldOptions}
-        {...rest}
-      />
-    );
-  }
-
-  if (type.includes('array')) {
-    element = (value || ['']).map((elem, index) => {
-      return (
-        <div
-          key={`${schemaProp}.${'container' + index}`}
-          className={styles.arrayRow}
-        >
-          <BuildFormElements
-            {...rest}
-            fieldId={`${fieldId}.${index}`}
-            template={template}
-            schemaProp={`${schemaProp}.${index}`}
-            type={items.type}
-            value={elem}
-            title={`${items.title} ${index + 1}`}
-            objectProperties={items.properties}
-            depth={depth + 1}
-            onChange={onChange}
-            key={`${schemaProp}.${'buildform' + index}`}
-          />
-          {isArray(value) && value.length > 1 && !rest.isReadOnly ? (
-            <div className={styles.arrayRemove}>
-              <IconButton
-                disableRipple
-                className={styles.noHover}
-                onClick={handleArrayElementRemove(template, schemaProp, index)}
-              >
-                <Icon className={'icon-trash'} />
-              </IconButton>
-            </div>
-          ) : null}
-        </div>
-      );
-    });
-    element = (
-      <div className={styles.insetSection}>
-        <span>{title}</span>
-        {element}
-        {!rest.isReadOnly ? (
-          <div className={styles.arrayAdd}>
-            <IconButton
-              className={styles.noHover}
-              disableRipple
-              onClick={handleArrayElementAdd(template, schemaProp)}
-            >
-              <AddIcon />
-            </IconButton>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (type.includes('object') && objectProperties) {
-    element = Object.keys(objectProperties).map(objProp => {
-      return (
-        <BuildFormElements
-          {...rest}
-          fieldId={`${fieldId}.${objProp}`}
-          template={template}
-          schemaProp={`${schemaProp}.${objProp}`}
-          type={objectProperties[objProp].type}
-          value={(value && value[objProp]) || ''}
-          title={objectProperties[objProp].title || objProp}
-          objectProperties={objectProperties[objProp].properties}
-          depth={depth + 1}
-          onChange={onChange}
-          key={objProp}
-        />
-      );
-    });
-    element = (
-      <div className={styles.insetSection}>
-        <span>{title}</span>
-        {element}
-      </div>
-    );
-  }
-
-  if (depth) {
-    element = <div style={{ paddingLeft: depth * 10 }}>{element}</div>; // eslint-disable-line
-  }
-
-  if (!element) {
-    return null;
-  }
-
-  return element;
 }

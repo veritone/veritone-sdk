@@ -11,7 +11,6 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Icon from '@material-ui/core/Icon';
 import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
@@ -38,7 +37,6 @@ import styles from './styles.scss';
 class ProgramInfo extends React.Component {
   static propTypes = {
     program: shape({
-      name: string,
       programImage: string,
       signedProgramImage: string,
       programLiveImage: string,
@@ -142,18 +140,6 @@ class ProgramInfo extends React.Component {
     }
     return null;
   }
-
-  handleNameChange = event => {
-    const newValue = event.target.value;
-    this.setState(prevState => {
-      return {
-        program: {
-          ...prevState.program,
-          name: newValue
-        }
-      };
-    });
-  };
 
   handleDescriptionChange = event => {
     const newValue = event.target.value;
@@ -299,16 +285,6 @@ class ProgramInfo extends React.Component {
         <Form onSubmit={this.props.handleSubmit(this.handleSubmit)}>
           <div className={styles.activeSectionContainer}>
             <div className={styles.programInfoSection}>
-              <TextField
-                label="Program Name"
-                className={styles.programInfoInputField}
-                margin="normal"
-                onChange={this.handleNameChange}
-                value={program.name}
-                disabled={readOnly}
-              />
-            </div>
-            <div className={styles.programInfoSection}>
               <div className={styles.programImagesSection}>
                 <div className={styles.programLiveImageSection}>
                   <div className={styles.programInfoFieldHeader}>
@@ -427,17 +403,8 @@ class ProgramInfo extends React.Component {
                 margin="normal"
                 value={program.website}
                 onChange={this.handleWebsiteChange}
+                placeholder="http://"
                 disabled={readOnly}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment
-                      position="start"
-                      classes={{ positionStart: styles.websitePrefix }}
-                    >
-                      http://
-                    </InputAdornment>
-                  )
-                }}
               />
             </div>
 

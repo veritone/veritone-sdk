@@ -82,7 +82,7 @@ export default class SourceTypeField extends React.Component {
     ];
 
     const foundSupportedType = supportedTypes.find(supportedType =>
-      type.includes(supportedType)
+      type.includes(supportedType.toLowerCase())
     );
 
     if (!foundSupportedType) {
@@ -123,19 +123,33 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
     key: 'schema-' + id
   };
   return (
-    <FormControl className={styles.selectContainer} required={required} error={isDirty && required && (isUndefined(value) || value === '')} {...rest}>
-      <InputLabel htmlFor={'schema-' + id}>{title}</InputLabel>
+    <FormControl
+      {...rest}
+      className={ styles.forceBlockDisplay }
+      fullWidth
+      required={required}
+      error={isDirty && required && (isUndefined(value) || value === '')}
+    >
+      <InputLabel
+        className={`${styles.textFieldLabel} ${styles.selectFieldLabel}`}
+        htmlFor={'schema-' + id}
+        shrink
+      >
+        {title}
+      </InputLabel>
       <Select
-        multiple={multiple}
+        {...rest}
+        {...inputProps}
+        classes={{ root: styles.selectContainer }}
+        className={styles.forceBlockDisplay}
         value={multiple ? 
           (isArray(value) ? value : []) :
           value
         }
+        multiple={multiple}
         required={required}
         onChange={onChange}
         disabled={!options || !options.length}
-        {...inputProps}
-        {...rest}
         readOnly={isReadOnly}
       >
         {
@@ -225,7 +239,7 @@ BoolTypeField.propTypes = {
 };
 
 const GeoPointField = props => {
-  return <BaseField helperText="eg. 12.0, 2.0" {...props} />;
+  return <BaseField {...props} helperText="eg. 12.0, 2.0" />;
 };
 
 const NumberField = props => {

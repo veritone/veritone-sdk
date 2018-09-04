@@ -3,11 +3,18 @@
 .structuredDataOutputView {
   .schemaMenu {
     @include mui-text('body1');
-    max-width: 150px;
     margin-left: 20px;
   }
+  overflow-y: hidden;
+  height: calc(100% - 20px);
 }
 
 .schemaMenuItem {
   font-size: 14px !important;
+}
+
+.sdoTableContainer {
+  padding: 3px;
+  overflow-y: scroll;
+  height: calc(100% - 70px);
 }

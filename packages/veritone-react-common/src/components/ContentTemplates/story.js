@@ -11,6 +11,22 @@ function logFormData(formData) {
   console.log(formData);
 }
 
+const fakeSchemaOptions = [{
+  name: 'name0',
+  id: 0
+}, {
+  name: 'name1',
+  id: 1
+}, {
+  name: 'name2',
+  id: 2
+}];
+
+const getFieldOptions = query => {
+  console.log('Executed Query: ' + query);
+  return Promise.resolve(fakeSchemaOptions);
+};
+
 storiesOf('Content Templates', module)
   .add('Null State', () => <NullState />)
   .add('Template List', () => (
@@ -25,12 +41,14 @@ storiesOf('Content Templates', module)
       templates={initialTemplates}
       onTemplateDetailsChange={noop}
       onRemoveTemplate={noop}
+      getFieldOptions={getFieldOptions}
     />
   ))
   .add('Form', () => (
     <ContentTemplateForm
       templateData={templateData}
       initialTemplates={initialTemplates}
+      getFieldOptions={getFieldOptions}
       onSubmit={logFormData}
     />
   ));

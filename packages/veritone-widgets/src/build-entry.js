@@ -17,6 +17,9 @@ export {
 } from './widgets/Notifications';
 export notificationsReducer, * as notificationsModule from './redux/modules/notifications';
 export { MediaPlayer } from './widgets/MediaPlayer';
+export MediaPlayerLightbox, {
+  MediaPlayerLightboxWidget
+} from './widgets/MediaPlayer/Lightbox';
 export MediaPlayerControlBar from './widgets/MediaPlayer/DefaultControlBar';
 export EngineOutputExport, {
   EngineOutputExportWidget
@@ -31,5 +34,5 @@ export ContentTemplateForm from './widgets/ContentTemplateForm';
 export SDOTable from './widgets/SDOTable';
 export IngestionJobsList from './widgets/IngestionJobsList';
 export IngestionAdapters from './widgets/IngestionAdapters';
-export Scheduler from './widgets/Scheduler';
+export { SchedulerWidget } from './widgets/Scheduler';
 export ProgramInfo from './widgets/ProgramInfo';

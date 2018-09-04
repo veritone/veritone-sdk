@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { forEach, get } from 'lodash';
+import React, { Component } from 'react';
+import { forEach, get, includes, find } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -48,8 +48,8 @@ export default class EngineCategoryConfig extends Component {
     }).isRequired,
     engineCategoryConfigs: arrayOf(
       shape({
-        engineId: string.isRequired,
-        categoryId: string.isRequired,
+        engineId: string,
+        categoryId: string,
         formats: arrayOf(
           shape({
             extension: string.isRequired,
@@ -65,7 +65,6 @@ export default class EngineCategoryConfig extends Component {
     applySubtitleConfigs: func,
     expanded: bool,
     onExpandConfigs: func,
-    bulkExportEnabled: bool,
     initialSubtitleConfig: shape({
       maxCharacterPerLine: number,
       newLineOnPunctuation: bool,
@@ -102,20 +101,26 @@ export default class EngineCategoryConfig extends Component {
       engineCategoryConfigs,
       onExpandConfigs,
       expanded,
-      bulkExportEnabled,
       initialSubtitleConfig
     } = this.props;
 
-    let hasFormatsSelected = false;
+    let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {
       if (get(config, 'formats.length')) {
-        hasFormatsSelected = true;
+        forEach(config.formats, format => {
+          const exportFormat = find(category.exportFormats, {
+            format: format.extension
+          });
+          if (exportFormat && includes(exportFormat.types, 'subtitle')) {
+            hasSubtitleFormatsSelected = true;
+          }
+        });
       }
     });
 
     const defaultSubtitleConfig = {
       linesPerScreen: 2,
-      maxLinesPerCaptionLine: 32,
+      maxCharacterPerLine: 32,
       newLineOnPunctuation: false
     };
 
@@ -141,27 +146,18 @@ export default class EngineCategoryConfig extends Component {
         </ListItem>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <List disablePadding>
-            {bulkExportEnabled ? (
-              <EngineConfigItem
-                categoryId={category.id}
-                formats={engineCategoryConfigs[0].formats}
-              />
-            ) : (
-              <Fragment>
-                {engineCategoryConfigs.map(config => {
-                  return (
-                    <EngineConfigItem
-                      key={`engine-config-item-${config.engineId}`}
-                      engineId={config.engineId}
-                      categoryId={config.categoryId}
-                      formats={config.formats}
-                    />
-                  );
-                })}
-              </Fragment>
-            )}
-
-            {hasFormatsSelected && (
+            {engineCategoryConfigs.map(config => {
+              return (
+                <EngineConfigItem
+                  key={`engine-config-item-${config.engineId ||
+                    config.categoryId}`}
+                  engineId={config.engineId}
+                  categoryId={category.id}
+                  formats={config.formats}
+                />
+              );
+            })}
+            {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
                   <ClosedCaptionIcon className={styles.closedCaptionIcon} />

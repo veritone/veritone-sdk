@@ -26,12 +26,14 @@ const days = [
 
 @formValues('repeatEvery')
 @formValues({ selectedDays: 'weekly.selectedDays' })
+@formValues('setEndDate')
 export default class RecurringSection extends React.Component {
   static propTypes = {
     repeatEvery: shape({
       number: string.isRequired,
       period: string.isRequired
     }).isRequired,
+    setEndDate: bool,
     readOnly: bool
   };
 
@@ -75,6 +77,7 @@ export default class RecurringSection extends React.Component {
                     component={Checkbox}
                     name={`weekly.selectedDays.${d}`}
                     label={capitalize(d)}
+                    color="primary"
                     disabled={this.props.readOnly}
                   />
                 </div>
@@ -82,10 +85,20 @@ export default class RecurringSection extends React.Component {
               </div>
             ))}
         </div>
-
-        <div className={styles.formSectionRow}>
-          <DateTimeSelector name="end" label="Ends" readOnly={this.props.readOnly} showIcon />
+        <div style={{ width: 150 }}>
+          <Field
+            component={Checkbox}
+            name="setEndDate"
+            label="Set End Date"
+            color="primary"
+            disabled={this.props.readOnly}
+          />
         </div>
+        {
+          this.props.setEndDate ? (<div className={styles.formSectionRow}>
+            <DateTimeSelector name="end" label="Ends" readOnly={this.props.readOnly} showIcon />
+          </div>) : null
+        }
       </Fragment>
     );
   }

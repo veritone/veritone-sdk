@@ -118,7 +118,17 @@ const programLiveImageNullState =
       id
     ),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
-    betaFlagEnabled: userModule.hasFeature(state, 'beta')
+    betaFlagEnabled: userModule.hasFeature(state, 'beta'),
+    exportClosedCaptionsEnabled: userModule.hasFeature(
+      state,
+      'exportClosedCaptions'
+    ),
+    bulkEditEnabled: userModule.hasFeature(state, 'bulkEditTranscript'),
+    publicMediaDownloadEnabled: userModule.hasFeature(
+      state,
+      'downloadPublicMedia'
+    ),
+    downloadMediaEnabled: userModule.hasFeature(state, 'downloadMedia')
   }),
   {
     initializeWidget: mediaDetailsModule.initializeWidget,
@@ -350,7 +360,11 @@ class MediaDetailsWidget extends React.Component {
     ),
     createQuickExport: func.isRequired,
     betaFlagEnabled: bool.isRequired,
-    onExport: func
+    onExport: func,
+    exportClosedCaptionsEnabled: bool,
+    bulkEditEnabled: bool,
+    publicMediaDownloadEnabled: bool,
+    downloadMediaEnabled: bool
   };
 
   static contextTypes = {
@@ -656,9 +670,7 @@ class MediaDetailsWidget extends React.Component {
     if (!this.isMediaPublic(this.props.tdo)) {
       return true;
     }
-    const publicMediaDownloadEnabled =
-      get(this.props.kvp, 'features.downloadPublicMedia') === 'enabled';
-    if (this.isOwnMedia() || publicMediaDownloadEnabled) {
+    if (this.isOwnMedia() || this.props.publicMediaDownloadEnabled) {
       return true;
     }
     return false;
@@ -667,7 +679,7 @@ class MediaDetailsWidget extends React.Component {
   isDownloadMediaEnabled = () => {
     return (
       get(this.props.tdo, 'primaryAsset.signedUri.length') &&
-      get(this.props.kvp, 'features.downloadMedia') === 'enabled'
+      this.props.downloadMediaEnabled
     );
   };
 
@@ -854,7 +866,9 @@ class MediaDetailsWidget extends React.Component {
       alertDialogConfig,
       categoryExportFormats,
       betaFlagEnabled,
-      onExport
+      onExport,
+      exportClosedCaptionsEnabled,
+      bulkEditEnabled
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -887,6 +901,7 @@ class MediaDetailsWidget extends React.Component {
           onExportClicked={this.handleExportClicked}
           onMoreClicked={this.openEngineOutputExport}
           categoryExportFormats={categoryExportFormats}
+          exportClosedCaptionsEnabled={exportClosedCaptionsEnabled}
         />
       );
     }
@@ -1276,10 +1291,7 @@ class MediaDetailsWidget extends React.Component {
                         onClick={this.handleUpdateMediaPlayerTime}
                         neglectableTimeMs={100}
                         outputNullState={this.buildEngineNullStateComponent()}
-                        bulkEditEnabled={
-                          get(this.props.kvp, 'features.bulkEditTranscript') ===
-                          'enabled'
-                        }
+                        bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
                       />
                     )}
@@ -1410,6 +1422,8 @@ class MediaDetailsWidget extends React.Component {
                         onEngineChange={this.handleSelectEngine}
                         onExpandClick={this.toggleExpandedMode}
                         isExpandedMode={isExpandedMode}
+                        onSdoClick={this.handleUpdateMediaPlayerTime}
+                        mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         outputNullState={this.buildEngineNullStateComponent()}
                       />
                     )}
