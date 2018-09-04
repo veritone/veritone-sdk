@@ -322,7 +322,7 @@ export const Column = ({
     }
 
     return isFunction(cellRenderer)
-      ? cellRenderer(get(data, dataKey), data, row)
+      ? cellRenderer(get(data, dataKey), data, dataKey, row)
       : String(get(data, dataKey) || '');
   }
 

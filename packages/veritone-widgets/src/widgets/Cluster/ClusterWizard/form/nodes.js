@@ -11,7 +11,14 @@ import {
   oneOfType
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { reduxForm, Field, formValueSelector } from 'redux-form';
+import {
+  reduxForm,
+  Field,
+  FieldArray,
+  formValueSelector,
+  registerField,
+  unregisterField
+} from 'redux-form';
 import { formComponents, NullState, Table, Column, DualStateIcon } from 'veritone-react-common';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
@@ -43,11 +50,11 @@ const configFields = [
   initialValues: {
     nodes: []
   },
-  validate: wizardConfig.validate,
+  validate: wizardConfig.model.validate,
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true
 })
-// @withMuiThemeProvider
+
 export default class ClusterNodes extends React.Component {
   static propTypes = {
     fields: shape({
@@ -62,12 +69,21 @@ export default class ClusterNodes extends React.Component {
     // redux-form supplied props
     nodes: arrayOf(object),
     array: objectOf(any).isRequired,
-    change: func.isRequired
+    change: func.isRequired,
+    dispatch: func.isRequired
   };
 
-  state = {
-    nodes: 0
-  };
+  componentDidMount() {
+    if (!this.props.nodes.length) {
+      this.props.dispatch(registerField(wizardConfig.formName, this.props.fields.nodes, 'FieldArray'));
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!this.props.nodes.length) {
+      this.props.dispatch(registerField(wizardConfig.formName, this.props.fields.nodes, 'FieldArray'));
+    }
+  }
 
   addNode = () => {
     const { array, fields } = this.props;
@@ -97,9 +113,9 @@ export default class ClusterNodes extends React.Component {
     const configFieldKeys = map(configFields, head);
 
     configFieldKeys.forEach(cfk => {
-      const fldVal = get(nodes, [nodeIdx, cfk], []);
+      const fldVal = get(nodes, [nodeIdx, cfk]);
 
-      if (fldVal.length) {
+      if (fldVal && fldVal.length) {
         this.props.change(`${fields.nodes}[${nodeIdx}].${cfk}`, [{
           ...fldVal[0],
           [config]: value
@@ -132,10 +148,11 @@ export default class ClusterNodes extends React.Component {
           <AddNewNode onClick={this.addNode} />
           {this.props.nodes && this.props.nodes.length
           ?
-            <ClusterNodesList
-              nodes={this.props.nodes}
-              fields={this.props.fields}
+            <FieldArray
+              name={this.props.fields.nodes}
+              component={ClusterNodesList}
               validations={this.props.fieldValidations}
+              // validate={this.props.validate}
               onRemoveNode={this.removeNode}
               onConfigChange={this.updateNodeConfig}
             />
@@ -148,7 +165,15 @@ export default class ClusterNodes extends React.Component {
   }
 }
 
-
+{
+  /* <ClusterNodesList
+              nodes={this.props.nodes}
+              fields={this.props.fields}
+              validations={this.props.fieldValidations}
+              onRemoveNode={this.removeNode}
+              onConfigChange={this.updateNodeConfig}
+            /> */
+}
 
 const ClusterNodesNullState = () => {
   return (
@@ -173,20 +198,23 @@ const ClusterNodesNullState = () => {
 }
 
 const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigChange }) => {
-  const handleConfigChange = (node, config) => (e, val) => {
-    onConfigChange(node, config, val);
+  const handleConfigChange = (nodeIdx, config) => (e, val) => {
+    onConfigChange(nodeIdx, config, val);
   }
 
   function getRowData(row) {
-    return nodes[row];
+    // return nodes[row];
+    return fields.get(row);
   }
-  function renderNodeName(nodeName, data, nodeIdx) {
+  function renderNodeName(nodeName, data, dataKey, nodeIdx) {
     return (
       <Field
-        name={`${fields.nodes}[${nodeIdx}].nodeName`}
-        component={TextFieldToggle}
+        // name={`${fields.nodes}[${nodeIdx}].nodeName`}
+        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        component={TextInputToggleField}
         placeholder={`node-${nodeIdx + 1}`}
-        validate={validations[fields.nodes].name}
+        // validate={validations[fields.nodes].name}
+        validate={validations[fields.name][dataKey]}
         className={styles['text-toggle-field']}
         inputProps={{
           className: styles['text-toggle-field'],
@@ -197,14 +225,16 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       />
     );
   }
-  function renderIPAddr(ipAddr, data, nodeIdx) {
+  function renderIPAddr(ipAddr, data, dataKey, nodeIdx) {
     return (
       <Field
-        name={`${fields.nodes}[${nodeIdx}].ip`}
-        component={TextFieldToggle}
+        // name={`${fields.nodes}[${nodeIdx}].ip`}
+        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        component={TextInputToggleField}
         placeholder="—.—.—.—.—"
         onBlur={handleConfigChange(nodeIdx, 'ip')}
-        validate={validations[fields.nodes].ip}
+        // validate={validations[fields.nodes].ip}
+        validate={validations[fields.name][dataKey]}
         className={styles['text-toggle-field']}
         inputProps={{
           className: styles['text-toggle-field'],
@@ -215,10 +245,11 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       />
     );
   }
-  function renderDiskSelect(disk, data, nodeIdx) {
+  function renderDiskSelect(disk, data, dataKey, nodeIdx) {
     return (
       <Field
-        name={`${fields.nodes}[${nodeIdx}].disk`}
+        // name={`${fields.nodes}[${nodeIdx}].disk`}
+        name={`${fields.name}[${nodeIdx}].${dataKey}`}
         component={Select}
         displayEmpty
         classes={{
@@ -237,10 +268,11 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       </Field>
     )
   }
-  function renderCPUSelect(cpu, data, nodeIdx) {
+  function renderCPUSelect(cpu, data, dataKey, nodeIdx) {
     return (
       <Field
-        name={`${fields.nodes}[${nodeIdx}].cpu`}
+        // name={`${fields.nodes}[${nodeIdx}].cpu`}
+        name={`${fields.name}[${nodeIdx}].${dataKey}`}
         component={Select}
         displayEmpty
         classes={{
@@ -260,10 +292,11 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       </Field>
     )
   }
-  function renderMemorySelect(mem, data, nodeIdx) {
+  function renderMemorySelect(mem, data, dataKey, nodeIdx) {
     return (
       <Field
-        name={`${fields.nodes}[${nodeIdx}].mem`}
+        // name={`${fields.nodes}[${nodeIdx}].mem`}
+        name={`${fields.name}[${nodeIdx}].${dataKey}`}
         component={Select}
         displayEmpty
         classes={{
@@ -283,13 +316,14 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       </Field>
     )
   }
-  function renderNodeConfig(config, data, nodeIdx) {
+  function renderNodeConfig(config, data, dataKey, nodeIdx) {
     function normalizeVal(value, previousValue, allValues) {
       if (!value) {
         return [];
       }
 
-      const node = get(allValues, [fields.nodes, nodeIdx]);
+      // const node = get(allValues, [fields.nodes, nodeIdx]);
+      const node = get(allValues, [fields.name, nodeIdx]);
       const configVals = pick(node, ['ip', 'cpu', 'disk', 'mem']);
 
       return [configVals];
@@ -300,14 +334,16 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
           return (
             <Field
               key={uniqueId(configField[0])}
-              name={`${fields.nodes}[${nodeIdx}].${configField[0]}`}
+              // name={`${fields.nodes}[${nodeIdx}].${configField[0]}`}
+              name={`${fields.name}[${nodeIdx}].${configField[0]}`}
               component={DualStateIconField}
               normalize={normalizeVal}
               props={{
                 caption: configField[1],
                 activeClass: styles.activeClass,
                 inActiveClass: styles.inActiveClass,
-                isActive: !!get(nodes, [nodeIdx, configField[0], 'length'])
+                // isActive: !!get(nodes, [nodeIdx, configField[0], 'length'])
+                isActive: !!get(fields.get(nodeIdx), [configField[0], 'length'])
               }}
             >
               <span className="icon-circlecheck" />
@@ -317,20 +353,22 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       </div>
     )
   }
-  function renderNodeRemoveIcon(val, data, row) {
+  function renderNodeRemoveIcon(val, data, dataKey, nodeIdx) {
     return (
       <IconButton disableRipple aria-label="Remove Node">
-        <DeleteIcon onClick={handleRemoveNode(row)} />
+        <DeleteIcon onClick={handleRemoveNode(nodeIdx)} />
       </IconButton>
     );
   }
 
-  function handleRemoveNode(row) {
-    return () => onRemoveNode(row);
+  function handleRemoveNode(nodeIdx) {
+    // return () => onRemoveNode(nodeIdx);
+    return () => fields.remove(nodeIdx);
   }
 
   return (
-    <Table rowGetter={getRowData} rowCount={nodes.length} rowHeight={90} showHeader>
+    // <Table rowGetter={getRowData} rowCount={nodes.length} rowHeight={90} showHeader>
+    <Table rowGetter={getRowData} rowCount={fields.getAll().length} rowHeight={90} showHeader>
       <Column dataKey="nodeName" header="Node Name" cellRenderer={renderNodeName} width="250px" />
       <Column dataKey="ip" header="IP Address" cellRenderer={renderIPAddr} width="200px" />
       <Column dataKey="" header="" cellRenderer={renderNodeConfig} />
@@ -343,14 +381,14 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
 }
 
 ClusterNodesList.propTypes = {
-  nodes: arrayOf(shape({
-    nodeName: string,
-    ip: string,
-    disk: oneOfType([number, string]),
-    cpu: oneOfType([number, string]),
-    mem: oneOfType([number, string])
-  })).isRequired,
-  fields: objectOf(string).isRequired,
+  // nodes: arrayOf(shape({
+  //   nodeName: string,
+  //   ip: string,
+  //   disk: oneOfType([number, string]),
+  //   cpu: oneOfType([number, string]),
+  //   mem: oneOfType([number, string])
+  // })).isRequired,
+  // fields: objectOf(string).isRequired,
   validations: objectOf(any).isRequired,
   onRemoveNode: func.isRequired,
   onConfigChange: func.isRequired
@@ -379,7 +417,7 @@ AddNewNode.propTypes = {
   onClick: func.isRequired
 }
 
-class TextFieldToggle extends React.Component {
+class TextInputToggleField extends React.Component {
   static propTypes = {
     className: string,
     placeholder: string,
@@ -423,7 +461,9 @@ class TextFieldToggle extends React.Component {
   }
 
   render() {
-    const showEditState = this.state.isEditMode || this.props.meta.error;
+    const { meta: { touched, error } } = this.props;
+    console.log('this.state, touched, error:', this.state, touched, error)
+    const showEditState = this.state.isEditMode || (touched && error);
 
     return (
       <div className={styles['toggle-field-wrapper']}>
@@ -454,6 +494,7 @@ class TextFieldToggle extends React.Component {
 
 const DualStateIconField = ({ input, ...rest }) => {
   function handleIconClick(boolVal) {
+    console.log('#'.repeat(50))
     input.onChange(boolVal);
   }
 

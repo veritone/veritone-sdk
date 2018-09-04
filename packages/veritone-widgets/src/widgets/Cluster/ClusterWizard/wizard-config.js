@@ -24,23 +24,31 @@ const stepperWizardConfig = {
       nodes: 'nodes',
       engines: 'engines'
     },
-    requiredFields: ['name', 'metrics', 'nodes'],
+    requiredFields: ['name', 'metrics', 'engines'],
     initialValues: {
-      nodes: []
+      nodes: [],
+      engines: []
     },
     validate(values) {
       const maxChars = 50;
+      const requiredNodeFields = ['nodeName', 'ip'];
+
+      console.log('values:', values)
+
       return {
         name: get(values['name'], 'length', 0) > maxChars
-            ? `Max length for name cannot exceed ${maxChars} characters`
-            : undefined
+          ? `Max length for name cannot exceed ${maxChars} characters`
+          : undefined,
+        // nodes: !get(values['nodes'], 'length', 0) ? 'Please specify a node configuration' : undefined,
+        nodes: !get(values['nodes'], 'length', 0) ? { _error: 'At least one node must be entered' } : undefined,
+        engines: !get(values['engines'], 'length', 0) ? 'Please specify processing engines' : undefined
       };
     },
     fieldValidations: {
       nodes: {
-        name(value, allValues) {
+        nodeName(value, allValues) {
           if (!value) {
-            return;
+            return 'Required';
           }
 
           const maxChars = 25;
@@ -55,7 +63,7 @@ const stepperWizardConfig = {
         },
         ip(value, allValues) {
           if (!value) {
-            return;
+            return 'Required';
           }
 
           if (!isValidIPAddr(value)) {

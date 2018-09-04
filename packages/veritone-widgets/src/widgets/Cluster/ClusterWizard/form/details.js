@@ -25,7 +25,6 @@ export default class ClusterDetails extends React.Component {
   };
 
   render() {
-    console.log('this.props:', this.props);
     const { fields } = this.props;
 
     return (

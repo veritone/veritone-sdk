@@ -57,7 +57,6 @@ const wizardConfigShape = shape({
 })
 
 
-
 export class Wizard extends React.Component {
   static propTypes = {
     formName: string.isRequired,
@@ -85,6 +84,7 @@ export class Wizard extends React.Component {
   };
 
   validateWizard = values => {
+    console.log('%'.repeat(50))
     return omitBy(
       {
         ...this.props.config.model.validate(values),

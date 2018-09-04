@@ -15,8 +15,9 @@ import ClusterDetails from './form/details';
 import ClusterNodes from './form/nodes';
 import ClusterProcessing from './form/processing';
 
+import widget from '../../../shared/widget';
 
-export default class ClusterWizard extends React.Component {
+class ClusterWizard extends React.Component {
   state = {
     currentStep: 0,
     dialogIsOpen: true
@@ -102,3 +103,7 @@ export default class ClusterWizard extends React.Component {
     )
   }
 }
+
+
+const ClusterWizardWidget = widget(ClusterWizard);
+export { ClusterWizard as default, ClusterWizardWidget };
