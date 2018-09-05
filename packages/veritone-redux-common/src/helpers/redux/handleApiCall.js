@@ -1,6 +1,7 @@
 import { get, mapValues, partial } from 'lodash';
 import { guid } from 'helpers/misc';
-import { createReducer, fetchingStatus } from './';
+import fetchingStatus from './fetchingStatus';
+import { createReducer } from './reducer';
 
 // Creates a reducer and selectors that track the loading state for any api call.
 // Designed to be used with callGraphQLApi.

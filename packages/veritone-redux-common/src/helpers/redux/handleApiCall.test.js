@@ -1,5 +1,5 @@
 import handleApiCall from './handleApiCall';
-import { fetchingStatus } from './';
+import fetchingStatus from './fetchingStatus';
 
 const GET = 'GET';
 const GET_SUCCESS = 'GET_SUCCESS';
