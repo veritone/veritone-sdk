@@ -22,6 +22,10 @@ import StepLabel from '@material-ui/core/StepLabel';
 import StepIcon from '@material-ui/core/StepIcon';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import ErrorIcon from '@material-ui/icons/Error';
@@ -83,8 +87,7 @@ export class Wizard extends React.Component {
     confirmingLeave: false
   };
 
-  validateWizard = values => {
-    console.log('%'.repeat(50))
+  validateWizard = (values, allValues) => {
     return omitBy(
       {
         ...this.props.config.model.validate(values),
@@ -299,8 +302,18 @@ export class Wizard extends React.Component {
 
   renderConfirmationDialog = () => (
     <Dialog
-      title={<h5>Are you sure you want to exit?</h5>}
-      actions={[
+      open={this.state.confirmingLeave}
+      aria-labelledby="conf-dialog-title"
+    >
+      <DialogTitle id="conf-dialog-title">
+        Are you sure you want to exit?
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          You will lose any unsaved changes.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
         <Button
           variant="flat"
           color="primary"
@@ -317,10 +330,7 @@ export class Wizard extends React.Component {
         >
           Leave anyway
         </Button>
-      ]}
-      open={this.state.confirmingLeave}
-    >
-      You will lose any unsaved changes.
+      </DialogActions>
     </Dialog>
   );
 
@@ -329,7 +339,8 @@ export class Wizard extends React.Component {
       onSubmit: this.handleSubmit,
       validate: this.validateWizard,
       initialValues: this.props.config.model.initialValues,
-      fields: this.props.config.model.fields
+      fields: this.props.config.model.fields,
+      fieldValidations: this.props.config.model.fieldValidations
     });
 
     return this.props.children({

@@ -36,6 +36,7 @@ export default class ClusterProcessing extends React.Component {
         component={EngineSelectionField}
         _widgetId="abc-123"
         onEngineSelectionChange={this.handleEngineSelectionChange}
+        hideActions
       />
     );
   }

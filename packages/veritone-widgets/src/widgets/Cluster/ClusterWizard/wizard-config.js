@@ -17,7 +17,6 @@ const stepperWizardConfig = {
     }
   ],
   model: {
-    // fields: ['name', 'metrics', 'nodes'],
     fields: {
       name: 'name',
       metrics: 'metrics',
@@ -31,16 +30,12 @@ const stepperWizardConfig = {
     },
     validate(values) {
       const maxChars = 50;
-      const requiredNodeFields = ['nodeName', 'ip'];
-
-      console.log('values:', values)
 
       return {
         name: get(values['name'], 'length', 0) > maxChars
           ? `Max length for name cannot exceed ${maxChars} characters`
           : undefined,
-        // nodes: !get(values['nodes'], 'length', 0) ? 'Please specify a node configuration' : undefined,
-        nodes: !get(values['nodes'], 'length', 0) ? { _error: 'At least one node must be entered' } : undefined,
+        nodes: !get(values['nodes'], 'length', 0) ? { _error: 'At least one node must be configured' } : undefined,
         engines: !get(values['engines'], 'length', 0) ? 'Please specify processing engines' : undefined
       };
     },
@@ -73,6 +68,21 @@ const stepperWizardConfig = {
           const ipAddresses = countBy(get(allValues, 'nodes', []), 'ip');
           if (ipAddresses[value] > 1) {
             return 'Duplicate IP Address';
+          }
+        },
+        disk(value) {
+          if (!value) {
+            return 'Required';
+          }
+        },
+        cpu(value) {
+          if (!value) {
+            return 'Required';
+          }
+        },
+        mem(value) {
+          if (!value) {
+            return 'Required';
           }
         }
       }

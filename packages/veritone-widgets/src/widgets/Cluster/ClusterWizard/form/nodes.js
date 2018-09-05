@@ -6,9 +6,7 @@ import {
   func,
   objectOf,
   any,
-  number,
-  object,
-  oneOfType
+  object
 } from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -16,8 +14,7 @@ import {
   Field,
   FieldArray,
   formValueSelector,
-  registerField,
-  unregisterField
+  registerField
 } from 'redux-form';
 import { formComponents, NullState, Table, Column, DualStateIcon } from 'veritone-react-common';
 import Paper from '@material-ui/core/Paper';
@@ -79,12 +76,6 @@ export default class ClusterNodes extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (!this.props.nodes.length) {
-      this.props.dispatch(registerField(wizardConfig.formName, this.props.fields.nodes, 'FieldArray'));
-    }
-  }
-
   addNode = () => {
     const { array, fields } = this.props;
 
@@ -99,13 +90,6 @@ export default class ClusterNodes extends React.Component {
       db: [],
       eng: []
     });
-  };
-
-  removeNode = nodeIdx => {
-    const { nodes } = this.props;
-    const newNodes = nodes.slice(0, nodeIdx).concat(nodes.slice(nodeIdx + 1));
-
-    this.props.change(this.props.fields.nodes, newNodes);
   };
 
   updateNodeConfig = (nodeIdx, config, value) => {
@@ -151,9 +135,7 @@ export default class ClusterNodes extends React.Component {
             <FieldArray
               name={this.props.fields.nodes}
               component={ClusterNodesList}
-              validations={this.props.fieldValidations}
-              // validate={this.props.validate}
-              onRemoveNode={this.removeNode}
+              fieldValidations={this.props.fieldValidations.nodes}
               onConfigChange={this.updateNodeConfig}
             />
           :
@@ -163,16 +145,6 @@ export default class ClusterNodes extends React.Component {
       </div>
     );
   }
-}
-
-{
-  /* <ClusterNodesList
-              nodes={this.props.nodes}
-              fields={this.props.fields}
-              validations={this.props.fieldValidations}
-              onRemoveNode={this.removeNode}
-              onConfigChange={this.updateNodeConfig}
-            /> */
 }
 
 const ClusterNodesNullState = () => {
@@ -197,24 +169,27 @@ const ClusterNodesNullState = () => {
   )
 }
 
-const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigChange }) => {
-  const handleConfigChange = (nodeIdx, config) => (e, val) => {
-    onConfigChange(nodeIdx, config, val);
+class ClusterNodesList extends React.Component {
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.fields.length !== this.props.fields.length
   }
 
-  function getRowData(row) {
-    // return nodes[row];
-    return fields.get(row);
+  handleConfigChange = (nodeIdx, config) => (e, val) => {
+    this.props.onConfigChange(nodeIdx, config, val);
+  };
+
+  getRowData = (row) => {
+    return this.props.fields.get(row);
   }
-  function renderNodeName(nodeName, data, dataKey, nodeIdx) {
+
+  renderNodeName = (nodeName, data, dataKey, nodeIdx) => {
     return (
       <Field
-        // name={`${fields.nodes}[${nodeIdx}].nodeName`}
-        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        name={`${this.props.fields.name}[${nodeIdx}].${dataKey}`}
         component={TextInputToggleField}
         placeholder={`node-${nodeIdx + 1}`}
-        // validate={validations[fields.nodes].name}
-        validate={validations[fields.name][dataKey]}
+        validate={this.props.fieldValidations[dataKey]}
         className={styles['text-toggle-field']}
         inputProps={{
           className: styles['text-toggle-field'],
@@ -225,16 +200,14 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       />
     );
   }
-  function renderIPAddr(ipAddr, data, dataKey, nodeIdx) {
+  renderIPAddr = (ipAddr, data, dataKey, nodeIdx) => {
     return (
       <Field
-        // name={`${fields.nodes}[${nodeIdx}].ip`}
-        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        name={`${this.props.fields.name}[${nodeIdx}].${dataKey}`}
         component={TextInputToggleField}
         placeholder="—.—.—.—.—"
-        onBlur={handleConfigChange(nodeIdx, 'ip')}
-        // validate={validations[fields.nodes].ip}
-        validate={validations[fields.name][dataKey]}
+        onBlur={this.handleConfigChange(nodeIdx, dataKey)}
+        validate={this.props.fieldValidations[dataKey]}
         className={styles['text-toggle-field']}
         inputProps={{
           className: styles['text-toggle-field'],
@@ -245,20 +218,20 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
       />
     );
   }
-  function renderDiskSelect(disk, data, dataKey, nodeIdx) {
+  renderDiskSelect = (disk, data, dataKey, nodeIdx) => {
     return (
       <Field
-        // name={`${fields.nodes}[${nodeIdx}].disk`}
-        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        name={`${this.props.fields.name}[${nodeIdx}].${dataKey}`}
         component={Select}
         displayEmpty
         classes={{
           root: styles['size-select']
         }}
-        onChange={handleConfigChange(nodeIdx, 'disk')}
+        onChange={this.handleConfigChange(nodeIdx, dataKey)}
+        validate={this.props.fieldValidations[dataKey]}
       >
         <MenuItem value="" disabled>
-          <em>{"--"}</em>
+          <em>{'--'}</em>
         </MenuItem>
         <MenuItem value={250}>250GB</MenuItem>
         <MenuItem value={500}>500GB</MenuItem>
@@ -266,22 +239,22 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
         <MenuItem value={2000}>2TB</MenuItem>
         <MenuItem value={4000}>4TB</MenuItem>
       </Field>
-    )
+    );
   }
-  function renderCPUSelect(cpu, data, dataKey, nodeIdx) {
+  renderCPUSelect = (cpu, data, dataKey, nodeIdx) => {
     return (
       <Field
-        // name={`${fields.nodes}[${nodeIdx}].cpu`}
-        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        name={`${this.props.fields.name}[${nodeIdx}].${dataKey}`}
         component={Select}
         displayEmpty
         classes={{
           root: styles['size-select']
         }}
-        onChange={handleConfigChange(nodeIdx, 'cpu')}
+        onChange={this.handleConfigChange(nodeIdx, dataKey)}
+        validate={this.props.fieldValidations[dataKey]}
       >
         <MenuItem value="" disabled>
-          <em>{"--"}</em>
+          <em>{'--'}</em>
         </MenuItem>
         <MenuItem value={2}>2 CPU</MenuItem>
         <MenuItem value={4}>4 CPU</MenuItem>
@@ -290,22 +263,22 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
         <MenuItem value={32}>32 CPU</MenuItem>
         <MenuItem value={64}>64 CPU</MenuItem>
       </Field>
-    )
+    );
   }
-  function renderMemorySelect(mem, data, dataKey, nodeIdx) {
+  renderMemorySelect = (mem, data, dataKey, nodeIdx) => {
     return (
       <Field
-        // name={`${fields.nodes}[${nodeIdx}].mem`}
-        name={`${fields.name}[${nodeIdx}].${dataKey}`}
+        name={`${this.props.fields.name}[${nodeIdx}].${dataKey}`}
         component={Select}
         displayEmpty
         classes={{
           root: styles['size-select']
         }}
-        onChange={handleConfigChange(nodeIdx, 'mem')}
+        onChange={this.handleConfigChange(nodeIdx, dataKey)}
+        validate={this.props.fieldValidations[dataKey]}
       >
         <MenuItem value="" disabled>
-          <em>{"--"}</em>
+          <em>{'--'}</em>
         </MenuItem>
         <MenuItem value={8}>8 GB</MenuItem>
         <MenuItem value={16}>16 GB</MenuItem>
@@ -314,83 +287,109 @@ const ClusterNodesList = ({ nodes, fields, validations, onRemoveNode, onConfigCh
         <MenuItem value={128}>128 GB</MenuItem>
         <MenuItem value={256}>256 GB</MenuItem>
       </Field>
-    )
+    );
   }
-  function renderNodeConfig(config, data, dataKey, nodeIdx) {
+  renderNodeConfig = (config, data, dataKey, nodeIdx) => {
+    const { fields: { name } } = this.props;
+
     function normalizeVal(value, previousValue, allValues) {
       if (!value) {
         return [];
       }
 
-      // const node = get(allValues, [fields.nodes, nodeIdx]);
-      const node = get(allValues, [fields.name, nodeIdx]);
+      const node = get(allValues, [name, nodeIdx]);
       const configVals = pick(node, ['ip', 'cpu', 'disk', 'mem']);
 
       return [configVals];
     }
     return (
       <div className={styles['node-config']}>
-        {configFields.map((configField) => {
+        {configFields.map(configField => {
           return (
             <Field
               key={uniqueId(configField[0])}
-              // name={`${fields.nodes}[${nodeIdx}].${configField[0]}`}
-              name={`${fields.name}[${nodeIdx}].${configField[0]}`}
+              name={`${this.props.fields.name}[${nodeIdx}].${configField[0]}`}
               component={DualStateIconField}
               normalize={normalizeVal}
               props={{
                 caption: configField[1],
                 activeClass: styles.activeClass,
                 inActiveClass: styles.inActiveClass,
-                // isActive: !!get(nodes, [nodeIdx, configField[0], 'length'])
-                isActive: !!get(fields.get(nodeIdx), [configField[0], 'length'])
+                isActive: !!get(this.props.fields.get(nodeIdx), [configField[0], 'length'])
               }}
             >
               <span className="icon-circlecheck" />
             </Field>
-          )
+          );
         })}
       </div>
-    )
+    );
   }
-  function renderNodeRemoveIcon(val, data, dataKey, nodeIdx) {
+  renderNodeRemoveIcon = (val, data, dataKey, nodeIdx) => {
     return (
       <IconButton disableRipple aria-label="Remove Node">
-        <DeleteIcon onClick={handleRemoveNode(nodeIdx)} />
+        <DeleteIcon onClick={this.handleRemoveNode(nodeIdx)} />
       </IconButton>
     );
   }
 
-  function handleRemoveNode(nodeIdx) {
-    // return () => onRemoveNode(nodeIdx);
-    return () => fields.remove(nodeIdx);
+  handleRemoveNode = (nodeIdx) => {
+    return () => this.props.fields.remove(nodeIdx);
   }
 
-  return (
-    // <Table rowGetter={getRowData} rowCount={nodes.length} rowHeight={90} showHeader>
-    <Table rowGetter={getRowData} rowCount={fields.getAll().length} rowHeight={90} showHeader>
-      <Column dataKey="nodeName" header="Node Name" cellRenderer={renderNodeName} width="250px" />
-      <Column dataKey="ip" header="IP Address" cellRenderer={renderIPAddr} width="200px" />
-      <Column dataKey="" header="" cellRenderer={renderNodeConfig} />
-      <Column dataKey="disk" header="Disk" cellRenderer={renderDiskSelect} width="100px" />
-      <Column dataKey="cpu" header="CPU" cellRenderer={renderCPUSelect} width="100px" />
-      <Column dataKey="mem" header="Memory" cellRenderer={renderMemorySelect} width="100px" />
-      <Column dataKey="" header="" cellRenderer={renderNodeRemoveIcon} align="right" />
-    </Table>
-  );
-}
+  render() {
+    return (
+      <Table
+        rowGetter={this.getRowData}
+        rowCount={this.props.fields.getAll().length}
+        rowHeight={90}
+        showHeader
+      >
+        <Column
+          dataKey="nodeName"
+          header="Node Name"
+          cellRenderer={this.renderNodeName}
+          width="250px"
+        />
+        <Column
+          dataKey="ip"
+          header="IP Address"
+          cellRenderer={this.renderIPAddr}
+          width="200px"
+        />
+        <Column dataKey="" header="" cellRenderer={this.renderNodeConfig} />
+        <Column
+          dataKey="disk"
+          header="Disk"
+          cellRenderer={this.renderDiskSelect}
+          width="100px"
+        />
+        <Column
+          dataKey="cpu"
+          header="CPU"
+          cellRenderer={this.renderCPUSelect}
+          width="100px"
+        />
+        <Column
+          dataKey="mem"
+          header="Memory"
+          cellRenderer={this.renderMemorySelect}
+          width="100px"
+        />
+        <Column
+          dataKey=""
+          header=""
+          cellRenderer={this.renderNodeRemoveIcon}
+          align="right"
+        />
+      </Table>
+    );
+  }
+};
 
 ClusterNodesList.propTypes = {
-  // nodes: arrayOf(shape({
-  //   nodeName: string,
-  //   ip: string,
-  //   disk: oneOfType([number, string]),
-  //   cpu: oneOfType([number, string]),
-  //   mem: oneOfType([number, string])
-  // })).isRequired,
-  // fields: objectOf(string).isRequired,
-  validations: objectOf(any).isRequired,
-  onRemoveNode: func.isRequired,
+  fields: objectOf(any).isRequired,
+  fieldValidations: objectOf(any),
   onConfigChange: func.isRequired
 }
 
@@ -462,7 +461,6 @@ class TextInputToggleField extends React.Component {
 
   render() {
     const { meta: { touched, error } } = this.props;
-    console.log('this.state, touched, error:', this.state, touched, error)
     const showEditState = this.state.isEditMode || (touched && error);
 
     return (
@@ -494,7 +492,6 @@ class TextInputToggleField extends React.Component {
 
 const DualStateIconField = ({ input, ...rest }) => {
   function handleIconClick(boolVal) {
-    console.log('#'.repeat(50))
     input.onChange(boolVal);
   }
 
