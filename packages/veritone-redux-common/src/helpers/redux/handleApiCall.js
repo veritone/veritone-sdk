@@ -157,7 +157,7 @@ function makeApiCallReducer(key, [requestType, successType, failureType]) {
 }
 
 const selectors = {
-  fetchingStatus: (key, localState, optionalRequestId) => {
+  fetchingStatus(key, localState, optionalRequestId) {
     const requestId =
       optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
 
@@ -168,14 +168,14 @@ const selectors = {
     );
   },
 
-  fetchingStatusByRequestId: (key, localState) => {
+  fetchingStatusByRequestId(key, localState) {
     return get(
       localState.apiCallHandlers,
       [key, 'fetchingStatusByRequestId']
     );
   },
 
-  fetchingFailureMessage: (key, localState, optionalRequestId) => {
+  fetchingFailureMessage(key, localState, optionalRequestId) {
     const requestId =
       optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
 
@@ -186,7 +186,7 @@ const selectors = {
     );
   },
 
-  fetchingFailureMessagesByRequestId: (key, localState) => {
+  fetchingFailureMessagesByRequestId(key, localState) {
     return get(
       localState.apiCallHandlers,
       [key, 'fetchingFailureMessagesByRequestId'],
