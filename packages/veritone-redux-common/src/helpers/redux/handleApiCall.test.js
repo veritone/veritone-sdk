@@ -1,4 +1,5 @@
 import handleApiCall from './handleApiCall';
+import { fetchingStatus } from './';
 
 const GET = 'GET';
 const GET_SUCCESS = 'GET_SUCCESS';
@@ -43,10 +44,8 @@ describe('handleApiCall reducer factory', function() {
       });
 
       [
-        'isFetching',
-        'isFetchingRequestIds',
-        'fetchingFailed',
-        'fetchingFailedRequestIds',
+        'fetchingStatus',
+        'fetchingStatusByRequestId',
         'fetchingFailureMessage',
         'fetchingFailureMessagesByRequestId'
       ].forEach(name => expect(selectors).toHaveProperty(name));
@@ -55,7 +54,11 @@ describe('handleApiCall reducer factory', function() {
 
   const {
     reducer: testReducer,
-    selectors: { isFetching, fetchingFailed, fetchingFailureMessage }
+    selectors: {
+      fetchingStatusByRequestId,
+      fetchingStatus: selectFetchingStatus,
+      fetchingFailureMessage
+    }
   } = handleApiCall({
     types: [GET, GET_SUCCESS, GET_FAILURE]
   });
@@ -64,7 +67,7 @@ describe('handleApiCall reducer factory', function() {
     it('sets isFetching when a call is made', function() {
       let state = testReducer(undefined, {});
 
-      expect(isFetching(state)).toEqual(false);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.default);
 
       state = [
         undefined,
@@ -77,13 +80,13 @@ describe('handleApiCall reducer factory', function() {
         }
       ].reduce(testReducer);
 
-      expect(isFetching(state)).toEqual(true);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.fetching);
     });
 
     it('sets fetchingFailed when a call fails', function() {
       let state = testReducer(undefined, {});
 
-      expect(fetchingFailed(state)).toEqual(false);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.default);
 
       state = [
         undefined,
@@ -104,13 +107,13 @@ describe('handleApiCall reducer factory', function() {
         }
       ].reduce(testReducer);
 
-      expect(fetchingFailed(state)).toEqual(true);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.failure);
     });
 
     it('updates the failure message when a call fails', function() {
       let state = testReducer(undefined, {});
 
-      expect(fetchingFailed(state)).toEqual(false);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.default);
 
       state = [
         undefined,
@@ -132,7 +135,7 @@ describe('handleApiCall reducer factory', function() {
         }
       ].reduce(testReducer);
 
-      expect(fetchingFailed(state)).toEqual(true);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.failure);
       expect(fetchingFailureMessage(state)).toEqual('There was an error');
     });
 
@@ -174,7 +177,7 @@ describe('handleApiCall reducer factory', function() {
         }
       ].reduce(testReducer);
 
-      expect(isFetching(state)).toEqual(true);
+      expect(selectFetchingStatus(state)).toEqual(fetchingStatus.fetching);
 
       const finishedState = [
         {
@@ -188,8 +191,9 @@ describe('handleApiCall reducer factory', function() {
         }
       ].reduce(testReducer, state);
 
-      expect(isFetching(finishedState)).toEqual(false);
-      expect(fetchingFailed(finishedState)).toEqual(false);
+      expect(selectFetchingStatus(finishedState)).toEqual(
+        fetchingStatus.success
+      );
       expect(fetchingFailureMessage(finishedState)).toEqual('');
     });
   });
@@ -225,14 +229,16 @@ describe('handleApiCall reducer factory', function() {
       }
     ].reduce(testReducer);
 
-    expect(isFetching(state, 'my-first-request')).toEqual(false);
-    expect(fetchingFailed(state, 'my-first-request')).toEqual(true);
+    expect(selectFetchingStatus(state, 'my-first-request')).toEqual(
+      fetchingStatus.failure
+    );
     expect(fetchingFailureMessage(state, 'my-first-request')).toEqual(
       'something went wrong'
     );
 
-    expect(isFetching(state, 'my-second-request')).toEqual(true);
-    expect(fetchingFailed(state, 'my-second-request')).toEqual(false);
+    expect(selectFetchingStatus(state, 'my-second-request')).toEqual(
+      fetchingStatus.fetching
+    );
     expect(fetchingFailureMessage(state, 'my-second-request')).toEqual('');
 
     const finishedState = [
@@ -249,7 +255,13 @@ describe('handleApiCall reducer factory', function() {
       }
     ].reduce(testReducer, state);
 
-    expect(isFetching(finishedState, 'my-second-request')).toEqual(false);
-    expect(fetchingFailed(finishedState, 'my-second-request')).toEqual(false);
+    expect(selectFetchingStatus(finishedState, 'my-second-request')).toEqual(
+      fetchingStatus.success
+    );
+
+    expect(fetchingStatusByRequestId(finishedState)).toEqual({
+      'my-first-request': fetchingStatus.failure,
+      'my-second-request': fetchingStatus.success
+    });
   });
 });
