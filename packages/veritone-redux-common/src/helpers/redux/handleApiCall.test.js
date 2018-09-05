@@ -36,8 +36,22 @@ describe('handleApiCall reducer factory', function() {
 
       expect(state.apiCallHandlers[_key]).toBeTruthy();
     });
-  });
 
+    it('creates all needed selectors', function() {
+      const { selectors } = handleApiCall({
+        types: [GET, GET_SUCCESS, GET_FAILURE]
+      });
+
+      [
+        'isFetching',
+        'isFetchingRequestIds',
+        'fetchingFailed',
+        'fetchingFailedRequestIds',
+        'fetchingFailureMessage',
+        'fetchingFailureMessagesByRequestId'
+      ].forEach(name => expect(selectors).toHaveProperty(name));
+    });
+  });
 
   const {
     reducer: testReducer,
@@ -176,6 +190,7 @@ describe('handleApiCall reducer factory', function() {
 
       expect(isFetching(finishedState)).toEqual(false);
       expect(fetchingFailed(finishedState)).toEqual(false);
+      expect(fetchingFailureMessage(finishedState)).toEqual('');
     });
   });
 
