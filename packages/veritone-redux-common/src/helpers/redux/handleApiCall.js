@@ -170,10 +170,7 @@ const selectors = {
   },
 
   fetchingStatusByRequestId(key, localState) {
-    return get(
-      localState.apiCallHandlers,
-      [key, 'fetchingStatusByRequestId']
-    );
+    return get(localState.apiCallHandlers, [key, 'fetchingStatusByRequestId']);
   },
 
   fetchingFailureMessage(key, localState, optionalRequestId) {

@@ -2,4 +2,4 @@
 
 ## 3.3.3
 
-- First official release. Changelog, readme, first test added.
+* First official release. Changelog, readme, first test added.

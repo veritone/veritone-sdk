@@ -41,9 +41,7 @@ export default class InnerProfileMenu extends React.Component {
       <Fragment>
         <ListSubheader className={styles['header']} key="header">
           <div className={styles['user-avatar']}>
-            <Avatar
-              src={userProfileImage}
-            />
+            <Avatar src={userProfileImage} />
           </div>
           <div className={styles['user-profile']}>
             <div className={styles['full-name']}>

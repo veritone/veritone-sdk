@@ -14,6 +14,6 @@ export const promiseMiddleware = {
   CALLBACK_ERROR_ARGUMENT
 };
 
-export { createReducer, reduceReducers} from './reducer';
+export { createReducer, reduceReducers } from './reducer';
 export handleApiCall from './handleApiCall';
 export fetchingStatus from './fetchingStatus';

@@ -59,10 +59,7 @@ export default class ProfileMenu extends React.Component {
     return (
       <div>
         <IconButton className={this.props.className} onClick={this.openMenu}>
-          <Avatar
-            src={userProfileImage}
-            style={{ height: 35, width: 35 }}
-          />
+          <Avatar src={userProfileImage} style={{ height: 35, width: 35 }} />
         </IconButton>
         <Menu
           open={this.state.open}
