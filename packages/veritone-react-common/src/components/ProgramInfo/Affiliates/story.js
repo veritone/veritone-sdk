@@ -1,6 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { slice } from 'lodash';
 
 import Affiliates from './';
 
@@ -49,10 +50,18 @@ const generateAffiliates = function(n, setSchedule) {
   return result;
 };
 
+const AFFILIATES_LIST = generateAffiliates(222);
+
+const loadNextAffiliates = function ({limit, offset, nameSearchText = ''}) {
+  return Promise.resolve(
+    slice(AFFILIATES_LIST
+      .filter(affiliate => affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())), offset, offset + limit));
+};
+
 storiesOf('Affiliates', module)
   .add('Base', () => (
     <Affiliates
-      affiliates={generateAffiliates(51)}
+      loadNextAffiliates={loadNextAffiliates}
       selectedAffiliates={generateAffiliates(11, true)}
       onAffiliateChange={action('onAffiliateChange')}
       canBulkAddAffiliates
@@ -60,7 +69,7 @@ storiesOf('Affiliates', module)
   ))
   .add('No Initial Affiliates', () => (
     <Affiliates
-      affiliates={generateAffiliates(51)}
+      loadNextAffiliates={loadNextAffiliates}
       onAffiliateChange={action('onAffiliateChange')}
       canBulkAddAffiliates
     />

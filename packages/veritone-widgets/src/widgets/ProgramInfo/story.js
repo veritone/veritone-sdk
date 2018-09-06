@@ -71,6 +71,14 @@ const generateAffiliates = function(n, setSchedule) {
   return result;
 };
 
+const AFFILIATES_LIST = generateAffiliates(222);
+
+const loadNextAffiliates = function ({limit, offset, nameSearchText = ''}) {
+  return Promise.resolve(
+    slice(AFFILIATES_LIST
+      .filter(affiliate => affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())), offset, offset + limit));
+};
+
 class NoDataStory extends React.Component {
   state = { lastResult: {} };
 
@@ -139,7 +147,7 @@ class FullDataStory extends React.Component {
       },
       programFormats: ['live', 'recorded'],
       organizations: generateOrganizations(21),
-      affiliates: generateAffiliates(21)
+      loadNextAffiliates: loadNextAffiliates
     });
   }
 

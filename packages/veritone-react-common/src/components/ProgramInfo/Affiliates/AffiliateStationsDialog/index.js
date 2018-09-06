@@ -6,63 +6,57 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TextField from '@material-ui/core/TextField';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { debounce, get } from 'lodash';
-import { string, arrayOf, func, shape } from 'prop-types';
+import { debounce, get, slice } from 'lodash';
+import { func } from 'prop-types';
 import EditAffiliateDialog from '../EditAffiliateDialog';
 import styles from './styles.scss';
 
 export default class AffiliateStationsDialog extends Component {
   static propTypes = {
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
-    onAdd: func,
-    onClose: func
-  };
-
-  static defaultProps = {
-    affiliates: []
+    loadNextAffiliates: func.isRequired,
+    onAdd: func.isRequired,
+    onClose: func.isRequired
   };
 
   state = {
-    affiliatesView: this.props.affiliates || [],
+    affiliatesView: [],
+    isLoading: false,
+    hasNexPage: true,
     selectedAffiliate: null,
     searchText: '',
     page: 0,
-    rowsPerPage: 10,
-    rowsPerPageOptions: []
+    rowsPerPage: 10
   };
+
+  componentDidMount() {
+    this.fetchAffiliates(this.state.rowsPerPage, 0);
+  }
 
   onSearchTextChange = event => {
     const searchText = event.target.value ? event.target.value : '';
     this.setState({
       searchText: searchText,
-      page: 0
+      page: 0,
+      hasNexPage: true
     });
     this.handleSearchWithDebounce(searchText);
   };
 
   handleSearchWithDebounce = debounce(
     searchText => this.handleSearch(searchText),
-    300
+    500
   );
 
   handleSearch = searchText => {
     const searchTextLowerCase = searchText.toLowerCase();
-    this.setState({
-      affiliatesView: this.props.affiliates.filter(affiliate =>
-        affiliate.name.toLowerCase().includes(searchTextLowerCase)
-      )
-    });
+    this.fetchAffiliates(this.state.rowsPerPage, 0, searchTextLowerCase);
   };
 
   handleSelectAffiliate = affiliate => {
@@ -85,8 +79,50 @@ export default class AffiliateStationsDialog extends Component {
     this.props.onClose();
   };
 
-  handleChangePage = (event, page) => {
-    this.setState({ page });
+  onPreviousPage = () => {
+    this.setState(prevState => {
+      const page = prevState.page - 1;
+      const searchTextLowerCase = prevState.searchText.toLowerCase();
+      this.fetchAffiliates(prevState.rowsPerPage, page * prevState.rowsPerPage, searchTextLowerCase);
+      return {
+        page,
+        hasNexPage: true
+      };
+    });
+  };
+
+  onNextPage = () => {
+    this.setState(prevState => {
+      const page = prevState.page + 1;
+      const searchTextLowerCase = prevState.searchText.toLowerCase();
+      this.fetchAffiliates(prevState.rowsPerPage, page * prevState.rowsPerPage, searchTextLowerCase);
+      return {
+        page
+      };
+    });
+  };
+
+  fetchAffiliates = (limit, offset, nameSearchText) => {
+    this.setState({
+      isLoading: true
+    });
+    const fetchLimit = limit + 1;
+    this.props.loadNextAffiliates({limit: fetchLimit, offset, nameSearchText})
+      .then(affiliateResults => {
+        if (affiliateResults && affiliateResults.length) {
+          this.setState({
+            affiliatesView: slice(affiliateResults, 0, limit),
+            isLoading: false,
+            hasNexPage: affiliateResults.length === fetchLimit
+          });
+        } else {
+          this.setState({
+            affiliatesView: [],
+            isLoading: false,
+            hasNexPage: false
+          });
+        }
+      });
   };
 
   render() {
@@ -97,8 +133,9 @@ export default class AffiliateStationsDialog extends Component {
       affiliatesView,
       page,
       rowsPerPage,
-      rowsPerPageOptions,
-      selectedAffiliate
+      selectedAffiliate,
+      hasNexPage,
+      isLoading,
     } = this.state;
 
     return (
@@ -126,6 +163,7 @@ export default class AffiliateStationsDialog extends Component {
                 className={styles.dialogTitleSearchInput}
                 value={searchText}
                 onChange={this.onSearchTextChange}
+                disabled={isLoading}
               />
               <div className={styles.dialogTitleSeparator} />
               <IconButton onClick={onClose} aria-label="Close">
@@ -146,10 +184,6 @@ export default class AffiliateStationsDialog extends Component {
                 >
                   <TableBody>
                     {affiliatesView
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
                       .map(affiliate => {
                         return (
                           /* eslint-disable react/jsx-no-bind */
@@ -184,23 +218,24 @@ export default class AffiliateStationsDialog extends Component {
             )}
             {get(affiliatesView, 'length') > 0 && (
               <div className={styles.affiliatesViewPagination}>
-                <TablePagination
-                  component="div"
-                  count={affiliatesView.length}
-                  page={page}
-                  rowsPerPage={rowsPerPage}
-                  backIconButtonProps={{
-                    'aria-label': 'Previous Page'
-                  }}
-                  nextIconButtonProps={{
-                    'aria-label': 'Next Page'
-                  }}
-                  onChangePage={this.handleChangePage}
-                  rowsPerPageOptions={rowsPerPageOptions}
-                />
+                <div className={styles.affiliatesViewPaginationLabel}>{page * rowsPerPage + 1} - {page * rowsPerPage + affiliatesView.length}</div>
+                <IconButton
+                  aria-label="Previous Page"
+                  disabled={page === 0 || isLoading}
+                  onClick={this.onPreviousPage}
+                >
+                  <ChevronLeftIcon/>
+                </IconButton>
+                <IconButton
+                  aria-label="Next Page"
+                  disabled={!hasNexPage || isLoading}
+                  onClick={this.onNextPage}
+                >
+                  <ChevronRightIcon/>
+                </IconButton>
               </div>
             )}
-            {!get(affiliatesView, 'length') && (
+            {!get(affiliatesView, 'length') && !isLoading && (
               <div className={styles.noResultsMessage}>No Results</div>
             )}
           </DialogContent>

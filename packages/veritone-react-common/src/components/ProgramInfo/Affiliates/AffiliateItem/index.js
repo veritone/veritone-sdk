@@ -25,6 +25,7 @@ export default class Affiliates extends React.Component {
         })
       }).isRequired
     }).isRequired,
+    readOnly: bool,
     onDelete: func,
     onEdit: func
   };
@@ -48,45 +49,47 @@ export default class Affiliates extends React.Component {
   };
 
   render() {
-    const { affiliate, onDelete, onEdit } = this.props;
+    const { affiliate, readOnly, onDelete, onEdit } = this.props;
     const schedulerString = this.getScheduleString();
     return (
       /* eslint-disable react/jsx-no-bind */
       <div className={styles.affiliateContainer}>
         <div className={styles.title}>
           <div className={styles.name}>{affiliate.name}</div>
-          <div>
-            {onDelete && (
-              <IconButton
-                aria-label="Delete"
-                onClick={() => onDelete(affiliate)}
-                classes={{
-                  root: styles.actionButton
-                }}
-              >
-                <DeleteIcon
+          {!readOnly && (
+            <div>
+              {onDelete && (
+                <IconButton
+                  aria-label="Delete"
+                  onClick={() => onDelete(affiliate)}
                   classes={{
-                    root: styles.actionButtonIcon
+                    root: styles.actionButton
                   }}
-                />
-              </IconButton>
-            )}
-            {onEdit && (
-              <IconButton
-                aria-label="Edit"
-                onClick={() => onEdit(affiliate)}
-                classes={{
-                  root: styles.actionButton
-                }}
-              >
-                <EditIcon
+                >
+                  <DeleteIcon
+                    classes={{
+                      root: styles.actionButtonIcon
+                    }}
+                  />
+                </IconButton>
+              )}
+              {onEdit && (
+                <IconButton
+                  aria-label="Edit"
+                  onClick={() => onEdit(affiliate)}
                   classes={{
-                    root: styles.actionButtonIcon
+                    root: styles.actionButton
                   }}
-                />
-              </IconButton>
-            )}
-          </div>
+                >
+                  <EditIcon
+                    classes={{
+                      root: styles.actionButtonIcon
+                    }}
+                  />
+                </IconButton>
+              )}
+            </div>
+          )}
         </div>
         {schedulerString.length > 30 && (
           <Tooltip id={schedulerString} title={schedulerString} placement="top">

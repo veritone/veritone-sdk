@@ -6,6 +6,7 @@ import { combineReducers, createStore } from 'redux';
 
 import { createLogger } from 'redux-logger';
 import { applyMiddleware, compose } from 'redux';
+import { slice } from 'lodash';
 
 import ProgramInfo from './';
 
@@ -90,6 +91,14 @@ const generateAffiliates = function(n, setSchedule) {
   return result;
 };
 
+const AFFILIATES_LIST = generateAffiliates(222);
+
+const loadNextAffiliates = function ({limit, offset, nameSearchText = ''}) {
+  return Promise.resolve(
+    slice(AFFILIATES_LIST
+      .filter(affiliate => affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())), offset, offset + limit));
+};
+
 @connect(
   state => ({
     form: state.form.programInfo
@@ -130,11 +139,11 @@ class FullDataStory extends React.Component {
                 isNational: true,
                 acls: generateAcls(11, 'viewer'),
                 isPublic: false,
-                affiliates: generateAffiliates(11, true)
+                affiliates: generateAffiliates(10, true)
               }}
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(21)}
+              loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>
@@ -192,11 +201,11 @@ class FullDataReadOnlyStory extends React.Component {
                 isNational: true,
                 acls: generateAcls(11, 'viewer'),
                 isPublic: false,
-                affiliates: generateAffiliates(11, true)
+                affiliates: generateAffiliates(10, true)
               }}
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(21)}
+              loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>
@@ -243,7 +252,7 @@ class NoProgramDataStory extends React.Component {
               canBulkAddAffiliates
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(51)}
+              loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>

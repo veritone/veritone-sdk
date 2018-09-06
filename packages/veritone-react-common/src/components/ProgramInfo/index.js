@@ -80,14 +80,9 @@ class ProgramInfo extends React.Component {
         name: string.isRequired
       })
     ),
-    canEditAffiliates: bool,
+    loadNextAffiliates: func,
     canBulkAddAffiliates: bool,
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
+    loadAllAffiliates: func,
     readOnly: bool,
     onUploadImage: func,
     onRemoveImage: func,
@@ -262,14 +257,14 @@ class ProgramInfo extends React.Component {
   render() {
     const {
       canShare,
-      canEditAffiliates,
       canBulkAddAffiliates,
       programFormats,
       organizations,
-      affiliates,
       readOnly,
       onUploadImage,
-      onRemoveImage
+      onRemoveImage,
+      loadNextAffiliates,
+      loadAllAffiliates
     } = this.props;
 
     const { program, openFilePicker } = this.state;
@@ -475,19 +470,18 @@ class ProgramInfo extends React.Component {
                 </div>
               )}
 
-            {canEditAffiliates &&
-              !readOnly && <div className={styles.programInfoDivider} />}
-            {canEditAffiliates &&
-              !readOnly && (
-                <div className={styles.affiliatesSection}>
-                  <Affiliates
-                    selectedAffiliates={program.affiliates}
-                    affiliates={affiliates}
-                    canBulkAddAffiliates={canBulkAddAffiliates}
-                    onAffiliatesChange={this.handleAffiliatesChange}
-                  />
-                </div>
-              )}
+            {!readOnly && <div className={styles.programInfoDivider} />}
+            {!readOnly && (
+              <div className={styles.affiliatesSection}>
+                <Affiliates
+                  selectedAffiliates={program.affiliates}
+                  loadNextAffiliates={loadNextAffiliates}
+                  canBulkAddAffiliates={canBulkAddAffiliates}
+                  loadAllAffiliates={loadAllAffiliates}
+                  onAffiliatesChange={this.handleAffiliatesChange}
+                />
+              </div>
+            )}
           </div>
         </Form>
       </MuiThemeProvider>

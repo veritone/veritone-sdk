@@ -56,14 +56,9 @@ class ProgramInfoWidget extends React.Component {
         name: string.isRequired
       })
     ),
-    canEditAffiliates: bool,
     canBulkAddAffiliates: bool,
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
+    loadNextAffiliates: func,
+    loadAllAffiliates: func,
     pick: func,
     _widgetId: string,
     relativeSize: number, // optional - used to scale text sizes from hosting app

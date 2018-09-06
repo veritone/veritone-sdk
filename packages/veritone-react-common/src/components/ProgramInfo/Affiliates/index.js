@@ -28,13 +28,10 @@ export default class Affiliates extends React.Component {
         }).isRequired
       })
     ),
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
-    onAffiliatesChange: func.isRequired,
+    loadNextAffiliates: func,
+    loadAllAffiliates: func,
+    onAffiliatesChange: func,
+    readOnly: bool,
     canBulkAddAffiliates: bool
   };
 
@@ -81,9 +78,8 @@ export default class Affiliates extends React.Component {
   };
 
   handleAddAffiliateStation = newAffiliate => {
-    this.props.onAffiliatesChange(
-      concat(this.props.selectedAffiliates, newAffiliate)
-    );
+    const affiliates = reject(this.props.selectedAffiliates, { id: newAffiliate.id });
+    this.props.onAffiliatesChange(concat(affiliates, newAffiliate));
   };
 
   handleBulkAddAffiliates = newAffiliates => {
@@ -138,7 +134,7 @@ export default class Affiliates extends React.Component {
   };
 
   render() {
-    const { selectedAffiliates, canBulkAddAffiliates, affiliates } = this.props;
+    const { selectedAffiliates, readOnly, canBulkAddAffiliates, loadNextAffiliates, loadAllAffiliates } = this.props;
     const { isAffiliateStationsDialogOpen, isBulkAddAffiliateDialogOpen, affiliateToEdit } = this.state;
 
     return (
@@ -155,6 +151,7 @@ export default class Affiliates extends React.Component {
                 <div key={affiliate.id} className={styles.affiliateItem}>
                   <AffiliateItem
                     affiliate={affiliate}
+                    readOnly={readOnly}
                     onDelete={this.handleDeleteAffiliate}
                     onEdit={this.handleOnEditAffiliateClick}
                   />
@@ -163,35 +160,37 @@ export default class Affiliates extends React.Component {
             })}
           </div>
         )}
-        <div className={styles.addAffiliateActionButtons}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={this.openAffiliateStationsDialog}
-            classes={{
-              root: styles.addAffiliateButton,
-              label: styles.addAffiliateButtonLabel
-            }}
-          >
-            ADD AFFILIATE
-          </Button>
-          {canBulkAddAffiliates && (
+        {!readOnly && (
+          <div className={styles.addAffiliateActionButtons}>
             <Button
               variant="outlined"
               color="primary"
-              onClick={this.openBulkAddAffiliateDialog}
+              onClick={this.openAffiliateStationsDialog}
               classes={{
                 root: styles.addAffiliateButton,
                 label: styles.addAffiliateButtonLabel
               }}
             >
-              BULK ADD AFFILIATES
+              ADD AFFILIATE
             </Button>
-          )}
-        </div>
+            {canBulkAddAffiliates && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.openBulkAddAffiliateDialog}
+                classes={{
+                  root: styles.addAffiliateButton,
+                  label: styles.addAffiliateButtonLabel
+                }}
+              >
+                BULK ADD AFFILIATES
+              </Button>
+            )}
+          </div>
+        )}
         {isAffiliateStationsDialogOpen && (
           <AffiliateStationsDialog
-            affiliates={differenceBy(affiliates, selectedAffiliates, 'id')}
+            loadNextAffiliates={loadNextAffiliates}
             onClose={this.closeAffiliateStationsDialog}
             onAdd={this.handleAddAffiliateStation}
           />
@@ -206,7 +205,7 @@ export default class Affiliates extends React.Component {
         )}
         {isBulkAddAffiliateDialogOpen && (
           <BulkAddAffiliatesDialog
-            affiliates={affiliates}
+            loadAllAffiliates={loadAllAffiliates}
             onClose={this.closeBulkAddAffiliateDialog}
             onAdd={this.handleBulkAddAffiliates}
           />

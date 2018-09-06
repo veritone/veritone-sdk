@@ -13,12 +13,7 @@ import styles from './styles.scss';
 
 export default class BulkAddAffiliatesDialog extends Component {
   static propTypes = {
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ).isRequired,
+    loadAllAffiliates: func.isRequired,
     onAdd: func.isRequired,
     onClose: func
   };
@@ -34,19 +29,26 @@ export default class BulkAddAffiliatesDialog extends Component {
   };
 
   handleBulkAddAffiliates = scheduleByLowerCaseAffiliateName => {
-    const result = [];
-    this.props.affiliates.forEach(affiliate => {
-      const affiliateName = affiliate.name.toLowerCase();
-      if (scheduleByLowerCaseAffiliateName[affiliateName]) {
-        result.push({
-          ...affiliate,
-          schedule: {
-            ...scheduleByLowerCaseAffiliateName[affiliateName]
-          }
-        });
-      }
+    this.props.loadAllAffiliates().then(affiliates => {
+      const result = [];
+      affiliates.forEach(affiliate => {
+        const affiliateName = affiliate.name.toLowerCase();
+        if (scheduleByLowerCaseAffiliateName[affiliateName]) {
+          result.push({
+            ...affiliate,
+            schedule: {
+              ...scheduleByLowerCaseAffiliateName[affiliateName]
+            }
+          });
+        }
+      });
+
+      // TODO: show processing progress bar
+      // TODO: report added affiliates count
+      // TODO: report ignored affiliates count
+
+      this.props.onAdd(result);
     });
-    this.props.onAdd(result);
   };
 
   csvToAffiliateSchedulesMap = csvContent => {

@@ -238,7 +238,7 @@ export default class SelectAclGroupDialog extends Component {
             </div>
           )}
           {!get(organizationsView, 'length') &&
-            get(organizations, 'length') && (
+            get(organizations, 'length') > 0 && (
               <div className={styles.noResultsMessage}>No Results</div>
             )}
         </DialogContent>
