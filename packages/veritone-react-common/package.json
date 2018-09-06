@@ -72,7 +72,7 @@
     "enzyme-adapter-react-16.3": "1.0.0",
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
-    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-import": "^2.10.0",
     "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.8.2",
