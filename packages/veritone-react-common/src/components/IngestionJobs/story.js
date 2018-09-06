@@ -12,6 +12,7 @@ const jobInfo = {
           id: '35986',
           isActive: true,
           name: 'test time',
+          permission: 'viewer',
           jobs: {
             records: [
               {

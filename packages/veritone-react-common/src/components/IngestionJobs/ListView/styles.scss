@@ -38,3 +38,17 @@
   align-content: center;
   align-items: center;
 }
+
+
+.ingestionTileViewCell {
+  .gap {
+    width: 1em;
+    height: 1px;
+    display: inline-block;
+  }
+
+  .sharedIcon {
+    color: rgba(0, 0, 0, 0.54);
+    vertical-align: middle;
+  }
+}
