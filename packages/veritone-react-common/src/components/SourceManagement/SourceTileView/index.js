@@ -50,9 +50,13 @@ export default class SourceTileView extends React.Component {
     const isLivestream = data.isLivestream;
     const cellContents = [name];
     if (isLivestream) {
-      cellContents.push((<span className={classNames(styles.gap)} />));
+      cellContents.push((<span key={data.id + 'space1'} className={classNames(styles.gap)} />));
       cellContents.push((
-        <ButtonWrapper data={data} onClick={this.handleLivestreamButton}>
+        <ButtonWrapper
+          key={data.id + 'live'}
+          data={data}
+          onClick={this.handleLivestreamButton}
+        >
           <Button
             variant="outlined"
             size="small"
@@ -64,10 +68,10 @@ export default class SourceTileView extends React.Component {
       ));
     } 
 
-    if (data.permission) {
-      cellContents.push((<span className={classNames(styles.gap)} />));
+    if (data.permission === 'viewer') {
+      cellContents.push((<span key={data.id + 'space2'} className={classNames(styles.gap)} />));
       cellContents.push((
-        <Tooltip title="Shared with You" placement="right">
+        <Tooltip title="Shared with You" placement="right" key={data.id + 'share'}>
           <SharedIcon className={styles.sharedIcon} />
         </Tooltip>
       ));
@@ -91,6 +95,13 @@ export default class SourceTileView extends React.Component {
 
   renderUpdatedDate = date => {
     return capitalize(distanceInWordsToNow(date, { includeSeconds: true }));
+  };
+
+  transformActions = (actions, data) => {
+    if (data && data.permission === 'viewer') {
+      return ['View', 'Remove'];
+    }
+    return actions;
   };
 
   render() {
@@ -145,6 +156,7 @@ export default class SourceTileView extends React.Component {
           actions={['Edit', 'Delete']}
           protectedActions={['Delete']}
           onSelectItem={this.props.onSelectMenuItem}
+          transformActions={this.transformActions}
         />
       </TableComp>
     );

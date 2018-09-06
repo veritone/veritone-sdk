@@ -111,7 +111,7 @@ export default class MenuColumn extends React.Component {
                 ) : (
                   <MenuItem
                     key={s}
-                    onClick={partial(this.handleClick, s, ...rest)}
+                    onClick={partial(this.handleClick, s, data, ...rest)}
                   >
                     {startCase(camelCase(this.props.transformLabel(s)))}
                   </MenuItem>
