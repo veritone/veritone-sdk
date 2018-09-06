@@ -21,6 +21,10 @@ export default class ProfileMenu extends React.Component {
     })
   };
 
+  static defaultProps = {
+    user: {}
+  };
+
   state = {
     open: false,
     anchorEl: null
