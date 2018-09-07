@@ -10,6 +10,8 @@ import { capitalize, omit, noop } from 'lodash';
 
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import SharedIcon from '@material-ui/icons/People';
 import ButtonWrapper from '../../share-components/buttons/ButtonWrapper';
 import styles from './styles.scss';
 
@@ -46,25 +48,40 @@ export default class SourceTileView extends React.Component {
 
   renderSourceName = (name, data) => {
     const isLivestream = data.isLivestream;
-    if (!isLivestream) {
-      return name;
-    } else {
-      return (
-        <span className={classNames(styles.sourceTileViewCell)}>
-          {name}
-          <span className={classNames(styles.gap)} />
-          <ButtonWrapper data={data} onClick={this.handleLivestreamButton}>
-            <Button
-              variant="outlined"
-              size="small"
-              className={classNames(styles.liveNowButton)}
-            >
-              Live Now
-            </Button>
-          </ButtonWrapper>
-        </span>
-      );
+    const cellContents = [name];
+    if (isLivestream) {
+      cellContents.push((<span key={data.id + 'space1'} className={classNames(styles.gap)} />));
+      cellContents.push((
+        <ButtonWrapper
+          key={data.id + 'live'}
+          data={data}
+          onClick={this.handleLivestreamButton}
+        >
+          <Button
+            variant="outlined"
+            size="small"
+            className={classNames(styles.liveNowButton)}
+          >
+            Live Now
+          </Button>
+        </ButtonWrapper>
+      ));
+    } 
+
+    if (data.permission === 'viewer') {
+      cellContents.push((<span key={data.id + 'space2'} className={classNames(styles.gap)} />));
+      cellContents.push((
+        <Tooltip title="Shared with You" placement="right" key={data.id + 'share'}>
+          <SharedIcon className={styles.sharedIcon} />
+        </Tooltip>
+      ));
     }
+
+    return (
+      <span className={classNames(styles.sourceTileViewCell)}>
+        {cellContents}
+      </span>
+    );
   };
 
   handleLivestreamButton = (event, data) => {
@@ -78,6 +95,13 @@ export default class SourceTileView extends React.Component {
 
   renderUpdatedDate = date => {
     return capitalize(distanceInWordsToNow(date, { includeSeconds: true }));
+  };
+
+  transformActions = (actions, data) => {
+    if (data && data.permission === 'viewer') {
+      return ['View', 'Remove'];
+    }
+    return actions;
   };
 
   render() {
@@ -132,6 +156,7 @@ export default class SourceTileView extends React.Component {
           actions={['Edit', 'Delete']}
           protectedActions={['Delete']}
           onSelectItem={this.props.onSelectMenuItem}
+          transformActions={this.transformActions}
         />
       </TableComp>
     );

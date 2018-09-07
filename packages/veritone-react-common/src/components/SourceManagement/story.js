@@ -18,6 +18,7 @@ const sourceResult = {
         username: 'therealtrump',
         password: 'password'
       },
+      permission: 'viewer',
       sourceType: {
         id: '1',
         name: 'Audio',
