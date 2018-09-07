@@ -6,7 +6,7 @@ import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
 import Avatar from '@material-ui/core/Avatar';
 import { format, distanceInWordsToNow } from 'date-fns';
-import { capitalize, omit, noop } from 'lodash';
+import { capitalize, omit, noop, get } from 'lodash';
 
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
@@ -34,8 +34,9 @@ export default class SourceTileView extends React.Component {
     return this.props.sources[i];
   };
 
-  renderThumbnail = thumbnailUrl => {
-    return (
+  renderThumbnail = (thumbnailUrl, source) => {
+    const sourceTypeIconClass = get(source, 'sourceType.iconClass');
+    return thumbnailUrl ? (
       <Avatar
         src={thumbnailUrl}
         style={{
@@ -43,7 +44,7 @@ export default class SourceTileView extends React.Component {
           height: '30px'
         }}
       />
-    );
+    ) : (<span className={`${sourceTypeIconClass} ${styles.sourceTileViewIcon}`} />);
   };
 
   renderSourceName = (name, data) => {
