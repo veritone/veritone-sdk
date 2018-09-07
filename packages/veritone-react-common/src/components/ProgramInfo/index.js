@@ -26,7 +26,6 @@ import {
 import { reduxForm, Form } from 'redux-form';
 import blue from '@material-ui/core//colors/blue';
 import { get } from 'lodash';
-import SharingConfiguration from '../SharingConfiguration';
 import Affiliates from './Affiliates';
 
 import styles from './styles.scss';
@@ -46,13 +45,6 @@ class ProgramInfo extends React.Component {
       format: string,
       language: string,
       isNational: bool,
-      acls: arrayOf(
-        shape({
-          organizationId: string.isRequired,
-          permission: string.isRequired
-        })
-      ),
-      isPublic: bool,
       affiliateById: objectOf(
         shape({
           id: string.isRequired,
@@ -74,13 +66,6 @@ class ProgramInfo extends React.Component {
       )
     }),
     programFormats: arrayOf(string),
-    canShare: bool,
-    organizations: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
     loadNextAffiliates: func,
     canBulkAddAffiliates: bool,
     loadAllAffiliates: func,
@@ -185,28 +170,6 @@ class ProgramInfo extends React.Component {
     });
   };
 
-  handleAclsChange = acls => {
-    this.setState(prevState => {
-      return {
-        program: {
-          ...prevState.program,
-          acls
-        }
-      };
-    });
-  };
-
-  handleIsPublicChange = isPublic => {
-    this.setState(prevState => {
-      return {
-        program: {
-          ...prevState.program,
-          isPublic
-        }
-      };
-    });
-  };
-
   handleAffiliatesChange = affiliateById => {
     this.setState(prevState => {
       return {
@@ -257,9 +220,7 @@ class ProgramInfo extends React.Component {
 
   render() {
     const {
-      canShare,
       programFormats,
-      organizations,
       readOnly,
       onUploadImage,
       onRemoveImage,
@@ -453,26 +414,6 @@ class ProgramInfo extends React.Component {
                 className={styles.isNationalLabel}
               />
             </div>
-
-            {canShare &&
-              !readOnly && <div className={styles.programInfoDivider} />}
-            {canShare &&
-              !readOnly && (
-                <div className={styles.shareSection}>
-                  <SharingConfiguration
-                    acls={program.acls}
-                    organizations={organizations}
-                    isPublic={program.isPublic}
-                    defaultPermission="viewer"
-                    onAclsChange={this.handleAclsChange}
-                    showMakePublic
-                    onIsPublicChange={this.handleIsPublicChange}
-                    sharingSectionDescription="Share this program across organizations."
-                    aclGroupsSectionDescription="Grant organizations permission to this program and its contents. Sharing programs will also share related Sources."
-                    publicSectionDescription="Share this program and all of its content with all of Veritone."
-                  />
-                </div>
-              )}
 
             {!readOnly && <div className={styles.programInfoDivider} />}
             {!readOnly && (

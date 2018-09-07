@@ -33,13 +33,6 @@ class ProgramInfoWidget extends React.Component {
       format: string,
       language: string,
       isNational: bool,
-      acls: arrayOf(
-        shape({
-          organizationId: string.isRequired,
-          permission: string.isRequired
-        })
-      ),
-      isPublic: bool,
       affiliateById: objectOf(
         shape({
           id: string.isRequired,
@@ -50,13 +43,6 @@ class ProgramInfoWidget extends React.Component {
       )
     }),
     programFormats: arrayOf(string),
-    canShare: bool,
-    organizations: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
     canBulkAddAffiliates: bool,
     loadNextAffiliates: func,
     loadAllAffiliates: func,

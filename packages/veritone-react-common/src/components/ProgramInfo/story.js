@@ -24,28 +24,6 @@ const store = createStore(
   )
 );
 
-const generateAcls = function(n, permission) {
-  const acls = [];
-  for (let i = 1; i <= n; i++) {
-    acls.push({
-      organizationId: 'orgId' + i,
-      permission: permission
-    });
-  }
-  return acls;
-};
-
-const generateOrganizations = function(n) {
-  const organizations = [];
-  for (let i = 1; i <= n; i++) {
-    organizations.push({
-      id: 'orgId' + i,
-      name: 'Organization ' + i
-    });
-  }
-  return organizations;
-};
-
 const generateAffiliates = function(n, setSchedule) {
   const result = [];
   for (let i = 1; i <= n; i++) {
@@ -142,7 +120,6 @@ class FullDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canShare
               canEditAffiliates
               canBulkAddAffiliates
               program={{
@@ -155,12 +132,9 @@ class FullDataStory extends React.Component {
                 format: 'live',
                 language: 'en',
                 isNational: true,
-                acls: generateAcls(11, 'viewer'),
-                isPublic: false,
                 affiliateById: generateAffiliateById(10, true)
               }}
               programFormats={['live', 'recorded']}
-              organizations={generateOrganizations(21)}
               loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
@@ -204,7 +178,6 @@ class FullDataReadOnlyStory extends React.Component {
           <div>
             <ProgramInfo
               readOnly
-              canShare
               canEditAffiliates
               canBulkAddAffiliates
               program={{
@@ -217,12 +190,9 @@ class FullDataReadOnlyStory extends React.Component {
                 format: 'live',
                 language: 'en',
                 isNational: true,
-                acls: generateAcls(11, 'viewer'),
-                isPublic: false,
                 affiliateById: generateAffiliateById(10, true)
               }}
               programFormats={['live', 'recorded']}
-              organizations={generateOrganizations(21)}
               loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
@@ -265,11 +235,9 @@ class NoProgramDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canShare
               canEditAffiliates
               canBulkAddAffiliates
               programFormats={['live', 'recorded']}
-              organizations={generateOrganizations(21)}
               loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
