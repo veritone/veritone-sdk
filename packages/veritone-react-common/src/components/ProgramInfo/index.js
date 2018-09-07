@@ -68,6 +68,7 @@ class ProgramInfo extends React.Component {
     programFormats: arrayOf(string),
     loadNextAffiliates: func,
     canBulkAddAffiliates: bool,
+    canEditAffiliates: bool,
     loadAllAffiliates: func,
     readOnly: bool,
     onUploadImage: func,
@@ -225,7 +226,8 @@ class ProgramInfo extends React.Component {
       onUploadImage,
       onRemoveImage,
       loadNextAffiliates,
-      loadAllAffiliates
+      loadAllAffiliates,
+      canEditAffiliates
     } = this.props;
 
     // TODO OLEKS: intentionally disabled. Enable when bulk add is implemented
@@ -415,8 +417,8 @@ class ProgramInfo extends React.Component {
               />
             </div>
 
-            {!readOnly && <div className={styles.programInfoDivider} />}
-            {!readOnly && (
+            {canEditAffiliates && <div className={styles.programInfoDivider} />}
+            {canEditAffiliates && (
               <div className={styles.affiliatesSection}>
                 <Affiliates
                   selectedAffiliateById={program.affiliateById}
@@ -424,6 +426,7 @@ class ProgramInfo extends React.Component {
                   canBulkAddAffiliates={canBulkAddAffiliates}
                   loadAllAffiliates={loadAllAffiliates}
                   onAffiliatesChange={this.handleAffiliatesChange}
+                  readOnly={readOnly}
                 />
               </div>
             )}
