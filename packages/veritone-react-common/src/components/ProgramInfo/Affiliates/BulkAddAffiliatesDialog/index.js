@@ -160,7 +160,7 @@ export default class BulkAddAffiliatesDialog extends Component {
     const { onClose } = this.props;
 
     // TODO OLES: use when schedule parsing and merge is implemented
-    //eslint-disable-next-line react/no-unused-vars
+    //eslint-disable-next-line no-unused-vars
     const { onAdd } = this.props;
 
     return (
