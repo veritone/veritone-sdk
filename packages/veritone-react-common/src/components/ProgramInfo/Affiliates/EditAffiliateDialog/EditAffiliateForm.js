@@ -26,112 +26,133 @@ const days = [
 const EditAffiliateForm = reduxForm({
   form: 'affiliate',
   initialValues: {}
-})(({ handleSubmit, onDelete, onCancel, children, submitting, invalid }) => (
-  <form onSubmit={handleSubmit}>
-    <div className={styles.scheduleConfig}>
-      <div className={styles.scheduleDateFieldSection}>
-        <FormLabel
-          focused={false}
-          classes={{
-            root: styles.scheduleDateFieldLabel
-          }}
-        >
-          Schedule Start Date
-        </FormLabel>
-        <Today className={styles.todayIcon} />
-        <Field type="date" name="schedule.start" component={TextField} />
-      </div>
-      <div className={styles.scheduleDateFieldSection}>
-        <FormLabel
-          focused={false}
-          classes={{
-            root: styles.scheduleDateFieldLabel
-          }}
-        >
-          Schedule End Date
-        </FormLabel>
-        <Today className={styles.todayIcon} />
-        <Field
-          type="date"
-          name="schedule.end"
-          component={TextField}
-        />
-      </div>
-      <div className={styles.scheduleTitle}>Schedule</div>
-      {days.map(d => (
-        <div
-          key={d}
-          className={cx(
-            styles.timeRangeContainer,
-            styles.weekSelectionContainer
-          )}
-        >
-          <div style={{ width: 150 }}>
-            <Field
-              component={Checkbox}
-              color="primary"
-              name={`schedule.weekly.selectedDays.${d}`}
-              label={capitalize(d)}
-            />
-          </div>
-          <FieldArray
-            name={`schedule.weekly.${d}`}
-            component={MultiTimeRange}
+})(
+  ({
+    handleSubmit,
+    onDelete,
+    onCancel,
+    defaultTimeZone,
+    readOnly,
+    children,
+    submitting,
+    invalid
+  }) => (
+    <form onSubmit={handleSubmit}>
+      <div className={styles.scheduleConfig}>
+        <div className={styles.scheduleDateFieldSection}>
+          <FormLabel
+            focused={false}
+            classes={{
+              root: styles.scheduleDateFieldLabel
+            }}
+          >
+            Schedule Start Date
+          </FormLabel>
+          <Today className={styles.todayIcon} />
+          <Field
+            type="date"
+            name="schedule.start"
+            component={TextField}
+            disabled={readOnly}
           />
         </div>
-      ))}
-    </div>
-    <br />
-    <DialogActions
-      classes={{
-        root: styles.actionButtons
-      }}
-    >
-      {onDelete && (
+        <div className={styles.scheduleDateFieldSection}>
+          <FormLabel
+            focused={false}
+            classes={{
+              root: styles.scheduleDateFieldLabel
+            }}
+          >
+            Schedule End Date
+          </FormLabel>
+          <Today className={styles.todayIcon} />
+          <Field
+            type="date"
+            name="schedule.end"
+            component={TextField}
+            disabled={readOnly}
+          />
+        </div>
+        <div className={styles.scheduleTitle}>Schedule</div>
+        {days.map(d => (
+          <div
+            key={d}
+            className={cx(
+              styles.timeRangeContainer,
+              styles.weekSelectionContainer
+            )}
+          >
+            <div style={{ width: 150 }}>
+              <Field
+                component={Checkbox}
+                color="primary"
+                name={`schedule.weekly.selectedDays.${d}`}
+                label={capitalize(d)}
+                disabled={readOnly}
+              />
+            </div>
+            <FieldArray
+              name={`schedule.weekly.${d}`}
+              defaultTimeZone={defaultTimeZone}
+              component={MultiTimeRange}
+              readOnly={readOnly}
+            />
+          </div>
+        ))}
+      </div>
+      <br />
+      <DialogActions
+        classes={{
+          root: styles.actionButtons
+        }}
+      >
+        {onDelete && (
+          <Button
+            color="secondary"
+            variant="contained"
+            disabled={submitting}
+            onClick={onDelete}
+            classes={{
+              label: styles.actionButtonLabel,
+              root: styles.deleteActionButton,
+              containedSecondary: styles.containedSecondaryColorOverride
+            }}
+          >
+            Delete Affiliate
+          </Button>
+        )}
         <Button
-          color="secondary"
-          variant="contained"
-          disabled={submitting}
-          onClick={onDelete}
           classes={{
             label: styles.actionButtonLabel,
-            root: styles.deleteActionButton,
-            containedSecondary: styles.containedSecondaryColorOverride
+            root: styles.actionButton
+          }}
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          color="primary"
+          variant="contained"
+          disabled={submitting || invalid}
+          classes={{
+            label: styles.actionButtonLabel,
+            root: styles.actionButton
           }}
         >
-          Delete Affiliate
+          Save
         </Button>
-      )}
-      <Button
-        classes={{
-          label: styles.actionButtonLabel,
-          root: styles.actionButton
-        }}
-        onClick={onCancel}
-      >
-        Cancel
-      </Button>
-      <Button
-        type="submit"
-        color="primary"
-        variant="contained"
-        disabled={submitting || invalid}
-        classes={{
-          label: styles.actionButtonLabel,
-          root: styles.actionButton
-        }}
-      >
-        Save
-      </Button>
-    </DialogActions>
-  </form>
-));
+      </DialogActions>
+    </form>
+  )
+);
 
 EditAffiliateForm.propTypes = {
   handleCancel: func,
   initialValues: shape({
     id: string.isRequired,
     name: string.isRequired,
+    timeZone: string,
     schedule: shape({
       scheduleType: string,
       start: string,
@@ -145,10 +166,12 @@ EditAffiliateForm.propTypes = {
       })
     }).isRequired
   }),
+  defaultTimeZone: string,
+  readOnly: bool,
   onSubmit: func
 };
 
-const MultiTimeRange = ({ fields, readOnly }) => {
+const MultiTimeRange = ({ fields, defaultTimeZone, readOnly }) => {
   /* eslint-disable react/jsx-no-bind */
   return (
     <div className={styles.multiTimeRange}>
@@ -167,7 +190,8 @@ const MultiTimeRange = ({ fields, readOnly }) => {
                 onClick={() =>
                   fields.push({
                     start: '',
-                    end: ''
+                    end: '',
+                    timeZone: defaultTimeZone
                   })
                 }
               >
@@ -182,6 +206,7 @@ const MultiTimeRange = ({ fields, readOnly }) => {
 
 MultiTimeRange.propTypes = {
   fields: objectOf(any),
+  defaultTimeZone: string,
   readOnly: bool
 };
 

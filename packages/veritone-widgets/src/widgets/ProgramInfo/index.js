@@ -40,10 +40,11 @@ class ProgramInfoWidget extends React.Component {
         })
       ),
       isPublic: bool,
-      affiliates: arrayOf(
+      affiliateById: objectOf(
         shape({
           id: string.isRequired,
           name: string.isRequired,
+          timeZone: string,
           schedule: objectOf(any).isRequired
         })
       )
@@ -65,7 +66,6 @@ class ProgramInfoWidget extends React.Component {
     color: string,
     submit: func.isRequired
   };
-
 
   static defaultProps = {
     program: {}

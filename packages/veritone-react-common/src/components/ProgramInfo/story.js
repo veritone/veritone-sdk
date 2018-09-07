@@ -51,7 +51,8 @@ const generateAffiliates = function(n, setSchedule) {
   for (let i = 1; i <= n; i++) {
     const affiliate = {
       id: String(i),
-      name: 'Affiliate Station ' + i
+      name: 'Affiliate Station ' + i,
+      timeZone: 'US/Eastern'
     };
     if (setSchedule) {
       affiliate.schedule = {
@@ -66,17 +67,20 @@ const generateAffiliates = function(n, setSchedule) {
           Wednesday: [
             {
               start: '16:33',
-              end: '17:21'
+              end: '17:21',
+              timeZone: 'US/Eastern'
             }
           ],
           Thursday: [
             {
               start: '12:33',
-              end: '03:21'
+              end: '03:21',
+              timeZone: 'US/Eastern'
             },
             {
               start: '01:00',
-              end: '01:00'
+              end: '01:00',
+              timeZone: 'US/Eastern'
             }
           ],
           selectedDays: {
@@ -91,12 +95,26 @@ const generateAffiliates = function(n, setSchedule) {
   return result;
 };
 
+const generateAffiliateById = function(n, setSchedule) {
+  const affiliateById = {};
+  generateAffiliates(n, setSchedule).forEach(
+    affiliate => (affiliateById[affiliate.id] = affiliate)
+  );
+  return affiliateById;
+};
+
 const AFFILIATES_LIST = generateAffiliates(222);
 
-const loadNextAffiliates = function ({limit, offset, nameSearchText = ''}) {
+const loadNextAffiliates = function({ limit, offset, nameSearchText = '' }) {
   return Promise.resolve(
-    slice(AFFILIATES_LIST
-      .filter(affiliate => affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())), offset, offset + limit));
+    slice(
+      AFFILIATES_LIST.filter(affiliate =>
+        affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())
+      ),
+      offset,
+      offset + limit
+    )
+  );
 };
 
 @connect(
@@ -139,7 +157,7 @@ class FullDataStory extends React.Component {
                 isNational: true,
                 acls: generateAcls(11, 'viewer'),
                 isPublic: false,
-                affiliates: generateAffiliates(10, true)
+                affiliateById: generateAffiliateById(10, true)
               }}
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
@@ -201,7 +219,7 @@ class FullDataReadOnlyStory extends React.Component {
                 isNational: true,
                 acls: generateAcls(11, 'viewer'),
                 isPublic: false,
-                affiliates: generateAffiliates(10, true)
+                affiliateById: generateAffiliateById(10, true)
               }}
               programFormats={['live', 'recorded']}
               organizations={generateOrganizations(21)}
@@ -293,7 +311,10 @@ class BaseStory extends React.Component {
       <div>
         <Provider store={store}>
           <div>
-            <ProgramInfo onSubmit={this.handleSubmit} />
+            <ProgramInfo
+              onSubmit={this.handleSubmit}
+              loadNextAffiliates={loadNextAffiliates}
+            />
             <button type="button" onClick={this.submit}>
               Submit
             </button>

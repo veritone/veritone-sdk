@@ -12,6 +12,7 @@ export default class Affiliates extends React.Component {
     affiliate: shape({
       id: string.isRequired,
       name: string.isRequired,
+      timeZone: string,
       schedule: shape({
         scheduleType: string,
         start: string,

@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { func, string, arrayOf, shape, bool, objectOf } from 'prop-types';
-import { get, concat, findIndex, reject, intersectionBy, differenceBy } from 'lodash';
+import { func, string, shape, bool, objectOf } from 'prop-types';
+import { get, keys, values } from 'lodash';
 import AffiliateItem from './AffiliateItem';
 import styles from './styles.scss';
 import AffiliateStationsDialog from './AffiliateStationsDialog';
@@ -10,10 +10,11 @@ import BulkAddAffiliatesDialog from './BulkAddAffiliatesDialog';
 
 export default class Affiliates extends React.Component {
   static propTypes = {
-    selectedAffiliates: arrayOf(
+    selectedAffiliateById: objectOf(
       shape({
         id: string.isRequired,
         name: string.isRequired,
+        timeZone: string,
         schedule: shape({
           scheduleType: string,
           start: string,
@@ -78,64 +79,79 @@ export default class Affiliates extends React.Component {
   };
 
   handleAddAffiliateStation = newAffiliate => {
-    const affiliates = reject(this.props.selectedAffiliates, { id: newAffiliate.id });
-    this.props.onAffiliatesChange(concat(affiliates, newAffiliate));
+    const affiliateById = {
+      ...this.props.selectedAffiliateById
+    };
+    affiliateById[newAffiliate.id] = newAffiliate;
+    this.props.onAffiliatesChange(affiliateById);
   };
 
-  handleBulkAddAffiliates = newAffiliates => {
+  handleBulkAddAffiliates = bulkAddAffiliateById => {
     this.closeBulkAddAffiliateDialog();
-    const result = [];
-    // TODO: optimize this by using affiliates map as a component and callback inputs.
-    const affiliatesToKeep = differenceBy(this.props.selectedAffiliates, newAffiliates, 'id');
-    affiliatesToKeep.forEach(affiliate => result.push(affiliate));
-    const affiliatesToMerge = intersectionBy(newAffiliates, this.props.selectedAffiliates, 'id');
-    affiliatesToMerge.forEach(affiliate => {
-      const index = findIndex(this.props.selectedAffiliates, { id: affiliate.id });
-      const mergedAffiliate = {
-        ...affiliate
-      };
-      mergedAffiliate.schedule.start = this.props.selectedAffiliates[index].schedule.start;
-      mergedAffiliate.schedule.end = this.props.selectedAffiliates[index].schedule.end;
-      result.push(mergedAffiliate);
-    });
-    const affiliatesToAdd = differenceBy(newAffiliates, this.props.selectedAffiliates, 'id');
-    affiliatesToAdd.forEach(affiliate => result.push(affiliate));
-    this.props.onAffiliatesChange(result);
+    for (let affiliateId in keys(bulkAddAffiliateById)) {
+      if (this.props.selectedAffiliateById[affiliateId]) {
+        bulkAddAffiliateById[
+          affiliateId
+        ].schedule.start = this.props.selectedAffiliateById[
+          affiliateId
+        ].schedule.start;
+        bulkAddAffiliateById[
+          affiliateId
+        ].schedule.end = this.props.selectedAffiliateById[
+          affiliateId
+        ].schedule.end;
+      }
+    }
+    const affiliateById = {
+      ...this.props.selectedAffiliateById,
+      ...bulkAddAffiliateById
+    };
+    this.props.onAffiliatesChange(affiliateById);
   };
 
   handleEditAffiliate = newAffiliate => {
     this.closeEditAffiliateDialog();
-    for(let selectedDay in Object.keys(get(newAffiliate, 'schedule.weekly.selectedDays', {}))) {
+    for (let selectedDay in keys(
+      get(newAffiliate, 'schedule.weekly.selectedDays', {})
+    )) {
       if (newAffiliate.schedule.weekly.selectedDays[selectedDay]) {
         delete newAffiliate.schedule.weekly.selectedDays[selectedDay];
         delete newAffiliate.schedule.weekly[selectedDay];
       }
     }
-    const newAffiliates = [...this.props.selectedAffiliates];
-    const affiliateIndex = findIndex(newAffiliates, { id: newAffiliate.id });
-    if (affiliateIndex >= 0) {
-      newAffiliates[affiliateIndex] = newAffiliate;
-      this.props.onAffiliatesChange(newAffiliates);
-    }
+    const affiliateById = {
+      ...this.props.selectedAffiliateById
+    };
+    affiliateById[newAffiliate.id] = newAffiliate;
+    this.props.onAffiliatesChange(affiliateById);
   };
 
   handleDeleteAffiliate = affiliate => {
     this.closeEditAffiliateDialog();
-    this.props.onAffiliatesChange(
-      reject(this.props.selectedAffiliates, { id: affiliate.id })
-    );
+    const affiliateById = {
+      ...this.props.selectedAffiliateById
+    };
+    delete affiliateById[affiliate.id];
+    this.props.onAffiliatesChange(affiliateById);
   };
 
   handleDeleteEditedAffiliate = () => {
-    this.props.onAffiliatesChange(
-      reject(this.props.selectedAffiliates, { id: this.state.affiliateToEdit.id })
-    );
-    this.closeEditAffiliateDialog();
+    this.handleDeleteAffiliate(this.state.affiliateToEdit);
   };
 
   render() {
-    const { selectedAffiliates, readOnly, canBulkAddAffiliates, loadNextAffiliates, loadAllAffiliates } = this.props;
-    const { isAffiliateStationsDialogOpen, isBulkAddAffiliateDialogOpen, affiliateToEdit } = this.state;
+    const {
+      selectedAffiliateById,
+      readOnly,
+      canBulkAddAffiliates,
+      loadNextAffiliates,
+      loadAllAffiliates
+    } = this.props;
+    const {
+      isAffiliateStationsDialogOpen,
+      isBulkAddAffiliateDialogOpen,
+      affiliateToEdit
+    } = this.state;
 
     return (
       <div className={styles.affiliatesContainer}>
@@ -144,9 +160,9 @@ export default class Affiliates extends React.Component {
           Assign affiliated stations that also broadcast programming from this
           ingestion source.
         </div>
-        {get(selectedAffiliates, 'length') > 0 && (
+        {values(selectedAffiliateById).length > 0 && (
           <div className={styles.affiliatesListSection}>
-            {selectedAffiliates.map(affiliate => {
+            {values(selectedAffiliateById).map(affiliate => {
               return (
                 <div key={affiliate.id} className={styles.affiliateItem}>
                   <AffiliateItem

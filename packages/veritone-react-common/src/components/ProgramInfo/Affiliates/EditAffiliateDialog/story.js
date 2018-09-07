@@ -50,6 +50,7 @@ class FullDataStory extends React.Component {
               affiliate={{
                 id: 'stationId',
                 name: 'Affiliate Station 1',
+                timeZone: 'US/Eastern',
                 schedule: {
                   scheduleType: 'Recurring',
                   start: '2018-04-14T19:48:25.147Z',
@@ -62,17 +63,20 @@ class FullDataStory extends React.Component {
                     Wednesday: [
                       {
                         start: '16:33',
-                        end: '17:21'
+                        end: '17:21',
+                        timeZone: 'US/Eastern'
                       }
                     ],
                     Thursday: [
                       {
                         start: '12:33',
-                        end: '03:21'
+                        end: '03:21',
+                        timeZone: 'US/Eastern'
                       },
                       {
                         start: '01:00',
-                        end: '01:00'
+                        end: '01:00',
+                        timeZone: 'US/Eastern'
                       }
                     ],
                     selectedDays: {

@@ -7,7 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import { get } from 'lodash';
-import { string, arrayOf, func, shape } from 'prop-types';
+import { func } from 'prop-types';
 import FilePicker from 'components/FilePicker';
 import styles from './styles.scss';
 
@@ -47,30 +47,35 @@ export default class BulkAddAffiliatesDialog extends Component {
       // TODO: report added affiliates count
       // TODO: report ignored affiliates count
 
-      this.props.onAdd(result);
+      // this.props.onAdd(result);
+      return null;
     });
   };
 
   csvToAffiliateSchedulesMap = csvContent => {
     /* TODO: handle usecases like
       W/ W/o CSV header:
-        KXIA-FM	MF12M5:30A+SAT12M6A+SUN12M5A/1
-        KBFM-FM	SAT6A10A/1
-                MFSA12M6A+SUN12M5A/1
-                MS12M6A/1
-                SS9P5A/1
-                SUN10P3A/1
-                MF10A12N+MF1P2P/1
-                MF10A12N/1
-                MF12N3P/1
-                "Th2P4P,Su10A12P"
+      KXIA-FM,MF12M5:30A+SAT12M6A+SUN12M5A/1
+      KBFM-FM,SAT6A10A/1
+      MFSA12M6A+SUN12M5A/1
+      MS12M6A/1
+      SS9P5A/1
+      SUN10P3A/1
+      MF10A12N+MF1P2P/1
+      MF10A12N/1
+      MF12N3P/1
+      "Th2P4P,Su10A12P"
      */
     const scheduleByLowerCaseAffiliateName = {};
     const allLines = csvContent.split(/\r\n|\n/);
     allLines.forEach(csvLine => {
       const line = csvLine.replace('"', '');
       const affiliateData = line.split(',');
-      if (affiliateData.length < 2 || !get(affiliateData[0], length) || !get(affiliateData[1], length)) {
+      if (
+        affiliateData.length < 2 ||
+        !get(affiliateData[0], length) ||
+        !get(affiliateData[1], length)
+      ) {
         return;
       }
       const affiliateNameLowerCase = affiliateData[0].toLowerCase();
@@ -93,17 +98,23 @@ export default class BulkAddAffiliatesDialog extends Component {
 
       for (let i = 1; i < affiliateData.length; i++) {
         const daySchedule = this.parseDaySchedule(affiliateData[1]);
-        if (!get(daySchedule, 'day.length') ||
+        if (
+          !get(daySchedule, 'day.length') ||
           !get(daySchedule, 'hours.start.length') ||
-          !get(daySchedule, 'hours.end.length')) {
+          !get(daySchedule, 'hours.end.length')
+        ) {
           continue;
         }
         if (!schedule.weekly[daySchedule.day]) {
           schedule.weekly[daySchedule.day] = [];
         }
-        if (schedule.weekly[daySchedule.day].some(hours =>
-            hours.start === daySchedule.hours.start &&
-            hours.end === daySchedule.hours.end)) {
+        if (
+          schedule.weekly[daySchedule.day].some(
+            hours =>
+              hours.start === daySchedule.hours.start &&
+              hours.end === daySchedule.hours.end
+          )
+        ) {
           continue;
         }
         schedule.weekly[daySchedule.day].push(daySchedule.hours);
@@ -131,7 +142,9 @@ export default class BulkAddAffiliatesDialog extends Component {
       this.setState({
         selectingFile: false
       });
-      const scheduleByAffiliateName = this.csvToAffiliateSchedulesMap(fileReader.result);
+      const scheduleByAffiliateName = this.csvToAffiliateSchedulesMap(
+        fileReader.result
+      );
       this.handleBulkAddAffiliates(scheduleByAffiliateName);
     };
     fileReader.readAsText(files[0]);
@@ -146,68 +159,72 @@ export default class BulkAddAffiliatesDialog extends Component {
   render() {
     const { onClose } = this.props;
 
+    // TODO OLES: use when schedule parsing and merge is implemented
+    //eslint-disable-next-line react/no-unused-vars
+    const { onAdd } = this.props;
+
     return (
-        <Dialog
-          open
-          onClose={onClose}
-          disableBackdropClick
-          aria-labelledby="bulk-add-affiliates-dialog"
-          classes={{
-            paper: styles.bulkAddAffiliatesDialogPaper
-          }}
-        >
-          {this.state.selectingFile && (
-            <FilePicker
-              accept="text/csv"
-              allowUrlUpload={false}
-              onRequestClose={this.handleCloseFilePicker}
-              onPickFiles={this.handleFilesSelected}
-              width={640}
-              height={482}
-            />
-          )}
-          {!this.state.selectingFile && (
-            <Fragment>
-              <DialogTitle
+      <Dialog
+        open
+        onClose={onClose}
+        disableBackdropClick
+        aria-labelledby="bulk-add-affiliates-dialog"
+        classes={{
+          paper: styles.bulkAddAffiliatesDialogPaper
+        }}
+      >
+        {this.state.selectingFile && (
+          <FilePicker
+            accept="text/csv"
+            allowUrlUpload={false}
+            onRequestClose={this.handleCloseFilePicker}
+            onPickFiles={this.handleFilesSelected}
+            width={640}
+            height={482}
+          />
+        )}
+        {!this.state.selectingFile && (
+          <Fragment>
+            <DialogTitle
+              classes={{
+                root: styles.dialogTitle
+              }}
+            >
+              <div>Bulk Add Affiliates</div>
+              <IconButton onClick={onClose} aria-label="Close">
+                <Icon className="icon-close-exit" />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent
+              classes={{
+                root: styles.dialogContent
+              }}
+            >
+              <div className={styles.bulkAddHelperText}>
+                Use the provided template to bulk add affiliates.
+              </div>
+            </DialogContent>
+            <DialogActions
+              classes={{
+                root: styles.actionButtons,
+                action: styles.actionButton
+              }}
+            >
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={this.openFilePicker}
                 classes={{
-                  root: styles.dialogTitle
+                  label: styles.actionButtonLabel
                 }}
               >
-                <div>Bulk Add Affiliates</div>
-                <IconButton onClick={onClose} aria-label="Close">
-                  <Icon className="icon-close-exit" />
-                </IconButton>
-              </DialogTitle>
-              <DialogContent
-                classes={{
-                  root: styles.dialogContent
-                }}
-              >
-                <div className={styles.bulkAddHelperText}>
-                  Use the provided template to bulk add affiliates.
-                </div>
-              </DialogContent>
-              <DialogActions
-                classes={{
-                  root: styles.actionButtons,
-                  action: styles.actionButton
-                }}
-              >
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={this.openFilePicker}
-                  classes={{
-                    label: styles.actionButtonLabel
-                  }}
-                >
-                  <Icon className="icon-cloud_upload" />
-                  Browse To Upload
-                </Button>
-              </DialogActions>
-            </Fragment>
-          )}
-        </Dialog>
+                <Icon className="icon-cloud_upload" />
+                Browse To Upload
+              </Button>
+            </DialogActions>
+          </Fragment>
+        )}
+      </Dialog>
     );
   }
 }

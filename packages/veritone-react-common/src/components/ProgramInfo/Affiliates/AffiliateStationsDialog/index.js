@@ -83,7 +83,11 @@ export default class AffiliateStationsDialog extends Component {
     this.setState(prevState => {
       const page = prevState.page - 1;
       const searchTextLowerCase = prevState.searchText.toLowerCase();
-      this.fetchAffiliates(prevState.rowsPerPage, page * prevState.rowsPerPage, searchTextLowerCase);
+      this.fetchAffiliates(
+        prevState.rowsPerPage,
+        page * prevState.rowsPerPage,
+        searchTextLowerCase
+      );
       return {
         page,
         hasNexPage: true
@@ -95,7 +99,11 @@ export default class AffiliateStationsDialog extends Component {
     this.setState(prevState => {
       const page = prevState.page + 1;
       const searchTextLowerCase = prevState.searchText.toLowerCase();
-      this.fetchAffiliates(prevState.rowsPerPage, page * prevState.rowsPerPage, searchTextLowerCase);
+      this.fetchAffiliates(
+        prevState.rowsPerPage,
+        page * prevState.rowsPerPage,
+        searchTextLowerCase
+      );
       return {
         page
       };
@@ -107,7 +115,8 @@ export default class AffiliateStationsDialog extends Component {
       isLoading: true
     });
     const fetchLimit = limit + 1;
-    this.props.loadNextAffiliates({limit: fetchLimit, offset, nameSearchText})
+    this.props
+      .loadNextAffiliates({ limit: fetchLimit, offset, nameSearchText })
       .then(affiliateResults => {
         if (affiliateResults && affiliateResults.length) {
           this.setState({
@@ -122,6 +131,7 @@ export default class AffiliateStationsDialog extends Component {
             hasNexPage: false
           });
         }
+        return;
       });
   };
 
@@ -135,7 +145,7 @@ export default class AffiliateStationsDialog extends Component {
       rowsPerPage,
       selectedAffiliate,
       hasNexPage,
-      isLoading,
+      isLoading
     } = this.state;
 
     return (
@@ -163,7 +173,6 @@ export default class AffiliateStationsDialog extends Component {
                 className={styles.dialogTitleSearchInput}
                 value={searchText}
                 onChange={this.onSearchTextChange}
-                disabled={isLoading}
               />
               <div className={styles.dialogTitleSeparator} />
               <IconButton onClick={onClose} aria-label="Close">
@@ -183,61 +192,64 @@ export default class AffiliateStationsDialog extends Component {
                   aria-labelledby="tableTitle"
                 >
                   <TableBody>
-                    {affiliatesView
-                      .map(affiliate => {
-                        return (
-                          /* eslint-disable react/jsx-no-bind */
-                          <TableRow hover tabIndex={-1} key={affiliate.id}>
-                            <TableCell
-                              scope="row"
-                              padding="none"
-                              classes={{
-                                body: styles.nameCell
-                              }}
-                            >
-                              <div className={styles.nameCellContent}>
-                                <div>{affiliate.name}</div>
-                                <div className={styles.selectAffiliateButton}>
-                                  <Button
-                                    color="primary"
-                                    onClick={() =>
-                                      this.handleSelectAffiliate(affiliate)
-                                    }
-                                  >
-                                    SELECT
-                                  </Button>
-                                </div>
+                    {affiliatesView.map(affiliate => {
+                      return (
+                        /* eslint-disable react/jsx-no-bind */
+                        <TableRow hover tabIndex={-1} key={affiliate.id}>
+                          <TableCell
+                            scope="row"
+                            padding="none"
+                            classes={{
+                              body: styles.nameCell
+                            }}
+                          >
+                            <div className={styles.nameCellContent}>
+                              <div>{affiliate.name}</div>
+                              <div className={styles.selectAffiliateButton}>
+                                <Button
+                                  color="primary"
+                                  onClick={() =>
+                                    this.handleSelectAffiliate(affiliate)
+                                  }
+                                >
+                                  SELECT
+                                </Button>
                               </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
             )}
             {get(affiliatesView, 'length') > 0 && (
               <div className={styles.affiliatesViewPagination}>
-                <div className={styles.affiliatesViewPaginationLabel}>{page * rowsPerPage + 1} - {page * rowsPerPage + affiliatesView.length}</div>
+                <div className={styles.affiliatesViewPaginationLabel}>
+                  {page * rowsPerPage + 1} -{' '}
+                  {page * rowsPerPage + affiliatesView.length}
+                </div>
                 <IconButton
                   aria-label="Previous Page"
                   disabled={page === 0 || isLoading}
                   onClick={this.onPreviousPage}
                 >
-                  <ChevronLeftIcon/>
+                  <ChevronLeftIcon />
                 </IconButton>
                 <IconButton
                   aria-label="Next Page"
                   disabled={!hasNexPage || isLoading}
                   onClick={this.onNextPage}
                 >
-                  <ChevronRightIcon/>
+                  <ChevronRightIcon />
                 </IconButton>
               </div>
             )}
-            {!get(affiliatesView, 'length') && !isLoading && (
-              <div className={styles.noResultsMessage}>No Results</div>
-            )}
+            {!get(affiliatesView, 'length') &&
+              !isLoading && (
+                <div className={styles.noResultsMessage}>No Results</div>
+              )}
           </DialogContent>
           <DialogActions
             classes={{

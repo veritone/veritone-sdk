@@ -16,7 +16,8 @@ export default class EditAffiliateDialog extends Component {
   static propTypes = {
     affiliate: shape({
       id: string.isRequired,
-      name: string.isRequired
+      name: string.isRequired,
+      timeZone: string
     }),
     onSave: func.isRequired,
     onDelete: func,
@@ -61,7 +62,15 @@ export default class EditAffiliateDialog extends Component {
             ],
             keys(get(this.props.affiliate.schedule, 'weekly'))
             // ... provide them with default start/end ranges
-          ).reduce((r, day) => ({ ...r, [day]: [{ start: '', end: '' }] }), {}),
+          ).reduce(
+            (r, day) => ({
+              ...r,
+              [day]: [
+                { start: '', end: '', timeZone: this.props.affiliate.timeZone }
+              ]
+            }),
+            {}
+          ),
           // and assume any days given explicit initial values should be selected
           selectedDays: mapValues(
             get(this.props.affiliate.schedule, 'weekly'),
@@ -113,6 +122,7 @@ export default class EditAffiliateDialog extends Component {
         >
           <EditAffiliateForm
             initialValues={affiliate}
+            defaultTimeZone={affiliate.timeZone}
             onSubmit={this.handleOnSubmit}
             onDelete={onDelete}
             onCancel={onClose}

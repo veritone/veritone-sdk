@@ -53,10 +53,11 @@ class ProgramInfo extends React.Component {
         })
       ),
       isPublic: bool,
-      affiliates: arrayOf(
+      affiliateById: objectOf(
         shape({
           id: string.isRequired,
           name: string.isRequired,
+          timeZone: string,
           schedule: shape({
             scheduleType: string,
             start: string,
@@ -206,12 +207,12 @@ class ProgramInfo extends React.Component {
     });
   };
 
-  handleAffiliatesChange = affiliates => {
+  handleAffiliatesChange = affiliateById => {
     this.setState(prevState => {
       return {
         program: {
           ...prevState.program,
-          affiliates
+          affiliateById
         }
       };
     });
@@ -257,7 +258,6 @@ class ProgramInfo extends React.Component {
   render() {
     const {
       canShare,
-      canBulkAddAffiliates,
       programFormats,
       organizations,
       readOnly,
@@ -266,6 +266,10 @@ class ProgramInfo extends React.Component {
       loadNextAffiliates,
       loadAllAffiliates
     } = this.props;
+
+    // TODO OLEKS: intentionally disabled. Enable when bulk add is implemented
+    let { canBulkAddAffiliates } = this.props;
+    canBulkAddAffiliates = false;
 
     const { program, openFilePicker } = this.state;
 
@@ -474,7 +478,7 @@ class ProgramInfo extends React.Component {
             {!readOnly && (
               <div className={styles.affiliatesSection}>
                 <Affiliates
-                  selectedAffiliates={program.affiliates}
+                  selectedAffiliateById={program.affiliateById}
                   loadNextAffiliates={loadNextAffiliates}
                   canBulkAddAffiliates={canBulkAddAffiliates}
                   loadAllAffiliates={loadAllAffiliates}

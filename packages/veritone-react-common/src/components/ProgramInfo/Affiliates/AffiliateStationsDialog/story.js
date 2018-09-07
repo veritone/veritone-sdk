@@ -10,7 +10,8 @@ const generateAffiliates = function(n) {
   for (let i = 1; i <= n; i++) {
     result.push({
       id: String(i),
-      name: 'Affiliate Station ' + i
+      name: 'Affiliate Station ' + i,
+      timeZone: 'US/Eastern'
     });
   }
   return result;
@@ -18,10 +19,16 @@ const generateAffiliates = function(n) {
 
 const AFFILIATES_LIST = generateAffiliates(222);
 
-const loadNextAffiliates = function ({limit, offset, nameSearchText = ''}) {
+const loadNextAffiliates = function({ limit, offset, nameSearchText = '' }) {
   return Promise.resolve(
-    slice(AFFILIATES_LIST
-      .filter(affiliate => affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())), offset, offset + limit));
+    slice(
+      AFFILIATES_LIST.filter(affiliate =>
+        affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())
+      ),
+      offset,
+      offset + limit
+    )
+  );
 };
 
 storiesOf('Affiliate Stations Dialog', module).add('Base', () => (
