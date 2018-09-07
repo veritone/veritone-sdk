@@ -7,6 +7,10 @@ import MenuColumn from 'components/DataTable/MenuColumn';
 import StatusPill from 'components/StatusPill';
 import { format } from 'date-fns';
 import { map, uniq, omit, noop } from 'lodash';
+import classNames from 'classnames';
+
+import Tooltip from '@material-ui/core/Tooltip';
+import SharedIcon from '@material-ui/icons/People';
 
 import styles from './styles.scss';
 
@@ -27,6 +31,25 @@ export default class IngestionJobTileView extends React.Component {
 
   getIngestionJobData = i => {
     return this.props.jobs[i];
+  };
+
+  renderNameCell = (name, data) => {
+    const cellContents = [name];
+
+    if (data.permission === 'viewer') {
+      cellContents.push((<span key={data.id + 'space2'} className={classNames(styles.gap)} />));
+      cellContents.push((
+        <Tooltip title="Shared with You" placement="right" key={data.id + 'share'}>
+          <SharedIcon className={styles.sharedIcon} />
+        </Tooltip>
+      ));
+    }
+
+    return (
+      <span className={classNames(styles.ingestionTileViewCell)}>
+        {cellContents}
+      </span>
+    );
   };
 
   renderEnginesIcons = taskTemplates => {
@@ -63,6 +86,13 @@ export default class IngestionJobTileView extends React.Component {
     return <StatusPill status={isActive ? 'active' : 'inactive'} />;
   };
 
+  transformActions = (actions, data) => {
+    if (data && data.permission === 'viewer') {
+      return ['View', 'Remove'];
+    }
+    return actions;
+  };
+
   render() {
     const TableComp = this.props.paginate ? PaginatedTable : Table;
     const tableProps = omit(this.props, ['jobs', 'paginate', 'onFetchData']);
@@ -80,7 +110,11 @@ export default class IngestionJobTileView extends React.Component {
         rowHeight={48}
         {...tableProps}
       >
-        <Column dataKey="name" header="Job Name" />
+        <Column
+          header="Job Name"
+          dataKey="name"
+          cellRenderer={this.renderNameCell}
+        />
         <Column
           dataKey="isActive"
           header="Status"
@@ -113,6 +147,7 @@ export default class IngestionJobTileView extends React.Component {
           actions={['Edit', 'Delete']}
           protectedActions={['Delete']}
           onSelectItem={this.props.onSelectMenuItem}
+          transformActions={this.transformActions}
         />
       </TableComp>
     );
