@@ -41,7 +41,8 @@ class SearchBarContainer extends React.Component{
 
     constructor(props){
         super(props)
-        console.log('props.engineCategories ', props.engineCategories);
+
+        this.openModalRef = React.createRef();
 
         this.state = {
           open: false,
@@ -162,7 +163,7 @@ class SearchBarContainer extends React.Component{
               { Modal ? (
                   <Modal 
                     engineCategoryId={this.state.selectedEngine.id}
-                    ref={ (input) => { this.openModalRef = input; } }
+                    ref={ this.openModalRef }
                     onCancel={this.handleCancel} 
                     add={this.handleAdd}
                   /> 

@@ -6,7 +6,7 @@ import { object } from '@storybook/addon-knobs/react';
 import { CSPToSearchParameters } from './parser';
 
 import SearchBarContainer from './SearchBarForm/containers/SearchBarContainer'
-import SearchParameters from './';
+import {SearchParameters} from './SearchParameters';
 
 import DemoApp from './SearchBarForm/App/DemoApp'
 import {engineCategories} from './SearchBarForm/EngineModelInfo';
