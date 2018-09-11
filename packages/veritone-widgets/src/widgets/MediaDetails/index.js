@@ -924,7 +924,7 @@ class MediaDetailsWidget extends React.Component {
                   this.props,
                   'tdo.details.veritoneFile.filename.length',
                   0
-                ) > 64 && (
+                ) > 120 && (
                   <Tooltip
                     id="truncated-file-name-tooltip"
                     title={get(this.props, 'tdo.details.veritoneFile.filename')}
@@ -941,7 +941,7 @@ class MediaDetailsWidget extends React.Component {
                         this.props,
                         'tdo.details.veritoneFile.filename',
                         ''
-                      ).substring(0, 63) + '...'}
+                      ).substring(0, 120) + '...'}
                     </div>
                   </Tooltip>
                 )}
@@ -950,7 +950,7 @@ class MediaDetailsWidget extends React.Component {
                     this.props,
                     'tdo.details.veritoneFile.filename.length',
                     0
-                  ) <= 64 && (
+                  ) <= 120 && (
                     <div className={styles.pageHeaderTitleLabel}>
                       {get(
                         this.props,
@@ -1021,6 +1021,7 @@ class MediaDetailsWidget extends React.Component {
                           <Tooltip
                             id="tooltip-show-overflow-menu"
                             title="Show more options"
+                            leaveDelay={20}
                             PopperProps={{
                               style: {
                                 pointerEvents: 'none',
