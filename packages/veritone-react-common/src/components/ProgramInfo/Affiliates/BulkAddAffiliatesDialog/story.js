@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { generateAffiliates } from "../test-helpers";
+import { generateAffiliates } from '../test-helpers';
 
 import BulkAddAffiliatesDialog from './';
 

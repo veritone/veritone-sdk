@@ -115,7 +115,11 @@ export default class AffiliateStationsDialog extends Component {
       isLoading: true
     });
     const fetchLimit = limit + 1;
-    const fetchNextPagePromise = this.props.loadNextAffiliates({ limit: fetchLimit, offset, nameSearchText });
+    const fetchNextPagePromise = this.props.loadNextAffiliates({
+      limit: fetchLimit,
+      offset,
+      nameSearchText
+    });
     if (!fetchNextPagePromise) {
       return;
     }

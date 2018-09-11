@@ -3,8 +3,8 @@ import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
-import { combineReducers, createStore  } from 'redux';
-import { generateAffiliateById, loadNextAffiliates } from "./test-helpers";
+import { combineReducers, createStore } from 'redux';
+import { generateAffiliateById, loadNextAffiliates } from './test-helpers';
 
 import Affiliates from './';
 

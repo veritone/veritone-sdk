@@ -3,10 +3,12 @@ import { storiesOf } from '@storybook/react';
 import { Provider, connect } from 'react-redux';
 import { reducer as formReducer, submit } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
-
 import { createLogger } from 'redux-logger';
 import { applyMiddleware, compose } from 'redux';
-import { slice } from 'lodash';
+import {
+  generateAffiliateById,
+  loadNextAffiliates
+} from './Affiliates/test-helpers';
 
 import ProgramInfo from './';
 
@@ -23,77 +25,6 @@ const store = createStore(
     )
   )
 );
-
-const generateAffiliates = function(n, setSchedule) {
-  const result = [];
-  for (let i = 1; i <= n; i++) {
-    const affiliate = {
-      id: String(i),
-      name: 'Affiliate Station ' + i,
-      timeZone: 'US/Eastern'
-    };
-    if (setSchedule) {
-      affiliate.schedule = {
-        scheduleType: 'Recurring',
-        start: '2018-04-14T19:48:25.147Z',
-        end: '2018-04-17T19:48:25.147Z',
-        repeatEvery: {
-          number: '1',
-          period: 'week'
-        },
-        weekly: {
-          Wednesday: [
-            {
-              start: '16:33',
-              end: '17:21',
-              timeZone: 'US/Eastern'
-            }
-          ],
-          Thursday: [
-            {
-              start: '12:33',
-              end: '03:21',
-              timeZone: 'US/Eastern'
-            },
-            {
-              start: '01:00',
-              end: '01:00',
-              timeZone: 'US/Eastern'
-            }
-          ],
-          selectedDays: {
-            Wednesday: true,
-            Thursday: true
-          }
-        }
-      };
-    }
-    result.push(affiliate);
-  }
-  return result;
-};
-
-const generateAffiliateById = function(n, setSchedule) {
-  const affiliateById = {};
-  generateAffiliates(n, setSchedule).forEach(
-    affiliate => (affiliateById[affiliate.id] = affiliate)
-  );
-  return affiliateById;
-};
-
-const AFFILIATES_LIST = generateAffiliates(222);
-
-const loadNextAffiliates = function({ limit, offset, nameSearchText = '' }) {
-  return Promise.resolve(
-    slice(
-      AFFILIATES_LIST.filter(affiliate =>
-        affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())
-      ),
-      offset,
-      offset + limit
-    )
-  );
-};
 
 @connect(
   state => ({
@@ -123,8 +54,6 @@ class FullDataStory extends React.Component {
               canEditAffiliates
               canBulkAddAffiliates
               program={{
-                id: '12345',
-                name: 'Test program',
                 programImage: '',
                 programLiveImage: '',
                 description: 'This is a test program data with description',

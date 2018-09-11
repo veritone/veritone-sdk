@@ -59,7 +59,11 @@ export const generateAffiliateById = function(n, setSchedule) {
 
 export const AFFILIATES_LIST = generateAffiliates(222);
 
-export const loadNextAffiliates = function({ limit, offset, nameSearchText = '' }) {
+export const loadNextAffiliates = function({
+  limit,
+  offset,
+  nameSearchText = ''
+}) {
   return Promise.resolve(
     slice(
       AFFILIATES_LIST.filter(affiliate =>

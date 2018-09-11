@@ -123,6 +123,13 @@ class ProgramInfo extends React.Component {
     return null;
   }
 
+  handleOnUploadImage = imageName => {
+    if (this.props.readOnly) {
+      return;
+    }
+    this.props.onUploadImage(imageName);
+  };
+
   handleDescriptionChange = event => {
     const newValue = event.target.value;
     this.setState(prevState => {
@@ -266,25 +273,29 @@ class ProgramInfo extends React.Component {
                           program.programLiveImage
                         }
                       />
-                      <div className={styles.imageOverlay}>
-                        <EditIcon
-                          classes={{ root: styles.editProgramLiveImageIcon }}
-                          className="icon-mode_edit2"
-                          onClick={() => onUploadImage('programLiveImage')}
-                        />
-                        <DeleteIcon
-                          classes={{ root: styles.editProgramLiveImageIcon }}
-                          className="icon-trashcan"
-                          onClick={() => onRemoveImage('programLiveImage')}
-                        />
-                      </div>
+                      {!readOnly && (
+                        <div className={styles.imageOverlay}>
+                          <EditIcon
+                            classes={{ root: styles.editProgramLiveImageIcon }}
+                            className="icon-mode_edit2"
+                            onClick={() => onUploadImage('programLiveImage')}
+                          />
+                          <DeleteIcon
+                            classes={{ root: styles.editProgramLiveImageIcon }}
+                            className="icon-trashcan"
+                            onClick={() => onRemoveImage('programLiveImage')}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                   {!get(program, 'signedProgramLiveImage.length') &&
                     !get(program, 'programLiveImage.length') && (
                       <div
                         className={styles.programLiveImageNullState}
-                        onClick={() => onUploadImage('programLiveImage')}
+                        onClick={() =>
+                          this.handleOnUploadImage('programLiveImage')
+                        }
                       >
                         <div className={styles.uploadImageIconSection}>
                           <Icon
@@ -313,25 +324,27 @@ class ProgramInfo extends React.Component {
                         className={styles.programImage}
                         src={program.signedProgramImage || program.programImage}
                       />
-                      <div className={styles.imageOverlay}>
-                        <EditIcon
-                          classes={{ root: styles.editProgramImageIcon }}
-                          className="icon-mode_edit2"
-                          onClick={() => onUploadImage('programImage')}
-                        />
-                        <DeleteIcon
-                          classes={{ root: styles.editProgramImageIcon }}
-                          className="icon-trashcan"
-                          onClick={() => onRemoveImage('programImage')}
-                        />
-                      </div>
+                      {!readOnly && (
+                        <div className={styles.imageOverlay}>
+                          <EditIcon
+                            classes={{ root: styles.editProgramImageIcon }}
+                            className="icon-mode_edit2"
+                            onClick={() => onUploadImage('programImage')}
+                          />
+                          <DeleteIcon
+                            classes={{ root: styles.editProgramImageIcon }}
+                            className="icon-trashcan"
+                            onClick={() => onRemoveImage('programImage')}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                   {!get(program, 'signedProgramImage.length') &&
                     !get(program, 'programImage.length') && (
                       <div
                         className={styles.programImageNullState}
-                        onClick={() => onUploadImage('programImage')}
+                        onClick={() => this.handleOnUploadImage('programImage')}
                       >
                         <div className={styles.uploadImageIconSection}>
                           <Icon
