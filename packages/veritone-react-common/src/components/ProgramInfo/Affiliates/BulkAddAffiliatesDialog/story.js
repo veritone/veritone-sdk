@@ -1,19 +1,9 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { generateAffiliates } from "../test-helpers";
 
 import BulkAddAffiliatesDialog from './';
-
-const generateAffiliates = function(n) {
-  const result = [];
-  for (let i = 1; i <= n; i++) {
-    result.push({
-      id: String(i),
-      name: 'Affiliate Station ' + i
-    });
-  }
-  return result;
-};
 
 storiesOf('Bulk Add Affiliates Dialog', module).add('Base', () => (
   <BulkAddAffiliatesDialog

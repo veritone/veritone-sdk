@@ -115,24 +115,26 @@ export default class AffiliateStationsDialog extends Component {
       isLoading: true
     });
     const fetchLimit = limit + 1;
-    this.props
-      .loadNextAffiliates({ limit: fetchLimit, offset, nameSearchText })
-      .then(affiliateResults => {
-        if (affiliateResults && affiliateResults.length) {
-          this.setState({
-            affiliatesView: slice(affiliateResults, 0, limit),
-            isLoading: false,
-            hasNexPage: affiliateResults.length === fetchLimit
-          });
-        } else {
-          this.setState({
-            affiliatesView: [],
-            isLoading: false,
-            hasNexPage: false
-          });
-        }
-        return;
-      });
+    const fetchNextPagePromise = this.props.loadNextAffiliates({ limit: fetchLimit, offset, nameSearchText });
+    if (!fetchNextPagePromise) {
+      return;
+    }
+    fetchNextPagePromise.then(affiliateResults => {
+      if (affiliateResults && affiliateResults.length) {
+        this.setState({
+          affiliatesView: slice(affiliateResults, 0, limit),
+          isLoading: false,
+          hasNexPage: affiliateResults.length === fetchLimit
+        });
+      } else {
+        this.setState({
+          affiliatesView: [],
+          isLoading: false,
+          hasNexPage: false
+        });
+      }
+      return;
+    });
   };
 
   render() {
