@@ -42,6 +42,9 @@ export default class EditAffiliateDialog extends Component {
         start: get(this.props.affiliate.schedule, 'start')
           ? format(new Date(this.props.affiliate.schedule.start), 'YYYY-MM-DD')
           : format(initDate, 'YYYY-MM-DD'),
+        end: get(this.props.affiliate.schedule, 'end')
+          ? format(new Date(this.props.affiliate.schedule.end), 'YYYY-MM-DD')
+          : undefined,
         repeatEvery: {
           number: '1',
           period: 'week'

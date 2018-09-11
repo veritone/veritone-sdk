@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 import { cloneDeep } from 'lodash';
 import { Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
-import { combineReducers, createStore  } from 'redux';
+import { combineReducers, createStore } from 'redux';
 import EditAffiliateDialog from './EditAffiliateDialog/index';
 import AffiliateStationsDialog from './AffiliateStationsDialog/index';
 import BulkAddAffiliatesDialog from './BulkAddAffiliatesDialog/index';
@@ -16,11 +16,10 @@ describe('Affiliates', () => {
       form: formReducer
     })
   );
-  const onAffiliatesChange = jest.fn();
-  const loadNextAffiliates = jest.fn();
-  const loadAllAffiliates = jest.fn();
 
   it('should render affiliates', () => {
+    const onAffiliatesChange = jest.fn();
+    const loadNextAffiliates = jest.fn();
     const wrapper = mount(
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
@@ -30,21 +29,46 @@ describe('Affiliates', () => {
       />
     );
     expect(wrapper.find('.titleLabel').text()).toEqual('Affiliated Stations');
-    expect(wrapper.find('.titleDescription').text()).toEqual('Assign affiliated stations that also broadcast programming from this ingestion source.');
+    expect(wrapper.find('.titleDescription').text()).toEqual(
+      'Assign affiliated stations that also broadcast programming from this ingestion source.'
+    );
     expect(wrapper.find('.affiliateItem')).toHaveLength(11);
-    expect(wrapper.find('.addAffiliateActionButtons').find('button')).toHaveLength(2);
-    expect(wrapper.find('.addAffiliateActionButtons').find('button').at(0).text()).toEqual('ADD AFFILIATE');
-    expect(wrapper.find('.addAffiliateActionButtons').find('button').at(1).text()).toEqual('BULK ADD AFFILIATES');
+    expect(
+      wrapper.find('.addAffiliateActionButtons').find('button')
+    ).toHaveLength(2);
+    expect(
+      wrapper
+        .find('.addAffiliateActionButtons')
+        .find('button')
+        .at(0)
+        .text()
+    ).toEqual('ADD AFFILIATE');
+    expect(
+      wrapper
+        .find('.addAffiliateActionButtons')
+        .find('button')
+        .at(1)
+        .text()
+    ).toEqual('BULK ADD AFFILIATES');
 
     const affiliateItem = wrapper.find('.affiliateItem').first();
     expect(affiliateItem).toBeDefined();
-    expect(affiliateItem.find('.title').find('.name').text()).toEqual('Affiliate Station 1');
+    expect(
+      affiliateItem
+        .find('.title')
+        .find('.name')
+        .text()
+    ).toEqual('Affiliate Station 1');
     expect(affiliateItem.find('.title').find('IconButton')).toHaveLength(2);
-    expect(affiliateItem.find('.schedule').text()).toEqual('W 16:33-17:21; T 12:33-03:21 01:00-01:00');
+    expect(affiliateItem.find('.schedule').text()).toEqual(
+      'W 16:33-17:21; T 12:33-03:21 01:00-01:00'
+    );
   });
 
   it('should remove affiliate on delete icon click', () => {
     const selectedAffiliates = generateAffiliateById(11, true);
+    const onAffiliatesChange = jest.fn();
+    const loadNextAffiliates = jest.fn();
     const wrapper = mount(
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
@@ -67,6 +91,8 @@ describe('Affiliates', () => {
   });
 
   it('should open edit affiliate dialog', () => {
+    const onAffiliatesChange = jest.fn();
+    const loadNextAffiliates = jest.fn();
     const wrapper = mount(
       <Provider store={store}>
         <Affiliates
@@ -85,10 +111,14 @@ describe('Affiliates', () => {
       .simulate('click');
     const editAffiliateDialogElement = wrapper.find(EditAffiliateDialog);
     expect(editAffiliateDialogElement).toHaveLength(1);
-    expect(editAffiliateDialogElement.find('.dialogTitle').text()).toEqual('Affiliate Station 1');
+    expect(editAffiliateDialogElement.find('.dialogTitle').text()).toEqual(
+      'Affiliate Station 1'
+    );
   });
 
   it('should open affiliated stations dialog', () => {
+    const onAffiliatesChange = jest.fn();
+    const loadNextAffiliates = jest.fn();
     const wrapper = mount(
       <Provider store={store}>
         <Affiliates
@@ -102,13 +132,19 @@ describe('Affiliates', () => {
       .find('button')
       .at(0)
       .simulate('click');
-    const affiliateStationsDialogElement = wrapper.find(AffiliateStationsDialog);
+    const affiliateStationsDialogElement = wrapper.find(
+      AffiliateStationsDialog
+    );
     expect(affiliateStationsDialogElement).toHaveLength(1);
-    expect(affiliateStationsDialogElement.find('.dialogTitle').text()).toEqual('Affiliated Stations');
+    expect(affiliateStationsDialogElement.find('.dialogTitle').text()).toEqual(
+      'Affiliated Stations'
+    );
     expect(loadNextAffiliates).toHaveBeenCalled();
   });
 
   it('should not render bulk add affiliate button', () => {
+    const onAffiliatesChange = jest.fn();
+    const loadNextAffiliates = jest.fn();
     const wrapper = mount(
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
@@ -116,12 +152,21 @@ describe('Affiliates', () => {
         onAffiliatesChange={onAffiliatesChange}
       />
     );
-    expect(wrapper.find('.addAffiliateActionButtons').find('button')).toHaveLength(1);
-    expect(wrapper.find('.addAffiliateActionButtons').find('button').at(0).text()).toEqual('ADD AFFILIATE');
+    expect(
+      wrapper.find('.addAffiliateActionButtons').find('button')
+    ).toHaveLength(1);
+    expect(
+      wrapper
+        .find('.addAffiliateActionButtons')
+        .find('button')
+        .at(0)
+        .text()
+    ).toEqual('ADD AFFILIATE');
   });
 
   it('should open bulk add affiliate dialog', () => {
-
+    const onAffiliatesChange = jest.fn();
+    const loadAllAffiliates = jest.fn();
     const wrapper = mount(
       <Provider store={store}>
         <Affiliates
@@ -136,8 +181,12 @@ describe('Affiliates', () => {
       .find('button')
       .at(1)
       .simulate('click');
-    const bulkAddAffiliatesDialogElement = wrapper.find(BulkAddAffiliatesDialog);
+    const bulkAddAffiliatesDialogElement = wrapper.find(
+      BulkAddAffiliatesDialog
+    );
     expect(bulkAddAffiliatesDialogElement).toHaveLength(1);
-    expect(bulkAddAffiliatesDialogElement.find('.dialogTitle').text()).toEqual('Bulk Add Affiliates');
+    expect(bulkAddAffiliatesDialogElement.find('.dialogTitle').text()).toEqual(
+      'Bulk Add Affiliates'
+    );
   });
 });
