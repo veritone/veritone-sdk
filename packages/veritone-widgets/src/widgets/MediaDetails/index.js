@@ -983,7 +983,32 @@ class MediaDetailsWidget extends React.Component {
                         aria-label="Run process"
                       >
                         <Icon
-                          className="icon-run-process"
+                          className="icon-enginerunning"
+                          classes={{ root: styles.iconClass }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {this.isDownloadMediaEnabled() && (
+                    <Tooltip
+                      id="tooltip-download"
+                      title="Download"
+                      PopperProps={{
+                        style: {
+                          pointerEvents: 'none',
+                          marginTop: '5px',
+                          top: '-20px'
+                        }
+                      }}
+                    >
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.downloadFile}
+                        disabled={!this.isDownloadAllowed()}
+                        aria-label="Download"
+                      >
+                        <Icon
+                          className="icon-file_download"
                           classes={{ root: styles.iconClass }}
                         />
                       </IconButton>
@@ -1007,14 +1032,13 @@ class MediaDetailsWidget extends React.Component {
                         aria-label="Info Panel"
                       >
                         <Icon
-                          className="icon-info-panel"
+                          className="icon-info-round"
                           classes={{ root: styles.iconClass }}
                         />
                       </IconButton>
                     </Tooltip>
                   )}
-                  {(get(this.props, 'tdo.id') ||
-                    get(this.props, 'contextMenuExtensions.tdos.length')) && (
+                  {get(this.props, 'contextMenuExtensions.tdos.length') && (
                     <Manager>
                       <Target>
                         <div ref={this.setMenuTarget}>
@@ -1056,17 +1080,6 @@ class MediaDetailsWidget extends React.Component {
                             >
                               <Paper>
                                 <MenuList role="menu">
-                                  {this.isDownloadMediaEnabled() && (
-                                    <MenuItem
-                                      classes={{
-                                        root: styles.headerMenuItem
-                                      }}
-                                      disabled={!this.isDownloadAllowed()}
-                                      onClick={this.downloadFile}
-                                    >
-                                      Download
-                                    </MenuItem>
-                                  )}
                                   {this.props.contextMenuExtensions &&
                                     this.props.contextMenuExtensions.tdos.map(
                                       tdoMenu => (
