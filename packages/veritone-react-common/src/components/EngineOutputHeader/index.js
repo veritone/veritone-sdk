@@ -37,7 +37,9 @@ class EngineOutputHeader extends Component {
     onEngineChange: func,
     onExpandClick: func,
     children: oneOfType([arrayOf(node), node]),
-    moreMenuItems: arrayOf(node)
+    moreMenuItems: arrayOf(node),
+    showEditButton: bool,
+    onEditButtonClick: func
   };
 
   static defaultProps = {
@@ -75,7 +77,9 @@ class EngineOutputHeader extends Component {
       hideExpandButton,
       engines,
       selectedEngineId,
-      onExpandClick
+      onExpandClick,
+      showEditButton,
+      onEditButtonClick
     } = this.props;
     const { isMoreMenuOpen } = this.state;
 
@@ -123,6 +127,19 @@ class EngineOutputHeader extends Component {
               })}
             </Select>
           )}
+          { showEditButton && (
+            <IconButton
+              aria-label="Edit Mode"
+              onClick={onEditButtonClick}
+              classes={{
+                root: styles.actionIconButton
+              }}
+            >
+              <Icon
+                className="icon-mode_edit2"
+              />
+            </IconButton>
+          )}
           {!!get(moreMenuItems, 'length') && (
             <Manager>
               <Target>
@@ -133,7 +150,7 @@ class EngineOutputHeader extends Component {
                     aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
                     onClick={this.toggleIsMoreMenuOpen}
                     classes={{
-                      root: styles.moreMenuButton
+                      root: styles.actionIconButton
                     }}
                   >
                     <MoreVertIcon />
