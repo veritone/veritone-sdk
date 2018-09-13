@@ -56,10 +56,14 @@ export default class SourceManagementForm extends React.Component {
     ),
     isReadOnly: bool,
     canShare: bool,
-    organizations: arrayOf(shape({
-      id: string.isRequired,
-      name: string.isRequired
-    })),
+    // eslint-disable-next-line react/no-unused-prop-types
+    organizations: arrayOf(
+      shape({
+        // used on component mount to populate acls
+        id: string.isRequired,
+        name: string.isRequired
+      })
+    ),
     onSubmit: func.isRequired,
     onClose: func,
     getFieldOptions: func.isRequired,
@@ -82,6 +86,7 @@ export default class SourceManagementForm extends React.Component {
     },
     formDirtyStates: {},
     contentTemplates: [],
+    organizations: {},
     activeTab: 0,
     openDialog: true
   };
@@ -94,6 +99,10 @@ export default class SourceManagementForm extends React.Component {
       contentTemplates: [...this.props.initialTemplates]
     };
     newState.contentTemplates.forEach(template => (template.guid = guid()));
+    newState.organizations = {};
+    get(this.props, 'organizations', []).forEach(
+      organization => (newState.organizations[organization.id] = organization)
+    );
 
     if (has(this.props, 'open')) {
       newState.openDialog = this.props.open;
@@ -106,9 +115,22 @@ export default class SourceManagementForm extends React.Component {
       };
       if (this.props.canShare) {
         newState.share = {
-          isPublic: this.props.source.isPublic,
-          acls: get(this.props.source, 'collaborators.records') || []
-        }
+          isPublic: this.props.source.isPublic
+        };
+        get(this.props.source, 'collaborators.records', []).forEach(
+          collaborator => {
+            if (newState.organizations[collaborator.organizationId]) {
+              newState.organizations[collaborator.organizationId].permission =
+                collaborator.permission;
+            } else {
+              newState.organizations[collaborator.organizationId] = {
+                id: collaborator.organizationId,
+                name: collaborator.organizationId,
+                permission: collaborator.permission
+              };
+            }
+          }
+        );
       }
     } else {
       // If there is no source, then just pick the first available sourceType
@@ -222,12 +244,12 @@ export default class SourceManagementForm extends React.Component {
     });
   };
 
-  handleAclsChange = acls => {
+  handleAclsChange = modifiedAcls => {
     this.setState(prevState => {
       return {
-        share: {
-          ...prevState.share,
-          acls
+        organizations: {
+          ...prevState.organizations,
+          ...modifiedAcls
         }
       };
     });
@@ -240,64 +262,90 @@ export default class SourceManagementForm extends React.Component {
           ...prevState.share,
           isPublic
         }
-      }
-    })
-  }
+      };
+    });
+  };
 
   handleSubmit = e => {
     e.preventDefault();
     let isValidForm = true;
     let resultTemplates = [];
-    this.setState(prevState => {
-      const sourceTypeId = prevState.sourceConfig.sourceTypeId;
-      const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === sourceTypeId);
-      const schemaProps = get(selectedSourceType, 'sourceSchema.definition.properties');
-      const formDirtyStates = Object.keys(schemaProps || []).reduce((acc, curVal) => {
-        acc[curVal] = true;
-        return acc;
-      }, {});
-      // Determine if any required fields are undefined and prevent submission if invalid
-      const formValues = prevState.sourceConfig.details;
-      const requiredFields = get(selectedSourceType, 'sourceSchema.definition.required') || [];
-      requiredFields.forEach(requiredField => {
-        const value = formValues[requiredField];
-        if (isUndefined(value) || value === '') {
-          isValidForm = false;
-        }
-      });
-      // Also determine if contentTemplates had any invalid inputs
-      resultTemplates = cloneDeep(prevState.contentTemplates) || resultTemplates;
-      resultTemplates.forEach(template => {
-        template.dirtyState = {};
-        if (template.definition) {
-          const requiredCTFields = template.definition.required || [];
-          if (template.definition.properties) {
-            Object.keys(template.definition.properties).reduce((acc, cur) => {
-              const isRequiredInput = requiredCTFields.some(field => field === cur);
-              if (isRequiredInput && isUndefined(template.data[cur])) {
-                isValidForm = false;
-              }
-              acc[cur] = true;
-              return acc;
-            }, template.dirtyState);
+    this.setState(
+      prevState => {
+        const sourceTypeId = prevState.sourceConfig.sourceTypeId;
+        const selectedSourceType = this.props.sourceTypes.find(
+          sourceType => sourceType.id === sourceTypeId
+        );
+        const schemaProps = get(
+          selectedSourceType,
+          'sourceSchema.definition.properties'
+        );
+        const formDirtyStates = Object.keys(schemaProps || []).reduce(
+          (acc, curVal) => {
+            acc[curVal] = true;
+            return acc;
+          },
+          {}
+        );
+        // Determine if any required fields are undefined and prevent submission if invalid
+        const formValues = prevState.sourceConfig.details;
+        const requiredFields =
+          get(selectedSourceType, 'sourceSchema.definition.required') || [];
+        requiredFields.forEach(requiredField => {
+          const value = formValues[requiredField];
+          if (isUndefined(value) || value === '') {
+            isValidForm = false;
           }
-        }
-      });
-      return {
-        formDirtyStates,
-        contentTemplates: resultTemplates
-      };
-    }, () => {
-      if (isValidForm) {
-        const cloneCTs = cloneDeep(resultTemplates);
-        cloneCTs.forEach(template => delete template.guid);
-        this.props.onSubmit({
-          sourceConfiguration: this.state.sourceConfig,
-          contentTemplates: cloneCTs,
-          share: this.state.share
         });
+        // Also determine if contentTemplates had any invalid inputs
+        resultTemplates =
+          cloneDeep(prevState.contentTemplates) || resultTemplates;
+        resultTemplates.forEach(template => {
+          template.dirtyState = {};
+          if (template.definition) {
+            const requiredCTFields = template.definition.required || [];
+            if (template.definition.properties) {
+              Object.keys(template.definition.properties).reduce((acc, cur) => {
+                const isRequiredInput = requiredCTFields.some(
+                  field => field === cur
+                );
+                if (isRequiredInput && isUndefined(template.data[cur])) {
+                  isValidForm = false;
+                }
+                acc[cur] = true;
+                return acc;
+              }, template.dirtyState);
+            }
+          }
+        });
+        return {
+          formDirtyStates,
+          contentTemplates: resultTemplates
+        };
+      },
+      () => {
+        if (isValidForm) {
+          const cloneCTs = cloneDeep(resultTemplates);
+          cloneCTs.forEach(template => delete template.guid);
+          const acls = Object.values(this.state.organizations)
+            .filter(organization => organization.permission)
+            .map(organization => {
+              return {
+                organizationId: organization.id,
+                permission: organization.permission
+              };
+            });
+          this.props.onSubmit({
+            sourceConfiguration: this.state.sourceConfig,
+            contentTemplates: cloneCTs,
+            share: {
+              ...this.state.share,
+              acls: acls
+            }
+          });
+        }
       }
-    });
+    );
   };
 
   render() {
@@ -334,15 +382,9 @@ export default class SourceManagementForm extends React.Component {
                 label="Content Templates"
                 classes={{ label: styles['form-tab'] }}
               />
-              {
-                this.props.canShare ?
-                (
-                  <Tab
-                    label="Sharing"
-                    classes={{ label: styles['form-tab'] }}
-                  />
-                ) : null
-              }
+              {this.props.canShare ? (
+                <Tab label="Sharing" classes={{ label: styles['form-tab'] }} />
+              ) : null}
             </Tabs>
           </ModalHeader>
           <form onSubmit={this.handleSubmit} className={styles['form-scroll']}>
@@ -371,8 +413,7 @@ export default class SourceManagementForm extends React.Component {
             {activeTab === 2 && (
               <div className={styles.shareContainer}>
                 <SharingConfiguration
-                  acls={this.state.share.acls}
-                  organizations={this.props.organizations}
+                  organizations={this.state.organizations}
                   isPublic={this.state.share.isPublic}
                   defaultPermission="viewer"
                   onAclsChange={this.handleAclsChange}
@@ -385,14 +426,14 @@ export default class SourceManagementForm extends React.Component {
                 />
               </div>
             )}
-            { !this.props.isReadOnly ? (
+            {!this.props.isReadOnly ? (
               <div className={styles['btn-container']}>
                 <Button onClick={this.handleCloseDialog}>Cancel</Button>
                 <Button variant="raised" color="primary" type="submit">
                   {get(this.props, 'source.id') ? 'Save' : 'Create'}
                 </Button>
               </div>
-            ) : null }
+            ) : null}
           </form>
         </div>
       </FullScreenDialog>
