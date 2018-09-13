@@ -172,7 +172,8 @@ class FaceEngineOutputContainer extends Component {
     clearEngineResultsByEngineId: func,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
-    onEditButtonClick: func
+    onEditButtonClick: func,
+    disableEditButton: bool
   };
 
   state = {
@@ -515,7 +516,8 @@ class FaceEngineOutputContainer extends Component {
       'isSearchingEntities',
       'onRestoreOriginalClick',
       'outputNullState',
-      'showEditButton'
+      'showEditButton',
+      'disableEditButton'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {

@@ -1296,6 +1296,7 @@ class MediaDetailsWidget extends React.Component {
                         tdo={tdo}
                         editMode={isEditModeEnabled}
                         showEditButton={this.showEditButton()}
+                        disableEditButton={this.isEditModeButtonDisabled()}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
@@ -1318,6 +1319,7 @@ class MediaDetailsWidget extends React.Component {
                         selectedEngineId={selectedEngineId}
                         editMode={isEditModeEnabled}
                         showEditButton={this.showEditButton()}
+                        disableEditButton={this.isEditModeButtonDisabled()}
                         disableEdit={this.handleDisableEditBtn}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime

@@ -72,7 +72,8 @@ export default class TranscriptEngineOutput extends Component {
     viewTypeSelectionEnabled: bool,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
-    onEditButtonClick: func
+    onEditButtonClick: func,
+    disableEditButton: bool
   };
 
   static defaultProps = {
@@ -237,7 +238,8 @@ export default class TranscriptEngineOutput extends Component {
       viewTypeSelectionEnabled,
       moreMenuItems,
       showEditButton,
-      onEditButtonClick
+      onEditButtonClick,
+      disableEditButton
     } = this.props;
     const selectedEngine = find(engines, { id: selectedEngineId });
     return (
@@ -253,6 +255,7 @@ export default class TranscriptEngineOutput extends Component {
         moreMenuItems={moreMenuItems}
         showEditButton={showEditButton}
         onEditButtonClick={onEditButtonClick}
+        disableEditButton={disableEditButton}
       >
         <div className={classNames(styles.controllers)}>
           {editMode && this.renderEditOptions()}

@@ -39,7 +39,8 @@ class EngineOutputHeader extends Component {
     children: oneOfType([arrayOf(node), node]),
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
-    onEditButtonClick: func
+    onEditButtonClick: func,
+    disableEditButton: bool
   };
 
   static defaultProps = {
@@ -79,7 +80,8 @@ class EngineOutputHeader extends Component {
       selectedEngineId,
       onExpandClick,
       showEditButton,
-      onEditButtonClick
+      onEditButtonClick,
+      disableEditButton
     } = this.props;
     const { isMoreMenuOpen } = this.state;
 
@@ -127,17 +129,16 @@ class EngineOutputHeader extends Component {
               })}
             </Select>
           )}
-          { showEditButton && (
+          {showEditButton && (
             <IconButton
               aria-label="Edit Mode"
               onClick={onEditButtonClick}
               classes={{
                 root: styles.actionIconButton
               }}
+              disabled={disableEditButton}
             >
-              <Icon
-                className="icon-mode_edit2"
-              />
+              <Icon className="icon-mode_edit2" />
             </IconButton>
           )}
           {!!get(moreMenuItems, 'length') && (

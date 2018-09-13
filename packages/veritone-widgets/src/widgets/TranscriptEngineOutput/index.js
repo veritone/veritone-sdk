@@ -135,7 +135,8 @@ export default class TranscriptEngineOutputContainer extends Component {
     clearEngineResultsByEngineId: func,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
-    onEditButtonClick: func
+    onEditButtonClick: func,
+    disableEditButton: bool
   };
 
   state = {
@@ -245,7 +246,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'outputNullState',
       'bulkEditEnabled',
       'moreMenuItems',
-      'showEditButton'
+      'showEditButton',
+      'disableEditButton'
     ]);
 
     const alertTitle = 'Unsaved Transcript Changes';

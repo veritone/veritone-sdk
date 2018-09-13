@@ -94,7 +94,8 @@ class FaceEngineOutput extends Component {
     onToggleUserEditedOutput: func,
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
-    onEditButtonClick: func
+    onEditButtonClick: func,
+    disableEditButton: bool
   };
 
   state = {
@@ -147,7 +148,8 @@ class FaceEngineOutput extends Component {
       showingUserEditedOutput,
       moreMenuItems,
       showEditButton,
-      onEditButtonClick
+      onEditButtonClick,
+      disableEditButton
     } = this.props;
     const { viewMode } = this.state;
 
@@ -163,6 +165,7 @@ class FaceEngineOutput extends Component {
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
+          disableEditButton={disableEditButton}
         >
           {!editMode &&
             selectedEngine &&
