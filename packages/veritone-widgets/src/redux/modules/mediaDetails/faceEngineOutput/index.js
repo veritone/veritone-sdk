@@ -24,6 +24,8 @@ export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
 export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIALOG`;
 
+export const FACE_EDIT_BUTTON_CLICKED = `vtn/${namespace}/FACE_EDIT_BUTTON_CLICKED`;
+
 import {
   get,
   map,
@@ -373,6 +375,12 @@ export const openConfirmationDialog = confirmationAction => {
 export const closeConfirmationDialog = () => ({
   type: CLOSE_CONFIRMATION_DIALOG
 });
+
+export const editFaceButtonClick = () => {
+  return {
+    type: FACE_EDIT_BUTTON_CLICKED
+  };
+};
 
 export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');

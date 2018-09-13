@@ -29,7 +29,8 @@ import {
   pendingUserEdits,
   ADD_DETECTED_FACE,
   REMOVE_DETECTED_FACE,
-  CANCEL_FACE_EDITS
+  CANCEL_FACE_EDITS,
+  FACE_EDIT_BUTTON_CLICKED
 } from './faceEngineOutput';
 import {
   TRANSCRIPT_EDIT_BUTTON_CLICKED,
@@ -1707,13 +1708,16 @@ function* watchToStartRefreshEngineRunsWithTimeout(
 }
 
 function* watchEditButtonClicked(widgetId) {
-  yield takeLatest([TRANSCRIPT_EDIT_BUTTON_CLICKED], function*() {
-    const selectedEngineCategory = yield select(
-      getSelectedEngineCategory,
-      widgetId
-    );
-    yield put(toggleEditMode(widgetId, selectedEngineCategory));
-  });
+  yield takeLatest(
+    [TRANSCRIPT_EDIT_BUTTON_CLICKED, FACE_EDIT_BUTTON_CLICKED],
+    function*() {
+      const selectedEngineCategory = yield select(
+        getSelectedEngineCategory,
+        widgetId
+      );
+      yield put(toggleEditMode(widgetId, selectedEngineCategory));
+    }
+  );
 }
 
 function* onMount(id, mediaId) {

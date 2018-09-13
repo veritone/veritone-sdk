@@ -92,7 +92,9 @@ class FaceEngineOutput extends Component {
     isSearchingEntities: bool,
     showingUserEditedOutput: bool,
     onToggleUserEditedOutput: func,
-    moreMenuItems: arrayOf(node)
+    moreMenuItems: arrayOf(node),
+    showEditButton: bool,
+    onEditButtonClick: func
   };
 
   state = {
@@ -143,7 +145,9 @@ class FaceEngineOutput extends Component {
       onExpandClick,
       outputNullState,
       showingUserEditedOutput,
-      moreMenuItems
+      moreMenuItems,
+      showEditButton,
+      onEditButtonClick
     } = this.props;
     const { viewMode } = this.state;
 
@@ -157,6 +161,8 @@ class FaceEngineOutput extends Component {
           onEngineChange={onEngineChange}
           onExpandClick={onExpandClick}
           moreMenuItems={moreMenuItems}
+          showEditButton={showEditButton}
+          onEditButtonClick={onEditButtonClick}
         >
           {!editMode &&
             selectedEngine &&

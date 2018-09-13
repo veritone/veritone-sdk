@@ -69,7 +69,8 @@ const saga = util.reactReduxSaga.saga;
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
     cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
     clearEngineResultsByEngineId:
-      engineResultsModule.clearEngineResultsByEngineId
+      engineResultsModule.clearEngineResultsByEngineId,
+    onEditButtonClick: faceEngineOutput.editFaceButtonClick
   },
   null,
   { withRef: true }
@@ -169,7 +170,9 @@ class FaceEngineOutputContainer extends Component {
     pendingUserEdits: bool,
     isDisplayingUserEditedOutput: bool,
     clearEngineResultsByEngineId: func,
-    moreMenuItems: arrayOf(node)
+    moreMenuItems: arrayOf(node),
+    showEditButton: bool,
+    onEditButtonClick: func
   };
 
   state = {
@@ -511,7 +514,8 @@ class FaceEngineOutputContainer extends Component {
       'onFaceOccurrenceClicked',
       'isSearchingEntities',
       'onRestoreOriginalClick',
-      'outputNullState'
+      'outputNullState',
+      'showEditButton'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -543,6 +547,7 @@ class FaceEngineOutputContainer extends Component {
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           moreMenuItems={this.props.moreMenuItems}
+          onEditButtonClick={this.props.onEditButtonClick}
         />
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}

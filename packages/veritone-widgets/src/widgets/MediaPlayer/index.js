@@ -151,11 +151,7 @@ class MediaPlayerComponent extends React.Component {
           {/* prevent video-react from adding its own control bar */}
           <ControlBar autoHide className={styles.hiddenDummyControls} />
 
-          <VideoSource
-            isVideoChild
-            src={src}
-            streams={streams}
-          />
+          <VideoSource isVideoChild src={src} streams={streams} />
           <BigPlayButton position="center" className={styles.mediaPlayButton} />
         </Player>
       </OverlayPositioningProvider>
