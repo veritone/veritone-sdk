@@ -2,35 +2,31 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import SharingConfigurartion from './';
+import SharingConfiguration from './';
 
-const generateAcls = function(n, permission) {
-  const acls = [];
+export const generateOrganizations = function(
+  n,
+  nWithPermission = 0,
+  permission = 'viewer'
+) {
+  const organizationById = {};
   for (let i = 1; i <= n; i++) {
-    acls.push({
-      organizationId: 'orgId' + i,
-      permission: permission
-    });
-  }
-  return acls;
-};
-
-const generateOrganizations = function(n) {
-  const organizations = [];
-  for (let i = 1; i <= n; i++) {
-    organizations.push({
+    const organization = {
       id: 'orgId' + i,
       name: 'Organization ' + i
-    });
+    };
+    if (i <= nWithPermission) {
+      organization.permission = permission;
+    }
+    organizationById[organization.id] = organization;
   }
-  return organizations;
+  return organizationById;
 };
 
 storiesOf('Sharing Configuration', module)
   .add('Base', () => (
-    <SharingConfigurartion
-      acls={generateAcls(2, 'viewer')}
-      organizations={generateOrganizations(21)}
+    <SharingConfiguration
+      organizations={generateOrganizations(21, 2, 'viewer')}
       isPublic
       onAclsChange={action('onAclsChange')}
       showMakePublic
@@ -43,9 +39,8 @@ storiesOf('Sharing Configuration', module)
   ))
 
   .add('No Descriptions', () => (
-    <SharingConfigurartion
-      acls={generateAcls(2, 'viewer')}
-      organizations={generateOrganizations(21)}
+    <SharingConfiguration
+      organizations={generateOrganizations(21, 2, 'viewer')}
       onAclsChange={action('onAclsChange')}
       showMakePublic
       onIsPublicChange={action('onAclsChange')}
@@ -54,9 +49,8 @@ storiesOf('Sharing Configuration', module)
   ))
 
   .add('Hide Public Section', () => (
-    <SharingConfigurartion
-      acls={generateAcls(2, 'viewer')}
-      organizations={generateOrganizations(21)}
+    <SharingConfiguration
+      organizations={generateOrganizations(21, 2, 'viewer')}
       onAclsChange={action('onAclsChange')}
       defaultPermission="viewer"
       sharingSectionDescription={

@@ -1,15 +1,14 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { generateAcls, generateOrganizations } from './test-helpers';
+import { generateOrganizations } from './test-helpers';
 
 import AclGroups from './';
 
 storiesOf('Acl Groups', module)
   .add('Base', () => (
     <AclGroups
-      acls={generateAcls(2, 'viewer')}
-      organizations={generateOrganizations(21)}
+      organizations={generateOrganizations(21, 2, 'viewer')}
       defaultPermission={'viewer'}
       onAclsChange={action('onAclsChange')}
       description={

@@ -1,21 +1,18 @@
-export const generateAcls = function(n, permission) {
-  const acls = [];
+export const generateOrganizations = function(
+  n,
+  nWithPermission = 0,
+  permission = 'viewer'
+) {
+  const organizationById = {};
   for (let i = 1; i <= n; i++) {
-    acls.push({
-      organizationId: 'orgId' + i,
-      permission: permission
-    });
-  }
-  return acls;
-};
-
-export const generateOrganizations = function(n) {
-  const organizations = [];
-  for (let i = 1; i <= n; i++) {
-    organizations.push({
+    const organization = {
       id: 'orgId' + i,
       name: 'Organization ' + i
-    });
+    };
+    if (i <= nWithPermission) {
+      organization.permission = permission;
+    }
+    organizationById[organization.id] = organization;
   }
-  return organizations;
+  return organizationById;
 };

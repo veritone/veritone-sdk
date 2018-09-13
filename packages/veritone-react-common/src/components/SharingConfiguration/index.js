@@ -1,21 +1,16 @@
 import React from 'react';
-import { func, bool, string, arrayOf, shape } from 'prop-types';
+import { func, bool, string, objectOf, shape } from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 import AclGroups from '../AclGroups';
 import styles from './styles.scss';
 
 export default class SharingConfiguration extends React.Component {
   static propTypes = {
-    acls: arrayOf(
-      shape({
-        organizationId: string.isRequired,
-        permission: string.isRequired
-      })
-    ),
-    organizations: arrayOf(
+    organizations: objectOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired
+        name: string.isRequired,
+        permission: string
       })
     ).isRequired,
     isPublic: bool,
@@ -36,7 +31,6 @@ export default class SharingConfiguration extends React.Component {
 
   render() {
     const {
-      acls,
       organizations,
       isPublic,
       defaultPermission,
@@ -58,7 +52,6 @@ export default class SharingConfiguration extends React.Component {
         {!isPublic && (
           <div className={styles.selectAclGroupSection}>
             <AclGroups
-              acls={acls}
               organizations={organizations}
               onAclsChange={onAclsChange}
               defaultPermission={defaultPermission}
