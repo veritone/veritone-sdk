@@ -17,6 +17,8 @@ export const CHANGE = transcriptNamespace + '_CHANGE';
 export const CLEAR_DATA = transcriptNamespace + '_CLEAR_DATA';
 export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
+export const TRANSCRIPT_EDIT_BUTTON_CLICKED =
+  transcriptNamespace + '_TRANSCRIPT_EDIT_BUTTON_CLICKED';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -280,6 +282,12 @@ export const currentData = state => get(state[transcriptNamespace], 'data');
 export const hasUserEdits = state => {
   const history = get(state[transcriptNamespace], 'past');
   return history && history.length > 0;
+};
+
+export const editTranscriptButtonClick = () => {
+  return {
+    type: TRANSCRIPT_EDIT_BUTTON_CLICKED
+  };
 };
 
 export const getTranscriptEditAssetData = state => {

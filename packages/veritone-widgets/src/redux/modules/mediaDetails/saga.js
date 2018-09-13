@@ -32,6 +32,7 @@ import {
   CANCEL_FACE_EDITS
 } from './faceEngineOutput';
 import {
+  TRANSCRIPT_EDIT_BUTTON_CLICKED,
   getTranscriptEditAssetData,
   reset as resetTranscript
 } from './transcriptWidget';
@@ -1705,6 +1706,16 @@ function* watchToStartRefreshEngineRunsWithTimeout(
   );
 }
 
+function* watchEditButtonClicked(widgetId) {
+  yield takeLatest([TRANSCRIPT_EDIT_BUTTON_CLICKED], function*() {
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
+    yield put(toggleEditMode(widgetId, selectedEngineCategory));
+  });
+}
+
 function* onMount(id, mediaId) {
   yield put(loadTdoRequest(id, mediaId));
   yield put(applicationModule.fetchApplications());
@@ -1728,6 +1739,7 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
     fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
+    fork(watchEditButtonClicked, id),
     fork(onMount, id, mediaId)
   ]);
 }

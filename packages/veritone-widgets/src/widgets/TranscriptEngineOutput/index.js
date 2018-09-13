@@ -40,7 +40,8 @@ const saga = util.reactReduxSaga.saga;
     receiveData: TranscriptRedux.receiveData,
     fetchEngineResults: engineResultsModule.fetchEngineResults,
     clearEngineResultsByEngineId:
-      engineResultsModule.clearEngineResultsByEngineId
+      engineResultsModule.clearEngineResultsByEngineId,
+    onEditButtonClick: TranscriptRedux.editTranscriptButtonClick
   },
   null,
   { withRef: true }
@@ -132,7 +133,9 @@ export default class TranscriptEngineOutputContainer extends Component {
     fetchEngineResults: func,
     isDisplayingUserEditedOutput: bool,
     clearEngineResultsByEngineId: func,
-    moreMenuItems: arrayOf(node)
+    moreMenuItems: arrayOf(node),
+    showEditButton: bool,
+    onEditButtonClick: func
   };
 
   state = {
@@ -241,7 +244,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'mediaPlayerTimeIntervalMs',
       'outputNullState',
       'bulkEditEnabled',
-      'moreMenuItems'
+      'moreMenuItems',
+      'showEditButton'
     ]);
 
     const alertTitle = 'Unsaved Transcript Changes';
@@ -257,6 +261,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           {...transcriptEngineProps}
           onChange={this.handleContentChanged}
           editType={this.state.editMode}
+          onEditButtonClick={this.props.onEditButtonClick}
           onEditTypeChange={this.handleOnEditModeChange}
           onEngineChange={this.handleEngineChange}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}

@@ -697,7 +697,8 @@ class MediaDetailsWidget extends React.Component {
     if (
       !this.isEditableEngineResults() ||
       !this.hasSelectedEngineResults() ||
-      !this.isSelectedEngineCompleted()
+      !this.isSelectedEngineCompleted() ||
+      this.props.isEditModeEnabled
     ) {
       return false;
     }
@@ -1294,6 +1295,7 @@ class MediaDetailsWidget extends React.Component {
                       <TranscriptEngineOutput
                         tdo={tdo}
                         editMode={isEditModeEnabled}
+                        showEditButton={this.showEditButton()}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}

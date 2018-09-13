@@ -71,7 +71,6 @@ class ProgramInfoWidget extends React.Component {
     submit: func.isRequired
   };
 
-
   static defaultProps = {
     program: {}
   };
