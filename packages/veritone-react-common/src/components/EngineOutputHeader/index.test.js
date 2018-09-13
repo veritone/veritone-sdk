@@ -64,7 +64,7 @@ describe('EngineOutputHeader', () => {
     const wrapper = mount(
       <EngineOutputHeader title="Test Title" onExpandClick={expandClicked} />
     );
-    let expandButton = wrapper.find(IconButton);
+    let expandButton = wrapper.find(IconButton).last();
     expandButton.simulate('click');
     expect(expandClicked).toHaveBeenCalled();
   });

@@ -1038,7 +1038,7 @@ class MediaDetailsWidget extends React.Component {
                       </IconButton>
                     </Tooltip>
                   )}
-                  {get(this.props, 'contextMenuExtensions.tdos.length') && (
+                  {!!get(this.props, 'contextMenuExtensions.tdos.length') && (
                     <Manager>
                       <Target>
                         <div ref={this.setMenuTarget}>
