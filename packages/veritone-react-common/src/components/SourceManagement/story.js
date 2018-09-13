@@ -12,7 +12,7 @@ const sourceResult = {
       isLivestream: true,
       createdDateTime: '2014-12-01T18:17:20.675Z',
       modifiedDateTime: '2015-12-01T18:17:20.675Z',
-      thumbnailUrl: 'https://image.flaticon.com/icons/svg/25/25305.svg',
+      thumbnailUrl: '',
       details: {
         url: 'twitter.com',
         username: 'therealtrump',
@@ -22,6 +22,7 @@ const sourceResult = {
       sourceType: {
         id: '1',
         name: 'Audio',
+        iconClass: 'icon-audio',
         sourceSchema: {
           id: 'schemaId1',
           definition: {
