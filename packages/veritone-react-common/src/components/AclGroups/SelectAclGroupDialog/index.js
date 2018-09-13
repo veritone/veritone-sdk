@@ -13,36 +13,31 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { debounce, isEqual, get } from 'lodash';
-import { string, arrayOf, func, shape } from 'prop-types';
+import { debounce, get, values } from 'lodash';
+import { string, objectOf, func, shape } from 'prop-types';
 import styles from './styles.scss';
 
 export default class SelectAclGroupDialog extends Component {
   static propTypes = {
-    acls: arrayOf(
-      shape({
-        organizationId: string.isRequired,
-        permission: string.isRequired
-      })
-    ),
-    organizations: arrayOf(
+    organizations: objectOf(
       shape({
         id: string.isRequired,
-        name: string.isRequired
+        name: string.isRequired,
+        permission: string
       })
-    ).isRequired,
+    ),
     defaultPermission: string.isRequired,
     onAdd: func,
     onClose: func
   };
 
   static defaultProps = {
-    acls: []
+    organizations: {}
   };
 
   state = {
-    selectedAcls: this.props.acls,
-    organizationsView: this.props.organizations || [],
+    modifiedAcls: {},
+    organizationsView: values(this.props.organizations) || [],
     searchText: '',
     page: 0,
     rowsPerPage: 10,
@@ -66,48 +61,43 @@ export default class SelectAclGroupDialog extends Component {
   handleSearch = searchText => {
     const searchTextLowerCase = searchText.toLowerCase();
     this.setState({
-      organizationsView: this.props.organizations.filter(organization =>
+      organizationsView: values(this.props.organizations).filter(organization =>
         organization.name.toLowerCase().includes(searchTextLowerCase)
       )
     });
   };
 
   isSelectedOrganization = organizationId => {
-    return this.state.selectedAcls.some(
-      acl => acl.organizationId === organizationId
-    );
+    if (this.state.modifiedAcls[organizationId]) {
+      // permission could have been added or removed
+      return !!this.state.modifiedAcls[organizationId].permission;
+    }
+    return !!this.props.organizations[organizationId].permission;
   };
 
-  handleSelectAclGroup = organizationId => {
-    const { defaultPermission, acls } = this.props;
-    const { selectedAcls } = this.state;
-    const selectedIndex = selectedAcls.findIndex(
-      acl => acl.organizationId === organizationId
-    );
-    let newSelectedAcls = [];
-    if (selectedIndex === -1) {
-      // preserve original acl permission when user re-selects acl
-      const originalAcl = acls.find(
-        acl => acl.organizationId === organizationId
-      );
-      const permission = originalAcl
-        ? originalAcl.permission
-        : defaultPermission;
-      newSelectedAcls = newSelectedAcls.concat(selectedAcls, {
-        organizationId: organizationId,
-        permission: permission
-      });
-    } else if (selectedIndex === 0) {
-      newSelectedAcls = newSelectedAcls.concat(selectedAcls.slice(1));
-    } else if (selectedIndex === selectedAcls.length - 1) {
-      newSelectedAcls = newSelectedAcls.concat(selectedAcls.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelectedAcls = newSelectedAcls.concat(
-        selectedAcls.slice(0, selectedIndex),
-        selectedAcls.slice(selectedIndex + 1)
-      );
-    }
-    this.setState({ selectedAcls: newSelectedAcls });
+  handleAclGroupClick = organizationId => {
+    const { defaultPermission, organizations } = this.props;
+    this.setState(prevState => {
+      const acls = { ...prevState.modifiedAcls };
+      if (!acls[organizationId]) {
+        if (organizations[organizationId].permission) {
+          // clicked on selected org, so save change to remove permission
+          acls[organizationId] = {
+            ...organizations[organizationId]
+          };
+          acls[organizationId].permission = null;
+        } else {
+          // clicked on unselected org, so add a default permission
+          acls[organizationId] = {
+            ...organizations[organizationId],
+            permission: defaultPermission
+          };
+        }
+      } else {
+        delete acls[organizationId];
+      }
+      return { modifiedAcls: acls };
+    });
   };
 
   handleChangePage = (event, page) => {
@@ -115,14 +105,14 @@ export default class SelectAclGroupDialog extends Component {
   };
 
   hasPendingChanges = () => {
-    return !isEqual(
-      this.state.selectedAcls.map(acl => acl.organizationId).sort(),
-      this.props.acls.map(acl => acl.organizationId).sort()
-    );
+    return values(this.state.modifiedAcls).length > 0;
   };
 
   handleAddButtonClick = () => {
-    this.props.onAdd(this.state.selectedAcls);
+    this.props.onAdd({
+      ...this.state.modifiedAcls
+    });
+    this.setState({ modifiedAcls: {} });
   };
 
   render() {
@@ -187,7 +177,7 @@ export default class SelectAclGroupDialog extends Component {
                         <TableRow
                           hover
                           onClick={() =>
-                            this.handleSelectAclGroup(organization.id)
+                            this.handleAclGroupClick(organization.id)
                           }
                           role="checkbox"
                           aria-checked={isSelected}
@@ -237,8 +227,8 @@ export default class SelectAclGroupDialog extends Component {
               />
             </div>
           )}
-          {!get(organizationsView, 'length') &&
-            get(organizations, 'length') && (
+          {!get(organizationsView, 'length', 0) === 0 &&
+            values(organizations).length > 0 && (
               <div className={styles.noResultsMessage}>No Results</div>
             )}
         </DialogContent>
