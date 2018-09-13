@@ -1186,17 +1186,6 @@ class MediaDetailsWidget extends React.Component {
                         onSelectEngineCategory={this.handleEngineCategoryChange}
                       />
                     </div>
-                    {this.showEditButton() && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        className={styles.toEditModeButton}
-                        onClick={this.toggleEditMode}
-                        disabled={this.isEditModeButtonDisabled()}
-                      >
-                        EDIT MODE
-                      </Button>
-                    )}
                   </div>
                 )}
             </div>
