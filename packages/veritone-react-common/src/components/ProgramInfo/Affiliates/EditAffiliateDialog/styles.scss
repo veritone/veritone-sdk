@@ -3,7 +3,6 @@
 .editAffiliateDialogPaper {
   min-width: 640px;
   width: 640px;
-  min-height: 740px;
 }
 
 .dialogTitle {
@@ -22,6 +21,71 @@
   flex-direction: column;
 }
 
+.scheduleConfig {
+  display: flex;
+  flex-direction: column;
+
+  label,
+  span,
+  input {
+    font-weight: inherit;
+    font-size: 0.8rem !important;
+  }
+}
+
+.scheduleDateFieldSection {
+  margin-top: 20px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.scheduleDateFieldLabel {
+  margin-right: 40px;
+  width: 150px;
+}
+
+.todayIcon {
+  color: $light-black;
+  margin-right: 25px;
+}
+
+.scheduleTitle {
+  margin: 30px 0 10px 5px;
+}
+
+.timeRangeContainer {
+  background-color: $grey-2;
+  padding: 0 10px;
+  margin: 0 15px;
+}
+
+.scheduleDaysSelection {
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.weekSelectionContainer {
+  display: flex;
+  align-items: flex-start;
+
+  &:not(:first-child) {
+    margin-top: 10px;
+  }
+}
+
+.multiTimeRange {
+  display: inline-flex;
+  flex-direction: column;
+
+  .row {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    line-height: 48px;
+  }
+}
+
 .dialogTitleActions {
   display: flex;
   flex-flow: row;
@@ -30,14 +94,27 @@
 }
 
 .actionButtons {
-  padding: 0 16px 16px;
+  padding: 0 !important;
+  margin: 20px 0 0 !important;
 }
 
 .actionButton {
   width: 80px;
   margin-left: 30px !important;
+  margin-right: 0 !important;
+}
+
+.deleteActionButton {
+  width: 160px;
+  margin-left: 0 !important;
+  margin-right: 210px !important;
+}
+
+.containedSecondaryColorOverride {
+  background-color: rgb(225, 0, 80) !important;
 }
 
 .actionButtonLabel {
   font-size: 14px;
+  white-space: nowrap;
 }
