@@ -44,7 +44,7 @@ class ProgramInfoWidget extends React.Component {
     }),
     programFormats: arrayOf(string),
     canBulkAddAffiliates: bool,
-    canEditAffiliates: bool,
+    showAffiliates: bool,
     loadNextAffiliates: func,
     loadAllAffiliates: func,
     pick: func,

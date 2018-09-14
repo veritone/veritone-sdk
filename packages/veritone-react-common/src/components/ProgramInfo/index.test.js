@@ -38,7 +38,7 @@ describe('Program Info', () => {
     const wrapper = mount(
       <Provider store={store}>
         <ProgramInfo
-          canEditAffiliates
+          showAffiliates
           canBulkAddAffiliates
           program={TEST_PROGRAM}
           programFormats={TEST_PROGRAM_FORMATS}
@@ -146,7 +146,7 @@ describe('Program Info', () => {
       <Provider store={store}>
         <ProgramInfo
           readOnly
-          canEditAffiliates
+          showAffiliates
           canBulkAddAffiliates
           program={TEST_PROGRAM}
           programFormats={TEST_PROGRAM_FORMATS}

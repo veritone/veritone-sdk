@@ -126,7 +126,7 @@ class FullDataStory extends React.Component {
   componentDidMount() {
     this._programInfo = new ProgramInfoWidget({
       elId: 'programInfo-widget',
-      canEditAffiliates: true,
+      showAffiliates: true,
       canBulkAddAffiliates: true,
       program: {
         id: '12345',

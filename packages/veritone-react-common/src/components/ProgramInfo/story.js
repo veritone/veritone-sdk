@@ -51,7 +51,7 @@ class FullDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canEditAffiliates
+              showAffiliates
               canBulkAddAffiliates
               program={{
                 programImage: '',
@@ -107,7 +107,7 @@ class FullDataReadOnlyStory extends React.Component {
           <div>
             <ProgramInfo
               readOnly
-              canEditAffiliates
+              showAffiliates
               canBulkAddAffiliates
               program={{
                 id: '12345',
@@ -164,7 +164,7 @@ class NoProgramDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canEditAffiliates
+              showAffiliates
               canBulkAddAffiliates
               programFormats={['live', 'recorded']}
               loadNextAffiliates={loadNextAffiliates}
