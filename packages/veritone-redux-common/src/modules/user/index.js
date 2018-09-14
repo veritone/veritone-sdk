@@ -18,8 +18,7 @@ export const namespace = 'user';
 const {
   reducer: resetUserPasswordReducer,
   selectors: {
-    isFetching: resetUserPasswordIsFetching,
-    fetchingFailed: resetUserPasswordFailed,
+    fetchingStatus: resetUserFetchingStatus,
     fetchingFailureMessage: resetUserPasswordFailureMessage
   }
 } = handleApiCall({
@@ -31,8 +30,7 @@ const {
 });
 
 export {
-  resetUserPasswordIsFetching,
-  resetUserPasswordFailed,
+  resetUserFetchingStatus,
   resetUserPasswordFailureMessage
 };
 
