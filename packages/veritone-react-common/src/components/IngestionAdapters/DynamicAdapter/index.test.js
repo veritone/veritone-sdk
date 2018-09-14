@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { startCase, toLower } from 'lodash';
+import { startCase, toLower, cloneDeep } from 'lodash';
 
 import DynamicAdapterConfig from './';
 
@@ -158,7 +158,10 @@ describe('DynamicAdapter', () => {
         return Promise.resolve(CLUSTERS);
       },
       OPEN_CREATE_SOURCE: () => () => jest.fn(),
-      CLOSE_CREATE_SOURCE: jest.fn()
+      CLOSE_CREATE_SOURCE: jest.fn(),
+      POPULATE_SELECTED_SOURCE: () => {
+        return Promise.resolve(SOURCES[0]);
+      }
     };
     mount(
       <DynamicAdapter
@@ -170,6 +173,7 @@ describe('DynamicAdapter', () => {
         closeCreateSource={testFuncs.CLOSE_CREATE_SOURCE}
         loadNextSources={testFuncs.loadNextSources}
         loadNextClusters={testFuncs.loadNextClusters}
+        populateSelectedSource={testFuncs.POPULATE_SELECTED_SOURCE}
         pageSize={3}
       />
     );
@@ -186,7 +190,7 @@ describe('DynamicAdapter', () => {
         isNextPageLoading: false,
         items: []
       },
-      maxTDODuration: 180
+      maxTDODuration: 60
     };
     expectedConfiguration[FIELDS[0].name] = FIELDS[0].defaultValue;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
@@ -214,7 +218,10 @@ describe('DynamicAdapter', () => {
         return Promise.resolve(CLUSTERS);
       },
       OPEN_CREATE_SOURCE: () => () => jest.fn(),
-      CLOSE_CREATE_SOURCE: jest.fn()
+      CLOSE_CREATE_SOURCE: jest.fn(),
+      POPULATE_SELECTED_SOURCE: () => {
+        return Promise.resolve(SOURCES[0]);
+      }
     };
     mount(
       <DynamicAdapter
@@ -227,6 +234,7 @@ describe('DynamicAdapter', () => {
         closeCreateSource={testFuncs.CLOSE_CREATE_SOURCE}
         loadNextSources={testFuncs.loadNextSources}
         loadNextClusters={testFuncs.loadNextClusters}
+        populateSelectedSource={testFuncs.POPULATE_SELECTED_SOURCE}
         pageSize={3}
       />
     );
@@ -243,7 +251,7 @@ describe('DynamicAdapter', () => {
         isNextPageLoading: false,
         items: []
       },
-      maxTDODuration: 180
+      maxTDODuration: 60
     };
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
