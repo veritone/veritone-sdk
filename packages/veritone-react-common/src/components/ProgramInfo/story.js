@@ -3,9 +3,12 @@ import { storiesOf } from '@storybook/react';
 import { Provider, connect } from 'react-redux';
 import { reducer as formReducer, submit } from 'redux-form';
 import { combineReducers, createStore } from 'redux';
-
 import { createLogger } from 'redux-logger';
 import { applyMiddleware, compose } from 'redux';
+import {
+  generateAffiliateById,
+  loadNextAffiliates
+} from './Affiliates/test-helpers';
 
 import ProgramInfo from './';
 
@@ -22,57 +25,6 @@ const store = createStore(
     )
   )
 );
-
-const generateAcls = function(n, permission) {
-  const acls = [];
-  for (let i = 1; i <= n; i++) {
-    acls.push({
-      organizationId: 'orgId' + i,
-      permission: permission
-    });
-  }
-  return acls;
-};
-
-const generateOrganizations = function(n) {
-  const organizations = [];
-  for (let i = 1; i <= n; i++) {
-    organizations.push({
-      id: 'orgId' + i,
-      name: 'Organization ' + i
-    });
-  }
-  return organizations;
-};
-
-const generateAffiliates = function(n) {
-  const result = [];
-  for (let i = 1; i <= n; i++) {
-    result.push({
-      id: String(i),
-      name: 'Affiliate Station ' + i,
-      schedule: {
-        scheduleType: 'Recurring',
-        start: new Date('August 19, 2018 01:00:00').toString(),
-        end: new Date('August 19, 2019 01:00:00').toString(),
-        repeatEvery: {
-          number: '1',
-          period: 'day'
-        },
-        daily: [
-          {
-            start: '00:00',
-            end: '01:00'
-          }
-        ],
-        weekly: {
-          selectedDays: ['Monday', 'Wednesday', 'Friday', 'Sunday']
-        }
-      }
-    });
-  }
-  return result;
-};
 
 @connect(
   state => ({
@@ -99,12 +51,9 @@ class FullDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canShare
-              canEditAffiliates
+              showAffiliates
               canBulkAddAffiliates
               program={{
-                id: '12345',
-                name: 'Test program',
                 programImage: '',
                 programLiveImage: '',
                 description: 'This is a test program data with description',
@@ -112,13 +61,10 @@ class FullDataStory extends React.Component {
                 format: 'live',
                 language: 'en',
                 isNational: true,
-                acls: generateAcls(11, 'viewer'),
-                isPublic: false,
-                affiliates: generateAffiliates(11)
+                affiliateById: generateAffiliateById(10, true)
               }}
               programFormats={['live', 'recorded']}
-              organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(21)}
+              loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>
@@ -161,8 +107,7 @@ class FullDataReadOnlyStory extends React.Component {
           <div>
             <ProgramInfo
               readOnly
-              canShare
-              canEditAffiliates
+              showAffiliates
               canBulkAddAffiliates
               program={{
                 id: '12345',
@@ -174,13 +119,10 @@ class FullDataReadOnlyStory extends React.Component {
                 format: 'live',
                 language: 'en',
                 isNational: true,
-                acls: generateAcls(11, 'viewer'),
-                isPublic: false,
-                affiliates: generateAffiliates(11)
+                affiliateById: generateAffiliateById(10, true)
               }}
               programFormats={['live', 'recorded']}
-              organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(21)}
+              loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>
@@ -222,12 +164,10 @@ class NoProgramDataStory extends React.Component {
         <Provider store={store}>
           <div>
             <ProgramInfo
-              canShare
-              canEditAffiliates
+              showAffiliates
               canBulkAddAffiliates
               programFormats={['live', 'recorded']}
-              organizations={generateOrganizations(21)}
-              affiliates={generateAffiliates(21)}
+              loadNextAffiliates={loadNextAffiliates}
               onSubmit={this.handleSubmit}
             />
             <button type="button" onClick={this.submit}>
@@ -268,7 +208,10 @@ class BaseStory extends React.Component {
       <div>
         <Provider store={store}>
           <div>
-            <ProgramInfo onSubmit={this.handleSubmit} />
+            <ProgramInfo
+              onSubmit={this.handleSubmit}
+              loadNextAffiliates={loadNextAffiliates}
+            />
             <button type="button" onClick={this.submit}>
               Submit
             </button>
@@ -285,7 +228,8 @@ class BaseStory extends React.Component {
 
 storiesOf('Program Info', module).add('Full data', () => (
   <FullDataStory store={store} />
-));storiesOf('Program Info', module).add('Full data readOnly', () => (
+));
+storiesOf('Program Info', module).add('Full data readOnly', () => (
   <FullDataReadOnlyStory store={store} />
 ));
 storiesOf('Program Info', module).add('No program data', () => (

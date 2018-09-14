@@ -72,6 +72,16 @@
 
 .affiliatesViewPagination {
   align-self: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+}
+
+.affiliatesViewPaginationLabel {
+  margin-right: 10px;
+  font-size: 14px;
+  color: $light-black;
 }
 
 .actionButtons {
