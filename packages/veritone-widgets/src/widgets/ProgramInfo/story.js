@@ -1,58 +1,79 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { slice } from 'lodash';
 
 import VeritoneApp from '../../shared/VeritoneApp';
 import ProgramInfoWidget from '.';
 
-const generateAcls = function(n, permission) {
-  const acls = [];
-  for (let i = 1; i <= n; i++) {
-    acls.push({
-      organizationId: 'orgId' + i,
-      permission: permission
-    });
-  }
-  return acls;
-};
-
-const generateOrganizations = function(n) {
-  const organizations = [];
-  for (let i = 1; i <= n; i++) {
-    organizations.push({
-      id: 'orgId' + i,
-      name: 'Organization ' + i
-    });
-  }
-  return organizations;
-};
-
-const generateAffiliates = function(n) {
+const generateAffiliates = function(n, setSchedule) {
   const result = [];
   for (let i = 1; i <= n; i++) {
-    result.push({
+    const affiliate = {
       id: String(i),
       name: 'Affiliate Station ' + i,
-      schedule: {
+      timeZone: 'US/Eastern'
+    };
+    if (setSchedule) {
+      affiliate.schedule = {
         scheduleType: 'Recurring',
-        start: new Date('August 19, 2018 01:00:00').toString(),
-        end: new Date('August 19, 2019 01:00:00').toString(),
+        start: '2018-04-14T19:48:25.147Z',
+        end: '2018-04-17T19:48:25.147Z',
         repeatEvery: {
           number: '1',
-          period: 'day'
+          period: 'week'
         },
-        daily: [
-          {
-            start: '00:00',
-            end: '01:00'
-          }
-        ],
         weekly: {
-          selectedDays: ['Monday', 'Wednesday', 'Friday', 'Sunday']
+          Wednesday: [
+            {
+              start: '16:33',
+              end: '17:21',
+              timeZone: 'US/Eastern'
+            }
+          ],
+          Thursday: [
+            {
+              start: '12:33',
+              end: '03:21',
+              timeZone: 'US/Eastern'
+            },
+            {
+              start: '01:00',
+              end: '01:00',
+              timeZone: 'US/Eastern'
+            }
+          ],
+          selectedDays: {
+            Wednesday: true,
+            Thursday: true
+          }
         }
-      }
-    });
+      };
+    }
+    result.push(affiliate);
   }
   return result;
+};
+
+const generateAffiliateById = function(n, setSchedule) {
+  const affiliateById = {};
+  generateAffiliates(n, setSchedule).forEach(
+    affiliate => (affiliateById[affiliate.id] = affiliate)
+  );
+  return affiliateById;
+};
+
+const AFFILIATES_LIST = generateAffiliates(222);
+
+const loadNextAffiliates = function({ limit, offset, nameSearchText = '' }) {
+  return Promise.resolve(
+    slice(
+      AFFILIATES_LIST.filter(affiliate =>
+        affiliate.name.toLowerCase().includes(nameSearchText.toLowerCase())
+      ),
+      offset,
+      offset + limit
+    )
+  );
 };
 
 class NoDataStory extends React.Component {
@@ -61,7 +82,8 @@ class NoDataStory extends React.Component {
   componentDidMount() {
     this._programInfo = new ProgramInfoWidget({
       elId: 'programInfo-widget',
-      programFormats: ['live', 'recorded']
+      programFormats: ['live', 'recorded'],
+      loadNextAffiliates: loadNextAffiliates
     });
   }
 
@@ -104,8 +126,7 @@ class FullDataStory extends React.Component {
   componentDidMount() {
     this._programInfo = new ProgramInfoWidget({
       elId: 'programInfo-widget',
-      canShare: true,
-      canEditAffiliates: true,
+      showAffiliates: true,
       canBulkAddAffiliates: true,
       program: {
         id: '12345',
@@ -117,13 +138,10 @@ class FullDataStory extends React.Component {
         format: 'live',
         language: 'en',
         isNational: true,
-        acls: generateAcls(11, 'viewer'),
-        isPublic: false,
-        affiliates: generateAffiliates(11)
+        affiliateById: generateAffiliateById(11, true)
       },
       programFormats: ['live', 'recorded'],
-      organizations: generateOrganizations(21),
-      affiliates: generateAffiliates(21)
+      loadNextAffiliates: loadNextAffiliates
     });
   }
 
