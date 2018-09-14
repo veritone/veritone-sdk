@@ -51,6 +51,7 @@ class EngineOutputExport extends Component {
     tdos: arrayOf(
       shape({
         tdoId: string.isRequired,
+        mentionId: string,
         startOffsetMs: number,
         stopOffsetMs: number
       })
@@ -113,9 +114,7 @@ class EngineOutputExport extends Component {
               }Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
-                export below based on your selection. Please note that larger
-                exports will be available through a download link sent to your
-                account email.
+                export with the option to download the corresponding file.
               </div>
             </Grid>
             <Grid item xs={1}>
@@ -141,7 +140,7 @@ class EngineOutputExport extends Component {
               <Card className={styles.formatSelection}>
                 <CardHeader
                   title="Export Format Selection"
-                  subheader="Select from available engine categories and engines that have run on these file(s). Then select your formats you would like to include in your download."
+                  subheader="Select the preferred engine categories and engines that have processed the file(s). Then choose the applicable format(s) to include in your export."
                   classes={{
                     title: styles.exportFormatTitle,
                     subheader: styles.exportFormatSubHeader
@@ -159,7 +158,7 @@ class EngineOutputExport extends Component {
                       color="primary"
                     />
                   }
-                  subheader="Include the Audio and Video media from your selected file(s) in your export. (This will increase download time)"
+                  subheader="Include the media file with your format export. Downloading the file may increase the wait time."
                   classes={{
                     title: styles.exportFormatTitle,
                     subheader: styles.exportFormatSubHeader

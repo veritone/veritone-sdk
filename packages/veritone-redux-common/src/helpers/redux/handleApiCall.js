@@ -1,6 +1,7 @@
-import { get, without } from 'lodash';
+import { get, mapValues, partial } from 'lodash';
 import { guid } from 'helpers/misc';
-import { createReducer } from './';
+import fetchingStatus from './fetchingStatus';
+import { createReducer } from './reducer';
 
 // Creates a reducer and selectors that track the loading state for any api call.
 // Designed to be used with callGraphQLApi.
@@ -10,8 +11,7 @@ import { createReducer } from './';
 // const {
 //   reducer: testReducer,
 //   selectors: {
-//     isFetching: testIsFetching,
-//     fetchingFailed: testFetchingFailed,
+//     fetchingStatus: testFetchingStatus,
 //     fetchingFailureMessage: testFetchingFailureMessage
 //   }
 // } = handleApiCall({
@@ -33,7 +33,7 @@ import { createReducer } from './';
 //   })
 // )
 
-// export { testIsFetching, testFetchingFailed, testFetchingFailureMessage }
+// export { testFetchingStatus, testFetchingFailureMessage }
 
 // There are two options for handling multiple in-flight requests for the same
 // resource:
@@ -44,14 +44,13 @@ import { createReducer } from './';
 
 // 2. If no explicit `requestId` is given, only the "latest" call for a given
 // resource is tracked. New calls will supersede old ones; old calls will
-// still resolve normally, but isFetching() etc will refer to the latest call.
+// still resolve normally, but fetchingStatus() etc will refer to the latest call.
 
 // see tests for examples
 
 function makeApiCallReducer(key, [requestType, successType, failureType]) {
   const defaultState = {
-    isFetchingRequestIds: [],
-    fetchingFailedRequestIds: [],
+    fetchingStatusByRequestId: {},
     fetchingFailureMessagesByRequestId: {},
     activeRequestId: null
   };
@@ -67,14 +66,10 @@ function makeApiCallReducer(key, [requestType, successType, failureType]) {
       }
     ) {
       return {
-        isFetchingRequestIds: [
-          ...state.isFetchingRequestIds,
-          _internalRequestId
-        ],
-        fetchingFailedRequestIds: without(
-          state.fetchingFailedRequestIds,
-          _internalRequestId
-        ),
+        fetchingStatusByRequestId: {
+          ...state.fetchingStatusByRequestId,
+          [_internalRequestId]: fetchingStatus.fetching
+        },
         fetchingFailureMessagesByRequestId: {
           ...state.fetchingFailureMessagesByRequestId,
           [_internalRequestId]: ''
@@ -101,14 +96,10 @@ function makeApiCallReducer(key, [requestType, successType, failureType]) {
       }
 
       return {
-        isFetchingRequestIds: without(
-          state.isFetchingRequestIds,
-          _internalRequestId
-        ),
-        fetchingFailedRequestIds: without(
-          state.fetchingFailedRequestIds,
-          _internalRequestId
-        ),
+        fetchingStatusByRequestId: {
+          ...state.fetchingStatusByRequestId,
+          [_internalRequestId]: fetchingStatus.success
+        },
         fetchingFailureMessagesByRequestId: {
           ...state.fetchingFailureMessagesByRequestId,
           [_internalRequestId]: ''
@@ -137,14 +128,10 @@ function makeApiCallReducer(key, [requestType, successType, failureType]) {
       }
 
       return {
-        isFetchingRequestIds: without(
-          state.isFetchingRequestIds,
-          _internalRequestId
-        ),
-        fetchingFailedRequestIds: [
-          ...state.fetchingFailedRequestIds,
-          _internalRequestId
-        ],
+        fetchingStatusByRequestId: {
+          ...state.fetchingStatusByRequestId,
+          [_internalRequestId]: fetchingStatus.failure
+        },
         fetchingFailureMessagesByRequestId: {
           ...state.fetchingFailureMessagesByRequestId,
           [_internalRequestId]: payload
@@ -170,43 +157,43 @@ function makeApiCallReducer(key, [requestType, successType, failureType]) {
   };
 }
 
-const makeSelectors = key => ({
-  isFetching: (localState, optionalRequestId) => {
-    const isFetchingRequestIds = get(
-      localState.apiCallHandlers,
-      [key, 'isFetchingRequestIds'],
-      []
-    );
-
+const selectors = {
+  fetchingStatus(key, localState, optionalRequestId) {
     const requestId =
       optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
-    return isFetchingRequestIds.includes(requestId);
+
+    return get(
+      localState.apiCallHandlers,
+      [key, 'fetchingStatusByRequestId', requestId],
+      fetchingStatus.default
+    );
   },
 
-  fetchingFailed: (localState, optionalRequestId) => {
-    const fetchingFailedRequestIds = get(
-      localState.apiCallHandlers,
-      [key, 'fetchingFailedRequestIds'],
-      []
-    );
+  fetchingStatusByRequestId(key, localState) {
+    return get(localState.apiCallHandlers, [key, 'fetchingStatusByRequestId']);
+  },
 
+  fetchingFailureMessage(key, localState, optionalRequestId) {
     const requestId =
       optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
-    return fetchingFailedRequestIds.includes(requestId);
+
+    return get(
+      selectors.fetchingFailureMessagesByRequestId(key, localState),
+      requestId,
+      ''
+    );
   },
 
-  fetchingFailureMessage: (localState, optionalRequestId) => {
-    const fetchingFailureMessagesByRequestId = get(
+  fetchingFailureMessagesByRequestId(key, localState) {
+    return get(
       localState.apiCallHandlers,
       [key, 'fetchingFailureMessagesByRequestId'],
       {}
     );
-
-    const requestId =
-      optionalRequestId || localState.apiCallHandlers[key].activeRequestId;
-    return fetchingFailureMessagesByRequestId[requestId] || '';
   }
-});
+};
+
+const makeSelectors = key => mapValues(selectors, func => partial(func, key));
 
 export default function handleApiCall({
   types: [requestType, successType, failureType]

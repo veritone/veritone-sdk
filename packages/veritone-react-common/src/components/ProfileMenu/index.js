@@ -21,6 +21,10 @@ export default class ProfileMenu extends React.Component {
     })
   };
 
+  static defaultProps = {
+    user: {}
+  };
+
   state = {
     open: false,
     anchorEl: null
@@ -47,17 +51,15 @@ export default class ProfileMenu extends React.Component {
   };
 
   render() {
+    const userProfileImage =
+      this.props.user.signedImageUrl ||
+      get(this.props.user, 'kvp.image') ||
+      '//static.veritone.com/veritone-ui/default-avatar-2.png';
+
     return (
       <div>
         <IconButton className={this.props.className} onClick={this.openMenu}>
-          <Avatar
-            src={get(
-              this.props.user,
-              'kvp.image',
-              '//static.veritone.com/veritone-ui/default-avatar-2.png'
-            )}
-            style={{ height: 35, width: 35 }}
-          />
+          <Avatar src={userProfileImage} style={{ height: 35, width: 35 }} />
         </IconButton>
         <Menu
           open={this.state.open}

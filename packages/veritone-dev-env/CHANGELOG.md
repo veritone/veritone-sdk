@@ -17,3 +17,7 @@
 
 ## 2.0.2
 * Bump required eslint-plugin-react version
+
+## 3.0.0
+* add eslint require-await rule
+* add stylelint-config-prettier to avoid conflicts between stylelint and prettier

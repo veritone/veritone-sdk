@@ -75,3 +75,6 @@ This allows redux-common to use more than one version of the API.
 * Add engine module action to fetch engine categories + related selectors
 * Always clear user state after logout
 * Add selectors to user module: selectUserOrganizationID and hasFeature
+
+## 3.8.0
+* Add handleApiCall helper which, along with an updated callGraphQLApi, should be able to handle most data-fetching reducer/selector requirements. See the header comment in src/helpers/redux/handleApiCall.js for details.
