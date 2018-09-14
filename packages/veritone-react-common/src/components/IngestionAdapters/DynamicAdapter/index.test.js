@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { startCase, toLower, cloneDeep } from 'lodash';
+import { startCase, toLower } from 'lodash';
 
 import DynamicAdapterConfig from './';
 
