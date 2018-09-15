@@ -1,5 +1,5 @@
 import { CALL_API } from 'redux-api-middleware-fixed';
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, pick } from 'lodash';
 import {
   permissions as perms,
   util as permissionUtil
@@ -18,7 +18,7 @@ export const namespace = 'user';
 const {
   reducer: resetUserPasswordReducer,
   selectors: {
-    fetchingStatus: resetUserFetchingStatus,
+    fetchingStatus: resetUserPasswordFetchingStatus,
     fetchingFailureMessage: resetUserPasswordFailureMessage
   }
 } = handleApiCall({
@@ -29,9 +29,25 @@ const {
   ]
 });
 
+export { resetUserPasswordFetchingStatus, resetUserPasswordFailureMessage };
+
+const {
+  reducer: updateCurrentUserProfileReducer,
+  selectors: {
+    fetchingStatus: updateCurrentUserProfileFetchingStatus,
+    fetchingFailureMessage: updateCurrentUserProfileFailureMessage
+  }
+} = handleApiCall({
+  types: [
+    constants.RESET_USER_PASSWORD,
+    constants.RESET_USER_PASSWORD_SUCCESS,
+    constants.RESET_USER_PASSWORD_FAILURE
+  ]
+});
+
 export {
-  resetUserFetchingStatus,
-  resetUserPasswordFailureMessage
+  updateCurrentUserProfileFetchingStatus,
+  updateCurrentUserProfileFailureMessage
 };
 
 const defaultState = {
@@ -52,6 +68,7 @@ const defaultState = {
 
 const reducer = reduceReducers(
   resetUserPasswordReducer,
+  updateCurrentUserProfileReducer,
   createReducer(defaultState, {
     [constants.FETCH_USER](state, action) {
       const requestSuccessState = {
@@ -306,6 +323,32 @@ export const resetUserPassword = email => (dispatch, getState) => {
     query,
     variables: {
       email: emailToReset
+    },
+    dispatch,
+    getState
+  });
+};
+
+export const updateCurrentUserProfile = vals => (dispatch, getState) => {
+  const query = `
+    mutation UpdateCurrentUser($input: UpdateCurrentUser!){
+      updateCurrentUser(input: $input) {
+        lastName
+      }
+    }
+  `;
+
+  const acceptableVals = ['firstName', 'lastName', 'image'];
+
+  return callGraphQLApi({
+    actionTypes: [
+      constants.UPDATE_CURRENT_USER_PROFILE,
+      constants.UPDATE_CURRENT_USER_PROFILE_SUCCESS,
+      constants.UPDATE_CURRENT_USER_PROFILE_FAILURE
+    ],
+    query,
+    variables: {
+      input: pick(vals, acceptableVals)
     },
     dispatch,
     getState
