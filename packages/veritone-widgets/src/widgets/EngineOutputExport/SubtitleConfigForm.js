@@ -15,7 +15,7 @@ const SubtitleConfigForm = reduxForm({
   form: 'subtitleConfig',
   initialValues: {}
 })(({ handleSubmit, onCancel, children, submitting, invalid }) => (
-  <form onSubmit={handleSubmit}>
+  <form onSubmit={handleSubmit} data-veritone-element="subtitle-config-form">
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
         <Grid container spacing={16} alignItems="flex-end">
@@ -41,6 +41,7 @@ const SubtitleConfigForm = reduxForm({
                   input: styles.subtitleFieldInput
                 }
               }}
+              data-veritone-element="max-characters-per-line-input"
             />
           </Grid>
         </Grid>
@@ -67,6 +68,7 @@ const SubtitleConfigForm = reduxForm({
                 },
                 getContentAnchorEl: null
               }}
+              data-veritone-element="lines-per-screen-select"
             >
               <MenuItem value={1}>1</MenuItem>
               <MenuItem value={2}>2</MenuItem>
@@ -82,12 +84,23 @@ const SubtitleConfigForm = reduxForm({
         color="primary"
         name="newLineOnPunctuation"
         label="New Caption Line on Punctuation"
+        data-veritone-element="new-line-on-punctuation-switch"
       />
     </div>
     <br />
     <DialogActions>
-      <Button onClick={onCancel}>Cancel</Button>
-      <Button type="submit" color="primary" disabled={submitting || invalid}>
+      <Button
+        onClick={onCancel}
+        data-veritone-element="subtitle-config-form-cancel-button"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        color="primary"
+        disabled={submitting || invalid}
+        data-veritone-element="subtitle-config-form-save-button"
+      >
         Save
       </Button>
     </DialogActions>

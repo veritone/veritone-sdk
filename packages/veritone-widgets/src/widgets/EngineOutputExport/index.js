@@ -100,7 +100,11 @@ class EngineOutputExport extends Component {
       fetchEngineRunsFailed;
 
     return (
-      <Dialog fullScreen open={open} data-veritone-element="export-and-download-dialog">
+      <Dialog
+        fullScreen
+        open={open}
+        data-veritone-element="export-and-download-dialog"
+      >
         <Grid
           container
           direction="column"
@@ -205,6 +209,7 @@ class EngineOutputExport extends Component {
               autoHideDuration={5000}
               // eslint-disable-next-line
               onClose={() => closeSnackBar(snackBar.id)}
+              data-veritone-element="export-and-download-snackbar"
             >
               <SnackbarContent
                 className={snackBarClasses[snackBar.variant]}
@@ -216,6 +221,7 @@ class EngineOutputExport extends Component {
                     color="inherit"
                     // eslint-disable-next-line
                     onClick={() => closeSnackBar(snackBar.id)}
+                    data-veritone-element="export-and-download-snackbar-close-button"
                   >
                     <CloseIcon />
                   </IconButton>
