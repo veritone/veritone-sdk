@@ -71,7 +71,7 @@ export default class EngineCategoryConfigList extends Component {
     } = this.props;
 
     return (
-      <div>
+      <div data-veritone-element="engine-category-config-list">
         {!fetchingEngineRuns ? (
           <List disablePadding>
             {Object.keys(outputConfigsByCategoryId).map((key, index) => (

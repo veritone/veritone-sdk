@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { forEach, get, includes, find } from 'lodash';
+import { forEach, get, includes, find, kebabCase } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -125,7 +125,11 @@ export default class EngineCategoryConfig extends Component {
     };
 
     return (
-      <div>
+      <div
+        data-veritone-element={`${kebabCase(
+          category.name
+        )}-engine-category-config`}
+      >
         <ListItem>
           <ListItemIcon>
             <Icon className={category.iconClass} />
@@ -139,6 +143,7 @@ export default class EngineCategoryConfig extends Component {
               aria-label="Expand Category"
               // eslint-disable-next-line
               onClick={() => onExpandConfigs(category.id)}
+              data-veritone-element="engine-category-config-more-less-button"
             >
               {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
@@ -169,6 +174,7 @@ export default class EngineCategoryConfig extends Component {
                     color="primary"
                     className={styles.customizeButton}
                     onClick={this.openCustomizeSubtitles}
+                    data-veritone-element="customize-subtitle-formats-button"
                   >
                     Customize
                   </Button>
@@ -181,6 +187,7 @@ export default class EngineCategoryConfig extends Component {
           open={this.state.dialogOpen}
           onClose={this.handleCloseDialog}
           aria-labelledby="customize-dialog-title"
+          data-veritone-element="customize-subtitle-formats-dialog"
         >
           <DialogTitle id="customize-dialog-title">
             Subtitle Format Settings
