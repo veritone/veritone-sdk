@@ -118,6 +118,7 @@ const programLiveImageNullState =
       id
     ),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
+    betaFlagEnabled: userModule.hasFeature(state, 'beta'),
     exportClosedCaptionsEnabled: userModule.hasFeature(
       state,
       'exportClosedCaptions'
@@ -358,6 +359,7 @@ class MediaDetailsWidget extends React.Component {
       })
     ),
     createQuickExport: func.isRequired,
+    betaFlagEnabled: bool.isRequired,
     onExport: func,
     exportClosedCaptionsEnabled: bool,
     bulkEditEnabled: bool,
@@ -863,6 +865,7 @@ class MediaDetailsWidget extends React.Component {
       isSavingEngineResults,
       alertDialogConfig,
       categoryExportFormats,
+      betaFlagEnabled,
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled
@@ -890,7 +893,7 @@ class MediaDetailsWidget extends React.Component {
         </MenuItem>
       );
     }
-    if (onExport && categoryExportFormats.length) {
+    if (onExport && categoryExportFormats.length && betaFlagEnabled) {
       moreMenuItems.push(
         <ExportMenuItem
           key="quick-export"
