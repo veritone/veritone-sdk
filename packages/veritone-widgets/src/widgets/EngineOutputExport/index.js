@@ -103,7 +103,7 @@ class EngineOutputExport extends Component {
       <Dialog
         fullScreen
         open={open}
-        data-veritone-element="export-and-download-dialog"
+        data-veritone-component="export-and-download-dialog"
       >
         <Grid
           container

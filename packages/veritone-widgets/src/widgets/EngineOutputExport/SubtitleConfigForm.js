@@ -15,7 +15,7 @@ const SubtitleConfigForm = reduxForm({
   form: 'subtitleConfig',
   initialValues: {}
 })(({ handleSubmit, onCancel, children, submitting, invalid }) => (
-  <form onSubmit={handleSubmit} data-veritone-element="subtitle-config-form">
+  <form onSubmit={handleSubmit} data-veritone-component="subtitle-config-form">
     <div className={styles.subtitleConfigField}>
       <FormControl fullWidth>
         <Grid container spacing={16} alignItems="flex-end">
