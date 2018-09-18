@@ -80,7 +80,10 @@ export default class EngineConfigItem extends Component {
     const selectedFileExtensions = formats.map(format => format.extension);
 
     return (
-      <ListItem className={styles.engineListItem}>
+      <ListItem
+        className={styles.engineListItem}
+        data-veritone-component="engine-config-list-item"
+      >
         {engine && engine.signedIconPath ? (
           <img className={styles.engineLogo} src={engine.signedIconPath} />
         ) : (
@@ -130,8 +133,10 @@ export default class EngineConfigItem extends Component {
               vertical: 'bottom',
               horizontal: 'left'
             },
-            getContentAnchorEl: null
+            getContentAnchorEl: null,
+            "data-veritone-element": "export-format-select-menu"
           }}
+          data-veritone-element="export-format-select"
         >
           {category.exportFormats.map(format => {
             if (
@@ -148,6 +153,7 @@ export default class EngineConfigItem extends Component {
                 classes={{
                   selected: styles.exportFormatSelected
                 }}
+                data-veritone-element={`${format.format}-export-format`}
               >
                 <Checkbox
                   color="primary"
