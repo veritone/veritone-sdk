@@ -333,11 +333,14 @@ export const updateCurrentUserProfile = vals => (dispatch, getState) => {
   const query = `
     mutation UpdateCurrentUser($input: UpdateCurrentUser!){
       updateCurrentUser(input: $input) {
+        firstName
         lastName
+        imageUrl
       }
     }
   `;
 
+  // when updating, update these in the query, too
   const acceptableVals = ['firstName', 'lastName', 'image'];
 
   return callGraphQLApi({
