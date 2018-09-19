@@ -64,4 +64,13 @@ storiesOf('RaisedTextField', module)
       onClickAction={action('clicked')}
       containerStyle={{ maxWidth: '300px' }}
     />
+  ))
+  .add('Tooltip', () => (
+    <RaisedTextField
+      action="go"
+      label="Name"
+      value="The President"
+      onClickAction={action('clicked')}
+      actionTooltipLabel="Click here for a great time"
+    />
   ));

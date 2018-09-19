@@ -5,8 +5,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import EditIcon from '@material-ui/icons/ModeEdit';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import { func, string, objectOf, any, bool } from 'prop-types';
+import { func, string, objectOf, any, bool, node } from 'prop-types';
 
 import styles from './styles.scss';
 
@@ -17,7 +18,8 @@ const RaisedTextField = ({
   onClickAction,
   className,
   containerStyle,
-  disabled
+  disabled,
+  actionTooltipLabel
 }) => {
   const actionIcon = {
     edit: <EditIcon />,
@@ -33,25 +35,27 @@ const RaisedTextField = ({
       <div className={styles.container}>
         <div className={styles.label}>{label}</div>
         <div className={styles.value}>{value}</div>
-        <div className={styles.actionIconContainer}>
-          {action &&
-            (actionIcon ? (
-              <IconButton
-                className={styles.actionIcon}
-                onClick={onClickAction}
-                disabled={!action || disabled}
-              >
-                {actionIcon}
-              </IconButton>
-            ) : (
-              <Button // className={styles.actionIcon}
-                onClick={onClickAction}
-                disabled={disabled}
-              >
-                {action}
-              </Button>
-            ))}
-        </div>
+        <ConditionalToolTip title={actionTooltipLabel} placement="left">
+          <div className={styles.actionIconContainer}>
+            {action &&
+              (actionIcon ? (
+                <IconButton
+                  className={styles.actionIcon}
+                  onClick={onClickAction}
+                  disabled={!action || disabled}
+                >
+                  {actionIcon}
+                </IconButton>
+              ) : (
+                <Button // className={styles.actionIcon}
+                  onClick={onClickAction}
+                  disabled={disabled}
+                >
+                  {action}
+                </Button>
+              ))}
+          </div>
+        </ConditionalToolTip>
       </div>
     </Paper>
   );
@@ -64,7 +68,22 @@ RaisedTextField.propTypes = {
   value: string,
   action: string,
   onClickAction: func,
-  disabled: bool
+  disabled: bool,
+  actionTooltipLabel: string
 };
 
 export default RaisedTextField;
+
+const ConditionalToolTip = ({ title, children, ...props }) =>
+  title ? (
+    <Tooltip title={title} {...props}>
+      {children}
+    </Tooltip>
+  ) : (
+    children
+  );
+
+ConditionalToolTip.propTypes = {
+  title: string,
+  children: node
+};
