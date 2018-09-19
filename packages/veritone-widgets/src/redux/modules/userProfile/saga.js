@@ -14,7 +14,7 @@ import { showNotification } from '../notifications';
 
 function* handleChangeUser({ error }) {
   if (error) {
-    yield put(showNotification('Failed to update user.'));
+    yield put(showNotification('Unable to update user; please try again.'));
     return;
   }
 

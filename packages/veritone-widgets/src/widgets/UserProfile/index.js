@@ -24,6 +24,7 @@ const {
   user: { resetUserPassword, updateCurrentUserProfile, selectUser }
 } = modules;
 import widget from '../../shared/widget';
+import FilePicker from '../FilePicker';
 // import rootSaga from '../../redux/modules/userProfile/saga';
 import PersonalInfoField from './PersonalInfoField';
 import PasswordField from './PasswordField';
@@ -71,11 +72,11 @@ export class UserProfile extends React.Component {
     user: shape({
       kvp: shape({
         firstName: string.isRequired,
-        lastName: string.isRequired,
+        lastName: string.isRequired
       }).isRequired,
-      email: string
+      email: string,
+      signedImageUrl: string
     }),
-    imageUrl: string,
     passwordUpdatedDateTime: string,
     resetForm: func.isRequired,
     submitForm: func.isRequired,
@@ -84,10 +85,6 @@ export class UserProfile extends React.Component {
     updateCurrentUserProfile: func.isRequired,
     invalid: bool,
     pristine: bool
-  };
-
-  static defaultProps = {
-    imageUrl: '//static.veritone.com/veritone-ui/default-avatar-2.png'
   };
 
   state = {
@@ -112,6 +109,12 @@ export class UserProfile extends React.Component {
     });
   };
 
+  openChangeAvatarModal = () => {
+    this.setState({
+      currentModal: 'changeAvatar'
+    });
+  };
+
   closeModal = () => {
     this.setState({
       currentModal: null
@@ -120,7 +123,7 @@ export class UserProfile extends React.Component {
 
   cancelChanges = () => {
     this.closeModal();
-    this.props.resetForm();
+    this.props.resetForm('userProfile');
   };
 
   submitChanges = () => {
@@ -141,6 +144,19 @@ export class UserProfile extends React.Component {
       .then(this.afterChange);
   };
 
+  handleUpdateImage = ([result], { error }) => {
+    if (error) {
+      // file picker upload error, messaging handled by picker itself
+      return;
+    }
+
+    console.log(result);
+
+    this.handleUpdateUser({
+      image: result.unsignedUrl
+    });
+  };
+
   afterChange = () => {
     this.closeModal();
   };
@@ -153,80 +169,87 @@ export class UserProfile extends React.Component {
 
   render() {
     return (
-      <Form onSubmit={this.props.handleSubmit(this.handleUpdateUser)}>
-        <div className={styles.container}>
-          <div className={styles.column}>
-            <div className={styles.section}>
-              <Avatar
-                src={this.props.imageUrl}
-                label="Change"
-                onClick={this.handleChangeAvatar}
-              />
-
-              <Typography variant="subheading" className={styles.greeting}>
-                Welcome, {this.getUserFullName()}
-              </Typography>
-            </div>
-
-            <div className={styles.section}>
-              <Typography
-                variant="title"
-                gutterBottom
-                classes={{ root: styles.title }}
-              >
-                Your Personal Info
-              </Typography>
-              <Typography
-                variant="subheading"
-                gutterBottom
-                classes={{ root: styles.subheading }}
-              >
-                Manage this basic information - your name and email.
-              </Typography>
-
-              <PersonalInfoField
-                name={this.getUserFullName()}
-                email={this.props.user.email}
-                onEditName={this.openChangeNameModal}
-                onEditEmail={this.openChangeEmailModal}
-              />
-            </div>
-
-            <div className={styles.section}>
-              <Typography
-                variant="title"
-                gutterBottom
-                classes={{ root: styles.title }}
-              >
-                Signing in to Veritone
-              </Typography>
-              <Typography
-                variant="subheading"
-                gutterBottom
-                classes={{ root: styles.subheading }}
-              >
-                Control your password and account access.
-              </Typography>
-
-              <PasswordField
-                lastUpdated={this.props.passwordUpdatedDateTime}
-                onEdit={this.openChangePasswordModal}
-              />
-            </div>
-
-            <ChangeNameModal
-              open={this.state.currentModal === 'changeName'}
-              onConfirm={this.submitChanges}
-              onCancel={this.cancelChanges}
-              disableConfirm={this.props.invalid || this.props.pristine}
+      <Form
+        onSubmit={this.props.handleSubmit(this.handleUpdateUser)}
+        className={styles.container}
+      >
+        <div className={styles.column}>
+          <div className={styles.section}>
+            <FilePicker
+              onPick={this.handleUpdateImage}
+              // eslint-disable-next-line
+              renderButton={({ handlePickFiles }) => (
+                <Avatar
+                  src={this.props.user.signedImageUrl}
+                  label="Change"
+                  onClick={handlePickFiles}
+                />
+              )}
             />
 
-            <ResetPasswordModal
-              open={this.state.currentModal === 'changePassword'}
-              onConfirm={this.handleResetPassword}
-              onCancel={this.cancelChanges}
+            <Typography variant="subheading" className={styles.greeting}>
+              Welcome, {this.getUserFullName()}
+            </Typography>
+          </div>
+
+          <div className={styles.section}>
+            <Typography
+              variant="title"
+              gutterBottom
+              classes={{ root: styles.title }}
+            >
+              Your Personal Info
+            </Typography>
+            <Typography
+              variant="subheading"
+              gutterBottom
+              classes={{ root: styles.subheading }}
+            >
+              Manage this basic information - your name and email.
+            </Typography>
+
+            <PersonalInfoField
+              name={this.getUserFullName()}
+              email={this.props.user.email}
+              onEditName={this.openChangeNameModal}
+              onEditEmail={this.openChangeEmailModal}
             />
           </div>
+
+          <div className={styles.section}>
+            <Typography
+              variant="title"
+              gutterBottom
+              classes={{ root: styles.title }}
+            >
+              Signing in to Veritone
+            </Typography>
+            <Typography
+              variant="subheading"
+              gutterBottom
+              classes={{ root: styles.subheading }}
+            >
+              Control your password and account access.
+            </Typography>
+
+            <PasswordField
+              lastUpdated={this.props.passwordUpdatedDateTime}
+              onEdit={this.openChangePasswordModal}
+            />
+          </div>
+
+          <ChangeNameModal
+            open={this.state.currentModal === 'changeName'}
+            onConfirm={this.submitChanges}
+            onCancel={this.cancelChanges}
+            disableConfirm={this.props.invalid || this.props.pristine}
+          />
+
+          <ResetPasswordModal
+            open={this.state.currentModal === 'changePassword'}
+            onConfirm={this.handleResetPassword}
+            onCancel={this.cancelChanges}
+          />
         </div>
       </Form>
     );

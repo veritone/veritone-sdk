@@ -7,7 +7,7 @@ import UserProfile, { UserProfileWidget } from './';
 
 storiesOf('UserProfile', module).add('Base', () => {
   const sharedProps = {
-    passwordUpdatedDateTime: '2017-04-07T22:10:30.230Z',// fixme
+    passwordUpdatedDateTime: '2017-04-07T22:10:30.230Z', // fixme
     open: boolean('open', false)
   };
 

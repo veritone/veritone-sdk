@@ -12,12 +12,7 @@ import Button from '@material-ui/core/Button';
 
 import styles from './styles.scss';
 
-const ChangeName = ({
-  open,
-  disableConfirm,
-  onConfirm,
-  onCancel
-}) => {
+const ChangeName = ({ open, disableConfirm, onConfirm, onCancel }) => {
   return (
     <Dialog open={open} classes={{ root: styles.dialogContainer }}>
       <DialogTitle>Change Name</DialogTitle>
