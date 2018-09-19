@@ -21,6 +21,7 @@ const Index = ({ name, email, onEditName, onEditEmail }) => {
         value={email}
         action="edit"
         onClickAction={onEditEmail}
+        actionTooltipLabel="This address is used to identify your Veritone account and cannot be changed."
         className={styles.field}
         disabled
       />
