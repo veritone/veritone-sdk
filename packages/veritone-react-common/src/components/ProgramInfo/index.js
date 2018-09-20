@@ -239,7 +239,7 @@ class ProgramInfo extends React.Component {
 
     // TODO OLEKS: intentionally disabled. Enable when bulk add is implemented
     let { canBulkAddAffiliates } = this.props;
-    canBulkAddAffiliates = false;
+    canBulkAddAffiliates = true;
 
     const { program, openFilePicker } = this.state;
 
