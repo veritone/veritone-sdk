@@ -33,37 +33,20 @@ class ProgramInfoWidget extends React.Component {
       format: string,
       language: string,
       isNational: bool,
-      acls: arrayOf(
-        shape({
-          organizationId: string.isRequired,
-          permission: string.isRequired
-        })
-      ),
-      isPublic: bool,
-      affiliates: arrayOf(
+      affiliateById: objectOf(
         shape({
           id: string.isRequired,
           name: string.isRequired,
+          timeZone: string,
           schedule: objectOf(any).isRequired
         })
       )
     }),
     programFormats: arrayOf(string),
-    canShare: bool,
-    organizations: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
-    canEditAffiliates: bool,
     canBulkAddAffiliates: bool,
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired
-      })
-    ),
+    showAffiliates: bool,
+    loadNextAffiliates: func,
+    loadAllAffiliates: func,
     pick: func,
     _widgetId: string,
     relativeSize: number, // optional - used to scale text sizes from hosting app

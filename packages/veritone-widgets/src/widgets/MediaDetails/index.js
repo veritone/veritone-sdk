@@ -118,6 +118,7 @@ const programLiveImageNullState =
       id
     ),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
+    betaFlagEnabled: userModule.hasFeature(state, 'beta'),
     exportClosedCaptionsEnabled: userModule.hasFeature(
       state,
       'exportClosedCaptions'

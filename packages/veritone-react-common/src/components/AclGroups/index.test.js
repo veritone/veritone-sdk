@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import SelectAclGroupDialog from './SelectAclGroupDialog/index';
-import { generateAcls, generateOrganizations } from './test-helpers';
+import { generateOrganizations } from './test-helpers';
 import AclGroups from './index';
 
 describe('Acl Groups', () => {
@@ -10,8 +10,7 @@ describe('Acl Groups', () => {
   it('should render acl groups', () => {
     const wrapper = mount(
       <AclGroups
-        acls={generateAcls(2, 'viewer')}
-        organizations={generateOrganizations(3)}
+        organizations={generateOrganizations(3, 2, 'viewer')}
         defaultPermission={'viewer'}
         onAclsChange={onAclsChange}
         description={'Acl groups description'}
@@ -27,11 +26,10 @@ describe('Acl Groups', () => {
   });
 
   it('should remove acl group', () => {
-    const acls = generateAcls(2, 'viewer');
+    const acls = generateOrganizations(3, 2, 'viewer');
     const wrapper = mount(
       <AclGroups
-        acls={acls}
-        organizations={generateOrganizations(3)}
+        organizations={acls}
         defaultPermission={'viewer'}
         onAclsChange={onAclsChange}
         description={'Acl groups description'}
@@ -42,15 +40,20 @@ describe('Acl Groups', () => {
       .find('IconButton.aclRowDeleteIcon')
       .first()
       .simulate('click');
-    const secondAcl = acls[1];
-    expect(onAclsChange).toHaveBeenCalledWith([secondAcl]);
+    const expectedAcls = {
+      orgId1: {
+        id: 'orgId1',
+        name: 'Organization 1',
+        permission: null
+      }
+    };
+    expect(onAclsChange).toHaveBeenCalledWith(expectedAcls);4
   });
 
   it('should render select acl groups dialog', () => {
     const wrapper = mount(
       <AclGroups
-        acls={generateAcls(1, 'viewer')}
-        organizations={generateOrganizations(3)}
+        organizations={generateOrganizations(3, 1, 'viewer')}
         defaultPermission={'viewer'}
         onAclsChange={onAclsChange}
         description={'Acl groups description'}
@@ -61,6 +64,7 @@ describe('Acl Groups', () => {
       .find('.selectAclGroupButton')
       .find('Button')
       .simulate('click');
+
     const selectAclGroupDialogElement = wrapper.find(SelectAclGroupDialog);
     expect(selectAclGroupDialogElement).toHaveLength(1);
     expect(
@@ -104,18 +108,20 @@ describe('Acl Groups', () => {
       .last()
       .simulate('click');
 
-    const expectedAcl = {
-      organizationId: 'orgId1',
-      permission: 'viewer'
+    const expectedAcls = {
+      orgId1: {
+        id: 'orgId1',
+        name: 'Organization 1',
+        permission: 'viewer'
+      }
     };
-    expect(onAclsChange).toHaveBeenCalledWith([expectedAcl]);
+    expect(onAclsChange).toHaveBeenCalledWith(expectedAcls);
   });
 
   it('should remove acl group through dialog', () => {
     const wrapper = mount(
       <AclGroups
-        acls={generateAcls(2, 'viewer')}
-        organizations={generateOrganizations(3)}
+        organizations={generateOrganizations(3, 2, 'viewer')}
         defaultPermission={'viewer'}
         onAclsChange={onAclsChange}
         description={'Acl groups description'}
@@ -138,10 +144,13 @@ describe('Acl Groups', () => {
       .last()
       .simulate('click');
 
-    const expectedAcl = {
-      organizationId: 'orgId2',
-      permission: 'viewer'
+    const expectedAcls = {
+      orgId1: {
+        id: 'orgId1',
+        name: 'Organization 1',
+        permission: null
+      }
     };
-    expect(onAclsChange).toHaveBeenCalledWith([expectedAcl]);
+    expect(onAclsChange).toHaveBeenCalledWith(expectedAcls);
   });
 });

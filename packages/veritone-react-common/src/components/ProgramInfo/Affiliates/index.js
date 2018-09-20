@@ -1,18 +1,20 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { func, string, arrayOf, shape, bool } from 'prop-types';
-import { get } from 'lodash';
+import { func, string, shape, bool, objectOf } from 'prop-types';
+import { get, keys, values } from 'lodash';
 import AffiliateItem from './AffiliateItem';
 import styles from './styles.scss';
-import AffiliateStationsDialog from "./AffiliateStationsDialog";
-import EditAffiliateDialog from "./EditAffiliateDialog";
+import AffiliateStationsDialog from './AffiliateStationsDialog';
+import EditAffiliateDialog from './EditAffiliateDialog';
+import BulkAddAffiliatesDialog from './BulkAddAffiliatesDialog';
 
 export default class Affiliates extends React.Component {
   static propTypes = {
-    selectedAffiliates: arrayOf(
+    selectedAffiliateById: objectOf(
       shape({
         id: string.isRequired,
         name: string.isRequired,
+        timeZone: string,
         schedule: shape({
           scheduleType: string,
           start: string,
@@ -21,49 +23,21 @@ export default class Affiliates extends React.Component {
             number: string,
             period: string
           }),
-          daily: arrayOf(
-            shape({
-              start: string,
-              end: string
-            })
-          ),
           weekly: shape({
-            selectedDays: arrayOf(string)
+            selectedDays: objectOf(bool)
           })
         }).isRequired
       })
     ),
-    affiliates: arrayOf(
-      shape({
-        id: string.isRequired,
-        name: string.isRequired,
-        schedule: shape({
-          scheduleType: string,
-          start: string,
-          end: string,
-          repeatEvery: shape({
-            number: string,
-            period: string
-          }),
-          daily: arrayOf(
-            shape({
-              start: string,
-              end: string
-            })
-          ),
-          weekly: shape({
-            selectedDays: arrayOf(string)
-          })
-        }).isRequired
-      })
-    ),
-    onAffiliatesChange: func.isRequired,
+    loadNextAffiliates: func,
+    loadAllAffiliates: func,
+    onAffiliatesChange: func,
+    readOnly: bool,
     canBulkAddAffiliates: bool
   };
 
   state = {
     isAffiliateStationsDialogOpen: false,
-    isEditAffiliateDialogOpen: false,
     isBulkAddAffiliateDialogOpen: false,
     affiliateToEdit: null
   };
@@ -72,7 +46,6 @@ export default class Affiliates extends React.Component {
     this.setState({
       affiliateToEdit: affiliate
     });
-    this.openEditAffiliateDialog();
   };
 
   openAffiliateStationsDialog = () => {
@@ -87,15 +60,9 @@ export default class Affiliates extends React.Component {
     });
   };
 
-  openEditAffiliateDialog = () => {
-    this.setState({
-      isEditAffiliateDialogOpen: true
-    });
-  };
-
   closeEditAffiliateDialog = () => {
     this.setState({
-      isEditAffiliateDialogOpen: false
+      affiliateToEdit: null
     });
   };
 
@@ -111,23 +78,80 @@ export default class Affiliates extends React.Component {
     });
   };
 
-  handleAddAffiliateStations = newAffiliates => {
-    this.closeAffiliateStationsDialog();
-    // TODO: implement
+  handleAddAffiliateStation = newAffiliate => {
+    const affiliateById = {
+      ...this.props.selectedAffiliateById
+    };
+    affiliateById[newAffiliate.id] = newAffiliate;
+    this.props.onAffiliatesChange(affiliateById);
+  };
+
+  handleBulkAddAffiliates = bulkAddAffiliateById => {
+    this.closeBulkAddAffiliateDialog();
+    for (let affiliateId in keys(bulkAddAffiliateById)) {
+      if (this.props.selectedAffiliateById[affiliateId]) {
+        bulkAddAffiliateById[
+          affiliateId
+        ].schedule.start = this.props.selectedAffiliateById[
+          affiliateId
+        ].schedule.start;
+        bulkAddAffiliateById[
+          affiliateId
+        ].schedule.end = this.props.selectedAffiliateById[
+          affiliateId
+        ].schedule.end;
+      }
+    }
+    const affiliateById = {
+      ...this.props.selectedAffiliateById,
+      ...bulkAddAffiliateById
+    };
+    this.props.onAffiliatesChange(affiliateById);
   };
 
   handleEditAffiliate = newAffiliate => {
     this.closeEditAffiliateDialog();
-    // TODO: implement
+    for (let selectedDay in keys(
+      get(newAffiliate, 'schedule.weekly.selectedDays', {})
+    )) {
+      if (newAffiliate.schedule.weekly.selectedDays[selectedDay]) {
+        delete newAffiliate.schedule.weekly.selectedDays[selectedDay];
+        delete newAffiliate.schedule.weekly[selectedDay];
+      }
+    }
+    const affiliateById = {
+      ...this.props.selectedAffiliateById
+    };
+    affiliateById[newAffiliate.id] = newAffiliate;
+    this.props.onAffiliatesChange(affiliateById);
+  };
+
+  handleDeleteAffiliate = affiliate => {
+    this.closeEditAffiliateDialog();
+    const affiliateById = {
+      ...this.props.selectedAffiliateById
+    };
+    delete affiliateById[affiliate.id];
+    this.props.onAffiliatesChange(affiliateById);
+  };
+
+  handleDeleteEditedAffiliate = () => {
+    this.handleDeleteAffiliate(this.state.affiliateToEdit);
   };
 
   render() {
-    const { selectedAffiliates, canBulkAddAffiliates } = this.props;
-    const { isAffiliateStationsDialogOpen, isEditAffiliateDialogOpen, affiliateToEdit } = this.state;
-
-    // TODO: use when ready
-    // eslint-disable-next-line no-unused-vars
-    const { affiliates, onAffiliatesChange } = this.props;
+    const {
+      selectedAffiliateById,
+      readOnly,
+      canBulkAddAffiliates,
+      loadNextAffiliates,
+      loadAllAffiliates
+    } = this.props;
+    const {
+      isAffiliateStationsDialogOpen,
+      isBulkAddAffiliateDialogOpen,
+      affiliateToEdit
+    } = this.state;
 
     return (
       <div className={styles.affiliatesContainer}>
@@ -136,13 +160,15 @@ export default class Affiliates extends React.Component {
           Assign affiliated stations that also broadcast programming from this
           ingestion source.
         </div>
-        {get(selectedAffiliates, 'length') > 0 && (
+        {values(selectedAffiliateById).length > 0 && (
           <div className={styles.affiliatesListSection}>
-            {selectedAffiliates.map(affiliate => {
+            {values(selectedAffiliateById).map(affiliate => {
               return (
                 <div key={affiliate.id} className={styles.affiliateItem}>
                   <AffiliateItem
                     affiliate={affiliate}
+                    readOnly={readOnly}
+                    onDelete={this.handleDeleteAffiliate}
                     onEdit={this.handleOnEditAffiliateClick}
                   />
                 </div>
@@ -150,44 +176,54 @@ export default class Affiliates extends React.Component {
             })}
           </div>
         )}
-        <div className={styles.addAffiliateActionButtons}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={this.openAffiliateStationsDialog}
-            classes={{
-              root: styles.addAffiliateButton,
-              label: styles.addAffiliateButtonLabel
-            }}
-          >
-            ADD AFFILIATE
-          </Button>
-          {canBulkAddAffiliates && (
+        {!readOnly && (
+          <div className={styles.addAffiliateActionButtons}>
             <Button
               variant="outlined"
               color="primary"
-              onClick={this.openBulkAddAffiliateDialog}
+              onClick={this.openAffiliateStationsDialog}
               classes={{
                 root: styles.addAffiliateButton,
                 label: styles.addAffiliateButtonLabel
               }}
             >
-              BULK ADD AFFILIATES
+              ADD AFFILIATE
             </Button>
-          )}
-        </div>
+            {canBulkAddAffiliates && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.openBulkAddAffiliateDialog}
+                classes={{
+                  root: styles.addAffiliateButton,
+                  label: styles.addAffiliateButtonLabel
+                }}
+              >
+                BULK ADD AFFILIATES
+              </Button>
+            )}
+          </div>
+        )}
         {isAffiliateStationsDialogOpen && (
           <AffiliateStationsDialog
-            affiliates={affiliates}
+            loadNextAffiliates={loadNextAffiliates}
             onClose={this.closeAffiliateStationsDialog}
-            onAdd={this.handleAddAffiliateStations}
+            onAdd={this.handleAddAffiliateStation}
           />
         )}
-        {isEditAffiliateDialogOpen && affiliateToEdit && (
+        {affiliateToEdit && (
           <EditAffiliateDialog
             affiliate={affiliateToEdit}
             onClose={this.closeEditAffiliateDialog}
-            onAdd={this.handleEditAffiliate}
+            onSave={this.handleEditAffiliate}
+            onDelete={this.handleDeleteEditedAffiliate}
+          />
+        )}
+        {isBulkAddAffiliateDialogOpen && (
+          <BulkAddAffiliatesDialog
+            loadAllAffiliates={loadAllAffiliates}
+            onClose={this.closeBulkAddAffiliateDialog}
+            onAdd={this.handleBulkAddAffiliates}
           />
         )}
       </div>
