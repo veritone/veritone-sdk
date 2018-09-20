@@ -3,21 +3,6 @@ import { mount, shallow } from 'enzyme';
 import BulkAddAffiliateDialog from './index';
 
 describe('Bulk Add Affiliate', () => {
-
-  const CSV_CONTENT =
-    `STATION,SCHEDULE,CLEARANCE,CLEARPCT
-    HEADER,Origin:PRN.LA Code:Q218RSD Name:"Rush Limbaugh Weekday"
-    A-FM,MF12M5:30A+SAT12M6A+SUN12M5A/1,BunchOfData,MoreData
-    B-FM,SAT6A10A/1
-    C-FM,MFSA12M6A+SUN12M5A/1
-    D-FM,AMS12M6A/1
-    E-FM,SS9P5A/1
-    F-FM,SUN10P3A/1
-    G-FM,MF10A12N+MF1P2P/1
-    H-FM,MF10A12N/1
-    I-FM,MF12N3P/1
-    J-FM,"Th2P4P,Su10A12P"`;
-
   it('should render dialog', () => {
     const loadAllAffiliates = jest.fn();
     const onAdd = jest.fn();
@@ -49,7 +34,7 @@ describe('Bulk Add Affiliate', () => {
     ).toEqual('Browse To Upload');
   });
 
-  xit('should parse schedules from CSV', () => {
+  it('should parse schedules from CSV', () => {
     const loadAllAffiliates = jest.fn();
     const onAdd = jest.fn();
     const dialogInstance = shallow(
@@ -58,7 +43,128 @@ describe('Bulk Add Affiliate', () => {
         onAdd={onAdd}
       />
     ).instance();
-    dialogInstance.csvToAffiliateSchedules(CSV_CONTENT);
+
+    const CSV_CONTENT = `STATION,SCHEDULE,CLEARANCE,CLEARPCT\r\n
+      HEADER,Origin:PRN.LA Code:Q218RSD Name:"Rush Limbaugh Weekday"\r\n
+      A-FM,MF12M5:30A+SAT12M6A+SUN12M5A/1,BunchOfData,MoreData\r\n
+      B-FM,SAT6A10A/1\r\n
+      C-FM,"Th2P4P,Su10A12P"`;
+    const actualResult = dialogInstance.csvToAffiliateSchedules(CSV_CONTENT);
+    const expectedResult = {
+      errors: [],
+      scheduleByLowerCaseName: {
+        'a-fm': {
+          repeatEvery: {
+            number: '1',
+            period: 'week'
+          },
+          scheduleType: 'Recurring',
+          weekly: {
+            Friday: [
+              {
+                end: '05:30',
+                start: '00:00'
+              }
+            ],
+            Monday: [
+              {
+                end: '05:30',
+                start: '00:00'
+              }
+            ],
+            Saturday: [
+              {
+                end: '06:00',
+                start: '00:00'
+              }
+            ],
+            Sunday: [
+              {
+                end: '05:00',
+                start: '00:00'
+              }
+            ],
+            Thursday: [
+              {
+                end: '05:30',
+                start: '00:00'
+              }
+            ],
+            Tuesday: [
+              {
+                end: '05:30',
+                start: '00:00'
+              }
+            ],
+            Wednesday: [
+              {
+                end: '05:30',
+                start: '00:00'
+              }
+            ],
+            selectedDays: {
+              Friday: true,
+              Monday: true,
+              Saturday: true,
+              Sunday: true,
+              Thursday: true,
+              Tuesday: true,
+              Wednesday: true
+            }
+          }
+        },
+        'b-fm': {
+          repeatEvery: {
+            number: '1',
+            period: 'week'
+          },
+          scheduleType: 'Recurring',
+          weekly: {
+            Saturday: [
+              {
+                end: '10:00',
+                start: '06:00'
+              }
+            ],
+            selectedDays: {
+              Saturday: true
+            }
+          }
+        },
+        'c-fm': {
+          repeatEvery: {
+            number: '1',
+            period: 'week'
+          },
+          scheduleType: 'Recurring',
+          weekly: {
+            Sunday: [
+              {
+                end: '12:00',
+                start: '10:00'
+              }
+            ],
+            Thursday: [
+              {
+                end: '16:00',
+                start: '14:00'
+              }
+            ],
+            selectedDays: {
+              Sunday: true,
+              Thursday: true
+            }
+          }
+        }
+      }
+    };
+    expect(actualResult.scheduleByLowerCaseName['a-fm'].start).toBeDefined();
+    expect(actualResult.scheduleByLowerCaseName['b-fm'].start).toBeDefined();
+    expect(actualResult.scheduleByLowerCaseName['c-fm'].start).toBeDefined();
+    delete actualResult.scheduleByLowerCaseName['a-fm'].start;
+    delete actualResult.scheduleByLowerCaseName['b-fm'].start;
+    delete actualResult.scheduleByLowerCaseName['c-fm'].start;
+    expect(actualResult).toEqual(expectedResult);
   });
 
   it('should return errors on parse schedules from CSV', () => {
@@ -73,18 +179,20 @@ describe('Bulk Add Affiliate', () => {
     let actualResult;
     let expectedResult;
 
-    const epmtyCsvContentWithHeader =
-      `STATION,SCHEDULE,CLEARANCE,CLEARPCT
+    const epmtyCsvContentWithHeader = `STATION,SCHEDULE,CLEARANCE,CLEARPCT
       HEADER,Origin:PRN.LA Code:Q218RSD Name:"Rush Limbaugh Weekday"
       NoSchedule-FM,`;
 
-    actualResult = dialogInstance.csvToAffiliateSchedules(epmtyCsvContentWithHeader);
+    actualResult = dialogInstance.csvToAffiliateSchedules(
+      epmtyCsvContentWithHeader
+    );
     expectedResult = {
-      errors: ['Empty schedule was specified. Ignoring affiliate: NoSchedule-FM'],
+      errors: [
+        'Empty schedule was specified. Ignoring affiliate: NoSchedule-FM'
+      ],
       scheduleByLowerCaseName: {}
     };
     expect(actualResult).toEqual(expectedResult);
-
   });
 
   it('should not fail on empty CSV', () => {
@@ -99,18 +207,20 @@ describe('Bulk Add Affiliate', () => {
     let actualResult;
     let expectedResult;
 
-    const epmtyCsvContentWithHeader =
-      `STATION,SCHEDULE,CLEARANCE,CLEARPCT
+    const emptyCsvContentWithHeader = `STATION,SCHEDULE,CLEARANCE,CLEARPCT
       HEADER,Origin:PRN.LA Code:Q218RSD Name:"Rush Limbaugh Weekday"`;
 
-    actualResult = dialogInstance.csvToAffiliateSchedules(epmtyCsvContentWithHeader);
+    actualResult = dialogInstance.csvToAffiliateSchedules(
+      emptyCsvContentWithHeader
+    );
     expectedResult = {
       errors: [],
       scheduleByLowerCaseName: {}
     };
     expect(actualResult).toEqual(expectedResult);
 
-    actualResult = dialogInstance.csvToAffiliateSchedules('');
+    const blankCsv = '';
+    actualResult = dialogInstance.csvToAffiliateSchedules(blankCsv);
     expectedResult = {
       errors: [],
       scheduleByLowerCaseName: {}
@@ -118,15 +228,70 @@ describe('Bulk Add Affiliate', () => {
     expect(actualResult).toEqual(expectedResult);
   });
 
-  xit('should parse schedule parts to days and times', () => {
-    // test schedulePartsToDaysAndTimes
+  it('should parse schedule parts to days and times', () => {
+    const loadAllAffiliates = jest.fn();
+    const onAdd = jest.fn();
+    const dialogInstance = shallow(
+      <BulkAddAffiliateDialog
+        loadAllAffiliates={loadAllAffiliates}
+        onAdd={onAdd}
+      />
+    ).instance();
+    const actualResult = dialogInstance.schedulePartsToDaysAndTimes([
+      'MF12:30M5:30A',
+      'SS9P5A',
+      'SUN12M5A'
+    ]);
+    const expectedResult = {
+      errors: [],
+      daysAndTimes: [
+        {
+          days: 'MF',
+          startTime: '12:30M',
+          endTime: '5:30A'
+        },
+        {
+          days: 'SS',
+          startTime: '9P',
+          endTime: '5A'
+        },
+        {
+          days: 'SUN',
+          startTime: '12M',
+          endTime: '5A'
+        }
+      ]
+    };
+    expect(actualResult).toEqual(expectedResult);
   });
 
-  xit('should return errors on parse schedule parts to days and times', () => {
-    // test schedulePartsToDaysAndTimes
-    // Daytime Format Not Supported
-    // Unable to parse time:
-    // Start and end times not found
+  it('should return errors on parse schedule parts to days and times', () => {
+    const loadAllAffiliates = jest.fn();
+    const onAdd = jest.fn();
+    const dialogInstance = shallow(
+      <BulkAddAffiliateDialog
+        loadAllAffiliates={loadAllAffiliates}
+        onAdd={onAdd}
+      />
+    ).instance();
+    let actualResult;
+    let expectedResult;
+
+    actualResult = dialogInstance.schedulePartsToDaysAndTimes([
+      '1stMonday12M5A'
+    ]);
+    expectedResult = {
+      errors: ['Daytime Format Not Supported: 1stMonday12M5A'],
+      daysAndTimes: []
+    };
+    expect(actualResult).toEqual(expectedResult);
+
+    actualResult = dialogInstance.schedulePartsToDaysAndTimes(['M1A5L']);
+    expectedResult = {
+      errors: ['Unable to parse time: 1A5'],
+      daysAndTimes: []
+    };
+    expect(actualResult).toEqual(expectedResult);
   });
 
   it('should parse time for start and end time', () => {
@@ -344,12 +509,14 @@ describe('Bulk Add Affiliate', () => {
         endTime: '5:30A'
       }
     ];
-    const actualResult = dialogInstance.daysAndTimesToDaysSchedule(daysAndTimes);
+    const actualResult = dialogInstance.daysAndTimesToDaysSchedule(
+      daysAndTimes
+    );
     const expectedResult = {
       errors: [],
       schedule: {
-        Friday: [ { start: '12:00', end: '15:00' } ],
-        Sunday: [ { start: '21:00', end: '05:30' } ]
+        Friday: [{ start: '12:00', end: '15:00' }],
+        Sunday: [{ start: '21:00', end: '05:30' }]
       }
     };
     expect(actualResult).toEqual(expectedResult);
@@ -369,19 +536,14 @@ describe('Bulk Add Affiliate', () => {
         days: 'SL',
         startTime: '12N',
         endTime: '3P'
-      },
-      {
-        days: 'SU',
-        startTime: '9P',
-        endTime: '5:30A'
       }
     ];
-    const actualResult = dialogInstance.daysAndTimesToDaysSchedule(daysAndTimes);
+    const actualResult = dialogInstance.daysAndTimesToDaysSchedule(
+      daysAndTimes
+    );
     const expectedResult = {
       errors: ['Unable to parse days from the following string: SL'],
-      schedule: {
-        Sunday: [ { start: '21:00', end: '05:30' } ]
-      }
+      schedule: {}
     };
     expect(actualResult).toEqual(expectedResult);
   });

@@ -45,7 +45,9 @@ export default class BulkAddAffiliatesDialog extends Component {
             }
           };
           keys(resultAffiliate.schedule.weekly).forEach(day => {
-            resultAffiliate.schedule.weekly[day].forEach(dayTimeRange => dayTimeRange.timeZone = affiliate.timeZone);
+            resultAffiliate.schedule.weekly[day].forEach(
+              dayTimeRange => (dayTimeRange.timeZone = affiliate.timeZone)
+            );
           });
           result.push(resultAffiliate);
         }
@@ -88,7 +90,10 @@ export default class BulkAddAffiliatesDialog extends Component {
 
       const affiliateName = csvRow.substring(0, nameCellEndIndex).trim();
       const affiliateNameLowerCase = affiliateName.toLowerCase();
-      if (affiliateNameLowerCase === 'station' || affiliateNameLowerCase === 'header') {
+      if (
+        affiliateNameLowerCase === 'station' ||
+        affiliateNameLowerCase === 'header'
+      ) {
         // skip headers
         return;
       }
@@ -100,27 +105,37 @@ export default class BulkAddAffiliatesDialog extends Component {
       } else if (nameCellEndIndex !== csvRow.length - 1) {
         scheduleCellEndIndex = csvRow.indexOf(',', nameCellEndIndex + 1);
       }
-      if (!scheduleCellEndIndex) {
+      if (scheduleCellEndIndex <= 0) {
         scheduleCellEndIndex = csvRow.length;
       }
 
-      const scheduleString =
-        csvRow.substring(nameCellEndIndex + 1, scheduleCellEndIndex)
-          .trim()
-          .replace('"', '')
-          .replace(',', '+');
+      const scheduleString = csvRow
+        .substring(nameCellEndIndex + 1, scheduleCellEndIndex)
+        .trim()
+        .replace('"', '')
+        .replace(',', '+')
+        .replace('/', '+');
       if (!scheduleString.length) {
-        errors.push(`Empty schedule was specified. Ignoring affiliate: ${affiliateName}`);
+        errors.push(
+          `Empty schedule was specified. Ignoring affiliate: ${affiliateName}`
+        );
         return;
       }
 
-      const scheduleDaysAndTimes = this.schedulePartsToDaysAndTimes(scheduleString.split('/'));
+      const scheduleParts = scheduleString
+        .split('+')
+        .filter(item => item.length > 1);
+      const scheduleDaysAndTimes = this.schedulePartsToDaysAndTimes(
+        scheduleParts
+      );
       scheduleDaysAndTimes.errors.forEach(error => errors.push(error));
       if (!scheduleDaysAndTimes.daysAndTimes.length) {
         return;
       }
 
-      const daysScheduleToApply = this.daysAndTimesToDaysSchedule(scheduleDaysAndTimes.daysAndTimes);
+      const daysScheduleToApply = this.daysAndTimesToDaysSchedule(
+        scheduleDaysAndTimes.daysAndTimes
+      );
       daysScheduleToApply.errors.forEach(error => errors.push(error));
       if (!keys(daysScheduleToApply.schedule)) {
         return;
@@ -139,7 +154,11 @@ export default class BulkAddAffiliatesDialog extends Component {
           }
         };
       }
-      this.mergeDaysSchedule(scheduleByLowerCaseAffiliateName[affiliateNameLowerCase], daysScheduleToApply.schedule);
+
+      this.mergeDaysSchedule(
+        scheduleByLowerCaseAffiliateName[affiliateNameLowerCase],
+        daysScheduleToApply.schedule
+      );
     });
 
     return {
@@ -151,10 +170,12 @@ export default class BulkAddAffiliatesDialog extends Component {
   schedulePartsToDaysAndTimes = scheduleParts => {
     const errors = [];
     const daysAndTimes = [];
-    const dayTimeSplittingRegex = /([a-zA-Z- ]+)([0-9]+[0-9aApPmMnN -]+)/g;
-    const timeSplittingRegex = /([0-9:]{1,5}[aApPmMnN]{0,2})([ -]{0,1})([0-9:]{1,5}[aApPmMnN]{1,2})/g;
+    const dayTimeSplittingRegex = /^([a-zA-Z- ]+)([0-9:]+[0-9:aApPmMnN -]+)/;
+    const timeSplittingRegex = /([0-9:]{1,5}[aApPmMnN]{0,2})([ -]{0,1})([0-9:]{1,5}[aApPmMnN]{1,2})/;
     scheduleParts.forEach(schedulePart => {
-      const dayTimeResultingParts = dayTimeSplittingRegex.exec(schedulePart.trim());
+      const dayTimeResultingParts = dayTimeSplittingRegex.exec(
+        schedulePart.trim()
+      );
       if (dayTimeResultingParts === null) {
         errors.push(`Daytime Format Not Supported: ${schedulePart}`);
         return;
@@ -185,7 +206,7 @@ export default class BulkAddAffiliatesDialog extends Component {
     return {
       errors,
       daysAndTimes
-    }
+    };
   };
 
   daysAndTimesToDaysSchedule = daysAndTimes => {
@@ -194,14 +215,30 @@ export default class BulkAddAffiliatesDialog extends Component {
     daysAndTimes.forEach(daysAndTimesItem => {
       const days = this.parseDays(daysAndTimesItem.days);
       if (!days || days.length === 0) {
-        errors.push(`Unable to parse days from the following string: ${daysAndTimesItem.days}`);
+        errors.push(
+          `Unable to parse days from the following string: ${
+            daysAndTimesItem.days
+          }`
+        );
         return;
       }
-      const time = this.parseTime(daysAndTimesItem.startTime, daysAndTimesItem.endTime);
-      const formattedStartTime = this.formatTime(time.startHours, time.startMinutes);
+      const time = this.parseTime(
+        daysAndTimesItem.startTime,
+        daysAndTimesItem.endTime
+      );
+      const formattedStartTime = this.formatTime(
+        time.startHours,
+        time.startMinutes
+      );
       const formattedEndTime = this.formatTime(time.endHours, time.endMinutes);
       days.forEach(day => {
-        if (schedule[day] && schedule[day].some(item => item.start === formattedStartTime && item.end === formattedEndTime)) {
+        if (
+          schedule[day] &&
+          schedule[day].some(
+            item =>
+              item.start === formattedStartTime && item.end === formattedEndTime
+          )
+        ) {
           return;
         }
         if (!schedule[day]) {
@@ -216,23 +253,40 @@ export default class BulkAddAffiliatesDialog extends Component {
     return {
       errors,
       schedule
-    }
+    };
   };
 
   parseDays = rawDays => {
-    switch(rawDays.toUpperCase()) {
+    switch (rawDays.toUpperCase()) {
       case 'F':
+      case 'FR':
       case 'FRI':
         return ['Friday'];
       case 'M':
+      case 'MO':
       case 'MON':
         return ['Monday'];
       case 'M-SU':
       case 'MSU':
-        return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return [
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday'
+        ];
       case 'M-SA':
       case 'MSA':
-        return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday'
+        ];
       case 'MF':
         return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
       case 'MTH':
@@ -240,18 +294,21 @@ export default class BulkAddAffiliatesDialog extends Component {
       case 'SA':
       case 'SAT':
         return ['Saturday'];
-      case 'SS':
-        return ['Sunday', 'Saturday'];
       case 'SU':
       case 'SUN':
         return ['Sunday'];
+      case 'SS':
+        return ['Saturday', 'Sunday'];
       case 'TUF':
         return ['Tuesday', 'Wednesday', 'Thursday', 'Friday'];
       case 'TUSA':
       case 'TU-SA':
         return ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       case 'TU':
+      case 'TUE':
         return ['Tuesday'];
+      case 'W':
+      case 'WE':
       case 'WED':
         return ['Wednesday'];
       case 'TH':
@@ -316,7 +373,7 @@ export default class BulkAddAffiliatesDialog extends Component {
     if (!rawPeriod) {
       period = '';
     } else {
-      switch(rawPeriod.toUpperCase().trim()) {
+      switch (rawPeriod.toUpperCase().trim()) {
         case 'M':
           hours = 0;
           period = 'AM';
@@ -367,19 +424,27 @@ export default class BulkAddAffiliatesDialog extends Component {
 
   mergeDaysSchedule = (schedule, daysSchedule) => {
     keys(daysSchedule).forEach(day => {
-      if (schedule.weekly[day] && schedule[day].some(item => item.start === daysSchedule[day].start && item.end === daysSchedule[day].end)) {
-        return;
-      }
-      if (!schedule.weekly[day]) {
-        schedule[day] = [];
-      }
-      schedule.weekly[day].push({
-        start: daysSchedule[day].start,
-        end: daysSchedule[day].end
+      daysSchedule[day].forEach(dayScheduleItem => {
+        if (
+          schedule.weekly[day] &&
+          schedule[day].some(
+            item =>
+              item.start === dayScheduleItem.start &&
+              item.end === dayScheduleItem.end
+          )
+        ) {
+          return;
+        }
+        if (!schedule.weekly[day]) {
+          schedule.weekly[day] = [];
+        }
+        schedule.weekly[day].push({
+          start: dayScheduleItem.start,
+          end: dayScheduleItem.end
+        });
+        schedule.weekly.selectedDays[day] = true;
       });
-      schedule.weekly.selectedDays[day] = true;
     });
-    return schedule;
   };
 
   handleFilesSelected = files => {
@@ -391,7 +456,10 @@ export default class BulkAddAffiliatesDialog extends Component {
       const affiliateSchedulesResult = this.csvToAffiliateSchedules(
         fileReader.result
       );
-      this.handleBulkAddAffiliates(affiliateSchedulesResult.scheduleByLowerCaseName, affiliateSchedulesResult.errors);
+      this.handleBulkAddAffiliates(
+        affiliateSchedulesResult.scheduleByLowerCaseName,
+        affiliateSchedulesResult.errors
+      );
     };
     fileReader.readAsText(files[0]);
   };
