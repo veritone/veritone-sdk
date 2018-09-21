@@ -79,11 +79,10 @@ export default class Affiliates extends React.Component {
   };
 
   handleAddAffiliateStation = newAffiliate => {
-    const newAffiliateById = {
-      ...this.props.affiliateById
-    };
-    newAffiliateById[newAffiliate.id] = newAffiliate;
-    this.props.onAffiliatesChange(newAffiliateById);
+    this.props.onAffiliatesChange({
+      ...this.props.affiliateById,
+      [newAffiliate.id]: newAffiliate
+    });
   };
 
   handleBulkAddAffiliates = bulkAddAffiliateById => {
@@ -114,11 +113,10 @@ export default class Affiliates extends React.Component {
         delete newAffiliate.schedule.weekly[selectedDay];
       }
     }
-    const newAffiliateById = {
-      ...this.props.affiliateById
-    };
-    newAffiliateById[newAffiliate.id] = newAffiliate;
-    this.props.onAffiliatesChange(newAffiliateById);
+    this.props.onAffiliatesChange({
+      ...this.props.affiliateById,
+      [newAffiliate.id]: newAffiliate
+    });
   };
 
   handleDeleteAffiliate = affiliate => {
