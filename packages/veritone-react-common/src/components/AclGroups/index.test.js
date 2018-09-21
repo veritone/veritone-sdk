@@ -47,7 +47,7 @@ describe('Acl Groups', () => {
         permission: null
       }
     };
-    expect(onAclsChange).toHaveBeenCalledWith(expectedAcls);4
+    expect(onAclsChange).toHaveBeenCalledWith(expectedAcls);
   });
 
   it('should render select acl groups dialog', () => {
