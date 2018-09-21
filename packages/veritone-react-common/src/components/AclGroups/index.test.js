@@ -48,7 +48,6 @@ describe('Acl Groups', () => {
       }
     };
     expect(onAclsChange).toHaveBeenCalledWith(expectedAcls);
-    4;
   });
 
   it('should render select acl groups dialog', () => {
