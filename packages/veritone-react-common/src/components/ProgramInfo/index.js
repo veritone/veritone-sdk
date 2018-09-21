@@ -234,12 +234,9 @@ class ProgramInfo extends React.Component {
       onRemoveImage,
       loadNextAffiliates,
       loadAllAffiliates,
-      showAffiliates
+      showAffiliates,
+      canBulkAddAffiliates
     } = this.props;
-
-    // TODO OLEKS: intentionally disabled. Enable when bulk add is implemented
-    let { canBulkAddAffiliates } = this.props;
-    canBulkAddAffiliates = true;
 
     const { program, openFilePicker } = this.state;
 
