@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
-import { keys, values } from 'lodash';
+import { keys, values, isArray } from 'lodash';
 import { func } from 'prop-types';
 import FilePicker from 'components/FilePicker';
 import styles from './styles.scss';
@@ -19,7 +20,12 @@ export default class BulkAddAffiliatesDialog extends Component {
   };
 
   state = {
-    selectingFile: false
+    selectingFile: false,
+    parsingAffiliates: false,
+    errors: [],
+    addedCount: 0,
+    ignoredCount: 0,
+    parsedCount: 0
   };
 
   openFilePicker = () => {
@@ -28,48 +34,48 @@ export default class BulkAddAffiliatesDialog extends Component {
     });
   };
 
-  handleBulkAddAffiliates = (scheduleByLowerCaseName, errors) => {
+  fetchAndAddAffiliates = (scheduleByLowerCaseName, errors) => {
     const affiliateNames = keys(scheduleByLowerCaseName);
     if (!affiliateNames.length) {
+      errors.unshift('0 affiliates were parsed.');
+      this.setState({
+        parsingAffiliates: false,
+        errors: errors
+      });
       return;
     }
+
     this.props.loadAllAffiliates(affiliateNames).then(affiliateById => {
-      const result = [];
+      const result = {};
       values(affiliateById).forEach(affiliate => {
-        const affiliateName = affiliate.name.toLowerCase();
-        if (scheduleByLowerCaseName[affiliateName]) {
+        const affiliateNameLowerCase = affiliate.name.toLowerCase();
+        if (scheduleByLowerCaseName[affiliateNameLowerCase]) {
           const resultAffiliate = {
             ...affiliate,
             schedule: {
-              ...scheduleByLowerCaseName[affiliateName]
+              ...scheduleByLowerCaseName[affiliateNameLowerCase]
             }
           };
           keys(resultAffiliate.schedule.weekly).forEach(day => {
-            resultAffiliate.schedule.weekly[day].forEach(
-              dayTimeRange => (dayTimeRange.timeZone = affiliate.timeZone)
-            );
+            if (isArray(resultAffiliate.schedule.weekly[day])) {
+              resultAffiliate.schedule.weekly[day].forEach(
+                dayTimeRange => (dayTimeRange.timeZone = affiliate.timeZone)
+              );
+            }
           });
-          result.push(resultAffiliate);
+          result[resultAffiliate.id] = resultAffiliate;
         }
       });
-
-      const addedCount = result.length;
-      const ignoredCount = affiliateNames.length - result.length;
-      const totalCount = affiliateNames.length;
-
-      console.log('Added count', addedCount);
-      console.log('Ignored count', ignoredCount);
-      console.log('Total count', totalCount);
-
-      console.log('Total count', result);
-
-      // TODO: show processing progress bar
-      // TODO: report added affiliates count
-      // TODO: report ignored affiliates count
-      // TODO: report errors found
-
-      // this.props.onAdd(result);
-      return null;
+      const addedCount = keys(result).length;
+      this.setState({
+        parsingAffiliates: false,
+        errors: errors,
+        addedCount: addedCount,
+        ignoredCount: affiliateNames.length - addedCount,
+        parsedCount: affiliateNames.length
+      });
+      this.props.onAdd(result);
+      return result;
     });
   };
 
@@ -451,12 +457,17 @@ export default class BulkAddAffiliatesDialog extends Component {
     const fileReader = new FileReader();
     fileReader.onload = () => {
       this.setState({
-        selectingFile: false
+        selectingFile: false,
+        parsingAffiliates: true,
+        errors: [],
+        addedCount: 0,
+        ignoredCount: 0,
+        parsedCount: 0
       });
       const affiliateSchedulesResult = this.csvToAffiliateSchedules(
         fileReader.result
       );
-      this.handleBulkAddAffiliates(
+      this.fetchAndAddAffiliates(
         affiliateSchedulesResult.scheduleByLowerCaseName,
         affiliateSchedulesResult.errors
       );
@@ -472,10 +483,14 @@ export default class BulkAddAffiliatesDialog extends Component {
 
   render() {
     const { onClose } = this.props;
-
-    // TODO OLES: use when schedule parsing and merge is implemented
-    //eslint-disable-next-line no-unused-vars
-    const { onAdd } = this.props;
+    const {
+      selectingFile,
+      parsingAffiliates,
+      errors,
+      addedCount,
+      ignoredCount,
+      parsedCount
+    } = this.state;
 
     return (
       <Dialog
@@ -487,7 +502,7 @@ export default class BulkAddAffiliatesDialog extends Component {
           paper: styles.bulkAddAffiliatesDialogPaper
         }}
       >
-        {this.state.selectingFile && (
+        {selectingFile && (
           <FilePicker
             accept="text/csv"
             allowUrlUpload={false}
@@ -497,7 +512,7 @@ export default class BulkAddAffiliatesDialog extends Component {
             height={482}
           />
         )}
-        {!this.state.selectingFile && (
+        {!selectingFile && (
           <Fragment>
             <DialogTitle
               classes={{
@@ -517,6 +532,32 @@ export default class BulkAddAffiliatesDialog extends Component {
               <div className={styles.bulkAddHelperText}>
                 Use the provided template to bulk add affiliates.
               </div>
+              {parsingAffiliates && (
+                <div className={styles.progressSpinner}>
+                  <CircularProgress size={50} />
+                </div>
+              )}
+              {!parsingAffiliates &&
+                parsedCount > 0 && (
+                  <div className={styles.parsingResultInfo}>
+                    {addedCount > 0 && `Added ${addedCount}. `}
+                    {ignoredCount > 0 && `Ignored ${ignoredCount}. `}
+                    {`Parsed ${parsedCount}.`}
+                  </div>
+                )}
+              {!parsingAffiliates &&
+                errors.length > 0 && (
+                  <div className={styles.parsingErrorsSection}>
+                    <div className={styles.parsingErrorsSectionLabel}>
+                      Parsing errors:
+                    </div>
+                    {errors.map(error => (
+                      <div key={error} className={styles.parsingError}>
+                        {error}
+                      </div>
+                    ))}
+                  </div>
+                )}
             </DialogContent>
             <DialogActions
               classes={{
@@ -531,6 +572,7 @@ export default class BulkAddAffiliatesDialog extends Component {
                 classes={{
                   label: styles.actionButtonLabel
                 }}
+                disabled={parsingAffiliates}
               >
                 <Icon className="icon-cloud_upload" />
                 Browse To Upload

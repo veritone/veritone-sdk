@@ -434,7 +434,7 @@ class ProgramInfo extends React.Component {
             {showAffiliates && (
               <div className={styles.affiliatesSection}>
                 <Affiliates
-                  selectedAffiliateById={program.affiliateById}
+                  affiliateById={program.affiliateById}
                   loadNextAffiliates={loadNextAffiliates}
                   canBulkAddAffiliates={canBulkAddAffiliates}
                   loadAllAffiliates={loadAllAffiliates}
