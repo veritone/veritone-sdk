@@ -17,6 +17,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import styles from './styles.scss';
 
 import * as engineOutputExportModule from '../../redux/modules/engineOutputExport';
+import engineOutputExportSaga from '../../redux/modules/engineOutputExport/saga';
 import widget from '../../shared/widget';
 import EngineCategoryConfigList from './EngineCategoryConfigList';
 
@@ -100,7 +101,11 @@ class EngineOutputExport extends Component {
       fetchEngineRunsFailed;
 
     return (
-      <Dialog fullScreen open={open}>
+      <Dialog
+        fullScreen
+        open={open}
+        data-veritone-component="export-and-download-dialog"
+      >
         <Grid
           container
           direction="column"
@@ -123,6 +128,7 @@ class EngineOutputExport extends Component {
                 color="inherit"
                 onClick={onCancel}
                 aria-label="Close"
+                data-veritone-element="export-and-download-close-button"
               >
                 <CloseIcon />
               </IconButton>
@@ -156,6 +162,7 @@ class EngineOutputExport extends Component {
                       checked={includeMedia}
                       onChange={this.handleIncludeMediaChange}
                       color="primary"
+                      data-veritone-element="export-and-download-include-media-switch"
                     />
                   }
                   subheader="Include the media file with your format export. Downloading the file may increase the wait time."
@@ -173,8 +180,13 @@ class EngineOutputExport extends Component {
             justify="flex-end"
             alignItems="center"
             className={styles.engineOutputExportActions}
+            data-veritone-element="export-and-download-action-buttons"
           >
-            <Button className={styles.actionButton} onClick={onCancel}>
+            <Button
+              className={styles.actionButton}
+              onClick={onCancel}
+              data-veritone-element="export-and-download-cancel-button"
+            >
               Cancel
             </Button>
             <Button
@@ -183,6 +195,7 @@ class EngineOutputExport extends Component {
               className={styles.actionButton}
               onClick={this.handleExportAndDownload}
               disabled={disableExportButton}
+              data-veritone-element="export-and-download-export-button"
             >
               Export
             </Button>
@@ -197,6 +210,7 @@ class EngineOutputExport extends Component {
               autoHideDuration={5000}
               // eslint-disable-next-line
               onClose={() => closeSnackBar(snackBar.id)}
+              data-veritone-element="export-and-download-snackbar"
             >
               <SnackbarContent
                 className={snackBarClasses[snackBar.variant]}
@@ -208,6 +222,7 @@ class EngineOutputExport extends Component {
                     color="inherit"
                     // eslint-disable-next-line
                     onClick={() => closeSnackBar(snackBar.id)}
+                    data-veritone-element="export-and-download-snackbar-close-button"
                   >
                     <CloseIcon />
                   </IconButton>
@@ -272,5 +287,8 @@ class EngineOutputExportWidgetComponent extends Component {
   }
 }
 
-const EngineOutputExportWidget = widget(EngineOutputExportWidgetComponent);
+const EngineOutputExportWidget = widget(
+  EngineOutputExportWidgetComponent,
+  engineOutputExportSaga
+);
 export { EngineOutputExport as default, EngineOutputExportWidget };
