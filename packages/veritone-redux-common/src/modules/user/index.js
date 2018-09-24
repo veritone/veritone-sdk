@@ -1,5 +1,5 @@
 import { CALL_API } from 'redux-api-middleware-fixed';
-import { get, isEmpty, pick } from 'lodash';
+import { get, isEmpty, pick, merge } from 'lodash';
 import {
   permissions as perms,
   util as permissionUtil
@@ -39,9 +39,9 @@ const {
   }
 } = handleApiCall({
   types: [
-    constants.RESET_USER_PASSWORD,
-    constants.RESET_USER_PASSWORD_SUCCESS,
-    constants.RESET_USER_PASSWORD_FAILURE
+    constants.UPDATE_CURRENT_USER_PROFILE,
+    constants.UPDATE_CURRENT_USER_PROFILE_SUCCESS,
+    constants.UPDATE_CURRENT_USER_PROFILE_FAILURE
   ]
 });
 
@@ -204,6 +204,32 @@ const reducer = reduceReducers(
         ...state,
         user: action.payload
       };
+    },
+
+    [constants.UPDATE_CURRENT_USER_PROFILE_SUCCESS](
+      state,
+      {
+        payload: {
+          updateCurrentUser: { firstName, lastName, imageUrl: image }
+        }
+      }
+    ) {
+      // fixme: for now, this has to paper over some differences between REST
+      // and graphQL apis
+      const newUserKvp = merge({}, state.user.kvp, {
+        firstName,
+        lastName,
+        image
+      });
+
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          kvp: newUserKvp,
+          signedImageUrl: image || state.user.signedImageUrl
+        }
+      };
     }
   })
 );
@@ -305,7 +331,7 @@ export function fetchEnabledApps() {
 
 export const resetUserPassword = email => (dispatch, getState) => {
   const query = `
-    mutation updateUser($email: String!) {
+    mutation ($email: String!) {
       createPasswordResetRequest(input: { userName: $email }) {
         message
       }
@@ -331,7 +357,7 @@ export const resetUserPassword = email => (dispatch, getState) => {
 
 export const updateCurrentUserProfile = vals => (dispatch, getState) => {
   const query = `
-    mutation UpdateCurrentUser($input: UpdateCurrentUser!){
+    mutation ($input: UpdateCurrentUser!){
       updateCurrentUser(input: $input) {
         firstName
         lastName
@@ -341,7 +367,7 @@ export const updateCurrentUserProfile = vals => (dispatch, getState) => {
   `;
 
   // when updating, update these in the query, too
-  const acceptableVals = ['firstName', 'lastName', 'image'];
+  const acceptableVals = ['firstName', 'lastName', 'imageUrl'];
 
   return callGraphQLApi({
     actionTypes: [
