@@ -18,7 +18,7 @@ const PasswordField = ({ lastUpdated, onEdit }) => (
 );
 
 PasswordField.propTypes = {
-  lastUpdated: string.isRequired,
+  lastUpdated: string,
   onEdit: func.isRequired
 };
 
