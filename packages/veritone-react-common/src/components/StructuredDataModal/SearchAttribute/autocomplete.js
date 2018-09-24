@@ -42,8 +42,14 @@ export default class StringValuePicker extends React.Component {
             <Paper>
               {isOpen &&
                 this.props.items && (
-                  <ListItem style={{ borderBottom: '1px dashed #ccc' }}>
-                    <ListItemText secondary={'Suggestions'} />
+                  <ListItem style={{ borderBottom: this.props.items && this.props.items.length > 0 ? '1px dashed #ccc' : null }}>
+                    <ListItemText
+                      secondary={
+                        this.props.items && this.props.items.length === 0
+                          ? 'No Suggestions'
+                          : 'Suggestions'
+                      }
+                    />
                   </ListItem>
                 )}
               {isOpen && this.props.loading ? (
@@ -64,13 +70,6 @@ export default class StringValuePicker extends React.Component {
                       })}
                     >
                       <ListItemText primary={item} />
-                    </ListItem>
-                  ))
-                : null}
-              {isOpen && !this.props.loading && (!this.props.items || this.props.items.length === 0)
-                ? this.props.items.map((item, index) => (
-                    <ListItem>
-                      <ListItemText secondary="None" />
                     </ListItem>
                   ))
                 : null}
