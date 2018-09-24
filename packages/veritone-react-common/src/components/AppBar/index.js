@@ -49,8 +49,8 @@ export default class AppBar extends React.Component {
     onClose: func,
     enabledAppsFailedLoading: bool,
     isFetchingApps: bool,
-    onLogout: func.isRequired,
-    onEditProfile: func.isRequired,
+    onLogout: func,
+    onEditProfile: func,
     fetchEnabledApps: func,
     user: objectOf(any),
     onSwitchApp: func
@@ -62,6 +62,7 @@ export default class AppBar extends React.Component {
     rightActions: [],
     elevation: 2,
     onLogout: () => {},
+    onEditProfile: () => {},
     fetchEnabledApps: () => {},
     onSwitchApp: () => {}
   };
