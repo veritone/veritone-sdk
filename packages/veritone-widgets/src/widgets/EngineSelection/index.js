@@ -17,6 +17,7 @@ import EngineListView from './EngineListView/';
 import EngineDetailView from './EngineDetailView/';
 
 import * as engineSelectionModule from '../../redux/modules/engineSelection';
+import engineSelectionRootSaga from '../../redux/modules/engineSelection/saga';
 
 import widget from '../../shared/widget';
 
@@ -166,5 +167,5 @@ class EngineSelection extends React.Component {
   }
 }
 
-const EngineSelectionWidget = widget(EngineSelection);
+const EngineSelectionWidget = widget(EngineSelection, engineSelectionRootSaga);
 export { EngineSelectionWidget };
