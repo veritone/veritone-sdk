@@ -2,7 +2,6 @@ import { all, fork, takeLatest, put } from 'redux-saga/effects';
 import { modules } from 'veritone-redux-common';
 const {
   user: {
-    fetchUser,
     RESET_USER_PASSWORD_SUCCESS,
     RESET_USER_PASSWORD_FAILURE,
     UPDATE_CURRENT_USER_PROFILE_SUCCESS,
@@ -19,8 +18,6 @@ function* handleChangeUser({ error }) {
   }
 
   yield put(showNotification('User was updated successfully.'));
-
-  yield put(fetchUser());
 }
 
 function* handleResetPassword({ error }) {
