@@ -41,11 +41,20 @@ export default class RecurringSection extends React.Component {
     return (
       <Fragment>
         <div className={styles.formSectionRow}>
-          <TimePeriodSelector name="repeatEvery" label="Repeat every" readOnly={this.props.readOnly} />
+          <TimePeriodSelector
+            name="repeatEvery"
+            label="Repeat every"
+            readOnly={this.props.readOnly}
+          />
         </div>
 
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="start" label="Starts" readOnly={this.props.readOnly} showIcon />
+          <DateTimeSelector
+            name="start"
+            label="Starts"
+            readOnly={this.props.readOnly}
+            showIcon
+          />
         </div>
 
         {this.props.repeatEvery.period === 'day' && (
@@ -57,7 +66,11 @@ export default class RecurringSection extends React.Component {
               )}
             >
               <TimeIcon className={styles.timeIcon} />
-              <FieldArray name="daily" component={MultiTimeRange} readOnly={this.props.readOnly} />
+              <FieldArray
+                name="daily"
+                component={MultiTimeRange}
+                readOnly={this.props.readOnly}
+              />
             </div>
           </div>
         )}
@@ -81,7 +94,11 @@ export default class RecurringSection extends React.Component {
                     disabled={this.props.readOnly}
                   />
                 </div>
-                <FieldArray name={`weekly.${d}`} component={MultiTimeRange} readOnly={this.props.readOnly} />
+                <FieldArray
+                  name={`weekly.${d}`}
+                  component={MultiTimeRange}
+                  readOnly={this.props.readOnly}
+                />
               </div>
             ))}
         </div>
@@ -94,11 +111,16 @@ export default class RecurringSection extends React.Component {
             disabled={this.props.readOnly}
           />
         </div>
-        {
-          this.props.setEndDate ? (<div className={styles.formSectionRow}>
-            <DateTimeSelector name="end" label="Ends" readOnly={this.props.readOnly} showIcon />
-          </div>) : null
-        }
+        {this.props.setEndDate ? (
+          <div className={styles.formSectionRow}>
+            <DateTimeSelector
+              name="end"
+              label="Ends"
+              readOnly={this.props.readOnly}
+              showIcon
+            />
+          </div>
+        ) : null}
       </Fragment>
     );
   }
@@ -119,20 +141,21 @@ const MultiTimeRange = ({ fields, readOnly }) => {
               <ClearIcon />
             </IconButton>
           )}
-          {!readOnly && index === fields.length - 1 && (
-            <IconButton
-              type="button"
-              onClick={() =>
-                fields.push({
-                  start: '',
-                  end: ''
-                })
-              }
-              className={styles.iconButton}
-            >
-              <AddIcon />
-            </IconButton>
-          )}
+          {!readOnly &&
+            index === fields.length - 1 && (
+              <IconButton
+                type="button"
+                onClick={() =>
+                  fields.push({
+                    start: '',
+                    end: ''
+                  })
+                }
+                className={styles.iconButton}
+              >
+                <AddIcon />
+              </IconButton>
+            )}
         </div>
       ))}
     </div>

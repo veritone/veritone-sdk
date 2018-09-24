@@ -167,7 +167,9 @@ export default class BulkAddAffiliatesDialog extends Component {
           daysScheduleToApply.schedule
         );
       } catch (e) {
-        errors.push(`Failed to parse affiliate schedule for row : ${csvRowString}`);
+        errors.push(
+          `Failed to parse affiliate schedule for row : ${csvRowString}`
+        );
       }
     });
 

@@ -40,10 +40,14 @@ export default class SDOTable extends React.Component {
         formattedData = `[${data}]`;
         break;
       case 'integer':
-        formattedData = Number.isInteger(data) ? IntegerFormatter.format(data) : data;
+        formattedData = Number.isInteger(data)
+          ? IntegerFormatter.format(data)
+          : data;
         break;
       case 'number':
-        formattedData = !Number.isNaN(data) ? NumberFormatter.format(data) : data;
+        formattedData = !Number.isNaN(data)
+          ? NumberFormatter.format(data)
+          : data;
         break;
       default:
         formattedData = data;

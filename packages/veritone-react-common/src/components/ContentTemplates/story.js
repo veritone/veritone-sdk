@@ -11,16 +11,20 @@ function logFormData(formData) {
   console.log(formData);
 }
 
-const fakeSchemaOptions = [{
-  name: 'name0',
-  id: 0
-}, {
-  name: 'name1',
-  id: 1
-}, {
-  name: 'name2',
-  id: 2
-}];
+const fakeSchemaOptions = [
+  {
+    name: 'name0',
+    id: 0
+  },
+  {
+    name: 'name1',
+    id: 1
+  },
+  {
+    name: 'name2',
+    id: 2
+  }
+];
 
 const getFieldOptions = query => {
   console.log('Executed Query: ' + query);

@@ -44,15 +44,19 @@ export default class SourceTileView extends React.Component {
           height: '30px'
         }}
       />
-    ) : (<span className={`${sourceTypeIconClass} ${styles.sourceTileViewIcon}`} />);
+    ) : (
+      <span className={`${sourceTypeIconClass} ${styles.sourceTileViewIcon}`} />
+    );
   };
 
   renderSourceName = (name, data) => {
     const isLivestream = data.isLivestream;
     const cellContents = [name];
     if (isLivestream) {
-      cellContents.push((<span key={data.id + 'space1'} className={classNames(styles.gap)} />));
-      cellContents.push((
+      cellContents.push(
+        <span key={data.id + 'space1'} className={classNames(styles.gap)} />
+      );
+      cellContents.push(
         <ButtonWrapper
           key={data.id + 'live'}
           data={data}
@@ -66,16 +70,22 @@ export default class SourceTileView extends React.Component {
             Live Now
           </Button>
         </ButtonWrapper>
-      ));
-    } 
+      );
+    }
 
     if (data.permission === 'viewer') {
-      cellContents.push((<span key={data.id + 'space2'} className={classNames(styles.gap)} />));
-      cellContents.push((
-        <Tooltip title="Shared with You" placement="right" key={data.id + 'share'}>
+      cellContents.push(
+        <span key={data.id + 'space2'} className={classNames(styles.gap)} />
+      );
+      cellContents.push(
+        <Tooltip
+          title="Shared with You"
+          placement="right"
+          key={data.id + 'share'}
+        >
           <SharedIcon className={styles.sharedIcon} />
         </Tooltip>
-      ));
+      );
     }
 
     return (

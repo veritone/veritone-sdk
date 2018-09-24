@@ -353,50 +353,50 @@ const CLUSTERS = [
 ];
 
 const dummySource = {
-    id: '99999',
-    name: 'Created source',
-    organization: {
-      id: '7864',
-      name: 'Fakey mic fake source',
-    },
-    isPublic: true,
-    details: {
-      liveTimezone: 'US/Pacific',
-      youtubeChannelId: 'UCZTR9wnEghg8FnN0jNBZaow',
-      youtubeChannelUrl:
-        'https://www.youtube.com/channel/UCZTR9wnEghg8FnN0jNBZaow'
-    },
-    sourceType: {
-      id: '3',
-      name: 'YouTube',
-      isLive: false,
-      sourceSchema: {
-        id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
-        definition: {
-          type: 'object',
-          definitions: {},
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          properties: {
-            youtubeChannelUrl: {
-              $id: '/properties/youtubeChannelUrl',
-              type: 'string',
-              title: 'YouTube Channel URL'
-            },
-            youtubeChannelId: {
-              $id: '/properties/youtubeChannelId',
-              type: 'string',
-              title: 'YouTube Channel ID'
-            }
+  id: '99999',
+  name: 'Created source',
+  organization: {
+    id: '7864',
+    name: 'Fakey mic fake source'
+  },
+  isPublic: true,
+  details: {
+    liveTimezone: 'US/Pacific',
+    youtubeChannelId: 'UCZTR9wnEghg8FnN0jNBZaow',
+    youtubeChannelUrl:
+      'https://www.youtube.com/channel/UCZTR9wnEghg8FnN0jNBZaow'
+  },
+  sourceType: {
+    id: '3',
+    name: 'YouTube',
+    isLive: false,
+    sourceSchema: {
+      id: 'f8af5c4b-3326-40ce-bd63-ce5611afe0d3',
+      definition: {
+        type: 'object',
+        definitions: {},
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        properties: {
+          youtubeChannelUrl: {
+            $id: '/properties/youtubeChannelUrl',
+            type: 'string',
+            title: 'YouTube Channel URL'
           },
-          required: ['youtubeChannelUrl']
+          youtubeChannelId: {
+            $id: '/properties/youtubeChannelId',
+            type: 'string',
+            title: 'YouTube Channel ID'
+          }
         },
-        majorVersion: 1,
-        minorVersion: 0,
-        validActions: ['view', 'edit', 'deactivate', 'delete'],
-        status: 'published'
-      }
+        required: ['youtubeChannelUrl']
+      },
+      majorVersion: 1,
+      minorVersion: 0,
+      validActions: ['view', 'edit', 'deactivate', 'delete'],
+      status: 'published'
     }
-  };
+  }
+};
 
 function updateConfiguration(config) {
   console.log('updateConfiguration', config);
@@ -407,7 +407,7 @@ function updateConfiguration(config) {
 const openCreateSource = insertAndSelectSource => () => {
   console.log('openCreateSource');
   insertAndSelectSource(dummySource);
-}
+};
 
 function closeCreateSource() {
   console.log('closeCreateSource');

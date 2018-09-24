@@ -10,7 +10,17 @@ import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
 import List from 'react-virtualized/dist/commonjs/List';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
-import { objectOf, any, func, arrayOf, string, bool, number, shape, oneOfType } from 'prop-types';
+import {
+  objectOf,
+  any,
+  func,
+  arrayOf,
+  string,
+  bool,
+  number,
+  shape,
+  oneOfType
+} from 'prop-types';
 import { get, noop, isArray, isFunction } from 'lodash';
 
 import styles from './styles.scss';
@@ -28,7 +38,7 @@ export default class InfiniteDropdownMenu extends React.Component {
     loadNextPage: func,
     hasNextPage: bool,
     isNextPageLoading: bool,
-    multiple: bool,   // Don't use this... it's not completely flushed out
+    multiple: bool, // Don't use this... it's not completely flushed out
     items: arrayOf(
       shape({
         id: oneOfType([string, number]),
@@ -55,7 +65,10 @@ export default class InfiniteDropdownMenu extends React.Component {
 
   UNSAFE_componentWillMount() {
     if (isFunction(this.props.loadNextPage)) {
-      this.props.loadNextPage({ startIndex: 0, stopIndex: this.props.pageSize });
+      this.props.loadNextPage({
+        startIndex: 0,
+        stopIndex: this.props.pageSize
+      });
     }
   }
 
@@ -88,16 +101,13 @@ export default class InfiniteDropdownMenu extends React.Component {
       this.handleMenuClose();
     };
 
-    const isSelected = this.props.multiple ?
-      (isArray(this.props.value)
-        && this.props.value.some(val => val === item.id)
-      ) : item.id === this.props.value
+    const isSelected = this.props.multiple
+      ? isArray(this.props.value) &&
+        this.props.value.some(val => val === item.id)
+      : item.id === this.props.value;
 
     return (
-      <div
-        key={key}
-        style={style}
-      >
+      <div key={key} style={style}>
         <MenuItem
           key={item.id}
           value={item.id}
@@ -116,7 +126,7 @@ export default class InfiniteDropdownMenu extends React.Component {
             <span className={styles.secondaryNameDisplay}>
               {secondaryNameDisplay}
             </span>
-          ) : null }
+          ) : null}
         </MenuItem>
       </div>
     );
@@ -124,12 +134,12 @@ export default class InfiniteDropdownMenu extends React.Component {
 
   openCustomTrigger = trigger => () => {
     this.setState({ anchorEl: null }, trigger);
-  }
+  };
 
   // To suppress InfiniteLoader warnings
-  dummyLoadNextPage = ({startIndex, stopIndex}) => {
+  dummyLoadNextPage = ({ startIndex, stopIndex }) => {
     return Promise.resolve([]);
-  }
+  };
 
   render() {
     const list = this.props.items || [];
@@ -138,7 +148,7 @@ export default class InfiniteDropdownMenu extends React.Component {
       : list.length;
     const loadMoreRows = this.props.isNextPageLoading
       ? noop
-      : (this.props.loadNextPage || this.dummyLoadNextPage);
+      : this.props.loadNextPage || this.dummyLoadNextPage;
 
     return (
       <ItemSelector
@@ -180,9 +190,9 @@ const ItemSelector = ({
 }) => {
   const menuId = 'long-menu';
   const dummyItem = 'dummy-item';
-  const selectedValue = multiple ?
-    items.filter(item => initialValue.find(id => item.id)) :
-    items.find(item => item.id === initialValue);
+  const selectedValue = multiple
+    ? items.filter(item => initialValue.find(id => item.id))
+    : items.find(item => item.id === initialValue);
 
   return (
     <FormControl>
@@ -203,11 +213,11 @@ const ItemSelector = ({
         }}
       >
         <MenuItem key={dummyItem} value={initialValue || dummyItem}>
-          {
-            multiple ?
-              selectedValue.map(option => option.name).join(', ') :
-              (selectedValue ? selectedValue.name : '---')
-          }
+          {multiple
+            ? selectedValue.map(option => option.name).join(', ')
+            : selectedValue
+              ? selectedValue.name
+              : '---'}
         </MenuItem>
       </Select>
       <Menu
@@ -249,22 +259,21 @@ const ItemSelector = ({
           </InfiniteLoader>
         </div>
         <div>
-        {
-          isArray(customTriggers) ?
-          customTriggers.map((customTrigger, index) => {
-            const customKey = customTrigger.label.split(' ').join('');
-            return (
-              <MenuItem
-                className={styles.customTriggerItem}
-                key={'custom-trigger-' + customKey}
-                value={null}
-                onClick={openCustomTrigger(customTrigger.trigger)}
-              >
-                {customTrigger.label}
-              </MenuItem>
-            );
-          }) : null
-        }
+          {isArray(customTriggers)
+            ? customTriggers.map((customTrigger, index) => {
+                const customKey = customTrigger.label.split(' ').join('');
+                return (
+                  <MenuItem
+                    className={styles.customTriggerItem}
+                    key={'custom-trigger-' + customKey}
+                    value={null}
+                    onClick={openCustomTrigger(customTrigger.trigger)}
+                  >
+                    {customTrigger.label}
+                  </MenuItem>
+                );
+              })
+            : null}
         </div>
       </Menu>
     </FormControl>
@@ -292,10 +301,12 @@ ItemSelector.propTypes = {
   loadMoreRows: func,
   isRowLoaded: func,
   rowRenderer: func,
-  customTriggers: arrayOf(shape({
-    label: string.isRequired,
-    trigger: func.isRequired
-  })),
+  customTriggers: arrayOf(
+    shape({
+      label: string.isRequired,
+      trigger: func.isRequired
+    })
+  ),
   openCustomTrigger: func,
   multiple: bool,
   readOnly: bool

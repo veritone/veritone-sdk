@@ -142,7 +142,9 @@ describe('DynamicAdapter', () => {
   });
 
   it('DynamicAdapter should set default values for any adapter input fields', () => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      fields: FIELDS
+    });
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,

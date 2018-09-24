@@ -48,12 +48,18 @@ export default class DynamicSelect extends React.Component {
 
   handleDetailChange = fieldId => event => {
     this.props.onSourceDetailChange({
-      [fieldId]: event.target.type === 'checkbox' ? event.target.checked : event.target.value
+      [fieldId]:
+        event.target.type === 'checkbox'
+          ? event.target.checked
+          : event.target.value
     });
   };
 
   renderFields = () => {
-    const sourceSchema = get(this.props.sourceTypes[this.props.currentSourceType], 'sourceSchema');
+    const sourceSchema = get(
+      this.props.sourceTypes[this.props.currentSourceType],
+      'sourceSchema'
+    );
     const definition = get(sourceSchema, 'definition');
     const properties = definition && definition.properties;
     const requiredFields = has(definition, 'required')
@@ -64,16 +70,19 @@ export default class DynamicSelect extends React.Component {
       return [];
     }
 
-    return Object.keys(properties).map((fieldId) => {
-      const enums = (!isUndefined(properties[fieldId].enum) && get(properties[fieldId], 'enumNames.length') === get(properties[fieldId], 'enum.length')) ?
-        properties[fieldId].enum.map((value, index) => {
-          return {
-            id: value,
-            name: properties[fieldId].enumNames[index]
-          };
-        })
-      : properties[fieldId].enum;
-      isArray(enums) && enums.sort((a, b) => a.name < b.name ? -1 : 1);
+    return Object.keys(properties).map(fieldId => {
+      const enums =
+        !isUndefined(properties[fieldId].enum) &&
+        get(properties[fieldId], 'enumNames.length') ===
+          get(properties[fieldId], 'enum.length')
+          ? properties[fieldId].enum.map((value, index) => {
+              return {
+                id: value,
+                name: properties[fieldId].enumNames[index]
+              };
+            })
+          : properties[fieldId].enum;
+      isArray(enums) && enums.sort((a, b) => (a.name < b.name ? -1 : 1));
       return (
         <SourceTypeField
           id={fieldId}
@@ -84,14 +93,16 @@ export default class DynamicSelect extends React.Component {
           title={properties[fieldId].title || ''}
           isDirty={this.props.errorFields[fieldId]}
           options={enums}
-          peerSelection={properties[fieldId].peerEnumKey
-            ? (isArray(this.props.fieldValues[properties[fieldId].peerEnumKey]) 
-              ? this.props.fieldValues[properties[fieldId].peerEnumKey] :
-              []
-            )
-            : undefined
+          peerSelection={
+            properties[fieldId].peerEnumKey
+              ? isArray(this.props.fieldValues[properties[fieldId].peerEnumKey])
+                ? this.props.fieldValues[properties[fieldId].peerEnumKey]
+                : []
+              : undefined
           }
-          query={properties[fieldId].query || get(properties[fieldId], 'items.query' )}
+          query={
+            properties[fieldId].query || get(properties[fieldId], 'items.query')
+          }
           getFieldOptions={this.props.getFieldOptions}
           key={sourceSchema.id + fieldId}
           isReadOnly={this.props.isReadOnly}

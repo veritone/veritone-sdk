@@ -127,23 +127,26 @@ class DynamicAdapter extends React.Component {
 
   insertAndSelectSource = source => {
     if (source) {
-      this.setState(prevState => {
-        const newSources = cloneDeep(prevState._source.items);
-        newSources.push(source);
-        const newState = {
-          _source: {
-            ...prevState._source,
-            items: newSources
-          }
-        };
-        return newState;
-      }, () => {
-        this.handleSourceChange(source);
-      });
+      this.setState(
+        prevState => {
+          const newSources = cloneDeep(prevState._source.items);
+          newSources.push(source);
+          const newState = {
+            _source: {
+              ...prevState._source,
+              items: newSources
+            }
+          };
+          return newState;
+        },
+        () => {
+          this.handleSourceChange(source);
+        }
+      );
     }
-  }
+  };
 
-  loadMoreSources = ({startIndex, stopIndex}) => {
+  loadMoreSources = ({ startIndex, stopIndex }) => {
     this.setState(prevState => {
       return Object.assign({}, prevState, {
         _source: {
@@ -153,35 +156,40 @@ class DynamicAdapter extends React.Component {
         }
       });
     });
-    return this.props.loadNextSources({startIndex, stopIndex}).then(nextPage => {
-      const hasPreselectedSource = this.state._source.items.length === 1;
-      const newState = {
-        _source: {
-          hasNextPage: !!get(nextPage, 'length'),
-          isNextPageLoading: false,
-          items: (!hasPreselectedSource && startIndex === 0) ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
+    return this.props
+      .loadNextSources({ startIndex, stopIndex })
+      .then(nextPage => {
+        const hasPreselectedSource = this.state._source.items.length === 1;
+        const newState = {
+          _source: {
+            hasNextPage: !!get(nextPage, 'length'),
+            isNextPageLoading: false,
+            items:
+              !hasPreselectedSource && startIndex === 0
+                ? nextPage
+                : cloneDeep(this.state._source.items).concat(nextPage)
+          }
+        };
+        const sourceToSelect = find(newState._source.items, [
+          'id',
+          this.state.sourceId
+        ]);
+        if (sourceToSelect) {
+          this.setState(newState, () => {
+            this.handleSourceChange(sourceToSelect);
+          });
+        } else if (newState._source.items.length && !this.state.sourceId) {
+          this.setState(newState, () => {
+            this.handleSourceChange(newState._source.items[0]);
+          });
+        } else {
+          this.setState(newState);
         }
-      }
-      const sourceToSelect = find(
-        newState._source.items,
-        ['id', this.state.sourceId]
-      );
-      if (sourceToSelect) {
-        this.setState(newState, () => {
-          this.handleSourceChange(sourceToSelect);
-        });
-      } else if (newState._source.items.length && !this.state.sourceId) {
-        this.setState(newState, () => {
-          this.handleSourceChange(newState._source.items[0]);
-        });
-      } else {
-        this.setState(newState);
-      }
-      return nextPage;
-    });
-  }
+        return nextPage;
+      });
+  };
 
-  loadMoreClusters = ({startIndex, stopIndex}) => {
+  loadMoreClusters = ({ startIndex, stopIndex }) => {
     this.setState(prevState => {
       return Object.assign({}, prevState, {
         _cluster: {
@@ -239,7 +247,8 @@ class DynamicAdapter extends React.Component {
             <div className={styles.adapterContainer}>
               <div className={styles.adapterHeader}>Select a Source</div>
               <div className={styles.adapterDescription}>
-                Select from your available ingestion sources or create a new source.
+                Select from your available ingestion sources or create a new
+                source.
               </div>
             </div>
             <div className={styles.adapterContainer}>
@@ -319,7 +328,7 @@ class DynamicAdapter extends React.Component {
                     max: MAX_DURATION_MINS,
                     step: 1,
                     readOnly: this.props.readOnly
-                  }} 
+                  }}
                   helperText={`Max ${MAX_DURATION_MINS} minutes`}
                   value={this.state.maxTDODuration}
                   onChange={this.handleFieldChange('maxTDODuration')}
@@ -341,7 +350,12 @@ class DynamicAdapter extends React.Component {
   }
 }
 
-function DynamicFieldForm({ fields = [], configuration, handleFieldChange, readOnly }) {
+function DynamicFieldForm({
+  fields = [],
+  configuration,
+  handleFieldChange,
+  readOnly
+}) {
   return fields
     .map(field => {
       const inputId = field.name + 'DynamicField';
