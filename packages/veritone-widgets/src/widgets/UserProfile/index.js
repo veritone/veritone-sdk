@@ -193,10 +193,6 @@ export class UserProfile extends React.Component {
                 />
               )}
             />
-
-            <Typography variant="subheading" className={styles.greeting}>
-              Welcome, {this.getUserFullName()}
-            </Typography>
           </div>
 
           <div className={styles.section}>
@@ -212,7 +208,7 @@ export class UserProfile extends React.Component {
               gutterBottom
               classes={{ root: styles.subheading }}
             >
-              Manage this basic information - your name and email.
+              Manage your basic information.
             </Typography>
 
             <PersonalInfoField
