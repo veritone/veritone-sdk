@@ -109,7 +109,7 @@ class GeolocationModal extends React.Component {
         const getMapControlOptions = drawnItems => ({ draw: { polygon: false, marker: false, rectangle: false, square: false, circle: true, polyline: false, circlemarker: false }, edit: { featureGroup: drawnItems, edit: false, remove: false } });
 
         // tile configuration for the map
-        tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+        tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
 
         var drawnItems = new featureGroup();
         map.addLayer(drawnItems);

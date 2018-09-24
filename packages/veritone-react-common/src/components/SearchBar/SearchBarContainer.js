@@ -410,8 +410,6 @@ class SearchBarContainer extends React.Component {
         }
       })) || {} ;
 
-    console.log(this.props);
-
     // don't show custom menu actions if there are no search parameters
     if(!this.props.searchParameters || this.props.searchParameters.length === 0) {
       customMenuActions = {};
