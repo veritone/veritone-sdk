@@ -275,10 +275,11 @@ export class SampleSearchBar extends React.Component {
     let getEntity = null;
     try {
       auth = this.props.auth ? this.props.auth : await this.getAuth();
-      this._veritoneApp = new VeritoneApp();
-      this._veritoneApp.login({sessionToken: auth });
-      this._veritoneApp._store.dispatch({type: 'vtn/config/SET_CONFIG', payload: {apiRoot: this.props.api && this.props.api.replace(/\/$/, "") } })
-      window._veritoneApp = this._veritoneApp;
+      if(!window._veritoneApp) {
+        this._veritoneApp = new VeritoneApp({apiRoot: this.props.api && this.props.api.replace(/\/$/, ""), theme: { typography: { htmlFontSize: this.props.relativeSize}}});
+        this._veritoneApp.login({ sessionToken: auth });
+        window._veritoneApp = this._veritoneApp;
+      }
       getEntity = this.getEntityFetch(auth);
       libraries = await this.getLibraries(auth);
     } catch (e) {
@@ -696,7 +697,7 @@ export class SampleSearchBar extends React.Component {
   getTheme = ( { color, relativeSize } ) => {
     const theme = createMuiTheme({
       typography: {
-        htmlFontSize: 12,
+        htmlFontSize: relativeSize,
         subheading: {
           fontSize: "1.2em"
         }
@@ -712,49 +713,43 @@ export class SampleSearchBar extends React.Component {
   }
 
   showLoadSavedSearch = (e) => {
-    if(!this.loadSavedSearchWidget) {
-      this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP});
-    }
-
+    this.cleanupLoadSavedSearch();
+    this.loadSavedSearchWidget = new LoadSavedSearchWidget({ elId: 'LoadSavedSearch', onSelectSavedSearch: this.loadCSP});
     this.loadSavedSearchWidget.open();
   }
 
   hideLoadSavedSearch = (e) => {
     if(this.loadSavedSearchWidget) {
       this.loadSavedSearchWidget.close();
+      this.cleanupLoadSavedSearch();
     }
   }
 
   showSavedSearch = (e) => {
-    if(!this.savedSearchWidget) {
-      const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
-    } else {
-      this.cleanupSavedSearch();
-      const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
-      this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
-    }
-
+    this.cleanupSavedSearch();
+    const csp = this.convertSearchParametersToCSP(this.state.searchParameters);
+    this.savedSearchWidget = new SaveSearchWidget({ elId: 'SaveSearch', csp});
     this.savedSearchWidget.open();
   }
 
   hideSavedSearch = (e) => {
     if(this.savedSearchWidget) {
       this.savedSearchWidget.close();
+      this.cleanupSavedSearch();
     }
   }
 
   render() {
     return (
       <Fragment>
-        <JssProvider classNamePrefix="vsdk1">
-          <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: 12 } ) }>
+        <JssProvider classNamePrefix={`vsdk_${guid()}`}>
+          <MuiThemeProvider theme={ this.getTheme( { color: this.props.color, relativeSize: this.props.relativeSize } ) }>
             <SearchBarContainer
               auth={this.state.auth}
               color={this.props.color}
-              enabledEngineCategories={this.extendEngineCategories(
+              enabledEngineCategories={[...this.extendEngineCategories(
                 this.props.enabledEngineCategories ? enabledEngineCategories.filter( engineCategory => engineCategory.id in this.props.enabledEngineCategories) : enabledEngineCategories
-              )}
+              )]}
               disableSavedSearch={this.props.disableSavedSearch}
               onSearch={this.onSearch}
               api={this.props.api}

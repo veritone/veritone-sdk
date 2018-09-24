@@ -17,11 +17,8 @@ const fetchSDOSchema = function fetchSDOSchema(api, auth, schemaId) {
               minorVersion,
               dataRegistry {
                 name,
-                createdBy {
-                  organization {
-                    id,
-                    name
-                  }
+                organization {
+                  name
                 }
               }
             }

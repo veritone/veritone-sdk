@@ -50,6 +50,8 @@ class SearchBarContainer extends React.Component {
     highlightedPills: []
   };
 
+  _id = guid();
+
   componentDidMount() {
     document.addEventListener('keydown', this.handleGroupingKeyPress);
   }
@@ -630,7 +632,7 @@ class SearchBarContainer extends React.Component {
     const selectedPill = this.props.searchParameters.find( x => x.id === this.state.selectedPill);
     const horizontalAnchorPosition = this.state.menuAnchorEl && this.state.menuAnchorEl.type === 'button' ? { horizontal: 'right' } : { horizontal: 'left' };
     return (
-      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }}>
+      <div ref={(input) => { this.searchBar = input; }} style={{ width: '100%', overflowY: 'hidden' }} data-veritone-component={`search_bar_${this._id}`}>
           <SearchBar
             onSearch={this.props.onSearch}
             color={this.props.color}
@@ -662,7 +664,7 @@ class SearchBarContainer extends React.Component {
               this.state.menuOptions && this.state.menuOptions.map(menuOption =>
                 menuOption.divider ? <Divider key={'menu_divider'} /> :
                 (
-                <MenuItem key={menuOption.label} onClick={menuOption.onClick} data-preservehighlight={menuOption.preserveHighlight}>
+                <MenuItem key={menuOption.label} data-veritone-element={`${menuOption.label.toLowerCase().split(' ').join('_')}`} onClick={menuOption.onClick} data-preservehighlight={menuOption.preserveHighlight}>
                   {menuOption.label}
                 </MenuItem>
                 )

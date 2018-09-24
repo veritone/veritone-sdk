@@ -154,8 +154,9 @@ class SearchBar extends React.Component {
     showScrollBar: false
   }
 
-  addTranscript = () => {
-    this.props.addPill('67cd4dd0-2f75-445d-a6f0-2f297d6cd182');
+  addPill = () => {
+    let categoryToAdd = this.props.enabledEngineCategories[0].id;
+    this.props.addPill(categoryToAdd);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -240,7 +241,7 @@ class SearchBar extends React.Component {
           color={ this.props.color}
           openMenu={ this.props.openMenu }
           /> }
-          {<GhostInput key="input_cursor" onFocus={ this.addTranscript } showGhost={ !this.props.searchParameters || this.props.searchParameters.length === 0 } />}
+          {<GhostInput key="input_cursor" onFocus={ this.addPill } showGhost={ !this.props.searchParameters || this.props.searchParameters.length === 0 } />}
         </div>
         { this.state.showScrollBar ? (
           <span onMouseDown={ this.mouseDown('right') }>
@@ -251,7 +252,7 @@ class SearchBar extends React.Component {
         ) : null
         }
         {
-          <IconButton onClick={ this.props.openMenuExtraActions } classes={ { root: cx(styles['resetButton']) } }>
+          <IconButton onClick={ this.props.openMenuExtraActions } data-veritone-element={"more_actions"} classes={ { root: cx(styles['resetButton']) } }>
             <MoreVert/>
           </IconButton>
         }
