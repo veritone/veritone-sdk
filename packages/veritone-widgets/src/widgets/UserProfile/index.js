@@ -89,7 +89,8 @@ export class UserProfile extends React.Component {
     resetUserPassword: func.isRequired,
     updateCurrentUserProfile: func.isRequired,
     invalid: bool,
-    pristine: bool
+    pristine: bool,
+    submitting: bool
   };
 
   state = {
@@ -247,7 +248,9 @@ export class UserProfile extends React.Component {
             open={this.state.currentModal === 'changeName'}
             onConfirm={this.submitChanges}
             onCancel={this.cancelChanges}
-            disableConfirm={this.props.invalid || this.props.pristine}
+            disableConfirm={
+              this.props.invalid || this.props.pristine || this.props.submitting
+            }
           />
 
           <ResetPasswordModal
