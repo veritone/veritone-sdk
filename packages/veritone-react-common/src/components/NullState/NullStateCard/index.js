@@ -1,14 +1,12 @@
 import React from 'react';
+import { shape, string, bool, func, node, objectOf, any } from 'prop-types';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-// import withMuiThemeProvider from 'helpers/withMuiThemeProvider';
-import { shape, string, bool, func, node, objectOf, any } from 'prop-types';
 
 import styles from './styles.scss';
 
-// @withMuiThemeProvider
 export default class NullStateCard extends React.Component {
   static propTypes = {
     imgSrc: string.isRequired,
@@ -54,16 +52,21 @@ export default class NullStateCard extends React.Component {
             }}
           >
             {imgProps &&
-              <img
-                src={imgSrc}
-                style={{
-                  marginBottom: '20px'
-                }}
-                {...imgProps}
-              />}
-            {titleText &&
-              <div className={styles['card-title']}>
-                {titleText}
+              <div className={styles["img-wrapper"]}>
+                <img
+                  src={imgSrc}
+                  {...imgProps}
+                />
+                {titleText &&
+                  <div
+                    className={styles['card-title']}
+                    style={{
+                      marginTop: '20px'
+                    }}
+                  >
+                    {titleText}
+                  </div>
+                }
               </div>
             }
             {children &&

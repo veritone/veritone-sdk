@@ -3,11 +3,11 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { reducer as formReducer } from 'redux-form'
 import { Provider } from 'react-redux'
 import { storiesOf } from '@storybook/react';
-import ClusterSplashScreen from './splash-screen';
+import ClusterTypes from './ClusterOverview/ClusterTypes';
 import ClusterWizardDetails from './ClusterWizard/form/details'
 import ClusterWizardNodes from './ClusterWizard/form/nodes'
 import { ClusterWizardWidget } from './ClusterWizard';
-// import createReducer from '../../redux/rootReducer';
+import ClusterList from './ClusterOverview/ClusterList';
 import { modules } from 'veritone-redux-common';
 const {
   user: { reducer: userReducer, namespace: userNamespace },
@@ -45,10 +45,20 @@ const enhancer = composeEnhancers(
 );
 
 const store = createStore(rootReducer, {}, enhancer);
+const clusters = [{
+  name: 'On-Premise Cluster 1',
+  status: 'pending',
+  createdDateTime: '2018-09-10T18:17:20.675Z',
+  modifiedDateTime: '2015-90-10T18:17:20.675Z',
+  mgt: [{}],
+  svc: [{}],
+  db: [{}],
+  eng: [{}]
+}];
 
 storiesOf('Cluster', module)
   .add('Splash Screen', () => {
-    return <ClusterSplashScreen />;
+    return <ClusterTypes />;
   })
   .add('Wizard - Details', () => {
     return (
@@ -75,16 +85,16 @@ storiesOf('Cluster', module)
     );
   })
   .add('Wizard', () => {
-    // return (
-    //   <Provider store={store}>
-    //     <ClusterWizard />
-    //   </Provider>
-    // );
     return (
       <BaseStory
         widget={ClusterWizardWidget}
-        // componentClass={AppBar}
-        // componentProps={{ ...props, title: 'AppBar Component' }}
+      />
+    );
+  })
+  .add('Cluster List', () => {
+    return (
+      <ClusterList
+        clusters={clusters}
       />
     );
   });

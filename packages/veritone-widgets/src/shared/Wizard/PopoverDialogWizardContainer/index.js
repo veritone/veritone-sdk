@@ -18,7 +18,7 @@ import { ModalHeader } from 'veritone-react-common';
 //   { popoverDialogWizardContainer({ title: 'Create New Engine' }) }
 // </Wizard>
 
-const popoverDialogWizardContainer = ({ title }) => {
+const popoverDialogWizardContainer = ({ headerProps, footerStyles }) => {
   function PopoverDialogWizardContainer({
     currentPage,
     requestClose,
@@ -27,8 +27,18 @@ const popoverDialogWizardContainer = ({ title }) => {
     renderConfirmationDialog
   }) {
     return (
-      <div style={{ height: '100%' }}>
-        <ModalHeader title={title} closeButton onClose={requestClose} />
+      <div style={{
+        // height: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <ModalHeader
+          // title={title}
+          {...headerProps}
+          closeButton
+          onClose={requestClose}
+        />
         <div className={styles['container']}>
           <div className={styles['stepperContainer']}>
             <div>
@@ -41,7 +51,10 @@ const popoverDialogWizardContainer = ({ title }) => {
           </div>
         </div>
 
-        <div className={styles['footer']}>
+        <div
+          className={styles['footer']}
+          style={footerStyles}
+        >
           {renderButtons({ className: styles['footer__button'] })}
         </div>
         {renderConfirmationDialog()}

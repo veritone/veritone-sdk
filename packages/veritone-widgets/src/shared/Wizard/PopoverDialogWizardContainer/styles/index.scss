@@ -17,6 +17,7 @@ $footer-height-stacked-buttons: 150px;
   box-shadow:
     rgba(0, 0, 0, 0.117647) 0 1px 6px,
     rgba(0, 0, 0, 0.117647) 0 1px 4px;
+  z-index: 1;
 
   > div {
     width: 100%;
@@ -25,7 +26,7 @@ $footer-height-stacked-buttons: 150px;
 }
 
 .wizardPageContainer {
-  padding-top: 16px;
+  // padding-top: 16px;
   height: 100%;
   overflow-y: scroll;
 
@@ -42,7 +43,7 @@ $footer-height-stacked-buttons: 150px;
 }
 
 .footer {
-  position: absolute;
+  // position: absolute;
   height: $footer-height;
   width: 100%;
   bottom: 0;

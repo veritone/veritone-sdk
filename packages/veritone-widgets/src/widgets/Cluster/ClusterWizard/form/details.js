@@ -67,6 +67,7 @@ export default class ClusterDetails extends React.Component {
                 name={`${fields.metrics}.${metric}`}
                 label={startCase(metric)}
                 component={Checkbox}
+                color="primary"
                 labelProps={{
                   classes: {
                     label: styles['cluster-details-metric']

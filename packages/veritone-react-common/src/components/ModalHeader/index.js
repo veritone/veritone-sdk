@@ -47,12 +47,12 @@ export default class ModalHeader extends React.Component {
               {hasIcons && this.props.closeButton &&
                 <span className={styles.separator} />}
               {this.props.closeButton &&
-                <IconButton aria-label="exit" color="inherit">
-                  <Icon
-                    className="icon-close-exit"
-                    onClick={this.props.onClose}
-                  />
-                </IconButton>}
+              <IconButton aria-label="exit" color="inherit" disableRipple>
+                <Icon
+                  className="icon-close-exit"
+                  onClick={this.props.onClose}
+                />
+              </IconButton>}
           </div>}
         </div>
         {this.props.children && <div>{this.props.children}</div>}

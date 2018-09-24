@@ -11,10 +11,6 @@ storiesOf('Null Card', module)
       <NullStateCard
         imgSrc={NullstateImage}
         imgProps={{
-          style: {
-            fontSize: '100px',
-            marginBottom: '10px'
-          },
           alt: "https://static.veritone.com/veritone-ui/default-nullstate.svg"
         }}
         titleText="On Premise"

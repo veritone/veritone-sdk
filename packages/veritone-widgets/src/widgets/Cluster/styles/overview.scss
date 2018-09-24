@@ -1,0 +1,36 @@
+@import 'src/styles/modules/_variables';
+@import 'src/styles/modules/_muiTypography';
+
+.content-block {
+  border-radius: 2px;
+  padding: 22px 25px;
+}
+
+.cluster-config-count {
+  font-weight: bold;
+  font-size: 16px;
+  color: $light-black;
+}
+
+.cluster-name {
+  @include mui-text('button');
+  text-transform: none;
+  color: $dark-black;
+}
+
+.cluster-status {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  border-radius: 2px;
+  padding: 0 8px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.cluster-last-updated {
+  @include mui-text('body1');
+  color: $min-black;
+  font-style: italic;
+}

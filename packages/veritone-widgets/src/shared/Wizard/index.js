@@ -128,7 +128,6 @@ export class Wizard extends React.Component {
     }
 
     return this.transitionToStep(
-      // this.props.config.steps[this.getCurrentStepIndex() + 1]
       this.getCurrentStepIndex() + 1
     );
   };
@@ -179,9 +178,6 @@ export class Wizard extends React.Component {
   };
 
   getCurrentStepIndex = () => {
-    // return findIndex(this.props.config.steps, {
-    //   path: this.getCurrentStepPath()
-    // });
     return this.props.currentStep;
   };
 
@@ -193,21 +189,10 @@ export class Wizard extends React.Component {
     return Object.keys(
       omitBy(flattenObject(errors), isUndefined)
     ).map(errorField => {
-      const page =
-        // find(this.props.config.steps, step => {
-        findIndex(this.props.config.steps, step => {
-          return step.fields.includes(errorField);
-        });
-        // }) || {};
+      const page = findIndex(this.props.config.steps, step => {
+        return step.fields.includes(errorField);
+      });
 
-      // if (__DEV__ && !page.path) {
-      //   console.warn(
-      //     "WARNING: validation found, but doesn't correspond to any page!",
-      //     errorField
-      //   );
-      // }
-
-      // return page.path;
       return page;
     });
   }
@@ -339,8 +324,7 @@ export class Wizard extends React.Component {
       onSubmit: this.handleSubmit,
       validate: this.validateWizard,
       initialValues: this.props.config.model.initialValues,
-      fields: this.props.config.model.fields,
-      fieldValidations: this.props.config.model.fieldValidations
+      fields: this.props.config.model.fields
     });
 
     return this.props.children({

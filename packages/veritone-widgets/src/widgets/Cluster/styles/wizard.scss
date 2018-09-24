@@ -82,3 +82,17 @@
   @include mui-text('menu');
   color: $dark-black;
 }
+
+.snack-notification {
+  display: flex;
+  align-items: baseline !important;
+  padding: 12px 24px !important;
+}
+.snack-notification-msg {
+  @include mui-text('body1');
+}
+
+.snack-notification-btn {
+  @include mui-text('button');
+  letter-spacing: 0.5px;
+}

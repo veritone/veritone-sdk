@@ -27,15 +27,22 @@ export function createComponent(MaterialUIComponent, mapProps) {
 }
 
 export const mapError = ({
+  hasHelperText = true,
   meta: { touched, error, warning } = {},
   input,
   ...props
-}) =>
-  touched && (error || warning)
+}) => {
+  const errorProps = touched && (error || warning)
     ? {
         ...props,
         ...input,
-        error: Boolean(error || warning),
-        helperText: error || warning
+        error: Boolean(error || warning)
       }
-    : { ...input, ...props };
+    : { ...input, ...props }
+
+  if (touched && hasHelperText && (error || warning)) {
+    errorProps.helperText = error || warning
+  }
+
+  return errorProps;
+}

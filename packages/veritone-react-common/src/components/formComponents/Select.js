@@ -9,7 +9,7 @@ export default createComponent(
     defaultValue,
     ...props
   }) => ({
-    ...mapError(props),
+    ...mapError({ ...props, hasHelperText: false }),
     ...inputProps,
     value: value,
     onChange: event => {

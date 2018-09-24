@@ -7,16 +7,8 @@ import styles from './styles.scss';
 const NullState = ({ imgSrc, imgProps, titleText, btnProps, children }) => {
   return (
     <div className={styles.nullStateView}>
-      {imgSrc &&
-      <img
-        src={imgSrc}
-        {...imgProps}
-      />}
-      {titleText &&
-        <div className={styles.titleText}>
-          {titleText}
-        </div>
-      }
+      {imgSrc && <img src={imgSrc} {...imgProps}/>}
+      {titleText && <div className={styles.titleText}>{titleText}</div>}
       {children}
       {btnProps && (
         <Button
