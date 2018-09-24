@@ -77,12 +77,12 @@ export class UserProfile extends React.Component {
     user: shape({
       kvp: shape({
         firstName: string.isRequired,
-        lastName: string.isRequired
+        lastName: string.isRequired,
+        lastPasswordUpdated: string
       }).isRequired,
       email: string,
       signedImageUrl: string
     }),
-    passwordUpdatedDateTime: string,
     resetForm: func.isRequired,
     submitForm: func.isRequired,
     handleSubmit: func.isRequired,
@@ -240,7 +240,7 @@ export class UserProfile extends React.Component {
             </Typography>
 
             <PasswordField
-              lastUpdated={this.props.passwordUpdatedDateTime}
+              lastUpdated={this.props.user.lastPasswordUpdated}
               onEdit={this.openChangePasswordModal}
             />
           </div>
