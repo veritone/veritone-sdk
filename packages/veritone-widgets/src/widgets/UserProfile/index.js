@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { startCase, noop } from 'lodash';
+import { startCase, noop, isEmpty } from 'lodash';
 import { string, func, bool, shape } from 'prop-types';
-import { withProps } from 'recompose';
+import { withProps, branch, renderNothing } from 'recompose';
 import {
   reduxForm,
   Form,
@@ -43,6 +43,11 @@ import styles from './styles.scss';
     resetUserPassword,
     updateCurrentUserProfile
   }
+)
+@branch(
+  // do not render if we don't have a user
+  props => isEmpty(props.user),
+  renderNothing
 )
 @withProps(props => ({
   initialValues: {
