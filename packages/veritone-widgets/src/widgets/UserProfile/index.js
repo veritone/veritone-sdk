@@ -137,14 +137,14 @@ export class UserProfile extends React.Component {
   };
 
   handleResetPassword = () => {
-    this.props
+    return this.props
       .resetUserPassword()
       .catch(noop)
       .then(this.afterChange);
   };
 
   handleUpdateUser = vals => {
-    this.props
+    return this.props
       .updateCurrentUserProfile(vals)
       .catch(noop)
       .then(this.afterChange);
@@ -156,10 +156,8 @@ export class UserProfile extends React.Component {
       return;
     }
 
-    console.log(result);
-
-    this.handleUpdateUser({
-      image: result.unsignedUrl
+    return this.handleUpdateUser({
+      imageUrl: result.unsignedUrl
     });
   };
 
