@@ -84,87 +84,91 @@ export default class BulkAddAffiliatesDialog extends Component {
     const errors = [];
     const allCsvRows = csvContent.split(/\r\n|\n/);
     allCsvRows.forEach(csvRowString => {
-      const csvRow = csvRowString.trim();
-      if (!csvRow.length) {
-        return;
-      }
+      try {
+        const csvRow = csvRowString.trim();
+        if (!csvRow.length) {
+          return;
+        }
 
-      const nameCellEndIndex = csvRow.indexOf(',');
-      if (!nameCellEndIndex) {
-        return;
-      }
+        const nameCellEndIndex = csvRow.indexOf(',');
+        if (!nameCellEndIndex) {
+          return;
+        }
 
-      const affiliateName = csvRow.substring(0, nameCellEndIndex).trim();
-      const affiliateNameLowerCase = affiliateName.toLowerCase();
-      if (
-        affiliateNameLowerCase === 'station' ||
-        affiliateNameLowerCase === 'header'
-      ) {
-        // skip headers
-        return;
-      }
+        const affiliateName = csvRow.substring(0, nameCellEndIndex).trim();
+        const affiliateNameLowerCase = affiliateName.toLowerCase();
+        if (
+          affiliateNameLowerCase === 'station' ||
+          affiliateNameLowerCase === 'header'
+        ) {
+          // skip headers
+          return;
+        }
 
-      let scheduleCellEndIndex;
-      if (csvRow.charAt(nameCellEndIndex + 1) === '"') {
-        // handle case: AffiliateName-FM,"Th2P4P,Su10A12P",bunchOfOtherData
-        scheduleCellEndIndex = csvRow.indexOf('"', nameCellEndIndex + 2);
-      } else if (nameCellEndIndex !== csvRow.length - 1) {
-        scheduleCellEndIndex = csvRow.indexOf(',', nameCellEndIndex + 1);
-      }
-      if (scheduleCellEndIndex <= 0) {
-        scheduleCellEndIndex = csvRow.length;
-      }
+        let scheduleCellEndIndex;
+        if (csvRow.charAt(nameCellEndIndex + 1) === '"') {
+          // handle case: AffiliateName-FM,"Th2P4P,Su10A12P",bunchOfOtherData
+          scheduleCellEndIndex = csvRow.indexOf('"', nameCellEndIndex + 2);
+        } else if (nameCellEndIndex !== csvRow.length - 1) {
+          scheduleCellEndIndex = csvRow.indexOf(',', nameCellEndIndex + 1);
+        }
+        if (scheduleCellEndIndex <= 0) {
+          scheduleCellEndIndex = csvRow.length;
+        }
 
-      const scheduleString = csvRow
-        .substring(nameCellEndIndex + 1, scheduleCellEndIndex)
-        .trim()
-        .replace('"', '')
-        .replace(',', '+')
-        .replace('/', '+');
-      if (!scheduleString.length) {
-        errors.push(
-          `Empty schedule was specified. Ignoring affiliate: ${affiliateName}`
+        const scheduleString = csvRow
+          .substring(nameCellEndIndex + 1, scheduleCellEndIndex)
+          .trim()
+          .replace('"', '')
+          .replace(',', '+')
+          .replace('/', '+');
+        if (!scheduleString.length) {
+          errors.push(
+            `Empty schedule was specified. Ignoring affiliate: ${affiliateName}`
+          );
+          return;
+        }
+
+        const scheduleParts = scheduleString
+          .split('+')
+          .filter(item => item.length > 1);
+        const scheduleDaysAndTimes = this.schedulePartsToDaysAndTimes(
+          scheduleParts
         );
-        return;
-      }
+        scheduleDaysAndTimes.errors.forEach(error => errors.push(error));
+        if (!scheduleDaysAndTimes.daysAndTimes.length) {
+          return;
+        }
 
-      const scheduleParts = scheduleString
-        .split('+')
-        .filter(item => item.length > 1);
-      const scheduleDaysAndTimes = this.schedulePartsToDaysAndTimes(
-        scheduleParts
-      );
-      scheduleDaysAndTimes.errors.forEach(error => errors.push(error));
-      if (!scheduleDaysAndTimes.daysAndTimes.length) {
-        return;
-      }
+        const daysScheduleToApply = this.daysAndTimesToDaysSchedule(
+          scheduleDaysAndTimes.daysAndTimes
+        );
+        daysScheduleToApply.errors.forEach(error => errors.push(error));
+        if (!keys(daysScheduleToApply.schedule)) {
+          return;
+        }
 
-      const daysScheduleToApply = this.daysAndTimesToDaysSchedule(
-        scheduleDaysAndTimes.daysAndTimes
-      );
-      daysScheduleToApply.errors.forEach(error => errors.push(error));
-      if (!keys(daysScheduleToApply.schedule)) {
-        return;
-      }
+        if (!scheduleByLowerCaseAffiliateName[affiliateNameLowerCase]) {
+          scheduleByLowerCaseAffiliateName[affiliateNameLowerCase] = {
+            scheduleType: 'Recurring',
+            start: new Date().toISOString(),
+            repeatEvery: {
+              number: '1',
+              period: 'week'
+            },
+            weekly: {
+              selectedDays: {}
+            }
+          };
+        }
 
-      if (!scheduleByLowerCaseAffiliateName[affiliateNameLowerCase]) {
-        scheduleByLowerCaseAffiliateName[affiliateNameLowerCase] = {
-          scheduleType: 'Recurring',
-          start: new Date().toISOString(),
-          repeatEvery: {
-            number: '1',
-            period: 'week'
-          },
-          weekly: {
-            selectedDays: {}
-          }
-        };
+        this.mergeDaysSchedule(
+          scheduleByLowerCaseAffiliateName[affiliateNameLowerCase],
+          daysScheduleToApply.schedule
+        );
+      } catch (e) {
+        errors.push(`Failed to parse affiliate schedule for row : ${csvRowString}`);
       }
-
-      this.mergeDaysSchedule(
-        scheduleByLowerCaseAffiliateName[affiliateNameLowerCase],
-        daysScheduleToApply.schedule
-      );
     });
 
     return {
@@ -520,7 +524,11 @@ export default class BulkAddAffiliatesDialog extends Component {
               }}
             >
               <div>Bulk Add Affiliates</div>
-              <IconButton onClick={onClose} aria-label="Close">
+              <IconButton
+                onClick={onClose}
+                aria-label="Close"
+                disabled={parsingAffiliates}
+              >
                 <Icon className="icon-close-exit" />
               </IconButton>
             </DialogTitle>

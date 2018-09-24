@@ -114,7 +114,9 @@ export default class AffiliateStationsDialog extends Component {
     this.setState({
       isLoading: true
     });
-    const fetchLimit = limit + 1;
+    // fetch for 2 more, 1 will be ignored if query return primary source
+    // and 1 will be used to determine if there are more pages left
+    const fetchLimit = limit + 2;
     const fetchNextPagePromise = this.props.loadNextAffiliates({
       limit: fetchLimit,
       offset,
