@@ -1,4 +1,5 @@
 import { all, fork, takeEvery, put } from 'redux-saga/effects';
+import { get } from 'lodash';
 import {
   FETCH_ENGINE_RUNS_FAILURE,
   EXPORT_AND_DOWNLOAD_FAILURE,
@@ -16,10 +17,18 @@ function* watchErrors() {
         let message;
         switch (action.type) {
           case FETCH_ENGINE_RUNS_FAILURE:
-            message = 'Failed to get engine runs for one or more recordings.';
+            if (get(action, 'payload[0].name') === 'not_found') {
+              message = 'Unable to export due to restricted file access';
+            } else {
+              message = 'Failed to get engine runs for one or more recordings.';
+            }
             break;
           case EXPORT_AND_DOWNLOAD_FAILURE:
-            message = 'Failed to export.';
+            if (get(action, 'payload.name') === 'no_formats_selected') {
+              message = get(action, 'payload.message');
+            } else {
+              message = 'Failed to export.';
+            }
             break;
           default:
             message = action.payload.message;

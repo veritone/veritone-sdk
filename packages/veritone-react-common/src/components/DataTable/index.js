@@ -58,7 +58,6 @@ class _Table extends React.Component {
   render() {
     const restProps = omit(this.props, [
       'onShowCellRange',
-      'focusedRow',
       'renderFocusedRowDetails'
     ]);
 
@@ -76,7 +75,9 @@ class _Table extends React.Component {
         }}
         component="div"
       >
-        {isNumber(this.props.focusedRow) && this.props.rowCount > 0 ? (
+        {isNumber(this.props.focusedRow) &&
+        this.props.rowCount > 0 &&
+        this.props.renderFocusedRowDetails ? (
           <SplitTableContainer
             {...restProps}
             focusedRow={this.props.focusedRow}
@@ -270,6 +271,7 @@ const TableBody = ({
   rowRangeEnd,
   rowGetter,
   rowHeight,
+  focusedRow,
   onCellClick,
   ...rest
 }) => {
@@ -279,7 +281,12 @@ const TableBody = ({
         ? range(rowRangeStart, rowRangeEnd)
         : range(rowRangeEnd)
       ).map(r => (
-        <TableRow key={r} style={{ height: rowHeight }} hover>
+        <TableRow
+          key={r}
+          style={{ height: rowHeight }}
+          hover
+          selected={r == focusedRow}
+        >
           {injectInto(children, {
             data: rowGetter(r),
             row: r,
@@ -295,6 +302,7 @@ TableBody.propTypes = {
   rowRangeEnd: number,
   rowHeight: number,
   rowGetter: func,
+  focusedRow: number,
   children: node,
   onCellClick: func
 };

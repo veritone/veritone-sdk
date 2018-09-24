@@ -51,6 +51,7 @@ class EngineOutputExport extends Component {
     tdos: arrayOf(
       shape({
         tdoId: string.isRequired,
+        mentionId: string,
         startOffsetMs: number,
         stopOffsetMs: number
       })
@@ -99,7 +100,11 @@ class EngineOutputExport extends Component {
       fetchEngineRunsFailed;
 
     return (
-      <Dialog fullScreen open={open}>
+      <Dialog
+        fullScreen
+        open={open}
+        data-veritone-component="export-and-download-dialog"
+      >
         <Grid
           container
           direction="column"
@@ -113,9 +118,7 @@ class EngineOutputExport extends Component {
               }Export and Download`}</div>
               <div className={styles.subtitle}>
                 Select the category, engine, and format type you would like to
-                export below based on your selection. Please note that larger
-                exports will be available through a download link sent to your
-                account email.
+                export with the option to download the corresponding file.
               </div>
             </Grid>
             <Grid item xs={1}>
@@ -124,6 +127,7 @@ class EngineOutputExport extends Component {
                 color="inherit"
                 onClick={onCancel}
                 aria-label="Close"
+                data-veritone-element="export-and-download-close-button"
               >
                 <CloseIcon />
               </IconButton>
@@ -141,7 +145,7 @@ class EngineOutputExport extends Component {
               <Card className={styles.formatSelection}>
                 <CardHeader
                   title="Export Format Selection"
-                  subheader="Select from available engine categories and engines that have run on these file(s). Then select your formats you would like to include in your download."
+                  subheader="Select the preferred engine categories and engines that have processed the file(s). Then choose the applicable format(s) to include in your export."
                   classes={{
                     title: styles.exportFormatTitle,
                     subheader: styles.exportFormatSubHeader
@@ -157,9 +161,10 @@ class EngineOutputExport extends Component {
                       checked={includeMedia}
                       onChange={this.handleIncludeMediaChange}
                       color="primary"
+                      data-veritone-element="export-and-download-include-media-switch"
                     />
                   }
-                  subheader="Include the Audio and Video media from your selected file(s) in your export. (This will increase download time)"
+                  subheader="Include the media file with your format export. Downloading the file may increase the wait time."
                   classes={{
                     title: styles.exportFormatTitle,
                     subheader: styles.exportFormatSubHeader
@@ -174,8 +179,13 @@ class EngineOutputExport extends Component {
             justify="flex-end"
             alignItems="center"
             className={styles.engineOutputExportActions}
+            data-veritone-element="export-and-download-action-buttons"
           >
-            <Button className={styles.actionButton} onClick={onCancel}>
+            <Button
+              className={styles.actionButton}
+              onClick={onCancel}
+              data-veritone-element="export-and-download-cancel-button"
+            >
               Cancel
             </Button>
             <Button
@@ -184,6 +194,7 @@ class EngineOutputExport extends Component {
               className={styles.actionButton}
               onClick={this.handleExportAndDownload}
               disabled={disableExportButton}
+              data-veritone-element="export-and-download-export-button"
             >
               Export
             </Button>
@@ -198,6 +209,7 @@ class EngineOutputExport extends Component {
               autoHideDuration={5000}
               // eslint-disable-next-line
               onClose={() => closeSnackBar(snackBar.id)}
+              data-veritone-element="export-and-download-snackbar"
             >
               <SnackbarContent
                 className={snackBarClasses[snackBar.variant]}
@@ -209,6 +221,7 @@ class EngineOutputExport extends Component {
                     color="inherit"
                     // eslint-disable-next-line
                     onClick={() => closeSnackBar(snackBar.id)}
+                    data-veritone-element="export-and-download-snackbar-close-button"
                   >
                     <CloseIcon />
                   </IconButton>

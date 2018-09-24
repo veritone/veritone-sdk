@@ -8,7 +8,8 @@ import {
   get
 } from 'lodash';
 
-import { createReducer, fetchingStatus } from 'helpers/redux';
+import { createReducer } from 'helpers/redux';
+import fetchingStatus from 'helpers/redux/fetchingStatus';
 
 // Example usage:
 // const reducer = reduceReducers(

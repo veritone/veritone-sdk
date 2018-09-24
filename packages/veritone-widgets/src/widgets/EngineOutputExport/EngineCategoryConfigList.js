@@ -39,6 +39,7 @@ export default class EngineCategoryConfigList extends Component {
     tdos: arrayOf(
       shape({
         tdoId: string.isRequired,
+        mentionId: string,
         startOffsetMs: number,
         stopOffsetMs: number
       })
@@ -63,7 +64,6 @@ export default class EngineCategoryConfigList extends Component {
 
   render() {
     const {
-      tdos,
       fetchingEngineRuns,
       outputConfigsByCategoryId,
       expandedCategories,
@@ -71,7 +71,7 @@ export default class EngineCategoryConfigList extends Component {
     } = this.props;
 
     return (
-      <div>
+      <div data-veritone-component="engine-category-config-list">
         {!fetchingEngineRuns ? (
           <List disablePadding>
             {Object.keys(outputConfigsByCategoryId).map((key, index) => (
@@ -80,7 +80,6 @@ export default class EngineCategoryConfigList extends Component {
                   categoryId={key}
                   engineCategoryConfigs={outputConfigsByCategoryId[key]}
                   expanded={expandedCategories[key]}
-                  bulkExportEnabled={tdos.length > 1}
                   onExpandConfigs={toggleConfigExpand}
                 />
                 {index !==

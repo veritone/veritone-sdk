@@ -232,6 +232,7 @@ The title and navigation bar common between all Veritone applications. Includes 
 * profileMenu: bool, whether or not to show the profile menu
 * appSwitcher: bool, whether or not to show the app switcher menu
 * logo: bool, whether or not to show the veritone logo on the left side of the AppBar
+* onLogout: func, called when the user clicks "logout". Apps must implement their own logout logic (usually by deleting the stored oauth token and redirecting or refreshing the page appropriately)
 
 **OAuthLoginButton**
 The "Log in with Veritone" button and corresponding frontend logic to handle the OAuth2 authentication flow.
@@ -325,6 +326,7 @@ The Veritone export engine outputs full screen dialog. This will fetch the engin
 * tdos: arrayOf(shape), array of tdo data objects that engine outputs will be exported for
   * shape: object with the following keys:
     * tdoId: string (required), the unique id of a tdo you want to export engine outputs for
+    * mentionId: string, the unique id of a mention you want to export engine outputs for. If a mentionId is provided the engine results of the mention will be returned rather than those of the tdo
     * startOffsetMs: number, an integer representing the number of milliseconds from the start of the tdo where the exported engine outputs will begin
     * stopOffsetMs: number, an integer representing the number of milliseconds from the start of the tdo where the exported engine outputs will end
 * onExport: func, specifies action to take when export button is clicked

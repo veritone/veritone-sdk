@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { forEach, get } from 'lodash';
+import React, { Component } from 'react';
+import { forEach, get, includes, find, kebabCase } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -48,8 +48,8 @@ export default class EngineCategoryConfig extends Component {
     }).isRequired,
     engineCategoryConfigs: arrayOf(
       shape({
-        engineId: string.isRequired,
-        categoryId: string.isRequired,
+        engineId: string,
+        categoryId: string,
         formats: arrayOf(
           shape({
             extension: string.isRequired,
@@ -65,7 +65,6 @@ export default class EngineCategoryConfig extends Component {
     applySubtitleConfigs: func,
     expanded: bool,
     onExpandConfigs: func,
-    bulkExportEnabled: bool,
     initialSubtitleConfig: shape({
       maxCharacterPerLine: number,
       newLineOnPunctuation: bool,
@@ -102,26 +101,32 @@ export default class EngineCategoryConfig extends Component {
       engineCategoryConfigs,
       onExpandConfigs,
       expanded,
-      bulkExportEnabled,
       initialSubtitleConfig
     } = this.props;
 
-    let hasFormatsSelected = false;
+    let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {
       if (get(config, 'formats.length')) {
-        hasFormatsSelected = true;
+        forEach(config.formats, format => {
+          const exportFormat = find(category.exportFormats, {
+            format: format.extension
+          });
+          if (exportFormat && includes(exportFormat.types, 'subtitle')) {
+            hasSubtitleFormatsSelected = true;
+          }
+        });
       }
     });
 
     const defaultSubtitleConfig = {
       linesPerScreen: 2,
-      maxLinesPerCaptionLine: 32,
+      maxCharacterPerLine: 32,
       newLineOnPunctuation: false
     };
 
     return (
-      <div>
-        <ListItem>
+      <div data-veritone-component="engine-category-config">
+        <ListItem data-veritone-element={`${kebabCase(category.name)}-engine-category`}>
           <ListItemIcon>
             <Icon className={category.iconClass} />
           </ListItemIcon>
@@ -134,6 +139,7 @@ export default class EngineCategoryConfig extends Component {
               aria-label="Expand Category"
               // eslint-disable-next-line
               onClick={() => onExpandConfigs(category.id)}
+              data-veritone-element="engine-category-config-more-less-button"
             >
               {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
@@ -141,27 +147,18 @@ export default class EngineCategoryConfig extends Component {
         </ListItem>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <List disablePadding>
-            {bulkExportEnabled ? (
-              <EngineConfigItem
-                categoryId={category.id}
-                formats={engineCategoryConfigs[0].formats}
-              />
-            ) : (
-              <Fragment>
-                {engineCategoryConfigs.map(config => {
-                  return (
-                    <EngineConfigItem
-                      key={`engine-config-item-${config.engineId}`}
-                      engineId={config.engineId}
-                      categoryId={config.categoryId}
-                      formats={config.formats}
-                    />
-                  );
-                })}
-              </Fragment>
-            )}
-
-            {hasFormatsSelected && (
+            {engineCategoryConfigs.map(config => {
+              return (
+                <EngineConfigItem
+                  key={`engine-config-item-${config.engineId ||
+                    config.categoryId}`}
+                  engineId={config.engineId}
+                  categoryId={category.id}
+                  formats={config.formats}
+                />
+              );
+            })}
+            {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
                   <ClosedCaptionIcon className={styles.closedCaptionIcon} />
@@ -173,6 +170,7 @@ export default class EngineCategoryConfig extends Component {
                     color="primary"
                     className={styles.customizeButton}
                     onClick={this.openCustomizeSubtitles}
+                    data-veritone-element="customize-subtitle-formats-button"
                   >
                     Customize
                   </Button>
@@ -185,6 +183,7 @@ export default class EngineCategoryConfig extends Component {
           open={this.state.dialogOpen}
           onClose={this.handleCloseDialog}
           aria-labelledby="customize-dialog-title"
+          data-veritone-element="customize-subtitle-formats-dialog"
         >
           <DialogTitle id="customize-dialog-title">
             Subtitle Format Settings

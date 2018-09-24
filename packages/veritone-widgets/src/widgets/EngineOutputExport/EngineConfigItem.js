@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { includes } from 'lodash';
+import { includes, get } from 'lodash';
+import cx from 'classnames';
 import { modules } from 'veritone-redux-common';
 const { user: userModule } = modules;
 
@@ -11,6 +12,7 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
+import Icon from '@material-ui/core/Icon';
 import InfoIcon from '@material-ui/icons/Info';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -39,7 +41,7 @@ export default class EngineConfigItem extends Component {
     engine: shape({
       id: string,
       name: string.isRequired,
-      signedLogoPath: string
+      signedIconPath: string
     }),
     category: shape({
       exportFormats: arrayOf(
@@ -78,9 +80,14 @@ export default class EngineConfigItem extends Component {
     const selectedFileExtensions = formats.map(format => format.extension);
 
     return (
-      <ListItem className={styles.engineListItem}>
-        {engine && (
-          <img className={styles.engineLogo} src={engine.signedLogoPath} />
+      <ListItem
+        className={styles.engineListItem}
+        data-veritone-component="engine-config-list-item"
+      >
+        {engine && engine.signedIconPath ? (
+          <img className={styles.engineLogo} src={engine.signedIconPath} />
+        ) : (
+          <Icon className={cx(styles['default-engine-icon'], 'icon-engines')} />
         )}
         <ListItemText
           classes={{ primary: styles.engineNameText }}
@@ -106,7 +113,11 @@ export default class EngineConfigItem extends Component {
           value={selectedFileExtensions}
           // eslint-disable-next-line
           onChange={evt =>
-            selectFileType(evt.target.value, categoryId, engineId, !engine)
+            selectFileType(
+              evt.target.value,
+              categoryId || get(engine, 'category.id'),
+              engineId
+            )
           }
           // eslint-disable-next-line
           renderValue={value => `.${value.join(', .')}`}
@@ -122,8 +133,10 @@ export default class EngineConfigItem extends Component {
               vertical: 'bottom',
               horizontal: 'left'
             },
-            getContentAnchorEl: null
+            getContentAnchorEl: null,
+            "data-veritone-element": "export-format-select-menu"
           }}
+          data-veritone-element="export-format-select"
         >
           {category.exportFormats.map(format => {
             if (
@@ -140,6 +153,7 @@ export default class EngineConfigItem extends Component {
                 classes={{
                   selected: styles.exportFormatSelected
                 }}
+                data-veritone-element={`${format.format}-export-format`}
               >
                 <Checkbox
                   color="primary"
