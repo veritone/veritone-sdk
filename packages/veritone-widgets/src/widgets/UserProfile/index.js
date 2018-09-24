@@ -180,6 +180,9 @@ export class UserProfile extends React.Component {
         <div className={styles.column}>
           <div className={styles.section}>
             <FilePicker
+              accept={['image/*']}
+              multiple={false}
+              allowUrlUpload={false}
               onPick={this.handleUpdateImage}
               // eslint-disable-next-line
               renderButton={({ handlePickFiles }) => (
