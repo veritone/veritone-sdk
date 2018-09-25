@@ -191,8 +191,7 @@ describe('DynamicAdapter', () => {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
-      },
-      maxTDODuration: 60
+      }
     };
     expectedConfiguration[FIELDS[0].name] = FIELDS[0].defaultValue;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
@@ -252,8 +251,7 @@ describe('DynamicAdapter', () => {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
-      },
-      maxTDODuration: 60
+      }
     };
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);

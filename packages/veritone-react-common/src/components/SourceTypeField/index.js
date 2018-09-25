@@ -76,11 +76,9 @@ export default class SourceTypeField extends React.Component {
       id,
       type,
       query,
-      options,
       peerSelection,
-      getFieldOptions,
       ...rest
-    } = this.props; // eslint-disable-line no-unused-vars
+    } = this.props;
     const supportedTypes = [
       'object',
       'string',
