@@ -15,7 +15,7 @@ export default class OAuth extends Component {
     baseUrls: {},
     authRedirects: {
       dropbox: `${location.protocol}//${location.host}/dropbox/auth`,
-      googleDrive: `${location.protocol}//${location.host}googleDrive/auth`
+      googleDrive: `${location.protocol}//${location.host}/googleDrive/auth`
     },
     authTokenInfo: {},
     authSource: ''
