@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { capitalize, isEmpty, reduce } from 'lodash';
-import { string, func } from 'prop-types';
+import { string, func, oneOf } from 'prop-types';
 import Button from '@material-ui/core/Button';
 
 export default class OAuth extends Component {
   static propTypes = {
-    authSource: string.isRequired,
+    authSource: oneOf(['dropbox','googleDrive']).isRequired,
     clientId: string.isRequired,
     redirectUri: string.isRequired,
     onAuthSuccess: func.isRequired
@@ -13,7 +13,10 @@ export default class OAuth extends Component {
 
   state = {
     baseUrls: {},
-    authRedirects: {},
+    authRedirects: {
+      dropbox: `${location.protocol}//${location.host}/dropbox/auth`,
+      googleDrive: `${location.protocol}//${location.host}googleDrive/auth`
+    },
     authTokenInfo: {},
     authSource: ''
   };
@@ -31,10 +34,6 @@ export default class OAuth extends Component {
           }&state=authorized&scope=${window.encodeURI(
           'email profile https://www.googleapis.com/auth/drive'
         )}&access_type=offline&prompt=consent`
-      },
-      authRedirects: {
-        dropbox: `${location.protocol}//${location.host}/dropbox/auth`,
-        googleDrive: `${location.protocol}//${location.host}googleDrive/auth`
       }
     };
 

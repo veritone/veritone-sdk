@@ -180,17 +180,11 @@ export default class DynamicSelect extends React.Component {
         {clientId && (
           <OAuth
             authSource={sourceTypeName}
-            redirectUri={'https://local.veritone.com.ngrok.io/watcher/callback'}
+            redirectUri={`${location.protocol}//${location.host}${this.state.redirectUris[sourceTypeName]}`}
             clientId={clientId}
             onAuthSuccess={this.handleAuthSuccess}
           />
         )}
-        {/*{sourceTypeName === 'dropbox' &&*/}
-        {/*<Dropbox*/}
-        {/*redirectUri={'https://local.veritone.com.ngrok.io/watcher/callback'}*/}
-        {/*clientId={clientId}*/}
-        {/*onAuthSuccess={this.handleAuthSuccess}*/}
-        {/*/>}*/}
       </FormControl>
     );
   }
