@@ -23,10 +23,6 @@ const deleteIconClass = cx(styles['deleteIcon']);
 
 
 class SearchAutocompleteContainer extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   static propTypes = {
     selectResult: func,
     defaultIsOpen: bool,
@@ -48,6 +44,7 @@ class SearchAutocompleteContainer extends React.Component {
     }),
     onClickAutocomplete: func,
     onChange: func,
+    isOpen: bool,
     cancel: func
   };
 
@@ -86,21 +83,18 @@ class SearchAutocompleteContainer extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>
-          <SearchAutocompleteDownshift
-            defaultIsOpen={ this.props.defaultIsOpen }
-            cancel={ this.props.cancel }
-            debouncedOnChange={ this.debouncedOnChange }
-            onKeyPress={ this.onEnter }
-            onChange={ this.onKeyDown }
-            queryString={ this.state.queryString }
-            results={ this.props.componentState.queryResults }
-            selectResult={ this.selectResult }
-            onClickAutocomplete={ this.props.onClickAutocomplete }
-          />
-        </div>
-      </div>
+      <SearchAutocompleteDownshift
+        defaultIsOpen={ this.props.defaultIsOpen }
+        cancel={ this.props.cancel }
+        debouncedOnChange={ this.debouncedOnChange }
+        onKeyPress={ this.onEnter }
+        onChange={ this.onKeyDown }
+        queryString={ this.state.queryString }
+        results={ this.props.componentState.queryResults }
+        selectResult={ this.selectResult }
+        onClickAutocomplete={ this.props.onClickAutocomplete }
+        isOpen={this.props.isOpen}
+      />
     );
   }
 }
@@ -114,7 +108,8 @@ const SearchAutocompleteDownshift = ({
   queryString,
   results,
   selectResult,
-  onClickAutocomplete
+  onClickAutocomplete,
+  isOpen
 }) => {
   const RESULT_COUNT_PER_CATEGORY = 10;
   const itemToString = (item) => item && item.label;
@@ -122,17 +117,22 @@ const SearchAutocompleteDownshift = ({
 
   return (
     <Downshift
+      isOpen={isOpen}
       itemToString={ itemToString }
       onSelect={ selectResult }
       defaultIsOpen={ defaultIsOpen }
-      render={({
-        getInputProps,
-        getItemProps,
-        selectedItem,
-        highlightedIndex,
-        isOpen,
-        openMenu
-      }) => (
+    >
+        {({
+          getInputProps,
+          getItemProps,
+          getLabelProps,
+          getMenuProps,
+          isOpen,
+          inputValue,
+          highlightedIndex,
+          selectedItem,
+          openMenu
+        }) => (
         <div>
           <TextField
             {...getInputProps({
@@ -203,7 +203,7 @@ const SearchAutocompleteDownshift = ({
           }
         </div>
       )}
-    />
+    </Downshift>
   );
 };
 

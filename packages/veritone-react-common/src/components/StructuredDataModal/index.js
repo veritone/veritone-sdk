@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { FormControl, FormControlLabel } from '@material-ui/core';
 import { Radio, RadioGroup } from '@material-ui/core';
-import { MenuItem } from '@material-ui/core';
+import { List, ListItem, ListItemText } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 
@@ -296,14 +296,12 @@ class StructuredDataModal extends React.Component {
     }
   }
 
-  showAutocompleteValue = () => {
-    const selectedType = get(this.state.selectedAttribute, 'type');
-    if(this.state.value1 && selectedType) {
-      this.searchField(this.state.value1);
-      this.setState({
-        showStringAutoComplete: true
-      })
-    }
+  showAutocompleteValue = (e) => {
+    this.stop$ = Rx.Observable.fromEvent(e.target, 'blur');
+    this.stop$.take(1).subscribe();
+
+    Rx.Observable.fromEvent(e.target, 'keyup').map( x => x.target.value).distinctUntilChanged().debounceTime(500).last( debouncedText => this.searchField(debouncedText) )
+    .takeUntil(this.stop$).subscribe();
   }
 
   hideAutocompleteValue = () => {
@@ -403,10 +401,11 @@ class StructuredDataModal extends React.Component {
             }
           >
             {operators.map(operator => (
-              <MenuItem key={operator} value={operator} style={{ justifyContent: 'space-between' }}>
-                <Typography variant={'headline'}>{StructuredDataModal.OPERATOR_LABELS[operator]}</Typography>
-                <Typography align="right" variant={'headline'}>{StructuredDataModal.SYMBOL_LABELS[operator]}</Typography>
-              </MenuItem>)
+
+              <ListItem key={operator} value={operator} style={{ justifyContent: 'space-between' }}>
+                <ListItemText variant={'subheading'}>{StructuredDataModal.OPERATOR_LABELS[operator]}</ListItemText>
+                <ListItemText align="right" variant={'subheading'}>{StructuredDataModal.SYMBOL_LABELS[operator]}</ListItemText>
+              </ListItem>)
             )
             }
           </TextField>
@@ -432,25 +431,20 @@ class StructuredDataModal extends React.Component {
   }
 
   async searchField(inputValue) {
-    if(!inputValue || inputValue.length === 0) {
-      this.setState({
-        loadingAutocomplete: false,
-        showStringAutoComplete: false,
-        autocompleteValues: undefined
-      });
+    if(!inputValue || inputValue.length === 0 || inputValue.trim() !== this.state.value1) {
       return;
     }
 
-    this.setState({
-      showStringAutoComplete: true,
-      loadingAutocomplete: true,
-      autocompleteValues: undefined
-    });
+    if(this.state.selectedAttribute && inputValue && inputValue.trim().length > 0) {
+      this.setState({
+        showStringAutoComplete: true,
+        loadingAutocomplete: true,
+        autocompleteValues: undefined
+      });
 
-    if(this.state.selectedAttribute && inputValue) {
       let field = this.state.selectedAttribute.field;
-      let values = await fetchAutocompleteValues(this.props.api, this.props.auth, inputValue, field);
-      let autocompleteValues = values.fields[field] || [];
+      let values = await fetchAutocompleteValues(this.props.api, this.props.auth, inputValue.trim().toLowerCase(), field);
+      let autocompleteValues = values && values.fields ? values.fields[field] : [];
       autocompleteValues = autocompleteValues.map( value => get(value, 'key').toLowerCase() );
       this.setState({
         loadingAutocomplete: false,
@@ -461,12 +455,6 @@ class StructuredDataModal extends React.Component {
   }
 
   getAutoCompleteValue = (e) => {
-    this.stop$ = Rx.Observable.fromEvent(e.target, 'focusout');
-    this.stop$.take(1).subscribe();
-
-    Rx.Observable.fromEvent(e.target, 'keyup').map( x => x.target.value).distinctUntilChanged().debounceTime(500).last( debouncedText => this.searchField(debouncedText) )
-    .takeUntil(this.stop$).subscribe();
-
     this.setState({ value1: e.target.value });
   }
 
@@ -500,6 +488,7 @@ class StructuredDataModal extends React.Component {
       return (
         <Fragment>
           <RadioGroup
+            key="value1"
             onChange={this.onChangeValue('value1')}
             value={this.state.value1}
             style={{ flexDirection: 'row' }}
@@ -516,6 +505,7 @@ class StructuredDataModal extends React.Component {
       return (
         <Fragment>
           <TextField
+            key="value1"
             onChange={this.onChangeValue('value1')}
             type={this.getInputType(type)}
             value={this.state.value1}
@@ -525,6 +515,7 @@ class StructuredDataModal extends React.Component {
             id="value1" />
           <StaticTextField value={'and'} marginLeft marginRight />
           <TextField
+            key="value2"
             onChange={this.onChangeValue('value2')}
             type={this.getInputType(type)}
             value={this.state.value2}
@@ -539,6 +530,7 @@ class StructuredDataModal extends React.Component {
       return (
         <Fragment>
           <TextField
+            key="value1"
             onChange={this.onChangeValue('value1')}
             onMouseDown={this.showGeolocationModal}
             margin="normal"
@@ -558,9 +550,8 @@ class StructuredDataModal extends React.Component {
       return (
         <Fragment>
           <TextField
+            key="value1"
             onChange={this.onChangeValue('value1')}
-            onFocus={this.getInputType(type) === 'string' && this.showAutocompleteValue}
-            onBlur={this.getInputType(type) === 'string' && this.hideAutocompleteValue}
             type={this.getInputType(type)}
             value={this.state.value1}
             margin="none"
@@ -586,8 +577,8 @@ class StructuredDataModal extends React.Component {
     const selectedType = get(this.state.selectedAttribute, 'type');
 
     return [
-      <SelectSchemas ref={this.setSchemaPicker} api={this.props.api} auth={this.props.auth} onSelect={this.onSelectSchema} selected={this.state.selectedSchema} autocompleteValue/>,
-      <SelectAttributes ref={this.setAttributePicker} placeholder={"Search by property"} api={this.props.api} auth={this.props.auth} selected={this.state.selectedAttribute} onSelect={this.onSelectAttribute} dataRegistryId={this.state.selectedDataRegistryId} majorVersion={this.state.selectedSchemaMajorVersion} />,
+      <SelectSchemas key="schemas" ref={this.setSchemaPicker} api={this.props.api} auth={this.props.auth} onSelect={this.onSelectSchema} selected={this.state.selectedSchema || null} autocompleteValue/>,
+      <SelectAttributes key="attributes" ref={this.setAttributePicker} placeholder={"Search by property"} api={this.props.api} auth={this.props.auth} selected={this.state.selectedAttribute || null} onSelect={this.onSelectAttribute} dataRegistryId={this.state.selectedDataRegistryId} majorVersion={this.state.selectedSchemaMajorVersion} />,
       <FormControl fullWidth margin="none" style={{ display: "flex", flexDirection: "row" }}>
         {selectedType && this.renderOperators(selectedType) }
         {this.state.selectedOperator && this.state.selectedOperator.length > 0 && selectedType && this.renderValue(this.state.selectedOperator, selectedType) }

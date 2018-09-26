@@ -63,9 +63,6 @@ import { LoadSavedSearchWidget, SaveSearchWidget } from '../SavedSearch/SavedSea
 import VeritoneApp from '../SavedSearch/VeritoneApp';
 import { SearchBar } from '.';
 
-//console.log("Load", LoadSavedSearch);
-//console.log("Save", SaveSearch)
-
 // a lot of this information should come from this endpoint
 // https://enterprise.stage.veritone.com/api/engine/category?time=1517268957867
 // hardcoded for now to help setup storybook.
@@ -270,11 +267,14 @@ export class SampleSearchBar extends React.Component {
   }
 
   async componentDidMount() {
-    let auth = null;
+    let auth = this.props.auth;
     let libraries = [];
     let getEntity = null;
     try {
-      auth = this.props.auth ? this.props.auth : await this.getAuth();
+      if(!auth) {
+        auth =  await this.getAuth();
+      }
+
       if(!window._veritoneApp) {
         this._veritoneApp = new VeritoneApp({apiRoot: this.props.api && this.props.api.replace(/\/$/, ""), theme: { typography: { htmlFontSize: this.props.relativeSize}}});
         this._veritoneApp.login({ sessionToken: auth });

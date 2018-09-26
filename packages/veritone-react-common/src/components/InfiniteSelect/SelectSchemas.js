@@ -45,16 +45,6 @@ export default class SelectSchemas extends React.Component {
     }
   }
 
-  /*
-  reduceData = results => {
-    return results.map(data => ({
-      id: get(data, 'dataRegistry.id'),
-      name: get(data, 'dataRegistry.name'),
-      organization: get(data, 'dataRegistry.organization.name'),
-      majorVersion: get(data, 'majorVersion')
-    }));
-  };
-  */
   reduceData = results => {
     const records = [];
     results.forEach(data => {
