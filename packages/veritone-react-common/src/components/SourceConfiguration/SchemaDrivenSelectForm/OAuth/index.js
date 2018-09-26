@@ -46,7 +46,9 @@ export default class OAuth extends Component {
   }
 
   componentWillUnmount() {
-    this.externalWindow.close();
+    if (this.externalWindow) {
+      this.externalWindow.close();
+    }
   }
 
   externalWindow = null;
