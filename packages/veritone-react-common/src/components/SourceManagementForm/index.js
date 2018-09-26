@@ -67,7 +67,12 @@ export default class SourceManagementForm extends React.Component {
     onSubmit: func.isRequired,
     onClose: func,
     getFieldOptions: func.isRequired,
-    open: bool
+    open: bool,
+    appConfig: shape({
+      boxClientId: string,
+      dropboxClientId: string,
+      googleDriveClientId: string
+    })
   };
 
   static defaultProps = {
@@ -355,6 +360,12 @@ export default class SourceManagementForm extends React.Component {
       title += ' (Read Only)';
     }
 
+    const authConfigs = pick(this.props.appConfig, [
+      'boxClientId',
+      'dropboxClientId',
+      'googleDriveClientId'
+    ]);
+
     return (
       <FullScreenDialog open={this.state.openDialog}>
         <div className={styles['sm-form-wrapper']}>
@@ -397,6 +408,7 @@ export default class SourceManagementForm extends React.Component {
                 errorFields={this.state.formDirtyStates}
                 isReadOnly={this.props.isReadOnly}
                 onClose={this.handleCloseDialog}
+                {...authConfigs}
               />
             )}
             {activeTab === 1 && (

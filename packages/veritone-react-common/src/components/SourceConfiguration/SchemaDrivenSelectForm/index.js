@@ -1,5 +1,5 @@
 import React from 'react';
-import { has, includes, get, isArray, isUndefined } from 'lodash';
+import { has, includes, get, isArray, isUndefined, camelCase } from 'lodash';
 
 import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
@@ -9,6 +9,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import SourceTypeField from '../../SourceTypeField';
+import OAuth from './OAuth';
 
 import styles from './styles.scss';
 
@@ -23,7 +24,10 @@ export default class DynamicSelect extends React.Component {
     errorFields: objectOf(any),
     helperText: string,
     selectLabel: string,
-    isReadOnly: bool
+    isReadOnly: bool,
+    boxClientId: string, // eslint-disable-line react/no-unused-prop-types
+    dropboxClientId: string, // eslint-disable-line react/no-unused-prop-types
+    googleDriveClientId: string // eslint-disable-line react/no-unused-prop-types
   };
   static defaultProps = {
     fieldValues: {},
@@ -31,7 +35,11 @@ export default class DynamicSelect extends React.Component {
   };
 
   state = {
-    oneSourceType: false
+    oneSourceType: false,
+    redirectUris: {
+      dropbox: '/watcher/callback',
+      googleDrive: '/googleDrive/callback'
+    }
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -111,8 +119,16 @@ export default class DynamicSelect extends React.Component {
     });
   };
 
+  handleAuthSuccess = tokenInfo => {
+    console.log(tokenInfo);
+  };
+
   render() {
     const { sourceTypes, currentSourceType } = this.props;
+    const sourceTypeName = camelCase(
+      get(sourceTypes, [currentSourceType, 'name'])
+    );
+    const clientId = this.props[sourceTypeName + 'ClientId'];
     const sourceTypesMenu = sourceTypes.map((type, index) => {
       return (
         <MenuItem value={index} id={type.id} key={type.id}>
@@ -161,6 +177,20 @@ export default class DynamicSelect extends React.Component {
         <div className={styles.sourceTypeSchemaContainer}>
           {this.renderFields()}
         </div>
+        {clientId && (
+          <OAuth
+            authSource={sourceTypeName}
+            redirectUri={'https://local.veritone.com.ngrok.io/watcher/callback'}
+            clientId={clientId}
+            onAuthSuccess={this.handleAuthSuccess}
+          />
+        )}
+        {/*{sourceTypeName === 'dropbox' &&*/}
+        {/*<Dropbox*/}
+        {/*redirectUri={'https://local.veritone.com.ngrok.io/watcher/callback'}*/}
+        {/*clientId={clientId}*/}
+        {/*onAuthSuccess={this.handleAuthSuccess}*/}
+        {/*/>}*/}
       </FormControl>
     );
   }

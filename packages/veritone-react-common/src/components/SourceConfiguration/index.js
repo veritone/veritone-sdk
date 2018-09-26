@@ -22,7 +22,10 @@ export default class SourceConfiguration extends React.Component {
     onInputChange: func.isRequired,
     getFieldOptions: func.isRequired,
     errorFields: objectOf(any),
-    isReadOnly: bool
+    isReadOnly: bool,
+    boxClientId: string,
+    dropboxClientId: string,
+    googleDriveClientId: string
   };
   static defaultProps = {};
 
@@ -173,7 +176,12 @@ export default class SourceConfiguration extends React.Component {
   };
 
   render() {
-    const { source } = this.props;
+    const {
+      source,
+      boxClientId,
+      dropboxClientId,
+      googleDriveClientId
+    } = this.props;
 
     return (
       <div className={styles['configuration-container']}>
@@ -234,6 +242,9 @@ export default class SourceConfiguration extends React.Component {
                 helperText="NOTE: Source types available are dynamic based on your ingestion adapter"
                 getFieldOptions={this.props.getFieldOptions}
                 isReadOnly={this.props.isReadOnly}
+                boxClientId={boxClientId}
+                dropboxClientId={dropboxClientId}
+                googleDriveClientId={googleDriveClientId}
               />
             </FormControl>
           </div>
