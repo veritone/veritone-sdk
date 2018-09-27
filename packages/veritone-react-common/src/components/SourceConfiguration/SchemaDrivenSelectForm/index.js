@@ -1,5 +1,5 @@
 import React from 'react';
-import { has, includes, get, isArray, isUndefined, camelCase } from 'lodash';
+import { has, includes, get, isArray, isUndefined, camelCase, mapKeys } from 'lodash';
 
 import { any, arrayOf, objectOf, func, string, number, bool } from 'prop-types';
 
@@ -9,7 +9,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import SourceTypeField from '../../SourceTypeField';
-import OAuth from './OAuth';
+import OAuth from './OAuth/index';
+import GoogleFolderSelector from './FolderSelectors/GoogleFolderSelector';
 
 import styles from './styles.scss';
 
@@ -120,7 +121,13 @@ export default class DynamicSelect extends React.Component {
   };
 
   handleAuthSuccess = tokenInfo => {
-    console.log(tokenInfo);
+    this.props.onSourceDetailChange(mapKeys(tokenInfo, (value, key) => {
+      return camelCase(key);
+    }));
+  };
+
+  handleAuthError = error => {
+    console.error(error);
   };
 
   render() {
@@ -183,8 +190,12 @@ export default class DynamicSelect extends React.Component {
             redirectUri={`${location.protocol}//${location.host}${this.state.redirectUris[sourceTypeName]}`}
             clientId={clientId}
             onAuthSuccess={this.handleAuthSuccess}
-          />
+            onAuthError={this.handleAuthError}
+          >
+            This should only show on success
+          </OAuth>
         )}
+        {sourceTypeName === 'googleDrive' && <GoogleFolderSelector/>}
       </FormControl>
     );
   }

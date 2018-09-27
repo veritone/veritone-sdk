@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { capitalize, isEmpty, reduce } from 'lodash';
-import { string, func, oneOf } from 'prop-types';
+import { isEmpty, reduce, startCase } from 'lodash';
+import {string, func, oneOf, oneOfType, arrayOf, node} from 'prop-types';
 import Button from '@material-ui/core/Button';
 
 export default class OAuth extends Component {
@@ -8,10 +8,13 @@ export default class OAuth extends Component {
     authSource: oneOf(['dropbox','googleDrive']).isRequired,
     clientId: string.isRequired,
     redirectUri: string.isRequired,
-    onAuthSuccess: func.isRequired
+    onAuthSuccess: func.isRequired,
+    onAuthError: func.isRequired,
+    children: oneOfType([arrayOf(node), node])
   };
 
   state = {
+    error: false,
     baseUrls: {},
     authRedirects: {
       dropbox: `${location.protocol}//${location.host}/dropbox/auth`,
@@ -54,7 +57,7 @@ export default class OAuth extends Component {
   externalWindow = null;
 
   openAuthWindow = () => {
-    const { redirectUri, onAuthSuccess } = this.props;
+    const { redirectUri, onAuthSuccess, onAuthError } = this.props;
     const { authSource } = this.state;
     const authListener = event => {
       const urlParts = event.data.split('#')[0].split('?');
@@ -85,15 +88,24 @@ export default class OAuth extends Component {
               return response.json();
             })
             .then(res => {
-              this.setState(
-                {
-                  authTokenInfo: {
-                    ...res
-                  }
-                },
-                onAuthSuccess(res)
-              );
-              return res;
+              if (res.error) {
+                this.setState({
+                  error: true,
+                  errorDescription: res.error_description
+                }, onAuthError(res))
+                return res;
+              } else {
+                this.setState(
+                  {
+                    error: false,
+                    authTokenInfo: {
+                      ...res
+                    }
+                  },
+                  onAuthSuccess(res)
+                );
+                return res;
+              }
             });
         }
       }
@@ -118,9 +130,13 @@ export default class OAuth extends Component {
             color="primary"
             onClick={this.openAuthWindow}
           >
-            Authorize {capitalize(this.state.authSource)}
+            Authorize {startCase(this.state.authSource)}
           </Button>
         )}
+        { this.state.error &&
+            <div>There was an error authorizing your {startCase(this.state.authSource)} account.</div>
+        }
+        { !this.state.error && !isEmpty(this.state.authTokenInfo) && this.props.children }
       </div>
     );
   }
