@@ -310,6 +310,7 @@ export default class BulkAddAffiliatesDialog extends Component {
       case 'SUN':
         return ['Sunday'];
       case 'SS':
+      case 'SASU':
         return ['Saturday', 'Sunday'];
       case 'TUF':
         return ['Tuesday', 'Wednesday', 'Thursday', 'Friday'];
