@@ -97,11 +97,11 @@ export default class FingerprintEngineOutput extends Component {
       .map(entity => entity.library);
     const librariesMap = keyBy(libraries, 'id');
 
-    sortBy(data, 'startTimeMs', 'endTimeMs');
+    sortBy(data, 'startTimeMs', 'stopTimeMs');
     data.forEach(dataChunk => {
       const series = dataChunk.series;
       if (series) {
-        sortBy(series, 'startTimeMs', 'endTimeMs');
+        sortBy(series, 'startTimeMs', 'stopTimeMs');
         series.forEach(entry => {
           if (entry.object && entry.object.entityId) {
             const entityId = entry.object.entityId;
