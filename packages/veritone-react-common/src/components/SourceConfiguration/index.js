@@ -102,15 +102,23 @@ export default class SourceConfiguration extends React.Component {
     const cloneFormDetail = cloneDeep(formDetail);
     const targetKey = Object.keys(formDetail)[0];
     const targetValue = formDetail[targetKey];
-    const selectedSourceType = this.props.sourceTypes.find(sourceType => sourceType.id === this.props.source.sourceTypeId);
-    const schemaProperties = get(selectedSourceType, 'sourceSchema.definition.properties');
+    const selectedSourceType = this.props.sourceTypes.find(
+      sourceType => sourceType.id === this.props.source.sourceTypeId
+    );
+    const schemaProperties = get(
+      selectedSourceType,
+      'sourceSchema.definition.properties'
+    );
     if (schemaProperties) {
       Object.keys(schemaProperties).forEach(propKey => {
         const peerKey = schemaProperties[propKey].peerEnumKey;
         if (peerKey && peerKey == targetKey) {
           // Check if the current props value is invalidated because its peer enum has changed
           const propValue = get(this.props.source, ['details', propKey]);
-          if (isArray(targetValue) && !targetValue.find(tVal => tVal == propValue)) {
+          if (
+            isArray(targetValue) &&
+            !targetValue.find(tVal => tVal == propValue)
+          ) {
             cloneFormDetail[propKey] = '';
           }
         }
@@ -191,16 +199,13 @@ export default class SourceConfiguration extends React.Component {
                       img: styles['avatar-img']
                     }}
                   />
-                  {
-                    !this.props.isReadOnly ?
-                    (
-                      <div className={styles['avatar-img-cta']}>
-                        <span id="openFilePicker" onClick={this.openFilePicker}>
-                          Edit
-                        </span>
-                      </div>
-                    ) : null
-                  }
+                  {!this.props.isReadOnly ? (
+                    <div className={styles['avatar-img-cta']}>
+                      <span id="openFilePicker" onClick={this.openFilePicker}>
+                        Edit
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
                 <TextField
                   className={styles.sourceName}

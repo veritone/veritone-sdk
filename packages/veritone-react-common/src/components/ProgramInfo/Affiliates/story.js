@@ -19,7 +19,7 @@ storiesOf('Program Affiliates', module)
     <Provider store={store}>
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
-        selectedAffiliateById={generateAffiliateById(11, true)}
+        affiliateById={generateAffiliateById(11, true)}
         onAffiliatesChange={action('onAffiliatesChange')}
         canBulkAddAffiliates
       />

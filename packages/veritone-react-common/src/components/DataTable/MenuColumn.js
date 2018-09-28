@@ -81,7 +81,10 @@ export default class MenuColumn extends React.Component {
     const allActions =
       this.props.transformActions(this.props.actions, data) ||
       difference(
-        [...(this.props.transformActions(actions, data)), ...this.props.additionalActions],
+        [
+          ...this.props.transformActions(actions, data),
+          ...this.props.additionalActions
+        ],
         this.props.excludeActions
       );
 

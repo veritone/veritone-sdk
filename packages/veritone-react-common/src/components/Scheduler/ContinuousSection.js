@@ -13,10 +13,20 @@ export default class ContinuousSection extends React.Component {
     return (
       <Fragment>
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="start" label="Starts" showIcon readOnly={this.props.readOnly} />
+          <DateTimeSelector
+            name="start"
+            label="Starts"
+            showIcon
+            readOnly={this.props.readOnly}
+          />
         </div>
         <div className={styles.formSectionRow}>
-          <DateTimeSelector name="end" label="Ends" showIcon readOnly={this.props.readOnly} />
+          <DateTimeSelector
+            name="end"
+            label="Ends"
+            showIcon
+            readOnly={this.props.readOnly}
+          />
         </div>
       </Fragment>
     );

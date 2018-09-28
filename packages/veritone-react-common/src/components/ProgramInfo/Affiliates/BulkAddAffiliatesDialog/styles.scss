@@ -1,8 +1,8 @@
 @import 'src/styles/modules/variables';
 
 .bulkAddAffiliatesDialogPaper {
-  min-width: 640px;
   width: 640px;
+  min-width: 640px;
 }
 
 .dialogTitle {
@@ -25,6 +25,37 @@
   font-weight: normal;
   font-size: 14px;
   color: $light-black;
+  margin-bottom: 25px;
+}
+
+.progressSpinner {
+  display: flex;
+  align-self: center;
+  height: 50px;
+}
+
+.parsingResultInfo {
+  height: 50px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.parsingErrorsSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.parsingErrorsSectionLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: $light-black;
+  margin-bottom: 5px;
+}
+
+.parsingError {
+  font-weight: 300;
+  font-size: 13px;
+  margin: 5px 10px;
 }
 
 .actionButtons {

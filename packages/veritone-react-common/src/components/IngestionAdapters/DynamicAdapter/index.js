@@ -25,6 +25,8 @@ import InfiniteDropdownMenu from '../../InfiniteDropdownMenu';
 
 import styles from './styles.scss';
 
+const MAX_LIVE_TDO_DURATION_MIN = 60;
+
 class DynamicAdapter extends React.Component {
   static propTypes = {
     updateConfiguration: func.isRequired,
@@ -56,8 +58,7 @@ class DynamicAdapter extends React.Component {
     let fields = get(this.props.adapterConfig, 'fields');
     const newState = {
       sourceId: get(this.props, 'configuration.sourceId'),
-      clusterId: get(this.props, 'configuration.clusterId'),
-      maxTDODuration: get(this.props, 'configuration.maxTDODuration') || 60
+      clusterId: get(this.props, 'configuration.clusterId')
     };
     if (isArray(fields)) {
       fields.forEach(field => {
@@ -89,18 +90,32 @@ class DynamicAdapter extends React.Component {
   };
 
   handleSourceChange = selectedSource => {
-    const newState = {
-      sourceId: selectedSource.id,
-      _source: {
-        ...pick(this.state._source, [
-          'hasNextPage',
-          'isNextPageLoading',
-          'items'
-        ]),
-        selectedSource
+    this.setState(prevState => {
+      const newState = {
+        sourceId: selectedSource.id,
+        _source: {
+          ...pick(this.state._source, [
+            'hasNextPage',
+            'isNextPageLoading',
+            'items'
+          ]),
+          selectedSource
+        }
+      };
+      if (get(selectedSource, 'sourceType.isLive', false)) {
+        let maxTDODuration = get(this.props, 'configuration.maxTDODuration');
+        if (!maxTDODuration) {
+          maxTDODuration = prevState.maxTDODuration;
+        }
+        if (!maxTDODuration || maxTDODuration > MAX_LIVE_TDO_DURATION_MIN) {
+          maxTDODuration = MAX_LIVE_TDO_DURATION_MIN;
+        }
+        newState.maxTDODuration = maxTDODuration;
+      } else {
+        delete newState.maxTDODuration;
       }
-    };
-    this.setState(newState, this.sendConfiguration);
+      return newState;
+    }, this.sendConfiguration);
   };
 
   handleClusterChange = selectedCluster => {
@@ -127,23 +142,26 @@ class DynamicAdapter extends React.Component {
 
   insertAndSelectSource = source => {
     if (source) {
-      this.setState(prevState => {
-        const newSources = cloneDeep(prevState._source.items);
-        newSources.push(source);
-        const newState = {
-          _source: {
-            ...prevState._source,
-            items: newSources
-          }
-        };
-        return newState;
-      }, () => {
-        this.handleSourceChange(source);
-      });
+      this.setState(
+        prevState => {
+          const newSources = cloneDeep(prevState._source.items);
+          newSources.push(source);
+          const newState = {
+            _source: {
+              ...prevState._source,
+              items: newSources
+            }
+          };
+          return newState;
+        },
+        () => {
+          this.handleSourceChange(source);
+        }
+      );
     }
-  }
+  };
 
-  loadMoreSources = ({startIndex, stopIndex}) => {
+  loadMoreSources = ({ startIndex, stopIndex }) => {
     this.setState(prevState => {
       return Object.assign({}, prevState, {
         _source: {
@@ -153,35 +171,40 @@ class DynamicAdapter extends React.Component {
         }
       });
     });
-    return this.props.loadNextSources({startIndex, stopIndex}).then(nextPage => {
-      const hasPreselectedSource = this.state._source.items.length === 1;
-      const newState = {
-        _source: {
-          hasNextPage: !!get(nextPage, 'length'),
-          isNextPageLoading: false,
-          items: (!hasPreselectedSource && startIndex === 0) ? nextPage : cloneDeep(this.state._source.items).concat(nextPage)
+    return this.props
+      .loadNextSources({ startIndex, stopIndex })
+      .then(nextPage => {
+        const hasPreselectedSource = this.state._source.items.length === 1;
+        const newState = {
+          _source: {
+            hasNextPage: !!get(nextPage, 'length'),
+            isNextPageLoading: false,
+            items:
+              !hasPreselectedSource && startIndex === 0
+                ? nextPage
+                : cloneDeep(this.state._source.items).concat(nextPage)
+          }
+        };
+        const sourceToSelect = find(newState._source.items, [
+          'id',
+          this.state.sourceId
+        ]);
+        if (sourceToSelect) {
+          this.setState(newState, () => {
+            this.handleSourceChange(sourceToSelect);
+          });
+        } else if (newState._source.items.length && !this.state.sourceId) {
+          this.setState(newState, () => {
+            this.handleSourceChange(newState._source.items[0]);
+          });
+        } else {
+          this.setState(newState);
         }
-      }
-      const sourceToSelect = find(
-        newState._source.items,
-        ['id', this.state.sourceId]
-      );
-      if (sourceToSelect) {
-        this.setState(newState, () => {
-          this.handleSourceChange(sourceToSelect);
-        });
-      } else if (newState._source.items.length && !this.state.sourceId) {
-        this.setState(newState, () => {
-          this.handleSourceChange(newState._source.items[0]);
-        });
-      } else {
-        this.setState(newState);
-      }
-      return nextPage;
-    });
-  }
+        return nextPage;
+      });
+  };
 
-  loadMoreClusters = ({startIndex, stopIndex}) => {
+  loadMoreClusters = ({ startIndex, stopIndex }) => {
     this.setState(prevState => {
       return Object.assign({}, prevState, {
         _cluster: {
@@ -224,7 +247,6 @@ class DynamicAdapter extends React.Component {
   };
 
   render() {
-    const MAX_DURATION_MINS = 60;
     const customTriggers = [];
     if (this.props.openCreateSource) {
       customTriggers.push({
@@ -239,7 +261,8 @@ class DynamicAdapter extends React.Component {
             <div className={styles.adapterContainer}>
               <div className={styles.adapterHeader}>Select a Source</div>
               <div className={styles.adapterDescription}>
-                Select from your available ingestion sources or create a new source.
+                Select from your available ingestion sources or create a new
+                source.
               </div>
             </div>
             <div className={styles.adapterContainer}>
@@ -305,26 +328,28 @@ class DynamicAdapter extends React.Component {
                 pageSize={this.props.pageSize}
                 readOnly={this.props.readOnly}
               />
-              <div>
-                <TextField
-                  type="number"
-                  label="Segment Duration Length"
-                  margin="normal"
-                  InputLabelProps={{
-                    className: styles.tdoDurationLabel
-                  }}
-                  inputProps={{
-                    className: styles.tdoDurationInput,
-                    min: 0,
-                    max: MAX_DURATION_MINS,
-                    step: 1,
-                    readOnly: this.props.readOnly
-                  }} 
-                  helperText={`Max ${MAX_DURATION_MINS} minutes`}
-                  value={this.state.maxTDODuration}
-                  onChange={this.handleFieldChange('maxTDODuration')}
-                />
-              </div>
+              {get(this.state, '_source.selectedSource.sourceType.isLive', false) && (
+                <div>
+                  <TextField
+                    type="number"
+                    label="Segment Duration Length"
+                    margin="normal"
+                    InputLabelProps={{
+                      className: styles.tdoDurationLabel
+                    }}
+                    inputProps={{
+                      className: styles.tdoDurationInput,
+                      min: 0,
+                      max: MAX_LIVE_TDO_DURATION_MIN,
+                      step: 1,
+                      readOnly: this.props.readOnly
+                    }}
+                    helperText={`Max ${MAX_LIVE_TDO_DURATION_MIN} minutes`}
+                    value={this.state.maxTDODuration}
+                    onChange={this.handleFieldChange('maxTDODuration')}
+                  />
+                </div>
+              )}
             </div>
             <div>
               <DynamicFieldForm
@@ -341,7 +366,12 @@ class DynamicAdapter extends React.Component {
   }
 }
 
-function DynamicFieldForm({ fields = [], configuration, handleFieldChange, readOnly }) {
+function DynamicFieldForm({
+  fields = [],
+  configuration,
+  handleFieldChange,
+  readOnly
+}) {
   return fields
     .map(field => {
       const inputId = field.name + 'DynamicField';

@@ -14,13 +14,15 @@ const TimePeriodSelector = ({ name, label, number, period, readOnly }) => (
   <FormSection name={name}>
     <LabeledInputGroup label={label}>
       <FormGroup className={styles.inputsGroup}>
-        { period !== 'week' ? (<Field
-          name="number"
-          type="number"
-          component={TextField}
-          className={styles.leftInput}
-          inputProps={{ readOnly }}
-        />) : null }
+        {period !== 'week' ? (
+          <Field
+            name="number"
+            type="number"
+            component={TextField}
+            className={styles.leftInput}
+            inputProps={{ readOnly }}
+          />
+        ) : null}
         <Field
           component={Select}
           name="period"

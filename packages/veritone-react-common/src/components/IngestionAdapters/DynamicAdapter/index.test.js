@@ -142,7 +142,9 @@ describe('DynamicAdapter', () => {
   });
 
   it('DynamicAdapter should set default values for any adapter input fields', () => {
-    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, { fields: FIELDS });
+    const ADAPTER_CONFIG = Object.assign({}, BASE_ADAPTER_CONFIG, {
+      fields: FIELDS
+    });
     const CONFIGURATION = {
       sourceId: SOURCES[0].id,
       clusterId: CLUSTERS[0].id,
@@ -189,8 +191,7 @@ describe('DynamicAdapter', () => {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
-      },
-      maxTDODuration: 60
+      }
     };
     expectedConfiguration[FIELDS[0].name] = FIELDS[0].defaultValue;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);
@@ -250,8 +251,7 @@ describe('DynamicAdapter', () => {
         hasNextPage: false,
         isNextPageLoading: false,
         items: []
-      },
-      maxTDODuration: 60
+      }
     };
     expectedConfiguration[FIELDS[0].name] = TEST_FIELD_VALUE;
     expect(UPDATE_CONFIGURATION).toHaveBeenCalledWith(expectedConfiguration);

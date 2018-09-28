@@ -40,10 +40,11 @@ export default class SourceTypeField extends React.Component {
   };
 
   state = {
-    options: isArray(this.props.options) ?
-      this.props.options.map(e => {
-        return isString(e) ? { id: e, name: e } : e
-      }) : undefined
+    options: isArray(this.props.options)
+      ? this.props.options.map(e => {
+          return isString(e) ? { id: e, name: e } : e;
+        })
+      : undefined
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -53,7 +54,9 @@ export default class SourceTypeField extends React.Component {
       this.props.getFieldOptions(query).then(results => {
         const newState = {};
         if (isArray(results)) {
-          newState.options = results.map(result => isString(result) ? { id: result, name: result } : result);
+          newState.options = results.map(
+            result => (isString(result) ? { id: result, name: result } : result)
+          );
         }
         this.setState(newState);
         return results;
@@ -66,10 +69,16 @@ export default class SourceTypeField extends React.Component {
     if (isFunction(onChange)) {
       return onChange(e, id, { ...rest, type });
     }
-  }
+  };
 
   render() {
-    const { id, type, query, options, peerSelection, getFieldOptions, ...rest } = this.props; // eslint-disable-line no-unused-vars
+    const {
+      id,
+      type,
+      query,
+      peerSelection,
+      ...rest
+    } = this.props;
     const supportedTypes = [
       'object',
       'string',
@@ -101,7 +110,14 @@ export default class SourceTypeField extends React.Component {
     let isMultiple = false;
     let filteredOptions = this.state.options;
     if (isArray(peerSelection)) {
-      filteredOptions = isArray(this.state.options) && this.state.options.filter(result => !isUndefined(peerSelection.find(selection => selection === result.id)));
+      filteredOptions =
+        isArray(this.state.options) &&
+        this.state.options.filter(
+          result =>
+            !isUndefined(
+              peerSelection.find(selection => selection === result.id)
+            )
+        );
     }
     if (filteredOptions || query) {
       FieldTypeComponent = SelectField;
@@ -112,11 +128,31 @@ export default class SourceTypeField extends React.Component {
       FieldTypeComponent = BaseField;
     }
 
-    return <FieldTypeComponent id={id} onChange={this.handleChange} options={filteredOptions || []} multiple={isMultiple} {...rest} />;
+    return (
+      <FieldTypeComponent
+        {...rest}
+        id={id}
+        onChange={this.handleChange}
+        options={filteredOptions || []}
+        multiple={isMultiple}
+      />
+    );
   }
 }
 
-const SelectField = ({ id, title, value, onChange, options, multiple, required, isDirty, error, isReadOnly, ...rest }) => {
+const SelectField = ({
+  id,
+  title,
+  value,
+  onChange,
+  options,
+  multiple,
+  required,
+  isDirty,
+  error,
+  isReadOnly,
+  ...rest
+}) => {
   const inputProps = {
     name: title,
     id: 'schema-' + id,
@@ -125,7 +161,7 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
   return (
     <FormControl
       {...rest}
-      className={ styles.forceBlockDisplay }
+      className={styles.forceBlockDisplay}
       fullWidth
       required={required}
       error={isDirty && required && (isUndefined(value) || value === '')}
@@ -142,27 +178,22 @@ const SelectField = ({ id, title, value, onChange, options, multiple, required, 
         {...inputProps}
         classes={{ root: styles.selectContainer }}
         className={styles.forceBlockDisplay}
-        value={multiple ? 
-          (isArray(value) ? value : []) :
-          value
-        }
+        value={multiple ? (isArray(value) ? value : []) : value}
         multiple={multiple}
         required={required}
         onChange={onChange}
         disabled={!options || !options.length}
         readOnly={isReadOnly}
       >
-        {
-          (!required && !multiple) ? 
-          (
-            <MenuItem key="null" />
-          ) : null
-        }
-        {isArray(options) && options.map(e => {
-          return (
-            <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>
-          );
-        })}
+        {!required && !multiple ? <MenuItem key="null" /> : null}
+        {isArray(options) &&
+          options.map(e => {
+            return (
+              <MenuItem key={e.id} value={e.id}>
+                {e.name}
+              </MenuItem>
+            );
+          })}
       </Select>
     </FormControl>
   );
@@ -181,7 +212,14 @@ SelectField.propTypes = {
   isReadOnly: bool
 };
 
-const DateTimeTypeField = ({ id, title, value, onChange, isDirty, ...rest }) => {
+const DateTimeTypeField = ({
+  id,
+  title,
+  value,
+  onChange,
+  isDirty,
+  ...rest
+}) => {
   return (
     <FormControl fullWidth className={styles.dateTimeContainer}>
       <InputLabel className={styles.textFieldLabel} shrink htmlFor={id}>
@@ -211,7 +249,15 @@ DateTimeTypeField.propTypes = {
   isReadOnly: bool
 };
 
-const BoolTypeField = ({ id, title, value, onChange, isDirty, isReadOnly, ...rest }) => {
+const BoolTypeField = ({
+  id,
+  title,
+  value,
+  onChange,
+  isDirty,
+  isReadOnly,
+  ...rest
+}) => {
   return (
     <FormControlLabel
       label={title}

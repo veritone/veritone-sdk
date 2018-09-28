@@ -23,7 +23,7 @@ describe('Affiliates', () => {
     const wrapper = mount(
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
-        selectedAffiliateById={generateAffiliateById(11, true)}
+        affiliateById={generateAffiliateById(11, true)}
         onAffiliatesChange={onAffiliatesChange}
         canBulkAddAffiliates
       />
@@ -72,7 +72,7 @@ describe('Affiliates', () => {
     const wrapper = mount(
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
-        selectedAffiliateById={selectedAffiliates}
+        affiliateById={selectedAffiliates}
         onAffiliatesChange={onAffiliatesChange}
       />
     );
@@ -97,7 +97,7 @@ describe('Affiliates', () => {
       <Provider store={store}>
         <Affiliates
           loadNextAffiliates={loadNextAffiliates}
-          selectedAffiliateById={generateAffiliateById(11, true)}
+          affiliateById={generateAffiliateById(11, true)}
           onAffiliatesChange={onAffiliatesChange}
         />
       </Provider>
@@ -148,7 +148,7 @@ describe('Affiliates', () => {
     const wrapper = mount(
       <Affiliates
         loadNextAffiliates={loadNextAffiliates}
-        selectedAffiliateById={generateAffiliateById(11, true)}
+        affiliateById={generateAffiliateById(11, true)}
         onAffiliatesChange={onAffiliatesChange}
       />
     );

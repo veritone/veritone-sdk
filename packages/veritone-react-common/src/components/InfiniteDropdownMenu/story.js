@@ -2,16 +2,20 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import InfiniteDropdownMenu from 'components/InfiniteDropdownMenu';
 
-const fakeStaticOptions = [{
-  name: 'name0',
-  id: 0
-}, {
-  name: 'name1',
-  id: 1
-}, {
-  name: 'name2',
-  id: 2
-}];
+const fakeStaticOptions = [
+  {
+    name: 'name0',
+    id: 0
+  },
+  {
+    name: 'name1',
+    id: 1
+  },
+  {
+    name: 'name2',
+    id: 2
+  }
+];
 
 const getFieldOptions = query => {
   console.log('Executed Query');
@@ -61,11 +65,13 @@ storiesOf('InfiniteDropdownMenu', module)
     <InfiniteDropdownMenu
       label="Custom Trigger"
       handleSelectionChange={logData}
-      customTriggers={[{
-        label: 'Click Me',
-        trigger: customTrigger
-      }]}
-    /> 
+      customTriggers={[
+        {
+          label: 'Click Me',
+          trigger: customTrigger
+        }
+      ]}
+    />
   ))
   .add('Read Only', () => (
     <InfiniteDropdownMenu

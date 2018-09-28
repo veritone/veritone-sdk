@@ -29,18 +29,16 @@ export default class TemplateList extends React.Component {
       return (
         <div className={styles.templateRow} key={schemaId}>
           <div className={cx(styles.name)}>{templates[schemaId].name}</div>
-          {
-           !this.props.isReadOnly ? (
-              <IconButton
-                className={styles.trashIcon}
-                onClick={this.addTemplate(schemaId)}
-                aria-label="add"
-                disableRipple
-              >
-                <Icon className={'icon-zoom-in'} />
-              </IconButton>
-            ) : null
-          }
+          {!this.props.isReadOnly ? (
+            <IconButton
+              className={styles.trashIcon}
+              onClick={this.addTemplate(schemaId)}
+              aria-label="add"
+              disableRipple
+            >
+              <Icon className={'icon-zoom-in'} />
+            </IconButton>
+          ) : null}
         </div>
       );
     });

@@ -37,12 +37,18 @@ export default class IngestionJobTileView extends React.Component {
     const cellContents = [name];
 
     if (data.permission === 'viewer') {
-      cellContents.push((<span key={data.id + 'space2'} className={classNames(styles.gap)} />));
-      cellContents.push((
-        <Tooltip title="Shared with You" placement="right" key={data.id + 'share'}>
+      cellContents.push(
+        <span key={data.id + 'space2'} className={classNames(styles.gap)} />
+      );
+      cellContents.push(
+        <Tooltip
+          title="Shared with You"
+          placement="right"
+          key={data.id + 'share'}
+        >
           <SharedIcon className={styles.sharedIcon} />
         </Tooltip>
-      ));
+      );
     }
 
     return (
