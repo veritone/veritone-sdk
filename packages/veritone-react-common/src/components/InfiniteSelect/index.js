@@ -49,7 +49,10 @@ export default class InfiniteSelect extends React.Component {
       });
     }
 
-    if (
+    if (this.props.defaultSelected && !prevProps.defaultSelected) {
+      this.props.resetSelect();
+      this.props.onSelect({name: 'All Schemas'});
+    } else if (
       this.props.selected && !this.props.defaultSelected && get(this.props.selected, 'name') !== get(prevProps.selected, 'name')
     ) {
       this.setState({

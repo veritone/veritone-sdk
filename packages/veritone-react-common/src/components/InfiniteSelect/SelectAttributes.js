@@ -111,7 +111,7 @@ export default class SelectAttributes extends React.Component {
       );
       let count = get(results, 'data.schemaProperties.count');
 
-      let nextOffset = offset + count + 1;
+      let nextOffset = offset + count;
       this.setState({
         data: data,
         offset: nextOffset,

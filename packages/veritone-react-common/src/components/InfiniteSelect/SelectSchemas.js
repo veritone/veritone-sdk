@@ -28,7 +28,7 @@ export default class SelectSchemas extends React.Component {
   state = {
     data: [],
     firstOption: {
-      name: 'All Datasets'
+      name: 'All Schemas'
     },
     loading: false,
     selected: this.props.selected,
@@ -91,7 +91,7 @@ export default class SelectSchemas extends React.Component {
 
       let count = get(results, 'data.dataRegistries.count');
 
-      let nextOffset = offset + count + 1;
+      let nextOffset = offset + count;
       this.setState({
         data: data,
         offset: nextOffset,

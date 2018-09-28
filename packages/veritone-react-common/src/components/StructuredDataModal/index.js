@@ -109,7 +109,7 @@ class StructuredDataModal extends React.Component {
 
   static SUPPORTED_TYPES = ['string', 'number', 'integer', 'dateTime', 'boolean', 'geoPoint'];
 
-  static STRING_OPERATORS = ["is", "is_not", "contains", "not_contains"];
+  static STRING_OPERATORS = ["contains", "not_contains", "is", "is_not"];
   static NUMERIC_OPERATORS = ["is", "is_not", "gt", "gte", "lt", "lte", "range"];
   static BOOLEAN_OPERATORS = ['is'];
   static GEOLOCATION_OPERATORS = ['within'];
@@ -219,6 +219,8 @@ class StructuredDataModal extends React.Component {
         )
       } else if (selectedAttribute.type === 'boolean') {
         value1 = "true";
+      } else if (selectedAttribute.type === 'string') {
+        defaultOperator = 'contains';
       }
     }
     this.setState(
