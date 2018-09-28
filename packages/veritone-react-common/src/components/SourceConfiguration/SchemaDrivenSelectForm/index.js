@@ -114,6 +114,13 @@ export default class DynamicSelect extends React.Component {
   render() {
     const { sourceTypes, currentSourceType } = this.props;
     const sourceTypesMenu = sourceTypes.map((type, index) => {
+      // TODO: Remove this and add a more data driven approach. The API doesn't
+      // indicate whether or not it is a oauth required source type so we are
+      // using hard coded ids for now. (dropbox === '12' and google drive === '14')
+      const oauthRequiredSourceTypeIds = ['12','14'];
+      if (includes(oauthRequiredSourceTypeIds, type.id)) {
+        return null;
+      }
       return (
         <MenuItem value={index} id={type.id} key={type.id}>
           {type.name}

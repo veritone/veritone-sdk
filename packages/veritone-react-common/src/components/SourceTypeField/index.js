@@ -130,11 +130,11 @@ export default class SourceTypeField extends React.Component {
 
     return (
       <FieldTypeComponent
+        {...rest}
         id={id}
         onChange={this.handleChange}
         options={filteredOptions || []}
         multiple={isMultiple}
-        {...rest}
       />
     );
   }
