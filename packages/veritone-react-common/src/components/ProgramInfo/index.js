@@ -366,6 +366,7 @@ class ProgramInfo extends React.Component {
                 value={program.description}
                 onChange={this.handleDescriptionChange}
                 disabled={readOnly}
+                multiline
               />
             </div>
             <div className={styles.programInfoSection}>
