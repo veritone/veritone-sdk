@@ -145,8 +145,6 @@ const programLiveImageNullState =
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
-    setShowTranscriptBulkEditSnackState:
-      mediaDetailsModule.setShowTranscriptBulkEditSnackState,
     updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
     restoreOriginalEngineResults:
       mediaDetailsModule.restoreOriginalEngineResults,
@@ -346,7 +344,6 @@ class MediaDetailsWidget extends React.Component {
     isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
     isEditButtonDisabled: bool,
-    setShowTranscriptBulkEditSnackState: func,
     showTranscriptBulkEditSnack: bool,
     updateMediaPlayerState: func,
     restoreOriginalEngineResults: func,
@@ -751,10 +748,6 @@ class MediaDetailsWidget extends React.Component {
     );
   }
 
-  closeTranscriptBulkEditSnack = () => {
-    this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
-  };
-
   renderTranscriptBulkEditSnack = () => {
     return (
       <Snackbar
@@ -892,7 +885,7 @@ class MediaDetailsWidget extends React.Component {
         </MenuItem>
       );
     }
-    if (onExport && categoryExportFormats.length) {
+    if (onExport && categoryExportFormats.length && !isEditModeEnabled) {
       moreMenuItems.push(
         <ExportMenuItem
           key="quick-export"
@@ -1285,6 +1278,7 @@ class MediaDetailsWidget extends React.Component {
                       <TranscriptEngineOutput
                         tdo={tdo}
                         editMode={isEditModeEnabled}
+                        onToggleEditMode={this.toggleEditMode}
                         showEditButton={this.showEditButton()}
                         disableEditButton={this.isEditModeButtonDisabled()}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}

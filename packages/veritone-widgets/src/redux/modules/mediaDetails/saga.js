@@ -97,7 +97,7 @@ import {
   restoreOriginalEngineResultsSuccess
 } from '.';
 
-import { UPDATE_EDIT_STATUS } from './transcriptWidget';
+import { UPDATE_EDIT_STATUS, RUN_BULK_EDIT_JOB_SUCCESS } from './transcriptWidget';
 import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
@@ -1720,6 +1720,34 @@ function* watchEditButtonClicked(widgetId) {
   );
 }
 
+function* watchEditSuccess(widgetId) {
+  yield takeLatest(
+    [ RUN_BULK_EDIT_JOB_SUCCESS ],
+    function*({ type, payload }) {
+      const requestTdo = yield select(getTdo, widgetId);
+      const selectedEngineCategory = yield select(
+        getSelectedEngineCategory,
+        widgetId
+      );
+      yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+      yield put(
+        engineResultsModule.fetchEngineResults({
+          tdo: requestTdo,
+          engineId: selectedEngineId,
+          startOffsetMs: 0,
+          stopOffsetMs:
+            Date.parse(requestTdo.stopDateTime) -
+            Date.parse(requestTdo.startDateTime),
+          ignoreUserEdited: false
+        })
+      );
+      yield put(toggleEditMode(widgetId, selectedEngineCategory));
+      yield put(createFileAssetSuccess(widgetId, payload.id));
+    }
+  )
+}
+
 function* onMount(id, mediaId) {
   yield put(loadTdoRequest(id, mediaId));
   yield put(applicationModule.fetchApplications());
@@ -1744,6 +1772,7 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchRestoreOriginalEngineResults),
     fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
     fork(watchEditButtonClicked, id),
+    fork(watchEditSuccess, id, mediaId),
     fork(onMount, id, mediaId)
   ]);
 }

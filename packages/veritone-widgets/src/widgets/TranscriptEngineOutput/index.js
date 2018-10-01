@@ -13,8 +13,13 @@ import {
   TranscriptEngineOutput,
   TranscriptEditMode
 } from 'veritone-react-common';
+import Button from "@material-ui/core/Button/Button";
+import styles from "../MediaDetails/styles.scss";
+import Snackbar from "@material-ui/core/Snackbar/Snackbar";
 
-const { engineResults: engineResultsModule } = modules;
+const {
+  engineResults: engineResultsModule
+} = modules;
 
 const saga = util.reactReduxSaga.saga;
 
@@ -30,7 +35,8 @@ const saga = util.reactReduxSaga.saga;
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       selectedEngineId
-    )
+    ),
+    showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -41,7 +47,9 @@ const saga = util.reactReduxSaga.saga;
     fetchEngineResults: engineResultsModule.fetchEngineResults,
     clearEngineResultsByEngineId:
       engineResultsModule.clearEngineResultsByEngineId,
-    onEditButtonClick: TranscriptRedux.editTranscriptButtonClick
+    onEditButtonClick: TranscriptRedux.editTranscriptButtonClick,
+    saveTranscriptEdit: TranscriptRedux.saveTranscriptEdit,
+    setShowTranscriptBulkEditSnackState: TranscriptRedux.setShowTranscriptBulkEditSnackState
   },
   null,
   { withRef: true }
@@ -107,6 +115,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     contentClassName: string,
 
     editMode: bool,
+    onToggleEditMode: func,
 
     onClick: func,
     onScroll: func,
@@ -136,14 +145,18 @@ export default class TranscriptEngineOutputContainer extends Component {
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
-    disableEditButton: bool
+    disableEditButton: bool,
+    saveTranscriptEdit: func,
+    setShowTranscriptBulkEditSnackState: func,
+    showTranscriptBulkEditSnack: bool
   };
 
   state = {
     alert: false,
     editMode: TranscriptEditMode.SNIPPET,
     props: this.props,
-    alertConfirmAction: noop
+    alertConfirmAction: noop,
+    alertCancelAction: noop
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -172,6 +185,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       this.setState({
         alert: true,
         alertConfirmAction: () => {
+          this.props.reset();
           this.setState({ editMode: value.type });
         }
       });
@@ -188,6 +202,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       this.setState({
         alert: true,
         alertConfirmAction: () => {
+          this.props.reset();
           this.props.onEngineChange(engineId);
         }
       });
@@ -210,19 +225,46 @@ export default class TranscriptEngineOutputContainer extends Component {
   };
 
   handleAlertConfirm = () => {
-    this.props.reset();
     this.state.alertConfirmAction();
     this.setState({
       alert: false,
-      alertConfirmAction: noop
+      alertConfirmAction: noop,
+      alertCancelAction: noop
     });
   };
 
   handleAlertCancel = () => {
+    this.state.alertCancelAction();
     this.setState({
       alert: false,
-      alertConfirmAction: noop
+      alertConfirmAction: noop,
+      alertCancelAction: noop,
     });
+  };
+
+  onSaveEdits = () => {
+    this.props.saveTranscriptEdit(get(this.props, 'tdo.id'), get(this.props, 'selectedEngineId'));
+  };
+
+  checkEditState = () => {
+    if (this.props.hasUserEdits) {
+      console.log('Trigger confirmation');
+      this.setState({
+        alert: true,
+        alertCancelAction: () => {
+          this.props.onToggleEditMode()
+        },
+        alertConfirmAction: () => {
+          this.onSaveEdits();
+        }
+      });
+    } else {
+      this.props.onToggleEditMode();
+    }
+  };
+
+  closeTranscriptBulkEditSnack = () => {
+    this.props.setShowTranscriptBulkEditSnackState(false);
   };
 
   render() {
@@ -269,6 +311,25 @@ export default class TranscriptEngineOutputContainer extends Component {
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
+        {this.props.editMode && (
+          <div className={styles.actionButtonsEditMode}>
+            <Button
+              className={styles.actionButtonEditMode}
+              onClick={this.checkEditState}
+            >
+              CANCEL
+            </Button>
+            <Button
+              className={styles.actionButtonEditMode}
+              onClick={this.onSaveEdits}
+              disabled={!this.props.hasUserEdits}
+              variant="contained"
+              color="primary"
+            >
+              SAVE
+            </Button>
+          </div>
+        )}
         <AlertDialog
           open={this.state.alert}
           title={alertTitle}
@@ -277,6 +338,17 @@ export default class TranscriptEngineOutputContainer extends Component {
           approveButtonLabel={approveButtonLabel}
           onCancel={this.handleAlertCancel}
           onApprove={this.handleAlertConfirm}
+        />
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={this.props.showTranscriptBulkEditSnack}
+          autoHideDuration={5000}
+          onClose={this.closeTranscriptBulkEditSnack}
+          message={
+            <span className={styles.snackbarMessageText}>
+            {`Bulk edit transcript will run in the background and may take some time to finish.`}
+          </span>
+          }
         />
       </Fragment>
     );

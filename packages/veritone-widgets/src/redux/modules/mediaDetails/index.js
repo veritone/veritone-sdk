@@ -47,8 +47,6 @@ export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
 export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
 export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
 export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
-export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE =
-  'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 export const UPDATE_MEDIA_PLAYER_STATE = 'UPDATE_MEDIA_PLAYER_STATE';
 export const RESTORE_ORIGINAL_ENGINE_RESULTS =
   'RESTORE_ORIGINAL_ENGINE_RESULTS';
@@ -87,7 +85,6 @@ const defaultMDPState = {
     cancelAction: noop
   },
   isEditButtonDisabled: false,
-  showTranscriptBulkEditSnack: false,
   currentMediaPlayerTime: 0,
   isRestoringOriginalEngineResult: false,
   isSavingEngineResults: false
@@ -639,21 +636,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](
-    state,
-    {
-      showTranscriptBulkEditSnack,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        showTranscriptBulkEditSnack
-      }
-    };
-  },
   [SAVE_ASSET_DATA](
     state,
     {
@@ -1034,15 +1016,6 @@ export const discardUnsavedChanges = () => ({
 export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
   type: SET_EDIT_BUTTON_STATE,
   isEditButtonDisabled,
-  meta: { widgetId }
-});
-
-export const setShowTranscriptBulkEditSnackState = (
-  widgetId,
-  showTranscriptBulkEditSnack
-) => ({
-  type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
-  showTranscriptBulkEditSnack,
   meta: { widgetId }
 });
 

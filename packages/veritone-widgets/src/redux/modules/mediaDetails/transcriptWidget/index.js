@@ -1,13 +1,17 @@
-import { get, set, isEqual, cloneDeep } from 'lodash';
+import {get, set, isEqual, cloneDeep, isEmpty} from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
 // 2. comment out or remove lines that have "// without immutable js"
 // import { fromJS } from 'immutable';  // with immutable js
 
-import { helpers } from 'veritone-redux-common';
+import { helpers, modules } from 'veritone-redux-common';
 
-const { createReducer } = helpers;
+const { createReducer, callGraphQLApi } = helpers;
+const {
+  auth: authModule,
+  config: configModule
+} = modules;
 
 export const transcriptNamespace = 'veritoneTranscriptWidget';
 export const UNDO = transcriptNamespace + '_UNDO';
@@ -19,6 +23,22 @@ export const RECEIVE_DATA = transcriptNamespace + '_RECEIVE_DATA';
 export const UPDATE_EDIT_STATUS = transcriptNamespace + '_UPDATE_EDIT_STATUS';
 export const TRANSCRIPT_EDIT_BUTTON_CLICKED =
   transcriptNamespace + '_TRANSCRIPT_EDIT_BUTTON_CLICKED';
+export const SAVE_TRANSCRIPT_EDITS = transcriptNamespace + '_SAVE_TRANSCRIPT_EDITS';
+export const SAVE_TRANSCRIPT_EDITS_SUCCESS = transcriptNamespace + '_SAVE_TRANSCRIPT_EDITS_SUCCESS';
+export const SAVE_TRANSCRIPT_EDITS_FAILURE = transcriptNamespace + '_SAVE_TRANSCRIPT_EDITS_FAILURE';
+export const SAVE_BULK_EDIT_TEXT_ASSET = transcriptNamespace + '_SAVE_BULK_EDIT_TEXT_ASSET';
+export const SAVE_BULK_EDIT_TEXT_ASSET_SUCCESS = transcriptNamespace + '_SAVE_BULK_EDIT_TEXT_ASSET_SUCCESS';
+export const SAVE_BULK_EDIT_TEXT_ASSET_FAILURE = transcriptNamespace + '_SAVE_BULK_EDIT_TEXT_ASSET_FAILURE';
+export const GET_PRIMARY_TRANSCRIPT_ASSET = transcriptNamespace + '_GET_PRIMARY_TRANSCRIPT_ASSET';
+export const GET_PRIMARY_TRANSCRIPT_ASSET_SUCCESS = transcriptNamespace + '_GET_PRIMARY_TRANSCRIPT_ASSET_SUCCESS';
+export const GET_PRIMARY_TRANSCRIPT_ASSET_FAILURE = transcriptNamespace + '_GET_PRIMARY_TRANSCRIPT_ASSET_FAILURE';
+export const GET_VTN_STANDARD_ASSETS = transcriptNamespace + '_GET_VTN_STANDARD_ASSETS';
+export const GET_VTN_STANDARD_ASSETS_SUCCESS = transcriptNamespace + '_GET_VTN_STANDARD_ASSETS_SUCCESS';
+export const GET_VTN_STANDARD_ASSETS_FAILURE = transcriptNamespace + '_GET_VTN_STANDARD_ASSETS_FAILURE';
+export const RUN_BULK_EDIT_JOB = transcriptNamespace + '_RUN_BULK_EDIT_JOB';
+export const RUN_BULK_EDIT_JOB_SUCCESS = transcriptNamespace + '_RUN_BULK_EDIT_JOB_SUCCESS';
+export const RUN_BULK_EDIT_JOB_FAILURE = transcriptNamespace + '_RUN_BULK_EDIT_JOB_FAILURE';
+export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE = transcriptNamespace + '_SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -28,7 +48,8 @@ const initialState = {
   past: [],
   future: [],
   present: null,
-  isBulkEdit: false
+  isBulkEdit: false,
+  showTranscriptBulkEditSnack: false
 };
 
 const transcriptReducer = createReducer(initialState, {
@@ -138,6 +159,21 @@ const transcriptReducer = createReducer(initialState, {
       const present = cloneDeep(data); // without immutable js
       return { ...state, data: data, past: [], future: [], present: present };
     }
+  },
+
+  [SAVE_TRANSCRIPT_EDITS_SUCCESS](state) {
+    return {
+      ...state
+    };
+  },
+
+  [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](state, {
+    showTranscriptBulkEditSnack
+  }) {
+    return {
+      ...state,
+      showTranscriptBulkEditSnack
+    };
   }
 });
 
@@ -278,17 +314,28 @@ export const reset = () => ({ type: RESET });
 export const change = newData => ({ type: CHANGE, data: newData });
 export const clearData = () => ({ type: CLEAR_DATA });
 export const receiveData = newData => ({ type: RECEIVE_DATA, data: newData });
-export const currentData = state => get(state[transcriptNamespace], 'data');
-export const hasUserEdits = state => {
-  const history = get(state[transcriptNamespace], 'past');
-  return history && history.length > 0;
-};
-
 export const editTranscriptButtonClick = () => {
   return {
     type: TRANSCRIPT_EDIT_BUTTON_CLICKED
   };
 };
+export const setShowTranscriptBulkEditSnackState = (
+  showTranscriptBulkEditSnack
+) => ({
+  type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
+  showTranscriptBulkEditSnack,
+});
+
+function local(state) {
+  return state[transcriptNamespace];
+}
+export const currentData = state => get(local(state), 'data');
+export const hasUserEdits = state => {
+  const history = get(local(state), 'past');
+  return history && history.length > 0;
+};
+export const isBulkEdit = state => get(local(state), 'isBulkEdit');
+export const getShowTranscriptBulkEditSnack = state => get(local(state), 'showTranscriptBulkEditSnack');
 
 export const getTranscriptEditAssetData = state => {
   const { isBulkEdit, data } = state[transcriptNamespace];
@@ -299,4 +346,262 @@ export const getTranscriptEditAssetData = state => {
   }
   // return all chunks
   return data;
+};
+
+const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
+  // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset
+  const getPrimaryTranscriptAssetQuery = `query temporalDataObject($tdoId: ID!){
+      temporalDataObject(id: $tdoId) {
+        primaryAsset(assetType: "transcript") {
+          id
+        }
+      }
+    }`;
+  return callGraphQLApi({
+    actionTypes: [
+      GET_PRIMARY_TRANSCRIPT_ASSET,
+      GET_PRIMARY_TRANSCRIPT_ASSET_SUCCESS,
+      GET_PRIMARY_TRANSCRIPT_ASSET_FAILURE
+    ],
+    query: getPrimaryTranscriptAssetQuery,
+    variables: {tdoId},
+    dispatch,
+    getState
+  });
+};
+
+const saveBulkEditTextAsset = (tdoId, dispatch, getState) => {
+  const assetData = currentData(getState());
+  const contentType = 'text/plain';
+  const type = 'bulk-edit-transcript';
+  const sourceData = {};
+  const fileData = get(assetData, '[0].series[0].words[0].word', '');
+  const createAssetQuery = `mutation createAsset(
+          $tdoId: ID!,
+          $type: String,
+          $contentType: String,
+          $file: UploadedFile,
+          $sourceData: SetAssetSourceData,
+          $isUserEdited: Boolean
+        ){
+          createAsset( input: {
+            containerId: $tdoId,
+            type: $type,
+            contentType: $contentType,
+            sourceData: $sourceData,
+            file: $file,
+            isUserEdited: $isUserEdited
+          })
+          { id }
+        }`;
+
+  const variables = {
+    tdoId: tdoId,
+    type,
+    contentType,
+    file: fileData,
+    sourceData,
+    isUserEdited: false
+  };
+
+  const formData = new FormData();
+  formData.append('query', createAssetQuery);
+  formData.append('variables', JSON.stringify(variables));
+  formData.append('file', new Blob([fileData], { type: contentType }));
+  const config = configModule.getConfig(getState());
+  const { apiRoot, graphQLEndpoint } = config;
+  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
+  const token = authModule.selectSessionToken(getState());
+  return fetch(graphQLUrl, {
+    method: 'post',
+    body: formData,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then(r => {
+    return r.json();
+  });
+};
+
+const fetchAssets = (tdoId, assetType, dispatch, getState) => {
+  const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
+    temporalDataObject(id: $tdoId) {
+      assets (limit: 1000, type: "${assetType}", orderBy: createdDateTime) {
+        records {
+          id
+          isUserEdited
+          sourceData {
+            engineId
+          }
+          jsondata
+        }
+      }
+    }
+  }`;
+
+  return callGraphQLApi({
+    actionTypes: [
+      GET_VTN_STANDARD_ASSETS,
+      GET_VTN_STANDARD_ASSETS_SUCCESS,
+      GET_VTN_STANDARD_ASSETS_FAILURE
+    ],
+    query: getVtnStandardAssetsQuery,
+    variables: {tdoId},
+    dispatch,
+    getState
+  });
+};
+
+const runBulkEditJob = (tdoId, originalTranscriptAssetId, bulkTextAssetId, engineId, dispatch, getState) => {
+  // run levenstein engine
+  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
+    createJob(input: {
+      targetId: $tdoId,
+      tasks: [{
+        engineId: "bulk-edit-transcript",
+        payload: {
+          originalTranscriptAssetId: "${originalTranscriptAssetId}",
+          temporaryBulkEditAssetId: "${bulkTextAssetId}",
+          originalEngineId: "${engineId}",
+          saveTtmlToVtnStandard: true
+        }
+      },
+      {
+        engineId: "insert-into-index"
+      },
+      {
+        engineId: "mention-generate"
+      }]
+    }) {
+      id
+      status
+      tasks {
+        records {
+          id
+        }
+      }
+    }
+  }`;
+
+  return callGraphQLApi({
+    actionTypes: [
+      RUN_BULK_EDIT_JOB,
+      RUN_BULK_EDIT_JOB_SUCCESS,
+      RUN_BULK_EDIT_JOB_FAILURE
+    ],
+    query: runBulkEditJobQuery,
+    variables: {tdoId},
+    dispatch,
+    getState
+  });
+};
+
+export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
+  return async function action(dispatch, getState) {
+    const bulkEditEnabled = isBulkEdit(getState());
+    if (bulkEditEnabled) {
+      dispatch({
+        type: SAVE_BULK_EDIT_TEXT_ASSET
+      });
+      let createBulkEditAssetResponse;
+      try {
+        createBulkEditAssetResponse = await saveBulkEditTextAsset(tdoId, dispatch, getState);
+      } catch(e) {
+        console.error(e);
+        dispatch({
+          type: SAVE_BULK_EDIT_TEXT_ASSET_FAILURE,
+          payload: {
+            errors: [e]
+          }
+        })
+      }
+
+      if (!isEmpty(createBulkEditAssetResponse.errors)) {
+        dispatch({
+          type: SAVE_BULK_EDIT_TEXT_ASSET_FAILURE,
+          payload: {
+            errors: createBulkEditAssetResponse.errors
+          }
+        })
+      }
+
+      const bulkEditTextAsset = get(createBulkEditAssetResponse, 'data.createAsset');
+      if (bulkEditTextAsset && bulkEditTextAsset.id) {
+        dispatch({
+          type: SAVE_BULK_EDIT_TEXT_ASSET_SUCCESS,
+          payload: {
+            ...bulkEditTextAsset
+          }
+        });
+      }
+
+      let getPrimaryTranscriptAssetResponse, vtnStandardAssetsResponse;
+      try {
+        getPrimaryTranscriptAssetResponse = await getPrimaryTranscriptAsset(tdoId, dispatch, getState);
+      } catch(e) {
+        console.error(e);
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+          error:
+            'Failed to get primary transcript asset.'
+        });
+      }
+
+      let originalTranscriptAssetId;
+      // if not found 'transcript' ttml asset - try to find original 'vtn-standard' asset for selected transcript engine
+      if (
+        get(
+          getPrimaryTranscriptAssetResponse,
+          'temporalDataObject.primaryAsset.id'
+        )
+      ) {
+        originalTranscriptAssetId = get(
+          getPrimaryTranscriptAssetResponse,
+          'temporalDataObject.primaryAsset.id'
+        );
+      } else {
+        vtnStandardAssetsResponse = await fetchAssets(tdoId, 'vtn-standard', dispatch, getState);
+        const transcriptVtnAssets = get(
+          vtnStandardAssetsResponse,
+          'temporalDataObject.assets.records',
+          []
+        );
+        const transcriptVtnAsset = transcriptVtnAssets.find(
+          asset => get(asset, 'sourceData.engineId') === selectedEngineId
+        );
+        originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
+      }
+
+      if (!originalTranscriptAssetId) {
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+          error: 'Original transcript asset not found. Failed to save bulk transcript edit.'
+        });
+        return;
+      }
+      let runBulkEditResponse;
+      try {
+        runBulkEditResponse = await runBulkEditJob(
+          tdoId,
+          originalTranscriptAssetId,
+          bulkEditTextAsset.id,
+          selectedEngineId,
+          dispatch,
+          getState
+        );
+      } catch (e) {
+        console.error(e);
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_FAILURE,
+          error:
+            'Failed to start bulk-edit-transcript job. Failed to save bulk transcript edit.'
+        });
+      }
+      dispatch(setShowTranscriptBulkEditSnackState(true));
+      dispatch({
+        type: SAVE_TRANSCRIPT_EDITS_SUCCESS
+      });
+      return runBulkEditResponse;
+    }
+  }
 };
