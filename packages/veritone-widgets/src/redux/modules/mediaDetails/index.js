@@ -964,27 +964,14 @@ export const saveAssetDataSuccess = widgetId => ({
   meta: { widgetId }
 });
 
-export const createFileAssetSuccess = (widgetId, assetId) => ({
+export const createFileAssetSuccess = (widgetId) => ({
   type: CREATE_FILE_ASSET_SUCCESS,
-  payload: {
-    assetId
-  },
   meta: { widgetId }
 });
 
 export const createFileAssetFailure = (widgetId, { error }) => ({
   type: CREATE_FILE_ASSET_FAILURE,
   meta: { error, widgetId }
-});
-
-export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
-  meta: { error, widgetId }
-});
-
-export const createBulkEditTranscriptAssetSuccess = widgetId => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
-  meta: { widgetId }
 });
 
 export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({

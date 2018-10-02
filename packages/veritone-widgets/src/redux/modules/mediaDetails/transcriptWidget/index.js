@@ -1,4 +1,4 @@
-import {get, set, isEqual, cloneDeep, isEmpty} from 'lodash';
+import {get, set, isEqual, cloneDeep, isEmpty, forEach} from 'lodash';
 
 // if memory becomes a problem, use immutable js by:
 // 1. uncomment lines that have "// with immutable js"
@@ -370,44 +370,46 @@ const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   });
 };
 
-const saveBulkEditTextAsset = (tdoId, dispatch, getState) => {
-  const assetData = currentData(getState());
-  const contentType = 'text/plain';
-  const type = 'bulk-edit-transcript';
-  const sourceData = {};
-  const fileData = get(assetData, '[0].series[0].words[0].word', '');
+const saveAsset = ({ tdoId, contentType, type, sourceData, isUserEdited }, fileData, dispatch, getState) => {
   const createAssetQuery = `mutation createAsset(
-          $tdoId: ID!,
-          $type: String,
-          $contentType: String,
-          $file: UploadedFile,
-          $sourceData: SetAssetSourceData,
-          $isUserEdited: Boolean
-        ){
-          createAsset( input: {
-            containerId: $tdoId,
-            type: $type,
-            contentType: $contentType,
-            sourceData: $sourceData,
-            file: $file,
-            isUserEdited: $isUserEdited
-          })
-          { id }
-        }`;
+    $tdoId: ID!,
+    $type: String,
+    $contentType: String,
+    $file: UploadedFile,
+    $sourceData: SetAssetSourceData,
+    $isUserEdited: Boolean
+  ){
+    createAsset( input: {
+      containerId: $tdoId,
+      type: $type,
+      contentType: $contentType,
+      sourceData: $sourceData,
+      file: $file,
+      isUserEdited: $isUserEdited
+    })
+    { id }
+  }`;
 
   const variables = {
-    tdoId: tdoId,
+    tdoId,
     type,
     contentType,
     file: fileData,
     sourceData,
-    isUserEdited: false
+    isUserEdited: isUserEdited || false
   };
 
   const formData = new FormData();
   formData.append('query', createAssetQuery);
   formData.append('variables', JSON.stringify(variables));
-  formData.append('file', new Blob([fileData], { type: contentType }));
+  if (contentType === 'application/json') {
+    formData.append(
+      'file',
+      new Blob([JSON.stringify(fileData)], { type: contentType })
+    );
+  } else {
+    formData.append('file', new Blob([fileData], { type: contentType }));
+  }
   const config = configModule.getConfig(getState());
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
@@ -499,13 +501,19 @@ const runBulkEditJob = (tdoId, originalTranscriptAssetId, bulkTextAssetId, engin
 export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
   return async function action(dispatch, getState) {
     const bulkEditEnabled = isBulkEdit(getState());
+    const assetData = currentData(getState());
     if (bulkEditEnabled) {
       dispatch({
         type: SAVE_BULK_EDIT_TEXT_ASSET
       });
       let createBulkEditAssetResponse;
       try {
-        createBulkEditAssetResponse = await saveBulkEditTextAsset(tdoId, dispatch, getState);
+        createBulkEditAssetResponse = await saveAsset({
+          tdoId,
+          contentType: 'text/plain',
+          type: 'bulk-edit-transcript',
+          sourceData: {}
+        }, get(assetData, '[0].series[0].words[0].word', ''), dispatch, getState);
       } catch(e) {
         console.error(e);
         dispatch({
@@ -602,6 +610,40 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
         type: SAVE_TRANSCRIPT_EDITS_SUCCESS
       });
       return runBulkEditResponse;
+    } else {
+      const assetData = currentData(getState());
+      const createAssetCalls = [];
+      const contentType = 'application/json';
+      const type = 'vtn-standard';
+      forEach(assetData, jsonData => {
+        if (get(jsonData, 'series.length')) {
+          forEach(jsonData.series, asset => {
+            delete asset.guid;
+          });
+        }
+        // process vtn-standard asset
+        const sourceData = {
+          name: jsonData.sourceEngineName,
+          engineId: jsonData.sourceEngineId,
+          assetId: jsonData.assetId,
+          taskId: jsonData.taskId
+        };
+        createAssetCalls.push(
+          saveAsset({
+            tdoId,
+            contentType,
+            type,
+            sourceData,
+            isUserEdited: true
+          }, jsonData, dispatch, getState)
+        );
+      });
+      return Promise.all(createAssetCalls).then(values => {
+        dispatch({
+          type: SAVE_TRANSCRIPT_EDITS_SUCCESS
+        });
+        return values;
+      })
     }
   }
 };
