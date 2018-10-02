@@ -94,7 +94,10 @@ import {
   restoreOriginalEngineResultsSuccess
 } from '.';
 
-import { UPDATE_EDIT_STATUS, SAVE_TRANSCRIPT_EDITS_SUCCESS } from './transcriptWidget';
+import {
+  UPDATE_EDIT_STATUS,
+  SAVE_TRANSCRIPT_EDITS_SUCCESS
+} from './transcriptWidget';
 import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
@@ -1536,31 +1539,28 @@ function* watchEditButtonClicked(widgetId) {
 }
 
 function* watchEditSuccess(widgetId) {
-  yield takeLatest(
-    [ SAVE_TRANSCRIPT_EDITS_SUCCESS ],
-    function*() {
-      const requestTdo = yield select(getTdo, widgetId);
-      const selectedEngineCategory = yield select(
-        getSelectedEngineCategory,
-        widgetId
-      );
-      yield call(refreshEngineRuns, widgetId, requestTdo.id);
-      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-      yield put(
-        engineResultsModule.fetchEngineResults({
-          tdo: requestTdo,
-          engineId: selectedEngineId,
-          startOffsetMs: 0,
-          stopOffsetMs:
-            Date.parse(requestTdo.stopDateTime) -
-            Date.parse(requestTdo.startDateTime),
-          ignoreUserEdited: false
-        })
-      );
-      yield put(toggleEditMode(widgetId, selectedEngineCategory));
-      yield put(createFileAssetSuccess(widgetId));
-    }
-  )
+  yield takeLatest([SAVE_TRANSCRIPT_EDITS_SUCCESS], function*() {
+    const requestTdo = yield select(getTdo, widgetId);
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
+    yield call(refreshEngineRuns, widgetId, requestTdo.id);
+    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
+    yield put(
+      engineResultsModule.fetchEngineResults({
+        tdo: requestTdo,
+        engineId: selectedEngineId,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(requestTdo.stopDateTime) -
+          Date.parse(requestTdo.startDateTime),
+        ignoreUserEdited: false
+      })
+    );
+    yield put(toggleEditMode(widgetId, selectedEngineCategory));
+    yield put(createFileAssetSuccess(widgetId));
+  });
 }
 
 function* onMount(id, mediaId) {

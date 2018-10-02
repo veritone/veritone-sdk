@@ -964,7 +964,7 @@ export const saveAssetDataSuccess = widgetId => ({
   meta: { widgetId }
 });
 
-export const createFileAssetSuccess = (widgetId) => ({
+export const createFileAssetSuccess = widgetId => ({
   type: CREATE_FILE_ASSET_SUCCESS,
   meta: { widgetId }
 });

@@ -13,13 +13,12 @@ import {
   TranscriptEngineOutput,
   TranscriptEditMode
 } from 'veritone-react-common';
-import Button from "@material-ui/core/Button/Button";
-import styles from "../MediaDetails/styles.scss";
-import Snackbar from "@material-ui/core/Snackbar/Snackbar";
+import Button from '@material-ui/core/Button/Button';
+import styles from '../MediaDetails/styles.scss';
+import Snackbar from '@material-ui/core/Snackbar/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 
-const {
-  engineResults: engineResultsModule
-} = modules;
+const { engineResults: engineResultsModule } = modules;
 
 const saga = util.reactReduxSaga.saga;
 
@@ -36,7 +35,11 @@ const saga = util.reactReduxSaga.saga;
       state,
       selectedEngineId
     ),
-    showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(state)
+    showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
+      state
+    ),
+    error: TranscriptRedux.getError(state),
+    savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -49,7 +52,9 @@ const saga = util.reactReduxSaga.saga;
       engineResultsModule.clearEngineResultsByEngineId,
     onEditButtonClick: TranscriptRedux.editTranscriptButtonClick,
     saveTranscriptEdit: TranscriptRedux.saveTranscriptEdit,
-    setShowTranscriptBulkEditSnackState: TranscriptRedux.setShowTranscriptBulkEditSnackState
+    setShowTranscriptBulkEditSnackState:
+      TranscriptRedux.setShowTranscriptBulkEditSnackState,
+    closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar
   },
   null,
   { withRef: true }
@@ -148,7 +153,10 @@ export default class TranscriptEngineOutputContainer extends Component {
     disableEditButton: bool,
     saveTranscriptEdit: func,
     setShowTranscriptBulkEditSnackState: func,
-    showTranscriptBulkEditSnack: bool
+    showTranscriptBulkEditSnack: bool,
+    error: string,
+    closeErrorSnackbar: func,
+    savingTranscript: bool
   };
 
   state = {
@@ -187,7 +195,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           title: 'Unsaved Transcript Changes',
           description: 'This action will reset your changes to the transcript.',
           cancelButtonLabel: 'Cancel',
-          approveButtonLabel : 'Continue'
+          approveButtonLabel: 'Continue'
         },
         alertConfirmAction: () => {
           this.props.reset();
@@ -209,7 +217,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           title: 'Unsaved Transcript Changes',
           description: 'This action will reset your changes to the transcript.',
           cancelButtonLabel: 'Cancel',
-          approveButtonLabel : 'Continue'
+          approveButtonLabel: 'Continue'
         },
         alertConfirmAction: () => {
           this.props.reset();
@@ -272,10 +280,10 @@ export default class TranscriptEngineOutputContainer extends Component {
           title: 'Save Changes?',
           description: 'Would you like to save the changes?',
           cancelButtonLabel: 'Discard',
-          approveButtonLabel : 'Save'
+          approveButtonLabel: 'Save'
         },
         alertCancelAction: () => {
-          this.props.onToggleEditMode()
+          this.props.onToggleEditMode();
         },
         alertConfirmAction: () => {
           this.onSaveEdits();
@@ -288,6 +296,10 @@ export default class TranscriptEngineOutputContainer extends Component {
 
   closeTranscriptBulkEditSnack = () => {
     this.props.setShowTranscriptBulkEditSnackState(false);
+  };
+
+  closeErrorSnackbar = () => {
+    this.props.closeErrorSnackbar();
   };
 
   render() {
@@ -312,7 +324,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       'bulkEditEnabled',
       'moreMenuItems',
       'showEditButton',
-      'disableEditButton',
+      'disableEditButton'
     ]);
     const { alert } = this.state;
 
@@ -334,13 +346,14 @@ export default class TranscriptEngineOutputContainer extends Component {
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.checkEditState}
+              disabled={this.props.savingTranscript}
             >
               CANCEL
             </Button>
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.onSaveEdits}
-              disabled={!this.props.hasUserEdits}
+              disabled={!this.props.hasUserEdits || this.props.savingTranscript}
               variant="contained"
               color="primary"
             >
@@ -364,10 +377,25 @@ export default class TranscriptEngineOutputContainer extends Component {
           onClose={this.closeTranscriptBulkEditSnack}
           message={
             <span className={styles.snackbarMessageText}>
-            {`Bulk edit transcript will run in the background and may take some time to finish.`}
-          </span>
+              {`Bulk edit transcript will run in the background and may take some time to finish.`}
+            </span>
           }
         />
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={!!this.props.error}
+          autoHideDuration={5000}
+          onClose={this.closeErrorSnackbar}
+        >
+          <SnackbarContent
+            className={styles.errorSnackbar}
+            message={
+              <span className={styles.snackbarMessageText}>
+                {this.props.error}
+              </span>
+            }
+          />
+        </Snackbar>
       </Fragment>
     );
   }
