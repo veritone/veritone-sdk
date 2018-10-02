@@ -105,7 +105,7 @@ export default class SourceTileView extends React.Component {
   };
 
   renderUpdatedDate = date => {
-    return capitalize(distanceInWordsToNow(date, { includeSeconds: true }));
+    return format(date, 'M/D/YYYY h:mm A');
   };
 
   transformActions = (actions, data) => {

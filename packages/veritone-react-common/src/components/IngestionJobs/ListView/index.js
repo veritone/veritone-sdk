@@ -78,10 +78,6 @@ export default class IngestionJobTileView extends React.Component {
     return ingestionJobEngine ? ingestionJobEngine.name : '-';
   };
 
-  renderIngestionType = ingestionJobEngine => {
-    return ingestionJobEngine ? ingestionJobEngine.category.name : '-';
-  };
-
   renderLastIngestion = mostRecentJob => {
     return mostRecentJob
       ? format(mostRecentJob.createdDateTime, 'M/D/YYYY h:mm A')
@@ -136,12 +132,6 @@ export default class IngestionJobTileView extends React.Component {
           dataKey={ingestionJobKey}
           header="Adapter"
           cellRenderer={this.renderAdapter}
-        />
-        <Column
-          dataKey={ingestionJobKey}
-          header="Ingestion Type"
-          cellRenderer={this.renderIngestionType}
-          align="center"
         />
         <Column
           dataKey="jobs.records[0]"
