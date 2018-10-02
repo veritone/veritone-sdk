@@ -157,10 +157,6 @@ export default class SourceTileView extends React.Component {
           dataKey="modifiedDateTime"
           header="Updated"
           cellRenderer={this.renderUpdatedDate}
-          style={{
-            fontStyle: 'italic',
-            opacity: 0.54
-          }}
         />
         <MenuColumn
           id="menu"
