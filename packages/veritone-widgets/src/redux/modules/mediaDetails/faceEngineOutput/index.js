@@ -26,6 +26,10 @@ export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIA
 
 export const FACE_EDIT_BUTTON_CLICKED = `vtn/${namespace}/FACE_EDIT_BUTTON_CLICKED`;
 
+export const SAVE_FACE_EDITS = `vtn/${namespace}/SAVE_FACE_EDITS`;
+export const SAVE_FACE_EDITS_SUCCESS = `vtn/${namespace}/SAVE_FACE_EDITS_SUCCESS`;
+export const SAVE_FACE_EDITS_FAILURE = `vtn/${namespace}/SAVE_FACE_EDITS_FAILURE`;
+
 import {
   get,
   map,
@@ -36,10 +40,11 @@ import {
   flatten,
   noop,
   reduce,
-  cloneDeep
+  cloneDeep, forEach
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
+import { saveAsset, removeAwsSignatureParams } from "../../../../shared/asset";
 
 const { createReducer } = helpers;
 const { engineResults: engineResultsModule } = modules;
@@ -55,7 +60,8 @@ const defaultState = {
   facesRemovedByUser: {},
   showConfirmationDialog: false,
   confirmationAction: noop,
-  displayUserEdited: false
+  displayUserEdited: false,
+  savingFaceEdits: false
 };
 
 const reducer = createReducer(defaultState, {
@@ -227,6 +233,30 @@ const reducer = createReducer(defaultState, {
       showConfirmationDialog: false,
       confirmationAction: noop
     };
+  },
+  [SAVE_FACE_EDITS](state) {
+    return {
+      ...state,
+      savingFaceEdits: true
+    }
+  },
+  [SAVE_FACE_EDITS_SUCCESS](state) {
+    return {
+      ...state,
+      savingFaceEdits: false
+    }
+  },
+  [SAVE_FACE_EDITS_FAILURE](
+    state,
+    {
+      payload: { error }
+    }
+  ) {
+    return {
+      ...state,
+      error,
+      savingFaceEdits: false
+    }
   }
 });
 export default reducer;
@@ -244,6 +274,8 @@ export const getUserDetectedFaces = (state, engineId) =>
 
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
+
+export const getSavingFaceEdits = (state) => get(local(state), 'savingFaceEdits');
 
 export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
@@ -487,3 +519,63 @@ function addUserDetectedFaces(
     )
   }));
 }
+
+export const saveFaceEdits = (tdoId, selectedEngineId) => {
+  return async function action(dispatch, getState) {
+    dispatch({
+      type: SAVE_FACE_EDITS
+    });
+    const assetData = getFaceEngineAssetData(getState(), selectedEngineId);
+    const contentType = 'application/json';
+    const type = 'vtn-standard';
+    const createAssetCalls = [];
+    forEach(assetData, jsonData => {
+      if (get(jsonData, 'series.length')) {
+        forEach(jsonData.series, asset => {
+          if (get(asset, 'object.uri')) {
+            asset.object.uri = removeAwsSignatureParams(
+              get(asset, 'object.uri')
+            );
+          }
+          delete asset.guid;
+        });
+      }
+      // process vtn-standard asset
+      const sourceData = {
+        name: jsonData.sourceEngineName,
+        engineId: jsonData.sourceEngineId,
+        assetId: jsonData.assetId,
+        taskId: jsonData.taskId
+      };
+      createAssetCalls.push(
+        saveAsset(
+          {
+            tdoId,
+            contentType,
+            type,
+            sourceData,
+            isUserEdited: true
+          },
+          jsonData,
+          dispatch,
+          getState
+        )
+      );
+    });
+    return await Promise.all(createAssetCalls)
+      .then(values => {
+        dispatch({
+          type: SAVE_FACE_EDITS_SUCCESS
+        });
+        return values;
+      })
+      .catch(() => {
+        dispatch({
+          type: SAVE_FACE_EDITS_FAILURE,
+          payload: {
+            error: 'Failed to save face edits.'
+          }
+        });
+      });
+  }
+};

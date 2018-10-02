@@ -5,10 +5,10 @@ import { get, set, isEqual, cloneDeep, forEach } from 'lodash';
 // 2. comment out or remove lines that have "// without immutable js"
 // import { fromJS } from 'immutable';  // with immutable js
 
-import { helpers, modules } from 'veritone-redux-common';
+import { saveAsset } from "../../../../shared/asset";
+import { helpers } from 'veritone-redux-common';
 
 const { createReducer, callGraphQLApi } = helpers;
-const { auth: authModule, config: configModule } = modules;
 
 export const transcriptNamespace = 'veritoneTranscriptWidget';
 export const UNDO = transcriptNamespace + '_UNDO';
@@ -406,73 +406,6 @@ const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   });
 };
 
-const saveAsset = (
-  { tdoId, contentType, type, sourceData, isUserEdited },
-  fileData,
-  dispatch,
-  getState
-) => {
-  const createAssetQuery = `mutation createAsset(
-    $tdoId: ID!,
-    $type: String,
-    $contentType: String,
-    $file: UploadedFile,
-    $sourceData: SetAssetSourceData,
-    $isUserEdited: Boolean
-  ){
-    createAsset( input: {
-      containerId: $tdoId,
-      type: $type,
-      contentType: $contentType,
-      sourceData: $sourceData,
-      file: $file,
-      isUserEdited: $isUserEdited
-    })
-    { id }
-  }`;
-
-  const variables = {
-    tdoId,
-    type,
-    contentType,
-    file: fileData,
-    sourceData,
-    isUserEdited: isUserEdited || false
-  };
-
-  const formData = new FormData();
-  formData.append('query', createAssetQuery);
-  formData.append('variables', JSON.stringify(variables));
-  if (contentType === 'application/json') {
-    formData.append(
-      'file',
-      new Blob([JSON.stringify(fileData)], { type: contentType })
-    );
-  } else {
-    formData.append('file', new Blob([fileData], { type: contentType }));
-  }
-  const config = configModule.getConfig(getState());
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = authModule.selectSessionToken(getState());
-  return fetch(graphQLUrl, {
-    method: 'post',
-    body: formData,
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-    .then(r => {
-      return r.json();
-    })
-    .then(res => {
-      if (res.errors) {
-        return Promise.reject(res);
-      }
-      return res;
-    });
-};
-
 const fetchAssets = (tdoId, assetType, dispatch, getState) => {
   const getVtnStandardAssetsQuery = `query temporalDataObject($tdoId: ID!){
     temporalDataObject(id: $tdoId) {
@@ -718,7 +651,7 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
           )
         );
       });
-      return Promise.all(createAssetCalls)
+      return await Promise.all(createAssetCalls)
         .then(values => {
           dispatch({
             type: SAVE_TRANSCRIPT_EDITS_SUCCESS

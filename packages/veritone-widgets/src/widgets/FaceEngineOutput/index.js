@@ -56,7 +56,8 @@ const saga = util.reactReduxSaga.saga;
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       selectedEngineId
-    )
+    ),
+    savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -70,7 +71,8 @@ const saga = util.reactReduxSaga.saga;
     cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
     clearEngineResultsByEngineId:
       engineResultsModule.clearEngineResultsByEngineId,
-    onEditButtonClick: faceEngineOutput.editFaceButtonClick
+    onEditButtonClick: faceEngineOutput.editFaceButtonClick,
+    saveFaceEdits: faceEngineOutput.saveFaceEdits
   },
   null,
   { withRef: true }
@@ -173,7 +175,9 @@ class FaceEngineOutputContainer extends Component {
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
-    disableEditButton: bool
+    disableEditButton: bool,
+    saveFaceEdits: func,
+    savingFaceEdits: bool
   };
 
   state = {
@@ -474,6 +478,11 @@ class FaceEngineOutputContainer extends Component {
     }
   };
 
+  onSaveEdits = () => {
+    const { tdo, selectedEngineId } = this.props;
+    this.props.saveFaceEdits(tdo.id, selectedEngineId);
+  };
+
   renderConfirmationDialog = () => {
     const alertTitle = 'Unsaved Changes';
     const alertDescription = 'This action will reset your changes.';
@@ -565,6 +574,25 @@ class FaceEngineOutputContainer extends Component {
           moreMenuItems={this.props.moreMenuItems}
           onEditButtonClick={this.props.onEditButtonClick}
         />
+        {this.props.editMode && (
+          <div className={styles.actionButtonsEditMode}>
+            <Button
+              className={styles.actionButtonEditMode}
+              disabled={this.props.savingFaceEdits}
+            >
+              CANCEL
+            </Button>
+            <Button
+              className={styles.actionButtonEditMode}
+              onClick={this.onSaveEdits}
+              disabled={!this.props.pendingUserEdits || this.props.savingFaceEdits}
+              variant="contained"
+              color="primary"
+            >
+              SAVE
+            </Button>
+          </div>
+        )}
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}
         {this.renderFaceDetectionDoneSnackbar()}

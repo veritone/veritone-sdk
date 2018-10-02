@@ -101,7 +101,6 @@ const programLiveImageNullState =
     ),
     widgetError: mediaDetailsModule.getWidgetError(state, id),
     isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isSavingEngineResults: mediaDetailsModule.isSavingEngineResults(state, id),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
@@ -140,7 +139,6 @@ const programLiveImageNullState =
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    saveAssetData: mediaDetailsModule.saveAssetData,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
     discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
@@ -325,10 +323,8 @@ class MediaDetailsWidget extends React.Component {
         })
       )
     }),
-    saveAssetData: func,
     widgetError: string,
     isSaveEnabled: bool,
-    isSavingEngineResults: bool,
     alertDialogConfig: shape({
       show: bool,
       title: string,
@@ -493,10 +489,6 @@ class MediaDetailsWidget extends React.Component {
   };
 
   onSaveEdit = () => {
-    this.props.saveAssetData(this.props.id, {
-      selectedEngineId: this.props.selectedEngineId,
-      selectedEngineCategory: this.props.selectedEngineCategory
-    });
     this.props.closeConfirmModal(this.props.id);
   };
 
@@ -615,8 +607,7 @@ class MediaDetailsWidget extends React.Component {
     const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
       this.props.isFetchingEngineResults ||
-      this.props.isRestoringOriginalEngineResult ||
-      this.props.isSavingEngineResults
+      this.props.isRestoringOriginalEngineResult
     ) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
@@ -855,7 +846,6 @@ class MediaDetailsWidget extends React.Component {
       googleMapsApiKey,
       widgetError,
       isSaveEnabled,
-      isSavingEngineResults,
       alertDialogConfig,
       categoryExportFormats,
       onExport,
@@ -1218,7 +1208,6 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={isSavingEngineResults}
                         onClick={this.checkSaveState}
                       >
                         CANCEL
@@ -1227,7 +1216,7 @@ class MediaDetailsWidget extends React.Component {
                     {isEditModeEnabled && (
                       <Button
                         className={styles.actionButtonEditMode}
-                        disabled={!isSaveEnabled || isSavingEngineResults}
+                        disabled={!isSaveEnabled}
                         onClick={this.onSaveEdit}
                       >
                         SAVE

@@ -18,22 +18,23 @@ import {
   isUndefined,
   isArray,
   every,
-  forEach,
   find,
   includes
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
-  getFaceEngineAssetData,
   cancelFaceEdits,
   pendingUserEdits,
   ADD_DETECTED_FACE,
   REMOVE_DETECTED_FACE,
   CANCEL_FACE_EDITS,
-  FACE_EDIT_BUTTON_CLICKED
+  FACE_EDIT_BUTTON_CLICKED,
+  SAVE_FACE_EDITS_SUCCESS
 } from './faceEngineOutput';
 import {
   TRANSCRIPT_EDIT_BUTTON_CLICKED,
+  UPDATE_EDIT_STATUS,
+  SAVE_TRANSCRIPT_EDITS_SUCCESS,
   reset as resetTranscript
 } from './transcriptWidget';
 const {
@@ -60,10 +61,11 @@ import {
   REQUEST_SCHEMAS,
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
-  SAVE_ASSET_DATA,
   CREATE_FILE_ASSET_SUCCESS,
   TOGGLE_EDIT_MODE,
   RESTORE_ORIGINAL_ENGINE_RESULTS,
+  LOAD_TDO_SUCCESS,
+  REFRESH_ENGINE_RUNS_SUCCESS,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadTdoRequest,
@@ -80,10 +82,7 @@ import {
   getTdoMetadata,
   getTdo,
   toggleSaveMode,
-  saveAssetDataFailure,
-  saveAssetDataSuccess,
   createFileAssetSuccess,
-  createFileAssetFailure,
   isEditModeEnabled,
   toggleEditMode,
   getSelectedEngineCategory,
@@ -93,12 +92,6 @@ import {
   restoreOriginalEngineResultsFailure,
   restoreOriginalEngineResultsSuccess
 } from '.';
-
-import {
-  UPDATE_EDIT_STATUS,
-  SAVE_TRANSCRIPT_EDITS_SUCCESS
-} from './transcriptWidget';
-import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
     details
@@ -614,121 +607,6 @@ function* deleteAssetsSaga(assetIds) {
   }
 
   return {};
-}
-
-function* createFileAssetSaga(
-  widgetId,
-  type,
-  contentType,
-  sourceData,
-  fileData,
-  isUserEdited
-) {
-  const requestTdo = yield select(getTdo, widgetId);
-  const createAssetQuery = `mutation createAsset(
-    $tdoId: ID!,
-    $type: String,
-    $contentType: String,
-    $file: UploadedFile,
-    $sourceData: SetAssetSourceData,
-    $isUserEdited: Boolean
-  ){
-    createAsset( input: {
-      containerId: $tdoId,
-      type: $type,
-      contentType: $contentType,
-      sourceData: $sourceData,
-      file: $file,
-      isUserEdited: $isUserEdited
-    })
-    { id }
-  }`;
-
-  const variables = {
-    tdoId: requestTdo.id,
-    type,
-    contentType,
-    file: fileData,
-    sourceData,
-    isUserEdited
-  };
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-
-  const formData = new FormData();
-  formData.append('query', createAssetQuery);
-  formData.append('variables', JSON.stringify(variables));
-  if (contentType === 'application/json') {
-    formData.append(
-      'file',
-      new Blob([JSON.stringify(fileData)], { type: contentType })
-    );
-  } else {
-    formData.append('file', new Blob([fileData], { type: contentType }));
-  }
-
-  const saveFile = function({ endpoint, data, authToken }) {
-    return fetch(endpoint, {
-      method: 'post',
-      body: data,
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
-    }).then(r => {
-      return r.json();
-    });
-  };
-
-  let response;
-  try {
-    response = yield call(saveFile, {
-      endpoint: graphQLUrl,
-      data: formData,
-      authToken: token
-    });
-  } catch (error) {
-    return yield put(createFileAssetFailure(widgetId, { error }));
-  }
-  if (!isEmpty(response.errors)) {
-    return yield put(
-      createFileAssetFailure(widgetId, { error: response.errors.join(', \n') })
-    );
-  }
-  if (!get(response, 'data.createAsset.id')) {
-    return yield put(
-      createFileAssetFailure(widgetId, {
-        error: 'Failed to create file asset.'
-      })
-    );
-  }
-
-  const assetId = get(response, 'data.createAsset.id');
-  if (assetId) {
-    const selectedEngineCategory = yield select(
-      getSelectedEngineCategory,
-      widgetId
-    );
-    yield call(refreshEngineRuns, widgetId, requestTdo.id);
-    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-    yield put(
-      engineResultsModule.fetchEngineResults({
-        tdo: requestTdo,
-        engineId: selectedEngineId,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(requestTdo.stopDateTime) -
-          Date.parse(requestTdo.startDateTime),
-        ignoreUserEdited: false
-      })
-    );
-    yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    yield put(createFileAssetSuccess(widgetId));
-  }
-
-  return response;
 }
 
 function* watchUpdateTdoContentTemplates() {
@@ -1283,81 +1161,6 @@ function* watchFaceEngineEntityUpdate(widgetId) {
   );
 }
 
-// Remove AWS prefixed params, keep the rest.
-function removeAwsSignatureParams(uri) {
-  const amzParamKeyRegex = /[x..X]-[a..A][m..M][z..Z]/;
-  if (!uri || !uri.includes('?') || !amzParamKeyRegex.test(uri)) {
-    return uri;
-  }
-  const nakedUri = uri.split('?')[0];
-  const uriParamsStr = uri.split('?')[1];
-  const nonAwsSignatureParams = uriParamsStr
-    .split('&')
-    .filter(
-      uriParam =>
-        uriParam && uriParam.length && !amzParamKeyRegex.test(uriParam)
-    );
-  if (nonAwsSignatureParams.length) {
-    return `${nakedUri}?${nonAwsSignatureParams.join('&')}`;
-  }
-  return nakedUri;
-}
-
-function* watchSaveAssetData() {
-  yield takeEvery(SAVE_ASSET_DATA, function*(action) {
-    let assetData;
-    if (action.payload.selectedEngineCategory.categoryType === 'face') {
-      assetData = yield select(
-        getFaceEngineAssetData,
-        action.payload.selectedEngineId
-      );
-    }
-    if (!assetData) {
-      return yield put(
-        saveAssetDataFailure(action.meta.widgetId, {
-          error: 'Asset data to store must be provided'
-        })
-      );
-    }
-    const { widgetId } = action.meta;
-    const createAssetCalls = [];
-    forEach(assetData, jsonData => {
-      if (get(jsonData, 'series.length')) {
-        forEach(jsonData.series, asset => {
-          if (get(asset, 'object.uri')) {
-            asset.object.uri = removeAwsSignatureParams(
-              get(asset, 'object.uri')
-            );
-          }
-          delete asset.guid;
-        });
-      }
-      // process vtn-standard asset
-      const contentType = 'application/json';
-      const type = 'vtn-standard';
-      const sourceData = {
-        name: jsonData.sourceEngineName,
-        engineId: jsonData.sourceEngineId,
-        assetId: jsonData.assetId,
-        taskId: jsonData.taskId
-      };
-      createAssetCalls.push(
-        call(
-          createFileAssetSaga,
-          widgetId,
-          type,
-          contentType,
-          sourceData,
-          jsonData,
-          true
-        )
-      );
-    });
-    yield all(createAssetCalls);
-    yield put(saveAssetDataSuccess(widgetId));
-  });
-}
-
 function* watchCreateFileAssetSuccess() {
   yield takeEvery(
     action => action.type === CREATE_FILE_ASSET_SUCCESS,
@@ -1539,7 +1342,7 @@ function* watchEditButtonClicked(widgetId) {
 }
 
 function* watchEditSuccess(widgetId) {
-  yield takeLatest([SAVE_TRANSCRIPT_EDITS_SUCCESS], function*() {
+  yield takeLatest([SAVE_TRANSCRIPT_EDITS_SUCCESS, SAVE_FACE_EDITS_SUCCESS], function*() {
     const requestTdo = yield select(getTdo, widgetId);
     const selectedEngineCategory = yield select(
       getSelectedEngineCategory,
@@ -1579,7 +1382,6 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchUpdateTdoContentTemplates),
     fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate, id),
-    fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
     fork(watchCancelEdit),
     fork(watchLatestFetchEngineResultsStart, id),

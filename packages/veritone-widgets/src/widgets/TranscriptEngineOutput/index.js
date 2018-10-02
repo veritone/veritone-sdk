@@ -274,7 +274,6 @@ export default class TranscriptEngineOutputContainer extends Component {
 
   checkEditState = () => {
     if (this.props.hasUserEdits) {
-      console.log('Trigger confirmation');
       this.setState({
         alert: {
           title: 'Save Changes?',

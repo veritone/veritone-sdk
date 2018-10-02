@@ -33,9 +33,6 @@ export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
 export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
 export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
 export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
-export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
-export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
-export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
 export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
 export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
 export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
@@ -86,8 +83,7 @@ const defaultMDPState = {
   },
   isEditButtonDisabled: false,
   currentMediaPlayerTime: 0,
-  isRestoringOriginalEngineResult: false,
-  isSavingEngineResults: false
+  isRestoringOriginalEngineResult: false
 };
 
 const defaultState = {};
@@ -636,51 +632,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SAVE_ASSET_DATA](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        isSavingEngineResults: true
-      }
-    };
-  },
-  [SAVE_ASSET_DATA_SUCCESS](
-    state,
-    {
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        isSavingEngineResults: false
-      }
-    };
-  },
-  [SAVE_ASSET_DATA_FAILURE](
-    state,
-    {
-      meta: { error, widgetId }
-    }
-  ) {
-    const errorMessage = get(error, 'message', error);
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: errorMessage || 'Unknown error saving engine results',
-        isSavingEngineResults: false
-      }
-    };
-  },
   [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
     state,
     {
@@ -691,7 +642,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        isSavingEngineResults: false,
         enableSave: true,
         showTranscriptBulkEditSnack: true
       }
@@ -709,7 +659,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         error: errorMessage || 'Unknown error saving bulk transcript edit',
-        isSavingEngineResults: false,
         enableSave: true
       }
     };
@@ -817,8 +766,6 @@ export const currentMediaPlayerTime = (state, widgetId) =>
   get(local(state), [widgetId, 'currentMediaPlayerTime']);
 export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
-export const isSavingEngineResults = (state, widgetId) =>
-  get(local(state), [widgetId, 'isSavingEngineResults']);
 export const categoryExportFormats = (state, widgetId) =>
   get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
 
@@ -944,24 +891,6 @@ export const toggleSaveMode = enableSave => ({
   payload: {
     enableSave
   }
-});
-
-export const saveAssetData = (widgetId, payload) => {
-  return {
-    type: SAVE_ASSET_DATA,
-    payload: payload,
-    meta: { widgetId }
-  };
-};
-
-export const saveAssetDataFailure = (widgetId, { error }) => ({
-  type: SAVE_ASSET_DATA_FAILURE,
-  meta: { error, widgetId }
-});
-
-export const saveAssetDataSuccess = widgetId => ({
-  type: SAVE_ASSET_DATA_SUCCESS,
-  meta: { widgetId }
 });
 
 export const createFileAssetSuccess = widgetId => ({
