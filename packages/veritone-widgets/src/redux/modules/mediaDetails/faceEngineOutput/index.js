@@ -62,6 +62,7 @@ const defaultState = {
   facesDetectedByUser: {},
   facesRemovedByUser: {},
   showConfirmationDialog: false,
+  alert: null,
   confirmationAction: noop,
   displayUserEdited: false,
   savingFaceEdits: false
@@ -222,19 +223,37 @@ const reducer = createReducer(defaultState, {
       facesRemovedByUser: {}
     };
   },
-  [OPEN_CONFIRMATION_DIALOG](state, action) {
-    const { confirmationAction } = action.payload;
+  [OPEN_CONFIRMATION_DIALOG](
+    state,
+    {
+      payload: {
+        title,
+        description,
+        cancelButtonLabel,
+        approveButtonLabel,
+        confirmationAction,
+        cancelAction
+      }
+    }
+  ) {
     return {
       ...state,
       showConfirmationDialog: true,
-      confirmationAction: confirmationAction || noop
+      alert: {
+        title,
+        description,
+        cancelButtonLabel,
+        approveButtonLabel,
+        confirmationAction: confirmationAction || noop,
+        cancelAction: cancelAction || noop
+      }
     };
   },
-  [CLOSE_CONFIRMATION_DIALOG](state, action) {
+  [CLOSE_CONFIRMATION_DIALOG](state) {
     return {
       ...state,
       showConfirmationDialog: false,
-      confirmationAction: noop
+      alert: null
     };
   },
   [SAVE_FACE_EDITS](state) {
@@ -290,6 +309,8 @@ export const getSavingFaceEdits = state => get(local(state), 'savingFaceEdits');
 export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
+
+export const getAlert = state => get(local(state), 'alert');
 
 /* ENTITIES */
 export const fetchingEntities = meta => ({
@@ -410,11 +431,11 @@ export const cancelFaceEdits = () => ({
 });
 
 /* CONFIRMATION DIALOG */
-export const openConfirmationDialog = confirmationAction => {
+export const openConfirmationDialog = alertConfig => {
   return {
     type: OPEN_CONFIRMATION_DIALOG,
     payload: {
-      confirmationAction
+      ...alertConfig
     }
   };
 };

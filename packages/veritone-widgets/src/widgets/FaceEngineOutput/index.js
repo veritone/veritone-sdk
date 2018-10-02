@@ -59,7 +59,8 @@ const saga = util.reactReduxSaga.saga;
       selectedEngineId
     ),
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
-    error: faceEngineOutput.getError(state)
+    error: faceEngineOutput.getError(state),
+    alert: faceEngineOutput.getAlert(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -148,6 +149,7 @@ class FaceEngineOutputContainer extends Component {
     onEngineChange: func,
     onRestoreOriginalClick: func,
     editMode: bool,
+    onToggleEditMode: func,
     currentMediaPlayerTime: number,
     className: string,
     onFaceOccurrenceClicked: func,
@@ -182,7 +184,15 @@ class FaceEngineOutputContainer extends Component {
     saveFaceEdits: func,
     savingFaceEdits: bool,
     error: string,
-    closeErrorSnackbar: func
+    closeErrorSnackbar: func,
+    alert: shape({
+      title: string.isRequired,
+      description: string.isRequired,
+      cancelButtonLabel: string.isRequired,
+      approveButtonLabel: string.isRequired,
+      confirmationAction: func.isRequired,
+      cancelAction: func.isRequired
+    })
   };
 
   state = {
@@ -473,10 +483,19 @@ class FaceEngineOutputContainer extends Component {
 
   handleEngineChange = engineId => {
     if (this.props.editMode && this.props.pendingUserEdits) {
-      this.props.openConfirmationDialog(() => {
-        this.props.cancelFaceEdits();
-        this.props.onEngineChange(engineId);
-        this.props.closeConfirmationDialog();
+      this.props.openConfirmationDialog({
+        title: 'Unsaved Changes',
+        description: 'This action will reset your changes.',
+        cancelButtonLabel: 'Cancel',
+        approveButtonLabel: 'Confirm',
+        confirmationAction: () => {
+          this.props.cancelFaceEdits();
+          this.props.onEngineChange(engineId);
+          this.props.closeConfirmationDialog();
+        },
+        cancelAction: () => {
+          this.props.closeConfirmationDialog();
+        }
       });
     } else {
       this.props.onEngineChange(engineId);
@@ -488,29 +507,25 @@ class FaceEngineOutputContainer extends Component {
     this.props.saveFaceEdits(tdo.id, selectedEngineId);
   };
 
-  renderConfirmationDialog = () => {
-    const alertTitle = 'Unsaved Changes';
-    const alertDescription = 'This action will reset your changes.';
-    const cancelButtonLabel = 'Cancel';
-    const approveButtonLabel = 'Continue';
-
-    const {
-      showConfirmationDialog,
-      closeConfirmationDialog,
-      confirmationAction
-    } = this.props;
-
-    return (
-      <AlertDialog
-        open={showConfirmationDialog}
-        title={alertTitle}
-        content={alertDescription}
-        cancelButtonLabel={cancelButtonLabel}
-        approveButtonLabel={approveButtonLabel}
-        onCancel={closeConfirmationDialog}
-        onApprove={confirmationAction}
-      />
-    );
+  checkEditState = () => {
+    if (this.props.editMode && this.props.pendingUserEdits) {
+      this.props.openConfirmationDialog({
+        title: 'Save Changes?',
+        description: 'Would you like to save the changes?',
+        cancelButtonLabel: 'Discard',
+        approveButtonLabel: 'Save',
+        confirmationAction: () => {
+          this.onSaveEdits();
+          this.props.closeConfirmationDialog();
+        },
+        cancelAction: () => {
+          this.props.closeConfirmationDialog();
+          this.props.onToggleEditMode();
+        }
+      })
+    } else {
+      this.props.onToggleEditMode();
+    }
   };
 
   renderFaceDetectionDoneSnackbar = () => {
@@ -547,6 +562,7 @@ class FaceEngineOutputContainer extends Component {
       'showEditButton',
       'disableEditButton'
     ]);
+    const { alert } = this.props;
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
       return (
@@ -583,6 +599,7 @@ class FaceEngineOutputContainer extends Component {
           <div className={styles.actionButtonsEditMode}>
             <Button
               className={styles.actionButtonEditMode}
+              onClick={this.checkEditState}
               disabled={this.props.savingFaceEdits}
             >
               CANCEL
@@ -601,7 +618,16 @@ class FaceEngineOutputContainer extends Component {
           </div>
         )}
         {this.renderAddNewEntityModal()}
-        {this.renderConfirmationDialog()}
+        {!!this.props.alert &&
+          <AlertDialog
+            open={this.props.showConfirmationDialog}
+            title={alert.title}
+            content={alert.description}
+            cancelButtonLabel={alert.cancelButtonLabel}
+            approveButtonLabel={alert.approveButtonLabel}
+            onCancel={alert.cancelAction}
+            onApprove={alert.confirmationAction}
+          />}
         {this.renderFaceDetectionDoneSnackbar()}
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
