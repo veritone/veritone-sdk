@@ -205,6 +205,20 @@ class FaceEngineOutputContainer extends Component {
     ) {
       this.props.disableEdit(true);
     }
+
+    // fetch engine results when user changes engine
+    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
+      const tdo = this.props.tdo;
+      this.props.clearEngineResultsByEngineId(nextProps.selectedEngineId);
+      this.props.fetchEngineResults({
+        engineId: nextProps.selectedEngineId,
+        tdo: this.props.tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        ignoreUserEdited: false
+      });
+    }
   }
 
   handleSearchEntities = searchText => {
