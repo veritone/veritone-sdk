@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy, pick, noop } from 'lodash';
+import { get, isEqual, orderBy, pick, noop, isEmpty } from 'lodash';
 
 import { connect } from 'react-redux';
 import { modules, util } from 'veritone-redux-common';
@@ -183,7 +183,12 @@ export default class TranscriptEngineOutputContainer extends Component {
   handleOnEditModeChange = value => {
     if (this.props.editMode && this.props.hasUserEdits) {
       this.setState({
-        alert: true,
+        alert: {
+          title: 'Unsaved Transcript Changes',
+          description: 'This action will reset your changes to the transcript.',
+          cancelButtonLabel: 'Cancel',
+          approveButtonLabel : 'Continue'
+        },
         alertConfirmAction: () => {
           this.props.reset();
           this.setState({ editMode: value.type });
@@ -200,7 +205,12 @@ export default class TranscriptEngineOutputContainer extends Component {
   handleEngineChange = engineId => {
     if (this.props.editMode && this.props.hasUserEdits) {
       this.setState({
-        alert: true,
+        alert: {
+          title: 'Unsaved Transcript Changes',
+          description: 'This action will reset your changes to the transcript.',
+          cancelButtonLabel: 'Cancel',
+          approveButtonLabel : 'Continue'
+        },
         alertConfirmAction: () => {
           this.props.reset();
           this.props.onEngineChange(engineId);
@@ -238,19 +248,32 @@ export default class TranscriptEngineOutputContainer extends Component {
     this.setState({
       alert: false,
       alertConfirmAction: noop,
-      alertCancelAction: noop,
+      alertCancelAction: noop
     });
   };
 
   onSaveEdits = () => {
-    this.props.saveTranscriptEdit(get(this.props, 'tdo.id'), get(this.props, 'selectedEngineId'));
+    this.setState({
+      alert: false,
+      alertConfirmAction: noop,
+      alertCancelAction: noop
+    });
+    this.props.saveTranscriptEdit(
+      get(this.props, 'tdo.id'),
+      get(this.props, 'selectedEngineId')
+    );
   };
 
   checkEditState = () => {
     if (this.props.hasUserEdits) {
       console.log('Trigger confirmation');
       this.setState({
-        alert: true,
+        alert: {
+          title: 'Save Changes?',
+          description: 'Would you like to save the changes?',
+          cancelButtonLabel: 'Discard',
+          approveButtonLabel : 'Save'
+        },
         alertCancelAction: () => {
           this.props.onToggleEditMode()
         },
@@ -289,14 +312,9 @@ export default class TranscriptEngineOutputContainer extends Component {
       'bulkEditEnabled',
       'moreMenuItems',
       'showEditButton',
-      'disableEditButton'
+      'disableEditButton',
     ]);
-
-    const alertTitle = 'Unsaved Transcript Changes';
-    const alertDescription =
-      'This action will reset your changes to the transcript.';
-    const cancelButtonLabel = 'Cancel';
-    const approveButtonLabel = 'Continue';
+    const { alert } = this.state;
 
     return (
       <Fragment>
@@ -331,11 +349,11 @@ export default class TranscriptEngineOutputContainer extends Component {
           </div>
         )}
         <AlertDialog
-          open={this.state.alert}
-          title={alertTitle}
-          content={alertDescription}
-          cancelButtonLabel={cancelButtonLabel}
-          approveButtonLabel={approveButtonLabel}
+          open={alert && !isEmpty(alert)}
+          title={alert.title}
+          content={alert.description}
+          cancelButtonLabel={alert.cancelButtonLabel}
+          approveButtonLabel={alert.approveButtonLabel}
           onCancel={this.handleAlertCancel}
           onApprove={this.handleAlertConfirm}
         />
