@@ -30,6 +30,8 @@ export const SAVE_FACE_EDITS = `vtn/${namespace}/SAVE_FACE_EDITS`;
 export const SAVE_FACE_EDITS_SUCCESS = `vtn/${namespace}/SAVE_FACE_EDITS_SUCCESS`;
 export const SAVE_FACE_EDITS_FAILURE = `vtn/${namespace}/SAVE_FACE_EDITS_FAILURE`;
 
+export const CLOSE_ERROR_SNACKBAR = `vtn/${namespace}/CLOSE_ERROR_SNACKBAR`;
+
 import {
   get,
   map,
@@ -40,11 +42,12 @@ import {
   flatten,
   noop,
   reduce,
-  cloneDeep, forEach
+  cloneDeep,
+  forEach
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
-import { saveAsset, removeAwsSignatureParams } from "../../../../shared/asset";
+import { saveAsset, removeAwsSignatureParams } from '../../../../shared/asset';
 
 const { createReducer } = helpers;
 const { engineResults: engineResultsModule } = modules;
@@ -238,13 +241,14 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       savingFaceEdits: true
-    }
+    };
   },
   [SAVE_FACE_EDITS_SUCCESS](state) {
     return {
       ...state,
+      error: null,
       savingFaceEdits: false
-    }
+    };
   },
   [SAVE_FACE_EDITS_FAILURE](
     state,
@@ -256,7 +260,13 @@ const reducer = createReducer(defaultState, {
       ...state,
       error,
       savingFaceEdits: false
-    }
+    };
+  },
+  [CLOSE_ERROR_SNACKBAR](state) {
+    return {
+      ...state,
+      error: null
+    };
   }
 });
 export default reducer;
@@ -275,7 +285,7 @@ export const getUserDetectedFaces = (state, engineId) =>
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
 
-export const getSavingFaceEdits = (state) => get(local(state), 'savingFaceEdits');
+export const getSavingFaceEdits = state => get(local(state), 'savingFaceEdits');
 
 export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
@@ -332,6 +342,9 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
   payload,
   meta
 });
+export const closeErrorSnackbar = () => ({
+  type: CLOSE_ERROR_SNACKBAR
+});
 
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
@@ -347,6 +360,8 @@ export const getEntities = state =>
 export function getEntitySearchResults(state) {
   return get(local(state), 'entitySearchResults', []);
 }
+
+export const getError = state => get(local(state), 'error');
 
 /* LIBRARIES */
 export const fetchLibraries = payload => ({
@@ -577,5 +592,5 @@ export const saveFaceEdits = (tdoId, selectedEngineId) => {
           }
         });
       });
-  }
+  };
 };

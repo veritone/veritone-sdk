@@ -1,5 +1,5 @@
 import { modules } from 'veritone-redux-common';
-import {isFunction} from "lodash";
+import { isFunction } from 'lodash';
 const { auth: authModule, config: configModule } = modules;
 
 export const saveAsset = (

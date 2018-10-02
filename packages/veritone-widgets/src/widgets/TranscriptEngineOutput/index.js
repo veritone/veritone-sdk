@@ -297,10 +297,6 @@ export default class TranscriptEngineOutputContainer extends Component {
     this.props.setShowTranscriptBulkEditSnackState(false);
   };
 
-  closeErrorSnackbar = () => {
-    this.props.closeErrorSnackbar();
-  };
-
   render() {
     const transcriptEngineProps = pick(this.props, [
       'title',
@@ -384,7 +380,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={!!this.props.error}
           autoHideDuration={5000}
-          onClose={this.closeErrorSnackbar}
+          onClose={this.props.closeErrorSnackbar}
         >
           <SnackbarContent
             className={styles.errorSnackbar}

@@ -5,7 +5,7 @@ import { get, set, isEqual, cloneDeep, forEach } from 'lodash';
 // 2. comment out or remove lines that have "// without immutable js"
 // import { fromJS } from 'immutable';  // with immutable js
 
-import { saveAsset } from "../../../../shared/asset";
+import { saveAsset } from '../../../../shared/asset';
 import { helpers } from 'veritone-redux-common';
 
 const { createReducer, callGraphQLApi } = helpers;

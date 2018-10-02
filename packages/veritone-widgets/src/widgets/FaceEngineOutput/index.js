@@ -14,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent/SnackbarContent';
 import { pick, head, get } from 'lodash';
 import {
   shape,
@@ -57,7 +58,8 @@ const saga = util.reactReduxSaga.saga;
       state,
       selectedEngineId
     ),
-    savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state)
+    savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
+    error: faceEngineOutput.getError(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -72,7 +74,8 @@ const saga = util.reactReduxSaga.saga;
     clearEngineResultsByEngineId:
       engineResultsModule.clearEngineResultsByEngineId,
     onEditButtonClick: faceEngineOutput.editFaceButtonClick,
-    saveFaceEdits: faceEngineOutput.saveFaceEdits
+    saveFaceEdits: faceEngineOutput.saveFaceEdits,
+    closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar
   },
   null,
   { withRef: true }
@@ -177,7 +180,9 @@ class FaceEngineOutputContainer extends Component {
     onEditButtonClick: func,
     disableEditButton: bool,
     saveFaceEdits: func,
-    savingFaceEdits: bool
+    savingFaceEdits: bool,
+    error: string,
+    closeErrorSnackbar: func
   };
 
   state = {
@@ -585,7 +590,9 @@ class FaceEngineOutputContainer extends Component {
             <Button
               className={styles.actionButtonEditMode}
               onClick={this.onSaveEdits}
-              disabled={!this.props.pendingUserEdits || this.props.savingFaceEdits}
+              disabled={
+                !this.props.pendingUserEdits || this.props.savingFaceEdits
+              }
               variant="contained"
               color="primary"
             >
@@ -596,6 +603,21 @@ class FaceEngineOutputContainer extends Component {
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}
         {this.renderFaceDetectionDoneSnackbar()}
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={!!this.props.error}
+          autoHideDuration={5000}
+          onClose={this.props.closeErrorSnackbar}
+        >
+          <SnackbarContent
+            className={styles.errorSnackbar}
+            message={
+              <span className={styles.snackbarMessageText}>
+                {this.props.error}
+              </span>
+            }
+          />
+        </Snackbar>
       </Fragment>
     );
   }
