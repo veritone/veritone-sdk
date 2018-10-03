@@ -19,6 +19,7 @@ import { Manager, Target, Popper } from 'react-popper';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
+import FormControl from '@material-ui/core/FormControl';
 
 import styles from './styles.scss';
 
@@ -40,12 +41,14 @@ class EngineOutputHeader extends Component {
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
-    disableEditButton: bool
+    disableEditButton: bool,
+    disableEngineSelect: bool
   };
 
   static defaultProps = {
     engines: [],
-    moreMenuItems: []
+    moreMenuItems: [],
+    disableEngineSelect: false
   };
 
   state = {
@@ -81,7 +84,8 @@ class EngineOutputHeader extends Component {
       onExpandClick,
       showEditButton,
       onEditButtonClick,
-      disableEditButton
+      disableEditButton,
+      disableEngineSelect
     } = this.props;
     const { isMoreMenuOpen } = this.state;
 
@@ -97,37 +101,42 @@ class EngineOutputHeader extends Component {
         <div className={styles.headerActions}>
           {children}
           {!isEmpty(engines) && (
-            <Select
-              autoWidth
-              value={selectedEngineId || engines[0].id}
-              className={styles.engineSelect}
-              onChange={this.handleEngineChange}
-              MenuProps={{
-                anchorOrigin: {
-                  horizontal: 'center',
-                  vertical: 'bottom'
-                },
-                transformOrigin: {
-                  horizontal: 'center',
-                  vertical: 'top'
-                },
-                getContentAnchorEl: null
-              }}
+            <FormControl
+              className={styles.engineFormControl}
+              disabled={disableEngineSelect}
             >
-              {engines.map(e => {
-                return (
-                  <MenuItem
-                    key={`engine-menu-item-${e.id}`}
-                    value={e.id}
-                    classes={{
-                      root: styles.engine
-                    }}
-                  >
-                    {e.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              <Select
+                autoWidth
+                value={selectedEngineId || engines[0].id}
+                className={styles.engineSelect}
+                onChange={this.handleEngineChange}
+                MenuProps={{
+                  anchorOrigin: {
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                  },
+                  transformOrigin: {
+                    horizontal: 'center',
+                    vertical: 'top'
+                  },
+                  getContentAnchorEl: null
+                }}
+              >
+                {engines.map(e => {
+                  return (
+                    <MenuItem
+                      key={`engine-menu-item-${e.id}`}
+                      value={e.id}
+                      classes={{
+                        root: styles.engine
+                      }}
+                    >
+                      {e.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
           )}
           {showEditButton && (
             <IconButton

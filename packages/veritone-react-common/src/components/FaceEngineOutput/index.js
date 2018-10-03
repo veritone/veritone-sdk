@@ -166,6 +166,7 @@ class FaceEngineOutput extends Component {
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
           disableEditButton={disableEditButton}
+          disableEngineSelect={!!editMode}
         >
           {!editMode &&
             selectedEngine &&

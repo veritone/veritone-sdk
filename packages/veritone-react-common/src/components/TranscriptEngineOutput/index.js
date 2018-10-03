@@ -256,6 +256,7 @@ export default class TranscriptEngineOutput extends Component {
         showEditButton={showEditButton}
         onEditButtonClick={onEditButtonClick}
         disableEditButton={disableEditButton}
+        disableEngineSelect={!!editMode}
       >
         <div className={classNames(styles.controllers)}>
           {editMode && this.renderEditOptions()}
