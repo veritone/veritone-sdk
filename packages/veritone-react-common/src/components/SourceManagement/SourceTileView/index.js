@@ -105,7 +105,7 @@ export default class SourceTileView extends React.Component {
   };
 
   renderUpdatedDate = date => {
-    return capitalize(distanceInWordsToNow(date, { includeSeconds: true }));
+    return format(date, 'M/D/YYYY h:mm A');
   };
 
   transformActions = (actions, data) => {
@@ -157,10 +157,6 @@ export default class SourceTileView extends React.Component {
           dataKey="modifiedDateTime"
           header="Updated"
           cellRenderer={this.renderUpdatedDate}
-          style={{
-            fontStyle: 'italic',
-            opacity: 0.54
-          }}
         />
         <MenuColumn
           id="menu"
