@@ -113,11 +113,7 @@ export default class TranscriptContent extends Component {
       overviewSentences = '';
     };
 
-    const textarea = document.createElement('textarea');
-
-    // for (var i = 0, l = fragments.length; i < l; i++) {
-    //
-    // }
+    const textareaToDecodeCharacters = document.createElement('textarea');
 
     let lazyLoading = true;
     this.props.data.forEach(chunk => {
@@ -182,8 +178,8 @@ export default class TranscriptContent extends Component {
 
             // escape special characters to show in UI
             if (selectedWord) {
-              textarea.innerHTML = selectedWord;
-              selectedWord = textarea.value;
+              textareaToDecodeCharacters.innerHTML = selectedWord;
+              selectedWord = textareaToDecodeCharacters.value;
             }
 
             const snippet = {
