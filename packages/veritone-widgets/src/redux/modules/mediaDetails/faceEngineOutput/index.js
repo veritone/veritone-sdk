@@ -32,6 +32,8 @@ export const SAVE_FACE_EDITS_FAILURE = `vtn/${namespace}/SAVE_FACE_EDITS_FAILURE
 
 export const CLOSE_ERROR_SNACKBAR = `vtn/${namespace}/CLOSE_ERROR_SNACKBAR`;
 
+export const TOGGLE_EDIT_MODE = `vtn/${namespace}/TOGGLE_EDIT_MODE`;
+
 import {
   get,
   map,
@@ -40,7 +42,6 @@ import {
   isEmpty,
   pick,
   flatten,
-  noop,
   reduce,
   cloneDeep,
   forEach
@@ -62,10 +63,10 @@ const defaultState = {
   facesDetectedByUser: {},
   facesRemovedByUser: {},
   showConfirmationDialog: false,
-  alert: null,
-  confirmationAction: noop,
+  confirmationType:  'cancelEdits',
   displayUserEdited: false,
-  savingFaceEdits: false
+  savingFaceEdits: false,
+  editModeEnabled: false
 };
 
 const reducer = createReducer(defaultState, {
@@ -227,33 +228,21 @@ const reducer = createReducer(defaultState, {
     state,
     {
       payload: {
-        title,
-        description,
-        cancelButtonLabel,
-        approveButtonLabel,
-        confirmationAction,
-        cancelAction
+        confirmationType
       }
     }
   ) {
     return {
       ...state,
       showConfirmationDialog: true,
-      alert: {
-        title,
-        description,
-        cancelButtonLabel,
-        approveButtonLabel,
-        confirmationAction: confirmationAction || noop,
-        cancelAction: cancelAction || noop
-      }
+      confirmationType:  confirmationType || 'cancelEdits'
     };
   },
   [CLOSE_CONFIRMATION_DIALOG](state) {
     return {
       ...state,
       showConfirmationDialog: false,
-      alert: null
+      confirmationType:  'cancelEdits'
     };
   },
   [SAVE_FACE_EDITS](state) {
@@ -286,6 +275,12 @@ const reducer = createReducer(defaultState, {
       ...state,
       error: null
     };
+  },
+  [TOGGLE_EDIT_MODE](state) {
+    return {
+      ...state,
+      editModeEnabled: !state.editModeEnabled
+    }
   }
 });
 export default reducer;
@@ -310,7 +305,17 @@ export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
 
-export const getAlert = state => get(local(state), 'alert');
+export const getConfirmationType = state => get(local(state), 'confirmationType');
+export const getError = state => get(local(state), 'error');
+export const getEditModeEnabled = state => get(local(state), 'editModeEnabled');
+
+export const closeErrorSnackbar = () => ({
+  type: CLOSE_ERROR_SNACKBAR
+});
+
+export const toggleEditMode = () => ({
+  type: TOGGLE_EDIT_MODE
+});
 
 /* ENTITIES */
 export const fetchingEntities = meta => ({
@@ -363,9 +368,6 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
   payload,
   meta
 });
-export const closeErrorSnackbar = () => ({
-  type: CLOSE_ERROR_SNACKBAR
-});
 
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
@@ -381,8 +383,6 @@ export const getEntities = state =>
 export function getEntitySearchResults(state) {
   return get(local(state), 'entitySearchResults', []);
 }
-
-export const getError = state => get(local(state), 'error');
 
 /* LIBRARIES */
 export const fetchLibraries = payload => ({
@@ -431,11 +431,11 @@ export const cancelFaceEdits = () => ({
 });
 
 /* CONFIRMATION DIALOG */
-export const openConfirmationDialog = alertConfig => {
+export const openConfirmationDialog = confirmationType => {
   return {
     type: OPEN_CONFIRMATION_DIALOG,
     payload: {
-      ...alertConfig
+      confirmationType
     }
   };
 };
@@ -452,9 +452,6 @@ export const editFaceButtonClick = () => {
 
 export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
-
-export const confirmationAction = state =>
-  get(local(state), 'confirmationAction');
 
 /* SELECTORS */
 export const getFaces = createSelector(

@@ -53,6 +53,7 @@ export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE =
   transcriptNamespace + '_SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
 export const CLOSE_ERROR_SNACKBAR =
   transcriptNamespace + 'CLOSE_ERROR_SNACKBAR';
+export const TOGGLE_EDIT_MODE = transcriptNamespace + '_TOGGLE_EDIT_MODE';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -65,7 +66,8 @@ const initialState = {
   isBulkEdit: false,
   showTranscriptBulkEditSnack: false,
   error: null,
-  savingTranscript: false
+  savingTranscript: false,
+  editModeEnabled: false
 };
 
 const transcriptReducer = createReducer(initialState, {
@@ -216,6 +218,12 @@ const transcriptReducer = createReducer(initialState, {
       ...state,
       error: null
     };
+  },
+  [TOGGLE_EDIT_MODE](state) {
+    return {
+      ...state,
+      editModeEnabled: !state.editModeEnabled
+    }
   }
 });
 
@@ -368,6 +376,9 @@ export const setShowTranscriptBulkEditSnackState = showTranscriptBulkEditSnack =
 export const closeErrorSnackbar = () => ({
   type: CLOSE_ERROR_SNACKBAR
 });
+export const toggleEditMode = () => ({
+  type: TOGGLE_EDIT_MODE
+});
 
 function local(state) {
   return state[transcriptNamespace];
@@ -383,6 +394,7 @@ export const getShowTranscriptBulkEditSnack = state =>
 export const getError = state => get(local(state), 'error');
 export const getSavingTranscriptEdits = state =>
   get(local(state), 'savingTranscript');
+export const getEditModeEnabled = state => get(local(state), 'editModeEnabled');
 
 const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset

@@ -1,8 +1,8 @@
 import { get, isEqual } from 'lodash';
 import { delay } from 'redux-saga';
-import { fork, all, call, put, takeEvery, select } from 'redux-saga/effects';
+import {fork, all, call, put, takeEvery, select, takeLatest} from 'redux-saga/effects';
 import * as TranscriptRedux from '.';
-import { DISCARD_UNSAVED_CHANGES } from '../index';
+import { DISCARD_UNSAVED_CHANGES, CANCEL_EDIT } from '../index';
 
 const CHANGE_WITH_DEBOUNCE =
   TranscriptRedux.transcriptNamespace + '_CHANGE_WITH_DEBOUNCE';
@@ -118,6 +118,21 @@ function* watchDiscardUnsavedChanges() {
   });
 }
 
+function* watchMediaDetailCancelEdit() {
+  yield takeLatest(
+    [CANCEL_EDIT],
+    function*() {
+      const pendingUserEdits = yield select(TranscriptRedux.hasUserEdits);
+      console.log('transcript watchMediaDetailCancelEdit', pendingUserEdits);
+      if (pendingUserEdits) {
+        console.log('Hello');
+      } else {
+        yield put(TranscriptRedux.toggleEditMode());
+      }
+    }
+  );
+}
+
 export const changeWidthDebounce = newData => ({
   data: newData,
   type: CHANGE_WITH_DEBOUNCE
@@ -131,6 +146,7 @@ export default function* transcriptSaga() {
     fork(watchContentChange),
     fork(watchContentClearData),
     fork(watchContentReceiveData),
-    fork(watchDiscardUnsavedChanges)
+    fork(watchDiscardUnsavedChanges),
+    fork(watchMediaDetailCancelEdit)
   ]);
 }

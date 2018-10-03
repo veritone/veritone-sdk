@@ -39,7 +39,8 @@ const saga = util.reactReduxSaga.saga;
       state
     ),
     error: TranscriptRedux.getError(state),
-    savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state)
+    savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state),
+    editModeEnabled: TranscriptRedux.getEditModeEnabled(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -54,7 +55,8 @@ const saga = util.reactReduxSaga.saga;
     saveTranscriptEdit: TranscriptRedux.saveTranscriptEdit,
     setShowTranscriptBulkEditSnackState:
       TranscriptRedux.setShowTranscriptBulkEditSnackState,
-    closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar
+    closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar,
+    toggleEditMode: TranscriptRedux.toggleEditMode
   },
   null,
   { withRef: true }
@@ -120,7 +122,6 @@ export default class TranscriptEngineOutputContainer extends Component {
     contentClassName: string,
 
     editMode: bool,
-    onToggleEditMode: func,
 
     onClick: func,
     onScroll: func,
@@ -156,7 +157,9 @@ export default class TranscriptEngineOutputContainer extends Component {
     showTranscriptBulkEditSnack: bool,
     error: string,
     closeErrorSnackbar: func,
-    savingTranscript: bool
+    savingTranscript: bool,
+    toggleEditMode: func,
+    editModeEnabled: bool
   };
 
   state = {
@@ -282,14 +285,14 @@ export default class TranscriptEngineOutputContainer extends Component {
           approveButtonLabel: 'Save'
         },
         alertCancelAction: () => {
-          this.props.onToggleEditMode();
+          this.props.toggleEditMode();
         },
         alertConfirmAction: () => {
           this.onSaveEdits();
         }
       });
     } else {
-      this.props.onToggleEditMode();
+      this.props.toggleEditMode();
     }
   };
 
@@ -318,7 +321,6 @@ export default class TranscriptEngineOutputContainer extends Component {
       'outputNullState',
       'bulkEditEnabled',
       'moreMenuItems',
-      'showEditButton',
       'disableEditButton'
     ]);
     const { alert } = this.state;
@@ -328,15 +330,17 @@ export default class TranscriptEngineOutputContainer extends Component {
         <TranscriptEngineOutput
           data={this.props.currentData}
           {...transcriptEngineProps}
+          editMode={this.props.editModeEnabled}
           onChange={this.handleContentChanged}
           editType={this.state.editMode}
-          onEditButtonClick={this.props.onEditButtonClick}
+          showEditButton={this.props.showEditButton && !this.props.editModeEnabled}
+          onEditButtonClick={this.props.toggleEditMode}
           onEditTypeChange={this.handleOnEditModeChange}
           onEngineChange={this.handleEngineChange}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
-        {this.props.editMode && (
+        {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
             <Button
               className={styles.actionButtonEditMode}

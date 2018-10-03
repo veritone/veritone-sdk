@@ -14,6 +14,7 @@ import { helpers, modules } from 'veritone-redux-common';
 const { fetchGraphQLApi } = helpers;
 
 import * as faceEngineOutput from '.';
+import { CANCEL_EDIT } from "../index";
 import * as gqlQuery from './queries';
 
 const {
@@ -200,12 +201,27 @@ function* watchSearchEntities() {
   );
 }
 
+function* watchMediaDetailCancelEdit() {
+  yield takeLatest(
+    [CANCEL_EDIT],
+    function*({ meta: { selectedEngineId } }) {
+      const pendingUserEdits = yield select(faceEngineOutput.pendingUserEdits, selectedEngineId);
+      if (pendingUserEdits) {
+        yield put(faceEngineOutput.openConfirmationDialog('saveChanges'));
+      } else {
+        yield put(faceEngineOutput.toggleEditMode());
+      }
+    }
+  );
+}
+
 export default function* root({ tdo, selectedEngineId }) {
   yield all([
     fork(watchFetchEngineResultsSuccess),
     fork(watchFetchLibraries),
     fork(watchCreateEntity),
     fork(watchSearchEntities),
+    fork(watchMediaDetailCancelEdit, tdo.id),
     fork(onMount, tdo, selectedEngineId)
   ]);
 }

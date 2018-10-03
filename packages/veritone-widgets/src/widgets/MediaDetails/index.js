@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -100,7 +99,6 @@ const programLiveImageNullState =
       id
     ),
     widgetError: mediaDetailsModule.getWidgetError(state, id),
-    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
@@ -134,19 +132,18 @@ const programLiveImageNullState =
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
-    toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
-    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
     updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
     restoreOriginalEngineResults:
       mediaDetailsModule.restoreOriginalEngineResults,
-    createQuickExport: mediaDetailsModule.createQuickExport
+    createQuickExport: mediaDetailsModule.createQuickExport,
+    cancelEdit: mediaDetailsModule.cancelEdit
   },
   null,
   { withRef: true }
@@ -263,7 +260,6 @@ class MediaDetailsWidget extends React.Component {
     }),
     selectedEngineId: string,
     setEngineId: func,
-    toggleEditMode: func,
     toggleInfoPanel: func,
     isEditModeEnabled: bool,
     isInfoPanelOpen: bool,
@@ -324,7 +320,6 @@ class MediaDetailsWidget extends React.Component {
       )
     }),
     widgetError: string,
-    isSaveEnabled: bool,
     alertDialogConfig: shape({
       show: bool,
       title: string,
@@ -336,7 +331,6 @@ class MediaDetailsWidget extends React.Component {
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
-    discardUnsavedChanges: func,
     isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
     isEditButtonDisabled: bool,
@@ -356,7 +350,8 @@ class MediaDetailsWidget extends React.Component {
     exportClosedCaptionsEnabled: bool,
     bulkEditEnabled: bool,
     publicMediaDownloadEnabled: bool,
-    downloadMediaEnabled: bool
+    downloadMediaEnabled: bool,
+    cancelEdit: func
   };
 
   static contextTypes = {
@@ -480,46 +475,12 @@ class MediaDetailsWidget extends React.Component {
     return false;
   };
 
-  toggleEditMode = () => {
-    this.props.toggleEditMode(this.props.id, this.props.selectedEngineCategory);
-  };
-
   toggleExpandedMode = () => {
     this.props.toggleExpandedMode(this.props.id);
   };
 
   onSaveEdit = () => {
     this.props.closeConfirmModal(this.props.id);
-  };
-
-  onCancelEdit = () => {
-    if (this.props.isExpandedMode) {
-      this.toggleExpandedMode();
-    }
-    if (this.props.isEditModeEnabled) {
-      this.toggleEditMode();
-    }
-  };
-
-  checkSaveState = () => {
-    if (this.props.isSaveEnabled) {
-      this.props.openConfirmModal(this.props.id, {
-        title: 'Save Changes?',
-        description: 'Would you like to save the changes?',
-        cancelButtonLabel: 'Discard',
-        confirmButtonLabel: 'Save',
-        confirmAction: this.onSaveEdit,
-        cancelAction: this.handleCancelSaveDialog
-      });
-    } else {
-      this.onCancelEdit();
-    }
-  };
-
-  handleCancelSaveDialog = () => {
-    this.props.discardUnsavedChanges();
-    this.props.closeConfirmModal(this.props.id);
-    this.onCancelEdit();
   };
 
   toggleInfoPanel = () => {
@@ -686,8 +647,7 @@ class MediaDetailsWidget extends React.Component {
     if (
       !this.isEditableEngineResults() ||
       !this.hasSelectedEngineResults() ||
-      !this.isSelectedEngineCompleted() ||
-      this.props.isEditModeEnabled
+      !this.isSelectedEngineCompleted()
     ) {
       return false;
     }
@@ -845,12 +805,12 @@ class MediaDetailsWidget extends React.Component {
       schemasById,
       googleMapsApiKey,
       widgetError,
-      isSaveEnabled,
       alertDialogConfig,
       categoryExportFormats,
       onExport,
       exportClosedCaptionsEnabled,
-      bulkEditEnabled
+      bulkEditEnabled,
+      cancelEdit
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -902,7 +862,7 @@ class MediaDetailsWidget extends React.Component {
           />
         )}
         <Paper className={styles.mediaDetailsPageContent}>
-          {!isExpandedMode && (
+          {!isExpandedMode && !isEditModeEnabled && (
             <div>
               <div className={styles.pageHeader}>
                 {get(
@@ -1175,13 +1135,14 @@ class MediaDetailsWidget extends React.Component {
             </div>
           )}
 
-          {isExpandedMode &&
+          {(isExpandedMode || isEditModeEnabled) &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    onClick={this.checkSaveState}
+                    // eslint-disable-next-line
+                    onClick={() => cancelEdit(this.props.id, selectedEngineId)}
                     aria-label="Back"
                   >
                     <Icon
@@ -1203,25 +1164,6 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
                     {this.getSelectedCategoryMessage()}
-                  </div>
-                  <div className={styles.actionButtonsEditMode}>
-                    {isEditModeEnabled && (
-                      <Button
-                        className={styles.actionButtonEditMode}
-                        onClick={this.checkSaveState}
-                      >
-                        CANCEL
-                      </Button>
-                    )}
-                    {isEditModeEnabled && (
-                      <Button
-                        className={styles.actionButtonEditMode}
-                        disabled={!isSaveEnabled}
-                        onClick={this.onSaveEdit}
-                      >
-                        SAVE
-                      </Button>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1266,8 +1208,6 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         tdo={tdo}
-                        editMode={isEditModeEnabled}
-                        onToggleEditMode={this.toggleEditMode}
                         showEditButton={this.showEditButton()}
                         disableEditButton={this.isEditModeButtonDisabled()}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
@@ -1290,8 +1230,6 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        editMode={isEditModeEnabled}
-                        onToggleEditMode={this.toggleEditMode}
                         showEditButton={this.showEditButton()}
                         disableEditButton={this.isEditModeButtonDisabled()}
                         disableEdit={this.handleDisableEditBtn}

@@ -49,7 +49,6 @@ const saga = util.reactReduxSaga.saga;
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
     showConfirmationDialog: faceEngineOutput.showConfirmationDialog(state),
-    confirmationAction: faceEngineOutput.confirmationAction(state),
     pendingUserEdits: faceEngineOutput.pendingUserEdits(
       state,
       selectedEngineId
@@ -60,7 +59,8 @@ const saga = util.reactReduxSaga.saga;
     ),
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
     error: faceEngineOutput.getError(state),
-    alert: faceEngineOutput.getAlert(state)
+    confirmationType: faceEngineOutput.getConfirmationType(state),
+    editModeEnabled: faceEngineOutput.getEditModeEnabled(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -76,7 +76,8 @@ const saga = util.reactReduxSaga.saga;
       engineResultsModule.clearEngineResultsByEngineId,
     onEditButtonClick: faceEngineOutput.editFaceButtonClick,
     saveFaceEdits: faceEngineOutput.saveFaceEdits,
-    closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar
+    closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar,
+    toggleEditMode: faceEngineOutput.toggleEditMode
   },
   null,
   { withRef: true }
@@ -148,8 +149,7 @@ class FaceEngineOutputContainer extends Component {
     ),
     onEngineChange: func,
     onRestoreOriginalClick: func,
-    editMode: bool,
-    onToggleEditMode: func,
+    editModeEnabled: bool,
     currentMediaPlayerTime: number,
     className: string,
     onFaceOccurrenceClicked: func,
@@ -170,7 +170,7 @@ class FaceEngineOutputContainer extends Component {
     removeDetectedFace: func,
     createEntity: func,
     showConfirmationDialog: bool,
-    confirmationAction: func,
+    confirmationType: string,
     cancelFaceEdits: func,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
@@ -185,14 +185,7 @@ class FaceEngineOutputContainer extends Component {
     savingFaceEdits: bool,
     error: string,
     closeErrorSnackbar: func,
-    alert: shape({
-      title: string.isRequired,
-      description: string.isRequired,
-      cancelButtonLabel: string.isRequired,
-      approveButtonLabel: string.isRequired,
-      confirmationAction: func.isRequired,
-      cancelAction: func.isRequired
-    })
+    toggleEditMode: func
   };
 
   state = {
@@ -292,16 +285,6 @@ class FaceEngineOutputContainer extends Component {
         name: e.target.value
       }
     }));
-  };
-
-  openDialog = () => {
-    this.setState({ dialogOpen: true });
-  };
-
-  closeDialog = () => {
-    this.setState({
-      dialogOpen: false
-    });
   };
 
   clearNewEntityForm = () => {
@@ -482,49 +465,82 @@ class FaceEngineOutputContainer extends Component {
   };
 
   handleEngineChange = engineId => {
-    if (this.props.editMode && this.props.pendingUserEdits) {
-      this.props.openConfirmationDialog({
-        title: 'Unsaved Changes',
-        description: 'This action will reset your changes.',
-        cancelButtonLabel: 'Cancel',
-        approveButtonLabel: 'Confirm',
-        confirmationAction: () => {
-          this.props.cancelFaceEdits();
-          this.props.onEngineChange(engineId);
-          this.props.closeConfirmationDialog();
-        },
-        cancelAction: () => {
-          this.props.closeConfirmationDialog();
-        }
-      });
-    } else {
-      this.props.onEngineChange(engineId);
-    }
+    this.props.onEngineChange(engineId);
   };
 
   onSaveEdits = () => {
-    const { tdo, selectedEngineId } = this.props;
-    this.props.saveFaceEdits(tdo.id, selectedEngineId);
+    const { tdo, selectedEngineId, toggleEditMode, saveFaceEdits } = this.props;
+    saveFaceEdits(tdo.id, selectedEngineId).then(res => {
+      toggleEditMode();
+      return res;
+    });
+  };
+
+  handleDialogCancel = () => {
+    const {
+      closeConfirmationDialog,
+      cancelFaceEdits,
+      confirmationType,
+      toggleEditMode
+    } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      cancelFaceEdits();
+      toggleEditMode();
+    }
+    closeConfirmationDialog();
+  };
+
+  handleDialogConfirm = () => {
+    const {
+      closeConfirmationDialog,
+      cancelFaceEdits,
+      confirmationType
+    } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      this.onSaveEdits();
+    } else if (confirmationType === 'cancelEdits') {
+      cancelFaceEdits();
+    }
+    closeConfirmationDialog();
+  };
+
+  renderConfirmationDialog = () => {
+    let alertTitle = 'Unsaved Changes';
+    let alertDescription = 'This action will reset your changes.';
+    let cancelButtonLabel = 'Cancel';
+    let approveButtonLabel = 'Continue';
+    const {
+      showConfirmationDialog,
+      confirmationType
+    } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      alertTitle = 'Save Changes?';
+      alertDescription = 'Would you like to save the changes?';
+      cancelButtonLabel = 'Discard';
+      approveButtonLabel = 'Save';
+    }
+
+    return (
+      <AlertDialog
+        open={showConfirmationDialog}
+        title={alertTitle}
+        content={alertDescription}
+        cancelButtonLabel={cancelButtonLabel}
+        approveButtonLabel={approveButtonLabel}
+        onCancel={this.handleDialogCancel}
+        onApprove={this.handleDialogConfirm}
+      />
+    );
   };
 
   checkEditState = () => {
-    if (this.props.editMode && this.props.pendingUserEdits) {
-      this.props.openConfirmationDialog({
-        title: 'Save Changes?',
-        description: 'Would you like to save the changes?',
-        cancelButtonLabel: 'Discard',
-        approveButtonLabel: 'Save',
-        confirmationAction: () => {
-          this.onSaveEdits();
-          this.props.closeConfirmationDialog();
-        },
-        cancelAction: () => {
-          this.props.closeConfirmationDialog();
-          this.props.onToggleEditMode();
-        }
-      })
+    if (this.props.editModeEnabled && this.props.pendingUserEdits) {
+      this.props.openConfirmationDialog('saveEdits');
     } else {
-      this.props.onToggleEditMode();
+      this.props.toggleEditMode();
     }
   };
 
@@ -549,7 +565,6 @@ class FaceEngineOutputContainer extends Component {
 
   render() {
     const faceEngineProps = pick(this.props, [
-      'editMode',
       'engines',
       'entities',
       'currentMediaPlayerTime',
@@ -559,10 +574,8 @@ class FaceEngineOutputContainer extends Component {
       'isSearchingEntities',
       'onRestoreOriginalClick',
       'outputNullState',
-      'showEditButton',
       'disableEditButton'
     ]);
-    const { alert } = this.props;
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
       return (
@@ -585,6 +598,9 @@ class FaceEngineOutputContainer extends Component {
         <FaceEngineOutput
           {...this.props.faces}
           {...faceEngineProps}
+          editMode={this.props.editModeEnabled}
+          onEditButtonClick={this.props.toggleEditMode}
+          showEditButton={this.props.showEditButton && !this.props.editModeEnabled}
           onEngineChange={this.handleEngineChange}
           onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={this.handleSearchEntities}
@@ -593,9 +609,8 @@ class FaceEngineOutputContainer extends Component {
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           moreMenuItems={this.props.moreMenuItems}
-          onEditButtonClick={this.props.onEditButtonClick}
         />
-        {this.props.editMode && (
+        {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
             <Button
               className={styles.actionButtonEditMode}
@@ -618,16 +633,7 @@ class FaceEngineOutputContainer extends Component {
           </div>
         )}
         {this.renderAddNewEntityModal()}
-        {!!this.props.alert &&
-          <AlertDialog
-            open={this.props.showConfirmationDialog}
-            title={alert.title}
-            content={alert.description}
-            cancelButtonLabel={alert.cancelButtonLabel}
-            approveButtonLabel={alert.approveButtonLabel}
-            onCancel={alert.cancelAction}
-            onApprove={alert.confirmationAction}
-          />}
+        {this.renderConfirmationDialog()}
         {this.renderFaceDetectionDoneSnackbar()}
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

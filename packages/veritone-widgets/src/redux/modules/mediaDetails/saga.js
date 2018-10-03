@@ -23,19 +23,15 @@ import {
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
-  cancelFaceEdits,
   pendingUserEdits,
   ADD_DETECTED_FACE,
   REMOVE_DETECTED_FACE,
   CANCEL_FACE_EDITS,
-  FACE_EDIT_BUTTON_CLICKED,
   SAVE_FACE_EDITS_SUCCESS
 } from './faceEngineOutput';
 import {
-  TRANSCRIPT_EDIT_BUTTON_CLICKED,
   UPDATE_EDIT_STATUS,
-  SAVE_TRANSCRIPT_EDITS_SUCCESS,
-  reset as resetTranscript
+  SAVE_TRANSCRIPT_EDITS_SUCCESS
 } from './transcriptWidget';
 const {
   auth: authModule,
@@ -62,7 +58,6 @@ import {
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
   CREATE_FILE_ASSET_SUCCESS,
-  TOGGLE_EDIT_MODE,
   RESTORE_ORIGINAL_ENGINE_RESULTS,
   LOAD_TDO_SUCCESS,
   REFRESH_ENGINE_RUNS_SUCCESS,
@@ -83,8 +78,6 @@ import {
   getTdo,
   toggleSaveMode,
   createFileAssetSuccess,
-  isEditModeEnabled,
-  toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
   setEditButtonState,
@@ -1219,27 +1212,6 @@ function* insertIntoIndexSaga(tdoId) {
   }
 }
 
-function* watchCancelEdit() {
-  yield takeEvery(action => action.type === TOGGLE_EDIT_MODE, function*(
-    action
-  ) {
-    const editModeIsEnabled = yield select(
-      isEditModeEnabled,
-      action.meta.widgetId
-    );
-
-    if (!editModeIsEnabled) {
-      const selectedEngineCategory = action.payload.selectedEngineCategory;
-
-      if (selectedEngineCategory.categoryType === 'face') {
-        yield put(cancelFaceEdits());
-      } else if (selectedEngineCategory.categoryType === 'transcript') {
-        yield put(resetTranscript());
-      }
-    }
-  });
-}
-
 function* watchLatestFetchEngineResultsStart(widgetId) {
   yield takeLatest([engineResultsModule.FETCH_ENGINE_RESULTS], function*() {
     yield put(setEditButtonState(widgetId, true));
@@ -1328,28 +1300,11 @@ function* watchToStartRefreshEngineRunsWithTimeout(
   );
 }
 
-function* watchEditButtonClicked(widgetId) {
-  yield takeLatest(
-    [TRANSCRIPT_EDIT_BUTTON_CLICKED, FACE_EDIT_BUTTON_CLICKED],
-    function*() {
-      const selectedEngineCategory = yield select(
-        getSelectedEngineCategory,
-        widgetId
-      );
-      yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    }
-  );
-}
-
 function* watchEditSuccess(widgetId) {
   yield takeLatest(
     [SAVE_TRANSCRIPT_EDITS_SUCCESS, SAVE_FACE_EDITS_SUCCESS],
     function*() {
       const requestTdo = yield select(getTdo, widgetId);
-      const selectedEngineCategory = yield select(
-        getSelectedEngineCategory,
-        widgetId
-      );
       yield call(refreshEngineRuns, widgetId, requestTdo.id);
       const selectedEngineId = yield select(getSelectedEngineId, widgetId);
       yield put(
@@ -1363,7 +1318,6 @@ function* watchEditSuccess(widgetId) {
           ignoreUserEdited: false
         })
       );
-      yield put(toggleEditMode(widgetId, selectedEngineCategory));
       yield put(createFileAssetSuccess(widgetId));
     }
   );
@@ -1386,12 +1340,10 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate, id),
     fork(watchCreateFileAssetSuccess),
-    fork(watchCancelEdit),
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
     fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
-    fork(watchEditButtonClicked, id),
     fork(watchEditSuccess, id, mediaId),
     fork(onMount, id, mediaId)
   ]);
