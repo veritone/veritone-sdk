@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { number, bool, string, func, shape, arrayOf, node } from 'prop-types';
-import { get, isEqual, orderBy, pick, noop, isEmpty } from 'lodash';
+import { get, isEqual, orderBy, pick } from 'lodash';
 
 import { connect } from 'react-redux';
 import { modules, util } from 'veritone-redux-common';
@@ -40,7 +40,9 @@ const saga = util.reactReduxSaga.saga;
     ),
     error: TranscriptRedux.getError(state),
     savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state),
-    editModeEnabled: TranscriptRedux.getEditModeEnabled(state)
+    editModeEnabled: TranscriptRedux.getEditModeEnabled(state),
+    showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
+    confirmationType: TranscriptRedux.getConfirmationType(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -56,7 +58,9 @@ const saga = util.reactReduxSaga.saga;
     setShowTranscriptBulkEditSnackState:
       TranscriptRedux.setShowTranscriptBulkEditSnackState,
     closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar,
-    toggleEditMode: TranscriptRedux.toggleEditMode
+    toggleEditMode: TranscriptRedux.toggleEditMode,
+    openConfirmationDialog: TranscriptRedux.openConfirmationDialog,
+    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog
   },
   null,
   { withRef: true }
@@ -159,15 +163,17 @@ export default class TranscriptEngineOutputContainer extends Component {
     closeErrorSnackbar: func,
     savingTranscript: bool,
     toggleEditMode: func,
-    editModeEnabled: bool
+    editModeEnabled: bool,
+    showConfirmationDialog: bool,
+    openConfirmationDialog: func,
+    closeConfirmationDialog: func,
+    confirmationType: string
   };
 
   state = {
-    alert: false,
-    editMode: TranscriptEditMode.SNIPPET,
-    props: this.props,
-    alertConfirmAction: noop,
-    alertCancelAction: noop
+    editType: TranscriptEditMode.SNIPPET,
+    confirmEditType: null,
+    props: this.props
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -191,44 +197,20 @@ export default class TranscriptEngineOutputContainer extends Component {
     this.props.change(value);
   };
 
-  handleOnEditModeChange = value => {
-    if (this.props.editMode && this.props.hasUserEdits) {
-      this.setState({
-        alert: {
-          title: 'Unsaved Transcript Changes',
-          description: 'This action will reset your changes to the transcript.',
-          cancelButtonLabel: 'Cancel',
-          approveButtonLabel: 'Continue'
+  handleOnEditTypeChange = value => {
+    if (this.props.editModeEnabled && this.props.hasUserEdits) {
+      this.setState(
+        {
+          confirmEditType: value.type
         },
-        alertConfirmAction: () => {
-          this.props.reset();
-          this.setState({ editMode: value.type });
+        () => {
+          this.props.openConfirmationDialog('cancelEdits');
         }
-      });
+      );
     } else {
       this.setState({
-        alert: false,
-        editMode: value.type
+        editType: value.type
       });
-    }
-  };
-
-  handleEngineChange = engineId => {
-    if (this.props.editMode && this.props.hasUserEdits) {
-      this.setState({
-        alert: {
-          title: 'Unsaved Transcript Changes',
-          description: 'This action will reset your changes to the transcript.',
-          cancelButtonLabel: 'Cancel',
-          approveButtonLabel: 'Continue'
-        },
-        alertConfirmAction: () => {
-          this.props.reset();
-          this.props.onEngineChange(engineId);
-        }
-      });
-    } else {
-      this.props.onEngineChange(engineId);
     }
   };
 
@@ -245,55 +227,58 @@ export default class TranscriptEngineOutputContainer extends Component {
     });
   };
 
-  handleAlertConfirm = () => {
-    this.state.alertConfirmAction();
-    this.setState({
-      alert: false,
-      alertConfirmAction: noop,
-      alertCancelAction: noop
-    });
-  };
-
-  handleAlertCancel = () => {
-    this.state.alertCancelAction();
-    this.setState({
-      alert: false,
-      alertConfirmAction: noop,
-      alertCancelAction: noop
-    });
-  };
-
   onSaveEdits = () => {
-    this.setState({
-      alert: false,
-      alertConfirmAction: noop,
-      alertCancelAction: noop
+    const { tdo, selectedEngineId, fetchEngineResults } = this.props;
+    this.props.saveTranscriptEdit(tdo.id, selectedEngineId).then(res => {
+      fetchEngineResults({
+        engineId: selectedEngineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        ignoreUserEdited: false
+      });
+      this.props.toggleEditMode();
+      return res;
     });
-    this.props.saveTranscriptEdit(
-      get(this.props, 'tdo.id'),
-      get(this.props, 'selectedEngineId')
-    );
+  };
+
+  handleDialogCancel = () => {
+    const {
+      closeConfirmationDialog,
+      reset,
+      confirmationType,
+      toggleEditMode
+    } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      reset();
+      toggleEditMode();
+    }
+    closeConfirmationDialog();
   };
 
   checkEditState = () => {
-    if (this.props.hasUserEdits) {
-      this.setState({
-        alert: {
-          title: 'Save Changes?',
-          description: 'Would you like to save the changes?',
-          cancelButtonLabel: 'Discard',
-          approveButtonLabel: 'Save'
-        },
-        alertCancelAction: () => {
-          this.props.toggleEditMode();
-        },
-        alertConfirmAction: () => {
-          this.onSaveEdits();
-        }
-      });
+    if (this.props.editModeEnabled && this.props.hasUserEdits) {
+      this.props.openConfirmationDialog('saveEdits');
     } else {
       this.props.toggleEditMode();
     }
+  };
+
+  handleDialogConfirm = () => {
+    const { closeConfirmationDialog, reset, confirmationType } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      this.onSaveEdits();
+    } else if (confirmationType === 'cancelEdits') {
+      this.setState(prevState => ({
+        editType: prevState.confirmEditType,
+        confirmEditType: null
+      }));
+      reset();
+    }
+    closeConfirmationDialog();
   };
 
   closeTranscriptBulkEditSnack = () => {
@@ -321,9 +306,22 @@ export default class TranscriptEngineOutputContainer extends Component {
       'outputNullState',
       'bulkEditEnabled',
       'moreMenuItems',
-      'disableEditButton'
+      'disableEditButton',
+      'onEngineChange'
     ]);
-    const { alert } = this.state;
+
+    let alertTitle = 'Unsaved Transcript Changes';
+    let alertDescription =
+      'This action will reset y;our changes to the transcript.';
+    let cancelButtonLabel = 'Cancel';
+    let approveButtonLabel = 'Continue';
+
+    if (this.props.confirmationType === 'saveEdits') {
+      alertTitle = 'Save Changes?';
+      alertDescription = 'Would you like to save the changes?';
+      cancelButtonLabel = 'Discard';
+      approveButtonLabel = 'Save';
+    }
 
     return (
       <Fragment>
@@ -332,11 +330,12 @@ export default class TranscriptEngineOutputContainer extends Component {
           {...transcriptEngineProps}
           editMode={this.props.editModeEnabled}
           onChange={this.handleContentChanged}
-          editType={this.state.editMode}
-          showEditButton={this.props.showEditButton && !this.props.editModeEnabled}
+          editType={this.state.editType}
+          showEditButton={
+            this.props.showEditButton && !this.props.editModeEnabled
+          }
           onEditButtonClick={this.props.toggleEditMode}
-          onEditTypeChange={this.handleOnEditModeChange}
-          onEngineChange={this.handleEngineChange}
+          onEditTypeChange={this.handleOnEditTypeChange}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
         />
@@ -361,13 +360,13 @@ export default class TranscriptEngineOutputContainer extends Component {
           </div>
         )}
         <AlertDialog
-          open={alert && !isEmpty(alert)}
-          title={alert.title}
-          content={alert.description}
-          cancelButtonLabel={alert.cancelButtonLabel}
-          approveButtonLabel={alert.approveButtonLabel}
-          onCancel={this.handleAlertCancel}
-          onApprove={this.handleAlertConfirm}
+          open={this.props.showConfirmationDialog}
+          title={alertTitle}
+          content={alertDescription}
+          cancelButtonLabel={cancelButtonLabel}
+          approveButtonLabel={approveButtonLabel}
+          onCancel={this.handleDialogCancel}
+          onApprove={this.handleDialogConfirm}
         />
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

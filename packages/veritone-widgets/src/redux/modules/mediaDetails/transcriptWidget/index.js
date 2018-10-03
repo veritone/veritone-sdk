@@ -54,6 +54,10 @@ export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE =
 export const CLOSE_ERROR_SNACKBAR =
   transcriptNamespace + 'CLOSE_ERROR_SNACKBAR';
 export const TOGGLE_EDIT_MODE = transcriptNamespace + '_TOGGLE_EDIT_MODE';
+export const OPEN_CONFIRMATION_DIALOG =
+  transcriptNamespace + '_OPEN_CONFIRMATION_DIALOG';
+export const CLOSE_CONFIRMATION_DIALOG =
+  transcriptNamespace + '_CLOSE_CONFIRMATION_DIALOG';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -67,7 +71,9 @@ const initialState = {
   showTranscriptBulkEditSnack: false,
   error: null,
   savingTranscript: false,
-  editModeEnabled: false
+  editModeEnabled: false,
+  showConfirmationDialog: false,
+  confirmationType: 'cancelEdits'
 };
 
 const transcriptReducer = createReducer(initialState, {
@@ -223,7 +229,26 @@ const transcriptReducer = createReducer(initialState, {
     return {
       ...state,
       editModeEnabled: !state.editModeEnabled
+    };
+  },
+  [OPEN_CONFIRMATION_DIALOG](
+    state,
+    {
+      payload: { confirmationType }
     }
+  ) {
+    return {
+      ...state,
+      showConfirmationDialog: true,
+      confirmationType: confirmationType || 'cancelEdits'
+    };
+  },
+  [CLOSE_CONFIRMATION_DIALOG](state) {
+    return {
+      ...state,
+      showConfirmationDialog: false,
+      confirmationType: 'cancelEdits'
+    };
   }
 });
 
@@ -379,6 +404,18 @@ export const closeErrorSnackbar = () => ({
 export const toggleEditMode = () => ({
   type: TOGGLE_EDIT_MODE
 });
+export const openConfirmationDialog = confirmationType => {
+  return {
+    type: OPEN_CONFIRMATION_DIALOG,
+    payload: {
+      confirmationType
+    }
+  };
+};
+
+export const closeConfirmationDialog = () => ({
+  type: CLOSE_CONFIRMATION_DIALOG
+});
 
 function local(state) {
   return state[transcriptNamespace];
@@ -395,6 +432,10 @@ export const getError = state => get(local(state), 'error');
 export const getSavingTranscriptEdits = state =>
   get(local(state), 'savingTranscript');
 export const getEditModeEnabled = state => get(local(state), 'editModeEnabled');
+export const showConfirmationDialog = state =>
+  get(local(state), 'showConfirmationDialog');
+export const getConfirmationType = state =>
+  get(local(state), 'confirmationType');
 
 const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset
@@ -629,7 +670,7 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       dispatch({
         type: SAVE_TRANSCRIPT_EDITS_SUCCESS
       });
-      return runBulkEditResponse;
+      return Promise.resolve(runBulkEditResponse);
     } else {
       const assetData = currentData(getState());
       const createAssetCalls = [];

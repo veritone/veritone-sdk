@@ -469,8 +469,22 @@ class FaceEngineOutputContainer extends Component {
   };
 
   onSaveEdits = () => {
-    const { tdo, selectedEngineId, toggleEditMode, saveFaceEdits } = this.props;
+    const {
+      tdo,
+      selectedEngineId,
+      toggleEditMode,
+      saveFaceEdits,
+      fetchEngineResults
+    } = this.props;
     saveFaceEdits(tdo.id, selectedEngineId).then(res => {
+      fetchEngineResults({
+        engineId: selectedEngineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        ignoreUserEdited: false
+      });
       toggleEditMode();
       return res;
     });
@@ -511,10 +525,7 @@ class FaceEngineOutputContainer extends Component {
     let alertDescription = 'This action will reset your changes.';
     let cancelButtonLabel = 'Cancel';
     let approveButtonLabel = 'Continue';
-    const {
-      showConfirmationDialog,
-      confirmationType
-    } = this.props;
+    const { showConfirmationDialog, confirmationType } = this.props;
 
     if (confirmationType === 'saveEdits') {
       alertTitle = 'Save Changes?';
@@ -600,7 +611,9 @@ class FaceEngineOutputContainer extends Component {
           {...faceEngineProps}
           editMode={this.props.editModeEnabled}
           onEditButtonClick={this.props.toggleEditMode}
-          showEditButton={this.props.showEditButton && !this.props.editModeEnabled}
+          showEditButton={
+            this.props.showEditButton && !this.props.editModeEnabled
+          }
           onEngineChange={this.handleEngineChange}
           onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={this.handleSearchEntities}

@@ -1306,18 +1306,6 @@ function* watchEditSuccess(widgetId) {
     function*() {
       const requestTdo = yield select(getTdo, widgetId);
       yield call(refreshEngineRuns, widgetId, requestTdo.id);
-      const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-      yield put(
-        engineResultsModule.fetchEngineResults({
-          tdo: requestTdo,
-          engineId: selectedEngineId,
-          startOffsetMs: 0,
-          stopOffsetMs:
-            Date.parse(requestTdo.stopDateTime) -
-            Date.parse(requestTdo.startDateTime),
-          ignoreUserEdited: false
-        })
-      );
       yield put(createFileAssetSuccess(widgetId));
     }
   );
