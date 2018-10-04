@@ -129,7 +129,6 @@ function* watchDiscardUnsavedChanges() {
 function* watchMediaDetailCancelEdit() {
   yield takeLatest([CANCEL_EDIT], function*() {
     const pendingUserEdits = yield select(TranscriptRedux.hasUserEdits);
-    console.log('transcript watchMediaDetailCancelEdit', pendingUserEdits);
     if (pendingUserEdits) {
       console.log('Hello');
     } else {

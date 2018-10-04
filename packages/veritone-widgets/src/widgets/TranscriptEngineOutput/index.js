@@ -312,7 +312,7 @@ export default class TranscriptEngineOutputContainer extends Component {
 
     let alertTitle = 'Unsaved Transcript Changes';
     let alertDescription =
-      'This action will reset y;our changes to the transcript.';
+      'This action will reset your changes to the transcript.';
     let cancelButtonLabel = 'Cancel';
     let approveButtonLabel = 'Continue';
 

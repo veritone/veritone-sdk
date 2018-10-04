@@ -66,7 +66,8 @@ const defaultState = {
   confirmationType: 'cancelEdits',
   displayUserEdited: false,
   savingFaceEdits: false,
-  editModeEnabled: false
+  editModeEnabled: false,
+  error: null,
 };
 
 const reducer = createReducer(defaultState, {
