@@ -92,20 +92,20 @@ function local(state) {
   return state[namespace];
 }
 
-export const engineResultsByEngineId = (state, tdo, engineId) =>
-  get(local(state), ['tdoEngineResultsMappedByEngineId', get(tdo, 'id'), engineId], []);
+export const engineResultsByEngineId = (state, tdoId, engineId) =>
+  get(local(state), ['tdoEngineResultsMappedByEngineId', tdoId, engineId], []);
 
 export const isFetchingEngineResults = state =>
   local(state).isFetchingEngineResults;
 
-export const isDisplayingUserEditedOutput = (state, tdo, engineId) => {
-  const results = engineResultsByEngineId(state, tdo, engineId);
+export const isDisplayingUserEditedOutput = (state, tdoId, engineId) => {
+  const results = engineResultsByEngineId(state, tdoId, engineId);
   return !!find(results, { userEdited: true });
 };
 
-export const clearEngineResultsByEngineId = (tdo, engineId) => ({
+export const clearEngineResultsByEngineId = (tdoId, engineId) => ({
   type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
-  tdoId: get(tdo, 'id'),
+  tdoId,
   engineId
 });
 

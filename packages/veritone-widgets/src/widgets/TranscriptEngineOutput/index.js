@@ -25,12 +25,12 @@ const saga = util.reactReduxSaga.saga;
     currentData: TranscriptRedux.currentData(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
-      tdo,
+      tdo.id,
       selectedEngineId
     ),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
-      tdo,
+      tdo.id,
       selectedEngineId
     )
   }),
@@ -196,7 +196,7 @@ export default class TranscriptEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
-    this.props.clearEngineResultsByEngineId(tdo, this.props.selectedEngineId);
+    this.props.clearEngineResultsByEngineId(tdo.id, this.props.selectedEngineId);
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,

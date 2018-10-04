@@ -806,6 +806,7 @@ const local = state => state[namespace];
 export const getEngineCategories = (state, widgetId) =>
   get(local(state), [widgetId, 'engineCategories']);
 export const getTdo = (state, widgetId) => get(local(state), [widgetId, 'tdo']);
+export const getTdoId = (state, widgetId) => get(getTdo(state, widgetId), 'id');
 export const isLoadingTdo = (state, widgetId) =>
   get(local(state), [widgetId, 'isLoadingTdo']);
 export const getTdoMetadata = (state, widgetId) =>

@@ -1490,7 +1490,7 @@ function* watchSaveAssetData() {
       const tdo = yield select(getTdo, widgetId);
       assetData = yield select(
         getFaceEngineAssetData,
-        tdo,
+        tdo.id,
         action.payload.selectedEngineId
       );
     }

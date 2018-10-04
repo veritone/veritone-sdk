@@ -81,7 +81,7 @@ const programLiveImageNullState =
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
-      mediaDetailsModule.getTdo(state, id),
+      mediaDetailsModule.getTdoId(state, id),
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
@@ -107,7 +107,7 @@ const programLiveImageNullState =
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
-      mediaDetailsModule.getTdo(state, id),
+      mediaDetailsModule.getTdoId(state, id),
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),

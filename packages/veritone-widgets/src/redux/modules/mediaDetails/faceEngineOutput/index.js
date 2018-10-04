@@ -233,8 +233,8 @@ function local(state) {
   return state[namespace];
 }
 
-export const getFaceDataByEngine = (state, tdo, engineId) => {
-  return engineResultsModule.engineResultsByEngineId(state, tdo, engineId);
+export const getFaceDataByEngine = (state, tdoId, engineId) => {
+  return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
 };
 
 export const getUserDetectedFaces = (state, engineId) =>
@@ -426,8 +426,8 @@ export const getFaces = createSelector(
 );
 
 /* HELPERS */
-export const getFaceEngineAssetData = (state, tdo, engineId) => {
-  const engineResults = cloneDeep(getFaceDataByEngine(state, tdo, engineId));
+export const getFaceEngineAssetData = (state, tdoId, engineId) => {
+  const engineResults = cloneDeep(getFaceDataByEngine(state, tdoId, engineId));
   const userDetectedFaces =
     cloneDeep(getUserDetectedFaces(state, engineId)) || [];
   const userRemovedFaces =
