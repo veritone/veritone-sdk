@@ -15,7 +15,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find } from 'lodash';
+import { find, reduce } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -152,7 +152,9 @@ class FaceEngineOutput extends Component {
       disableEditButton
     } = this.props;
     const { viewMode } = this.state;
-
+    const recognizedFaceCount = reduce(Object.values(this.props.recognizedFaces), (acc, faces) => {
+      return acc + faces.length;
+    }, 0);
     const selectedEngine = find(this.props.engines, { id: selectedEngineId });
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -239,12 +241,12 @@ class FaceEngineOutput extends Component {
         >
           <Tab
             classes={{ root: styles.faceTab }}
-            label="Face Recognition"
+            label={`Face Recognition (${recognizedFaceCount})`}
             value="faceRecognition"
           />
           <Tab
             classes={{ root: styles.faceTab }}
-            label="Face Detection"
+            label={`Face Detection (${this.props.unrecognizedFaces.length})`}
             value="faceDetection"
           />
         </Tabs>
