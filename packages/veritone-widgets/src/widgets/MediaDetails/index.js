@@ -411,6 +411,7 @@ class MediaDetailsWidget extends React.Component {
 
   handleUpdateMediaPlayerTime = (startTime, stopTime) => {
     this.mediaPlayer.seek(startTime / 1000);
+    this.mediaPlayer.play();
   };
 
   handleRunProcess = () => {
