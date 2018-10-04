@@ -21,25 +21,33 @@ export default class NullStateCard extends React.Component {
     }),
     disableHover: bool,
     children: node
-  }
+  };
 
   state = {
     hover: false
-  }
+  };
 
-  handleMouseOver = (boolVal) => () => {
+  handleMouseOver = boolVal => () => {
     this.setState({
       hover: boolVal
-    })
-  }
+    });
+  };
 
   render() {
-    const { children, disableHover, imgSrc, titleText, imgProps, btnProps } = this.props;
+    const {
+      children,
+      disableHover,
+      imgSrc,
+      titleText,
+      imgProps,
+      btnProps
+    } = this.props;
 
     return (
       <div
         onMouseOver={this.handleMouseOver(true)}
-        onMouseLeave={this.handleMouseOver(false)}>
+        onMouseLeave={this.handleMouseOver(false)}
+      >
         <Card
           classes={{
             root: styles['null-state-card']
@@ -51,13 +59,10 @@ export default class NullStateCard extends React.Component {
               root: styles['null-card-content']
             }}
           >
-            {imgProps &&
-              <div className={styles["img-wrapper"]}>
-                <img
-                  src={imgSrc}
-                  {...imgProps}
-                />
-                {titleText &&
+            {imgProps && (
+              <div className={styles['img-wrapper']}>
+                <img src={imgSrc} {...imgProps} />
+                {titleText && (
                   <div
                     className={styles['card-title']}
                     style={{
@@ -66,15 +71,14 @@ export default class NullStateCard extends React.Component {
                   >
                     {titleText}
                   </div>
-                }
+                )}
               </div>
-            }
-            {children &&
-              <div className={styles['card-desc-text']}>
-                {children}
-              </div>}
+            )}
+            {children && (
+              <div className={styles['card-desc-text']}>{children}</div>
+            )}
           </CardContent>
-          {btnProps &&
+          {btnProps && (
             <CardActions>
               <Button
                 className={styles.buttonStyle}
@@ -85,7 +89,7 @@ export default class NullStateCard extends React.Component {
                 {btnProps.text}
               </Button>
             </CardActions>
-          }
+          )}
         </Card>
       </div>
     );

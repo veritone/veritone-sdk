@@ -9,7 +9,6 @@ import styles from '../../styles/wizard.scss';
 
 const { TextField, Checkbox } = formComponents;
 
-
 @reduxForm({
   form: wizardConfig.formName,
   destroyOnUnmount: false,

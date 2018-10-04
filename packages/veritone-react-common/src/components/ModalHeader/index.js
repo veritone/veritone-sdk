@@ -33,27 +33,33 @@ export default class ModalHeader extends React.Component {
     return (
       <div
         className="modal-header"
-        style={{ backgroundColor: this.props.backgroundColor, color: this.props.color }}
+        style={{
+          backgroundColor: this.props.backgroundColor,
+          color: this.props.color
+        }}
       >
         <div
           className={styles.fullScreenTopBar}
           style={{ height: this.props.height }}
         >
-          {this.props.title &&
-            <span className={styles.topBarTitle}>{this.props.title}</span>}
-          {(hasIcons || this.props.closeButton) &&
+          {this.props.title && (
+            <span className={styles.topBarTitle}>{this.props.title}</span>
+          )}
+          {(hasIcons || this.props.closeButton) && (
             <div className={styles.iconGroup}>
               {hasIcons && this.props.icons}
-              {hasIcons && this.props.closeButton &&
-                <span className={styles.separator} />}
-              {this.props.closeButton &&
-              <IconButton aria-label="exit" color="inherit" disableRipple>
-                <Icon
-                  className="icon-close-exit"
-                  onClick={this.props.onClose}
-                />
-              </IconButton>}
-          </div>}
+              {hasIcons &&
+                this.props.closeButton && <span className={styles.separator} />}
+              {this.props.closeButton && (
+                <IconButton aria-label="exit" color="inherit" disableRipple>
+                  <Icon
+                    className="icon-close-exit"
+                    onClick={this.props.onClose}
+                  />
+                </IconButton>
+              )}
+            </div>
+          )}
         </div>
         {this.props.children && <div>{this.props.children}</div>}
       </div>

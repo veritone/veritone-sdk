@@ -96,8 +96,6 @@ class EngineSelection extends React.Component {
   }
 
   componentDidMount() {
-    console.log('this.props.selectedEngineIds:', this.props.selectedEngineIds)
-    console.log('this.props.filteredSelectedEngineIds:', this.props.filteredSelectedEngineIds)
     this.props.setDeselectedEngineIds(
       this.props._widgetId,
       this.props.initialDeselectedEngineIds
@@ -123,7 +121,10 @@ class EngineSelection extends React.Component {
     if (
       this.props.selectedEngineIds.length !== prevProps.selectedEngineIds.length
     ) {
-      this.props.onEngineSelectionChange(this.props.selectedEngineIds, prevProps.selectedEngineIds);
+      this.props.onEngineSelectionChange(
+        this.props.selectedEngineIds,
+        prevProps.selectedEngineIds
+      );
     }
   }
 

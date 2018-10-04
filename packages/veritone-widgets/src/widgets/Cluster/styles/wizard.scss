@@ -21,7 +21,8 @@
   }
 }
 
-.cluster-subheading, .cluster-headline {
+.cluster-subheading,
+.cluster-headline {
   margin: 0;
 }
 
@@ -39,12 +40,12 @@
 .edit-icon {
   font-size: 14px !important;
   color: $min-black;
-  margin-left: 10px
+  margin-left: 10px;
 }
 
 /* DETAILS */
 .cluster-details-metrics {
-  $color: $light-black
+  $color: $light-black;
 }
 
 .cluster-details-metric {

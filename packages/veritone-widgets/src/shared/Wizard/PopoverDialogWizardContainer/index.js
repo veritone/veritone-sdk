@@ -18,7 +18,7 @@ import { ModalHeader } from 'veritone-react-common';
 //   { popoverDialogWizardContainer({ title: 'Create New Engine' }) }
 // </Wizard>
 
-const popoverDialogWizardContainer = ({ headerProps, footerStyles }) => {
+const popoverDialogWizardContainer = ({ title, headerProps, footerStyles }) => {
   function PopoverDialogWizardContainer({
     currentPage,
     requestClose,
@@ -27,34 +27,28 @@ const popoverDialogWizardContainer = ({ headerProps, footerStyles }) => {
     renderConfirmationDialog
   }) {
     return (
-      <div style={{
-        // height: '100%',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         <ModalHeader
-          // title={title}
+          title={title}
           {...headerProps}
           closeButton
           onClose={requestClose}
         />
         <div className={styles['container']}>
           <div className={styles['stepperContainer']}>
-            <div>
-              {renderStepper()}
-            </div>
+            <div>{renderStepper()}</div>
           </div>
 
-          <div className={styles['wizardPageContainer']}>
-            {currentPage}
-          </div>
+          <div className={styles['wizardPageContainer']}>{currentPage}</div>
         </div>
 
-        <div
-          className={styles['footer']}
-          style={footerStyles}
-        >
+        <div className={styles['footer']} style={footerStyles}>
           {renderButtons({ className: styles['footer__button'] })}
         </div>
         {renderConfirmationDialog()}

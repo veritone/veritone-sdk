@@ -9,13 +9,14 @@ import {
   object
 } from 'prop-types';
 import { connect } from 'react-redux';
+import { reduxForm, Field, FieldArray, formValueSelector } from 'redux-form';
 import {
-  reduxForm,
-  Field,
-  FieldArray,
-  formValueSelector
-} from 'redux-form';
-import { formComponents, NullState, Table, Column, DualStateIcon } from 'veritone-react-common';
+  formComponents,
+  NullState,
+  Table,
+  Column,
+  DualStateIcon
+} from 'veritone-react-common';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -23,7 +24,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import MenuItem from '@material-ui/core/MenuItem';
 import Snackbar from '@material-ui/core/Snackbar';
-import { get, pick, omit, isFunction, map, head, uniqueId } from 'lodash';
+import { get, omit, isFunction, head, uniqueId } from 'lodash';
 
 import wizardConfig from '../wizard-config';
 import styles from '../../styles/wizard.scss';
@@ -44,9 +45,6 @@ const configFields = [
 }))
 @reduxForm({
   form: wizardConfig.formName,
-  initialValues: {
-    nodes: []
-  },
   validate: wizardConfig.model.validate,
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true
@@ -57,28 +55,9 @@ export default class ClusterNodes extends React.Component {
       nodes: string
     }).isRequired,
     // redux-form supplied props
-    nodes: arrayOf(object),
-    change: func.isRequired
+    nodes: arrayOf(object)
   };
-
-  updateNodeConfig = (nodeIdx, config, value) => {
-    const { fields, nodes } = this.props;
-    const configFieldKeys = map(configFields, head);
-
-    configFieldKeys.forEach(cfk => {
-      const fldVal = get(nodes, [nodeIdx, cfk]);
-
-      if (fldVal && fldVal.length) {
-        this.props.change(`${fields.nodes}[${nodeIdx}].${cfk}`, [{
-          ...fldVal[0],
-          [config]: value
-        }]);
-      }
-    });
-  };
-
   render() {
-    console.log('this.props:', this.props)
     return (
       <div className={styles['cluster-wizard-view']}>
         <div className={styles['cluster-heading']}>
@@ -101,7 +80,6 @@ export default class ClusterNodes extends React.Component {
         <FieldArray
           name={this.props.fields.nodes}
           component={ClusterNodesList}
-          onConfigChange={this.updateNodeConfig}
         />
       </div>
     );
@@ -139,7 +117,6 @@ class ClusterNodesList extends React.Component {
         name={`${this.props.fields.name}[${nodeIdx}].${dataKey}`}
         component={TextInputToggleField}
         placeholder="—.—.—.—.—"
-        onBlur={this.handleConfigChange(nodeIdx, dataKey)}
         className={styles['text-toggle-field']}
         inputProps={{
           className: styles['text-toggle-field'],
@@ -159,7 +136,6 @@ class ClusterNodesList extends React.Component {
         classes={{
           root: styles['size-select']
         }}
-        onChange={this.handleConfigChange(nodeIdx, dataKey)}
       >
         <MenuItem value="" disabled>
           <em>{'--'}</em>
@@ -181,7 +157,6 @@ class ClusterNodesList extends React.Component {
         classes={{
           root: styles['size-select']
         }}
-        onChange={this.handleConfigChange(nodeIdx, dataKey)}
       >
         <MenuItem value="" disabled>
           <em>{'--'}</em>
@@ -204,7 +179,6 @@ class ClusterNodesList extends React.Component {
         classes={{
           root: styles['size-select']
         }}
-        onChange={this.handleConfigChange(nodeIdx, dataKey)}
       >
         <MenuItem value="" disabled>
           <em>{'--'}</em>
@@ -219,38 +193,23 @@ class ClusterNodesList extends React.Component {
     );
   };
   renderNodeConfig = (config, data, dataKey, nodeIdx) => {
-    const {
-      fields: { name }
-    } = this.props;
-
-    function normalizeVal(value, previousValue, allValues) {
-      if (!value) {
-        return [];
-      }
-
-      const node = get(allValues, [name, nodeIdx]);
-      const configVals = pick(node, ['ip', 'cpu', 'disk', 'mem']);
-
-      return [configVals];
-    }
+    const { fields } = this.props;
 
     return (
       <div className={styles['node-config']}>
         {configFields.map(configField => {
+          const config = head(configField);
+
           return (
             <Field
-              key={uniqueId(configField[0])}
-              name={`${this.props.fields.name}[${nodeIdx}].${configField[0]}`}
+              key={uniqueId(config)}
+              name={`${fields.name}[${nodeIdx}].${dataKey}.${config}`}
               component={DualStateIconField}
-              normalize={normalizeVal}
               props={{
                 caption: configField[1],
                 activeClass: styles.activeClass,
                 inActiveClass: styles.inActiveClass,
-                isActive: !!get(this.props.fields.get(nodeIdx), [
-                  configField[0],
-                  'length'
-                ])
+                isActive: get(fields.get(nodeIdx), [dataKey, config], false)
               }}
             >
               <span className="icon-circlecheck" />
@@ -275,10 +234,12 @@ class ClusterNodesList extends React.Component {
       disk: '',
       cpu: '',
       mem: '',
-      mgt: [],
-      svc: [],
-      db: [],
-      eng: []
+      configs: {
+        mgt: false,
+        svc: false,
+        db: false,
+        eng: false
+      }
     });
   };
 
@@ -290,10 +251,6 @@ class ClusterNodesList extends React.Component {
     this.setState({
       snackbarIsOpen: false
     });
-  };
-
-  handleConfigChange = (nodeIdx, config) => (e, val) => {
-    this.props.onConfigChange(nodeIdx, config, val);
   };
 
   render() {
@@ -345,7 +302,11 @@ class ClusterNodesList extends React.Component {
               cellRenderer={this.renderIPAddr}
               width="200px"
             />
-            <Column dataKey="" header="" cellRenderer={this.renderNodeConfig} />
+            <Column
+              dataKey="configs"
+              header=""
+              cellRenderer={this.renderNodeConfig}
+            />
             <Column
               dataKey="disk"
               header="Disk"
@@ -377,12 +338,11 @@ class ClusterNodesList extends React.Component {
       </div>
     );
   }
-};
+}
 
 ClusterNodesList.propTypes = {
-  fields: objectOf(any).isRequired,
-  onConfigChange: func.isRequired
-}
+  fields: objectOf(any).isRequired
+};
 
 const AddNewNode = ({ onClick }) => {
   return (
@@ -391,21 +351,16 @@ const AddNewNode = ({ onClick }) => {
         root: styles['cluster-add-node']
       }}
     >
-      <Button
-        variant="flat"
-        color="primary"
-        disableRipple
-        onClick={onClick}
-      >
+      <Button variant="flat" color="primary" disableRipple onClick={onClick}>
         ADD NODE MANUALLY
       </Button>
     </Paper>
-  )
-}
+  );
+};
 
 AddNewNode.propTypes = {
   onClick: func.isRequired
-}
+};
 
 const ClusterNodesNullState = () => {
   return (
@@ -443,46 +398,50 @@ class TextInputToggleField extends React.Component {
     meta: shape({
       error: string
     })
-  }
+  };
 
   state = {
     isEditMode: false
-  }
+  };
 
-  toggleEdit = (boolVal) => () => {
+  toggleEdit = boolVal => () => {
     if (this.state.isEditMode !== boolVal) {
       this.setState({
         isEditMode: boolVal
       });
     }
-  }
+  };
 
-  handleBlur = (e) => {
+  handleBlur = e => {
     const { input, meta } = this.props;
     e.persist();
 
-    if (!meta.error)  {
-      this.setState({
-        isEditMode: false
-      }, () => {
-        if (isFunction(input.onBlur)) {
-          input.onBlur(e, e.target.value);
+    if (!meta.error) {
+      this.setState(
+        {
+          isEditMode: false
+        },
+        () => {
+          if (isFunction(input.onBlur)) {
+            input.onBlur(e, e.target.value);
+          }
         }
-      });
+      );
       return;
     }
 
     return input.onBlur(e, e.target.value);
-  }
+  };
 
   render() {
-    const { meta: { touched, error } } = this.props;
+    const {
+      meta: { touched, error }
+    } = this.props;
     const showEditState = this.state.isEditMode || (touched && error);
 
     return (
       <div className={styles['toggle-field-wrapper']}>
-        {showEditState
-        ?
+        {showEditState ? (
           <TextField
             InputProps={{
               disableUnderline: !showEditState,
@@ -496,13 +455,17 @@ class TextInputToggleField extends React.Component {
             {...omit(this.props, 'placeholder')}
             onBlur={this.handleBlur}
           />
-          :
+        ) : (
           <span className={this.props.className}>
             {this.props.input.value || this.props.placeholder}
-          </span>}
-        <EditIcon className={styles['edit-icon']} onClick={this.toggleEdit(true)} />
+          </span>
+        )}
+        <EditIcon
+          className={styles['edit-icon']}
+          onClick={this.toggleEdit(true)}
+        />
       </div>
-    )
+    );
   }
 }
 
@@ -511,13 +474,8 @@ const DualStateIconField = ({ input, ...rest }) => {
     input.onChange(boolVal);
   }
 
-  return (
-    <DualStateIcon
-      {...omit(rest, 'meta')}
-      onClick={handleIconClick}
-    />
-  )
-}
+  return <DualStateIcon {...omit(rest, 'meta')} onClick={handleIconClick} />;
+};
 
 DualStateIconField.propTypes = {
   input: shape({

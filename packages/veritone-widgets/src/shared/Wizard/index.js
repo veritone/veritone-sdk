@@ -8,13 +8,7 @@ import {
   getFormSubmitErrors,
   SubmissionError
 } from 'redux-form';
-import {
-  omitBy,
-  isEmpty,
-  isUndefined,
-  findIndex,
-  partial,
-} from 'lodash';
+import { omitBy, isEmpty, isUndefined, findIndex, partial } from 'lodash';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
@@ -45,7 +39,7 @@ import {
 } from 'prop-types';
 import { requireFields, flattenObject } from './helpers';
 
-const wizardConfigShape = shape({
+export const wizardConfigShape = shape({
   model: shape({
     fields: objectOf(string).isRequired,
     requiredFields: arrayOf(string).isRequired,
@@ -58,8 +52,7 @@ const wizardConfigShape = shape({
       fields: array.isRequired
     })
   ).isRequired
-})
-
+});
 
 export class Wizard extends React.Component {
   static propTypes = {
@@ -77,7 +70,7 @@ export class Wizard extends React.Component {
     isDirty: bool.isRequired,
     submitErrors: objectOf(string),
     submit: func.isRequired,
-    destroy: func.isRequired,
+    destroy: func.isRequired
   };
   static defaultProps = {
     submitErrors: {}
@@ -127,9 +120,7 @@ export class Wizard extends React.Component {
         .catch(this.handleSubmissionFailure);
     }
 
-    return this.transitionToStep(
-      this.getCurrentStepIndex() + 1
-    );
+    return this.transitionToStep(this.getCurrentStepIndex() + 1);
   };
 
   handleSubmissionSuccess = vals => {
@@ -152,7 +143,7 @@ export class Wizard extends React.Component {
     this.props.submit(this.props.formName);
   };
 
-  transitionToStep = (step) => {
+  transitionToStep = step => {
     this.props.onTransitionToStep(step);
   };
 
@@ -186,15 +177,15 @@ export class Wizard extends React.Component {
   };
 
   getStepsWithErrors(errors) {
-    return Object.keys(
-      omitBy(flattenObject(errors), isUndefined)
-    ).map(errorField => {
-      const page = findIndex(this.props.config.steps, step => {
-        return step.fields.includes(errorField);
-      });
+    return Object.keys(omitBy(flattenObject(errors), isUndefined)).map(
+      errorField => {
+        const page = findIndex(this.props.config.steps, step => {
+          return step.fields.includes(errorField);
+        });
 
-      return page;
-    });
+        return page;
+      }
+    );
   }
 
   renderStepper = () => {
@@ -204,16 +195,15 @@ export class Wizard extends React.Component {
     );
 
     return (
-      <Stepper
-        style={{ width: '50%' }}
-        activeStep={currentStepIndex}
-      >
+      <Stepper style={{ width: '50%' }} activeStep={currentStepIndex}>
         {this.props.config.steps.map((step, stepIdx) => {
           const buttonProps = {};
-          const labelProps = {}
+          const labelProps = {};
 
           if (step.optional) {
-            buttonProps.optional = <Typography variant="caption">Optional</Typography>;
+            buttonProps.optional = (
+              <Typography variant="caption">Optional</Typography>
+            );
           }
           if (stepsWithSubmitErrors.includes(stepIdx)) {
             labelProps.error = true;
@@ -235,7 +225,7 @@ export class Wizard extends React.Component {
                 <StepLabel {...labelProps}>{step.label}</StepLabel>
               </StepButton>
             </Step>
-          )
+          );
         })}
       </Stepper>
     );
@@ -250,38 +240,37 @@ export class Wizard extends React.Component {
     }
 
     return (
-      !currentStep.hideButtons &&
-      <span>
-        <Button
-          variant="flat"
-          className={className}
-          onClick={partial(this.transitionToStep, currentStepIndex - 1)}
-          disabled={currentStepIndex === 0}
-        >
-          Back
-        </Button>
-        <Button
-          variant="flat"
-          className={className}
-        >
-          Save & Continue Later
-        </Button>
-        <Button
-          variant="raised"
-          type="submit"
-          color="primary"
-          className={className}
-          onClick={this.submitForm}
-          disabled={!this.props.isValid || this.props.isLoading}
-        >
-          {this.props.isLoading
-            ? <CircularProgress size={35} />
-            : currentStepIndex === this.props.config.steps.length - 1
-              ? 'Submit'
-              : 'Next'
-          }
-        </Button>
-      </span>
+      !currentStep.hideButtons && (
+        <span>
+          <Button
+            variant="flat"
+            className={className}
+            onClick={partial(this.transitionToStep, currentStepIndex - 1)}
+            disabled={currentStepIndex === 0}
+          >
+            Back
+          </Button>
+          <Button variant="flat" className={className}>
+            Save & Continue Later
+          </Button>
+          <Button
+            variant="raised"
+            type="submit"
+            color="primary"
+            className={className}
+            onClick={this.submitForm}
+            disabled={!this.props.isValid || this.props.isLoading}
+          >
+            {this.props.isLoading ? (
+              <CircularProgress size={35} />
+            ) : currentStepIndex === this.props.config.steps.length - 1 ? (
+              currentStep.buttonText || 'Submit'
+            ) : (
+              'Next'
+            )}
+          </Button>
+        </span>
+      )
     );
   };
 

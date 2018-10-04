@@ -14,7 +14,8 @@ export default {
     },
     {
       label: 'Processing',
-      fields: ['engines']
+      fields: ['engines'],
+      buttonText: 'Save & Request Installation Bundle'
     }
   ],
   model: {
@@ -33,17 +34,20 @@ export default {
       const maxChars = 50;
 
       return {
-        name: get(values['name'], 'length', 0) > maxChars
-          ? `Max length for name cannot exceed ${maxChars} characters`
-          : undefined,
-        nodes: !get(values['nodes'], 'length', 0) ? { _error: 'At least one node must be configured' } : validateNodes(values['nodes']),
-        engines: !get(values['engines'], 'length', 0) ? 'Please specify processing engines' : undefined
+        name:
+          get(values['name'], 'length', 0) > maxChars
+            ? `Max length for name cannot exceed ${maxChars} characters`
+            : undefined,
+        nodes: !get(values['nodes'], 'length', 0)
+          ? { _error: 'At least one node must be configured' }
+          : validateNodes(values['nodes']),
+        engines: !get(values['engines'], 'length', 0)
+          ? 'Please specify processing engines'
+          : undefined
       };
     }
   }
 };
-
-
 
 function validateNodes(nodes) {
   const nodeArrayErrors = [];
@@ -52,11 +56,14 @@ function validateNodes(nodes) {
   nodes.forEach((node, nodeIdx) => {
     const nodeErrors = {};
     validationFields.forEach(validationField => {
-      nodeErrors[validationField] = validations.nodes[validationField](node[validationField], nodes);
+      nodeErrors[validationField] = validations.nodes[validationField](
+        node[validationField],
+        nodes
+      );
       if (nodeErrors[validationField]) {
         nodeArrayErrors[nodeIdx] = nodeErrors;
       }
-    })
+    });
   });
 
   if (nodeArrayErrors.length) {

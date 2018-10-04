@@ -1,4 +1,4 @@
-import { countBy, isString, compact } from 'lodash';
+import { countBy, isString, compact, reduce } from 'lodash';
 
 export default {
   nodes: {
@@ -29,6 +29,18 @@ export default {
       const ipAddresses = countBy(allNodes, 'ip');
       if (ipAddresses[ipAddr] > 1) {
         return 'Duplicate IP Address';
+      }
+    },
+    configs(configs, allNodes) {
+      if (Object.values(configs).every(cfg => !cfg)) {
+        return reduce(
+          configs,
+          (errObj, cfgVal, cfgKey) => {
+            errObj[cfgKey] = 'Required';
+            return errObj;
+          },
+          {}
+        );
       }
     },
     disk(value) {

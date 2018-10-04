@@ -6,13 +6,9 @@ import { noop } from 'lodash';
 import { EngineSelection } from '../../../../widgets/EngineSelection';
 import wizardConfig from '../wizard-config';
 
-
 @reduxForm({
   form: wizardConfig.formName,
   validate: wizardConfig.validate,
-  initialValues: {
-    engines: []
-  },
   destroyOnUnmount: false,
   forceUnregisterOnUnmount: true
 })
@@ -22,7 +18,8 @@ export default class ClusterProcessing extends React.Component {
       engines: string.isRequired
     }).isRequired,
     // redux-form supplied props
-    change: func.isRequired
+    change: func.isRequired,
+    widgetId: string.isRequired
   };
 
   handleEngineSelectionChange = selectedEngineIds => {
@@ -34,7 +31,7 @@ export default class ClusterProcessing extends React.Component {
       <Field
         name={this.props.fields.engines}
         component={EngineSelectionField}
-        _widgetId="abc-123"
+        _widgetId={this.props.widgetId}
         onEngineSelectionChange={this.handleEngineSelectionChange}
         hideActions
       />

@@ -28,3 +28,4 @@ export engineOutputExportReducer, * as engineOutputExportModule from './redux/mo
 // export IngestionJobsList from './widgets/IngestionJobsList';
 export { SchedulerWidget } from './widgets/Scheduler';
 export { ClusterWizardWidget } from './widgets/Cluster/ClusterWizard';
+export { ClusterListWidget } from './widgets/Cluster/ClusterList';
