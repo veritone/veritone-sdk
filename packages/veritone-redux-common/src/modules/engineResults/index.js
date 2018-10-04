@@ -11,8 +11,7 @@ export const FETCH_ENGINE_RESULTS_FAILURE = `vtn/${namespace}/FETCH_ENGINE_RESUL
 export const CLEAR_ENGINE_RESULTS_BY_ENGINE_ID = `vtn/${namespace}/CLEAR_ENGINE_RESULTS_BY_ENGINE_ID`;
 
 export const defaultState = {
-  engineResultsMappedByEngineId: {},
-  fetchedEngineResults: {},
+  tdoEngineResultsMappedByEngineId: {},
   isFetchingEngineResults: false,
   fetchEngineResultsError: null
 };
@@ -39,24 +38,34 @@ export default createReducer(defaultState, {
         ...result.jsondata,
         userEdited: result.userEdited,
         assetId: result.assetId,
-        requestEngineId: result.engineId
+        requestEngineId: result.engineId,
+        tdoId: result.tdoId
       };
     });
 
-    const resultsGroupedByRequestEngineId = groupBy(results, 'requestEngineId');
-    forEach(Object.keys(resultsGroupedByRequestEngineId),
-      engineId =>
-        resultsGroupedByRequestEngineId[engineId]
-          .forEach(result => delete result.requestEngineId));
+    const tdoEngineResultsMappedByEngineId = {
+      ...state.tdoEngineResultsMappedByEngineId
+    };
+    const resultsGroupedByTdoId = groupBy(results, 'tdoId');
+    forEach(Object.keys(resultsGroupedByTdoId), tdoId => {
+      const resultsGroupedByRequestEngineId = groupBy(resultsGroupedByTdoId[tdoId], 'requestEngineId');
+      forEach(Object.keys(resultsGroupedByRequestEngineId),
+        engineId =>
+          resultsGroupedByRequestEngineId[engineId]
+            .forEach(result => {
+              delete result.requestEngineId;
+              delete result.tdoId;
+            }));
+      tdoEngineResultsMappedByEngineId[tdoId] = {
+        ...resultsGroupedByRequestEngineId
+      };
+    });
 
     return {
       ...state,
       isFetchingEngineResults: false,
       fetchEngineResultsError: null,
-      engineResultsMappedByEngineId: {
-        ...state.engineResultsMappedByEngineId,
-        ...resultsGroupedByRequestEngineId
-      }
+      tdoEngineResultsMappedByEngineId
     };
   },
   [FETCH_ENGINE_RESULTS_FAILURE](state, action) {
@@ -67,13 +76,14 @@ export default createReducer(defaultState, {
         get(action, 'payload[0].message') || 'Error fetching engine results'
     };
   },
-  [CLEAR_ENGINE_RESULTS_BY_ENGINE_ID](state, { engineId }) {
+  [CLEAR_ENGINE_RESULTS_BY_ENGINE_ID](state, { tdoId, engineId }) {
+    const tdoEngineResultsMappedByEngineId = {
+      ...state.tdoEngineResultsMappedByEngineId
+    };
+    tdoEngineResultsMappedByEngineId[tdoId][engineId] = [];
     return {
       ...state,
-      engineResultsMappedByEngineId: {
-        ...state.engineResultsMappedByEngineId,
-        [engineId]: []
-      }
+      tdoEngineResultsMappedByEngineId
     };
   }
 });
@@ -82,22 +92,20 @@ function local(state) {
   return state[namespace];
 }
 
-export const engineResults = state =>
-  local(state).engineResultsMappedByEngineId;
-
-export const engineResultsByEngineId = (state, engineId) =>
-  get(local(state), ['engineResultsMappedByEngineId', engineId], []);
+export const engineResultsByEngineId = (state, tdo, engineId) =>
+  get(local(state), ['tdoEngineResultsMappedByEngineId', get(tdo, 'id'), engineId], []);
 
 export const isFetchingEngineResults = state =>
   local(state).isFetchingEngineResults;
 
-export const isDisplayingUserEditedOutput = (state, engineId) => {
-  const results = engineResultsByEngineId(state, engineId);
+export const isDisplayingUserEditedOutput = (state, tdo, engineId) => {
+  const results = engineResultsByEngineId(state, tdo, engineId);
   return !!find(results, { userEdited: true });
 };
 
-export const clearEngineResultsByEngineId = engineId => ({
+export const clearEngineResultsByEngineId = (tdo, engineId) => ({
   type: CLEAR_ENGINE_RESULTS_BY_ENGINE_ID,
+  tdoId: get(tdo, 'id'),
   engineId
 });
 

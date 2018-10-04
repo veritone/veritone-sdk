@@ -1487,8 +1487,10 @@ function* watchSaveAssetData() {
         );
       }
     } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
+      const tdo = yield select(getTdo, widgetId);
       assetData = yield select(
         getFaceEngineAssetData,
+        tdo,
         action.payload.selectedEngineId
       );
     }

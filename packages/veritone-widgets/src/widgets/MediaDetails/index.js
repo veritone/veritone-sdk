@@ -81,6 +81,7 @@ const programLiveImageNullState =
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
+      mediaDetailsModule.getTdo(state, id),
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
@@ -106,6 +107,7 @@ const programLiveImageNullState =
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
+      mediaDetailsModule.getTdo(state, id),
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),
@@ -409,8 +411,9 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
-  handleUpdateMediaPlayerTime = (startTime, stopTime) => {
+  handleUpdateMediaPlayerTime = (startTime) => {
     this.mediaPlayer.seek(startTime / 1000);
+    this.mediaPlayer.play();
   };
 
   handleRunProcess = () => {
