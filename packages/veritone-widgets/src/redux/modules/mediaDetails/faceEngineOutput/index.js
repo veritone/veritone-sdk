@@ -558,7 +558,7 @@ export const saveFaceEdits = (tdoId, selectedEngineId) => {
     dispatch({
       type: SAVE_FACE_EDITS
     });
-    const assetData = getFaceEngineAssetData(getState(), selectedEngineId);
+    const assetData = getFaceEngineAssetData(getState(), tdoId, selectedEngineId);
     const contentType = 'application/json';
     const type = 'vtn-standard';
     const createAssetCalls = [];
