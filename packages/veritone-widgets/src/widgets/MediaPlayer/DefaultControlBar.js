@@ -103,16 +103,16 @@ export default class DefaultControlBar extends React.Component {
           store={store}
           disableDefaultControls
         >
-          { btnRestart && (<RestartMediaButton order={1.1} />) }
-          { btnReplay && (<ReplayControl seconds={10} order={1.2} />) } 
-          { btnForward && (<ForwardControl seconds={10} order={1.3} />) }
-          { btnPlayToggle && (<PlayToggle order={2} />) }
-          { displayTime && (<CurrentTimeDisplay player={player} order={3.1}/>) }
-          { displayTime && (<TimeDivider order={3.2}/>) }
-          { displayTime && (<DurationDisplay player={player} order={3.3}/>) }
-          { ctrlProgress && (<ProgressControl order={6}/>) }
-          { btnVolume && (<VolumeMenuButton vertical={ctrlProgress} order={7} />) }
-          { btnFullscreenToggle && (<FullscreenToggle order={8} />) }
+          {btnRestart && <RestartMediaButton order={1.1} />}
+          {btnReplay && <ReplayControl seconds={10} order={1.2} />}
+          {btnForward && <ForwardControl seconds={10} order={1.3} />}
+          {btnPlayToggle && <PlayToggle order={2} />}
+          {displayTime && <CurrentTimeDisplay player={player} order={3.1} />}
+          {displayTime && <TimeDivider order={3.2} />}
+          {displayTime && <DurationDisplay player={player} order={3.3} />}
+          {ctrlProgress && <ProgressControl order={6} />}
+          {btnVolume && <VolumeMenuButton vertical={ctrlProgress} order={7} />}
+          {btnFullscreenToggle && <FullscreenToggle order={8} />}
         </ControlBar>
       </div>
     );

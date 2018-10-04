@@ -14,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent/SnackbarContent';
 import { pick, head, get } from 'lodash';
 import {
   shape,
@@ -48,7 +49,6 @@ const saga = util.reactReduxSaga.saga;
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
     isSearchingEntities: faceEngineOutput.isSearchingEntities(state),
     showConfirmationDialog: faceEngineOutput.showConfirmationDialog(state),
-    confirmationAction: faceEngineOutput.confirmationAction(state),
     pendingUserEdits: faceEngineOutput.pendingUserEdits(
       state,
       selectedEngineId
@@ -56,7 +56,11 @@ const saga = util.reactReduxSaga.saga;
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
       selectedEngineId
-    )
+    ),
+    savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
+    error: faceEngineOutput.getError(state),
+    confirmationType: faceEngineOutput.getConfirmationType(state),
+    editModeEnabled: faceEngineOutput.getEditModeEnabled(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -69,7 +73,11 @@ const saga = util.reactReduxSaga.saga;
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
     cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
     clearEngineResultsByEngineId:
-      engineResultsModule.clearEngineResultsByEngineId
+      engineResultsModule.clearEngineResultsByEngineId,
+    onEditButtonClick: faceEngineOutput.editFaceButtonClick,
+    saveFaceEdits: faceEngineOutput.saveFaceEdits,
+    closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar,
+    toggleEditMode: faceEngineOutput.toggleEditMode
   },
   null,
   { withRef: true }
@@ -141,7 +149,7 @@ class FaceEngineOutputContainer extends Component {
     ),
     onEngineChange: func,
     onRestoreOriginalClick: func,
-    editMode: bool,
+    editModeEnabled: bool,
     currentMediaPlayerTime: number,
     className: string,
     onFaceOccurrenceClicked: func,
@@ -162,14 +170,22 @@ class FaceEngineOutputContainer extends Component {
     removeDetectedFace: func,
     createEntity: func,
     showConfirmationDialog: bool,
-    confirmationAction: func,
+    confirmationType: string,
     cancelFaceEdits: func,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
     pendingUserEdits: bool,
     isDisplayingUserEditedOutput: bool,
     clearEngineResultsByEngineId: func,
-    moreMenuItems: arrayOf(node)
+    moreMenuItems: arrayOf(node),
+    showEditButton: bool,
+    onEditButtonClick: func,
+    disableEditButton: bool,
+    saveFaceEdits: func,
+    savingFaceEdits: bool,
+    error: string,
+    closeErrorSnackbar: func,
+    toggleEditMode: func
   };
 
   state = {
@@ -201,6 +217,26 @@ class FaceEngineOutputContainer extends Component {
     ) {
       this.props.disableEdit(true);
     }
+
+    // fetch engine results when user changes engine
+    if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
+      const tdo = this.props.tdo;
+      this.props.clearEngineResultsByEngineId(nextProps.selectedEngineId);
+      this.props.fetchEngineResults({
+        engineId: nextProps.selectedEngineId,
+        tdo: this.props.tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        ignoreUserEdited: false
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    if(this.props.editModeEnabled) {
+      this.props.toggleEditMode();
+    }
   }
 
   handleSearchEntities = searchText => {
@@ -215,6 +251,15 @@ class FaceEngineOutputContainer extends Component {
     );
 
     this.showFaceDetectionDoneSnack(selectedEntity);
+  };
+
+  openDialog = () => {
+    this.setState({ dialogOpen: true });
+  };
+  closeDialog = () => {
+    this.setState({
+      dialogOpen: false
+    });
   };
 
   handleAddNewEntity = currentlyEditedFace => {
@@ -255,16 +300,6 @@ class FaceEngineOutputContainer extends Component {
         name: e.target.value
       }
     }));
-  };
-
-  openDialog = () => {
-    this.setState({ dialogOpen: true });
-  };
-
-  closeDialog = () => {
-    this.setState({
-      dialogOpen: false
-    });
   };
 
   clearNewEntityForm = () => {
@@ -445,28 +480,74 @@ class FaceEngineOutputContainer extends Component {
   };
 
   handleEngineChange = engineId => {
-    if (this.props.editMode && this.props.pendingUserEdits) {
-      this.props.openConfirmationDialog(() => {
-        this.props.cancelFaceEdits();
-        this.props.onEngineChange(engineId);
-        this.props.closeConfirmationDialog();
+    this.props.onEngineChange(engineId);
+  };
+
+  onSaveEdits = () => {
+    const {
+      tdo,
+      selectedEngineId,
+      toggleEditMode,
+      saveFaceEdits,
+      fetchEngineResults
+    } = this.props;
+    saveFaceEdits(tdo.id, selectedEngineId).then(res => {
+      fetchEngineResults({
+        engineId: selectedEngineId,
+        tdo: tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
+        ignoreUserEdited: false
       });
-    } else {
-      this.props.onEngineChange(engineId);
+      toggleEditMode();
+      return res;
+    });
+  };
+
+  handleDialogCancel = () => {
+    const {
+      closeConfirmationDialog,
+      cancelFaceEdits,
+      confirmationType,
+      toggleEditMode
+    } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      cancelFaceEdits();
+      toggleEditMode();
     }
+    closeConfirmationDialog();
+  };
+
+  handleDialogConfirm = () => {
+    const {
+      closeConfirmationDialog,
+      cancelFaceEdits,
+      confirmationType
+    } = this.props;
+
+    if (confirmationType === 'saveEdits') {
+      this.onSaveEdits();
+    } else if (confirmationType === 'cancelEdits') {
+      cancelFaceEdits();
+    }
+    closeConfirmationDialog();
   };
 
   renderConfirmationDialog = () => {
-    const alertTitle = 'Unsaved Changes';
-    const alertDescription = 'This action will reset your changes.';
-    const cancelButtonLabel = 'Cancel';
-    const approveButtonLabel = 'Continue';
+    let alertTitle = 'Unsaved Changes';
+    let alertDescription = 'This action will reset your changes.';
+    let cancelButtonLabel = 'Cancel';
+    let approveButtonLabel = 'Continue';
+    const { showConfirmationDialog, confirmationType } = this.props;
 
-    const {
-      showConfirmationDialog,
-      closeConfirmationDialog,
-      confirmationAction
-    } = this.props;
+    if (confirmationType === 'saveEdits') {
+      alertTitle = 'Save Changes?';
+      alertDescription = 'Would you like to save the changes?';
+      cancelButtonLabel = 'Discard';
+      approveButtonLabel = 'Save';
+    }
 
     return (
       <AlertDialog
@@ -475,10 +556,18 @@ class FaceEngineOutputContainer extends Component {
         content={alertDescription}
         cancelButtonLabel={cancelButtonLabel}
         approveButtonLabel={approveButtonLabel}
-        onCancel={closeConfirmationDialog}
-        onApprove={confirmationAction}
+        onCancel={this.handleDialogCancel}
+        onApprove={this.handleDialogConfirm}
       />
     );
+  };
+
+  checkEditState = () => {
+    if (this.props.editModeEnabled && this.props.pendingUserEdits) {
+      this.props.openConfirmationDialog('saveEdits');
+    } else {
+      this.props.toggleEditMode();
+    }
   };
 
   renderFaceDetectionDoneSnackbar = () => {
@@ -502,7 +591,6 @@ class FaceEngineOutputContainer extends Component {
 
   render() {
     const faceEngineProps = pick(this.props, [
-      'editMode',
       'engines',
       'entities',
       'currentMediaPlayerTime',
@@ -511,7 +599,8 @@ class FaceEngineOutputContainer extends Component {
       'onFaceOccurrenceClicked',
       'isSearchingEntities',
       'onRestoreOriginalClick',
-      'outputNullState'
+      'outputNullState',
+      'disableEditButton'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -535,6 +624,11 @@ class FaceEngineOutputContainer extends Component {
         <FaceEngineOutput
           {...this.props.faces}
           {...faceEngineProps}
+          editMode={this.props.editModeEnabled}
+          onEditButtonClick={this.props.toggleEditMode}
+          showEditButton={
+            this.props.showEditButton && !this.props.editModeEnabled
+          }
           onEngineChange={this.handleEngineChange}
           onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={this.handleSearchEntities}
@@ -544,9 +638,46 @@ class FaceEngineOutputContainer extends Component {
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           moreMenuItems={this.props.moreMenuItems}
         />
+        {this.props.editModeEnabled && (
+          <div className={styles.actionButtonsEditMode}>
+            <Button
+              className={styles.actionButtonEditMode}
+              onClick={this.checkEditState}
+              disabled={this.props.savingFaceEdits}
+            >
+              CANCEL
+            </Button>
+            <Button
+              className={styles.actionButtonEditMode}
+              onClick={this.onSaveEdits}
+              disabled={
+                !this.props.pendingUserEdits || this.props.savingFaceEdits
+              }
+              variant="contained"
+              color="primary"
+            >
+              SAVE
+            </Button>
+          </div>
+        )}
         {this.renderAddNewEntityModal()}
         {this.renderConfirmationDialog()}
         {this.renderFaceDetectionDoneSnackbar()}
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={!!this.props.error}
+          autoHideDuration={5000}
+          onClose={this.props.closeErrorSnackbar}
+        >
+          <SnackbarContent
+            className={styles.errorSnackbar}
+            message={
+              <span className={styles.snackbarMessageText}>
+                {this.props.error}
+              </span>
+            }
+          />
+        </Snackbar>
       </Fragment>
     );
   }

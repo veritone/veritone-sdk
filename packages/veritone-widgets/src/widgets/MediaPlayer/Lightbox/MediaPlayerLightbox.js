@@ -31,11 +31,11 @@ export default class MediaPlayerLightbox extends React.Component {
     fullscreen: true,
     readOnly: true
   };
-  
+
   componentDidMount() {
     if (this.props.autoPlay) {
       setTimeout(() => {
-        (this.playerRef) && this.playerRef.current.actions.play();
+        this.playerRef && this.playerRef.current.actions.play();
       });
     }
   }
@@ -69,7 +69,7 @@ export default class MediaPlayerLightbox extends React.Component {
             onDeleteBoundingBox={this.handleOnDeleteBoundingBox}
             onChangeBoundingBox={this.handleOnChangeBoundingBox}
           />
-          <DefaultControlBar 
+          <DefaultControlBar
             btnRestart={!live}
             btnReplay={!live}
             btnForward={!live}
