@@ -247,6 +247,15 @@ class FaceEngineOutputContainer extends Component {
     this.showFaceDetectionDoneSnack(selectedEntity);
   };
 
+  openDialog = () => {
+    this.setState({ dialogOpen: true });
+  };
+  closeDialog = () => {
+    this.setState({
+      dialogOpen: false
+    });
+  };
+
   handleAddNewEntity = currentlyEditedFace => {
     if (!this.props.libraries.length) {
       this.props.fetchLibraries({
