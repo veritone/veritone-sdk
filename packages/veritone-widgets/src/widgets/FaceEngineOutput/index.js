@@ -40,7 +40,7 @@ const saga = util.reactReduxSaga.saga;
 @saga(rootSaga)
 @connect(
   (state, { tdo, selectedEngineId }) => ({
-    faces: faceEngineOutput.getFaces(state, tdo.id, selectedEngineId),
+    faces: faceEngineOutput.getFaces(state, selectedEngineId, tdo.id),
     entities: faceEngineOutput.getEntities(state),
     libraries: faceEngineOutput.getLibraries(state),
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),

@@ -288,7 +288,7 @@ function local(state) {
   return state[namespace];
 }
 
-export const getFaceDataByEngine = (state, tdoId, engineId) => {
+export const getFaceDataByEngine = (state, engineId, tdoId) => {
   return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
 };
 
@@ -500,7 +500,7 @@ export const getFaces = createSelector(
 
 /* HELPERS */
 export const getFaceEngineAssetData = (state, tdoId, engineId) => {
-  const engineResults = cloneDeep(getFaceDataByEngine(state, tdoId, engineId));
+  const engineResults = cloneDeep(getFaceDataByEngine(state, engineId, tdoId));
   const userDetectedFaces =
     cloneDeep(getUserDetectedFaces(state, engineId)) || [];
   const userRemovedFaces =
