@@ -234,7 +234,7 @@ class FaceEngineOutputContainer extends Component {
   }
 
   componentWillUnmount() {
-    if(this.props.editModeEnabled) {
+    if (this.props.editModeEnabled) {
       this.props.toggleEditMode();
     }
   }

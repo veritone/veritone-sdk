@@ -3,6 +3,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
 import {
   shape,
   number,
@@ -95,7 +97,8 @@ class FaceEngineOutput extends Component {
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
-    disableEditButton: bool
+    disableEditButton: bool,
+    onRestoreOriginalClick: func.isRequired
   };
 
   state = {
@@ -125,6 +128,10 @@ class FaceEngineOutput extends Component {
   };
 
   handleUserEditChange = evt => {
+    if (evt.target.value == 'restoreOriginal') {
+      this.props.onRestoreOriginalClick();
+      return;
+    }
     this.props.onToggleUserEditedOutput &&
       this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
@@ -149,7 +156,8 @@ class FaceEngineOutput extends Component {
       moreMenuItems,
       showEditButton,
       onEditButtonClick,
-      disableEditButton
+      disableEditButton,
+      onRestoreOriginalClick
     } = this.props;
     const { viewMode } = this.state;
 
@@ -175,7 +183,7 @@ class FaceEngineOutput extends Component {
                 autoWidth
                 value={showingUserEditedOutput ? 'userEdited' : 'original'}
                 onChange={this.handleUserEditChange}
-                className={cx(styles.outputHeaderSelect)}
+                className={styles.outputHeaderSelect}
                 MenuProps={{
                   anchorOrigin: {
                     horizontal: 'center',
@@ -190,15 +198,21 @@ class FaceEngineOutput extends Component {
               >
                 <MenuItem
                   value="userEdited"
-                  className={cx(styles.selectMenuItem)}
                 >
-                  User Edited
+                  <ListItemText classes={{primary: styles.selectMenuItem}} primary="User-Edited" />
                 </MenuItem>
                 <MenuItem
                   value="original"
-                  className={cx(styles.selectMenuItem)}
+                  className={styles.selectMenuItem}
                 >
-                  Original
+                  <ListItemText classes={{primary: styles.selectMenuItem}} primary="Original (View Only)" />
+                </MenuItem>
+                <Divider light />
+                <MenuItem
+                  value="restoreOriginal"
+                  className={styles.selectMenuItem}
+                >
+                  <ListItemText classes={{primary: styles.selectMenuItem}} primary="Restore Original" />
                 </MenuItem>
               </Select>
             )}

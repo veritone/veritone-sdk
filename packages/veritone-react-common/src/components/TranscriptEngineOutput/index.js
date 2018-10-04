@@ -8,6 +8,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent, { View, Edit } from './TranscriptContent';
@@ -73,7 +75,8 @@ export default class TranscriptEngineOutput extends Component {
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
-    disableEditButton: bool
+    disableEditButton: bool,
+    onRestoreOriginalClick: func.isRequired
   };
 
   static defaultProps = {
@@ -95,6 +98,10 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   handleUserEditChange = evt => {
+    if (evt.target.value == 'restoreOriginal') {
+      this.props.onRestoreOriginalClick();
+      return;
+    }
     this.props.onToggleUserEditedOutput &&
       this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
@@ -156,7 +163,7 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderResultOptions() {
-    const { showingUserEditedOutput } = this.props;
+    const { showingUserEditedOutput, onRestoreOriginalClick } = this.props;
     return (
       <Select
         autoWidth
@@ -177,15 +184,21 @@ export default class TranscriptEngineOutput extends Component {
       >
         <MenuItem
           value="userEdited"
-          className={classNames(styles.selectMenuItem)}
         >
-          User Edited
+          <ListItemText classes={{primary: styles.selectMenuItem}} primary="User-Edited" />
         </MenuItem>
         <MenuItem
           value="original"
-          className={classNames(styles.selectMenuItem)}
+          className={styles.selectMenuItem}
         >
-          Original
+          <ListItemText classes={{primary: styles.selectMenuItem}} primary="Original (View Only)" />
+        </MenuItem>
+        <Divider light />
+        <MenuItem
+          value="restoreOriginal"
+          className={styles.selectMenuItem}
+        >
+          <ListItemText classes={{primary: styles.selectMenuItem}} primary="Restore Original" />
         </MenuItem>
       </Select>
     );

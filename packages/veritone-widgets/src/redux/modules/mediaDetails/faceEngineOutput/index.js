@@ -67,7 +67,7 @@ const defaultState = {
   displayUserEdited: false,
   savingFaceEdits: false,
   editModeEnabled: false,
-  error: null,
+  error: null
 };
 
 const reducer = createReducer(defaultState, {

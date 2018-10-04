@@ -58,7 +58,6 @@ import { guid } from '../../shared/util';
 import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
-import moreMenuStyles from './MoreMenuItems/styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
@@ -822,20 +821,6 @@ class MediaDetailsWidget extends React.Component {
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     const moreMenuItems = [];
-    const selectedEngine = find(get(selectedEngineCategory, 'engines', []), {
-      id: selectedEngineId
-    });
-    if (!isEditModeEnabled && get(selectedEngine, 'hasUserEdits')) {
-      moreMenuItems.push(
-        <MenuItem
-          key="restore-original-output"
-          className={moreMenuStyles.moreMenuItem}
-          onClick={this.onRestoreOriginalClick}
-        >
-          Restore Original
-        </MenuItem>
-      );
-    }
     if (onExport && categoryExportFormats.length && !isEditModeEnabled) {
       moreMenuItems.push(
         <ExportMenuItem
@@ -1231,6 +1216,7 @@ class MediaDetailsWidget extends React.Component {
                         outputNullState={this.buildEngineNullStateComponent()}
                         bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1249,6 +1235,7 @@ class MediaDetailsWidget extends React.Component {
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
                         moreMenuItems={moreMenuItems}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
