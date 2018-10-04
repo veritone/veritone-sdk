@@ -5,8 +5,8 @@ import { arrayOf, any, objectOf, func, bool } from 'prop-types';
 import { Table, PaginatedTable, Column } from 'components/DataTable';
 import MenuColumn from 'components/DataTable/MenuColumn';
 import Avatar from '@material-ui/core/Avatar';
-import { format, distanceInWordsToNow } from 'date-fns';
-import { capitalize, omit, noop, get } from 'lodash';
+import { format } from 'date-fns';
+import { omit, noop, get } from 'lodash';
 
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';

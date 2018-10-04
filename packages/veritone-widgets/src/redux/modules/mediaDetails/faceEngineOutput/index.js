@@ -24,6 +24,16 @@ export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
 export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIALOG`;
 
+export const FACE_EDIT_BUTTON_CLICKED = `vtn/${namespace}/FACE_EDIT_BUTTON_CLICKED`;
+
+export const SAVE_FACE_EDITS = `vtn/${namespace}/SAVE_FACE_EDITS`;
+export const SAVE_FACE_EDITS_SUCCESS = `vtn/${namespace}/SAVE_FACE_EDITS_SUCCESS`;
+export const SAVE_FACE_EDITS_FAILURE = `vtn/${namespace}/SAVE_FACE_EDITS_FAILURE`;
+
+export const CLOSE_ERROR_SNACKBAR = `vtn/${namespace}/CLOSE_ERROR_SNACKBAR`;
+
+export const TOGGLE_EDIT_MODE = `vtn/${namespace}/TOGGLE_EDIT_MODE`;
+
 import {
   get,
   map,
@@ -32,12 +42,13 @@ import {
   isEmpty,
   pick,
   flatten,
-  noop,
   reduce,
-  cloneDeep
+  cloneDeep,
+  forEach
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
+import { saveAsset, removeAwsSignatureParams } from '../../../../shared/asset';
 
 const { createReducer } = helpers;
 const { engineResults: engineResultsModule } = modules;
@@ -52,8 +63,11 @@ const defaultState = {
   facesDetectedByUser: {},
   facesRemovedByUser: {},
   showConfirmationDialog: false,
-  confirmationAction: noop,
-  displayUserEdited: false
+  confirmationType: 'cancelEdits',
+  displayUserEdited: false,
+  savingFaceEdits: false,
+  editModeEnabled: false,
+  error: null,
 };
 
 const reducer = createReducer(defaultState, {
@@ -211,19 +225,60 @@ const reducer = createReducer(defaultState, {
       facesRemovedByUser: {}
     };
   },
-  [OPEN_CONFIRMATION_DIALOG](state, action) {
-    const { confirmationAction } = action.payload;
+  [OPEN_CONFIRMATION_DIALOG](
+    state,
+    {
+      payload: { confirmationType }
+    }
+  ) {
     return {
       ...state,
       showConfirmationDialog: true,
-      confirmationAction: confirmationAction || noop
+      confirmationType: confirmationType || 'cancelEdits'
     };
   },
-  [CLOSE_CONFIRMATION_DIALOG](state, action) {
+  [CLOSE_CONFIRMATION_DIALOG](state) {
     return {
       ...state,
       showConfirmationDialog: false,
-      confirmationAction: noop
+      confirmationType: 'cancelEdits'
+    };
+  },
+  [SAVE_FACE_EDITS](state) {
+    return {
+      ...state,
+      savingFaceEdits: true
+    };
+  },
+  [SAVE_FACE_EDITS_SUCCESS](state) {
+    return {
+      ...state,
+      error: null,
+      savingFaceEdits: false
+    };
+  },
+  [SAVE_FACE_EDITS_FAILURE](
+    state,
+    {
+      payload: { error }
+    }
+  ) {
+    return {
+      ...state,
+      error,
+      savingFaceEdits: false
+    };
+  },
+  [CLOSE_ERROR_SNACKBAR](state) {
+    return {
+      ...state,
+      error: null
+    };
+  },
+  [TOGGLE_EDIT_MODE](state) {
+    return {
+      ...state,
+      editModeEnabled: !state.editModeEnabled
     };
   }
 });
@@ -243,9 +298,24 @@ export const getUserDetectedFaces = (state, engineId) =>
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
 
+export const getSavingFaceEdits = state => get(local(state), 'savingFaceEdits');
+
 export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
+
+export const getConfirmationType = state =>
+  get(local(state), 'confirmationType');
+export const getError = state => get(local(state), 'error');
+export const getEditModeEnabled = state => get(local(state), 'editModeEnabled');
+
+export const closeErrorSnackbar = () => ({
+  type: CLOSE_ERROR_SNACKBAR
+});
+
+export const toggleEditMode = () => ({
+  type: TOGGLE_EDIT_MODE
+});
 
 /* ENTITIES */
 export const fetchingEntities = meta => ({
@@ -361,11 +431,11 @@ export const cancelFaceEdits = () => ({
 });
 
 /* CONFIRMATION DIALOG */
-export const openConfirmationDialog = confirmationAction => {
+export const openConfirmationDialog = confirmationType => {
   return {
     type: OPEN_CONFIRMATION_DIALOG,
     payload: {
-      confirmationAction
+      confirmationType
     }
   };
 };
@@ -374,11 +444,14 @@ export const closeConfirmationDialog = () => ({
   type: CLOSE_CONFIRMATION_DIALOG
 });
 
+export const editFaceButtonClick = () => {
+  return {
+    type: FACE_EDIT_BUTTON_CLICKED
+  };
+};
+
 export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
-
-export const confirmationAction = state =>
-  get(local(state), 'confirmationAction');
 
 /* SELECTORS */
 export const getFaces = createSelector(
@@ -479,3 +552,63 @@ function addUserDetectedFaces(
     )
   }));
 }
+
+export const saveFaceEdits = (tdoId, selectedEngineId) => {
+  return async function action(dispatch, getState) {
+    dispatch({
+      type: SAVE_FACE_EDITS
+    });
+    const assetData = getFaceEngineAssetData(getState(), selectedEngineId);
+    const contentType = 'application/json';
+    const type = 'vtn-standard';
+    const createAssetCalls = [];
+    forEach(assetData, jsonData => {
+      if (get(jsonData, 'series.length')) {
+        forEach(jsonData.series, asset => {
+          if (get(asset, 'object.uri')) {
+            asset.object.uri = removeAwsSignatureParams(
+              get(asset, 'object.uri')
+            );
+          }
+          delete asset.guid;
+        });
+      }
+      // process vtn-standard asset
+      const sourceData = {
+        name: jsonData.sourceEngineName,
+        engineId: jsonData.sourceEngineId,
+        assetId: jsonData.assetId,
+        taskId: jsonData.taskId
+      };
+      createAssetCalls.push(
+        saveAsset(
+          {
+            tdoId,
+            contentType,
+            type,
+            sourceData,
+            isUserEdited: true
+          },
+          jsonData,
+          dispatch,
+          getState
+        )
+      );
+    });
+    return await Promise.all(createAssetCalls)
+      .then(values => {
+        dispatch({
+          type: SAVE_FACE_EDITS_SUCCESS
+        });
+        return values;
+      })
+      .catch(() => {
+        dispatch({
+          type: SAVE_FACE_EDITS_FAILURE,
+          payload: {
+            error: 'Failed to save face edits.'
+          }
+        });
+      });
+  };
+};

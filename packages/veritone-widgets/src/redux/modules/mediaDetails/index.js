@@ -1,66 +1,56 @@
 import { get, has, find, values, uniqBy, keyBy, noop } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer, callGraphQLApi } = helpers;
-
-export const LOAD_ENGINE_CATEGORIES_SUCCESS = 'LOAD_ENGINE_CATEGORIES_SUCCESS';
-export const LOAD_ENGINE_CATEGORIES_FAILURE = 'LOAD_ENGINE_CATEGORIES_FAILURE';
-export const LOAD_TDO = 'LOAD_TDO';
-export const LOAD_TDO_SUCCESS = 'LOAD_TDO_SUCCESS';
-export const LOAD_TDO_FAILURE = 'LOAD_TDO_FAILURE';
-export const UPDATE_TDO = 'UPDATE_TDO';
-export const UPDATE_TDO_SUCCESS = 'UPDATE_TDO_SUCCESS';
-export const UPDATE_TDO_FAILURE = 'UPDATE_TDO_FAILURE';
-export const LOAD_CONTENT_TEMPLATES = 'LOAD_CONTENT_TEMPLATES';
-export const LOAD_CONTENT_TEMPLATES_SUCCESS = 'LOAD_CONTENT_TEMPLATES_SUCCESS';
-export const LOAD_CONTENT_TEMPLATES_FAILURE = 'LOAD_CONTENT_TEMPLATES_FAILURE';
-export const LOAD_TDO_CONTENT_TEMPLATES_SUCCESS =
-  'LOAD_TDO_CONTENT_TEMPLATES_SUCCESS';
-export const LOAD_TDO_CONTENT_TEMPLATES_FAILURE =
-  'LOAD_TDO_CONTENT_TEMPLATES_FAILURE';
-export const UPDATE_TDO_CONTENT_TEMPLATES = 'UPDATE_TDO_CONTENT_TEMPLATES';
-export const UPDATE_TDO_CONTENT_TEMPLATES_FAILURE =
-  'UPDATE_TDO_CONTENT_TEMPLATES_FAILURE';
-export const SELECT_ENGINE_CATEGORY = 'SELECT_ENGINE_CATEGORY';
-export const SET_SELECTED_ENGINE_ID = 'SET_SELECTED_ENGINE_ID';
-export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
-export const TOGGLE_INFO_PANEL = 'TOGGLE_INFO_PANEL';
-export const INITIALIZE_WIDGET = 'INITIALIZE_WIDGET';
-export const TOGGLE_EXPANDED_MODE = 'TOGGLE_EXPANDED_MODE';
-export const REQUEST_ENTITIES = 'REQUEST_ENTITIES';
-export const REQUEST_ENTITIES_SUCCESS = 'REQUEST_ENTITIES_SUCCESS';
-export const REQUEST_ENTITIES_FAILURE = 'REQUEST_ENTITIES_FAILURE';
-export const REQUEST_SCHEMAS = 'REQUEST_SCHEMAS';
-export const REQUEST_SCHEMAS_SUCCESS = 'REQUEST_SCHEMAS_SUCCESS';
-export const REQUEST_SCHEMAS_FAILURE = 'REQUEST_SCHEMAS_FAILURE';
-export const TOGGLE_SAVE_MODE = 'TOGGLE_SAVE_MODE';
-export const SAVE_ASSET_DATA = 'SAVE_ASSET_DATA';
-export const SAVE_ASSET_DATA_SUCCESS = 'SAVE_ASSET_DATA_SUCCESS';
-export const SAVE_ASSET_DATA_FAILURE = 'SAVE_ASSET_DATA_FAILURE';
-export const CREATE_FILE_ASSET_SUCCESS = 'CREATE_FILE_ASSET_SUCCESS';
-export const CREATE_FILE_ASSET_FAILURE = 'CREATE_FILE_ASSET_FAILURE';
-export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE =
-  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE';
-export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS =
-  'CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS';
-export const REFRESH_ENGINE_RUNS_SUCCESS = 'REFRESH_ENGINE_RUNS_SUCCESS';
-export const SHOW_CONFIRM_DIALOG = 'SHOW_CONFIRM_DIALOG';
-export const CLOSE_CONFIRM_DIALOG = 'CLOSE_CONFIRM_DIALOG';
-export const DISCARD_UNSAVED_CHANGES = 'DISCARD_UNSAVED_CHANGES';
-export const SET_EDIT_BUTTON_STATE = 'SET_EDIT_BUTTON_STATE';
-export const SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE =
-  'SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE';
-export const UPDATE_MEDIA_PLAYER_STATE = 'UPDATE_MEDIA_PLAYER_STATE';
-export const RESTORE_ORIGINAL_ENGINE_RESULTS =
-  'RESTORE_ORIGINAL_ENGINE_RESULTS';
-export const RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS =
-  'RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS';
-export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE =
-  'RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE';
-export const CREATE_QUICK_EXPORT = 'CREATE_QUICK_EXPORT';
-export const CREATE_QUICK_EXPORT_SUCCESS = 'CREATE_QUICK_EXPORT_SUCCESS';
-export const CREATE_QUICK_EXPORT_FAILURE = 'CREATE_QUICK_EXPORT_FAILURE';
+import { getEditModeEnabled as isFaceEditEnabled } from './faceEngineOutput';
+import { getEditModeEnabled as isTranscriptEditEnabled } from './transcriptWidget';
 
 export const namespace = 'mediaDetails';
+
+export const LOAD_ENGINE_CATEGORIES_SUCCESS = `vtn/${namespace}_LOAD_ENGINE_CATEGORIES_SUCCESS`;
+export const LOAD_ENGINE_CATEGORIES_FAILURE = `vtn/${namespace}_LOAD_ENGINE_CATEGORIES_FAILURE`;
+export const LOAD_TDO = `vtn/${namespace}_LOAD_TDO`;
+export const LOAD_TDO_SUCCESS = `vtn/${namespace}_LOAD_TDO_SUCCESS`;
+export const LOAD_TDO_FAILURE = `vtn/${namespace}_LOAD_TDO_FAILURE`;
+export const UPDATE_TDO = `vtn/${namespace}_UPDATE_TDO`;
+export const UPDATE_TDO_SUCCESS = `vtn/${namespace}_UPDATE_TDO_SUCCESS`;
+export const UPDATE_TDO_FAILURE = `vtn/${namespace}_UPDATE_TDO_FAILURE`;
+export const LOAD_CONTENT_TEMPLATES = `vtn/${namespace}_LOAD_CONTENT_TEMPLATES`;
+export const LOAD_CONTENT_TEMPLATES_SUCCESS = `vtn/${namespace}_LOAD_CONTENT_TEMPLATES_SUCCESS`;
+export const LOAD_CONTENT_TEMPLATES_FAILURE = `vtn/${namespace}_LOAD_CONTENT_TEMPLATES_FAILURE`;
+export const LOAD_TDO_CONTENT_TEMPLATES_SUCCESS = `vtn/${namespace}_LOAD_TDO_CONTENT_TEMPLATES_SUCCESS`;
+export const LOAD_TDO_CONTENT_TEMPLATES_FAILURE = `vtn/${namespace}_LOAD_TDO_CONTENT_TEMPLATES_FAILURE`;
+export const UPDATE_TDO_CONTENT_TEMPLATES = `vtn/${namespace}_UPDATE_TDO_CONTENT_TEMPLATES`;
+export const UPDATE_TDO_CONTENT_TEMPLATES_FAILURE = `vtn/${namespace}_UPDATE_TDO_CONTENT_TEMPLATES_FAILURE`;
+export const SELECT_ENGINE_CATEGORY = `vtn/${namespace}_SELECT_ENGINE_CATEGORY`;
+export const SET_SELECTED_ENGINE_ID = `vtn/${namespace}_SET_SELECTED_ENGINE_ID`;
+export const TOGGLE_EDIT_MODE = `vtn/${namespace}_TOGGLE_EDIT_MODE`;
+export const TOGGLE_INFO_PANEL = `vtn/${namespace}_TOGGLE_INFO_PANEL`;
+export const INITIALIZE_WIDGET = `vtn/${namespace}_INITIALIZE_WIDGET`;
+export const TOGGLE_EXPANDED_MODE = `vtn/${namespace}_TOGGLE_EXPANDED_MODE`;
+export const REQUEST_ENTITIES = `vtn/${namespace}_REQUEST_ENTITIES`;
+export const REQUEST_ENTITIES_SUCCESS = `vtn/${namespace}_REQUEST_ENTITIES_SUCCESS`;
+export const REQUEST_ENTITIES_FAILURE = `vtn/${namespace}_REQUEST_ENTITIES_FAILURE`;
+export const REQUEST_SCHEMAS = `vtn/${namespace}_REQUEST_SCHEMAS`;
+export const REQUEST_SCHEMAS_SUCCESS = `${namespace}_REQUEST_SCHEMAS_SUCCESS`;
+export const REQUEST_SCHEMAS_FAILURE = `${namespace}_REQUEST_SCHEMAS_FAILURE`;
+export const TOGGLE_SAVE_MODE = `${namespace}_TOGGLE_SAVE_MODE`;
+export const CREATE_FILE_ASSET_SUCCESS = `${namespace}_CREATE_FILE_ASSET_SUCCESS`;
+export const CREATE_FILE_ASSET_FAILURE = `${namespace}_CREATE_FILE_ASSET_FAILURE`;
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE = `${namespace}_CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE`;
+export const CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS = `${namespace}_CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS`;
+export const REFRESH_ENGINE_RUNS_SUCCESS = `${namespace}_REFRESH_ENGINE_RUNS_SUCCESS`;
+export const SHOW_CONFIRM_DIALOG = `${namespace}_SHOW_CONFIRM_DIALOG`;
+export const CLOSE_CONFIRM_DIALOG = `${namespace}_CLOSE_CONFIRM_DIALOG`;
+export const DISCARD_UNSAVED_CHANGES = `${namespace}_DISCARD_UNSAVED_CHANGES`;
+export const SET_EDIT_BUTTON_STATE = `${namespace}_SET_EDIT_BUTTON_STATE`;
+export const UPDATE_MEDIA_PLAYER_STATE = `${namespace}_UPDATE_MEDIA_PLAYER_STATE`;
+export const RESTORE_ORIGINAL_ENGINE_RESULTS = `${namespace}_RESTORE_ORIGINAL_ENGINE_RESULTS`;
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS = `${namespace}_RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS`;
+export const RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE = `${namespace}_RESTORE_ORIGINAL_ENGINE_RESULTS_FAILURE`;
+export const CREATE_QUICK_EXPORT = `${namespace}_CREATE_QUICK_EXPORT`;
+export const CREATE_QUICK_EXPORT_SUCCESS = `${namespace}_CREATE_QUICK_EXPORT_SUCCESS`;
+export const CREATE_QUICK_EXPORT_FAILURE = `${namespace}_CREATE_QUICK_EXPORT_FAILURE`;
+export const CANCEL_EDIT = `${namespace}_CANCEL_EDIT`;
 
 const defaultMDPState = {
   engineCategories: [],
@@ -87,10 +77,8 @@ const defaultMDPState = {
     cancelAction: noop
   },
   isEditButtonDisabled: false,
-  showTranscriptBulkEditSnack: false,
   currentMediaPlayerTime: 0,
-  isRestoringOriginalEngineResult: false,
-  isSavingEngineResults: false
+  isRestoringOriginalEngineResult: false
 };
 
 const defaultState = {};
@@ -540,12 +528,7 @@ export default createReducer(defaultState, {
       ...state
     };
   },
-  [REQUEST_SCHEMAS_SUCCESS](
-    state,
-    {
-      payload
-    }
-  ) {
+  [REQUEST_SCHEMAS_SUCCESS](state, { payload }) {
     return {
       ...state,
       schemasById: {
@@ -644,66 +627,6 @@ export default createReducer(defaultState, {
       }
     };
   },
-  [SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE](
-    state,
-    {
-      showTranscriptBulkEditSnack,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        showTranscriptBulkEditSnack
-      }
-    };
-  },
-  [SAVE_ASSET_DATA](
-    state,
-    {
-      payload,
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        isSavingEngineResults: true
-      }
-    };
-  },
-  [SAVE_ASSET_DATA_SUCCESS](
-    state,
-    {
-      meta: { widgetId }
-    }
-  ) {
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        isSavingEngineResults: false
-      }
-    };
-  },
-  [SAVE_ASSET_DATA_FAILURE](
-    state,
-    {
-      meta: { error, widgetId }
-    }
-  ) {
-    const errorMessage = get(error, 'message', error);
-    return {
-      ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: errorMessage || 'Unknown error saving engine results',
-        isSavingEngineResults: false
-      }
-    };
-  },
   [CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS](
     state,
     {
@@ -714,7 +637,6 @@ export default createReducer(defaultState, {
       ...state,
       [widgetId]: {
         ...state[widgetId],
-        isSavingEngineResults: false,
         enableSave: true,
         showTranscriptBulkEditSnack: true
       }
@@ -732,7 +654,6 @@ export default createReducer(defaultState, {
       [widgetId]: {
         ...state[widgetId],
         error: errorMessage || 'Unknown error saving bulk transcript edit',
-        isSavingEngineResults: false,
         enableSave: true
       }
     };
@@ -798,6 +719,11 @@ export default createReducer(defaultState, {
         isRestoringOriginalEngineResult: false
       }
     };
+  },
+  [CANCEL_EDIT](state) {
+    return {
+      ...state
+    };
   }
 });
 
@@ -816,7 +742,7 @@ export const getSelectedEngineCategory = (state, widgetId) =>
 export const getSelectedEngineId = (state, widgetId) =>
   get(local(state), [widgetId, 'selectedEngineId']);
 export const isEditModeEnabled = (state, widgetId) =>
-  get(local(state), [widgetId, 'isEditModeEnabled']);
+  isTranscriptEditEnabled(state) || isFaceEditEnabled(state);
 export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
@@ -827,8 +753,7 @@ export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
 export const getTdoContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'tdoContentTemplates']);
-export const getSchemasById = (state) =>
-  get(local(state), 'schemasById');
+export const getSchemasById = state => get(local(state), 'schemasById');
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
   get(local(state), [widgetId, 'error']);
@@ -842,8 +767,6 @@ export const currentMediaPlayerTime = (state, widgetId) =>
   get(local(state), [widgetId, 'currentMediaPlayerTime']);
 export const isRestoringOriginalEngineResult = (state, widgetId) =>
   get(local(state), [widgetId, 'isRestoringOriginalEngineResult']);
-export const isSavingEngineResults = (state, widgetId) =>
-  get(local(state), [widgetId, 'isSavingEngineResults']);
 export const categoryExportFormats = (state, widgetId) =>
   get(getSelectedEngineCategory(state, widgetId), 'exportFormats', []);
 
@@ -946,14 +869,6 @@ export const setEngineId = (widgetId, engineId) => ({
   meta: { widgetId }
 });
 
-export const toggleEditMode = (widgetId, selectedEngineCategory) => ({
-  type: TOGGLE_EDIT_MODE,
-  payload: {
-    selectedEngineCategory
-  },
-  meta: { widgetId }
-});
-
 export const toggleInfoPanel = widgetId => ({
   type: TOGGLE_INFO_PANEL,
   meta: { widgetId }
@@ -971,45 +886,14 @@ export const toggleSaveMode = enableSave => ({
   }
 });
 
-export const saveAssetData = (widgetId, payload) => {
-  return {
-    type: SAVE_ASSET_DATA,
-    payload: payload,
-    meta: { widgetId }
-  };
-};
-
-export const saveAssetDataFailure = (widgetId, { error }) => ({
-  type: SAVE_ASSET_DATA_FAILURE,
-  meta: { error, widgetId }
-});
-
-export const saveAssetDataSuccess = widgetId => ({
-  type: SAVE_ASSET_DATA_SUCCESS,
-  meta: { widgetId }
-});
-
-export const createFileAssetSuccess = (widgetId, assetId) => ({
+export const createFileAssetSuccess = widgetId => ({
   type: CREATE_FILE_ASSET_SUCCESS,
-  payload: {
-    assetId
-  },
   meta: { widgetId }
 });
 
 export const createFileAssetFailure = (widgetId, { error }) => ({
   type: CREATE_FILE_ASSET_FAILURE,
   meta: { error, widgetId }
-});
-
-export const createBulkEditTranscriptAssetFailure = (widgetId, { error }) => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_FAILURE,
-  meta: { error, widgetId }
-});
-
-export const createBulkEditTranscriptAssetSuccess = widgetId => ({
-  type: CREATE_BULK_EDIT_TRANSCRIPT_ASSET_SUCCESS,
-  meta: { widgetId }
 });
 
 export const refreshEngineRunsSuccess = (engineRuns, widgetId) => ({
@@ -1041,15 +925,6 @@ export const discardUnsavedChanges = () => ({
 export const setEditButtonState = (widgetId, isEditButtonDisabled) => ({
   type: SET_EDIT_BUTTON_STATE,
   isEditButtonDisabled,
-  meta: { widgetId }
-});
-
-export const setShowTranscriptBulkEditSnackState = (
-  widgetId,
-  showTranscriptBulkEditSnack
-) => ({
-  type: SET_SHOW_TRANSCRIPT_BULK_EDIT_SNACK_STATE,
-  showTranscriptBulkEditSnack,
   meta: { widgetId }
 });
 
@@ -1086,6 +961,11 @@ export const restoreOriginalEngineResultsFailure = (widgetId, { error }) => ({
 export const restoreOriginalEngineResultsSuccess = widgetId => ({
   type: RESTORE_ORIGINAL_ENGINE_RESULTS_SUCCESS,
   meta: { widgetId }
+});
+
+export const cancelEdit = (widgetId, selectedEngineId) => ({
+  type: CANCEL_EDIT,
+  meta: { widgetId, selectedEngineId }
 });
 
 export const createQuickExport = (

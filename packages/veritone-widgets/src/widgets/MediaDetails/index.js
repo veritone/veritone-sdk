@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -101,8 +100,6 @@ const programLiveImageNullState =
       id
     ),
     widgetError: mediaDetailsModule.getWidgetError(state, id),
-    isSaveEnabled: mediaDetailsModule.isSaveEnabled(state),
-    isSavingEngineResults: mediaDetailsModule.isSavingEngineResults(state, id),
     contextMenuExtensions: applicationModule.getContextMenuExtensions(state),
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
@@ -137,22 +134,18 @@ const programLiveImageNullState =
     updateTdoRequest: mediaDetailsModule.updateTdoRequest,
     selectEngineCategory: mediaDetailsModule.selectEngineCategory,
     setEngineId: mediaDetailsModule.setEngineId,
-    toggleEditMode: mediaDetailsModule.toggleEditMode,
     toggleInfoPanel: mediaDetailsModule.toggleInfoPanel,
     loadContentTemplates: mediaDetailsModule.loadContentTemplates,
     updateTdoContentTemplates: mediaDetailsModule.updateTdoContentTemplates,
     toggleExpandedMode: mediaDetailsModule.toggleExpandedMode,
-    saveAssetData: mediaDetailsModule.saveAssetData,
     openConfirmModal: mediaDetailsModule.openConfirmModal,
     closeConfirmModal: mediaDetailsModule.closeConfirmModal,
-    discardUnsavedChanges: mediaDetailsModule.discardUnsavedChanges,
     setEditButtonState: mediaDetailsModule.setEditButtonState,
-    setShowTranscriptBulkEditSnackState:
-      mediaDetailsModule.setShowTranscriptBulkEditSnackState,
     updateMediaPlayerState: mediaDetailsModule.updateMediaPlayerState,
     restoreOriginalEngineResults:
       mediaDetailsModule.restoreOriginalEngineResults,
-    createQuickExport: mediaDetailsModule.createQuickExport
+    createQuickExport: mediaDetailsModule.createQuickExport,
+    cancelEdit: mediaDetailsModule.cancelEdit
   },
   null,
   { withRef: true }
@@ -269,7 +262,6 @@ class MediaDetailsWidget extends React.Component {
     }),
     selectedEngineId: string,
     setEngineId: func,
-    toggleEditMode: func,
     toggleInfoPanel: func,
     isEditModeEnabled: bool,
     isInfoPanelOpen: bool,
@@ -329,10 +321,7 @@ class MediaDetailsWidget extends React.Component {
         })
       )
     }),
-    saveAssetData: func,
     widgetError: string,
-    isSaveEnabled: bool,
-    isSavingEngineResults: bool,
     alertDialogConfig: shape({
       show: bool,
       title: string,
@@ -344,11 +333,9 @@ class MediaDetailsWidget extends React.Component {
     }),
     openConfirmModal: func,
     closeConfirmModal: func,
-    discardUnsavedChanges: func,
     isDisplayingUserEditedOutput: bool,
     setEditButtonState: func,
     isEditButtonDisabled: bool,
-    setShowTranscriptBulkEditSnackState: func,
     showTranscriptBulkEditSnack: bool,
     updateMediaPlayerState: func,
     restoreOriginalEngineResults: func,
@@ -365,7 +352,8 @@ class MediaDetailsWidget extends React.Component {
     exportClosedCaptionsEnabled: bool,
     bulkEditEnabled: bool,
     publicMediaDownloadEnabled: bool,
-    downloadMediaEnabled: bool
+    downloadMediaEnabled: bool,
+    cancelEdit: func
   };
 
   static contextTypes = {
@@ -490,50 +478,12 @@ class MediaDetailsWidget extends React.Component {
     return false;
   };
 
-  toggleEditMode = () => {
-    this.props.toggleEditMode(this.props.id, this.props.selectedEngineCategory);
-  };
-
   toggleExpandedMode = () => {
     this.props.toggleExpandedMode(this.props.id);
   };
 
   onSaveEdit = () => {
-    this.props.saveAssetData(this.props.id, {
-      selectedEngineId: this.props.selectedEngineId,
-      selectedEngineCategory: this.props.selectedEngineCategory
-    });
     this.props.closeConfirmModal(this.props.id);
-  };
-
-  onCancelEdit = () => {
-    if (this.props.isExpandedMode) {
-      this.toggleExpandedMode();
-    }
-    if (this.props.isEditModeEnabled) {
-      this.toggleEditMode();
-    }
-  };
-
-  checkSaveState = () => {
-    if (this.props.isSaveEnabled) {
-      this.props.openConfirmModal(this.props.id, {
-        title: 'Save Changes?',
-        description: 'Would you like to save the changes?',
-        cancelButtonLabel: 'Discard',
-        confirmButtonLabel: 'Save',
-        confirmAction: this.onSaveEdit,
-        cancelAction: this.handleCancelSaveDialog
-      });
-    } else {
-      this.onCancelEdit();
-    }
-  };
-
-  handleCancelSaveDialog = () => {
-    this.props.discardUnsavedChanges();
-    this.props.closeConfirmModal(this.props.id);
-    this.onCancelEdit();
   };
 
   toggleInfoPanel = () => {
@@ -621,8 +571,7 @@ class MediaDetailsWidget extends React.Component {
     const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
       this.props.isFetchingEngineResults ||
-      this.props.isRestoringOriginalEngineResult ||
-      this.props.isSavingEngineResults
+      this.props.isRestoringOriginalEngineResult
     ) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';
@@ -753,10 +702,6 @@ class MediaDetailsWidget extends React.Component {
     );
   }
 
-  closeTranscriptBulkEditSnack = () => {
-    this.props.setShowTranscriptBulkEditSnackState(this.props.id, false);
-  };
-
   renderTranscriptBulkEditSnack = () => {
     return (
       <Snackbar
@@ -863,13 +808,12 @@ class MediaDetailsWidget extends React.Component {
       schemasById,
       googleMapsApiKey,
       widgetError,
-      isSaveEnabled,
-      isSavingEngineResults,
       alertDialogConfig,
       categoryExportFormats,
       onExport,
       exportClosedCaptionsEnabled,
-      bulkEditEnabled
+      bulkEditEnabled,
+      cancelEdit
     } = this.props;
 
     const { isMenuOpen } = this.state;
@@ -894,7 +838,7 @@ class MediaDetailsWidget extends React.Component {
         </MenuItem>
       );
     }
-    if (onExport && categoryExportFormats.length) {
+    if (onExport && categoryExportFormats.length && !isEditModeEnabled) {
       moreMenuItems.push(
         <ExportMenuItem
           key="quick-export"
@@ -921,284 +865,297 @@ class MediaDetailsWidget extends React.Component {
           />
         )}
         <Paper className={styles.mediaDetailsPageContent}>
-          {!isExpandedMode && (
-            <div>
-              <div className={styles.pageHeader}>
-                {get(
-                  this.props,
-                  'tdo.details.veritoneFile.filename.length',
-                  0
-                ) > 120 && (
-                  <Tooltip
-                    id="truncated-file-name-tooltip"
-                    title={get(this.props, 'tdo.details.veritoneFile.filename')}
-                    PopperProps={{
-                      style: {
-                        pointerEvents: 'none',
-                        marginTop: '5px',
-                        top: '-10px'
-                      }
-                    }}
-                  >
-                    <div className={styles.pageHeaderTitleLabel}>
-                      {get(
-                        this.props,
-                        'tdo.details.veritoneFile.filename',
-                        ''
-                      ).substring(0, 120) + '...'}
-                    </div>
-                  </Tooltip>
-                )}
-                {get(this.props, 'tdo.id') &&
-                  get(
+          {!isExpandedMode &&
+            !isEditModeEnabled && (
+              <div>
+                <div className={styles.pageHeader}>
+                  {get(
                     this.props,
                     'tdo.details.veritoneFile.filename.length',
                     0
-                  ) <= 120 && (
-                    <div className={styles.pageHeaderTitleLabel}>
-                      {get(
+                  ) > 120 && (
+                    <Tooltip
+                      id="truncated-file-name-tooltip"
+                      title={get(
                         this.props,
-                        'tdo.details.veritoneFile.filename',
-                        'No Filename'
+                        'tdo.details.veritoneFile.filename'
                       )}
-                    </div>
-                  )}
-                {!get(this.props, 'tdo.id') && (
-                  <div className={styles.pageHeaderTitleLabel}>
-                    {!isLoadingTdo && 'No Filename'}
-                  </div>
-                )}
-                <div className={styles.pageHeaderActionButtons}>
-                  {get(this.props, 'tdo.id') && (
-                    <Tooltip
-                      id="tooltip-run-process"
-                      title="Run Process"
                       PopperProps={{
                         style: {
                           pointerEvents: 'none',
                           marginTop: '5px',
-                          top: '-20px'
+                          top: '-10px'
                         }
                       }}
                     >
-                      <IconButton
-                        className={styles.pageHeaderActionButton}
-                        onClick={this.handleRunProcess}
-                        aria-label="Run process"
-                      >
-                        <Icon
-                          className="icon-run-process"
-                          classes={{ root: styles.iconClass }}
-                        />
-                      </IconButton>
+                      <div className={styles.pageHeaderTitleLabel}>
+                        {get(
+                          this.props,
+                          'tdo.details.veritoneFile.filename',
+                          ''
+                        ).substring(0, 120) + '...'}
+                      </div>
                     </Tooltip>
                   )}
-                  {get(this.props, 'tdo.details', null) && (
-                    <Tooltip
-                      id="tooltip-show-metadata"
-                      title="Show Metadata"
-                      PopperProps={{
-                        style: {
-                          pointerEvents: 'none',
-                          marginTop: '5px',
-                          top: '-20px'
-                        }
-                      }}
-                    >
-                      <IconButton
-                        className={styles.pageHeaderActionButton}
-                        onClick={this.toggleInfoPanel}
-                        aria-label="Info Panel"
-                      >
-                        <Icon
-                          className="icon-info-panel"
-                          classes={{ root: styles.iconClass }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {(get(this.props, 'tdo.id') ||
-                    get(this.props, 'contextMenuExtensions.tdos.length')) && (
-                    <Manager>
-                      <Target>
-                        <div ref={this.setMenuTarget}>
-                          <Tooltip
-                            id="tooltip-show-overflow-menu"
-                            title="Show more options"
-                            leaveDelay={20}
-                            PopperProps={{
-                              style: {
-                                pointerEvents: 'none',
-                                marginTop: '5px',
-                                top: '-20px'
-                              }
-                            }}
-                          >
-                            <IconButton
-                              className={styles.pageHeaderActionButton}
-                              aria-label="More"
-                              aria-haspopup="true"
-                              aria-owns={isMenuOpen ? 'menu-list-grow' : null}
-                              onClick={this.toggleIsMenuOpen}
-                            >
-                              <MoreVertIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      </Target>
-                      {isMenuOpen && (
-                        <Popper
-                          className={styles.popperContent}
-                          placement="bottom-end"
-                          eventsEnabled={isMenuOpen}
-                        >
-                          <ClickAwayListener onClickAway={this.onMenuClose}>
-                            <Grow
-                              in={isMenuOpen}
-                              id="menu-list-grow"
-                              style={{ transformOrigin: '0 0 0' }}
-                            >
-                              <Paper>
-                                <MenuList role="menu">
-                                  {this.isDownloadMediaEnabled() && (
-                                    <MenuItem
-                                      classes={{
-                                        root: styles.headerMenuItem
-                                      }}
-                                      disabled={!this.isDownloadAllowed()}
-                                      onClick={this.downloadFile}
-                                    >
-                                      Download
-                                    </MenuItem>
-                                  )}
-                                  {this.props.contextMenuExtensions &&
-                                    this.props.contextMenuExtensions.tdos.map(
-                                      tdoMenu => (
-                                        <MenuItem
-                                          key={tdoMenu.id}
-                                          classes={{
-                                            root: styles.headerMenuItem
-                                          }}
-                                          // eslint-disable-next-line
-                                          onClick={() =>
-                                            this.handleContextMenuClick(tdoMenu)
-                                          }
-                                        >
-                                          {tdoMenu.label}
-                                        </MenuItem>
-                                      )
-                                    )}
-                                </MenuList>
-                              </Paper>
-                            </Grow>
-                          </ClickAwayListener>
-                        </Popper>
-                      )}
-                    </Manager>
-                  )}
-                  {(get(this.props, 'tdo.id') ||
-                    get(this.props, 'tdo.details', null) ||
-                    this.isDownloadMediaEnabled() ||
-                    get(this.props, 'contextMenuExtensions.tdos.length')) && (
-                    <div className={styles.pageHeaderActionButtonsSeparator} />
-                  )}
-                  <IconButton
-                    className={styles.pageCloseButton}
-                    onClick={this.props.onClose}
-                    aria-label="Close"
-                  >
-                    <Icon
-                      className="icon-close-exit"
-                      classes={{ root: styles.iconClass }}
-                    />
-                  </IconButton>
-                </div>
-              </div>
-
-              {isLoadingTdo && (
-                <div className={styles.tdoLoadingProgress}>
-                  <CircularProgress size={80} color="primary" thickness={1} />
-                </div>
-              )}
-              {!isLoadingTdo &&
-                !get(this.props, 'tdo.id') && (
-                  <div className={styles.widgetErrorContainer}>
-                    <div className={styles.widgetError}>
-                      <img
-                        className={styles.errorImage}
-                        src="//static.veritone.com/veritone-ui/warning-icon-lg.svg"
-                      />
-                      <div className={styles.errorMessage}>{widgetError}</div>
-                    </div>
-                  </div>
-                )}
-
-              {get(this.props, 'tdo.id') && (
-                <Tabs
-                  value={this.state.selectedTabValue}
-                  onChange={this.handleTabChange}
-                  classes={{
-                    flexContainer: styles.mediaDetailsPageTabSelector,
-                    indicator: styles.tabIndicator
-                  }}
-                >
-                  <Tab
-                    label="Media Details"
-                    classes={{ root: styles.pageTabLabel }}
-                    value="mediaDetails"
-                    style={{
-                      fontWeight:
-                        this.state.selectedTabValue === 'mediaDetails'
-                          ? 500
-                          : 400
-                    }}
-                  />
-                  <Tab
-                    label="Content Templates"
-                    classes={{ root: styles.pageTabLabel }}
-                    value="contentTemplates"
-                    style={{
-                      fontWeight:
-                        this.state.selectedTabValue === 'contentTemplates'
-                          ? 500
-                          : 400
-                    }}
-                  />
-                </Tabs>
-              )}
-              {selectedEngineCategory &&
-                this.state.selectedTabValue === 'mediaDetails' && (
-                  <div className={styles.engineActionHeader}>
-                    <div className={styles.engineCategorySelector}>
-                      <EngineCategorySelector
-                        engineCategories={this.props.engineCategories}
-                        selectedEngineCategoryId={selectedEngineCategory.id}
-                        onSelectEngineCategory={this.handleEngineCategoryChange}
-                      />
-                    </div>
-                    {this.showEditButton() && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        className={styles.toEditModeButton}
-                        onClick={this.toggleEditMode}
-                        disabled={this.isEditModeButtonDisabled()}
-                      >
-                        EDIT MODE
-                      </Button>
+                  {get(this.props, 'tdo.id') &&
+                    get(
+                      this.props,
+                      'tdo.details.veritoneFile.filename.length',
+                      0
+                    ) <= 120 && (
+                      <div className={styles.pageHeaderTitleLabel}>
+                        {get(
+                          this.props,
+                          'tdo.details.veritoneFile.filename',
+                          'No Filename'
+                        )}
+                      </div>
                     )}
+                  {!get(this.props, 'tdo.id') && (
+                    <div className={styles.pageHeaderTitleLabel}>
+                      {!isLoadingTdo && 'No Filename'}
+                    </div>
+                  )}
+                  <div className={styles.pageHeaderActionButtons}>
+                    {get(this.props, 'tdo.id') && (
+                      <Tooltip
+                        id="tooltip-run-process"
+                        title="Run Process"
+                        PopperProps={{
+                          style: {
+                            pointerEvents: 'none',
+                            marginTop: '5px',
+                            top: '-20px'
+                          }
+                        }}
+                      >
+                        <IconButton
+                          className={styles.pageHeaderActionButton}
+                          onClick={this.handleRunProcess}
+                          aria-label="Run process"
+                        >
+                          <Icon
+                            className="icon-enginerunning"
+                            classes={{ root: styles.iconClass }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {this.isDownloadMediaEnabled() && (
+                      <Tooltip
+                        id="tooltip-download"
+                        title="Download"
+                        PopperProps={{
+                          style: {
+                            pointerEvents: 'none',
+                            marginTop: '5px',
+                            top: '-20px'
+                          }
+                        }}
+                      >
+                        <IconButton
+                          className={styles.pageHeaderActionButton}
+                          onClick={this.downloadFile}
+                          disabled={!this.isDownloadAllowed()}
+                          aria-label="Download"
+                        >
+                          <Icon
+                            className="icon-file_download"
+                            classes={{ root: styles.iconClass }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {get(this.props, 'tdo.details', null) && (
+                      <Tooltip
+                        id="tooltip-show-metadata"
+                        title="Show Metadata"
+                        PopperProps={{
+                          style: {
+                            pointerEvents: 'none',
+                            marginTop: '5px',
+                            top: '-20px'
+                          }
+                        }}
+                      >
+                        <IconButton
+                          className={styles.pageHeaderActionButton}
+                          onClick={this.toggleInfoPanel}
+                          aria-label="Info Panel"
+                        >
+                          <Icon
+                            className="icon-info-round"
+                            classes={{ root: styles.iconClass }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {!!get(this.props, 'contextMenuExtensions.tdos.length') && (
+                      <Manager>
+                        <Target>
+                          <div ref={this.setMenuTarget}>
+                            <Tooltip
+                              id="tooltip-show-overflow-menu"
+                              title="Show more options"
+                              leaveDelay={20}
+                              PopperProps={{
+                                style: {
+                                  pointerEvents: 'none',
+                                  marginTop: '5px',
+                                  top: '-20px'
+                                }
+                              }}
+                            >
+                              <IconButton
+                                className={styles.pageHeaderActionButton}
+                                aria-label="More"
+                                aria-haspopup="true"
+                                aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                                onClick={this.toggleIsMenuOpen}
+                              >
+                                <MoreVertIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
+                        </Target>
+                        {isMenuOpen && (
+                          <Popper
+                            className={styles.popperContent}
+                            placement="bottom-end"
+                            eventsEnabled={isMenuOpen}
+                          >
+                            <ClickAwayListener onClickAway={this.onMenuClose}>
+                              <Grow
+                                in={isMenuOpen}
+                                id="menu-list-grow"
+                                style={{ transformOrigin: '0 0 0' }}
+                              >
+                                <Paper>
+                                  <MenuList role="menu">
+                                    {this.props.contextMenuExtensions &&
+                                      this.props.contextMenuExtensions.tdos.map(
+                                        tdoMenu => (
+                                          <MenuItem
+                                            key={tdoMenu.id}
+                                            classes={{
+                                              root: styles.headerMenuItem
+                                            }}
+                                            // eslint-disable-next-line
+                                            onClick={() =>
+                                              this.handleContextMenuClick(
+                                                tdoMenu
+                                              )
+                                            }
+                                          >
+                                            {tdoMenu.label}
+                                          </MenuItem>
+                                        )
+                                      )}
+                                  </MenuList>
+                                </Paper>
+                              </Grow>
+                            </ClickAwayListener>
+                          </Popper>
+                        )}
+                      </Manager>
+                    )}
+                    {(get(this.props, 'tdo.id') ||
+                      get(this.props, 'tdo.details', null) ||
+                      this.isDownloadMediaEnabled() ||
+                      get(this.props, 'contextMenuExtensions.tdos.length')) && (
+                      <div
+                        className={styles.pageHeaderActionButtonsSeparator}
+                      />
+                    )}
+                    <IconButton
+                      className={styles.pageCloseButton}
+                      onClick={this.props.onClose}
+                      aria-label="Close"
+                    >
+                      <Icon
+                        className="icon-close-exit"
+                        classes={{ root: styles.iconClass }}
+                      />
+                    </IconButton>
+                  </div>
+                </div>
+
+                {isLoadingTdo && (
+                  <div className={styles.tdoLoadingProgress}>
+                    <CircularProgress size={80} color="primary" thickness={1} />
                   </div>
                 )}
-            </div>
-          )}
+                {!isLoadingTdo &&
+                  !get(this.props, 'tdo.id') && (
+                    <div className={styles.widgetErrorContainer}>
+                      <div className={styles.widgetError}>
+                        <img
+                          className={styles.errorImage}
+                          src="//static.veritone.com/veritone-ui/warning-icon-lg.svg"
+                        />
+                        <div className={styles.errorMessage}>{widgetError}</div>
+                      </div>
+                    </div>
+                  )}
 
-          {isExpandedMode &&
+                {get(this.props, 'tdo.id') && (
+                  <Tabs
+                    value={this.state.selectedTabValue}
+                    onChange={this.handleTabChange}
+                    classes={{
+                      flexContainer: styles.mediaDetailsPageTabSelector,
+                      indicator: styles.tabIndicator
+                    }}
+                  >
+                    <Tab
+                      label="Media Details"
+                      classes={{ root: styles.pageTabLabel }}
+                      value="mediaDetails"
+                      style={{
+                        fontWeight:
+                          this.state.selectedTabValue === 'mediaDetails'
+                            ? 500
+                            : 400
+                      }}
+                    />
+                    <Tab
+                      label="Content Templates"
+                      classes={{ root: styles.pageTabLabel }}
+                      value="contentTemplates"
+                      style={{
+                        fontWeight:
+                          this.state.selectedTabValue === 'contentTemplates'
+                            ? 500
+                            : 400
+                      }}
+                    />
+                  </Tabs>
+                )}
+                {selectedEngineCategory &&
+                  this.state.selectedTabValue === 'mediaDetails' && (
+                    <div className={styles.engineActionHeader}>
+                      <div className={styles.engineCategorySelector}>
+                        <EngineCategorySelector
+                          engineCategories={this.props.engineCategories}
+                          selectedEngineCategoryId={selectedEngineCategory.id}
+                          onSelectEngineCategory={
+                            this.handleEngineCategoryChange
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+              </div>
+            )}
+
+          {(isExpandedMode || isEditModeEnabled) &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
                   <IconButton
                     className={styles.backButtonEditMode}
-                    onClick={this.checkSaveState}
+                    // eslint-disable-next-line
+                    onClick={() => cancelEdit(this.props.id, selectedEngineId)}
                     aria-label="Back"
                   >
                     <Icon
@@ -1220,26 +1177,6 @@ class MediaDetailsWidget extends React.Component {
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
                     {this.getSelectedCategoryMessage()}
-                  </div>
-                  <div className={styles.actionButtonsEditMode}>
-                    {isEditModeEnabled && (
-                      <Button
-                        className={styles.actionButtonEditMode}
-                        disabled={isSavingEngineResults}
-                        onClick={this.checkSaveState}
-                      >
-                        CANCEL
-                      </Button>
-                    )}
-                    {isEditModeEnabled && (
-                      <Button
-                        className={styles.actionButtonEditMode}
-                        disabled={!isSaveEnabled || isSavingEngineResults}
-                        onClick={this.onSaveEdit}
-                      >
-                        SAVE
-                      </Button>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1284,7 +1221,8 @@ class MediaDetailsWidget extends React.Component {
                     selectedEngineCategory.categoryType === 'transcript' && (
                       <TranscriptEngineOutput
                         tdo={tdo}
-                        editMode={isEditModeEnabled}
+                        showEditButton={this.showEditButton()}
+                        disableEditButton={this.isEditModeButtonDisabled()}
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
@@ -1305,7 +1243,8 @@ class MediaDetailsWidget extends React.Component {
                         engines={selectedEngineCategory.engines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
-                        editMode={isEditModeEnabled}
+                        showEditButton={this.showEditButton()}
+                        disableEditButton={this.isEditModeButtonDisabled()}
                         disableEdit={this.handleDisableEditBtn}
                         onFaceOccurrenceClicked={
                           this.handleUpdateMediaPlayerTime
