@@ -89,13 +89,15 @@ describe('Program Info', () => {
     expect(
       descriptionSection
         .find('.programInfoInputField')
-        .find('input')
+        .find('textarea')
+        .last()
         .instance().value
     ).toEqual(TEST_PROGRAM.description);
     expect(
       descriptionSection
         .find('.programInfoInputField')
-        .find('input')
+        .find('textarea')
+        .last()
         .instance().disabled
     ).toEqual(false);
 
@@ -187,13 +189,15 @@ describe('Program Info', () => {
     expect(
       descriptionSection
         .find('.programInfoInputField')
-        .find('input')
+        .find('textarea')
+        .last()
         .instance().value
     ).toEqual(TEST_PROGRAM.description);
     expect(
       descriptionSection
         .find('.programInfoInputField')
-        .find('input')
+        .find('textarea')
+        .last()
         .instance().disabled
     ).toEqual(true);
 
