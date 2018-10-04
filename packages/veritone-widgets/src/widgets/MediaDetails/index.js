@@ -401,7 +401,13 @@ class MediaDetailsWidget extends React.Component {
 
   handleUpdateMediaPlayerTime = (startTime) => {
     this.mediaPlayer.seek(startTime / 1000);
-    this.mediaPlayer.play();
+    if (!this.props.isEditModeEnabled) {
+      this.mediaPlayer.play();
+    } else if (this.mediaPlayer.getState().player.paused) {
+      // if in edit mode and paused -> play/pause to refresh frame
+      this.mediaPlayer.play();
+      this.mediaPlayer.pause();
+    }
   };
 
   handleRunProcess = () => {

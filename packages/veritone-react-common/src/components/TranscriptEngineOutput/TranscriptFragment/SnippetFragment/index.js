@@ -32,9 +32,9 @@ export default class SnippetFragment extends Component {
   };
 
   handleSnippetClick = event => {
-    const { value, startTimeMs, stopTimeMs, editMode, onClick } = this.props;
+    const { value, startTimeMs, stopTimeMs, onClick } = this.props;
 
-    if (!editMode && onClick) {
+    if (onClick) {
       const data = {
         value: value,
         startTimeMs: startTimeMs,

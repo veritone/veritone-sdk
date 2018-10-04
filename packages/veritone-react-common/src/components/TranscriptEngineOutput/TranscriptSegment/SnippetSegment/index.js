@@ -42,9 +42,9 @@ export default class SnippetSegment extends Component {
   };
 
   handleSnippetClick = (event, entryData) => {
-    const { editMode, onClick } = this.props;
+    const { onClick } = this.props;
 
-    if (!editMode && onClick) {
+    if (onClick) {
       onClick(event, entryData);
     }
   };
