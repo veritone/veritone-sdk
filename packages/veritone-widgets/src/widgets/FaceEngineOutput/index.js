@@ -233,6 +233,12 @@ class FaceEngineOutputContainer extends Component {
     }
   }
 
+  componentWillUnmount() {
+    if(this.props.editModeEnabled) {
+      this.props.toggleEditMode();
+    }
+  }
+
   handleSearchEntities = searchText => {
     this.props.fetchEntitySearchResults('people', searchText);
   };

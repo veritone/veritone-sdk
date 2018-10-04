@@ -193,6 +193,12 @@ export default class TranscriptEngineOutputContainer extends Component {
     return { ...prevState, props: nextProps };
   }
 
+  componentWillUnmount() {
+    if(this.props.editModeEnabled) {
+      this.props.toggleEditMode();
+    }
+  }
+
   handleContentChanged = value => {
     this.props.change(value);
   };
