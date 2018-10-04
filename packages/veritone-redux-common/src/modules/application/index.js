@@ -1,6 +1,6 @@
 import { isEmpty, keyBy, get } from 'lodash';
 import { getConfig } from 'modules/config';
-import callGraphQLApi from 'helpers/api/callGraphQLApi';
+import fetchGraphQLApi from 'helpers/api/fetchGraphQLApi';
 import { createReducer } from 'helpers/redux';
 import { selectSessionToken, selectOAuthToken } from 'modules/auth';
 
@@ -96,7 +96,7 @@ export function fetchApplications() {
     const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
 
     try {
-      const response = await callGraphQLApi({
+      const response = await fetchGraphQLApi({
         endpoint: graphQLUrl,
         query,
         token: selectSessionToken(getState()) || selectOAuthToken(getState())

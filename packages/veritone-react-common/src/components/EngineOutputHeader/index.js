@@ -19,6 +19,7 @@ import { Manager, Target, Popper } from 'react-popper';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
+import FormControl from '@material-ui/core/FormControl';
 
 import styles from './styles.scss';
 
@@ -37,12 +38,17 @@ class EngineOutputHeader extends Component {
     onEngineChange: func,
     onExpandClick: func,
     children: oneOfType([arrayOf(node), node]),
-    moreMenuItems: arrayOf(node)
+    moreMenuItems: arrayOf(node),
+    showEditButton: bool,
+    onEditButtonClick: func,
+    disableEditButton: bool,
+    disableEngineSelect: bool
   };
 
   static defaultProps = {
     engines: [],
-    moreMenuItems: []
+    moreMenuItems: [],
+    disableEngineSelect: false
   };
 
   state = {
@@ -75,7 +81,11 @@ class EngineOutputHeader extends Component {
       hideExpandButton,
       engines,
       selectedEngineId,
-      onExpandClick
+      onExpandClick,
+      showEditButton,
+      onEditButtonClick,
+      disableEditButton,
+      disableEngineSelect
     } = this.props;
     const { isMoreMenuOpen } = this.state;
 
@@ -91,37 +101,54 @@ class EngineOutputHeader extends Component {
         <div className={styles.headerActions}>
           {children}
           {!isEmpty(engines) && (
-            <Select
-              autoWidth
-              value={selectedEngineId || engines[0].id}
-              className={styles.engineSelect}
-              onChange={this.handleEngineChange}
-              MenuProps={{
-                anchorOrigin: {
-                  horizontal: 'center',
-                  vertical: 'bottom'
-                },
-                transformOrigin: {
-                  horizontal: 'center',
-                  vertical: 'top'
-                },
-                getContentAnchorEl: null
-              }}
+            <FormControl
+              className={styles.engineFormControl}
+              disabled={disableEngineSelect}
             >
-              {engines.map(e => {
-                return (
-                  <MenuItem
-                    key={`engine-menu-item-${e.id}`}
-                    value={e.id}
-                    classes={{
-                      root: styles.engine
-                    }}
-                  >
-                    {e.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              <Select
+                autoWidth
+                value={selectedEngineId || engines[0].id}
+                className={styles.engineSelect}
+                onChange={this.handleEngineChange}
+                MenuProps={{
+                  anchorOrigin: {
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                  },
+                  transformOrigin: {
+                    horizontal: 'center',
+                    vertical: 'top'
+                  },
+                  getContentAnchorEl: null
+                }}
+              >
+                {engines.map(e => {
+                  return (
+                    <MenuItem
+                      key={`engine-menu-item-${e.id}`}
+                      value={e.id}
+                      classes={{
+                        root: styles.engine
+                      }}
+                    >
+                      {e.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          )}
+          {showEditButton && (
+            <IconButton
+              aria-label="Edit Mode"
+              onClick={onEditButtonClick}
+              classes={{
+                root: styles.actionIconButton
+              }}
+              disabled={disableEditButton}
+            >
+              <Icon className="icon-mode_edit2" />
+            </IconButton>
           )}
           {!!get(moreMenuItems, 'length') && (
             <Manager>
@@ -133,7 +160,7 @@ class EngineOutputHeader extends Component {
                     aria-owns={isMoreMenuOpen ? 'menu-list-grow' : null}
                     onClick={this.toggleIsMoreMenuOpen}
                     classes={{
-                      root: styles.moreMenuButton
+                      root: styles.actionIconButton
                     }}
                   >
                     <MoreVertIcon />

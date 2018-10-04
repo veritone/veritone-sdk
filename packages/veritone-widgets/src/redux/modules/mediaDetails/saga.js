@@ -18,22 +18,20 @@ import {
   isUndefined,
   isArray,
   every,
-  forEach,
   find,
   includes
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import {
-  getFaceEngineAssetData,
-  cancelFaceEdits,
   pendingUserEdits,
   ADD_DETECTED_FACE,
   REMOVE_DETECTED_FACE,
-  CANCEL_FACE_EDITS
+  CANCEL_FACE_EDITS,
+  SAVE_FACE_EDITS_SUCCESS
 } from './faceEngineOutput';
 import {
-  getTranscriptEditAssetData,
-  reset as resetTranscript
+  UPDATE_EDIT_STATUS,
+  SAVE_TRANSCRIPT_EDITS_SUCCESS
 } from './transcriptWidget';
 const {
   auth: authModule,
@@ -59,10 +57,10 @@ import {
   REQUEST_SCHEMAS,
   REQUEST_SCHEMAS_SUCCESS,
   REQUEST_SCHEMAS_FAILURE,
-  SAVE_ASSET_DATA,
   CREATE_FILE_ASSET_SUCCESS,
-  TOGGLE_EDIT_MODE,
   RESTORE_ORIGINAL_ENGINE_RESULTS,
+  LOAD_TDO_SUCCESS,
+  REFRESH_ENGINE_RUNS_SUCCESS,
   loadEngineCategoriesSuccess,
   loadEngineCategoriesFailure,
   loadTdoRequest,
@@ -79,14 +77,7 @@ import {
   getTdoMetadata,
   getTdo,
   toggleSaveMode,
-  saveAssetDataFailure,
-  saveAssetDataSuccess,
   createFileAssetSuccess,
-  createFileAssetFailure,
-  createBulkEditTranscriptAssetFailure,
-  createBulkEditTranscriptAssetSuccess,
-  isEditModeEnabled,
-  toggleEditMode,
   getSelectedEngineCategory,
   refreshEngineRunsSuccess,
   setEditButtonState,
@@ -94,9 +85,6 @@ import {
   restoreOriginalEngineResultsFailure,
   restoreOriginalEngineResultsSuccess
 } from '.';
-
-import { UPDATE_EDIT_STATUS } from './transcriptWidget';
-import { LOAD_TDO_SUCCESS, REFRESH_ENGINE_RUNS_SUCCESS } from './index';
 
 const tdoInfoQueryClause = `id
     details
@@ -612,282 +600,6 @@ function* deleteAssetsSaga(assetIds) {
   }
 
   return {};
-}
-
-function* createFileAssetSaga(
-  widgetId,
-  type,
-  contentType,
-  sourceData,
-  fileData,
-  isUserEdited
-) {
-  const requestTdo = yield select(getTdo, widgetId);
-  const createAssetQuery = `mutation createAsset(
-    $tdoId: ID!,
-    $type: String,
-    $contentType: String,
-    $file: UploadedFile,
-    $sourceData: SetAssetSourceData,
-    $isUserEdited: Boolean
-  ){
-    createAsset( input: {
-      containerId: $tdoId,
-      type: $type,
-      contentType: $contentType,
-      sourceData: $sourceData,
-      file: $file,
-      isUserEdited: $isUserEdited
-    })
-    { id }
-  }`;
-
-  const variables = {
-    tdoId: requestTdo.id,
-    type,
-    contentType,
-    file: fileData,
-    sourceData,
-    isUserEdited
-  };
-
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-
-  const formData = new FormData();
-  formData.append('query', createAssetQuery);
-  formData.append('variables', JSON.stringify(variables));
-  if (contentType === 'application/json') {
-    formData.append(
-      'file',
-      new Blob([JSON.stringify(fileData)], { type: contentType })
-    );
-  } else {
-    formData.append('file', new Blob([fileData], { type: contentType }));
-  }
-
-  const saveFile = function({ endpoint, data, authToken }) {
-    return fetch(endpoint, {
-      method: 'post',
-      body: data,
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
-    }).then(r => {
-      return r.json();
-    });
-  };
-
-  let response;
-  try {
-    response = yield call(saveFile, {
-      endpoint: graphQLUrl,
-      data: formData,
-      authToken: token
-    });
-  } catch (error) {
-    return yield put(createFileAssetFailure(widgetId, { error }));
-  }
-  if (!isEmpty(response.errors)) {
-    return yield put(
-      createFileAssetFailure(widgetId, { error: response.errors.join(', \n') })
-    );
-  }
-  if (!get(response, 'data.createAsset.id')) {
-    return yield put(
-      createFileAssetFailure(widgetId, {
-        error: 'Failed to create file asset.'
-      })
-    );
-  }
-
-  const assetId = get(response, 'data.createAsset.id');
-  if (assetId) {
-    const selectedEngineCategory = yield select(
-      getSelectedEngineCategory,
-      widgetId
-    );
-    yield call(refreshEngineRuns, widgetId, requestTdo.id);
-    const selectedEngineId = yield select(getSelectedEngineId, widgetId);
-    yield put(
-      engineResultsModule.fetchEngineResults({
-        tdo: requestTdo,
-        engineId: selectedEngineId,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(requestTdo.stopDateTime) -
-          Date.parse(requestTdo.startDateTime),
-        ignoreUserEdited: false
-      })
-    );
-    yield put(toggleEditMode(widgetId, selectedEngineCategory));
-    yield put(createFileAssetSuccess(widgetId, assetId));
-  }
-
-  return response;
-}
-
-function* createTranscriptBulkEditAssetSaga(
-  widgetId,
-  type,
-  contentType,
-  sourceData,
-  text,
-  selectedEngineId
-) {
-  let createFileAssetResponse;
-  try {
-    createFileAssetResponse = yield call(
-      createFileAssetSaga,
-      widgetId,
-      type,
-      contentType,
-      sourceData,
-      text,
-      false
-    );
-  } catch (error) {
-    return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
-  }
-  if (!createFileAssetResponse) {
-    return yield put(
-      createBulkEditTranscriptAssetFailure(widgetId, {
-        error: 'Failed to create bulk edit text asset.'
-      })
-    );
-  }
-
-  const requestTdo = yield select(getTdo, widgetId);
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const sessionToken = yield select(authModule.selectSessionToken);
-  const oauthToken = yield select(authModule.selectOAuthToken);
-  const token = sessionToken || oauthToken;
-
-  const bulkTextAssetId = get(createFileAssetResponse, 'data.createAsset.id');
-  let originalTranscriptAssetId;
-
-  // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset
-  const getPrimaryTranscriptAssetQuery = `query temporalDataObject($tdoId: ID!){
-      temporalDataObject(id: $tdoId) {
-        primaryAsset(assetType: "transcript") {
-          id
-        }
-      }
-    }`;
-  let getPrimaryTranscriptAssetResponse;
-  try {
-    getPrimaryTranscriptAssetResponse = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: getPrimaryTranscriptAssetQuery,
-      variables: { tdoId: requestTdo.id },
-      token
-    });
-  } catch (error) {
-    return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
-  }
-  // if not found 'transcript' ttml asset - try to find original 'vtn-standard' asset for selected transcript engine
-  if (
-    get(
-      getPrimaryTranscriptAssetResponse,
-      'data.temporalDataObject.primaryAsset.id'
-    )
-  ) {
-    originalTranscriptAssetId = get(
-      getPrimaryTranscriptAssetResponse,
-      'data.temporalDataObject.primaryAsset.id'
-    );
-  } else {
-    try {
-      const vtnStandardAssets = yield call(
-        fetchAssets,
-        requestTdo.id,
-        'vtn-standard'
-      );
-      const transcriptVtnAsset = vtnStandardAssets.find(
-        asset => get(asset, 'sourceData.engineId') === selectedEngineId
-      );
-      originalTranscriptAssetId = get(transcriptVtnAsset, 'id');
-    } catch (error) {
-      return yield put(
-        createBulkEditTranscriptAssetFailure(widgetId, { error })
-      );
-    }
-  }
-
-  if (!originalTranscriptAssetId) {
-    return yield put(
-      createBulkEditTranscriptAssetFailure(widgetId, {
-        error:
-          'Original transcript asset not found. Failed to save bulk transcript edit.'
-      })
-    );
-  }
-
-  // run levenstein engine
-  const runBulkEditJobQuery = `mutation createJob($tdoId: ID!){
-    createJob(input: {
-      targetId: $tdoId,
-      tasks: [{
-        engineId: "bulk-edit-transcript",
-        payload: {
-          originalTranscriptAssetId: "${originalTranscriptAssetId}",
-          temporaryBulkEditAssetId: "${bulkTextAssetId}",
-          originalEngineId: "${selectedEngineId}",
-          saveTtmlToVtnStandard: true
-        }
-      },
-      {
-        engineId: "insert-into-index"
-      },
-      {
-        engineId: "mention-generate"
-      }]
-    }) {
-      id
-      status
-      tasks {
-        records {
-          id
-        }
-      }
-    }
-  }`;
-
-  let runBulkEditJobResponse;
-  try {
-    runBulkEditJobResponse = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: runBulkEditJobQuery,
-      variables: { tdoId: requestTdo.id },
-      token
-    });
-  } catch (error) {
-    return yield put(createBulkEditTranscriptAssetFailure(widgetId, { error }));
-  }
-  if (!get(runBulkEditJobResponse, 'data.createJob.id')) {
-    return yield put(
-      createBulkEditTranscriptAssetFailure(widgetId, {
-        error:
-          'Failed to start bulk-edit-transcript job. Failed to save bulk transcript edit.'
-      })
-    );
-  }
-  if (
-    get(runBulkEditJobResponse, 'data.createJob.tasks.records[0].status') ===
-    'failed'
-  ) {
-    return yield put(
-      createBulkEditTranscriptAssetFailure(widgetId, {
-        error:
-          'Failed to create task for bulk-edit-transcript job. Failed to save bulk transcript edit.'
-      })
-    );
-  }
-  yield put(createBulkEditTranscriptAssetSuccess(widgetId));
 }
 
 function* watchUpdateTdoContentTemplates() {
@@ -1442,102 +1154,6 @@ function* watchFaceEngineEntityUpdate(widgetId) {
   );
 }
 
-// Remove AWS prefixed params, keep the rest.
-function removeAwsSignatureParams(uri) {
-  const amzParamKeyRegex = /[x..X]-[a..A][m..M][z..Z]/;
-  if (!uri || !uri.includes('?') || !amzParamKeyRegex.test(uri)) {
-    return uri;
-  }
-  const nakedUri = uri.split('?')[0];
-  const uriParamsStr = uri.split('?')[1];
-  const nonAwsSignatureParams = uriParamsStr
-    .split('&')
-    .filter(
-      uriParam =>
-        uriParam && uriParam.length && !amzParamKeyRegex.test(uriParam)
-    );
-  if (nonAwsSignatureParams.length) {
-    return `${nakedUri}?${nonAwsSignatureParams.join('&')}`;
-  }
-  return nakedUri;
-}
-
-function* watchSaveAssetData() {
-  yield takeEvery(SAVE_ASSET_DATA, function*(action) {
-    let assetData;
-    if (action.payload.selectedEngineCategory.categoryType === 'transcript') {
-      assetData = yield select(
-        getTranscriptEditAssetData,
-        action.payload.selectedEngineId
-      );
-      if (assetData.text) {
-        const contentType = 'text/plain';
-        const type = 'bulk-edit-transcript';
-        const { widgetId } = action.meta;
-        const sourceData = {};
-        // do save bulk transcript asset and return
-        return yield call(
-          createTranscriptBulkEditAssetSaga,
-          widgetId,
-          type,
-          contentType,
-          sourceData,
-          assetData.text,
-          action.payload.selectedEngineId
-        );
-      }
-    } else if (action.payload.selectedEngineCategory.categoryType === 'face') {
-      assetData = yield select(
-        getFaceEngineAssetData,
-        action.payload.selectedEngineId
-      );
-    }
-    if (!assetData) {
-      return yield put(
-        saveAssetDataFailure(action.meta.widgetId, {
-          error: 'Asset data to store must be provided'
-        })
-      );
-    }
-    const { widgetId } = action.meta;
-    const createAssetCalls = [];
-    forEach(assetData, jsonData => {
-      if (get(jsonData, 'series.length')) {
-        forEach(jsonData.series, asset => {
-          if (get(asset, 'object.uri')) {
-            asset.object.uri = removeAwsSignatureParams(
-              get(asset, 'object.uri')
-            );
-          }
-          delete asset.guid;
-        });
-      }
-      // process vtn-standard asset
-      const contentType = 'application/json';
-      const type = 'vtn-standard';
-      const sourceData = {
-        name: jsonData.sourceEngineName,
-        engineId: jsonData.sourceEngineId,
-        assetId: jsonData.assetId,
-        taskId: jsonData.taskId
-      };
-      createAssetCalls.push(
-        call(
-          createFileAssetSaga,
-          widgetId,
-          type,
-          contentType,
-          sourceData,
-          jsonData,
-          true
-        )
-      );
-    });
-    yield all(createAssetCalls);
-    yield put(saveAssetDataSuccess(widgetId));
-  });
-}
-
 function* watchCreateFileAssetSuccess() {
   yield takeEvery(
     action => action.type === CREATE_FILE_ASSET_SUCCESS,
@@ -1594,27 +1210,6 @@ function* insertIntoIndexSaga(tdoId) {
   } catch (error) {
     // return yield put(insertIntoIndexFailure(widgetId, { error }));
   }
-}
-
-function* watchCancelEdit() {
-  yield takeEvery(action => action.type === TOGGLE_EDIT_MODE, function*(
-    action
-  ) {
-    const editModeIsEnabled = yield select(
-      isEditModeEnabled,
-      action.meta.widgetId
-    );
-
-    if (!editModeIsEnabled) {
-      const selectedEngineCategory = action.payload.selectedEngineCategory;
-
-      if (selectedEngineCategory.categoryType === 'face') {
-        yield put(cancelFaceEdits());
-      } else if (selectedEngineCategory.categoryType === 'transcript') {
-        yield put(resetTranscript());
-      }
-    }
-  });
 }
 
 function* watchLatestFetchEngineResultsStart(widgetId) {
@@ -1705,6 +1300,17 @@ function* watchToStartRefreshEngineRunsWithTimeout(
   );
 }
 
+function* watchEditSuccess(widgetId) {
+  yield takeLatest(
+    [SAVE_TRANSCRIPT_EDITS_SUCCESS, SAVE_FACE_EDITS_SUCCESS],
+    function*() {
+      const requestTdo = yield select(getTdo, widgetId);
+      yield call(refreshEngineRuns, widgetId, requestTdo.id);
+      yield put(createFileAssetSuccess(widgetId));
+    }
+  );
+}
+
 function* onMount(id, mediaId) {
   yield put(loadTdoRequest(id, mediaId));
   yield put(applicationModule.fetchApplications());
@@ -1721,13 +1327,12 @@ export default function* root({ id, mediaId, refreshIntervalMs }) {
     fork(watchUpdateTdoContentTemplates),
     fork(watchTranscriptStatus),
     fork(watchFaceEngineEntityUpdate, id),
-    fork(watchSaveAssetData),
     fork(watchCreateFileAssetSuccess),
-    fork(watchCancelEdit),
     fork(watchLatestFetchEngineResultsStart, id),
     fork(watchLatestFetchEngineResultsEnd, id),
     fork(watchRestoreOriginalEngineResults),
     fork(watchToStartRefreshEngineRunsWithTimeout, id, refreshIntervalMs),
+    fork(watchEditSuccess, id, mediaId),
     fork(onMount, id, mediaId)
   ]);
 }

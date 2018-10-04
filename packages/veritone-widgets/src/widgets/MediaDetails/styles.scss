@@ -182,6 +182,28 @@
     }
   }
 
+  .actionButtonsEditMode {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 15px 80px 15px 0;
+    border-right: 1px solid $grey-4;
+
+    button {
+      height: 36px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .actionButtonEditMode {
+      width: 108px;
+      margin-right: 20px;
+    }
+  }
+
   .mediaScreen {
     margin: 20px;
     display: flex;
@@ -229,4 +251,8 @@
 
 .snackbarMessageText {
   font-size: 14px;
+}
+
+.errorSnackbar {
+  background-color: $red500 !important;
 }

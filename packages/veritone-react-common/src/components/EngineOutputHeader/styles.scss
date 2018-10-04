@@ -30,12 +30,16 @@
     justify-content: flex-end;
   }
 
-  .engineSelect {
-    @include mui-text('body1');
+  .engineFormControl {
+    min-width: 120px;
     margin-left: 20px;
+
+    .engineSelect {
+      @include mui-text('body1');
+    }
   }
 
-  .moreMenuButton {
+  .actionIconButton {
     margin-left: 10px;
     height: 40px;
     width: 40px;
