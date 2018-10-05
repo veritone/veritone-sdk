@@ -176,7 +176,7 @@ class FaceEngineOutput extends Component {
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
-          disableEditButton={disableEditButton}
+          disableEditButton={disableEditButton || this.state.activeTab === 'faceRecognition'}
           disableEngineSelect={!!editMode}
         >
           {!editMode &&

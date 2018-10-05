@@ -6,9 +6,9 @@ import styles from 'styles.scss';
 
 describe('EditHeader', () => {
   const testEngineCategory = {
-    categoryType: "face",
-    iconClass: "icon-test",
-    name: "Test Detection"
+    categoryType: 'face',
+    iconClass: 'icon-test',
+    name: 'Test Detection'
   };
   let onClickCloseTest;
   beforeEach(() => {
@@ -23,7 +23,12 @@ describe('EditHeader', () => {
         engineCategoryType={testEngineCategory.categoryType}
       />
     );
-    expect(wrapper.find(Icon).find('.' + styles.engineCategoryIcon).exists()).toEqual(true);
+    expect(
+      wrapper
+        .find(Icon)
+        .find('.' + styles.engineCategoryIcon)
+        .exists()
+    ).toEqual(true);
   });
 
   it('should render a title', () => {
@@ -45,7 +50,12 @@ describe('EditHeader', () => {
         engineCategoryType={testEngineCategory.categoryType}
       />
     );
-    expect(wrapper.find(Icon).find('.' + styles.closeIcon).exists()).toEqual(true);
+    expect(
+      wrapper
+        .find(Icon)
+        .find('.' + styles.closeIcon)
+        .exists()
+    ).toEqual(true);
   });
 
   it('call props.onCloseButtonClick when close button is clicked', () => {
