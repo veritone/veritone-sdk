@@ -16,6 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
   bool,
   func,
@@ -50,6 +51,7 @@ import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import EngineOutputExport from '../EngineOutputExport';
 import { ExportMenuItem } from './MoreMenuItems';
+import EditHeader from './Headers/EditHeader';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
@@ -58,7 +60,6 @@ const {
 } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
-import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
@@ -401,7 +402,7 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
-  handleUpdateMediaPlayerTime = (startTime) => {
+  handleUpdateMediaPlayerTime = startTime => {
     this.mediaPlayer.seek(startTime / 1000);
     if (!this.props.isEditModeEnabled) {
       this.mediaPlayer.play();
@@ -1183,7 +1184,7 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {(isExpandedMode || isEditModeEnabled) &&
+          {isExpandedMode &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
@@ -1198,16 +1199,6 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
-                  {isEditModeEnabled && (
-                    <div className={styles.pageHeaderTitleLabelEditMode}>
-                      Edit Mode: {selectedEngineCategory.name}
-                    </div>
-                  )}
-                  {!isEditModeEnabled && (
-                    <div className={styles.pageHeaderTitleLabelEditMode}>
-                      {selectedEngineCategory.name}
-                    </div>
-                  )}
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
@@ -1215,6 +1206,21 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 </div>
               </div>
+            )}
+
+          {selectedEngineCategory &&
+            isEditModeEnabled && (
+              <EditHeader
+                engineCategoryIconClass={get(
+                  selectedEngineCategory,
+                  'iconClass'
+                )}
+                engineCategoryType={'Bob'}
+                // eslint-disable-next-line
+                onCloseButtonClick={() =>
+                  cancelEdit(this.props.id, selectedEngineId)
+                }
+              />
             )}
 
           {this.state.selectedTabValue === 'mediaDetails' && (
