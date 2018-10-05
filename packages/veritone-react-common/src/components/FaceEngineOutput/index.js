@@ -156,8 +156,7 @@ class FaceEngineOutput extends Component {
       moreMenuItems,
       showEditButton,
       onEditButtonClick,
-      disableEditButton,
-      onRestoreOriginalClick
+      disableEditButton
     } = this.props;
     const { viewMode } = this.state;
 

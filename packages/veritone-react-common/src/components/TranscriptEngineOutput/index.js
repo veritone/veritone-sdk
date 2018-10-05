@@ -163,7 +163,7 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   renderResultOptions() {
-    const { showingUserEditedOutput, onRestoreOriginalClick } = this.props;
+    const { showingUserEditedOutput } = this.props;
     return (
       <Select
         autoWidth

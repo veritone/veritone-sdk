@@ -12,6 +12,10 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Button from '@material-ui/core/Button';
 import {
   bool,
   func,
@@ -40,8 +44,7 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState,
-  AlertDialog
+  EngineOutputNullState
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
@@ -717,11 +720,11 @@ class MediaDetailsWidget extends React.Component {
 
   onRestoreOriginalClick = () => {
     this.props.openConfirmModal(this.props.id, {
-      title: 'Restore Original',
+      title: 'Reset to Original',
       description:
-        'Are you sure you want to restore original version? \nAll edited work will be lost.',
-      cancelButtonLabel: 'Discard',
-      confirmButtonLabel: 'Restore',
+        'Are you sure you want to reset to original version? All edited work will be lost.',
+      cancelButtonLabel: 'Cancel',
+      confirmButtonLabel: 'Reset',
       confirmAction: this.onRestoreOriginalConfirm,
       cancelAction: this.onRestoreOriginalCancel
     });
@@ -837,15 +840,44 @@ class MediaDetailsWidget extends React.Component {
     return (
       <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
         {alertDialogConfig && (
-          <AlertDialog
+          <Dialog
             open={alertDialogConfig.show}
-            title={alertDialogConfig.title}
-            content={alertDialogConfig.description}
-            cancelButtonLabel={alertDialogConfig.cancelButtonLabel}
-            approveButtonLabel={alertDialogConfig.confirmButtonLabel}
-            onApprove={alertDialogConfig.confirmAction}
-            onCancel={alertDialogConfig.cancelAction}
-          />
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <div id="alert-dialog-title" className={styles.resetOriginalDialogTitle}>
+              {alertDialogConfig.title}
+              <IconButton
+                classes={{root: styles.closeResetOriginalDialogButton}}
+                onClick={alertDialogConfig.cancelAction}
+                aria-label="Close Reset to Original"
+              >
+                <Icon
+                  className="icon-close-exit"
+                  classes={{ root: styles.iconClass }}
+                />
+              </IconButton>
+            </div>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description" classes={{root: styles.resetOriginalDialogDescription}}>
+                {alertDialogConfig.description}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions classes={{root: styles.resetOriginalDialogActions}}>
+              <Button classes={{root: styles.resetOriginalDialogButton}} onClick={alertDialogConfig.cancelAction} color="primary">
+                {alertDialogConfig.cancelButtonLabel}
+              </Button>
+              <Button
+                classes={{root: styles.resetOriginalDialogButton}}
+                onClick={alertDialogConfig.confirmAction}
+                variant="contained"
+                color="primary"
+                autoFocus
+              >
+                {alertDialogConfig.confirmButtonLabel}
+              </Button>
+            </DialogActions>
+          </Dialog>
         )}
         <Paper className={styles.mediaDetailsPageContent}>
           {!isExpandedMode &&
