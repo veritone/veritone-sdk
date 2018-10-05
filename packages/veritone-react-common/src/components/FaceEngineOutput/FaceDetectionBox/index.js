@@ -111,7 +111,8 @@ class FaceDetectionBox extends Component {
     this.setState({ editFaceEntity: true });
   };
 
-  handleAddNewEntity = entity => {
+  // evt is mandatory here to avoid infinite call loop
+  handleAddNewEntity = entity => evt => {
     this.props.addNewEntity(this.props.face, entity);
   };
 
