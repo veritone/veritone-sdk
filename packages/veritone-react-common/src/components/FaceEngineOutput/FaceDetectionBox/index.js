@@ -111,7 +111,7 @@ class FaceDetectionBox extends Component {
     this.setState({ editFaceEntity: true });
   };
 
-  handleAddNewEntity = entity => evt => {
+  handleAddNewEntity = entity => {
     this.props.addNewEntity(this.props.face, entity);
   };
 
@@ -218,7 +218,7 @@ class FaceDetectionBox extends Component {
                   <div ref={this.inputRef}>
                     <Input
                       {...getInputProps({
-                        placeholder: 'Unknown',
+                        placeholder: (face.object.label ? face.object.label : 'Unknown'),
                         autoFocus: true,
                         className: styles.entitySearchInput
                       })}
@@ -268,7 +268,11 @@ class FaceDetectionBox extends Component {
               )}
             </Downshift>
           ) : (
-            <div className={styles.unknownEntityText}>Unknown</div>
+            face.object.label && face.object.label.length ? (
+              <div className={styles.unknownEntityText}>{face.object.label}</div>
+            ) : (
+              <div className={styles.unknownEntityText}>Unknown</div>
+            )
           )}
         </div>
       </div>

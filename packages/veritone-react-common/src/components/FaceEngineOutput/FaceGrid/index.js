@@ -35,8 +35,8 @@ class FaceGrid extends Component {
     isSearchingEntities: bool
   };
 
-  handleFaceClick = face => evt => {
-    if (!this.props.editMode) {
+  handleFaceClick = face => {
+    if (this.props.onFaceOccurrenceClicked) {
       this.props.onFaceOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
     }
   };

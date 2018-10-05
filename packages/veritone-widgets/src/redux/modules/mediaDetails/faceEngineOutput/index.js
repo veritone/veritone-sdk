@@ -288,8 +288,8 @@ function local(state) {
   return state[namespace];
 }
 
-export const getFaceDataByEngine = (state, engineId) => {
-  return engineResultsModule.engineResultsByEngineId(state, engineId);
+export const getFaceDataByEngine = (state, engineId, tdoId) => {
+  return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
 };
 
 export const getUserDetectedFaces = (state, engineId) =>
@@ -499,8 +499,8 @@ export const getFaces = createSelector(
 );
 
 /* HELPERS */
-export const getFaceEngineAssetData = (state, engineId) => {
-  const engineResults = cloneDeep(getFaceDataByEngine(state, engineId));
+export const getFaceEngineAssetData = (state, tdoId, engineId) => {
+  const engineResults = cloneDeep(getFaceDataByEngine(state, engineId, tdoId));
   const userDetectedFaces =
     cloneDeep(getUserDetectedFaces(state, engineId)) || [];
   const userRemovedFaces =
@@ -558,7 +558,7 @@ export const saveFaceEdits = (tdoId, selectedEngineId) => {
     dispatch({
       type: SAVE_FACE_EDITS
     });
-    const assetData = getFaceEngineAssetData(getState(), selectedEngineId);
+    const assetData = getFaceEngineAssetData(getState(), tdoId, selectedEngineId);
     const contentType = 'application/json';
     const type = 'vtn-standard';
     const createAssetCalls = [];

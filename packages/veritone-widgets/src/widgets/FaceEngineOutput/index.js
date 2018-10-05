@@ -39,8 +39,8 @@ const saga = util.reactReduxSaga.saga;
 
 @saga(rootSaga)
 @connect(
-  (state, { selectedEngineId }) => ({
-    faces: faceEngineOutput.getFaces(state, selectedEngineId),
+  (state, { tdo, selectedEngineId }) => ({
+    faces: faceEngineOutput.getFaces(state, selectedEngineId, tdo.id),
     entities: faceEngineOutput.getEntities(state),
     libraries: faceEngineOutput.getLibraries(state),
     entitySearchResults: faceEngineOutput.getEntitySearchResults(state),
@@ -55,6 +55,7 @@ const saga = util.reactReduxSaga.saga;
     ),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
+      tdo.id,
       selectedEngineId
     ),
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
@@ -221,7 +222,6 @@ class FaceEngineOutputContainer extends Component {
     // fetch engine results when user changes engine
     if (nextProps.selectedEngineId !== this.props.selectedEngineId) {
       const tdo = this.props.tdo;
-      this.props.clearEngineResultsByEngineId(nextProps.selectedEngineId);
       this.props.fetchEngineResults({
         engineId: nextProps.selectedEngineId,
         tdo: this.props.tdo,
@@ -349,7 +349,7 @@ class FaceEngineOutputContainer extends Component {
 
   handleToggleEditedOutput = showUserEdited => {
     const tdo = this.props.tdo;
-    this.props.clearEngineResultsByEngineId(this.props.selectedEngineId);
+    this.props.clearEngineResultsByEngineId(tdo.id, this.props.selectedEngineId);
     this.props.fetchEngineResults({
       engineId: this.props.selectedEngineId,
       tdo: tdo,

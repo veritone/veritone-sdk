@@ -75,13 +75,14 @@ const programLiveImageNullState =
 }))
 @saga(rootSaga)
 @connect(
-  (state, { id }) => ({
+  (state, { id, mediaId }) => ({
     engineCategories: mediaDetailsModule.getEngineCategories(state, id),
     tdo: mediaDetailsModule.getTdo(state, id),
     isLoadingTdo: mediaDetailsModule.isLoadingTdo(state, id),
     isFetchingEngineResults: engineResultsModule.isFetchingEngineResults(state),
     selectedEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
+      mediaId,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     selectedEngineCategory: mediaDetailsModule.getSelectedEngineCategory(
@@ -105,6 +106,7 @@ const programLiveImageNullState =
     alertDialogConfig: mediaDetailsModule.getAlertDialogConfig(state, id),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
       state,
+      mediaId,
       mediaDetailsModule.getSelectedEngineId(state, id)
     ),
     isEditButtonDisabled: mediaDetailsModule.isEditButtonDisabled(state, id),
@@ -399,9 +401,15 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
-  handleUpdateMediaPlayerTime = (startTime, stopTime) => {
+  handleUpdateMediaPlayerTime = (startTime) => {
     this.mediaPlayer.seek(startTime / 1000);
-    this.mediaPlayer.play();
+    if (!this.props.isEditModeEnabled) {
+      this.mediaPlayer.play();
+    } else if (this.mediaPlayer.getState().player.paused) {
+      // if in edit mode and paused -> play/pause to refresh frame
+      this.mediaPlayer.play();
+      this.mediaPlayer.pause();
+    }
   };
 
   handleRunProcess = () => {
