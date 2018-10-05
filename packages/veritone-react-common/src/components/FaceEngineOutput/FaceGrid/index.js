@@ -63,7 +63,7 @@ class FaceGrid extends Component {
           faces.map((face, idx) => {
             return (
               <FaceDetectionBox
-                key={`face-${face.startTimeMs}-${face.stopTimeMs}-${
+                key={`face-${face.guid}-${face.startTimeMs}-${face.stopTimeMs}-${
                   face.object.uri
                 }`}
                 face={face}
