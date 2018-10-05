@@ -1215,7 +1215,10 @@ class MediaDetailsWidget extends React.Component {
                   selectedEngineCategory,
                   'iconClass'
                 )}
-                engineCategoryType={'Bob'}
+                engineCategoryType={get(
+                  selectedEngineCategory,
+                  'categoryType'
+                )}
                 // eslint-disable-next-line
                 onCloseButtonClick={() =>
                   cancelEdit(this.props.id, selectedEngineId)

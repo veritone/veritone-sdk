@@ -582,7 +582,7 @@ class FaceEngineOutputContainer extends Component {
         onClose={this.closeFaceDetectionDoneSnack}
         message={
           <span className={styles.faceDetectionDoneSnackbarContentText}>
-            {`${entityName} has been added as a person for this file`}
+            {`${entityName} has been added to the face recognition tab.`}
           </span>
         }
       />

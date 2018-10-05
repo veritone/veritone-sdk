@@ -19,7 +19,7 @@ const editHeader = ({
     },
     face: {
       name: 'Faces',
-      subhead: 'Use the edit screen below to edit recognized or detected faces.'
+      subhead: 'Use the edit screen below to edit detected faces.'
     }
   };
   return (
