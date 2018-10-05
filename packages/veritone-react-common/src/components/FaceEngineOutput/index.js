@@ -5,6 +5,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
+import DoneIcon from '@material-ui/icons/Done';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import {
   shape,
   number,
@@ -185,33 +187,39 @@ class FaceEngineOutput extends Component {
                 className={styles.outputHeaderSelect}
                 MenuProps={{
                   anchorOrigin: {
-                    horizontal: 'center',
+                    horizontal: 'right',
                     vertical: 'bottom'
                   },
                   transformOrigin: {
-                    horizontal: 'center',
+                    horizontal: 'right',
                     vertical: 'top'
                   },
                   getContentAnchorEl: null
                 }}
+                // eslint-disable-next-line
+                renderValue={() => showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'}
               >
                 <MenuItem
                   value="userEdited"
                 >
-                  <ListItemText classes={{primary: styles.selectMenuItem}} primary="User-Edited" />
+                  {showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
+                  <ListItemText classes={{primary: cx(styles.selectMenuItem, {
+                      [styles.menuItemInset]: !showingUserEditedOutput
+                    })}} primary="User-Edited" />
                 </MenuItem>
                 <MenuItem
                   value="original"
-                  className={styles.selectMenuItem}
                 >
-                  <ListItemText classes={{primary: styles.selectMenuItem}} primary="Original (View Only)" />
+                  {!showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
+                  <ListItemText classes={{primary: cx(styles.selectMenuItem, {
+                      [styles.menuItemInset]: showingUserEditedOutput
+                    })}} primary="Original (View Only)" />
                 </MenuItem>
                 <Divider light />
                 <MenuItem
                   value="restoreOriginal"
-                  className={styles.selectMenuItem}
                 >
-                  <ListItemText classes={{primary: styles.selectMenuItem}} primary="Restore Original" />
+                  <ListItemText classes={{root: styles.restoreOriginalMenuItem, primary: cx(styles.selectMenuItem, styles.menuItemInset)}} primary="Restore Original" />
                 </MenuItem>
               </Select>
             )}

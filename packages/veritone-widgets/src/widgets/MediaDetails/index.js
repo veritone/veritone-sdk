@@ -845,10 +845,13 @@ class MediaDetailsWidget extends React.Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <div id="alert-dialog-title" className={styles.resetOriginalDialogTitle}>
+            <div
+              id="alert-dialog-title"
+              className={styles.resetOriginalDialogTitle}
+            >
               {alertDialogConfig.title}
               <IconButton
-                classes={{root: styles.closeResetOriginalDialogButton}}
+                classes={{ root: styles.closeResetOriginalDialogButton }}
                 onClick={alertDialogConfig.cancelAction}
                 aria-label="Close Reset to Original"
               >
@@ -859,16 +862,25 @@ class MediaDetailsWidget extends React.Component {
               </IconButton>
             </div>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description" classes={{root: styles.resetOriginalDialogDescription}}>
+              <DialogContentText
+                id="alert-dialog-description"
+                classes={{ root: styles.resetOriginalDialogDescription }}
+              >
                 {alertDialogConfig.description}
               </DialogContentText>
             </DialogContent>
-            <DialogActions classes={{root: styles.resetOriginalDialogActions}}>
-              <Button classes={{root: styles.resetOriginalDialogButton}} onClick={alertDialogConfig.cancelAction} color="primary">
+            <DialogActions
+              classes={{ root: styles.resetOriginalDialogActions }}
+            >
+              <Button
+                classes={{ root: styles.resetOriginalDialogButton }}
+                onClick={alertDialogConfig.cancelAction}
+                color="primary"
+              >
                 {alertDialogConfig.cancelButtonLabel}
               </Button>
               <Button
-                classes={{root: styles.resetOriginalDialogButton}}
+                classes={{ root: styles.resetOriginalDialogButton }}
                 onClick={alertDialogConfig.confirmAction}
                 variant="contained"
                 color="primary"
