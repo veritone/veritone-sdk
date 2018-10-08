@@ -12,6 +12,11 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
   bool,
   func,
@@ -40,13 +45,13 @@ import {
   GeoEngineOutput,
   TranslationEngineOutput,
   StructuredDataEngineOutput,
-  EngineOutputNullState,
-  AlertDialog
+  EngineOutputNullState
 } from 'veritone-react-common';
 import FaceEngineOutput from '../FaceEngineOutput';
 import TranscriptEngineOutput from '../TranscriptEngineOutput';
 import EngineOutputExport from '../EngineOutputExport';
 import { ExportMenuItem } from './MoreMenuItems';
+import EditHeader from './Headers/EditHeader';
 import { modules, util } from 'veritone-redux-common';
 const {
   application: applicationModule,
@@ -55,10 +60,8 @@ const {
 } = modules;
 import { withPropsOnChange } from 'recompose';
 import { guid } from '../../shared/util';
-import Tooltip from '@material-ui/core/Tooltip';
 import cx from 'classnames';
 import styles from './styles.scss';
-import moreMenuStyles from './MoreMenuItems/styles.scss';
 import * as mediaDetailsModule from '../../redux/modules/mediaDetails';
 import widget from '../../shared/widget';
 import rootSaga from '../../redux/modules/mediaDetails/saga';
@@ -399,7 +402,7 @@ class MediaDetailsWidget extends React.Component {
     }
   };
 
-  handleUpdateMediaPlayerTime = (startTime) => {
+  handleUpdateMediaPlayerTime = startTime => {
     this.mediaPlayer.seek(startTime / 1000);
     if (this.mediaPlayer.getState().player.paused) {
       // play/pause to refresh frame
@@ -724,11 +727,11 @@ class MediaDetailsWidget extends React.Component {
 
   onRestoreOriginalClick = () => {
     this.props.openConfirmModal(this.props.id, {
-      title: 'Restore Original',
+      title: 'Reset to Original',
       description:
-        'Are you sure you want to restore original version? \nAll edited work will be lost.',
-      cancelButtonLabel: 'Discard',
-      confirmButtonLabel: 'Restore',
+        'Are you sure you want to reset to original version? All edited work will be lost.',
+      cancelButtonLabel: 'Cancel',
+      confirmButtonLabel: 'Reset',
       confirmAction: this.onRestoreOriginalConfirm,
       cancelAction: this.onRestoreOriginalCancel
     });
@@ -828,20 +831,6 @@ class MediaDetailsWidget extends React.Component {
     const mediaPlayerTimeInMs = Math.floor(currentMediaPlayerTime * 1000);
 
     const moreMenuItems = [];
-    const selectedEngine = find(get(selectedEngineCategory, 'engines', []), {
-      id: selectedEngineId
-    });
-    if (!isEditModeEnabled && get(selectedEngine, 'hasUserEdits')) {
-      moreMenuItems.push(
-        <MenuItem
-          key="restore-original-output"
-          className={moreMenuStyles.moreMenuItem}
-          onClick={this.onRestoreOriginalClick}
-        >
-          Restore Original
-        </MenuItem>
-      );
-    }
     if (onExport && categoryExportFormats.length && !isEditModeEnabled) {
       moreMenuItems.push(
         <ExportMenuItem
@@ -858,15 +847,56 @@ class MediaDetailsWidget extends React.Component {
     return (
       <Dialog fullScreen open className={className} style={{ zIndex: 50 }}>
         {alertDialogConfig && (
-          <AlertDialog
+          <Dialog
             open={alertDialogConfig.show}
-            title={alertDialogConfig.title}
-            content={alertDialogConfig.description}
-            cancelButtonLabel={alertDialogConfig.cancelButtonLabel}
-            approveButtonLabel={alertDialogConfig.confirmButtonLabel}
-            onApprove={alertDialogConfig.confirmAction}
-            onCancel={alertDialogConfig.cancelAction}
-          />
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <div
+              id="alert-dialog-title"
+              className={styles.resetOriginalDialogTitle}
+            >
+              {alertDialogConfig.title}
+              <IconButton
+                classes={{ root: styles.closeResetOriginalDialogButton }}
+                onClick={alertDialogConfig.cancelAction}
+                aria-label="Close Reset to Original"
+              >
+                <Icon
+                  className="icon-close-exit"
+                  classes={{ root: styles.iconClass }}
+                />
+              </IconButton>
+            </div>
+            <DialogContent>
+              <DialogContentText
+                id="alert-dialog-description"
+                classes={{ root: styles.resetOriginalDialogDescription }}
+              >
+                {alertDialogConfig.description}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions
+              classes={{ root: styles.resetOriginalDialogActions }}
+            >
+              <Button
+                classes={{ root: styles.resetOriginalDialogButton }}
+                onClick={alertDialogConfig.cancelAction}
+                color="primary"
+              >
+                {alertDialogConfig.cancelButtonLabel}
+              </Button>
+              <Button
+                classes={{ root: styles.resetOriginalDialogButton }}
+                onClick={alertDialogConfig.confirmAction}
+                variant="contained"
+                color="primary"
+                autoFocus
+              >
+                {alertDialogConfig.confirmButtonLabel}
+              </Button>
+            </DialogActions>
+          </Dialog>
         )}
         <Paper className={styles.mediaDetailsPageContent}>
           {!isExpandedMode &&
@@ -1152,7 +1182,7 @@ class MediaDetailsWidget extends React.Component {
               </div>
             )}
 
-          {(isExpandedMode || isEditModeEnabled) &&
+          {isExpandedMode &&
             this.state.selectedTabValue === 'mediaDetails' && (
               <div>
                 <div className={styles.pageHeaderEditMode}>
@@ -1167,16 +1197,6 @@ class MediaDetailsWidget extends React.Component {
                       classes={{ root: styles.iconClass }}
                     />
                   </IconButton>
-                  {isEditModeEnabled && (
-                    <div className={styles.pageHeaderTitleLabelEditMode}>
-                      Edit Mode: {selectedEngineCategory.name}
-                    </div>
-                  )}
-                  {!isEditModeEnabled && (
-                    <div className={styles.pageHeaderTitleLabelEditMode}>
-                      {selectedEngineCategory.name}
-                    </div>
-                  )}
                 </div>
                 <div className={styles.pageSubHeaderEditMode}>
                   <div className={styles.editCategoryHelperMessage}>
@@ -1184,6 +1204,24 @@ class MediaDetailsWidget extends React.Component {
                   </div>
                 </div>
               </div>
+            )}
+
+          {selectedEngineCategory &&
+            isEditModeEnabled && (
+              <EditHeader
+                engineCategoryIconClass={get(
+                  selectedEngineCategory,
+                  'iconClass'
+                )}
+                engineCategoryType={get(
+                  selectedEngineCategory,
+                  'categoryType'
+                )}
+                // eslint-disable-next-line
+                onCloseButtonClick={() =>
+                  cancelEdit(this.props.id, selectedEngineId)
+                }
+              />
             )}
 
           {this.state.selectedTabValue === 'mediaDetails' && (
@@ -1237,6 +1275,7 @@ class MediaDetailsWidget extends React.Component {
                         outputNullState={this.buildEngineNullStateComponent()}
                         bulkEditEnabled={bulkEditEnabled}
                         moreMenuItems={moreMenuItems}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&
@@ -1255,6 +1294,7 @@ class MediaDetailsWidget extends React.Component {
                         }
                         outputNullState={this.buildEngineNullStateComponent()}
                         moreMenuItems={moreMenuItems}
+                        onRestoreOriginalClick={this.onRestoreOriginalClick}
                       />
                     )}
                   {selectedEngineCategory &&

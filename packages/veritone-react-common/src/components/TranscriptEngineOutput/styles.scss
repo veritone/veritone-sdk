@@ -50,4 +50,16 @@
 
 .selectMenuItem {
   font-size: 14px !important;
+
+  &.menuItemInset {
+    margin-left: 40px;
+  }
+}
+
+.restoreOriginalMenuItem {
+  padding: 0 !important;
+}
+
+.userEditListItemIcon {
+  margin-right: 0 !important;
 }

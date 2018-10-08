@@ -87,17 +87,9 @@ class FaceDetectionBox extends Component {
   };
 
   state = {
-    editFaceEntity: false,
     hovered: false,
     searchEntityText: ''
   };
-
-  // eslint-disable-next-line react/sort-comp
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.enableEdit === false) {
-      this.setState({ editFaceEntity: false });
-    }
-  }
 
   handleMouseOver = () => {
     this.setState({ hovered: true });
@@ -105,10 +97,6 @@ class FaceDetectionBox extends Component {
 
   handleMouseOut = () => {
     this.setState({ hovered: false });
-  };
-
-  makeEditable = () => {
-    this.setState({ editFaceEntity: true });
   };
 
   // evt is mandatory here to avoid infinite call loop
@@ -129,14 +117,6 @@ class FaceDetectionBox extends Component {
       this.setState({ searchEntityText: text });
     }, 1000);
     this.props.onSearchForEntities(text);
-  };
-
-  handleDownshiftStateChange = (changes, stateAndHelpers) => {
-    if (changes.isOpen === false) {
-      this.setState({
-        editFaceEntity: false
-      });
-    }
   };
 
   calculatePopperPlacement = () => {
@@ -182,12 +162,6 @@ class FaceDetectionBox extends Component {
               <div className={styles.imageButtonOverlay}>
                 <div
                   className={styles.faceActionIcon}
-                  onClick={this.makeEditable}
-                >
-                  <i className="icon-mode_edit2" />
-                </div>
-                <div
-                  className={styles.faceActionIcon}
                   onClick={this.handleDeleteFaceDetection}
                 >
                   <i className="icon-trashcan" />
@@ -201,12 +175,11 @@ class FaceDetectionBox extends Component {
               face.stopTimeMs
             )}`}
           </span>
-          {this.state.editFaceEntity ? (
+          {this.props.enableEdit ? (
             <Downshift
               itemToString={this.itemToString}
               onSelect={this.handleEntitySelect}
               onInputValueChange={this.onSearchEntityInputChange}
-              onStateChange={this.handleDownshiftStateChange}
             >
               {({
                 getInputProps,
@@ -220,7 +193,6 @@ class FaceDetectionBox extends Component {
                     <Input
                       {...getInputProps({
                         placeholder: (face.object.label ? face.object.label : 'Unknown'),
-                        autoFocus: true,
                         className: styles.entitySearchInput
                       })}
                     />
@@ -237,6 +209,7 @@ class FaceDetectionBox extends Component {
                       target={this._inputRef}
                     >
                       <Paper className={styles.autoCompleteDropdown} square>
+                        <div className={styles.libraryMatchesTitle}>Library Matches</div>
                         <div className={styles.searchResultsList}>
                           {isSearchingEntities ? (
                             <CircularProgress />

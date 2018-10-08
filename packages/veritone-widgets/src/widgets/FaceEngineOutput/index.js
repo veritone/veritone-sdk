@@ -234,7 +234,7 @@ class FaceEngineOutputContainer extends Component {
   }
 
   componentWillUnmount() {
-    if(this.props.editModeEnabled) {
+    if (this.props.editModeEnabled) {
       this.props.toggleEditMode();
     }
   }
@@ -582,7 +582,7 @@ class FaceEngineOutputContainer extends Component {
         onClose={this.closeFaceDetectionDoneSnack}
         message={
           <span className={styles.faceDetectionDoneSnackbarContentText}>
-            {`${entityName} has been added as a person for this file`}
+            {`${entityName} has been added to the face recognition tab.`}
           </span>
         }
       />

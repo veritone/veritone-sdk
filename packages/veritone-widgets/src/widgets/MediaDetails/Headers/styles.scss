@@ -1,0 +1,55 @@
+@import 'src/styles/modules/variables';
+@import 'src/styles/modules/muiTypography';
+
+.editHeader {
+  width: 100%;
+  background-color: #4e5c6e;
+  display: flex;
+  flex-direction: row;
+  padding: 24px;
+  color: $grey-1;
+  flex: none;
+  height: 92px;
+
+  .editHeaderIconContainer {
+    flex: none;
+    padding-right: 10px;
+    padding-top: 3px;
+
+    .engineCategoryIcon {
+      font-size: 24px;
+    }
+  }
+
+  .editHeaderText {
+    flex: auto;
+
+    .editHeaderTitle {
+      @include mui-text('title');
+      font-weight: 300 !important;
+
+      .boldText {
+        font-weight: 500 !important;
+      }
+    }
+
+    .editHeaderSubHeader {
+      @include mui-text('body1');
+      margin-top: 5px;
+    }
+  }
+
+  .editHeaderCloseIconContainer {
+    flex: none;
+
+    .closeIconButton {
+      margin-top: -10px;
+      margin-right: -10px;
+
+      .closeIcon {
+        color: $grey-1;
+        font-size: 24px;
+      }
+    }
+  }
+}

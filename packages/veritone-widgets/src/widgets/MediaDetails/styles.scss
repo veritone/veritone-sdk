@@ -256,3 +256,35 @@
 .errorSnackbar {
   background-color: $red500 !important;
 }
+
+.resetOriginalDialogTitle {
+  padding: 13px 24px 15px 24px;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  line-height: 28px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  .closeResetOriginalDialogButton {
+    margin-right: -15px;
+  }
+}
+
+.resetOriginalDialogDescription {
+  font-size: 15px !important;
+  line-height: 24px !important;
+  color: $dark-black !important;
+}
+
+.resetOriginalDialogActions {
+  padding-left: 24px;
+  padding-right: 24px;
+  margin: 8px 0px !important;
+
+  .resetOriginalDialogButton {
+    width: 100px;
+    margin: 0px;
+  }
+}

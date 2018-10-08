@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func, node } from 'prop-types';
 import { find, get } from 'lodash';
-import classNames from 'classnames';
+import cx from 'classnames';
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import Divider from '@material-ui/core/Divider';
+import DoneIcon from '@material-ui/icons/Done';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent, { View, Edit } from './TranscriptContent';
@@ -73,7 +77,8 @@ export default class TranscriptEngineOutput extends Component {
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
-    disableEditButton: bool
+    disableEditButton: bool,
+    onRestoreOriginalClick: func.isRequired
   };
 
   static defaultProps = {
@@ -95,6 +100,10 @@ export default class TranscriptEngineOutput extends Component {
   }
 
   handleUserEditChange = evt => {
+    if (evt.target.value == 'restoreOriginal') {
+      this.props.onRestoreOriginalClick();
+      return;
+    }
     this.props.onToggleUserEditedOutput &&
       this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
@@ -122,7 +131,7 @@ export default class TranscriptEngineOutput extends Component {
         aria-label="edit_mode"
         value={editType}
         name="editMode"
-        className={classNames(styles.radioButtonGroup)}
+        className={styles.radioButtonGroup}
         onChange={this.handleEditChange}
       >
         <FormControlLabel
@@ -165,27 +174,39 @@ export default class TranscriptEngineOutput extends Component {
         className={styles.outputHeaderSelect}
         MenuProps={{
           anchorOrigin: {
-            horizontal: 'center',
+            horizontal: 'right',
             vertical: 'bottom'
           },
           transformOrigin: {
-            horizontal: 'center',
+            horizontal: 'right',
             vertical: 'top'
           },
           getContentAnchorEl: null
         }}
+        // eslint-disable-next-line
+        renderValue={() => showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'}
       >
         <MenuItem
           value="userEdited"
-          className={classNames(styles.selectMenuItem)}
         >
-          User Edited
+          {showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
+          <ListItemText classes={{primary: cx(styles.selectMenuItem, {
+              [styles.menuItemInset]: !showingUserEditedOutput
+            })}} primary="User-Edited" />
         </MenuItem>
         <MenuItem
           value="original"
-          className={classNames(styles.selectMenuItem)}
         >
-          Original
+          {!showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
+          <ListItemText classes={{primary: cx(styles.selectMenuItem, {
+              [styles.menuItemInset]: showingUserEditedOutput
+            })}} primary="Original (View Only)" />
+        </MenuItem>
+        <Divider light />
+        <MenuItem
+          value="restoreOriginal"
+        >
+          <ListItemText classes={{root: styles.restoreOriginalMenuItem, primary: cx(styles.selectMenuItem, styles.menuItemInset)}} primary="Restore Original" />
         </MenuItem>
       </Select>
     );
@@ -212,13 +233,13 @@ export default class TranscriptEngineOutput extends Component {
       >
         <MenuItem
           value={View.TIME}
-          className={classNames(styles.selectMenuItem)}
+          className={styles.selectMenuItem}
         >
           Time
         </MenuItem>
         <MenuItem
           value={View.OVERVIEW}
-          className={classNames(styles.selectMenuItem)}
+          className={styles.selectMenuItem}
         >
           Overview
         </MenuItem>
@@ -250,7 +271,7 @@ export default class TranscriptEngineOutput extends Component {
         selectedEngineId={selectedEngineId}
         onEngineChange={onEngineChange}
         onExpandClick={onExpandClick}
-        className={classNames(headerClassName)}
+        className={headerClassName}
         showMoreMenuButton={!editMode && get(moreMenuItems, 'length')}
         moreMenuItems={moreMenuItems}
         showEditButton={showEditButton}
@@ -258,7 +279,7 @@ export default class TranscriptEngineOutput extends Component {
         disableEditButton={disableEditButton}
         disableEngineSelect={!!editMode}
       >
-        <div className={classNames(styles.controllers)}>
+        <div className={styles.controllers}>
           {editMode && this.renderEditOptions()}
           {!editMode &&
             selectedEngine &&
@@ -293,7 +314,7 @@ export default class TranscriptEngineOutput extends Component {
 
     return (
       outputNullState || (
-        <div className={classNames(styles.content)}>
+        <div className={styles.content}>
           <TranscriptContent
             data={data}
             editMode={editMode}
@@ -308,7 +329,7 @@ export default class TranscriptEngineOutput extends Component {
             onScroll={onScroll}
             onChange={onChange}
             selectedEngineId={selectedEngineId}
-            className={classNames(contentClassName)}
+            className={contentClassName}
           />
         </div>
       )
@@ -318,7 +339,7 @@ export default class TranscriptEngineOutput extends Component {
   render() {
     const { className } = this.props;
     return (
-      <div className={classNames(styles.transcriptOutput, className)}>
+      <div className={cx(styles.transcriptOutput, className)}>
         {this.renderHeader()}
         {this.renderBody()}
       </div>
