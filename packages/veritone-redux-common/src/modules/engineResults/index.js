@@ -1,6 +1,6 @@
 import { createReducer } from 'helpers/redux';
 import callGraphQLApi from 'helpers/api/callGraphQLApi';
-import { get, groupBy, find, forEach } from 'lodash';
+import { get, groupBy, find, forEach, some, uniq, differenceBy } from 'lodash';
 import { guid } from 'helpers/misc';
 
 export const namespace = 'engineResults';
@@ -30,7 +30,7 @@ export default createReducer(defaultState, {
 
     // requestEngineId could be different from the jsondata.sourceEngineId (internal engine id vs GUID)
     // so group by requestEngineId, keep grouped results and remove requestEngineId from the results
-    const results = get(action, 'payload.engineResults.records').map(result => {
+    let results = get(action, 'payload.engineResults.records').map(result => {
       forEach(get(result, 'jsondata.series'), seriesItem => {
         seriesItem.guid = guid();
       });
@@ -42,7 +42,29 @@ export default createReducer(defaultState, {
         tdoId: result.tdoId
       };
     });
-
+    // handle legacy user edited transcript that is return by API along with the original
+    if (some(results, { requestEngineId: 'manual', userEdited: true })) {
+      const requestEngineIds = uniq(
+        results
+          .filter(result => result.requestEngineId !== 'manual')
+          .map(result => result.requestEngineId)
+      );
+      if (requestEngineIds.length === 1) {
+        const requestEngineId = requestEngineIds[0];
+        // if exists user edited version for requested engine id - ignore manual edit
+        if (!some(results, { requestEngineId: requestEngineId, userEdited: true })) {
+          const originalEngineResult = find(results, { requestEngineId });
+          // keep only 'manual' results
+          results = differenceBy(results, [{ requestEngineId }], 'requestEngineId');
+          // remap 'manual' results with requestEngineId
+          forEach(results, manualEditEngineResult => {
+            manualEditEngineResult.requestEngineId = originalEngineResult.requestEngineId;
+            manualEditEngineResult.sourceEngineId = originalEngineResult.sourceEngineId;
+          });
+        }
+      }
+    }
+    // store results mapping
     const tdoEngineResultsMappedByEngineId = {
       ...state.tdoEngineResultsMappedByEngineId
     };
