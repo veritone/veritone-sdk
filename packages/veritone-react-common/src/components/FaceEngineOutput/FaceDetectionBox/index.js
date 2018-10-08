@@ -193,7 +193,6 @@ class FaceDetectionBox extends Component {
                     <Input
                       {...getInputProps({
                         placeholder: (face.object.label ? face.object.label : 'Unknown'),
-                        autoFocus: true,
                         className: styles.entitySearchInput
                       })}
                     />

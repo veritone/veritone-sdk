@@ -38,6 +38,7 @@
   background: black;
   display: flex;
   flex-direction: row;
+  justify-content: center;
 }
 
 .faceActionIcon {
@@ -49,14 +50,6 @@
   text-align: center;
   opacity: 1;
   cursor: pointer;
-
-  &:first-child {
-    padding-left: 6px;
-  }
-
-  &:last-child {
-    padding-right: 6px;
-  }
 }
 
 .faceInformation {
@@ -79,6 +72,10 @@
   font-size: 14px !important;
   padding: 0 !important;
   width: 100%;
+
+  input {
+    text-align: center;
+  }
 }
 
 .searchResultsList {
