@@ -119,7 +119,25 @@
 }
 
 .cantEditWarning {
+  height: 40px;
   width: 100%;
-  text-align: center;
-  padding-bottom: 20px;
+  background-color: #fff8e1;
+  margin-bottom: 20px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+
+  span {
+    opacity: 0.87;
+
+    .boldNoteText {
+      font-weight: 600;
+    }
+  }
+
+  .cantEditInfoIcon {
+    font-weight: 600;
+    font-size: 15px;
+    margin-right: 5px;
+  }
 }

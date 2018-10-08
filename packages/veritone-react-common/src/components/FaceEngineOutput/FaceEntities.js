@@ -10,6 +10,8 @@ import {
   bool
 } from 'prop-types';
 import { find, isObject, get, reduce, pick, findIndex } from 'lodash';
+import cx from 'classnames';
+import Icon from '@material-ui/core/Icon';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
@@ -120,7 +122,10 @@ export default class FaceEntities extends Component {
     if (viewMode === 'summary') {
       return (
         <Fragment>
-          {editMode && <div className={styles.cantEditWarning}>Recognized faces can not be edited currently</div>}
+          {editMode && <div className={styles.cantEditWarning}>
+            <Icon className={cx('icon-info-panel', styles.cantEditInfoIcon)}/>
+            <span><span className={styles.boldNoteText}> Note: </span>Recognized faces can not be edited currently</span>
+          </div>}
           <FacesByLibrary
             faceEntityLibraries={this.state.entitiesByLibrary}
             onSelectEntity={this.handleEntitySelect}
