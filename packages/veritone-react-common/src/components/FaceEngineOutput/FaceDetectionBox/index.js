@@ -85,7 +85,8 @@ class FaceDetectionBox extends Component {
     onClick: func,
     onSearchForEntities: func,
     isSearchingEntities: bool,
-    isSelected: bool
+    isSelected: bool,
+    onCheckboxClicked: func
   };
 
   state = {
@@ -138,13 +139,18 @@ class FaceDetectionBox extends Component {
 
   inputRef = node => (this._inputRef = node);
 
+  handleCheckboxClicked = face => evt => {
+    this.props.onCheckboxClicked(face, evt.target.checked);
+  };
+
   render() {
     const {
       face,
       searchResults,
       enableEdit,
       onClick,
-      isSearchingEntities
+      isSearchingEntities,
+      isSelected
     } = this.props;
 
     return (
@@ -161,9 +167,11 @@ class FaceDetectionBox extends Component {
           <img className={styles.entityImage} src={face.object.uri} />
           {enableEdit && <span className={styles.selectFaceCheckboxBackground}/>}
           {enableEdit && <Checkbox
+            checked={isSelected}
             color="primary"
             disableRipple
             classes={{root: styles.selectFaceCheckbox}}
+            onChange={this.handleCheckboxClicked(face)}
           />}
           {enableEdit &&
             this.state.hovered && (

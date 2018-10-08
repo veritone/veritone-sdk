@@ -136,4 +136,8 @@
   .selectAllLabel {
     @include mui-text('body1');
   }
+
+  .bulkFaceEditActions {
+    border-left: 1px solid $grey-4;
+  }
 }

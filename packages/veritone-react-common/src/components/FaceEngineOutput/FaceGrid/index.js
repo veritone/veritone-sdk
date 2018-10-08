@@ -42,7 +42,8 @@ class FaceGrid extends Component {
     onFaceOccurrenceClicked: func,
     onRemoveFaceDetection: func,
     onSearchForEntities: func,
-    isSearchingEntities: bool
+    isSearchingEntities: bool,
+    onFaceCheckboxClicked: func
   };
 
   // evt is mandatory here to avoid infinite call loop
@@ -71,15 +72,14 @@ class FaceGrid extends Component {
           <NoFacesFound />
         ) : (
           faces.map((face, idx) => {
-            console.log(face, selectedFaces);
-            const isSelected = !!find(selectedFaces, {guid: face.guid});
-            console.log(isSelected);
+            const isSelected = find(selectedFaces, {guid: face.guid});
             return (
               <FaceDetectionBox
                 key={`face-${face.guid}-${face.startTimeMs}-${face.stopTimeMs}-${
                   face.object.uri
                 }`}
-                isSelected
+                isSelected={!!isSelected}
+                onCheckboxClicked={this.props.onFaceCheckboxClicked}
                 face={face}
                 enableEdit={this.props.editMode}
                 addNewEntity={this.handleAddNewEntity(idx)}

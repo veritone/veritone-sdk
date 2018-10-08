@@ -21,7 +21,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce, get } from 'lodash';
+import { find, reduce, get, findIndex } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -140,8 +140,15 @@ class FaceEngineOutput extends Component {
       this.props.onRestoreOriginalClick();
       return;
     }
-    this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+    this.setState({
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
+    }, () => {
+      this.props.onToggleUserEditedOutput &&
+        this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
+    });
   };
 
   handleSelectAllToggle = activeTab => evt => {
@@ -160,6 +167,31 @@ class FaceEngineOutput extends Component {
           [activeTab]: [...this.props.unrecognizedFaces]
         }
       })
+    }
+  };
+
+  handleSelectFace = (face, checked) => {
+    if (checked) {
+      this.setState(prevState => ({
+        bulkEditActionItems: {
+          [prevState.activeTab]: [...prevState.bulkEditActionItems[prevState.activeTab], face]
+        }
+      }));
+    } else {
+      this.setState(prevState => {
+        const faceIndex = findIndex(get(prevState.bulkEditActionItems, [prevState.activeTab]), {guid: face.guid});
+        if (faceIndex === -1) {
+          return null;
+        }
+        return {
+          bulkEditActionItems: {
+            [prevState.activeTab]: [
+              ...prevState.bulkEditActionItems[prevState.activeTab].slice(0, faceIndex),
+              ...prevState.bulkEditActionItems[prevState.activeTab].slice(faceIndex + 1)
+            ]
+          }
+        }
+      });
     }
   };
 
@@ -304,9 +336,13 @@ class FaceEngineOutput extends Component {
               <Checkbox
                 value="selectAll"
                 color="primary"
+                indeterminate={!!get(bulkEditActionItems, [this.state.activeTab, 'length'])}
               />
             }
-            label="Select All"
+            label={get(bulkEditActionItems, [this.state.activeTab, 'length']) > 0 ?
+              `${get(bulkEditActionItems, [this.state.activeTab, 'length'])} Faces Selected` :
+              'Select All'
+            }
             onChange={this.handleSelectAllToggle(this.state.activeTab)}
             classes={{root: styles.selectAllFormControl, label: styles.selectAllLabel}}
           />
@@ -338,6 +374,7 @@ class FaceEngineOutput extends Component {
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
                 isSearchingEntities={this.props.isSearchingEntities}
+                onFaceCheckboxClicked={this.handleSelectFace}
               />
             </div>
           )}
