@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   shape,
   number,
@@ -6,7 +6,8 @@ import {
   arrayOf,
   func,
   objectOf,
-  oneOfType
+  oneOfType,
+  bool
 } from 'prop-types';
 import { find, isObject, get, reduce, pick, findIndex } from 'lodash';
 import EntityInformation from './EntityInformation';
@@ -14,8 +15,11 @@ import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
 import FacesByLibrary from './FacesByLibrary';
 
+import styles from './styles.scss';
+
 export default class FaceEntities extends Component {
   static propTypes = {
+    editMode: bool,
     viewMode: string,
     faces: objectOf(
       arrayOf(
@@ -96,7 +100,7 @@ export default class FaceEntities extends Component {
   };
 
   render() {
-    const { viewMode, currentMediaPlayerTime } = this.props;
+    const { viewMode, currentMediaPlayerTime, editMode } = this.props;
     const { faceEntities, selectedEntity } = this.state;
 
     if (selectedEntity && faceEntities[selectedEntity]) {
@@ -115,10 +119,13 @@ export default class FaceEntities extends Component {
 
     if (viewMode === 'summary') {
       return (
-        <FacesByLibrary
-          faceEntityLibraries={this.state.entitiesByLibrary}
-          onSelectEntity={this.handleEntitySelect}
-        />
+        <Fragment>
+          {editMode && <div className={styles.cantEditWarning}>Recognized faces can not be edited currently</div>}
+          <FacesByLibrary
+            faceEntityLibraries={this.state.entitiesByLibrary}
+            onSelectEntity={this.handleEntitySelect}
+          />
+        </Fragment>
       );
     } else if (viewMode === 'byFrame') {
       return (
