@@ -237,6 +237,7 @@ class FaceDetectionBox extends Component {
                       target={this._inputRef}
                     >
                       <Paper className={styles.autoCompleteDropdown} square>
+                        <div className={styles.libraryMatchesTitle}>Library Matches</div>
                         <div className={styles.searchResultsList}>
                           {isSearchingEntities ? (
                             <CircularProgress />
