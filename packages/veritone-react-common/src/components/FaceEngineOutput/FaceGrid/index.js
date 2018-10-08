@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string, bool, func } from 'prop-types';
-import { pick } from 'lodash';
+import { pick, find } from 'lodash';
 
 import NoFacesFound from '../NoFacesFound';
 import FaceDetectionBox from '../FaceDetectionBox';
@@ -10,6 +10,16 @@ import styles from './styles.scss';
 class FaceGrid extends Component {
   static propTypes = {
     faces: arrayOf(
+      shape({
+        startTimeMs: number,
+        endTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
+      })
+    ),
+    selectedFaces: arrayOf(
       shape({
         startTimeMs: number,
         endTimeMs: number,
@@ -47,7 +57,7 @@ class FaceGrid extends Component {
   };
 
   render() {
-    const { faces } = this.props;
+    const { faces, selectedFaces } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
       'onRemoveFaceDetection',
@@ -61,11 +71,15 @@ class FaceGrid extends Component {
           <NoFacesFound />
         ) : (
           faces.map((face, idx) => {
+            console.log(face, selectedFaces);
+            const isSelected = !!find(selectedFaces, {guid: face.guid});
+            console.log(isSelected);
             return (
               <FaceDetectionBox
                 key={`face-${face.guid}-${face.startTimeMs}-${face.stopTimeMs}-${
                   face.object.uri
                 }`}
+                isSelected
                 face={face}
                 enableEdit={this.props.editMode}
                 addNewEntity={this.handleAddNewEntity(idx)}

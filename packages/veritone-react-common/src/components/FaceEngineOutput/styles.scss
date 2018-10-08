@@ -44,10 +44,15 @@
 .faceTabBody {
   padding-top: 20px;
   overflow-y: auto;
-  border-top: 1px solid $grey-4;
   flex: auto;
   display: flex;
   align-items: flex-start;
+  border-top: 1px solid $grey-4;
+}
+
+.editMode {
+  border-top: none;
+  padding-top: 15px;
 }
 
 .facesByLibrary {
@@ -115,4 +120,20 @@
 
 .userEditListItemIcon {
   margin-right: 0 !important;
+}
+
+.multiEditActionBox {
+  height: 40px;
+  background-color: rgba(33, 150, 243, 0.06);
+  flex: none;
+  margin-top: 20px;
+  padding-left: 17px;
+
+  .selectAllFormControl {
+    height: 40px;
+  }
+
+  .selectAllLabel {
+    @include mui-text('body1');
+  }
 }

@@ -19,6 +19,21 @@
   position: relative;
 }
 
+.selectFaceCheckboxBackground {
+  margin-top: 7px;
+  margin-left: 7px;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  background-color: white;
+}
+
+.selectFaceCheckbox {
+  width: 30px !important;
+  height: 30px !important;
+  position: absolute !important;
+}
+
 .entityImage {
   width: 100%;
   height: 100%;

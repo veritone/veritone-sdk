@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Checkbox from '@material-ui/core/Checkbox';
 import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -83,7 +84,8 @@ class FaceDetectionBox extends Component {
     onEditFaceDetection: func,
     onClick: func,
     onSearchForEntities: func,
-    isSearchingEntities: bool
+    isSearchingEntities: bool,
+    isSelected: bool
   };
 
   state = {
@@ -157,6 +159,12 @@ class FaceDetectionBox extends Component {
       >
         <div className={styles.entityImageContainer}>
           <img className={styles.entityImage} src={face.object.uri} />
+          {enableEdit && <span className={styles.selectFaceCheckboxBackground}/>}
+          {enableEdit && <Checkbox
+            color="primary"
+            disableRipple
+            classes={{root: styles.selectFaceCheckbox}}
+          />}
           {enableEdit &&
             this.state.hovered && (
               <div className={styles.imageButtonOverlay}>

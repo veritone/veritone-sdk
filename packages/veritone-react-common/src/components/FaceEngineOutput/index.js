@@ -7,6 +7,8 @@ import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import DoneIcon from '@material-ui/icons/Done';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import {
   shape,
   number,
@@ -19,7 +21,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce } from 'lodash';
+import { find, reduce, get } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -105,7 +107,11 @@ class FaceEngineOutput extends Component {
 
   state = {
     activeTab: 'faceRecognition',
-    viewMode: 'summary'
+    viewMode: 'summary',
+    bulkEditActionItems: {
+      faceRecognition: [],
+      faceDetection: []
+    }
   };
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -138,6 +144,25 @@ class FaceEngineOutput extends Component {
       this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
 
+  handleSelectAllToggle = activeTab => evt => {
+    if(!evt.target.checked) {
+      this.setState({
+        bulkEditActionItems: {
+          [activeTab]: []
+        }
+      });
+      return;
+    }
+
+    if (activeTab === 'faceDetection' && this.props.unrecognizedFaces.length) {
+      this.setState({
+        bulkEditActionItems: {
+          [activeTab]: [...this.props.unrecognizedFaces]
+        }
+      })
+    }
+  };
+
   render() {
     const {
       editMode,
@@ -160,7 +185,7 @@ class FaceEngineOutput extends Component {
       onEditButtonClick,
       disableEditButton
     } = this.props;
-    const { viewMode } = this.state;
+    const { viewMode, bulkEditActionItems } = this.state;
     const recognizedFaceCount = reduce(Object.values(this.props.recognizedFaces), (acc, faces) => {
       return acc + faces.length;
     }, 0);
@@ -272,9 +297,23 @@ class FaceEngineOutput extends Component {
           />
         </Tabs>
         {outputNullState}
+        {editMode && <div className={styles.multiEditActionBox}>
+          <FormControlLabel
+            checked={get(bulkEditActionItems, [this.state.activeTab, 'length']) > 0}
+            control={
+              <Checkbox
+                value="selectAll"
+                color="primary"
+              />
+            }
+            label="Select All"
+            onChange={this.handleSelectAllToggle(this.state.activeTab)}
+            classes={{root: styles.selectAllFormControl, label: styles.selectAllLabel}}
+          />
+        </div>}
         {!outputNullState &&
           this.state.activeTab === 'faceRecognition' && (
-            <div className={styles.faceTabBody}>
+            <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
               <FaceEntities
                 viewMode={viewMode}
                 faces={this.props.recognizedFaces}
@@ -286,9 +325,10 @@ class FaceEngineOutput extends Component {
           )}
         {!outputNullState &&
           this.state.activeTab === 'faceDetection' && (
-            <div className={styles.faceTabBody}>
+            <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
               <FaceGrid
                 faces={this.props.unrecognizedFaces}
+                selectedFaces={get(bulkEditActionItems, 'faceDetection', [])}
                 editMode={editMode}
                 viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
