@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { shape, number, string, arrayOf, bool, func } from 'prop-types';
-import classNames from 'classnames';
+import cx from 'classnames';
 import Downshift from 'downshift';
 import Input from '@material-ui/core/Input';
 import Paper from '@material-ui/core/Paper';
@@ -147,9 +147,9 @@ class FaceDetectionBox extends Component {
 
     return (
       <div
-        className={classNames(
+        className={cx(
           styles.faceContainer,
-          this.state.hovered && styles.faceContainerHover
+          { [styles.faceContainerHover]: this.state.hovered }
         )}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseOut}

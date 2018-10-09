@@ -11,6 +11,7 @@
 
 .faceContainerHover {
   background-color: $grey-2;
+  cursor: pointer;
 }
 
 .entityImageContainer {
@@ -29,7 +30,7 @@
 }
 
 .imageButtonOverlay {
-  width: 100%;
+  width: calc(100% - 2px);
   height: 26px;
   bottom: 0;
   position: absolute;
@@ -39,17 +40,18 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
+  margin: 0 1px 1px;
 }
 
 .faceActionIcon {
   color: white;
   font-size: 20px;
-  padding-top: 3px;
-  padding-bottom: 3px;
   width: 50%;
   text-align: center;
   opacity: 1;
   cursor: pointer;
+  margin-top: 3px;
 }
 
 .faceInformation {
