@@ -1028,28 +1028,27 @@ class MediaDetailsWidget extends React.Component {
                       <Manager>
                         <Target>
                           <div ref={this.setMenuTarget}>
-                            <Tooltip
-                              id="tooltip-show-overflow-menu"
-                              title="Show more options"
-                              leaveDelay={20}
-                              PopperProps={{
-                                style: {
-                                  pointerEvents: 'none',
-                                  marginTop: '5px',
-                                  top: '-20px'
-                                }
-                              }}
+                            <IconButton
+                              className={styles.pageHeaderActionButton}
+                              aria-label="More"
+                              aria-haspopup="true"
+                              aria-owns={isMenuOpen ? 'menu-list-grow' : null}
+                              onClick={this.toggleIsMenuOpen}
                             >
-                              <IconButton
-                                className={styles.pageHeaderActionButton}
-                                aria-label="More"
-                                aria-haspopup="true"
-                                aria-owns={isMenuOpen ? 'menu-list-grow' : null}
-                                onClick={this.toggleIsMenuOpen}
+                              <Tooltip
+                                id="tooltip-show-overflow-menu"
+                                title="Show more options"
+                                leaveDelay={20}
+                                PopperProps={{
+                                  style: {
+                                    pointerEvents: 'none',
+                                    top: '-3px'
+                                  }
+                                }}
                               >
                                 <MoreVertIcon />
-                              </IconButton>
-                            </Tooltip>
+                              </Tooltip>
+                            </IconButton>
                           </div>
                         </Target>
                         {isMenuOpen && (
