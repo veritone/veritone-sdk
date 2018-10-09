@@ -122,10 +122,17 @@ export default class FaceEntities extends Component {
     if (viewMode === 'summary') {
       return (
         <Fragment>
-          {editMode && <div className={styles.cantEditWarning}>
-            <Icon className={cx('icon-info-panel', styles.cantEditInfoIcon)}/>
-            <span><span className={styles.boldNoteText}> Note: </span>Recognized faces can not be edited currently</span>
-          </div>}
+          {editMode && (
+            <div className={styles.cantEditWarning}>
+              <Icon
+                className={cx('icon-info-panel', styles.cantEditInfoIcon)}
+              />
+              <span>
+                <span className={styles.boldNoteText}> Note: </span>Recognized
+                faces can not be edited currently
+              </span>
+            </div>
+          )}
           <FacesByLibrary
             faceEntityLibraries={this.state.entitiesByLibrary}
             onSelectEntity={this.handleEntitySelect}

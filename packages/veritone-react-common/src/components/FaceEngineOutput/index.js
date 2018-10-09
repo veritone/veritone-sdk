@@ -19,7 +19,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce } from 'lodash';
+import { find, reduce, get } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -158,12 +158,17 @@ class FaceEngineOutput extends Component {
       moreMenuItems,
       showEditButton,
       onEditButtonClick,
-      disableEditButton
+      disableEditButton,
+      unrecognizedFaces
     } = this.props;
     const { viewMode } = this.state;
-    const recognizedFaceCount = reduce(Object.values(this.props.recognizedFaces), (acc, faces) => {
-      return acc + faces.length;
-    }, 0);
+    const recognizedFaceCount = reduce(
+      Object.values(this.props.recognizedFaces),
+      (acc, faces) => {
+        return acc + faces.length;
+      },
+      0
+    );
     const selectedEngine = find(this.props.engines, { id: selectedEngineId });
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -176,7 +181,11 @@ class FaceEngineOutput extends Component {
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
-          disableEditButton={disableEditButton || this.state.activeTab === 'faceRecognition'}
+          disableEditButton={
+            disableEditButton ||
+            this.state.activeTab === 'faceRecognition' ||
+            get(unrecognizedFaces, 'length') < 1
+          }
           disableEngineSelect={!!editMode}
         >
           {!editMode &&
@@ -199,29 +208,55 @@ class FaceEngineOutput extends Component {
                   getContentAnchorEl: null
                 }}
                 // eslint-disable-next-line
-                renderValue={() => showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'}
+                renderValue={() =>
+                  showingUserEditedOutput
+                    ? 'User-Edited'
+                    : 'Original (View Only)'
+                }
               >
-                <MenuItem
-                  value="userEdited"
-                >
-                  {showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
-                  <ListItemText classes={{primary: cx(styles.selectMenuItem, {
-                      [styles.menuItemInset]: !showingUserEditedOutput
-                    })}} primary="User-Edited" />
+                <MenuItem value="userEdited">
+                  {showingUserEditedOutput && (
+                    <ListItemIcon
+                      classes={{ root: styles.userEditListItemIcon }}
+                    >
+                      <DoneIcon />
+                    </ListItemIcon>
+                  )}
+                  <ListItemText
+                    classes={{
+                      primary: cx(styles.selectMenuItem, {
+                        [styles.menuItemInset]: !showingUserEditedOutput
+                      })
+                    }}
+                    primary="User-Edited"
+                  />
                 </MenuItem>
-                <MenuItem
-                  value="original"
-                >
-                  {!showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
-                  <ListItemText classes={{primary: cx(styles.selectMenuItem, {
-                      [styles.menuItemInset]: showingUserEditedOutput
-                    })}} primary="Original (View Only)" />
+                <MenuItem value="original">
+                  {!showingUserEditedOutput && (
+                    <ListItemIcon
+                      classes={{ root: styles.userEditListItemIcon }}
+                    >
+                      <DoneIcon />
+                    </ListItemIcon>
+                  )}
+                  <ListItemText
+                    classes={{
+                      primary: cx(styles.selectMenuItem, {
+                        [styles.menuItemInset]: showingUserEditedOutput
+                      })
+                    }}
+                    primary="Original (View Only)"
+                  />
                 </MenuItem>
                 <Divider light />
-                <MenuItem
-                  value="restoreOriginal"
-                >
-                  <ListItemText classes={{root: styles.restoreOriginalMenuItem, primary: cx(styles.selectMenuItem, styles.menuItemInset)}} primary="Restore Original" />
+                <MenuItem value="restoreOriginal">
+                  <ListItemText
+                    classes={{
+                      root: styles.restoreOriginalMenuItem,
+                      primary: cx(styles.selectMenuItem, styles.menuItemInset)
+                    }}
+                    primary="Restore Original"
+                  />
                 </MenuItem>
               </Select>
             )}
@@ -262,12 +297,12 @@ class FaceEngineOutput extends Component {
         >
           <Tab
             classes={{ root: styles.faceTab }}
-            label={`Face Recognition (${recognizedFaceCount})`}
+            label={`Face Recognition (${recognizedFaceCount || 0})`}
             value="faceRecognition"
           />
           <Tab
             classes={{ root: styles.faceTab }}
-            label={`Face Detection (${this.props.unrecognizedFaces.length})`}
+            label={`Face Detection (${get(unrecognizedFaces, 'length', 0)})`}
             value="faceDetection"
           />
         </Tabs>
@@ -289,7 +324,7 @@ class FaceEngineOutput extends Component {
           this.state.activeTab === 'faceDetection' && (
             <div className={styles.faceTabBody}>
               <FaceGrid
-                faces={this.props.unrecognizedFaces}
+                faces={unrecognizedFaces}
                 editMode={editMode}
                 viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
