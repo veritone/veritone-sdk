@@ -63,7 +63,6 @@ const defaultState = {
   facesDetectedByUser: {},
   facesRemovedByUser: {},
   showConfirmationDialog: false,
-  confirmationType: 'cancelEdits',
   displayUserEdited: false,
   savingFaceEdits: false,
   editModeEnabled: false,
@@ -226,22 +225,17 @@ const reducer = createReducer(defaultState, {
     };
   },
   [OPEN_CONFIRMATION_DIALOG](
-    state,
-    {
-      payload: { confirmationType }
-    }
+    state
   ) {
     return {
       ...state,
-      showConfirmationDialog: true,
-      confirmationType: confirmationType || 'cancelEdits'
+      showConfirmationDialog: true
     };
   },
   [CLOSE_CONFIRMATION_DIALOG](state) {
     return {
       ...state,
-      showConfirmationDialog: false,
-      confirmationType: 'cancelEdits'
+      showConfirmationDialog: false
     };
   },
   [SAVE_FACE_EDITS](state) {
@@ -304,8 +298,6 @@ export const pendingUserEdits = (state, engineId) =>
   !isEmpty(getUserDetectedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
 
-export const getConfirmationType = state =>
-  get(local(state), 'confirmationType');
 export const getError = state => get(local(state), 'error');
 export const getEditModeEnabled = state => get(local(state), 'editModeEnabled');
 
@@ -431,12 +423,9 @@ export const cancelFaceEdits = () => ({
 });
 
 /* CONFIRMATION DIALOG */
-export const openConfirmationDialog = confirmationType => {
+export const openConfirmationDialog = () => {
   return {
-    type: OPEN_CONFIRMATION_DIALOG,
-    payload: {
-      confirmationType
-    }
+    type: OPEN_CONFIRMATION_DIALOG
   };
 };
 

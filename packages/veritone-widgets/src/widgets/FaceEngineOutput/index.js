@@ -60,7 +60,6 @@ const saga = util.reactReduxSaga.saga;
     ),
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
     error: faceEngineOutput.getError(state),
-    confirmationType: faceEngineOutput.getConfirmationType(state),
     editModeEnabled: faceEngineOutput.getEditModeEnabled(state)
   }),
   {
@@ -171,7 +170,6 @@ class FaceEngineOutputContainer extends Component {
     removeDetectedFace: func,
     createEntity: func,
     showConfirmationDialog: bool,
-    confirmationType: string,
     cancelFaceEdits: func,
     openConfirmationDialog: func,
     closeConfirmationDialog: func,
@@ -509,57 +507,21 @@ class FaceEngineOutputContainer extends Component {
     const {
       closeConfirmationDialog,
       cancelFaceEdits,
-      confirmationType,
       toggleEditMode
     } = this.props;
 
-    if (confirmationType === 'saveEdits') {
-      cancelFaceEdits();
-      toggleEditMode();
-    }
+    cancelFaceEdits();
+    toggleEditMode();
     closeConfirmationDialog();
   };
 
   handleDialogConfirm = () => {
     const {
-      closeConfirmationDialog,
-      cancelFaceEdits,
-      confirmationType
+      closeConfirmationDialog
     } = this.props;
 
-    if (confirmationType === 'saveEdits') {
-      this.onSaveEdits();
-    } else if (confirmationType === 'cancelEdits') {
-      cancelFaceEdits();
-    }
+    this.onSaveEdits();
     closeConfirmationDialog();
-  };
-
-  renderConfirmationDialog = () => {
-    let alertTitle = 'Unsaved Changes';
-    let alertDescription = 'This action will reset your changes.';
-    let cancelButtonLabel = 'Cancel';
-    let approveButtonLabel = 'Continue';
-    const { showConfirmationDialog, confirmationType } = this.props;
-
-    if (confirmationType === 'saveEdits') {
-      alertTitle = 'Save Changes?';
-      alertDescription = 'Would you like to save the changes?';
-      cancelButtonLabel = 'Discard';
-      approveButtonLabel = 'Save';
-    }
-
-    return (
-      <AlertDialog
-        open={showConfirmationDialog}
-        title={alertTitle}
-        content={alertDescription}
-        cancelButtonLabel={cancelButtonLabel}
-        approveButtonLabel={approveButtonLabel}
-        onCancel={this.handleDialogCancel}
-        onApprove={this.handleDialogConfirm}
-      />
-    );
   };
 
   checkEditState = () => {
@@ -661,8 +623,16 @@ class FaceEngineOutputContainer extends Component {
           </div>
         )}
         {this.renderAddNewEntityModal()}
-        {this.renderConfirmationDialog()}
         {this.renderFaceDetectionDoneSnackbar()}
+        <AlertDialog
+          open={this.props.showConfirmationDialog}
+          title="Unsaved Changes"
+          content="Would you like to save the changes?"
+          cancelButtonLabel="Discard"
+          approveButtonLabel="Save"
+          onCancel={this.handleDialogCancel}
+          onApprove={this.handleDialogConfirm}
+        />
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={!!this.props.error}
