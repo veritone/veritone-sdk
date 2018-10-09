@@ -128,9 +128,12 @@
   flex: none;
   margin-top: 20px;
   padding-left: 17px;
+  display: flex;
+  align-items: center;
 
   .selectAllFormControl {
     height: 40px;
+    margin: 0 20px 0 -14px;
   }
 
   .selectAllLabel {
@@ -138,6 +141,13 @@
   }
 
   .bulkFaceEditActions {
+    height: 26px;
     border-left: 1px solid $grey-4;
+
+    .bulkFaceEditActionButton {
+      width: 40px;
+      height: 40px;
+      margin: -7px -7px 0 20px;
+    }
   }
 }

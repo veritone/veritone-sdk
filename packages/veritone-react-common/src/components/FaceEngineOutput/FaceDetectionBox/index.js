@@ -111,10 +111,6 @@ class FaceDetectionBox extends Component {
     this.props.onEditFaceDetection(this.props.face, entity);
   };
 
-  handleDeleteFaceDetection = () => {
-    this.props.onRemoveFaceDetection(this.props.face);
-  };
-
   onSearchEntityInputChange = text => {
     setTimeout(() => {
       this.setState({ searchEntityText: text });
@@ -150,7 +146,8 @@ class FaceDetectionBox extends Component {
       enableEdit,
       onClick,
       isSearchingEntities,
-      isSelected
+      isSelected,
+      onRemoveFaceDetection
     } = this.props;
 
     return (
@@ -178,7 +175,7 @@ class FaceDetectionBox extends Component {
               <div className={styles.imageButtonOverlay}>
                 <div
                   className={styles.faceActionIcon}
-                  onClick={this.handleDeleteFaceDetection}
+                  onClick={onRemoveFaceDetection(face)}
                 >
                   <i className="icon-trashcan" />
                 </div>
@@ -191,7 +188,7 @@ class FaceDetectionBox extends Component {
               face.stopTimeMs
             )}`}
           </span>
-          {this.props.enableEdit ? (
+          {this.props.enableEdit && !isSelected ? (
             <Downshift
               itemToString={this.itemToString}
               onSelect={this.handleEntitySelect}

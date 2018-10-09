@@ -18,7 +18,7 @@ export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
-export const REMOVE_DETECTED_FACE = `vtn/${namespace}/REMOVE_DETECTED_FACE`;
+export const REMOVE_DETECTED_FACES = `vtn/${namespace}/REMOVE_DETECTED_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 
 export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
@@ -202,18 +202,17 @@ const reducer = createReducer(defaultState, {
       }
     };
   },
-  [REMOVE_DETECTED_FACE](state, action) {
-    const { faceObj, selectedEngineId } = action.payload;
+  [REMOVE_DETECTED_FACES](state, action) {
+    const { faceObjects, selectedEngineId } = action.payload;
 
+    console.log('faceObjects', faceObjects);
     return {
       ...state,
       facesRemovedByUser: {
         ...state.facesRemovedByUser,
         [selectedEngineId]: [
           ...(state.facesRemovedByUser[selectedEngineId] || []),
-          {
-            ...faceObj
-          }
+          ...faceObjects
         ]
       }
     };
@@ -418,11 +417,11 @@ export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
   }
 });
 
-export const removeDetectedFace = (selectedEngineId, faceObj) => ({
-  type: REMOVE_DETECTED_FACE,
+export const removeDetectedFaces = (selectedEngineId, faceObjects) => ({
+  type: REMOVE_DETECTED_FACES,
   payload: {
     selectedEngineId,
-    faceObj
+    faceObjects
   }
 });
 

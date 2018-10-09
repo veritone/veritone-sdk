@@ -5,6 +5,9 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import CreateIcon from '@material-ui/icons/Create';
+import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -21,7 +24,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce, get, findIndex } from 'lodash';
+import { find, reduce, get, findIndex, isArray, isObject } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -65,7 +68,7 @@ class FaceEngineOutput extends Component {
     onAddNewEntity: func,
     className: string,
     onFaceOccurrenceClicked: func,
-    onRemoveFaceDetection: func,
+    onRemoveFaceDetections: func,
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClick: func,
@@ -195,6 +198,19 @@ class FaceEngineOutput extends Component {
     }
   };
 
+  handleRemoveFaceDetections = faces => evt => {
+    if (isArray(faces)) {
+      this.props.onRemoveFaceDetections(faces);
+      this.setState(prevState => ({
+        bulkEditActionItems: {
+          [prevState.activeTab]: []
+        }
+      }));
+    } else if (isObject(faces)) {
+      this.props.onRemoveFaceDetections([faces]);
+    }
+  };
+
   render() {
     const {
       editMode,
@@ -203,7 +219,6 @@ class FaceEngineOutput extends Component {
       className,
       onFaceOccurrenceClicked,
       currentMediaPlayerTime,
-      onRemoveFaceDetection,
       onEditFaceDetection,
       onSearchForEntities,
       engines,
@@ -217,7 +232,7 @@ class FaceEngineOutput extends Component {
       onEditButtonClick,
       disableEditButton
     } = this.props;
-    const { viewMode, bulkEditActionItems } = this.state;
+    const { viewMode, bulkEditActionItems, activeTab } = this.state;
     const recognizedFaceCount = reduce(Object.values(this.props.recognizedFaces), (acc, faces) => {
       return acc + faces.length;
     }, 0);
@@ -233,7 +248,7 @@ class FaceEngineOutput extends Component {
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
-          disableEditButton={disableEditButton || this.state.activeTab === 'faceRecognition'}
+          disableEditButton={disableEditButton || activeTab === 'faceRecognition'}
           disableEngineSelect={!!editMode}
         >
           {!editMode &&
@@ -313,7 +328,7 @@ class FaceEngineOutput extends Component {
           )}
         </EngineOutputHeader>
         <Tabs
-          value={this.state.activeTab}
+          value={activeTab}
           onChange={this.handleTabChange}
           indicatorColor="primary"
         >
@@ -331,24 +346,34 @@ class FaceEngineOutput extends Component {
         {outputNullState}
         {editMode && <div className={styles.multiEditActionBox}>
           <FormControlLabel
-            checked={get(bulkEditActionItems, [this.state.activeTab, 'length']) > 0}
+            checked={get(bulkEditActionItems, [activeTab, 'length']) > 0}
             control={
               <Checkbox
                 value="selectAll"
                 color="primary"
-                indeterminate={!!get(bulkEditActionItems, [this.state.activeTab, 'length'])}
+                indeterminate={!!get(bulkEditActionItems, [activeTab, 'length'])}
               />
             }
-            label={get(bulkEditActionItems, [this.state.activeTab, 'length']) > 0 ?
-              `${get(bulkEditActionItems, [this.state.activeTab, 'length'])} Faces Selected` :
+            label={get(bulkEditActionItems, [activeTab, 'length']) > 0 ?
+              `${get(bulkEditActionItems, [activeTab, 'length'])} ${activeTab === 'faceDetection' ? 'Unknown': 'Known'} Faces Selected` :
               'Select All'
             }
-            onChange={this.handleSelectAllToggle(this.state.activeTab)}
+            onChange={this.handleSelectAllToggle(activeTab)}
             classes={{root: styles.selectAllFormControl, label: styles.selectAllLabel}}
           />
+          {get(bulkEditActionItems, [activeTab, 'length']) > 0 &&
+            <div className={styles.bulkFaceEditActions}>
+              <IconButton classes={{root: styles.bulkFaceEditActionButton}}><CreateIcon/></IconButton>
+              <IconButton
+                classes={{root: styles.bulkFaceEditActionButton}}
+                onClick={this.handleRemoveFaceDetections(get(bulkEditActionItems, [activeTab]))}
+              ><
+                DeleteIcon/>
+              </IconButton>
+            </div>}
         </div>}
         {!outputNullState &&
-          this.state.activeTab === 'faceRecognition' && (
+          activeTab === 'faceRecognition' && (
             <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
               <FaceEntities
                 viewMode={viewMode}
@@ -360,7 +385,7 @@ class FaceEngineOutput extends Component {
             </div>
           )}
         {!outputNullState &&
-          this.state.activeTab === 'faceDetection' && (
+          activeTab === 'faceDetection' && (
             <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
               <FaceGrid
                 faces={this.props.unrecognizedFaces}
@@ -370,7 +395,7 @@ class FaceEngineOutput extends Component {
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-                onRemoveFaceDetection={onRemoveFaceDetection}
+                onRemoveFaceDetection={this.handleRemoveFaceDetections}
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
                 isSearchingEntities={this.props.isSearchingEntities}
