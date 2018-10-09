@@ -9,6 +9,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import styles from './styles.scss';
 
 const labelId = 'veritone-alert-dialog-title';
 const descriptionId = 'veritone-alert-dialog-description';
@@ -19,6 +20,8 @@ export default class AlertDialog extends Component {
     title: string,
     content: string,
     fullScreen: bool,
+    disableBackdropClick: bool,
+    disableEscapeKeyDown: bool,
     cancelButtonLabel: string,
     approveButtonLabel: string,
     onCancel: func,
@@ -32,6 +35,8 @@ export default class AlertDialog extends Component {
     title: '',
     content: '',
     fullScreen: false,
+    disableBackdropClick: true,
+    disableEscapeKeyDown: true,
     cancelValue: 'cancel',
     approveValue: 'approve',
     cancelButtonLabel: 'Cancel',
@@ -69,12 +74,22 @@ export default class AlertDialog extends Component {
         {...omit(forwardingProps, omittedProps)}
         open={open}
         onClose={this.handleCancel}
-        aria-labelledby={labelId}
-        aria-describedby={descriptionId}
       >
-        {title && <DialogTitle id={labelId}>{title}</DialogTitle>}
+        {title &&
+          <DialogTitle
+            id={labelId}
+            classes={{
+              root: styles.dialogTitle
+            }}
+          >
+            {title}
+          </DialogTitle>}
         {content && (
-          <DialogContent>
+          <DialogContent
+            classes={{
+              root: styles.dialogContent
+            }}
+          >
             <DialogContentText id={descriptionId}>{content}</DialogContentText>
           </DialogContent>
         )}

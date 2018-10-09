@@ -130,7 +130,7 @@ function* watchMediaDetailCancelEdit() {
   yield takeLatest([CANCEL_EDIT], function*() {
     const pendingUserEdits = yield select(TranscriptRedux.hasUserEdits);
     if (pendingUserEdits) {
-      console.log('Hello');
+      yield put(TranscriptRedux.openConfirmationDialog('saveEdits'));
     } else {
       yield put(TranscriptRedux.toggleEditMode());
     }
