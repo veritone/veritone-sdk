@@ -205,7 +205,6 @@ const reducer = createReducer(defaultState, {
   [REMOVE_DETECTED_FACES](state, action) {
     const { faceObjects, selectedEngineId } = action.payload;
 
-    console.log('faceObjects', faceObjects);
     return {
       ...state,
       facesRemovedByUser: {
