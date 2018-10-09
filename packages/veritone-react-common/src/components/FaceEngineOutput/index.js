@@ -376,6 +376,7 @@ class FaceEngineOutput extends Component {
           activeTab === 'faceRecognition' && (
             <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
               <FaceEntities
+                editMode={editMode}
                 viewMode={viewMode}
                 faces={this.props.recognizedFaces}
                 entities={this.props.entities}

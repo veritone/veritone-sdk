@@ -46,6 +46,7 @@
   overflow-y: auto;
   flex: auto;
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   border-top: 1px solid $grey-4;
 }
@@ -149,5 +150,29 @@
       height: 40px;
       margin: -7px -7px 0 20px;
     }
+  }
+}
+
+.cantEditWarning {
+  height: 40px;
+  width: 100%;
+  background-color: #fff8e1;
+  margin-bottom: 20px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+
+  span {
+    opacity: 0.87;
+
+    .boldNoteText {
+      font-weight: 600;
+    }
+  }
+
+  .cantEditInfoIcon {
+    font-weight: 600;
+    font-size: 15px;
+    margin-right: 5px;
   }
 }
