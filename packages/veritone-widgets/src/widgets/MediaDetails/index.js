@@ -958,8 +958,7 @@ class MediaDetailsWidget extends React.Component {
                         PopperProps={{
                           style: {
                             pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-20px'
+                            top: '-10px'
                           }
                         }}
                       >
@@ -982,8 +981,7 @@ class MediaDetailsWidget extends React.Component {
                         PopperProps={{
                           style: {
                             pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-20px'
+                            top: '-10px'
                           }
                         }}
                       >
@@ -1007,8 +1005,7 @@ class MediaDetailsWidget extends React.Component {
                         PopperProps={{
                           style: {
                             pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-20px'
+                            top: '-10px'
                           }
                         }}
                       >
@@ -1042,7 +1039,7 @@ class MediaDetailsWidget extends React.Component {
                                 PopperProps={{
                                   style: {
                                     pointerEvents: 'none',
-                                    top: '-3px'
+                                    top: '2px'
                                   }
                                 }}
                               >
