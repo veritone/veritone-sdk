@@ -122,6 +122,13 @@ class FaceEngineOutput extends Component {
       return {
         viewMode: 'summary'
       };
+    } else if (!nextProps.editMode) {
+      return {
+        bulkEditActionItems: {
+          faceRecognition: [],
+          faceDetection: []
+        }
+      }
     }
     return null;
   }
@@ -219,11 +226,22 @@ class FaceEngineOutput extends Component {
       this.props.onRemoveFaceDetections(faces);
       this.setState(prevState => ({
         bulkEditActionItems: {
-          [prevState.activeTab]: []
+          ...prevState.bulkEditActionItems,
+          [prevState.activeTab]: prevState.bulkEditActionItems[prevState.activeTab].filter(actionItem => {
+            return !find(faces, { guid: actionItem.guid});
+          })
         }
       }));
     } else if (isObject(faces)) {
       this.props.onRemoveFaceDetections([faces]);
+      this.setState(prevState => ({
+        bulkEditActionItems: {
+          ...prevState.bulkEditActionItems,
+          [prevState.activeTab]: prevState.bulkEditActionItems[prevState.activeTab].filter(actionItem => {
+            return faces.guid !== actionItem.guid;
+          })
+        }
+      }));
     }
   };
 

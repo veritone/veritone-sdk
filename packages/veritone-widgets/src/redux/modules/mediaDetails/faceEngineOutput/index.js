@@ -20,6 +20,7 @@ export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_DETECTED_FACES = `vtn/${namespace}/REMOVE_DETECTED_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
+export const PROCESS_REMOVED_FACES = `vtn/${namespace}/PROCESS_REMOVED_FACES`;
 
 export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
 export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIALOG`;
@@ -44,7 +45,8 @@ import {
   flatten,
   reduce,
   cloneDeep,
-  forEach
+  forEach,
+  omit
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -62,6 +64,7 @@ const defaultState = {
   isSearchingEntities: false,
   facesDetectedByUser: {},
   facesRemovedByUser: {},
+  pendingFaceEdits: {},
   showConfirmationDialog: false,
   displayUserEdited: false,
   savingFaceEdits: false,
@@ -206,13 +209,39 @@ const reducer = createReducer(defaultState, {
 
     return {
       ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: [
+          ...(state.pendingFaceEdits[selectedEngineId] || []),
+          ...faceObjects.map(face => {
+            return {
+              ...face,
+              editAction: 'Deleted'
+            }
+          })
+        ]
+      }
+    };
+  },
+  [PROCESS_REMOVED_FACES](state, action) {
+    const { faceObjects, selectedEngineId } = action.payload;
+
+    return {
+      ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: state.pendingFaceEdits[selectedEngineId].filter(faceEdit => {
+          return !find(faceObjects, {guid: faceEdit.guid});
+        })
+      },
       facesRemovedByUser: {
         ...state.facesRemovedByUser,
         [selectedEngineId]: [
           ...(state.facesRemovedByUser[selectedEngineId] || []),
-          ...faceObjects
+          ...faceObjects.map(face => omit(face, ['editAction']))
         ]
       }
+
     };
   },
   [CANCEL_FACE_EDITS](state, action) {
@@ -289,6 +318,9 @@ export const getUserDetectedFaces = (state, engineId) =>
 
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
+
+export const getPendingFaceEdits = (state, engineId) =>
+  get(local(state), ['pendingFaceEdits', engineId]);
 
 export const getSavingFaceEdits = state => get(local(state), 'savingFaceEdits');
 
@@ -416,6 +448,14 @@ export const removeDetectedFaces = (selectedEngineId, faceObjects) => ({
   }
 });
 
+export const processRemovedFaces = (selectedEngineId, faceObjects) => ({
+  type: PROCESS_REMOVED_FACES,
+  payload: {
+    selectedEngineId,
+    faceObjects
+  }
+});
+
 export const cancelFaceEdits = () => ({
   type: CANCEL_FACE_EDITS
 });
@@ -442,8 +482,8 @@ export const showConfirmationDialog = state =>
 
 /* SELECTORS */
 export const getFaces = createSelector(
-  [getFaceDataByEngine, getUserDetectedFaces, getUserRemovedFaces, getEntities],
-  (faceData, userDetectedFaces, userRemovedFaces, entities) => {
+  [getFaceDataByEngine, getUserDetectedFaces, getUserRemovedFaces, getEntities, getPendingFaceEdits],
+  (faceData, userDetectedFaces, userRemovedFaces, entities, pendingFaceEdits) => {
     const faceEntities = {
       unrecognizedFaces: [],
       recognizedFaces: {}
@@ -453,7 +493,8 @@ export const getFaces = createSelector(
     const faceSeries = addUserDetectedFaces(
       faceData,
       userDetectedFaces,
-      userRemovedFaces
+      userRemovedFaces,
+      pendingFaceEdits
     ).reduce((accumulator, faceSeries) => {
       if (!isEmpty(faceSeries.series)) {
         return [...accumulator, ...faceSeries.series];
@@ -517,7 +558,8 @@ export const getFaceEngineAssetData = (state, tdoId, engineId) => {
 function addUserDetectedFaces(
   engineResults,
   userDetectedFaces,
-  userRemovedFaces
+  userRemovedFaces,
+  pendingFaceEdits = []
 ) {
   return map(engineResults, data => ({
     taskId: data.taskId,
@@ -531,7 +573,8 @@ function addUserDetectedFaces(
         }
         return [
           ...accumulator,
-          find(userDetectedFaces, { guid: originalFaceObj.guid }) ||
+          find(pendingFaceEdits, { guid: originalFaceObj.guid }) ||
+            find(userDetectedFaces, { guid: originalFaceObj.guid }) ||
             originalFaceObj
         ];
       },

@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Checkbox from '@material-ui/core/Checkbox';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { Popper } from 'react-popper';
 
 import { msToReadableString } from 'helpers/time';
@@ -67,7 +68,7 @@ class FaceDetectionBox extends Component {
       object: shape({
         label: string,
         uri: string
-      })
+      }),
     }),
     searchResults: arrayOf(
       shape({
@@ -162,10 +163,10 @@ class FaceDetectionBox extends Component {
       >
         <div className={styles.entityImageContainer}>
           <img className={styles.entityImage} src={face.object.uri} />
-          {enableEdit && (
+          {enableEdit && !face.editAction && (
             <span className={styles.selectFaceCheckboxBackground} />
           )}
-          {enableEdit && (
+          {enableEdit && !face.editAction && (
             <Checkbox
               checked={isSelected}
               color="primary"
@@ -176,15 +177,21 @@ class FaceDetectionBox extends Component {
           )}
           {enableEdit &&
             this.state.hovered && (
-              <div className={styles.imageButtonOverlay}>
-                <div
-                  className={styles.faceActionIcon}
-                  onClick={onRemoveFaceDetection(face)}
-                >
+              <div
+                className={styles.imageButtonOverlay}
+                onClick={onRemoveFaceDetection(face)}
+              >
+                <div className={styles.faceActionIcon}>
                   <i className="icon-trashcan" />
                 </div>
               </div>
             )}
+          {!!face.editAction && (
+            <div className={styles.editActionOverlay}>
+              <CheckCircleIcon className={styles.actionIcon}/>
+              <div>{face.editAction}</div>
+            </div>
+          )}
         </div>
         <div className={styles.faceInformation}>
           <span className={styles.faceTimeOccurrence}>

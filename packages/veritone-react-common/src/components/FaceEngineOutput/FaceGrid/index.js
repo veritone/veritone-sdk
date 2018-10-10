@@ -72,13 +72,13 @@ class FaceGrid extends Component {
           <NoFacesFound />
         ) : (
           faces.map((face, idx) => {
-            const isSelected = find(selectedFaces, { guid: face.guid });
+            const selectedFace = find(selectedFaces, { guid: face.guid });
             return (
               <FaceDetectionBox
                 key={`face-${face.guid}-${face.startTimeMs}-${
                   face.stopTimeMs
                 }-${face.object.uri}`}
-                isSelected={!!isSelected}
+                isSelected={!!selectedFace}
                 onCheckboxClicked={this.props.onFaceCheckboxClicked}
                 face={face}
                 enableEdit={this.props.editMode}

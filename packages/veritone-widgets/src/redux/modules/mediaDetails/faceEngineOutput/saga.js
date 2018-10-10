@@ -215,6 +215,14 @@ function* watchMediaDetailCancelEdit() {
   });
 }
 
+function* watchRemoveFaceDetections() {
+  yield takeEvery([faceEngineOutput.REMOVE_DETECTED_FACES], function* ({ payload: { faceObjects, selectedEngineId } }) {
+    console.log('saga', faceObjects, selectedEngineId);
+    yield call(delay, 800);
+    yield put(faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects));
+  });
+}
+
 export default function* root({ tdo, selectedEngineId }) {
   yield all([
     fork(watchFetchEngineResultsSuccess),
@@ -222,6 +230,7 @@ export default function* root({ tdo, selectedEngineId }) {
     fork(watchCreateEntity),
     fork(watchSearchEntities),
     fork(watchMediaDetailCancelEdit, tdo.id),
+    fork(watchRemoveFaceDetections),
     fork(onMount, tdo, selectedEngineId)
   ]);
 }
