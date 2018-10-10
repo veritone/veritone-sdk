@@ -20,12 +20,14 @@ class FacesByScene extends Component {
         entityId: string,
         fullName: string,
         profileImage: string,
-        timeSlots: arrayOf(
+        faces: arrayOf(
           shape({
             startTimeMs: number,
-            stopTimeMs: number,
-            originalImage: string,
-            confidence: number
+            endTimeMs: number,
+            object: shape({
+              label: string,
+              originalImage: string
+            })
           })
         )
       })
@@ -38,10 +40,10 @@ class FacesByScene extends Component {
     const { currentMediaPlayerTime, onSelectEntity } = this.props;
 
     return this.props.recognizedEntityObjects.map(entityObject => {
-      const entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
+      const entityCurrentlyInFrame = entityObject.faces.find(time => {
         return (
           currentMediaPlayerTime >= time.startTimeMs &&
-          currentMediaPlayerTime <= time.stopTimeMs
+          currentMediaPlayerTime <= time.endTimeMs
         );
       });
       if (entityCurrentlyInFrame) {
@@ -63,10 +65,10 @@ class FacesByScene extends Component {
 
     const recognizedEntityObjects = this.props.recognizedEntityObjects.reduce(
       (acc, entityObject) => {
-        const entityCurrentlyInFrame = entityObject.timeSlots.find(time => {
+        const entityCurrentlyInFrame = entityObject.faces.find(time => {
           return (
             currentMediaPlayerTime >= time.startTimeMs &&
-            currentMediaPlayerTime <= time.stopTimeMs
+            currentMediaPlayerTime <= time.endTimeMs
           );
         });
 

@@ -1,105 +1,103 @@
 @import 'src/styles/modules/variables';
 @import 'src/styles/modules/muiTypography';
 
-.entityBackButton {
-  padding-left: 0 !important;
-
-  .entityBackIcon {
-    margin-right: 5px;
-  }
-
-  .entityBackLabel {
-    font-weight: 500;
-    line-height: 19px;
-    font-size: 16px;
-  }
-}
-
-.selectedEntity {
-  display: flex;
-  flex-direction: row;
-  margin: 10px 0;
-}
-
-.entityProfileImage {
-  width: 80px;
-  height: 80px;
-  flex: none;
-  background-color: $grey-4;
-}
-
-.selectedEntityInfo {
-  padding-left: 15px;
-
-  .entityNameAndCount {
-    font-size: 16px;
-    line-height: 19px;
-    font-weight: 500;
-    margin-bottom: 10px;
-  }
-
-  .libraryName {
-    font-size: 14px;
-    line-height: 16px;
-    display: flex;
-    align-items: center;
-  }
-
-  i {
-    font-size: 16px;
-    color: $light-black;
-  }
-}
-
-.infoTab {
-  @include mui-text('button');
-  text-transform: none !important;
-}
-
-.tabContainer {
-  padding-top: 20px;
-}
-
-.metadataLabel {
-  font-size: 12px;
-  line-height: 16px;
-  color: $min-black;
-}
-
-.metadataValue {
-  font-size: 14px;
-  line-height: 21px;
-}
-
-.faceOccurrenceList {
-  display: flex;
-  flex-flow: row wrap;
-}
-
-.faceOccurrence {
+.entityInformation {
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  margin-right: 20px;
-  width: 130px;
 
-  &:hover {
-    cursor: pointer;
+  .entityBackButtonContainer {
+    flex: none;
+
+    .entityBackButton {
+      padding-left: 0 !important;
+
+      .entityBackIcon {
+        margin-right: 5px;
+      }
+
+      .entityBackLabel {
+        font-weight: 500;
+        line-height: 19px;
+        font-size: 16px;
+      }
+    }
   }
-}
 
-.faceOccurrenceTimestamp {
-  color: $blue-1;
-  font-size: 14px;
-  line-height: 30px;
-}
+  .selectedEntity {
+    flex: none;
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+  }
 
-.entityJson {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-}
+  .entityProfileImage {
+    width: 80px;
+    height: 80px;
+    flex: none;
+    background-color: $grey-4;
+  }
 
-.jsondataItem {
-  margin-bottom: 20px;
-  margin-right: 10px;
+  .selectedEntityInfo {
+    padding-left: 15px;
+
+    .entityNameAndCount {
+      font-size: 16px;
+      line-height: 19px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .libraryName {
+      font-size: 14px;
+      line-height: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    i {
+      font-size: 16px;
+      color: $light-black;
+    }
+  }
+
+  .infoTab {
+    @include mui-text('button');
+    text-transform: none !important;
+  }
+
+  .selectedEntityTabs {
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .tabContainer {
+      overflow-y: auto;
+      padding-top: 20px;
+    }
+  }
+
+  .metadataLabel {
+    font-size: 12px;
+    line-height: 16px;
+    color: $min-black;
+  }
+
+  .metadataValue {
+    font-size: 14px;
+    line-height: 21px;
+  }
+
+  .entityJson {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
+  .jsondataItem {
+    margin-bottom: 20px;
+    margin-right: 10px;
+  }
 }

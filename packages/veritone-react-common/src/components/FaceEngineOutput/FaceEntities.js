@@ -108,11 +108,7 @@ export default class FaceEntities extends Component {
     if (selectedEntity && faceEntities[selectedEntity]) {
       return (
         <EntityInformation
-          {...pick(faceEntities[selectedEntity], [
-            'entity',
-            'count',
-            'timeSlots'
-          ])}
+          {...pick(faceEntities[selectedEntity], ['entity', 'count', 'faces'])}
           onBackClicked={this.removeSelectedEntity}
           onOccurrenceClicked={this.props.onFaceOccurrenceClicked}
         />
@@ -164,15 +160,7 @@ function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
   return {
     ...recognizedEntityObj,
     count: recognizedEntityObj.count + 1,
-    timeSlots: [
-      ...recognizedEntityObj.timeSlots,
-      {
-        stopTimeMs: faceObj.stopTimeMs,
-        startTimeMs: faceObj.startTimeMs,
-        originalImage: faceObj.object.uri,
-        confidence: faceObj.object.confidence
-      }
-    ],
+    faces: [...recognizedEntityObj.faces, faceObj],
     stopTimeMs:
       recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
         ? faceObj.stopTimeMs
@@ -187,16 +175,16 @@ function getFrameNamespaceForMatch(faceObj) {
 }
 
 // Gets list of nearest seconds which the face/entity appears in (MS)
-function getArrayOfSecondSpots(timeSlot) {
+function getArrayOfSecondSpots(face) {
   const secondSpots = [];
 
-  if (!isObject(timeSlot) || !timeSlot.startTimeMs || !timeSlot.stopTimeMs) {
+  if (!isObject(face) || !face.startTimeMs || !face.stopTimeMs) {
     return secondSpots;
   }
 
-  let timeCursor = timeSlot.startTimeMs - timeSlot.startTimeMs % 1000;
+  let timeCursor = face.startTimeMs - face.startTimeMs % 1000;
 
-  while (timeCursor <= timeSlot.stopTimeMs) {
+  while (timeCursor <= face.stopTimeMs) {
     secondSpots.push(timeCursor);
     timeCursor += 1000;
   }
@@ -252,14 +240,7 @@ function buildFaceDataPayload(faces, entities) {
               },
               profileImage: entity.profileImageUrl,
               count: 1,
-              timeSlots: [
-                {
-                  stopTimeMs: faceObj.stopTimeMs,
-                  startTimeMs: faceObj.startTimeMs,
-                  originalImage: faceObj.object.uri,
-                  confidence: faceObj.object.confidence
-                }
-              ],
+              faces: [faceObj],
               stopTimeMs: faceObj.stopTimeMs
             };
 

@@ -3,7 +3,7 @@ import { arrayOf, shape, number, string, bool, func } from 'prop-types';
 import { pick, find } from 'lodash';
 
 import NoFacesFound from '../NoFacesFound';
-import FaceDetectionBox from '../FaceDetectionBox';
+import FaceInfoBox from '../FaceInfoBox';
 
 import styles from './styles.scss';
 
@@ -49,6 +49,7 @@ class FaceGrid extends Component {
   // evt is mandatory here to avoid infinite call loop
   handleFaceClick = face => evt => {
     if (this.props.onFaceOccurrenceClicked) {
+      console.log('FaceGrid', face);
       this.props.onFaceOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
     }
   };
@@ -74,7 +75,7 @@ class FaceGrid extends Component {
           faces.map((face, idx) => {
             const selectedFace = find(selectedFaces, { guid: face.guid });
             return (
-              <FaceDetectionBox
+              <FaceInfoBox
                 key={`face-${face.guid}-${face.startTimeMs}-${
                   face.stopTimeMs
                 }-${face.object.uri}`}

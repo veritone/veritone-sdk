@@ -7,8 +7,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { startCase } from 'lodash';
 
-import { msToReadableString } from 'helpers/time';
 import noAvatar from 'images/no-avatar.png';
+import FaceGrid from '../FaceGrid';
 
 import styles from './styles.scss';
 
@@ -21,12 +21,14 @@ class EntityInformation extends Component {
       profileImage: string
     }).isRequired,
     count: number,
-    timeSlots: arrayOf(
+    faces: arrayOf(
       shape({
         startTimeMs: number,
-        stopTimeMs: number,
-        originalImage: string,
-        confidence: number
+        endTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
       })
     ),
     onBackClicked: func,
@@ -43,26 +45,23 @@ class EntityInformation extends Component {
     }
   };
 
-  handleFaceOccurrenceClicked = face => evt => {
-    this.props.onOccurrenceClicked &&
-      this.props.onOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
-  };
-
   render() {
-    const { entity, count, timeSlots, onBackClicked } = this.props;
+    const { entity, count, faces, onBackClicked } = this.props;
 
     return (
-      <div>
-        <Button
-          color="default"
-          className={styles.entityBackButton}
-          onClick={onBackClicked}
-        >
-          <Icon
-            className={classNames(styles.entityBackIcon, 'icon-arrow-back')}
-          />
-          <span className={styles.entityBackLabel}>Back</span>
-        </Button>
+      <div className={styles.entityInformation}>
+        <div className={styles.entityBackButtonContainer}>
+          <Button
+            color="default"
+            className={styles.entityBackButton}
+            onClick={onBackClicked}
+          >
+            <Icon
+              className={classNames(styles.entityBackIcon, 'icon-arrow-back')}
+            />
+            <span className={styles.entityBackLabel}>Back</span>
+          </Button>
+        </div>
         <div className={styles.selectedEntity}>
           <img
             className={styles.entityProfileImage}
@@ -81,7 +80,7 @@ class EntityInformation extends Component {
             </div>
           </div>
         </div>
-        <div>
+        <div className={styles.selectedEntityTabs}>
           <Tabs
             value={this.state.activeTab}
             onChange={this.handleTabChange}
@@ -100,26 +99,10 @@ class EntityInformation extends Component {
           </Tabs>
           {this.state.activeTab === 'faceMatches' && (
             <div className={styles.tabContainer}>
-              {timeSlots.length && (
-                <div className={styles.faceOccurrenceList}>
-                  {timeSlots.map(timeSlot => {
-                    return (
-                      <div
-                        onClick={this.handleFaceOccurrenceClicked(timeSlot)}
-                        className={styles.faceOccurrence}
-                        key={`face-match-${entity.entityId}-${
-                          timeSlot.startTimeMs
-                        }-${timeSlot.stopTimeMs}-${timeSlot.originalImage}`}
-                      >
-                        <span className={styles.faceOccurrenceTimestamp}>
-                          {msToReadableString(timeSlot.startTimeMs)} -{' '}
-                          {msToReadableString(timeSlot.stopTimeMs)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <FaceGrid
+                faces={faces}
+                onFaceOccurrenceClicked={this.props.onOccurrenceClicked}
+              />
             </div>
           )}
           {this.state.activeTab === 'metadata' && (
@@ -127,7 +110,7 @@ class EntityInformation extends Component {
               <div className={styles.entityJson}>
                 {entity.jsondata &&
                   !!Object.keys(entity.jsondata).length &&
-                  Object.keys(entity.jsondata).map((objKey, index) => {
+                  Object.keys(entity.jsondata).map(objKey => {
                     return (
                       <div
                         key={`entity-${entity.entityId}-jsondata-${objKey}`}

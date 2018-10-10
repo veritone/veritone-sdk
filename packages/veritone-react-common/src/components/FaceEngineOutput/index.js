@@ -128,7 +128,7 @@ class FaceEngineOutput extends Component {
           faceRecognition: [],
           faceDetection: []
         }
-      }
+      };
     }
     return null;
   }
@@ -227,8 +227,10 @@ class FaceEngineOutput extends Component {
       this.setState(prevState => ({
         bulkEditActionItems: {
           ...prevState.bulkEditActionItems,
-          [prevState.activeTab]: prevState.bulkEditActionItems[prevState.activeTab].filter(actionItem => {
-            return !find(faces, { guid: actionItem.guid});
+          [prevState.activeTab]: prevState.bulkEditActionItems[
+            prevState.activeTab
+          ].filter(actionItem => {
+            return !find(faces, { guid: actionItem.guid });
           })
         }
       }));
@@ -237,7 +239,9 @@ class FaceEngineOutput extends Component {
       this.setState(prevState => ({
         bulkEditActionItems: {
           ...prevState.bulkEditActionItems,
-          [prevState.activeTab]: prevState.bulkEditActionItems[prevState.activeTab].filter(actionItem => {
+          [prevState.activeTab]: prevState.bulkEditActionItems[
+            prevState.activeTab
+          ].filter(actionItem => {
             return faces.guid !== actionItem.guid;
           })
         }

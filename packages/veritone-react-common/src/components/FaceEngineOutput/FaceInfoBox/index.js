@@ -60,7 +60,7 @@ const renderEntitySearchMenu = ({
     );
   });
 
-class FaceDetectionBox extends Component {
+class FaceInfoBox extends Component {
   static propTypes = {
     face: shape({
       startTimeMs: number,
@@ -68,7 +68,7 @@ class FaceDetectionBox extends Component {
       object: shape({
         label: string,
         uri: string
-      }),
+      })
     }),
     searchResults: arrayOf(
       shape({
@@ -153,28 +153,29 @@ class FaceDetectionBox extends Component {
 
     return (
       <div
-        className={cx(
-          styles.faceContainer,
-          { [styles.faceContainerHover]: this.state.hovered }
-        )}
+        className={cx(styles.faceContainer, {
+          [styles.faceContainerHover]: this.state.hovered
+        })}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseOut}
         onClick={onClick}
       >
         <div className={styles.entityImageContainer}>
           <img className={styles.entityImage} src={face.object.uri} />
-          {enableEdit && !face.editAction && (
-            <span className={styles.selectFaceCheckboxBackground} />
-          )}
-          {enableEdit && !face.editAction && (
-            <Checkbox
-              checked={isSelected}
-              color="primary"
-              disableRipple
-              classes={{ root: styles.selectFaceCheckbox }}
-              onChange={this.handleCheckboxClicked(face)}
-            />
-          )}
+          {enableEdit &&
+            !face.editAction && (
+              <span className={styles.selectFaceCheckboxBackground} />
+            )}
+          {enableEdit &&
+            !face.editAction && (
+              <Checkbox
+                checked={isSelected}
+                color="primary"
+                disableRipple
+                classes={{ root: styles.selectFaceCheckbox }}
+                onChange={this.handleCheckboxClicked(face)}
+              />
+            )}
           {enableEdit &&
             this.state.hovered && (
               <div
@@ -188,7 +189,7 @@ class FaceDetectionBox extends Component {
             )}
           {!!face.editAction && (
             <div className={styles.editActionOverlay}>
-              <CheckCircleIcon className={styles.actionIcon}/>
+              <CheckCircleIcon className={styles.actionIcon} />
               <div>{face.editAction}</div>
             </div>
           )}
@@ -280,4 +281,4 @@ class FaceDetectionBox extends Component {
   }
 }
 
-export default FaceDetectionBox;
+export default FaceInfoBox;
