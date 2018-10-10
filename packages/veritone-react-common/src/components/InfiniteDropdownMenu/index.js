@@ -56,6 +56,9 @@ export default class InfiniteDropdownMenu extends React.Component {
   };
 
   static defaultProps = {
+    loadNextPage: ({ startIndex, stopIndex }) => {
+      return Promise.resolve([]);
+    },
     pageSize: 30
   };
 
@@ -63,7 +66,7 @@ export default class InfiniteDropdownMenu extends React.Component {
     anchorEl: null
   };
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     if (isFunction(this.props.loadNextPage)) {
       this.props.loadNextPage({
         startIndex: 0,
@@ -136,11 +139,6 @@ export default class InfiniteDropdownMenu extends React.Component {
     this.setState({ anchorEl: null }, trigger);
   };
 
-  // To suppress InfiniteLoader warnings
-  dummyLoadNextPage = ({ startIndex, stopIndex }) => {
-    return Promise.resolve([]);
-  };
-
   render() {
     const list = this.props.items || [];
     const rowCount = this.props.hasNextPage
@@ -148,7 +146,7 @@ export default class InfiniteDropdownMenu extends React.Component {
       : list.length;
     const loadMoreRows = this.props.isNextPageLoading
       ? noop
-      : this.props.loadNextPage || this.dummyLoadNextPage;
+      : this.props.loadNextPage;
 
     return (
       <ItemSelector

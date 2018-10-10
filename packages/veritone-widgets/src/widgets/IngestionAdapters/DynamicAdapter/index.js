@@ -6,10 +6,6 @@ import widget from '../../../shared/widget';
 const LibDynamicAdapter = LibDynamicAdapterObj.adapter;
 
 class DynamicAdapter extends React.Component {
-  static propTypes = {};
-
-  componentDidMount() {}
-
   render() {
     return <LibDynamicAdapter {...this.props} />;
   }
