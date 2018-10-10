@@ -1,0 +1,80 @@
+@import 'src/styles/modules/variables';
+
+$trackHeight: 2px;
+$dragAnimationTime: 0.1s;
+$buttonAnimationTime: 0.2s;
+$buttonDiameterSmall: 12px;
+$buttonDiameterLarge: 16px;
+$backgroundOpacity: 0.24;
+
+.rangeSlider {
+  display: flex;
+  align-items: center;
+
+  .label {
+    text-align: center;
+  }
+
+  .slider {
+    width: 100%;
+    height: $buttonDiameterLarge;
+    position: relative;
+    margin: 0 $buttonDiameterLarge/2;
+
+    .track {
+      top: 50%;
+      position: absolute;
+      height: $trackHeight;
+      border-radius: $trackHeight;
+      transform: translate(0, -50%);
+      background-color: $blue-1;
+
+      &.background {
+        width: 100%;
+        opacity: $backgroundOpacity;
+      }
+
+      &.highlight {
+        transition: width $dragAnimationTime, left $dragAnimationTime;
+      }
+    }
+
+    .backArea {
+      top: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      opacity: 0;
+
+      &.hitArea {
+        left: 0;
+        cursor: pointer;
+      }
+    }
+
+    .thumb {
+      top: 50%;
+      margin: 0;
+      padding: 0;
+      width: $buttonDiameterSmall;
+      height: $buttonDiameterSmall;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      background-color: $blue-1;
+      border-radius: 50%;
+      border: 1px solid rgba(72, 72, 72, 0.37);
+      cursor: pointer;
+      transition: width $buttonAnimationTime, height $buttonAnimationTime,
+        left $dragAnimationTime;
+
+      &:active {
+        width: $buttonDiameterLarge;
+        height: $buttonDiameterLarge;
+      }
+
+      &:focus {
+        outline-style: none;
+      }
+    }
+  }
+}
