@@ -246,7 +246,8 @@ class FaceEngineOutput extends Component {
       moreMenuItems,
       showEditButton,
       onEditButtonClick,
-      disableEditButton
+      disableEditButton,
+      unrecognizedFaces
     } = this.props;
     const { viewMode, bulkEditActionItems, activeTab } = this.state;
     const recognizedFaceCount = reduce(
@@ -269,7 +270,9 @@ class FaceEngineOutput extends Component {
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
           disableEditButton={
-            disableEditButton || activeTab === 'faceRecognition'
+            disableEditButton ||
+            this.state.activeTab === 'faceRecognition' ||
+            get(unrecognizedFaces, 'length') < 1
           }
           disableEngineSelect={!!editMode}
         >
@@ -382,12 +385,12 @@ class FaceEngineOutput extends Component {
         >
           <Tab
             classes={{ root: styles.faceTab }}
-            label={`Face Recognition (${recognizedFaceCount})`}
+            label={`Face Recognition (${recognizedFaceCount || 0})`}
             value="faceRecognition"
           />
           <Tab
             classes={{ root: styles.faceTab }}
-            label={`Face Detection (${this.props.unrecognizedFaces.length})`}
+            label={`Face Detection (${get(unrecognizedFaces, 'length', 0)})`}
             value="faceDetection"
           />
         </Tabs>
@@ -460,7 +463,7 @@ class FaceEngineOutput extends Component {
               })}
             >
               <FaceGrid
-                faces={this.props.unrecognizedFaces}
+                faces={unrecognizedFaces}
                 selectedFaces={get(bulkEditActionItems, 'faceDetection', [])}
                 editMode={editMode}
                 viewMode={viewMode}

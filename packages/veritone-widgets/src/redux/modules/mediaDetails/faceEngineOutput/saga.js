@@ -208,7 +208,7 @@ function* watchMediaDetailCancelEdit() {
       selectedEngineId
     );
     if (pendingUserEdits) {
-      yield put(faceEngineOutput.openConfirmationDialog('saveChanges'));
+      yield put(faceEngineOutput.openConfirmationDialog());
     } else {
       yield put(faceEngineOutput.toggleEditMode());
     }
