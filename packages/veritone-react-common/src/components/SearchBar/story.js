@@ -5,7 +5,11 @@ import { object } from '@storybook/addon-knobs/react';
 
 import { CSPToSearchParameters } from './parser';
 
-import SearchParameters from './';
+import SearchBarContainer from './SearchBarForm/containers/SearchBarContainer'
+import {SearchParameters} from './SearchParameters';
+
+import DemoApp from './SearchBarForm/App/DemoApp'
+import {engineCategories} from './SearchBarForm/EngineModelInfo';
 
 storiesOf('SearchBar', module).add('Base (render only)', () => {
   const csp = {
@@ -315,4 +319,23 @@ storiesOf('SearchBar/EngineCategories', module).add('TimeModal', () => {
   };
   const searchParameters = CSPToSearchParameters(object('CSP', csp));
   return <SearchParameters parameters={searchParameters} />;
+});
+
+
+storiesOf('SearchBar/SearchBarForm', module).add('Container only', () => {
+
+  return <SearchBarContainer engineCategories={engineCategories }/>;
+});
+
+storiesOf('SearchBar/SearchBarForm', module).add('Container inside Popover', () => {
+
+  return (
+    <div>
+      <h1>NEED TO BE IMPLEMENTED</h1>
+    </div>
+  )
+});
+
+storiesOf('SearchBar/SearchBarForm', module).add('SearchBar with Container inside Popover', () => {
+  return <DemoApp />
 });

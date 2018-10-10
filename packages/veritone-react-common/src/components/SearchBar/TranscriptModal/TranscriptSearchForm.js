@@ -1,0 +1,47 @@
+import React from 'react';
+import { func, string } from 'prop-types';
+
+import TextField from '@material-ui/core/TextField';
+
+
+const TranscriptSearchForm = ({
+    onCancel,
+    defaultValue,
+    onChange,
+    onKeyPress,
+    inputValue
+  }) => {
+    return (
+      <TextField
+        id="transcript_search_field"
+        autoFocus
+        margin="none"
+        defaultValue={defaultValue}
+        onChange={onChange}
+        onKeyPress={onKeyPress}
+        placeholder="Phrase to search"
+        fullWidth
+      />
+    );
+  };
+  
+
+  TranscriptSearchForm.propTypes = {
+    onCancel: func,
+    defaultValue : string,
+    onChange: func,
+    onKeyPress: func,
+    inputValue: string
+  }
+  
+  TranscriptSearchForm.defaultProps = {
+    onCancel: () => console.log('onCancel event '),
+    defaultValue: '',
+    onChange: () => console.log('onChange event '),
+    onKeyPress: () => console.log('onKeyPress event')
+  };
+
+  export {
+    TranscriptSearchForm
+  };
+  
