@@ -1,12 +1,30 @@
+@import '../veritone-react-common/src/styles/modules/variables';
+
+.dialogPaper {
+  width: 600px;
+}
 
 .dialogTitle {
   h2 {
+    line-height: 28px;
     font-size: 20px;
+    font-weight: 500;
   }
 }
 
 .dialogContent {
   p {
-    font-size: 16px;
+    font-size: 15px;
+    line-height: 24px;
+    color: $dark-black;
   }
+}
+
+.dialogActions {
+  padding: 0 20px 5px 0;
+}
+
+.actionButton {
+  width: 100px;
+  margin: 0 0 0 15px !important;
 }

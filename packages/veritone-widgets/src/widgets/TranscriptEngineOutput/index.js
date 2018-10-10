@@ -318,14 +318,13 @@ export default class TranscriptEngineOutputContainer extends Component {
       'onEngineChange'
     ]);
 
-    let alertTitle = 'Unsaved Transcript Changes';
+    const alertTitle = 'Unsaved Changes';
     let alertDescription =
       'This action will reset your changes to the transcript.';
     let cancelButtonLabel = 'Cancel';
     let approveButtonLabel = 'Continue';
 
     if (this.props.confirmationType === 'saveEdits') {
-      alertTitle = 'Save Changes?';
       alertDescription = 'Would you like to save the changes?';
       cancelButtonLabel = 'Discard';
       approveButtonLabel = 'Save';
@@ -369,7 +368,7 @@ export default class TranscriptEngineOutputContainer extends Component {
         )}
         <AlertDialog
           open={this.props.showConfirmationDialog}
-          title={alertTitle}
+          titleLabel={alertTitle}
           content={alertDescription}
           cancelButtonLabel={cancelButtonLabel}
           approveButtonLabel={approveButtonLabel}

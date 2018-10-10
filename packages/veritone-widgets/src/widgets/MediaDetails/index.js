@@ -849,8 +849,9 @@ class MediaDetailsWidget extends React.Component {
         {alertDialogConfig && (
           <Dialog
             open={alertDialogConfig.show}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            classes={{
+              paper: styles.resetOriginalDialogPaper
+            }}
           >
             <div
               id="alert-dialog-title"
@@ -882,7 +883,6 @@ class MediaDetailsWidget extends React.Component {
               <Button
                 classes={{ root: styles.resetOriginalDialogButton }}
                 onClick={alertDialogConfig.cancelAction}
-                color="primary"
               >
                 {alertDialogConfig.cancelButtonLabel}
               </Button>
