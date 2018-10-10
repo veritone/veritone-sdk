@@ -143,19 +143,24 @@ class FaceEngineOutput extends Component {
       this.props.onRestoreOriginalClick();
       return;
     }
-    this.setState({
-      bulkEditActionItems: {
-        faceRecognition: [],
-        faceDetection: []
+    this.setState(
+      {
+        bulkEditActionItems: {
+          faceRecognition: [],
+          faceDetection: []
+        }
+      },
+      () => {
+        this.props.onToggleUserEditedOutput &&
+          this.props.onToggleUserEditedOutput(
+            evt.target.value === 'userEdited'
+          );
       }
-    }, () => {
-      this.props.onToggleUserEditedOutput &&
-        this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
-    });
+    );
   };
 
   handleSelectAllToggle = activeTab => evt => {
-    if(!evt.target.checked) {
+    if (!evt.target.checked) {
       this.setState({
         bulkEditActionItems: {
           [activeTab]: []
@@ -169,7 +174,7 @@ class FaceEngineOutput extends Component {
         bulkEditActionItems: {
           [activeTab]: [...this.props.unrecognizedFaces]
         }
-      })
+      });
     }
   };
 
@@ -177,23 +182,34 @@ class FaceEngineOutput extends Component {
     if (checked) {
       this.setState(prevState => ({
         bulkEditActionItems: {
-          [prevState.activeTab]: [...prevState.bulkEditActionItems[prevState.activeTab], face]
+          [prevState.activeTab]: [
+            ...prevState.bulkEditActionItems[prevState.activeTab],
+            face
+          ]
         }
       }));
     } else {
       this.setState(prevState => {
-        const faceIndex = findIndex(get(prevState.bulkEditActionItems, [prevState.activeTab]), {guid: face.guid});
+        const faceIndex = findIndex(
+          get(prevState.bulkEditActionItems, [prevState.activeTab]),
+          { guid: face.guid }
+        );
         if (faceIndex === -1) {
           return null;
         }
         return {
           bulkEditActionItems: {
             [prevState.activeTab]: [
-              ...prevState.bulkEditActionItems[prevState.activeTab].slice(0, faceIndex),
-              ...prevState.bulkEditActionItems[prevState.activeTab].slice(faceIndex + 1)
+              ...prevState.bulkEditActionItems[prevState.activeTab].slice(
+                0,
+                faceIndex
+              ),
+              ...prevState.bulkEditActionItems[prevState.activeTab].slice(
+                faceIndex + 1
+              )
             ]
           }
-        }
+        };
       });
     }
   };
@@ -233,9 +249,13 @@ class FaceEngineOutput extends Component {
       disableEditButton
     } = this.props;
     const { viewMode, bulkEditActionItems, activeTab } = this.state;
-    const recognizedFaceCount = reduce(Object.values(this.props.recognizedFaces), (acc, faces) => {
-      return acc + faces.length;
-    }, 0);
+    const recognizedFaceCount = reduce(
+      Object.values(this.props.recognizedFaces),
+      (acc, faces) => {
+        return acc + faces.length;
+      },
+      0
+    );
     const selectedEngine = find(this.props.engines, { id: selectedEngineId });
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
@@ -248,7 +268,9 @@ class FaceEngineOutput extends Component {
           moreMenuItems={moreMenuItems}
           showEditButton={showEditButton}
           onEditButtonClick={onEditButtonClick}
-          disableEditButton={disableEditButton || activeTab === 'faceRecognition'}
+          disableEditButton={
+            disableEditButton || activeTab === 'faceRecognition'
+          }
           disableEngineSelect={!!editMode}
         >
           {!editMode &&
@@ -271,29 +293,55 @@ class FaceEngineOutput extends Component {
                   getContentAnchorEl: null
                 }}
                 // eslint-disable-next-line
-                renderValue={() => showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'}
+                renderValue={() =>
+                  showingUserEditedOutput
+                    ? 'User-Edited'
+                    : 'Original (View Only)'
+                }
               >
-                <MenuItem
-                  value="userEdited"
-                >
-                  {showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
-                  <ListItemText classes={{primary: cx(styles.selectMenuItem, {
-                      [styles.menuItemInset]: !showingUserEditedOutput
-                    })}} primary="User-Edited" />
+                <MenuItem value="userEdited">
+                  {showingUserEditedOutput && (
+                    <ListItemIcon
+                      classes={{ root: styles.userEditListItemIcon }}
+                    >
+                      <DoneIcon />
+                    </ListItemIcon>
+                  )}
+                  <ListItemText
+                    classes={{
+                      primary: cx(styles.selectMenuItem, {
+                        [styles.menuItemInset]: !showingUserEditedOutput
+                      })
+                    }}
+                    primary="User-Edited"
+                  />
                 </MenuItem>
-                <MenuItem
-                  value="original"
-                >
-                  {!showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
-                  <ListItemText classes={{primary: cx(styles.selectMenuItem, {
-                      [styles.menuItemInset]: showingUserEditedOutput
-                    })}} primary="Original (View Only)" />
+                <MenuItem value="original">
+                  {!showingUserEditedOutput && (
+                    <ListItemIcon
+                      classes={{ root: styles.userEditListItemIcon }}
+                    >
+                      <DoneIcon />
+                    </ListItemIcon>
+                  )}
+                  <ListItemText
+                    classes={{
+                      primary: cx(styles.selectMenuItem, {
+                        [styles.menuItemInset]: showingUserEditedOutput
+                      })
+                    }}
+                    primary="Original (View Only)"
+                  />
                 </MenuItem>
                 <Divider light />
-                <MenuItem
-                  value="restoreOriginal"
-                >
-                  <ListItemText classes={{root: styles.restoreOriginalMenuItem, primary: cx(styles.selectMenuItem, styles.menuItemInset)}} primary="Restore Original" />
+                <MenuItem value="restoreOriginal">
+                  <ListItemText
+                    classes={{
+                      root: styles.restoreOriginalMenuItem,
+                      primary: cx(styles.selectMenuItem, styles.menuItemInset)
+                    }}
+                    primary="Restore Original"
+                  />
                 </MenuItem>
               </Select>
             )}
@@ -344,37 +392,56 @@ class FaceEngineOutput extends Component {
           />
         </Tabs>
         {outputNullState}
-        {editMode && <div className={styles.multiEditActionBox}>
-          <FormControlLabel
-            checked={get(bulkEditActionItems, [activeTab, 'length']) > 0}
-            control={
-              <Checkbox
-                value="selectAll"
-                color="primary"
-                indeterminate={!!get(bulkEditActionItems, [activeTab, 'length'])}
-              />
-            }
-            label={get(bulkEditActionItems, [activeTab, 'length']) > 0 ?
-              `${get(bulkEditActionItems, [activeTab, 'length'])} ${activeTab === 'faceDetection' ? 'Unknown': 'Known'} Faces Selected` :
-              'Select All'
-            }
-            onChange={this.handleSelectAllToggle(activeTab)}
-            classes={{root: styles.selectAllFormControl, label: styles.selectAllLabel}}
-          />
-          {get(bulkEditActionItems, [activeTab, 'length']) > 0 &&
-            <div className={styles.bulkFaceEditActions}>
-              <IconButton classes={{root: styles.bulkFaceEditActionButton}}><CreateIcon/></IconButton>
-              <IconButton
-                classes={{root: styles.bulkFaceEditActionButton}}
-                onClick={this.handleRemoveFaceDetections(get(bulkEditActionItems, [activeTab]))}
-              ><
-                DeleteIcon/>
-              </IconButton>
-            </div>}
-        </div>}
+        {editMode && (
+          <div className={styles.multiEditActionBox}>
+            <FormControlLabel
+              checked={get(bulkEditActionItems, [activeTab, 'length']) > 0}
+              control={
+                <Checkbox
+                  value="selectAll"
+                  color="primary"
+                  indeterminate={
+                    !!get(bulkEditActionItems, [activeTab, 'length'])
+                  }
+                />
+              }
+              label={
+                get(bulkEditActionItems, [activeTab, 'length']) > 0
+                  ? `${get(bulkEditActionItems, [activeTab, 'length'])} ${
+                      activeTab === 'faceDetection' ? 'Unknown' : 'Known'
+                    } Faces Selected`
+                  : 'Select All'
+              }
+              onChange={this.handleSelectAllToggle(activeTab)}
+              classes={{
+                root: styles.selectAllFormControl,
+                label: styles.selectAllLabel
+              }}
+            />
+            {get(bulkEditActionItems, [activeTab, 'length']) > 0 && (
+              <div className={styles.bulkFaceEditActions}>
+                <IconButton classes={{ root: styles.bulkFaceEditActionButton }}>
+                  <CreateIcon />
+                </IconButton>
+                <IconButton
+                  classes={{ root: styles.bulkFaceEditActionButton }}
+                  onClick={this.handleRemoveFaceDetections(
+                    get(bulkEditActionItems, [activeTab])
+                  )}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            )}
+          </div>
+        )}
         {!outputNullState &&
           activeTab === 'faceRecognition' && (
-            <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
+            <div
+              className={cx(styles.faceTabBody, {
+                [styles.editMode]: editMode
+              })}
+            >
               <FaceEntities
                 editMode={editMode}
                 viewMode={viewMode}
@@ -387,7 +454,11 @@ class FaceEngineOutput extends Component {
           )}
         {!outputNullState &&
           activeTab === 'faceDetection' && (
-            <div className={cx(styles.faceTabBody, {[styles.editMode]: editMode})}>
+            <div
+              className={cx(styles.faceTabBody, {
+                [styles.editMode]: editMode
+              })}
+            >
               <FaceGrid
                 faces={this.props.unrecognizedFaces}
                 selectedFaces={get(bulkEditActionItems, 'faceDetection', [])}

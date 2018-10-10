@@ -162,14 +162,18 @@ class FaceDetectionBox extends Component {
       >
         <div className={styles.entityImageContainer}>
           <img className={styles.entityImage} src={face.object.uri} />
-          {enableEdit && <span className={styles.selectFaceCheckboxBackground}/>}
-          {enableEdit && <Checkbox
-            checked={isSelected}
-            color="primary"
-            disableRipple
-            classes={{root: styles.selectFaceCheckbox}}
-            onChange={this.handleCheckboxClicked(face)}
-          />}
+          {enableEdit && (
+            <span className={styles.selectFaceCheckboxBackground} />
+          )}
+          {enableEdit && (
+            <Checkbox
+              checked={isSelected}
+              color="primary"
+              disableRipple
+              classes={{ root: styles.selectFaceCheckbox }}
+              onChange={this.handleCheckboxClicked(face)}
+            />
+          )}
           {enableEdit &&
             this.state.hovered && (
               <div className={styles.imageButtonOverlay}>
@@ -205,7 +209,9 @@ class FaceDetectionBox extends Component {
                   <div ref={this.inputRef}>
                     <Input
                       {...getInputProps({
-                        placeholder: (face.object.label ? face.object.label : 'Unknown'),
+                        placeholder: face.object.label
+                          ? face.object.label
+                          : 'Unknown',
                         className: styles.entitySearchInput
                       })}
                     />
@@ -222,7 +228,9 @@ class FaceDetectionBox extends Component {
                       target={this._inputRef}
                     >
                       <Paper className={styles.autoCompleteDropdown} square>
-                        <div className={styles.libraryMatchesTitle}>Library Matches</div>
+                        <div className={styles.libraryMatchesTitle}>
+                          Library Matches
+                        </div>
                         <div className={styles.searchResultsList}>
                           {isSearchingEntities ? (
                             <CircularProgress />
@@ -254,12 +262,10 @@ class FaceDetectionBox extends Component {
                 </div>
               )}
             </Downshift>
+          ) : face.object.label && face.object.label.length ? (
+            <div className={styles.unknownEntityText}>{face.object.label}</div>
           ) : (
-            face.object.label && face.object.label.length ? (
-              <div className={styles.unknownEntityText}>{face.object.label}</div>
-            ) : (
-              <div className={styles.unknownEntityText}>Unknown</div>
-            )
+            <div className={styles.unknownEntityText}>Unknown</div>
           )}
         </div>
       </div>

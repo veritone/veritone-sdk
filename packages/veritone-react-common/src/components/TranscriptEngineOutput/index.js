@@ -9,7 +9,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Divider from '@material-ui/core/Divider';
 import DoneIcon from '@material-ui/icons/Done';
 
@@ -184,29 +184,49 @@ export default class TranscriptEngineOutput extends Component {
           getContentAnchorEl: null
         }}
         // eslint-disable-next-line
-        renderValue={() => showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'}
+        renderValue={() =>
+          showingUserEditedOutput ? 'User-Edited' : 'Original (View Only)'
+        }
       >
-        <MenuItem
-          value="userEdited"
-        >
-          {showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
-          <ListItemText classes={{primary: cx(styles.selectMenuItem, {
-              [styles.menuItemInset]: !showingUserEditedOutput
-            })}} primary="User-Edited" />
+        <MenuItem value="userEdited">
+          {showingUserEditedOutput && (
+            <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
+              <DoneIcon />
+            </ListItemIcon>
+          )}
+          <ListItemText
+            classes={{
+              primary: cx(styles.selectMenuItem, {
+                [styles.menuItemInset]: !showingUserEditedOutput
+              })
+            }}
+            primary="User-Edited"
+          />
         </MenuItem>
-        <MenuItem
-          value="original"
-        >
-          {!showingUserEditedOutput && <ListItemIcon classes={{root: styles.userEditListItemIcon}}><DoneIcon /></ListItemIcon>}
-          <ListItemText classes={{primary: cx(styles.selectMenuItem, {
-              [styles.menuItemInset]: showingUserEditedOutput
-            })}} primary="Original (View Only)" />
+        <MenuItem value="original">
+          {!showingUserEditedOutput && (
+            <ListItemIcon classes={{ root: styles.userEditListItemIcon }}>
+              <DoneIcon />
+            </ListItemIcon>
+          )}
+          <ListItemText
+            classes={{
+              primary: cx(styles.selectMenuItem, {
+                [styles.menuItemInset]: showingUserEditedOutput
+              })
+            }}
+            primary="Original (View Only)"
+          />
         </MenuItem>
         <Divider light />
-        <MenuItem
-          value="restoreOriginal"
-        >
-          <ListItemText classes={{root: styles.restoreOriginalMenuItem, primary: cx(styles.selectMenuItem, styles.menuItemInset)}} primary="Restore Original" />
+        <MenuItem value="restoreOriginal">
+          <ListItemText
+            classes={{
+              root: styles.restoreOriginalMenuItem,
+              primary: cx(styles.selectMenuItem, styles.menuItemInset)
+            }}
+            primary="Restore Original"
+          />
         </MenuItem>
       </Select>
     );
@@ -231,16 +251,10 @@ export default class TranscriptEngineOutput extends Component {
           getContentAnchorEl: null
         }}
       >
-        <MenuItem
-          value={View.TIME}
-          className={styles.selectMenuItem}
-        >
+        <MenuItem value={View.TIME} className={styles.selectMenuItem}>
           Time
         </MenuItem>
-        <MenuItem
-          value={View.OVERVIEW}
-          className={styles.selectMenuItem}
-        >
+        <MenuItem value={View.OVERVIEW} className={styles.selectMenuItem}>
           Overview
         </MenuItem>
       </Select>
