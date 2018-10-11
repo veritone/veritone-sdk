@@ -4,6 +4,9 @@ import cx from 'classnames';
 
 import styles from './styles.scss';
 
+const lowerButton = 'lowerButton';
+const upperButton = 'upperButton';
+
 export default class RangeSlider extends React.Component {
   static propTypes = {
     min: number,
@@ -138,8 +141,6 @@ export default class RangeSlider extends React.Component {
     return newState;
   }
 
-  lowerButton = 'lowerButton';
-  upperButton = 'upperButton';
   handleMouseDown = event => {
     document.onmousemove = this.handleMouseMove;
     document.onmouseup = this.handleMouseUp;
@@ -173,10 +174,10 @@ export default class RangeSlider extends React.Component {
       initialLowerButtonVal === undefined ? 0 : initialLowerButtonVal;
     let newUpperRatio =
       initialUpperButtonVal === undefined ? 1 : initialUpperButtonVal;
-    if (selectedButton === this.lowerButton) {
+    if (selectedButton === lowerButton) {
       newLowerRatio = newLowerRatio + travelRatio;
       newLowerRatio > newUpperRatio && (newUpperRatio = newLowerRatio);
-    } else if (selectedButton === this.upperButton) {
+    } else if (selectedButton === upperButton) {
       newUpperRatio = newUpperRatio + travelRatio;
       newLowerRatio > newUpperRatio && (newLowerRatio = newUpperRatio);
     }
@@ -344,7 +345,7 @@ export default class RangeSlider extends React.Component {
                 className={cx(styles.thumb)}
                 onMouseDown={this.handleMouseDown}
                 style={{ left: lowerPercentage + '%' }}
-                value={this.lowerButton}
+                value={lowerButton}
               />
             </Fragment>
           )}
@@ -352,7 +353,7 @@ export default class RangeSlider extends React.Component {
             className={cx(styles.thumb)}
             onMouseDown={this.handleMouseDown}
             style={{ left: upperPercentage + '%' }}
-            value={this.upperButton}
+            value={upperButton}
           />
         </div>
         {showValues && (
