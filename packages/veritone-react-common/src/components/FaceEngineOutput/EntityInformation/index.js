@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { shape, string, number, func, arrayOf } from 'prop-types';
+import { shape, string, number, func, arrayOf, bool } from 'prop-types';
 import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
@@ -31,8 +31,21 @@ class EntityInformation extends Component {
         })
       })
     ),
+    selectedFaces: arrayOf(
+      shape({
+        startTimeMs: number,
+        endTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
+      })
+    ),
     onBackClicked: func,
-    onOccurrenceClicked: func
+    onOccurrenceClicked: func,
+    editModeEnabled: bool,
+    onRemoveFaceRecognition: func,
+    onFaceCheckboxClicked: func
   };
 
   state = {
@@ -46,7 +59,16 @@ class EntityInformation extends Component {
   };
 
   render() {
-    const { entity, count, faces, onBackClicked } = this.props;
+    const {
+      entity,
+      count,
+      faces,
+      onBackClicked,
+      editModeEnabled,
+      onRemoveFaceRecognition,
+      selectedFaces,
+      onFaceCheckboxClicked
+    } = this.props;
 
     return (
       <div className={styles.entityInformation}>
@@ -101,7 +123,12 @@ class EntityInformation extends Component {
             <div className={styles.tabContainer}>
               <FaceGrid
                 faces={faces}
+                selectedFaces={selectedFaces}
                 onFaceOccurrenceClicked={this.props.onOccurrenceClicked}
+                hideEntityLabels
+                editMode={editModeEnabled}
+                onRemoveFace={onRemoveFaceRecognition}
+                onFaceCheckboxClicked={onFaceCheckboxClicked}
               />
             </div>
           )}

@@ -39,6 +39,16 @@ export default class FaceEntities extends Component {
         })
       )
     ).isRequired,
+    selectedFaces: arrayOf(
+      shape({
+        startTimeMs: number,
+        endTimeMs: number,
+        object: shape({
+          label: string,
+          originalImage: string
+        })
+      })
+    ),
     entities: arrayOf(
       shape({
         id: string.isRequired,
@@ -54,7 +64,9 @@ export default class FaceEntities extends Component {
     ).isRequired,
     currentMediaPlayerTime: number,
     onSelectEntity: func,
-    onFaceOccurrenceClicked: func
+    onFaceOccurrenceClicked: func,
+    onRemoveFaceRecognition: func,
+    onFaceCheckboxClicked: func
   };
 
   state = {
@@ -102,15 +114,26 @@ export default class FaceEntities extends Component {
   };
 
   render() {
-    const { viewMode, currentMediaPlayerTime, editMode } = this.props;
+    const {
+      viewMode,
+      currentMediaPlayerTime,
+      editMode,
+      onRemoveFaceRecognition,
+      selectedFaces,
+      onFaceCheckboxClicked
+    } = this.props;
     const { faceEntities, selectedEntity } = this.state;
 
     if (selectedEntity && faceEntities[selectedEntity]) {
       return (
         <EntityInformation
           {...pick(faceEntities[selectedEntity], ['entity', 'count', 'faces'])}
+          selectedFaces={selectedFaces}
+          editModeEnabled={editMode}
           onBackClicked={this.removeSelectedEntity}
           onOccurrenceClicked={this.props.onFaceOccurrenceClicked}
+          onRemoveFaceRecognition={onRemoveFaceRecognition}
+          onFaceCheckboxClicked={onFaceCheckboxClicked}
         />
       );
     }
@@ -160,7 +183,18 @@ function setRecognizedEntityObj(recognizedEntityObj, faceObj) {
   return {
     ...recognizedEntityObj,
     count: recognizedEntityObj.count + 1,
-    faces: [...recognizedEntityObj.faces, faceObj],
+    faces: [
+      ...recognizedEntityObj.faces,
+      {
+        ...faceObj,
+        object: {
+          ...faceObj.object,
+          label:
+            get(recognizedEntityObj, 'entity.name') ||
+            get(faceObj, 'object.label')
+        }
+      }
+    ],
     stopTimeMs:
       recognizedEntityObj.stopTimeMs <= faceObj.stopTimeMs
         ? faceObj.stopTimeMs
@@ -240,7 +274,15 @@ function buildFaceDataPayload(faces, entities) {
               },
               profileImage: entity.profileImageUrl,
               count: 1,
-              faces: [faceObj],
+              faces: [
+                {
+                  ...faceObj,
+                  object: {
+                    ...faceObj.object,
+                    label: entity.name || get(faceObj, 'object.label')
+                  }
+                }
+              ],
               stopTimeMs: faceObj.stopTimeMs
             };
 

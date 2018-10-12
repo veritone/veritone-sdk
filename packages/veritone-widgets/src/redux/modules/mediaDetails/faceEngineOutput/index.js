@@ -217,7 +217,7 @@ const reducer = createReducer(defaultState, {
             return {
               ...face,
               editAction: 'Deleted'
-            }
+            };
           })
         ]
       }
@@ -230,9 +230,11 @@ const reducer = createReducer(defaultState, {
       ...state,
       pendingFaceEdits: {
         ...state.pendingFaceEdits,
-        [selectedEngineId]: state.pendingFaceEdits[selectedEngineId].filter(faceEdit => {
-          return !find(faceObjects, {guid: faceEdit.guid});
-        })
+        [selectedEngineId]: state.pendingFaceEdits[selectedEngineId].filter(
+          faceEdit => {
+            return !find(faceObjects, { guid: faceEdit.guid });
+          }
+        )
       },
       facesRemovedByUser: {
         ...state.facesRemovedByUser,
@@ -241,7 +243,6 @@ const reducer = createReducer(defaultState, {
           ...faceObjects.map(face => omit(face, ['editAction']))
         ]
       }
-
     };
   },
   [CANCEL_FACE_EDITS](state, action) {
@@ -251,9 +252,7 @@ const reducer = createReducer(defaultState, {
       facesRemovedByUser: {}
     };
   },
-  [OPEN_CONFIRMATION_DIALOG](
-    state
-  ) {
+  [OPEN_CONFIRMATION_DIALOG](state) {
     return {
       ...state,
       showConfirmationDialog: true
@@ -440,19 +439,29 @@ export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
   }
 });
 
-export const removeDetectedFaces = (selectedEngineId, faceObjects) => ({
+export const removeDetectedFaces = (
+  selectedEngineId,
+  faceObjects,
+  objectType
+) => ({
   type: REMOVE_DETECTED_FACES,
   payload: {
     selectedEngineId,
-    faceObjects
+    faceObjects,
+    objectType
   }
 });
 
-export const processRemovedFaces = (selectedEngineId, faceObjects) => ({
+export const processRemovedFaces = (
+  selectedEngineId,
+  faceObjects,
+  objectType
+) => ({
   type: PROCESS_REMOVED_FACES,
   payload: {
     selectedEngineId,
-    faceObjects
+    faceObjects,
+    objectType
   }
 });
 
@@ -482,8 +491,20 @@ export const showConfirmationDialog = state =>
 
 /* SELECTORS */
 export const getFaces = createSelector(
-  [getFaceDataByEngine, getUserDetectedFaces, getUserRemovedFaces, getEntities, getPendingFaceEdits],
-  (faceData, userDetectedFaces, userRemovedFaces, entities, pendingFaceEdits) => {
+  [
+    getFaceDataByEngine,
+    getUserDetectedFaces,
+    getUserRemovedFaces,
+    getEntities,
+    getPendingFaceEdits
+  ],
+  (
+    faceData,
+    userDetectedFaces,
+    userRemovedFaces,
+    entities,
+    pendingFaceEdits
+  ) => {
     const faceEntities = {
       unrecognizedFaces: [],
       recognizedFaces: {}

@@ -189,6 +189,7 @@ class FaceEngineOutput extends Component {
     if (checked) {
       this.setState(prevState => ({
         bulkEditActionItems: {
+          ...prevState.bulkEditActionItems,
           [prevState.activeTab]: [
             ...prevState.bulkEditActionItems[prevState.activeTab],
             face
@@ -206,6 +207,7 @@ class FaceEngineOutput extends Component {
         }
         return {
           bulkEditActionItems: {
+            ...prevState.bulkEditActionItems,
             [prevState.activeTab]: [
               ...prevState.bulkEditActionItems[prevState.activeTab].slice(
                 0,
@@ -221,9 +223,9 @@ class FaceEngineOutput extends Component {
     }
   };
 
-  handleRemoveFaceDetections = faces => evt => {
+  handleRemoveFaces = faces => () => {
     if (isArray(faces)) {
-      this.props.onRemoveFaceDetections(faces);
+      this.props.onRemoveFaceDetections(faces, this.state.activeTab);
       this.setState(prevState => ({
         bulkEditActionItems: {
           ...prevState.bulkEditActionItems,
@@ -235,7 +237,7 @@ class FaceEngineOutput extends Component {
         }
       }));
     } else if (isObject(faces)) {
-      this.props.onRemoveFaceDetections([faces]);
+      this.props.onRemoveFaceDetections([faces], this.state.activeTab);
       this.setState(prevState => ({
         bulkEditActionItems: {
           ...prevState.bulkEditActionItems,
@@ -293,8 +295,7 @@ class FaceEngineOutput extends Component {
           onEditButtonClick={onEditButtonClick}
           disableEditButton={
             disableEditButton ||
-            this.state.activeTab === 'faceRecognition' ||
-            get(unrecognizedFaces, 'length') < 1
+            (recognizedFaceCount < 1 && get(unrecognizedFaces, 'length') < 1)
           }
           disableEngineSelect={!!editMode}
         >
@@ -450,7 +451,7 @@ class FaceEngineOutput extends Component {
                 </IconButton>
                 <IconButton
                   classes={{ root: styles.bulkFaceEditActionButton }}
-                  onClick={this.handleRemoveFaceDetections(
+                  onClick={this.handleRemoveFaces(
                     get(bulkEditActionItems, [activeTab])
                   )}
                 >
@@ -471,9 +472,12 @@ class FaceEngineOutput extends Component {
                 editMode={editMode}
                 viewMode={viewMode}
                 faces={this.props.recognizedFaces}
+                selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 entities={this.props.entities}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
+                onRemoveFaceRecognition={this.handleRemoveFaces}
+                onFaceCheckboxClicked={this.handleSelectFace}
               />
             </div>
           )}
@@ -486,13 +490,13 @@ class FaceEngineOutput extends Component {
             >
               <FaceGrid
                 faces={unrecognizedFaces}
-                selectedFaces={get(bulkEditActionItems, 'faceDetection', [])}
+                selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 editMode={editMode}
                 viewMode={viewMode}
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-                onRemoveFaceDetection={this.handleRemoveFaceDetections}
+                onRemoveFace={this.handleRemoveFaces}
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
                 isSearchingEntities={this.props.isSearchingEntities}

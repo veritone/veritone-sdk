@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { shape, number, string, arrayOf, bool, func } from 'prop-types';
 import cx from 'classnames';
 import Downshift from 'downshift';
@@ -81,13 +81,14 @@ class FaceInfoBox extends Component {
     onUpdateEntity: func,
     addNewEntity: func,
     onAddNewEntity: func,
-    onRemoveFaceDetection: func,
+    onRemoveFace: func,
     onEditFaceDetection: func,
     onClick: func,
     onSearchForEntities: func,
     isSearchingEntities: bool,
     isSelected: bool,
-    onCheckboxClicked: func
+    onCheckboxClicked: func,
+    hideEntityLabel: bool
   };
 
   state = {
@@ -148,13 +149,15 @@ class FaceInfoBox extends Component {
       onClick,
       isSearchingEntities,
       isSelected,
-      onRemoveFaceDetection
+      onRemoveFace,
+      hideEntityLabel
     } = this.props;
 
     return (
       <div
         className={cx(styles.faceContainer, {
-          [styles.faceContainerHover]: this.state.hovered
+          [styles.faceContainerHover]: this.state.hovered,
+          [styles.withoutEntityLabel]: hideEntityLabel
         })}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseOut}
@@ -180,7 +183,7 @@ class FaceInfoBox extends Component {
             this.state.hovered && (
               <div
                 className={styles.imageButtonOverlay}
-                onClick={onRemoveFaceDetection(face)}
+                onClick={onRemoveFace(face)}
               >
                 <div className={styles.faceActionIcon}>
                   <i className="icon-trashcan" />
@@ -200,80 +203,86 @@ class FaceInfoBox extends Component {
               face.stopTimeMs
             )}`}
           </span>
-          {this.props.enableEdit && !isSelected ? (
-            <Downshift
-              itemToString={this.itemToString}
-              onSelect={this.handleEntitySelect}
-              onInputValueChange={this.onSearchEntityInputChange}
-            >
-              {({
-                getInputProps,
-                getItemProps,
-                isOpen,
-                selectedItem,
-                highlightedIndex
-              }) => (
-                <div>
-                  <div ref={this.inputRef}>
-                    <Input
-                      {...getInputProps({
-                        placeholder: face.object.label
-                          ? face.object.label
-                          : 'Unknown',
-                        className: styles.entitySearchInput
-                      })}
-                    />
-                  </div>
-                  {isOpen ? (
-                    <Popper
-                      modifiers={{
-                        preventOverflow: {
-                          enabled: false
-                        }
-                      }}
-                      placement={this.calculatePopperPlacement()}
-                      style={{ zIndex: 1 }}
-                      target={this._inputRef}
-                    >
-                      <Paper className={styles.autoCompleteDropdown} square>
-                        <div className={styles.libraryMatchesTitle}>
-                          Library Matches
-                        </div>
-                        <div className={styles.searchResultsList}>
-                          {isSearchingEntities ? (
-                            <CircularProgress />
-                          ) : searchResults && searchResults.length ? (
-                            renderEntitySearchMenu({
-                              results: searchResults,
-                              getItemProps,
-                              highlightedIndex,
-                              searchEntityText: this.state.searchEntityText
-                            })
-                          ) : (
-                            <div className={styles.notFoundEntityMessage}>
-                              Results Not Found
+          {!hideEntityLabel && (
+            <Fragment>
+              {this.props.enableEdit && !isSelected ? (
+                <Downshift
+                  itemToString={this.itemToString}
+                  onSelect={this.handleEntitySelect}
+                  onInputValueChange={this.onSearchEntityInputChange}
+                >
+                  {({
+                    getInputProps,
+                    getItemProps,
+                    isOpen,
+                    selectedItem,
+                    highlightedIndex
+                  }) => (
+                    <div>
+                      <div ref={this.inputRef}>
+                        <Input
+                          {...getInputProps({
+                            placeholder: face.object.label
+                              ? face.object.label
+                              : 'Unknown',
+                            className: styles.entitySearchInput
+                          })}
+                        />
+                      </div>
+                      {isOpen ? (
+                        <Popper
+                          modifiers={{
+                            preventOverflow: {
+                              enabled: false
+                            }
+                          }}
+                          placement={this.calculatePopperPlacement()}
+                          style={{ zIndex: 1 }}
+                          target={this._inputRef}
+                        >
+                          <Paper className={styles.autoCompleteDropdown} square>
+                            <div className={styles.libraryMatchesTitle}>
+                              Library Matches
                             </div>
-                          )}
-                        </div>
-                        <div className={styles.addNewEntity}>
-                          <Button
-                            color="primary"
-                            className={styles.addNewEntityButton}
-                            onClick={this.handleAddNewEntity(face)}
-                          >
-                            ADD NEW
-                          </Button>
-                        </div>
-                      </Paper>
-                    </Popper>
-                  ) : null}
+                            <div className={styles.searchResultsList}>
+                              {isSearchingEntities ? (
+                                <CircularProgress />
+                              ) : searchResults && searchResults.length ? (
+                                renderEntitySearchMenu({
+                                  results: searchResults,
+                                  getItemProps,
+                                  highlightedIndex,
+                                  searchEntityText: this.state.searchEntityText
+                                })
+                              ) : (
+                                <div className={styles.notFoundEntityMessage}>
+                                  Results Not Found
+                                </div>
+                              )}
+                            </div>
+                            <div className={styles.addNewEntity}>
+                              <Button
+                                color="primary"
+                                className={styles.addNewEntityButton}
+                                onClick={this.handleAddNewEntity(face)}
+                              >
+                                ADD NEW
+                              </Button>
+                            </div>
+                          </Paper>
+                        </Popper>
+                      ) : null}
+                    </div>
+                  )}
+                </Downshift>
+              ) : face.object.label && face.object.label.length ? (
+                <div className={styles.unknownEntityText}>
+                  {face.object.label}
                 </div>
+              ) : (
+                <div className={styles.unknownEntityText}>Unknown</div>
               )}
-            </Downshift>
-          ) : face.object.label && face.object.label.length ? (
-            <div className={styles.unknownEntityText}>{face.object.label}</div>
-          ) : (
-            <div className={styles.unknownEntityText}>Unknown</div>
+            </Fragment>
           )}
         </div>
       </div>

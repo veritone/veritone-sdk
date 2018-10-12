@@ -40,16 +40,16 @@ class FaceGrid extends Component {
     onAddNewEntity: func,
     onEditFaceDetection: func,
     onFaceOccurrenceClicked: func,
-    onRemoveFaceDetection: func,
+    onRemoveFace: func,
     onSearchForEntities: func,
     isSearchingEntities: bool,
-    onFaceCheckboxClicked: func
+    onFaceCheckboxClicked: func,
+    hideEntityLabels: bool
   };
 
   // evt is mandatory here to avoid infinite call loop
   handleFaceClick = face => evt => {
     if (this.props.onFaceOccurrenceClicked) {
-      console.log('FaceGrid', face);
       this.props.onFaceOccurrenceClicked(face.startTimeMs, face.stopTimeMs);
     }
   };
@@ -59,10 +59,10 @@ class FaceGrid extends Component {
   };
 
   render() {
-    const { faces, selectedFaces } = this.props;
+    const { faces, selectedFaces, hideEntityLabels } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
-      'onRemoveFaceDetection',
+      'onRemoveFace',
       'onSearchForEntities',
       'isSearchingEntities'
     ]);
@@ -86,6 +86,7 @@ class FaceGrid extends Component {
                 addNewEntity={this.handleAddNewEntity(idx)}
                 searchResults={this.props.entitySearchResults}
                 onClick={this.handleFaceClick(face)}
+                hideEntityLabel={hideEntityLabels}
                 {...detectionBoxProps}
               />
             );

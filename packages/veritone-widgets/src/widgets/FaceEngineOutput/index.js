@@ -277,8 +277,12 @@ class FaceEngineOutputContainer extends Component {
     this.setNewEntityLibrary(e.target.value);
   };
 
-  handleRemoveFaceDetections = faceObjects => {
-    this.props.removeDetectedFaces(this.props.selectedEngineId, faceObjects);
+  handleRemoveFaceDetections = (faceObjects, objectType) => {
+    this.props.removeDetectedFaces(
+      this.props.selectedEngineId,
+      faceObjects,
+      objectType
+    );
   };
 
   setNewEntityLibrary = libraryId => {
@@ -519,9 +523,7 @@ class FaceEngineOutputContainer extends Component {
   };
 
   handleDialogConfirm = () => {
-    const {
-      closeConfirmationDialog
-    } = this.props;
+    const { closeConfirmationDialog } = this.props;
 
     this.onSaveEdits();
     closeConfirmationDialog();
@@ -599,6 +601,7 @@ class FaceEngineOutputContainer extends Component {
           onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaceDetections={this.handleRemoveFaceDetections}
+          onRemoveFaceEntities={this.handleRemoveFaceEntities}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           moreMenuItems={this.props.moreMenuItems}

@@ -216,10 +216,14 @@ function* watchMediaDetailCancelEdit() {
 }
 
 function* watchRemoveFaceDetections() {
-  yield takeEvery([faceEngineOutput.REMOVE_DETECTED_FACES], function* ({ payload: { faceObjects, selectedEngineId } }) {
+  yield takeEvery([faceEngineOutput.REMOVE_DETECTED_FACES], function*({
+    payload: { faceObjects, selectedEngineId }
+  }) {
     console.log('saga', faceObjects, selectedEngineId);
     yield call(delay, 800);
-    yield put(faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects));
+    yield put(
+      faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects)
+    );
   });
 }
 
