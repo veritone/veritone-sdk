@@ -84,7 +84,8 @@ const reducer = createReducer(defaultState, {
       return this[FETCH_ENTITIES_FAILURE](state, action);
     }
 
-    const entities = keyBy(Object.values(action.payload.data), 'id');
+    const { entities } = action.payload;
+    console.log('entities', entities);
 
     return {
       ...state,
@@ -345,7 +346,9 @@ export const fetchingEntities = meta => ({
 });
 export const fetchEntitiesSuccess = (payload, meta) => ({
   type: FETCH_ENTITIES_SUCCESS,
-  payload,
+  payload: {
+    entities: get(payload, 'entities.records', [])
+  },
   meta
 });
 export const fetchEntitiesFailure = (error, meta) => ({

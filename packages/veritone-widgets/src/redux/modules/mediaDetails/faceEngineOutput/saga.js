@@ -25,20 +25,39 @@ const {
 
 /* WATCH FUNCTIONS */
 function* fetchEntities(entityIds) {
-  const entityQueries = gqlQuery.getEntities(entityIds);
   const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
+  const {apiRoot, graphQLEndpoint} = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
+
+  const entitiesQuery = `
+    query entities($ids:[ID!]) {
+      entities(ids: $ids) {
+        records {
+          id
+          name
+          libraryId
+          library {
+            id
+            name
+          }
+          profileImageUrl
+          jsondata
+        }
+      }
+    }`;
 
   try {
     const response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
-      query: `query{${entityQueries.join(' ')}}`,
-      token
+      query: entitiesQuery,
+      token,
+      variables: {
+        ids: entityIds
+      }
     });
 
-    yield put(faceEngineOutput.fetchEntitiesSuccess(response, { entityIds }));
+    yield put(faceEngineOutput.fetchEntitiesSuccess(get(response, 'data'), { entityIds }));
   } catch (error) {
     yield put(faceEngineOutput.fetchEntitiesFailure(error, { entityIds }));
   }
@@ -219,7 +238,6 @@ function* watchRemoveFaceDetections() {
   yield takeEvery([faceEngineOutput.REMOVE_DETECTED_FACES], function*({
     payload: { faceObjects, selectedEngineId }
   }) {
-    console.log('saga', faceObjects, selectedEngineId);
     yield call(delay, 800);
     yield put(
       faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects)
