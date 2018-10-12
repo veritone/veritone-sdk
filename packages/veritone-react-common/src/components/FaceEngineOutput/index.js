@@ -182,6 +182,22 @@ class FaceEngineOutput extends Component {
           [activeTab]: [...this.props.unrecognizedFaces]
         }
       });
+    } else if(activeTab === 'faceRecognition') {
+      const recognizedFaces = reduce(
+        Object.values(this.props.recognizedFaces),
+        (acc, faces) => {
+          return acc.concat(faces);
+        },
+        []
+      );
+      console.log(recognizedFaces);
+      if (recognizedFaces.length > 0) {
+        this.setState({
+          bulkEditActionItems: {
+            [activeTab]: [...recognizedFaces]
+          }
+        });
+      }
     }
   };
 
