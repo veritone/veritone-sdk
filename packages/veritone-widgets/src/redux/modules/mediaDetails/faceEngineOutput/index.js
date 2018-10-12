@@ -18,7 +18,7 @@ export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
-export const REMOVE_DETECTED_FACES = `vtn/${namespace}/REMOVE_DETECTED_FACES`;
+export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 export const PROCESS_REMOVED_FACES = `vtn/${namespace}/PROCESS_REMOVED_FACES`;
 
@@ -46,7 +46,8 @@ import {
   reduce,
   cloneDeep,
   forEach,
-  omit
+  omit,
+  uniqBy
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -62,7 +63,7 @@ const defaultState = {
   isFetchingEntities: false,
   isFetchingLibraries: false,
   isSearchingEntities: false,
-  facesDetectedByUser: {},
+  facesEditedByUser: {},
   facesRemovedByUser: {},
   pendingFaceEdits: {},
   showConfirmationDialog: false,
@@ -85,7 +86,6 @@ const reducer = createReducer(defaultState, {
     }
 
     const { entities } = action.payload;
-    console.log('entities', entities);
 
     return {
       ...state,
@@ -185,10 +185,9 @@ const reducer = createReducer(defaultState, {
 
     return {
       ...state,
-      facesDetectedByUser: {
-        ...state.facesDetectedByUser,
-        [selectedEngineId]: [
-          ...(state.facesDetectedByUser[selectedEngineId] || []),
+      facesEditedByUser: {
+        ...state.facesEditedByUser,
+        [selectedEngineId]: uniqBy([
           {
             ...faceObj,
             object: {
@@ -196,8 +195,9 @@ const reducer = createReducer(defaultState, {
               entityId: entity.id,
               libraryId: entity.libraryId
             }
-          }
-        ]
+          },
+          ...(state.facesEditedByUser[selectedEngineId] || [])
+        ], 'guid')
       },
       entities: {
         ...state.entities,
@@ -205,7 +205,7 @@ const reducer = createReducer(defaultState, {
       }
     };
   },
-  [REMOVE_DETECTED_FACES](state, action) {
+  [REMOVE_FACES](state, action) {
     const { faceObjects, selectedEngineId } = action.payload;
 
     return {
@@ -225,8 +225,17 @@ const reducer = createReducer(defaultState, {
     };
   },
   [PROCESS_REMOVED_FACES](state, action) {
-    const { faceObjects, selectedEngineId } = action.payload;
+    const { faceObjects, selectedEngineId, objectType } = action.payload;
 
+    let removedFaces = [], editedFaces = [];
+    if (objectType === 'faceDetection') {
+      removedFaces = faceObjects.map(face => omit(face, ['editAction']));
+    } else if (objectType === 'faceRecognition') {
+      editedFaces = faceObjects.map(face => omit({
+        ...face,
+        object: omit(face.object, ['entityId', 'libraryId', 'confidence', 'label'])
+      }, ['editAction']));
+    }
     return {
       ...state,
       pendingFaceEdits: {
@@ -241,15 +250,22 @@ const reducer = createReducer(defaultState, {
         ...state.facesRemovedByUser,
         [selectedEngineId]: [
           ...(state.facesRemovedByUser[selectedEngineId] || []),
-          ...faceObjects.map(face => omit(face, ['editAction']))
+          ...removedFaces
         ]
+      },
+      facesEditedByUser: {
+        ...state.facesEditedByUser,
+        [selectedEngineId]: uniqBy([
+          ...editedFaces,
+          ...(state.facesEditedByUser[selectedEngineId] || [])
+        ], 'guid')
       }
     };
   },
   [CANCEL_FACE_EDITS](state, action) {
     return {
       ...state,
-      facesDetectedByUser: {},
+      facesEditedByUser: {},
       facesRemovedByUser: {}
     };
   },
@@ -313,8 +329,8 @@ export const getFaceDataByEngine = (state, engineId, tdoId) => {
   return engineResultsModule.engineResultsByEngineId(state, tdoId, engineId);
 };
 
-export const getUserDetectedFaces = (state, engineId) =>
-  get(local(state), ['facesDetectedByUser', engineId]);
+export const getUserEditedFaces = (state, engineId) =>
+  get(local(state), ['facesEditedByUser', engineId]);
 
 export const getUserRemovedFaces = (state, engineId) =>
   get(local(state), ['facesRemovedByUser', engineId]);
@@ -325,7 +341,7 @@ export const getPendingFaceEdits = (state, engineId) =>
 export const getSavingFaceEdits = state => get(local(state), 'savingFaceEdits');
 
 export const pendingUserEdits = (state, engineId) =>
-  !isEmpty(getUserDetectedFaces(state, engineId)) ||
+  !isEmpty(getUserEditedFaces(state, engineId)) ||
   !isEmpty(getUserRemovedFaces(state, engineId));
 
 export const getError = state => get(local(state), 'error');
@@ -442,12 +458,12 @@ export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
   }
 });
 
-export const removeDetectedFaces = (
+export const removeFaces = (
   selectedEngineId,
   faceObjects,
   objectType
 ) => ({
-  type: REMOVE_DETECTED_FACES,
+  type: REMOVE_FACES,
   payload: {
     selectedEngineId,
     faceObjects,
@@ -496,7 +512,7 @@ export const showConfirmationDialog = state =>
 export const getFaces = createSelector(
   [
     getFaceDataByEngine,
-    getUserDetectedFaces,
+    getUserEditedFaces,
     getUserRemovedFaces,
     getEntities,
     getPendingFaceEdits
@@ -554,7 +570,7 @@ export const getFaces = createSelector(
 export const getFaceEngineAssetData = (state, tdoId, engineId) => {
   const engineResults = cloneDeep(getFaceDataByEngine(state, engineId, tdoId));
   const userDetectedFaces =
-    cloneDeep(getUserDetectedFaces(state, engineId)) || [];
+    cloneDeep(getUserEditedFaces(state, engineId)) || [];
   const userRemovedFaces =
     cloneDeep(getUserRemovedFaces(state, engineId)) || [];
 

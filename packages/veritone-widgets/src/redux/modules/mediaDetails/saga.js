@@ -25,7 +25,7 @@ import { helpers, modules } from 'veritone-redux-common';
 import {
   pendingUserEdits,
   ADD_DETECTED_FACE,
-  REMOVE_DETECTED_FACES,
+  REMOVE_FACES,
   CANCEL_FACE_EDITS,
   SAVE_FACE_EDITS_SUCCESS
 } from './faceEngineOutput';
@@ -1142,7 +1142,7 @@ function* watchTranscriptStatus() {
 
 function* watchFaceEngineEntityUpdate(widgetId) {
   yield takeEvery(
-    [ADD_DETECTED_FACE, REMOVE_DETECTED_FACES, CANCEL_FACE_EDITS],
+    [ADD_DETECTED_FACE, REMOVE_FACES, CANCEL_FACE_EDITS],
     function*(action) {
       const selectedEngineId = yield select(getSelectedEngineId, widgetId);
       const hasPendingFaceEdits = yield select(

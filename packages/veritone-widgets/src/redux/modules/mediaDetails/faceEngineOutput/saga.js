@@ -235,12 +235,12 @@ function* watchMediaDetailCancelEdit() {
 }
 
 function* watchRemoveFaceDetections() {
-  yield takeEvery([faceEngineOutput.REMOVE_DETECTED_FACES], function*({
-    payload: { faceObjects, selectedEngineId }
+  yield takeEvery([faceEngineOutput.REMOVE_FACES], function*({
+    payload: { faceObjects, selectedEngineId, objectType }
   }) {
     yield call(delay, 800);
     yield put(
-      faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects)
+      faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects, objectType)
     );
   });
 }

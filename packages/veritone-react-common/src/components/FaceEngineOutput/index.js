@@ -68,7 +68,7 @@ class FaceEngineOutput extends Component {
     onAddNewEntity: func,
     className: string,
     onFaceOccurrenceClicked: func,
-    onRemoveFaceDetections: func,
+    onRemoveFaces: func,
     onEditFaceDetection: func,
     onSearchForEntities: func,
     onExpandClick: func,
@@ -225,7 +225,7 @@ class FaceEngineOutput extends Component {
 
   handleRemoveFaces = faces => () => {
     if (isArray(faces)) {
-      this.props.onRemoveFaceDetections(faces, this.state.activeTab);
+      this.props.onRemoveFaces(faces, this.state.activeTab);
       this.setState(prevState => ({
         bulkEditActionItems: {
           ...prevState.bulkEditActionItems,
@@ -237,7 +237,7 @@ class FaceEngineOutput extends Component {
         }
       }));
     } else if (isObject(faces)) {
-      this.props.onRemoveFaceDetections([faces], this.state.activeTab);
+      this.props.onRemoveFaces([faces], this.state.activeTab);
       this.setState(prevState => ({
         bulkEditActionItems: {
           ...prevState.bulkEditActionItems,

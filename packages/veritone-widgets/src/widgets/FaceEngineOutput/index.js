@@ -68,7 +68,7 @@ const saga = util.reactReduxSaga.saga;
     createEntity: faceEngineOutput.createEntity,
     addDetectedFace: faceEngineOutput.addDetectedFace,
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
-    removeDetectedFaces: faceEngineOutput.removeDetectedFaces,
+    removeFaces: faceEngineOutput.removeFaces,
     openConfirmationDialog: faceEngineOutput.openConfirmationDialog,
     closeConfirmationDialog: faceEngineOutput.closeConfirmationDialog,
     cancelFaceEdits: faceEngineOutput.cancelFaceEdits,
@@ -167,7 +167,7 @@ class FaceEngineOutputContainer extends Component {
     fetchEngineResults: func,
     fetchEntitySearchResults: func,
     addDetectedFace: func,
-    removeDetectedFaces: func,
+    removeFaces: func,
     createEntity: func,
     showConfirmationDialog: bool,
     cancelFaceEdits: func,
@@ -277,8 +277,8 @@ class FaceEngineOutputContainer extends Component {
     this.setNewEntityLibrary(e.target.value);
   };
 
-  handleRemoveFaceDetections = (faceObjects, objectType) => {
-    this.props.removeDetectedFaces(
+  handleRemoveFaces = (faceObjects, objectType) => {
+    this.props.removeFaces(
       this.props.selectedEngineId,
       faceObjects,
       objectType
@@ -600,8 +600,7 @@ class FaceEngineOutputContainer extends Component {
           onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
-          onRemoveFaceDetections={this.handleRemoveFaceDetections}
-          onRemoveFaceEntities={this.handleRemoveFaceEntities}
+          onRemoveFaces={this.handleRemoveFaces}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           moreMenuItems={this.props.moreMenuItems}

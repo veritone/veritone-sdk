@@ -9,15 +9,11 @@ import {
   oneOfType,
   bool
 } from 'prop-types';
-import { find, isObject, get, reduce, pick, findIndex } from 'lodash';
-import cx from 'classnames';
-import Icon from '@material-ui/core/Icon';
+import { find, isObject, get, reduce, pick, findIndex, isEqual } from 'lodash';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
 import FacesByLibrary from './FacesByLibrary';
-
-import styles from './styles.scss';
 
 export default class FaceEntities extends Component {
   static propTypes = {
@@ -90,8 +86,7 @@ export default class FaceEntities extends Component {
     }
     if (
       nextProps.entities.length !== this.props.entities.length ||
-      Object.keys(nextProps.faces).length !==
-        Object.keys(this.props.faces).length
+      !isEqual(nextProps.faces, this.props.faces)
     ) {
       this.setState(prevState => ({
         ...buildFaceDataPayload(nextProps.faces, nextProps.entities)
@@ -141,17 +136,6 @@ export default class FaceEntities extends Component {
     if (viewMode === 'summary') {
       return (
         <Fragment>
-          {editMode && (
-            <div className={styles.cantEditWarning}>
-              <Icon
-                className={cx('icon-info-panel', styles.cantEditInfoIcon)}
-              />
-              <span>
-                <span className={styles.boldNoteText}> Note: </span>Recognized
-                faces can not be edited currently
-              </span>
-            </div>
-          )}
           <FacesByLibrary
             faceEntityLibraries={this.state.entitiesByLibrary}
             onSelectEntity={this.handleEntitySelect}
