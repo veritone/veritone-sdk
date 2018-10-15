@@ -1,4 +1,4 @@
-import { fetchingStatus } from 'helpers/redux';
+import fetchingStatus from 'helpers/redux/fetchingStatus';
 import paginate, {
   makeSelectors,
   clearPagination
