@@ -8,7 +8,7 @@ import LibraryForm, { validate } from './index';
 
 const testValues = {
   libraryName: 'Test Library Name',
-  libraryType: 'test-library-id',
+  libraryTypeId: 'test-library-id',
   description: 'Test description'
 };
 
@@ -25,9 +25,9 @@ describe('validate', () => {
     });
   });
 
-  it('should validate that libraryType is not empty', () => {
-    expect(validate(omit(testValues, ['libraryType']))).toEqual({
-      libraryType: 'Required'
+  it('should validate that libraryTypeId is not empty', () => {
+    expect(validate(omit(testValues, ['libraryTypeId']))).toEqual({
+      libraryTypeId: 'Required'
     });
   });
 
@@ -121,21 +121,6 @@ describe('LibraryForm', () => {
   it('has disabled create button if libraryName is empty', () => {
     libraryFormComponent = mount(
       <Provider store={store}>
-        <LibraryForm libraryTypes={libraryTypes} />
-      </Provider>
-    );
-    expect(
-      libraryFormComponent
-        .find('[data-veritone-element="create-button"]')
-        .first()
-        .html()
-        .includes('disabled=""')
-    ).toEqual(true);
-  });
-
-  it('has disabled create button if libraryType is empty', () => {
-    libraryFormComponent = mount(
-      <Provider store={store}>
         <LibraryForm
           libraryTypes={libraryTypes}
           initialValues={omit(testValues, ['libraryName'])}
@@ -151,12 +136,12 @@ describe('LibraryForm', () => {
     ).toEqual(true);
   });
 
-  it('has disabled create button if libraryType is empty', () => {
+  it('has disabled create button if libraryTypeId is empty', () => {
     libraryFormComponent = mount(
       <Provider store={store}>
         <LibraryForm
           libraryTypes={libraryTypes}
-          initialValues={omit(testValues, ['libraryType'])}
+          initialValues={omit(testValues, ['libraryTypeId'])}
         />
       </Provider>
     );

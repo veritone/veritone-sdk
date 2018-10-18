@@ -92,7 +92,7 @@ storiesOf('LibraryForm', module)
   .add('Base', () => {
     const initialValues = {
       libraryName: 'testLibraryName',
-      libraryType: 'test-123',
+      libraryTypeId: 'test-123',
       description: 'Initial Description'
     };
     const libraryTypes = [

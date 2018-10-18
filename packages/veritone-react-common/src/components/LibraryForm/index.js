@@ -19,8 +19,8 @@ export const validate = values => {
   if (!values.libraryName) {
     errors.libraryName = 'Required';
   }
-  if (!values.libraryType) {
-    errors.libraryType = 'Required';
+  if (!values.libraryTypeId) {
+    errors.libraryTypeId = 'Required';
   }
   if (values.description && values.description.length > 240) {
     errors.description = 'Must be 240 characters or less';
@@ -85,7 +85,7 @@ const LibraryForm = reduxForm({
                       </InputLabel>
                       <Field
                         component={Select}
-                        name="libraryType"
+                        name="libraryTypeId"
                         data-veritone-element="library-type-select"
                         className={styles.libraryFormSelect}
                         MenuProps={{
