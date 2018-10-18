@@ -14,7 +14,7 @@ import Select from '../formComponents/Select';
 import ImageSelect from './ImageSelect';
 import styles from './styles.scss';
 
-const validate = values => {
+export const validate = values => {
   const errors = {};
   if (!values.libraryName) {
     errors.libraryName = 'Required';
@@ -54,7 +54,7 @@ const LibraryForm = reduxForm({
               <Grid item xs={12} sm={6}>
                 <Grid container direction="column" spacing={16}>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth data-veritone-element="library-name">
                       <Field
                         name="libraryName"
                         label={libraryNameLabel || 'Library Name'}
@@ -70,7 +70,7 @@ const LibraryForm = reduxForm({
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth data-veritone-element="library-type">
                       <InputLabel shrink>
                         {libraryTypesLabel || 'What will this Library contain?'}
                       </InputLabel>
@@ -88,7 +88,10 @@ const LibraryForm = reduxForm({
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
+                    <FormControl
+                      fullWidth
+                      data-veritone-element="library-description"
+                    >
                       <Field
                         name="description"
                         label={descriptionLabel || 'Description (optional)'}

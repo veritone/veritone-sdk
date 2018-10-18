@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { shape, func, string, number } from 'prop-types';
+import { shape, func, string } from 'prop-types';
 import cx from 'classnames';
 import Button from '@material-ui/core/Button/Button';
 import Icon from '@material-ui/core/Icon';
@@ -12,10 +12,6 @@ import styles from './styles.scss';
 class ImageSelect extends Component {
   static propTypes = {
     input: shape({
-      value: shape({
-        name: string,
-        size: number
-      }),
       onChange: func.isRequired
     }).isRequired,
     ButtonProps: shape({
