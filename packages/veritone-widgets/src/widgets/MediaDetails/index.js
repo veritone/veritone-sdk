@@ -849,8 +849,9 @@ class MediaDetailsWidget extends React.Component {
         {alertDialogConfig && (
           <Dialog
             open={alertDialogConfig.show}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            classes={{
+              paper: styles.resetOriginalDialogPaper
+            }}
           >
             <div
               id="alert-dialog-title"
@@ -882,7 +883,6 @@ class MediaDetailsWidget extends React.Component {
               <Button
                 classes={{ root: styles.resetOriginalDialogButton }}
                 onClick={alertDialogConfig.cancelAction}
-                color="primary"
               >
                 {alertDialogConfig.cancelButtonLabel}
               </Button>
@@ -952,77 +952,71 @@ class MediaDetailsWidget extends React.Component {
                   )}
                   <div className={styles.pageHeaderActionButtons}>
                     {get(this.props, 'tdo.id') && (
-                      <Tooltip
-                        id="tooltip-run-process"
-                        title="Run Process"
-                        PopperProps={{
-                          style: {
-                            pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-20px'
-                          }
-                        }}
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.handleRunProcess}
+                        aria-label="Run process"
                       >
-                        <IconButton
-                          className={styles.pageHeaderActionButton}
-                          onClick={this.handleRunProcess}
-                          aria-label="Run process"
+                        <Tooltip
+                          id="tooltip-run-process"
+                          title="Run Process"
+                          PopperProps={{
+                            style: {
+                              pointerEvents: 'none'
+                            }
+                          }}
                         >
                           <Icon
                             className="icon-enginerunning"
                             classes={{ root: styles.iconClass }}
                           />
-                        </IconButton>
-                      </Tooltip>
+                        </Tooltip>
+                      </IconButton>
                     )}
                     {this.isDownloadMediaEnabled() && (
-                      <Tooltip
-                        id="tooltip-download"
-                        title="Download"
-                        PopperProps={{
-                          style: {
-                            pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-20px'
-                          }
-                        }}
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.downloadFile}
+                        disabled={!this.isDownloadAllowed()}
+                        aria-label="Download"
                       >
-                        <IconButton
-                          className={styles.pageHeaderActionButton}
-                          onClick={this.downloadFile}
-                          disabled={!this.isDownloadAllowed()}
-                          aria-label="Download"
+                        <Tooltip
+                          id="tooltip-download"
+                          title="Download"
+                          PopperProps={{
+                            style: {
+                              pointerEvents: 'none'
+                            }
+                          }}
                         >
                           <Icon
                             className="icon-file_download"
                             classes={{ root: styles.iconClass }}
                           />
-                        </IconButton>
-                      </Tooltip>
+                        </Tooltip>
+                      </IconButton>
                     )}
                     {get(this.props, 'tdo.details', null) && (
-                      <Tooltip
-                        id="tooltip-show-metadata"
-                        title="Show Metadata"
-                        PopperProps={{
-                          style: {
-                            pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-20px'
-                          }
-                        }}
+                      <IconButton
+                        className={styles.pageHeaderActionButton}
+                        onClick={this.toggleInfoPanel}
+                        aria-label="Info Panel"
                       >
-                        <IconButton
-                          className={styles.pageHeaderActionButton}
-                          onClick={this.toggleInfoPanel}
-                          aria-label="Info Panel"
+                        <Tooltip
+                          id="tooltip-show-metadata"
+                          title="Show Metadata"
+                          PopperProps={{
+                            style: {
+                              pointerEvents: 'none'
+                            }
+                          }}
                         >
                           <Icon
                             className="icon-info-round"
                             classes={{ root: styles.iconClass }}
                           />
-                        </IconButton>
-                      </Tooltip>
+                        </Tooltip>
+                      </IconButton>
                     )}
                     {!!get(this.props, 'contextMenuExtensions.tdos.length') && (
                       <Manager>
@@ -1041,8 +1035,7 @@ class MediaDetailsWidget extends React.Component {
                                 leaveDelay={20}
                                 PopperProps={{
                                   style: {
-                                    pointerEvents: 'none',
-                                    top: '-3px'
+                                    pointerEvents: 'none'
                                   }
                                 }}
                               >

@@ -99,7 +99,9 @@ export default function callApiFactory(doRequest) {
       // otherwise default to session token
       const neededToken = oauthToken
         ? oauthToken
-        : options.tokenType === 'api' ? apiToken : token;
+        : options.tokenType === 'api'
+          ? apiToken
+          : token;
 
       return new Promise((resolve, reject) => {
         retryHelper.retry(

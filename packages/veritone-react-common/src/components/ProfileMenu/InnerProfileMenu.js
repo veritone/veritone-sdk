@@ -21,7 +21,8 @@ export default class InnerProfileMenu extends React.Component {
         firstName: string,
         lastName: string,
         image: string
-      })
+      }),
+      signedImageUrl: string
     })
   };
 
@@ -30,17 +31,17 @@ export default class InnerProfileMenu extends React.Component {
     if (!userExists) {
       return <div className={styles.userNullState}>No user found</div>;
     }
+
+    const userProfileImage =
+      this.props.user.signedImageUrl ||
+      get(this.props.user, 'kvp.image') ||
+      '//static.veritone.com/veritone-ui/default-avatar-2.png';
+
     return (
       <Fragment>
         <ListSubheader className={styles['header']} key="header">
           <div className={styles['user-avatar']}>
-            <Avatar
-              src={get(
-                this.props.user,
-                'kvp.image',
-                '//static.veritone.com/veritone-ui/default-avatar-2.png'
-              )}
-            />
+            <Avatar src={userProfileImage} />
           </div>
           <div className={styles['user-profile']}>
             <div className={styles['full-name']}>

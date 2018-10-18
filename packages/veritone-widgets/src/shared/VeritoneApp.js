@@ -26,13 +26,13 @@ class _VeritoneApp {
     this._theme = config && config.theme;
   }
 
-  _register(widget) {
-    this._store.dispatch(appModule.widgetAdded(widget));
+  _register(widget, saga) {
+    this._store.dispatch(appModule.widgetAdded(widget, saga));
     this._renderReactApp();
   }
 
-  _unregister(widget) {
-    this._store.dispatch(appModule.widgetRemoved(widget));
+  _unregister(widget, saga) {
+    this._store.dispatch(appModule.widgetRemoved(widget, saga));
     this._renderReactApp();
   }
 

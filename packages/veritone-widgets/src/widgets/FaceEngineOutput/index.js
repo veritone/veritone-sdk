@@ -631,7 +631,7 @@ class FaceEngineOutputContainer extends Component {
         {this.renderFaceDetectionDoneSnackbar()}
         <AlertDialog
           open={this.props.showConfirmationDialog}
-          title="Unsaved Changes"
+          titleLabel="Unsaved Changes"
           content="Would you like to save the changes?"
           cancelButtonLabel="Discard"
           approveButtonLabel="Save"

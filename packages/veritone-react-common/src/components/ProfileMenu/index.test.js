@@ -29,6 +29,20 @@ describe('InnerProfileMenu', function() {
     wrapper = mount(
       <div>
         <InnerProfileMenu
+          user={{
+            ...testUser,
+            signedImageUrl: 'https://veritone.com/signed.png'
+          }}
+          onLogout={noop}
+          onEditProfile={noop}
+        />
+      </div>
+    );
+    expect(wrapper.find('img').props().src).toMatch(/signed/);
+
+    wrapper = mount(
+      <div>
+        <InnerProfileMenu
           user={omit(testUser, 'kvp.image')}
           onLogout={noop}
           onEditProfile={noop}

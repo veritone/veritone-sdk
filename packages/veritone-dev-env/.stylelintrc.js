@@ -1,5 +1,5 @@
 module.exports = {
-  extends: 'stylelint-config-standard',
+  extends: ['stylelint-config-standard', 'stylelint-config-prettier'],
   rules: {
     'selector-pseudo-class-no-unknown': [
       true,
@@ -9,9 +9,13 @@ module.exports = {
     ],
     'no-eol-whitespace': null,
     'declaration-empty-line-before': null,
-    'at-rule-no-unknown': [true, {
-      ignoreAtRules: ["import", "include", "mixin", "if"]
-    }],
-    'declaration-colon-newline-after': null // prettier conflict
+    'at-rule-no-unknown': [
+      true,
+      {
+        ignoreAtRules: ['import', 'include', 'mixin', 'if']
+      }
+    ],
+    'declaration-colon-newline-after': null, // prettier conflict
+    'value-list-comma-newline-after': null
   }
 };

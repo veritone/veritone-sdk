@@ -37,7 +37,7 @@ storiesOf('Share Components', module)
     return (
       <AlertDialog
         open={boolean('open', true)}
-        title={boolean('has title', true) ? title : null}
+        titleLabel={boolean('has title', true) ? title : null}
         content={boolean('has content', true) ? content : null}
         fullScreen={boolean('Full Screen', false)}
         onApprove={action('approve button clicked')}

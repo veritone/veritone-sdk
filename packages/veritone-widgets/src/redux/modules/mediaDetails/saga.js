@@ -885,10 +885,18 @@ function* watchRestoreOriginalEngineResults() {
   });
 }
 
-function* watchLoadEngineResultsComplete() {
+function* watchLoadEngineResultsComplete(widgetId) {
   yield takeEvery(engineResultsModule.FETCH_ENGINE_RESULTS_SUCCESS, function*(
     action
   ) {
+    // Do not do duplicate fetch - faces widget handles this query
+    const selectedEngineCategory = yield select(
+      getSelectedEngineCategory,
+      widgetId
+    );
+    if (get(selectedEngineCategory, 'categoryType') === 'face') {
+      return;
+    }
     let entityIds = [],
       schemaIds = [];
     get(action, 'payload.engineResults.records', []).forEach(record => {
@@ -1318,7 +1326,7 @@ function* onMount(id, mediaId) {
 
 export default function* root({ id, mediaId, refreshIntervalMs }) {
   yield all([
-    fork(watchLoadEngineResultsComplete),
+    fork(watchLoadEngineResultsComplete, id),
     fork(watchLoadTdoRequest),
     fork(watchUpdateTdoRequest),
     fork(watchSetEngineId),

@@ -11,13 +11,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import styles from './styles.scss';
 
-const labelId = 'veritone-alert-dialog-title';
-const descriptionId = 'veritone-alert-dialog-description';
-
 export default class AlertDialog extends Component {
   static propTypes = {
     open: bool,
-    title: string,
+    titleLabel: string,
     content: string,
     fullScreen: bool,
     disableBackdropClick: bool,
@@ -32,7 +29,7 @@ export default class AlertDialog extends Component {
 
   static defaultProps = {
     open: false,
-    title: '',
+    titleLabel: '',
     content: '',
     fullScreen: false,
     disableBackdropClick: true,
@@ -54,7 +51,7 @@ export default class AlertDialog extends Component {
   render() {
     const {
       open,
-      title,
+      titleLabel,
       content,
       onCancel,
       cancelButtonLabel,
@@ -74,32 +71,41 @@ export default class AlertDialog extends Component {
         {...omit(forwardingProps, omittedProps)}
         open={open}
         onClose={this.handleCancel}
+        classes={{
+          paper: styles.dialogPaper
+        }}
       >
-        {title &&
-          <DialogTitle
-            id={labelId}
-            classes={{
-              root: styles.dialogTitle
-            }}
-          >
-            {title}
-          </DialogTitle>}
-        {content && (
-          <DialogContent
-            classes={{
-              root: styles.dialogContent
-            }}
-          >
-            <DialogContentText id={descriptionId}>{content}</DialogContentText>
-          </DialogContent>
-        )}
-        <DialogActions>
+        <DialogTitle
+          classes={{
+            root: styles.dialogTitle
+          }}
+        >
+          {titleLabel}
+        </DialogTitle>
+        <DialogContent
+          classes={{
+            root: styles.dialogContent
+          }}
+        >
+          <DialogContentText>{content}</DialogContentText>
+        </DialogContent>
+        <DialogActions
+          classes={{ root: styles.dialogActions }}
+        >
           {onCancel && (
-            <Button onClick={this.handleCancel} color="primary">
+            <Button
+              onClick={this.handleCancel}
+              classes={{ root: styles.actionButton }}
+            >
               {cancelButtonLabel}
             </Button>
           )}
-          <Button onClick={this.handleApprove} color="primary" autoFocus>
+          <Button
+            onClick={this.handleApprove}
+            color="primary"
+            variant="contained"
+            classes={{ root: styles.actionButton }}
+          >
             {approveButtonLabel}
           </Button>
         </DialogActions>

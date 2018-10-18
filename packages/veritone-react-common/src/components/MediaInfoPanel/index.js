@@ -215,17 +215,6 @@ class MediaInfoPanel extends Component {
                 <Manager>
                   <Target>
                     <div ref={this.setMenuTarget}>
-                      <Tooltip
-                        id="tooltip-show-edit-menu"
-                        title="Edit"
-                        PopperProps={{
-                          style: {
-                            pointerEvents: 'none',
-                            marginTop: '5px',
-                            top: '-10px'
-                          }
-                        }}
-                      >
                         <IconButton
                           className={styles.pageHeaderActionButton}
                           aria-label="Edit"
@@ -233,9 +222,18 @@ class MediaInfoPanel extends Component {
                           aria-owns={isMenuOpen ? 'menu-list-grow' : null}
                           onClick={this.toggleIsMenuOpen}
                         >
-                          <EditIcon />
+                          <Tooltip
+                            id="tooltip-show-edit-menu"
+                            title="Edit"
+                            PopperProps={{
+                              style: {
+                                pointerEvents: 'none'
+                              }
+                            }}
+                          >
+                            <EditIcon />
+                          </Tooltip>
                         </IconButton>
-                      </Tooltip>
                     </div>
                   </Target>
                   {isMenuOpen && (

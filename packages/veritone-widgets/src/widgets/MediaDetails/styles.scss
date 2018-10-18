@@ -258,7 +258,7 @@
 }
 
 .resetOriginalDialogTitle {
-  padding: 13px 24px 15px 24px;
+  padding: 13px 24px 15px;
   font-size: 20px !important;
   font-weight: 500 !important;
   line-height: 28px !important;
@@ -272,6 +272,10 @@
   }
 }
 
+.resetOriginalDialogPaper {
+  width: 600px;
+}
+
 .resetOriginalDialogDescription {
   font-size: 15px !important;
   line-height: 24px !important;
@@ -279,12 +283,11 @@
 }
 
 .resetOriginalDialogActions {
-  padding-left: 24px;
-  padding-right: 24px;
-  margin: 8px 0px !important;
+  padding: 0 20px 5px 0;
+  margin: 8px 0 !important;
 
   .resetOriginalDialogButton {
     width: 100px;
-    margin: 0px;
+    margin: 0 0 0 15px;
   }
 }
