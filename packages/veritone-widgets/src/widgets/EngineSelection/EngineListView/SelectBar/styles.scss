@@ -35,7 +35,7 @@
 }
 
 .searchBarUnderline {
-  &:before {
+  &::before {
     height: 1px !important;
   }
 }

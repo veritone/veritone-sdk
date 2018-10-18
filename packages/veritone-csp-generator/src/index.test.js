@@ -32,7 +32,7 @@ test('it should generate a basic face subquery from a face recognition engine ca
 });
 
 test('it should generate a basic object subquery from an object engine category', () => {
-  const basketball = {"exclude":false,"id":"basketball","type":"fullText"};
+  const basketball = { exclude: false, id: 'basketball', type: 'fullText' };
   expect(
     engineCategoryMapping['088a31be-9bd6-4628-a6f0-e4004e362ea0'](basketball)
   ).toEqual({
