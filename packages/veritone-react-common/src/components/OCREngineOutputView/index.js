@@ -77,7 +77,9 @@ class OCREngineOutputView extends Component {
                   }`}
                 >
                   {!isEmpty(dataObject.series) &&
-                    dataObject.series.map(ocrObject => {
+                    dataObject.series
+                      .filter(ocrObject => ocrObject.object && ocrObject.object.text)
+                      .map(ocrObject => {
                       return (
                         <div
                           key={`ocr-object-${ocrObject.startTimeMs}-${
