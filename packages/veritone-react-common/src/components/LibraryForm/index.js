@@ -51,8 +51,8 @@ const LibraryForm = reduxForm({
         <Grid container direction="column" spacing={32}>
           <Grid item xs={12}>
             <Grid container direction="row" spacing={32}>
-              <Grid item xs={12} sm={6}>
-                <Grid container direction="column" spacing={16}>
+              <Grid item xs={6}>
+                <Grid container direction="column" spacing={32}>
                   <Grid item xs={12}>
                     <FormControl fullWidth data-veritone-element="library-name">
                       <Field
@@ -61,26 +61,48 @@ const LibraryForm = reduxForm({
                         component={TextField}
                         data-veritone-element="library-name-input"
                         InputLabelProps={{
-                          shrink: true
+                          shrink: true,
+                          classes: {
+                            shrink: styles.libraryFormInputLabel
+                          }
                         }}
                         InputProps={{
-                          autoFocus: true
+                          autoFocus: true,
+                          classes: {
+                            root: styles.libraryFormInput
+                          }
                         }}
                       />
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
                     <FormControl fullWidth data-veritone-element="library-type">
-                      <InputLabel shrink>
+                      <InputLabel
+                        shrink
+                        classes={{ shrink: styles.libraryFormInputLabel }}
+                      >
                         {libraryTypesLabel || 'What will this Library contain?'}
                       </InputLabel>
                       <Field
                         component={Select}
                         name="libraryType"
                         data-veritone-element="library-type-select"
+                        className={styles.libraryFormSelect}
+                        MenuProps={{
+                          anchorOrigin: {
+                            horizontal: 'left',
+                            vertical: 'bottom'
+                          },
+                          marginThreshold: 8,
+                          getContentAnchorEl: null
+                        }}
                       >
                         {libraryTypes.map(libraryType => (
-                          <MenuItem value={libraryType.id} key={libraryType.id}>
+                          <MenuItem
+                            value={libraryType.id}
+                            key={libraryType.id}
+                            className={styles.libraryType}
+                          >
                             {libraryType.name}
                           </MenuItem>
                         ))}
@@ -101,7 +123,15 @@ const LibraryForm = reduxForm({
                         rows={4}
                         rowsmax={4}
                         InputLabelProps={{
-                          shrink: true
+                          shrink: true,
+                          classes: {
+                            shrink: styles.libraryFormInputLabel
+                          }
+                        }}
+                        InputProps={{
+                          classes: {
+                            root: styles.libraryFormInput
+                          }
                         }}
                       />
                       <FormHelperText
@@ -115,7 +145,7 @@ const LibraryForm = reduxForm({
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6}>
                 <div className={styles.addCoverImageText}>
                   Add a cover image{' '}
                   <span className={styles.optionalText}>(optional)</span>
@@ -132,7 +162,7 @@ const LibraryForm = reduxForm({
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} s={6}>
+          <Grid item xs={12}>
             <Grid container direction="row" justify="flex-end" spacing={16}>
               <Grid item>
                 <Button

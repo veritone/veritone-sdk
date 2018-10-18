@@ -41,13 +41,15 @@ class ImageSelect extends Component {
         reader.onerror = error => reject(error);
       });
     };
-    getBase64(file).then(result => {
-      this.setState({
-        imageSrc: result
+    if (file) {
+      getBase64(file).then(result => {
+        this.setState({
+          imageSrc: result
+        });
+        onChange(file);
+        return result;
       });
-      onChange(file);
-      return result;
-    });
+    }
   };
 
   handleRemoveImage = () => {
