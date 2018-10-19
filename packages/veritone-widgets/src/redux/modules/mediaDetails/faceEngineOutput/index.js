@@ -38,6 +38,8 @@ export const TOGGLE_EDIT_MODE = `vtn/${namespace}/TOGGLE_EDIT_MODE`;
 export const SELECT_FACE_OBJECTS = `vtn/${namespace}/SELECT_FACE_OBJECTS`;
 export const REMOVE_SELECTED_FACE_OBJECTS = `vtn/${namespace}/REMOVE_SELECTED_FACE_OBJECTS`;
 
+export const SET_ACTIVE_TAB = `vtn/${namespace}/SET_ACTIVE_TAB`;
+
 import {
   get,
   map,
@@ -78,7 +80,8 @@ const defaultState = {
   bulkEditActionItems: {
     faceRecognition: [],
     faceDetection: []
-  }
+  },
+  activeTab: 'faceRecognition'
 };
 
 const reducer = createReducer(defaultState, {
@@ -236,13 +239,13 @@ const reducer = createReducer(defaultState, {
     };
   },
   [PROCESS_REMOVED_FACES](state, action) {
-    const { faceObjects, selectedEngineId, objectType } = action.payload;
+    const { faceObjects, selectedEngineId } = action.payload;
 
     let removedFaces = [],
       editedFaces = [];
-    if (objectType === 'faceDetection') {
+    if (state.activeTab === 'faceDetection') {
       removedFaces = faceObjects.map(face => omit(face, ['editAction']));
-    } else if (objectType === 'faceRecognition') {
+    } else if (state.activeTab === 'faceRecognition') {
       editedFaces = faceObjects.map(face =>
         omit(
           {
@@ -287,9 +290,9 @@ const reducer = createReducer(defaultState, {
       },
       bulkEditActionItems: {
         ...state.bulkEditActionItems,
-        [objectType]: [
+        [state.activeTab]: [
           ...differenceBy(
-            state.bulkEditActionItems[objectType],
+            state.bulkEditActionItems[state.activeTab],
             faceObjects,
             'guid'
           )
@@ -375,24 +378,42 @@ const reducer = createReducer(defaultState, {
       ...state,
       bulkEditActionItems: {
         ...state.bulkEditActionItems,
-        [activeTab]: [...state.bulkEditActionItems[activeTab], ...faces]
+        [state.activeTab]: [
+          ...state.bulkEditActionItems[state.activeTab],
+          ...faces
+        ]
       }
     };
   },
   [REMOVE_SELECTED_FACE_OBJECTS](
     state,
     {
-      payload: { activeTab, faces }
+      payload: { faces }
     }
   ) {
     return {
       ...state,
       bulkEditActionItems: {
         ...state.bulkEditActionItems,
-        [activeTab]: [
-          ...differenceBy(state.bulkEditActionItems[activeTab], faces, 'guid')
+        [state.activeTab]: [
+          ...differenceBy(
+            state.bulkEditActionItems[state.activeTab],
+            faces,
+            'guid'
+          )
         ]
       }
+    };
+  },
+  [SET_ACTIVE_TAB](
+    state,
+    {
+      payload: { activeTab }
+    }
+  ) {
+    return {
+      ...state,
+      activeTab
     };
   }
 });
@@ -432,23 +453,29 @@ export const toggleEditMode = () => ({
   type: TOGGLE_EDIT_MODE
 });
 
-/* BULK FACE EDITS */
-export const getBulkEditActionItems = state =>
-  get(local(state), 'bulkEditActionItems');
-
-export const selectFaceObjects = (faces, activeTab) => ({
-  type: SELECT_FACE_OBJECTS,
+export const getActiveTab = state => get(local(state), 'activeTab');
+export const setActiveTab = activeTab => ({
+  type: SET_ACTIVE_TAB,
   payload: {
-    faces,
     activeTab
   }
 });
 
-export const removeSelectedFaceObjects = (faces, activeTab) => ({
+/* BULK FACE EDITS */
+export const getBulkEditActionItems = state =>
+  get(local(state), 'bulkEditActionItems');
+
+export const selectFaceObjects = faces => ({
+  type: SELECT_FACE_OBJECTS,
+  payload: {
+    faces
+  }
+});
+
+export const removeSelectedFaceObjects = faces => ({
   type: REMOVE_SELECTED_FACE_OBJECTS,
   payload: {
-    faces,
-    activeTab
+    faces
   }
 });
 
@@ -555,25 +582,19 @@ export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
   }
 });
 
-export const removeFaces = (selectedEngineId, faceObjects, objectType) => ({
+export const removeFaces = (selectedEngineId, faceObjects) => ({
   type: REMOVE_FACES,
   payload: {
     selectedEngineId,
-    faceObjects,
-    objectType
+    faceObjects
   }
 });
 
-export const processRemovedFaces = (
-  selectedEngineId,
-  faceObjects,
-  objectType
-) => ({
+export const processRemovedFaces = (selectedEngineId, faceObjects) => ({
   type: PROCESS_REMOVED_FACES,
   payload: {
     selectedEngineId,
-    faceObjects,
-    objectType
+    faceObjects
   }
 });
 

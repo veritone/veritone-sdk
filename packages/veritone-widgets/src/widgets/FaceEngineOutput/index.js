@@ -61,7 +61,8 @@ const saga = util.reactReduxSaga.saga;
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
     error: faceEngineOutput.getError(state),
     editModeEnabled: faceEngineOutput.getEditModeEnabled(state),
-    bulkEditActionItems: faceEngineOutput.getBulkEditActionItems(state)
+    bulkEditActionItems: faceEngineOutput.getBulkEditActionItems(state),
+    activeTab: faceEngineOutput.getActiveTab(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -80,7 +81,8 @@ const saga = util.reactReduxSaga.saga;
     closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar,
     toggleEditMode: faceEngineOutput.toggleEditMode,
     selectFaceObjects: faceEngineOutput.selectFaceObjects,
-    removeSelectedFaceObjects: faceEngineOutput.removeSelectedFaceObjects
+    removeSelectedFaceObjects: faceEngineOutput.removeSelectedFaceObjects,
+    setActiveTab: faceEngineOutput.setActiveTab
   },
   null,
   { withRef: true }
@@ -189,7 +191,8 @@ class FaceEngineOutputContainer extends Component {
     closeErrorSnackbar: func,
     toggleEditMode: func,
     selectFaceObjects: func,
-    removeSelectedFaceObjects: func
+    removeSelectedFaceObjects: func,
+    activeTab: string
   };
 
   state = {
@@ -282,12 +285,8 @@ class FaceEngineOutputContainer extends Component {
     this.setNewEntityLibrary(e.target.value);
   };
 
-  handleRemoveFaces = (faceObjects, objectType) => {
-    this.props.removeFaces(
-      this.props.selectedEngineId,
-      faceObjects,
-      objectType
-    );
+  handleRemoveFaces = faceObjects => {
+    this.props.removeFaces(this.props.selectedEngineId, faceObjects);
   };
 
   setNewEntityLibrary = libraryId => {
@@ -573,7 +572,10 @@ class FaceEngineOutputContainer extends Component {
       'onRestoreOriginalClick',
       'outputNullState',
       'disableEditButton',
-      'bulkEditActionItems'
+      'bulkEditActionItems',
+      'activeTab',
+      'setActiveTab',
+      'moreMenuItems'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -609,7 +611,6 @@ class FaceEngineOutputContainer extends Component {
           onRemoveFaces={this.handleRemoveFaces}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
-          moreMenuItems={this.props.moreMenuItems}
           onSelectFaces={this.props.selectFaceObjects}
           onUnselectFaces={this.props.removeSelectedFaceObjects}
         />

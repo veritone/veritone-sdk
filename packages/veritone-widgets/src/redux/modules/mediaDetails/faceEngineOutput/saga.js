@@ -26,7 +26,7 @@ const {
 /* WATCH FUNCTIONS */
 function* fetchEntities(entityIds) {
   const config = yield select(configModule.getConfig);
-  const {apiRoot, graphQLEndpoint} = config;
+  const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
 
@@ -57,7 +57,11 @@ function* fetchEntities(entityIds) {
       }
     });
 
-    yield put(faceEngineOutput.fetchEntitiesSuccess(get(response, 'data'), { entityIds }));
+    yield put(
+      faceEngineOutput.fetchEntitiesSuccess(get(response, 'data'), {
+        entityIds
+      })
+    );
   } catch (error) {
     yield put(faceEngineOutput.fetchEntitiesFailure(error, { entityIds }));
   }
@@ -240,7 +244,7 @@ function* watchRemoveFaceDetections() {
   }) {
     yield call(delay, 800);
     yield put(
-      faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects, objectType)
+      faceEngineOutput.processRemovedFaces(selectedEngineId, faceObjects)
     );
   });
 }

@@ -133,11 +133,12 @@ class FaceEngineOutput extends Component {
       )
     }),
     onSelectFaces: func,
-    onUnselectFaces: func
+    onUnselectFaces: func,
+    activeTab: string,
+    setActiveTab: func
   };
 
   state = {
-    activeTab: 'faceRecognition',
     viewMode: 'summary',
     selectedEntityId: null
   };
@@ -159,11 +160,8 @@ class FaceEngineOutput extends Component {
   }
 
   handleTabChange = (event, activeTab) => {
-    if (activeTab !== this.state.activeTab) {
-      this.setState({
-        activeTab,
-        selectedEntityId: null
-      });
+    if (activeTab !== this.props.activeTab) {
+      this.props.setActiveTab(activeTab);
     }
   };
 
@@ -180,25 +178,20 @@ class FaceEngineOutput extends Component {
       return;
     }
     this.props.onToggleUserEditedOutput &&
-      this.props.onToggleUserEditedOutput(
-        evt.target.value === 'userEdited'
-      );
+      this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
   };
 
   handleSelectAllToggle = evt => {
-    const { selectedEntityId, activeTab } = this.state;
-    const { bulkEditActionItems } = this.props;
+    const { selectedEntityId } = this.state;
+    const { bulkEditActionItems, activeTab } = this.props;
 
     if (activeTab === 'faceDetection' && this.props.unrecognizedFaces.length) {
       if (!evt.target.checked) {
-        this.props.onUnselectFaces(
-          this.props.unrecognizedFaces,
-          this.state.activeTab
-        );
+        this.props.onUnselectFaces(this.props.unrecognizedFaces);
         return;
       }
 
-      this.props.onSelectFaces(this.props.unrecognizedFaces, activeTab);
+      this.props.onSelectFaces(this.props.unrecognizedFaces);
     } else if (activeTab === 'faceRecognition') {
       let recognizedFaces = [];
       if (selectedEntityId) {
@@ -219,29 +212,28 @@ class FaceEngineOutput extends Component {
       }
       if (recognizedFaces.length > 0) {
         if (!evt.target.checked) {
-          this.props.onUnselectFaces(recognizedFaces, this.state.activeTab);
+          this.props.onUnselectFaces(recognizedFaces);
           return;
         }
 
-        this.props.onSelectFaces(recognizedFaces, activeTab);
+        this.props.onSelectFaces(recognizedFaces);
       }
     }
   };
 
   handleSelectFace = (face, checked) => {
     if (checked) {
-      this.props.onSelectFaces([face], this.state.activeTab);
+      this.props.onSelectFaces([face]);
     } else {
-      this.props.onUnselectFaces([face], this.state.activeTab);
+      this.props.onUnselectFaces([face]);
     }
   };
 
   handleRemoveFaces = faces => () => {
     if (isArray(faces)) {
-      console.log(faces);
-      this.props.onRemoveFaces(faces, this.state.activeTab);
+      this.props.onRemoveFaces(faces);
     } else if (isObject(faces)) {
-      this.props.onRemoveFaces([faces], this.state.activeTab);
+      this.props.onRemoveFaces([faces]);
     }
   };
 
@@ -272,10 +264,11 @@ class FaceEngineOutput extends Component {
       onEditButtonClick,
       disableEditButton,
       unrecognizedFaces,
-      bulkEditActionItems
+      bulkEditActionItems,
+      activeTab
     } = this.props;
 
-    const { viewMode, activeTab, selectedEntityId } = this.state;
+    const { viewMode, selectedEntityId } = this.state;
     const recognizedFaceCount = reduce(
       Object.values(this.props.recognizedFaces),
       (acc, faces) => {
@@ -286,7 +279,7 @@ class FaceEngineOutput extends Component {
     const selectedEngine = find(this.props.engines, { id: selectedEngineId });
     const faceTabs = (
       <Tabs
-        value={this.state.activeTab}
+        value={activeTab}
         onChange={this.handleTabChange}
         indicatorColor="primary"
       >
