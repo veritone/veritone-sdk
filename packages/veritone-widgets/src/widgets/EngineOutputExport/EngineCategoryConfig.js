@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { forEach, get, includes, find, kebabCase } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
+import { Field, reduxForm } from 'redux-form';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -15,9 +16,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import Switch from '@material-ui/core/Switch';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
+import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
 
 import EngineConfigItem from './EngineConfigItem';
 import SubtitleConfigForm from './SubtitleConfigForm';
@@ -31,10 +34,16 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
     initialSubtitleConfig: engineOutputExportModule.getSubtitleConfig(
       state,
       categoryId
+    ),
+    initialSpeakerToggle: engineOutputExportModule.getSpeakerToggle(
+      state,
+      categoryId
     )
   }),
   {
-    applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs
+    applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs,
+    applySpeakerToggle: engineOutputExportModule.applySpeakerToggle,
+    storeSpeakerToggle: engineOutputExportModule.storeSpeakerToggle
   },
   null,
   { withRef: true }
@@ -95,13 +104,23 @@ export default class EngineCategoryConfig extends Component {
     });
   };
 
+  handleSpeakerToggle = (event, values) => {
+    this.props.applySpeakerToggle(this.props.category.id, values);
+    this.props.storeSpeakerToggle(this.props.category.id, {
+      [this.props.category.id]: {
+        withSpeakerData: values
+      }
+    });
+  };
+
   render() {
     const {
       category,
       engineCategoryConfigs,
       onExpandConfigs,
       expanded,
-      initialSubtitleConfig
+      initialSubtitleConfig,
+      initialSpeakerToggle
     } = this.props;
 
     let hasSubtitleFormatsSelected = false;
@@ -117,6 +136,7 @@ export default class EngineCategoryConfig extends Component {
         });
       }
     });
+    let hasSpeakerData = true;
 
     const defaultSubtitleConfig = {
       linesPerScreen: 2,
@@ -158,11 +178,27 @@ export default class EngineCategoryConfig extends Component {
                 />
               );
             })}
+            {hasSpeakerData && (
+              <ListItem className={styles.engineListItem}>
+                <div className={styles.customizeOutputBox}>
+                  <RecordVoiceOverIcon className={styles.closedCaptionIcon} />
+                  <span className={styles.customizeSettingsText}>
+                    Include speaker separation results
+                  </span>
+                  <Switch
+                    color="primary"
+                    checked={initialSpeakerToggle.withSpeakerData}
+                    onChange={this.handleSpeakerToggle}
+                    data-veritone-element="with-speaker-data"
+                  />
+                </div>
+              </ListItem>
+            )}
             {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
                   <ClosedCaptionIcon className={styles.closedCaptionIcon} />
-                  <span className={styles.customizeSubtitleText}>
+                  <span className={styles.customizeSettingsText}>
                     Subtitle formats have been selected, adjust the format and
                     display settings here
                   </span>
