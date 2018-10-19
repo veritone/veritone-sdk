@@ -181,11 +181,12 @@ export default class EngineCategoryConfig extends Component {
             {hasSpeakerData && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
-                  <RecordVoiceOverIcon className={styles.closedCaptionIcon} />
+                  <RecordVoiceOverIcon className={styles.customizeSettingsIcon} />
                   <span className={styles.customizeSettingsText}>
                     Include speaker separation results
                   </span>
                   <Switch
+                    className={styles.customizeButton}
                     color="primary"
                     checked={initialSpeakerToggle.withSpeakerData}
                     onChange={this.handleSpeakerToggle}
@@ -197,7 +198,7 @@ export default class EngineCategoryConfig extends Component {
             {hasSubtitleFormatsSelected && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
-                  <ClosedCaptionIcon className={styles.closedCaptionIcon} />
+                  <ClosedCaptionIcon className={styles.customizeSettingsIcon} />
                   <span className={styles.customizeSettingsText}>
                     Subtitle formats have been selected, adjust the format and
                     display settings here
