@@ -62,11 +62,11 @@ export default class FaceEntities extends Component {
     onSelectEntity: func,
     onFaceOccurrenceClicked: func,
     onRemoveFaceRecognition: func,
-    onFaceCheckboxClicked: func
+    onFaceCheckboxClicked: func,
+    selectedEntityId: string
   };
 
   state = {
-    selectedEntity: null,
     faceEntities: {},
     entitiesByLibrary: {},
     framesBySeconds: {}
@@ -79,11 +79,6 @@ export default class FaceEntities extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.viewMode !== this.props.viewMode) {
-      this.setState(prevState => ({
-        selectedEntity: null
-      }));
-    }
     if (
       nextProps.entities.length !== this.props.entities.length ||
       !isEqual(nextProps.faces, this.props.faces)
@@ -96,16 +91,12 @@ export default class FaceEntities extends Component {
 
   handleEntitySelect = entityId => {
     if (this.state.faceEntities[entityId]) {
-      this.setState(prevState => ({
-        selectedEntity: entityId
-      }));
+      this.props.onSelectEntity(entityId);
     }
   };
 
   removeSelectedEntity = () => {
-    this.setState({
-      selectedEntity: null
-    });
+    this.props.onSelectEntity(null);
   };
 
   render() {
@@ -115,14 +106,19 @@ export default class FaceEntities extends Component {
       editMode,
       onRemoveFaceRecognition,
       selectedFaces,
-      onFaceCheckboxClicked
+      onFaceCheckboxClicked,
+      selectedEntityId
     } = this.props;
-    const { faceEntities, selectedEntity } = this.state;
+    const { faceEntities } = this.state;
 
-    if (selectedEntity && faceEntities[selectedEntity]) {
+    if (selectedEntityId && faceEntities[selectedEntityId]) {
       return (
         <EntityInformation
-          {...pick(faceEntities[selectedEntity], ['entity', 'count', 'faces'])}
+          {...pick(faceEntities[selectedEntityId], [
+            'entity',
+            'count',
+            'faces'
+          ])}
           selectedFaces={selectedFaces}
           editModeEnabled={editMode}
           onBackClicked={this.removeSelectedEntity}

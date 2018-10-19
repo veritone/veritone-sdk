@@ -24,7 +24,15 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce, get, findIndex, isArray, isObject } from 'lodash';
+import {
+  find,
+  reduce,
+  get,
+  findIndex,
+  isArray,
+  isObject,
+  uniqBy
+} from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -114,7 +122,8 @@ class FaceEngineOutput extends Component {
     bulkEditActionItems: {
       faceRecognition: [],
       faceDetection: []
-    }
+    },
+    selectedEntityId: null
   };
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -167,6 +176,7 @@ class FaceEngineOutput extends Component {
   };
 
   handleSelectAllToggle = activeTab => evt => {
+    const { selectedEntityId, bulkEditActionItems } = this.state;
     if (!evt.target.checked) {
       this.setState({
         bulkEditActionItems: {
@@ -182,15 +192,24 @@ class FaceEngineOutput extends Component {
           [activeTab]: [...this.props.unrecognizedFaces]
         }
       });
-    } else if(activeTab === 'faceRecognition') {
-      const recognizedFaces = reduce(
-        Object.values(this.props.recognizedFaces),
-        (acc, faces) => {
-          return acc.concat(faces);
-        },
-        []
-      );
-      console.log(recognizedFaces);
+    } else if (activeTab === 'faceRecognition') {
+      let recognizedFaces = [];
+      if (selectedEntityId) {
+        recognizedFaces = uniqBy(
+          bulkEditActionItems[activeTab].concat(
+            this.props.recognizedFaces[selectedEntityId]
+          ),
+          'guid'
+        );
+      } else {
+        recognizedFaces = reduce(
+          Object.values(this.props.recognizedFaces),
+          (acc, faces) => {
+            return acc.concat(faces);
+          },
+          []
+        );
+      }
       if (recognizedFaces.length > 0) {
         this.setState({
           bulkEditActionItems: {
@@ -267,6 +286,12 @@ class FaceEngineOutput extends Component {
     }
   };
 
+  handleSelectEntity = entityId => {
+    this.setState({
+      selectedEntityId: entityId
+    });
+  };
+
   render() {
     const {
       editMode,
@@ -289,7 +314,12 @@ class FaceEngineOutput extends Component {
       disableEditButton,
       unrecognizedFaces
     } = this.props;
-    const { viewMode, bulkEditActionItems, activeTab } = this.state;
+    const {
+      viewMode,
+      bulkEditActionItems,
+      activeTab,
+      selectedEntityId
+    } = this.state;
     const recognizedFaceCount = reduce(
       Object.values(this.props.recognizedFaces),
       (acc, faces) => {
@@ -490,6 +520,8 @@ class FaceEngineOutput extends Component {
                 faces={this.props.recognizedFaces}
                 selectedFaces={get(bulkEditActionItems, activeTab, [])}
                 entities={this.props.entities}
+                onSelectEntity={this.handleSelectEntity}
+                selectedEntityId={selectedEntityId}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
                 onRemoveFaceRecognition={this.handleRemoveFaces}
