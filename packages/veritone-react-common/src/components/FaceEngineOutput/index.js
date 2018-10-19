@@ -179,20 +179,10 @@ class FaceEngineOutput extends Component {
       this.props.onRestoreOriginalClick();
       return;
     }
-    this.setState(
-      {
-        bulkEditActionItems: {
-          faceRecognition: [],
-          faceDetection: []
-        }
-      },
-      () => {
-        this.props.onToggleUserEditedOutput &&
-          this.props.onToggleUserEditedOutput(
-            evt.target.value === 'userEdited'
-          );
-      }
-    );
+    this.props.onToggleUserEditedOutput &&
+      this.props.onToggleUserEditedOutput(
+        evt.target.value === 'userEdited'
+      );
   };
 
   handleSelectAllToggle = evt => {
