@@ -35,6 +35,9 @@ export const CLOSE_ERROR_SNACKBAR = `vtn/${namespace}/CLOSE_ERROR_SNACKBAR`;
 
 export const TOGGLE_EDIT_MODE = `vtn/${namespace}/TOGGLE_EDIT_MODE`;
 
+export const SELECT_FACE_OBJECTS = `vtn/${namespace}/SELECT_FACE_OBJECTS`;
+export const REMOVE_SELECTED_FACE_OBJECTS = `vtn/${namespace}/REMOVE_SELECTED_FACE_OBJECTS`;
+
 import {
   get,
   map,
@@ -47,7 +50,8 @@ import {
   cloneDeep,
   forEach,
   omit,
-  uniqBy
+  uniqBy,
+  differenceBy
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -70,7 +74,11 @@ const defaultState = {
   displayUserEdited: false,
   savingFaceEdits: false,
   editModeEnabled: false,
-  error: null
+  error: null,
+  bulkEditActionItems: {
+    faceRecognition: [],
+    faceDetection: []
+  }
 };
 
 const reducer = createReducer(defaultState, {
@@ -187,17 +195,20 @@ const reducer = createReducer(defaultState, {
       ...state,
       facesEditedByUser: {
         ...state.facesEditedByUser,
-        [selectedEngineId]: uniqBy([
-          {
-            ...faceObj,
-            object: {
-              ...faceObj.object,
-              entityId: entity.id,
-              libraryId: entity.libraryId
-            }
-          },
-          ...(state.facesEditedByUser[selectedEngineId] || [])
-        ], 'guid')
+        [selectedEngineId]: uniqBy(
+          [
+            {
+              ...faceObj,
+              object: {
+                ...faceObj.object,
+                entityId: entity.id,
+                libraryId: entity.libraryId
+              }
+            },
+            ...(state.facesEditedByUser[selectedEngineId] || [])
+          ],
+          'guid'
+        )
       },
       entities: {
         ...state.entities,
@@ -227,14 +238,25 @@ const reducer = createReducer(defaultState, {
   [PROCESS_REMOVED_FACES](state, action) {
     const { faceObjects, selectedEngineId, objectType } = action.payload;
 
-    let removedFaces = [], editedFaces = [];
+    let removedFaces = [],
+      editedFaces = [];
     if (objectType === 'faceDetection') {
       removedFaces = faceObjects.map(face => omit(face, ['editAction']));
     } else if (objectType === 'faceRecognition') {
-      editedFaces = faceObjects.map(face => omit({
-        ...face,
-        object: omit(face.object, ['entityId', 'libraryId', 'confidence', 'label'])
-      }, ['editAction']));
+      editedFaces = faceObjects.map(face =>
+        omit(
+          {
+            ...face,
+            object: omit(face.object, [
+              'entityId',
+              'libraryId',
+              'confidence',
+              'label'
+            ])
+          },
+          ['editAction']
+        )
+      );
     }
     return {
       ...state,
@@ -255,10 +277,23 @@ const reducer = createReducer(defaultState, {
       },
       facesEditedByUser: {
         ...state.facesEditedByUser,
-        [selectedEngineId]: uniqBy([
-          ...editedFaces,
-          ...(state.facesEditedByUser[selectedEngineId] || [])
-        ], 'guid')
+        [selectedEngineId]: uniqBy(
+          [
+            ...editedFaces,
+            ...(state.facesEditedByUser[selectedEngineId] || [])
+          ],
+          'guid'
+        )
+      },
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [objectType]: [
+          ...differenceBy(
+            state.bulkEditActionItems[objectType],
+            faceObjects,
+            'guid'
+          )
+        ]
       }
     };
   },
@@ -266,7 +301,11 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       facesEditedByUser: {},
-      facesRemovedByUser: {}
+      facesRemovedByUser: {},
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
     };
   },
   [OPEN_CONFIRMATION_DIALOG](state) {
@@ -291,7 +330,11 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       error: null,
-      savingFaceEdits: false
+      savingFaceEdits: false,
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
     };
   },
   [SAVE_FACE_EDITS_FAILURE](
@@ -315,7 +358,41 @@ const reducer = createReducer(defaultState, {
   [TOGGLE_EDIT_MODE](state) {
     return {
       ...state,
-      editModeEnabled: !state.editModeEnabled
+      editModeEnabled: !state.editModeEnabled,
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
+    };
+  },
+  [SELECT_FACE_OBJECTS](
+    state,
+    {
+      payload: { activeTab, faces }
+    }
+  ) {
+    return {
+      ...state,
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [activeTab]: [...state.bulkEditActionItems[activeTab], ...faces]
+      }
+    };
+  },
+  [REMOVE_SELECTED_FACE_OBJECTS](
+    state,
+    {
+      payload: { activeTab, faces }
+    }
+  ) {
+    return {
+      ...state,
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [activeTab]: [
+          ...differenceBy(state.bulkEditActionItems[activeTab], faces, 'guid')
+        ]
+      }
     };
   }
 });
@@ -353,6 +430,26 @@ export const closeErrorSnackbar = () => ({
 
 export const toggleEditMode = () => ({
   type: TOGGLE_EDIT_MODE
+});
+
+/* BULK FACE EDITS */
+export const getBulkEditActionItems = state =>
+  get(local(state), 'bulkEditActionItems');
+
+export const selectFaceObjects = (faces, activeTab) => ({
+  type: SELECT_FACE_OBJECTS,
+  payload: {
+    faces,
+    activeTab
+  }
+});
+
+export const removeSelectedFaceObjects = (faces, activeTab) => ({
+  type: REMOVE_SELECTED_FACE_OBJECTS,
+  payload: {
+    faces,
+    activeTab
+  }
 });
 
 /* ENTITIES */
@@ -458,11 +555,7 @@ export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
   }
 });
 
-export const removeFaces = (
-  selectedEngineId,
-  faceObjects,
-  objectType
-) => ({
+export const removeFaces = (selectedEngineId, faceObjects, objectType) => ({
   type: REMOVE_FACES,
   payload: {
     selectedEngineId,

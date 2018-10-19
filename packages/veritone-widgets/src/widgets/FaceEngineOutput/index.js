@@ -60,7 +60,8 @@ const saga = util.reactReduxSaga.saga;
     ),
     savingFaceEdits: faceEngineOutput.getSavingFaceEdits(state),
     error: faceEngineOutput.getError(state),
-    editModeEnabled: faceEngineOutput.getEditModeEnabled(state)
+    editModeEnabled: faceEngineOutput.getEditModeEnabled(state),
+    bulkEditActionItems: faceEngineOutput.getBulkEditActionItems(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -77,7 +78,9 @@ const saga = util.reactReduxSaga.saga;
     onEditButtonClick: faceEngineOutput.editFaceButtonClick,
     saveFaceEdits: faceEngineOutput.saveFaceEdits,
     closeErrorSnackbar: faceEngineOutput.closeErrorSnackbar,
-    toggleEditMode: faceEngineOutput.toggleEditMode
+    toggleEditMode: faceEngineOutput.toggleEditMode,
+    selectFaceObjects: faceEngineOutput.selectFaceObjects,
+    removeSelectedFaceObjects: faceEngineOutput.removeSelectedFaceObjects
   },
   null,
   { withRef: true }
@@ -184,7 +187,9 @@ class FaceEngineOutputContainer extends Component {
     savingFaceEdits: bool,
     error: string,
     closeErrorSnackbar: func,
-    toggleEditMode: func
+    toggleEditMode: func,
+    selectFaceObjects: func,
+    removeSelectedFaceObjects: func
   };
 
   state = {
@@ -567,7 +572,8 @@ class FaceEngineOutputContainer extends Component {
       'isSearchingEntities',
       'onRestoreOriginalClick',
       'outputNullState',
-      'disableEditButton'
+      'disableEditButton',
+      'bulkEditActionItems'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -604,6 +610,8 @@ class FaceEngineOutputContainer extends Component {
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           moreMenuItems={this.props.moreMenuItems}
+          onSelectFaces={this.props.selectFaceObjects}
+          onUnselectFaces={this.props.removeSelectedFaceObjects}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
