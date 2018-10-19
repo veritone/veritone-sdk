@@ -192,6 +192,7 @@ function BuildFormElements({
         type={type}
         title={title}
         value={value || ''}
+        multiline={(type === 'string') || undefined}
         onChange={onChange(schemaId, schemaProp, type)}
         {...rest}
       />

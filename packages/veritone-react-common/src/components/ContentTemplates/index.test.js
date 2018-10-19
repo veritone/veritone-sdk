@@ -39,6 +39,17 @@ describe('Content Templates', () => {
     expect(iconButtons).toHaveLength(2);
     expect(formCardContainer).toHaveLength(0);
   });
+  // it('should render string fields as multiline', () => {
+  //   const wrapper = mount(
+  //     <ContentTemplateForm
+  //       templateData={templateData}
+  //       initialTemplates={initialTemplates}
+  //       onSubmit={handleSubmit}
+  //     />
+  //   );
+  //
+  //   const textFields = wrapper.find()
+  // });
   it('should add template', () => {
     const wrapper = mount(
       <ContentTemplateForm
@@ -108,7 +119,7 @@ describe('Content Templates', () => {
     const formCardId = formCard.prop('id');
     const inputVal = 'Hello';
 
-    const formField = formCard.find('input[type="text"]').at(0);
+    const formField = formCard.find('textarea').at(0);
     const formFieldName = formField.prop('id').split('-')[0];
 
     formField.simulate('change', { target: { value: inputVal } });
