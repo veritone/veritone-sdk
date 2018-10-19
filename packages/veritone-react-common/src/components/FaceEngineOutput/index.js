@@ -144,13 +144,17 @@ class FaceEngineOutput extends Component {
 
   handleTabChange = (event, activeTab) => {
     if (activeTab !== this.state.activeTab) {
-      this.setState({ activeTab });
+      this.setState({
+        activeTab,
+        selectedEntityId: null
+      });
     }
   };
 
   handleViewModeChange = evt => {
     this.setState({
-      viewMode: evt.target.value
+      viewMode: evt.target.value,
+      selectedEntityId: null
     });
   };
 
