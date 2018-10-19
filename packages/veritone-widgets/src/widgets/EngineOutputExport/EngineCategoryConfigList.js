@@ -25,11 +25,13 @@ import styles from './styles.scss';
       state
     ),
     expandedCategories: engineOutputExportModule.expandedCategories(state),
-    fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state)
+    fetchingEngineRuns: engineOutputExportModule.fetchingEngineRuns(state),
+    hasSpeakerData: engineOutputExportModule.hasSpeakerData(state)
   }),
   {
     fetchEngineRuns: engineOutputExportModule.fetchEngineRuns,
-    toggleConfigExpand: engineOutputExportModule.toggleConfigExpand
+    toggleConfigExpand: engineOutputExportModule.toggleConfigExpand,
+    setHasSpeakerData: engineOutputExportModule.setHasSpeakerData
   },
   null,
   { withRef: true }
@@ -55,11 +57,24 @@ export default class EngineCategoryConfigList extends Component {
     expandedCategories: objectOf(bool),
     fetchEngineRuns: func,
     fetchingEngineRuns: bool,
-    toggleConfigExpand: func
+    toggleConfigExpand: func,
+    setHasSpeakerData: func,
+    hasSpeakerData: bool
   };
 
   componentDidMount() {
     this.props.fetchEngineRuns(this.props.tdos);
+  }
+
+  componentDidUpdate() {
+    // Detect if speaker data is available
+    const speakerSeparationCategoryId = 'a856c447-1030-4fb0-917f-08179f949c4e';
+    const outputConfigsByCategoryId = this.props.outputConfigsByCategoryId;
+    const speakerDataExists = outputConfigsByCategoryId[speakerSeparationCategoryId];
+    const hasSpeakerDataBeenSet = this.props.hasSpeakerData;
+    if (speakerDataExists && !hasSpeakerDataBeenSet) {
+      this.props.setHasSpeakerData(true);
+    }
   }
 
   render() {
@@ -70,11 +85,17 @@ export default class EngineCategoryConfigList extends Component {
       toggleConfigExpand
     } = this.props;
 
+    // Temporary bypass of speaker category since we are planning
+    // to separate it from transcription output in the future
+    const speakerSeparationCategoryId = 'a856c447-1030-4fb0-917f-08179f949c4e';
+    const modifiedOutputConfigsByCategoryId = Object.keys(outputConfigsByCategoryId)
+      .filter(categoryId => categoryId !== speakerSeparationCategoryId);
+
     return (
       <div data-veritone-component="engine-category-config-list">
         {!fetchingEngineRuns ? (
           <List disablePadding>
-            {Object.keys(outputConfigsByCategoryId).map((key, index) => (
+            {modifiedOutputConfigsByCategoryId.map((key, index) => (
               <Fragment key={`engine-output-config-${key}`}>
                 <EngineCategoryConfig
                   categoryId={key}

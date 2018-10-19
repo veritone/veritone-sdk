@@ -19,6 +19,7 @@ export const STORE_SUBTITLE_CONFIGS = `vtn/${namespace}/STORE_SUBTITLE_CONFIGS`;
 
 export const APPLY_SPEAKER_TOGGLE = `vtn/${namespace}/APPLY_SPEAKER_TOGGLE`;
 export const STORE_SPEAKER_TOGGLE = `vtn/${namespace}/STORE_SPEAKER_TOGGLE`;
+export const STORE_HAS_SPEAKER_DATA = `vtn/${namespace}/STORE_HAS_SPEAKER_DATA`;
 
 export const START_EXPORT_AND_DOWNLOAD = `vtn/${namespace}/START_EXPORT_AND_DOWNLOAD`;
 export const EXPORT_AND_DOWNLOAD_SUCCESS = `vtn/${namespace}/EXPORT_AND_DOWNLOAD_SUCCESS`;
@@ -38,6 +39,7 @@ const defaultState = {
   speakerToggleCache: {
     withSpeakerData: true // Default value across all categories
   },
+  hasSpeakerData: false,
   outputConfigurations: [],
   errorSnackBars: [],
   fetchEngineRunsFailed: false,
@@ -173,7 +175,7 @@ export default createReducer(defaultState, {
           const storedSpeakerToggle = get(state, [
             'speakerToggleCache',
             categoryId
-          ]) || get(state, ['speakerToggleCache']);
+          ]) || get(state, 'speakerToggleCache');
           return {
             ...config,
             formats: selectedFileTypes.map(type => {
@@ -247,6 +249,17 @@ export default createReducer(defaultState, {
         ...config
       }
     };
+  },
+  [STORE_HAS_SPEAKER_DATA](
+    state,
+    {
+      payload: { hasSpeakerData }
+    }
+  ) {
+    return {
+      ...state,
+      hasSpeakerData
+    }
   },
   [APPLY_SUBTITLE_CONFIGS](
     state,
@@ -351,7 +364,8 @@ function local(state) {
 export const getIncludeMedia = state => get(local(state), 'includeMedia');
 export const outputConfigsByCategoryId = state => {
   const outputConfigsByCategoryId = {};
-  forEach(get(local(state), 'outputConfigurations'), config => {
+  const outputConfigurations = get(local(state), 'outputConfigurations');
+  forEach(outputConfigurations, config => {
     if (config.categoryId) {
       if (!outputConfigsByCategoryId[config.categoryId]) {
         outputConfigsByCategoryId[config.categoryId] = [];
@@ -390,10 +404,13 @@ export const fetchEngineRunsFailed = state =>
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
 export const getSpeakerToggle = (state, categoryId) => {
+  // If the category speaker toggle is undefined, then
+  // fallback to the default across all categories
   const speakerToggleCache = get(local(state), ['speakerToggleCache', categoryId]) ||
-    get(local(state), ['speakerToggleCache']);
+    get(local(state), 'speakerToggleCache');
   return speakerToggleCache;
-}
+};
+export const hasSpeakerData = (state) => get(local(state), 'hasSpeakerData');
 export const isBulkExport = state => get(local(state), 'isBulkExport');
 export const selectedFormats = state =>
   get(local(state), 'outputConfigurations').reduce((accumulator, configObj) => {
@@ -555,7 +572,7 @@ export const applySpeakerToggle = (categoryId, values) => {
       categoryId,
       values
     }
-  }
+  };
 };
 
 export const storeSpeakerToggle = (categoryId, config) => {
@@ -565,7 +582,16 @@ export const storeSpeakerToggle = (categoryId, config) => {
       categoryId,
       config
     }
-  }
+  };
+};
+
+export const setHasSpeakerData = hasSpeakerData => {
+  return {
+    type: STORE_HAS_SPEAKER_DATA,
+    payload: {
+      hasSpeakerData
+    }
+  };
 };
 
 export const addSnackBar = snackBarConfig => {

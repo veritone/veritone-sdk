@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { forEach, get, includes, find, kebabCase } from 'lodash';
 import { string, bool, shape, func, arrayOf, number } from 'prop-types';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -38,7 +37,8 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
     initialSpeakerToggle: engineOutputExportModule.getSpeakerToggle(
       state,
       categoryId
-    )
+    ),
+    hasSpeakerData: engineOutputExportModule.hasSpeakerData(state)
   }),
   {
     applySubtitleConfigs: engineOutputExportModule.applySubtitleConfigs,
@@ -78,6 +78,11 @@ export default class EngineCategoryConfig extends Component {
       maxCharacterPerLine: number,
       newLineOnPunctuation: bool,
       linesPerScreen: number
+    }),
+    applySpeakerToggle: func,
+    storeSpeakerToggle: func,
+    initialSpeakerToggle: shape({
+      withSpeakerData: bool
     })
   };
 
@@ -122,6 +127,8 @@ export default class EngineCategoryConfig extends Component {
       initialSubtitleConfig,
       initialSpeakerToggle
     } = this.props;
+    const transcriptCategoryId = '67cd4dd0-2f75-445d-a6f0-2f297d6cd182';
+    const isTranscriptionCategory = category.id === transcriptCategoryId;
 
     let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {
@@ -136,7 +143,7 @@ export default class EngineCategoryConfig extends Component {
         });
       }
     });
-    let hasSpeakerData = true;
+    const hasSpeakerData = get(this.props, 'hasSpeakerData');
 
     const defaultSubtitleConfig = {
       linesPerScreen: 2,
@@ -178,7 +185,7 @@ export default class EngineCategoryConfig extends Component {
                 />
               );
             })}
-            {hasSpeakerData && (
+            {hasSpeakerData && isTranscriptionCategory && (
               <ListItem className={styles.engineListItem}>
                 <div className={styles.customizeOutputBox}>
                   <RecordVoiceOverIcon className={styles.customizeSettingsIcon} />
