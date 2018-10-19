@@ -104,18 +104,22 @@ describe('Content Templates', () => {
       />
     );
 
-    const formCard = wrapper.find(TemplateForms).find(FormCard);
-    const formCardId = formCard.prop('id');
+    const firstTemplate = Object.keys(templateData)[0];
+    const firstTemplateDefProp = Object.keys(templateData[firstTemplate].definition.properties)[0];
+    const templateDataField = `${firstTemplateDefProp}-${templateData[firstTemplate].id}`;
     const inputVal = 'Hello';
 
-    const formField = formCard.find('input[type="text"]').at(0);
-    const formFieldName = formField.prop('id').split('-')[0];
+    const formField = wrapper.find(`#${templateDataField}`).last();
 
     formField.simulate('change', { target: { value: inputVal } });
-    wrapper.find('button[type="submit"]').simulate('submit');
+    expect(wrapper
+      .find(`#${templateDataField}`)
+      .last()
+      .props().value).toEqual(inputVal);
 
+    wrapper.find('button[type="submit"]').simulate('submit');
     expect(testFn.mock.calls[0][0]).toHaveProperty(
-      `contentTemplates.${formCardId}.data.${formFieldName}`,
+      `contentTemplates.${templateData[firstTemplate].id}.data.${firstTemplateDefProp}`,
       inputVal
     );
   });

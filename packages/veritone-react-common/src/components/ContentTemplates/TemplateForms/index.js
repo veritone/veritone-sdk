@@ -130,7 +130,7 @@ export default class TemplateForms extends React.Component {
 
               return (
                 type && (
-                  <BuildFormElements
+                  <TemplateFormFieldRenderer
                     fieldId={`${schemaProp}-${schemaId}`}
                     schemaId={schemaId}
                     schemaProp={schemaProp}
@@ -164,7 +164,7 @@ export default class TemplateForms extends React.Component {
   }
 }
 
-function BuildFormElements({
+function TemplateFormFieldRenderer({
   fieldId,
   schemaId,
   schemaProp,
@@ -186,12 +186,22 @@ function BuildFormElements({
   let element;
 
   if (!type.includes('object') && !type.includes('array')) {
+    const fieldProps = {
+      id: fieldId,
+      type,
+      title,
+      value: value || '',
+    }
+
+    // make all text fields `textarea` inputs
+    if (type === 'string') {
+      fieldProps.multiline = true,
+      fieldProps.rowsMax = 15
+    };
+
     element = (
       <SourceTypeField
-        id={fieldId}
-        type={type}
-        title={title}
-        value={value || ''}
+        {...fieldProps}
         onChange={onChange(schemaId, schemaProp, type)}
         {...rest}
       />
@@ -205,7 +215,7 @@ function BuildFormElements({
           key={`${schemaProp}.${'container' + index}`}
           className={styles.arrayRow}
         >
-          <BuildFormElements
+          <TemplateFormFieldRenderer
             {...rest}
             fieldId={`${fieldId}.${index}`}
             schemaId={schemaId}
@@ -252,7 +262,7 @@ function BuildFormElements({
   if (type.includes('object') && objectProperties) {
     element = Object.keys(objectProperties).map(objProp => {
       return (
-        <BuildFormElements
+        <TemplateFormFieldRenderer
           {...rest}
           fieldId={`${fieldId}.${objProp}`}
           schemaId={schemaId}
