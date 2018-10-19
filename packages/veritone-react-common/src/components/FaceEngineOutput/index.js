@@ -328,10 +328,29 @@ class FaceEngineOutput extends Component {
       0
     );
     const selectedEngine = find(this.props.engines, { id: selectedEngineId });
+    const faceTabs = (
+      <Tabs
+        value={this.state.activeTab}
+        onChange={this.handleTabChange}
+        indicatorColor="primary"
+      >
+        <Tab
+          classes={{ root: styles.faceTab }}
+          label={`Face Recognition (${recognizedFaceCount || 0})`}
+          value="faceRecognition"
+        />
+        <Tab
+          classes={{ root: styles.faceTab }}
+          label={`Face Detection (${get(unrecognizedFaces, 'length', 0)})`}
+          value="faceDetection"
+        />
+      </Tabs>
+    );
     return (
       <div className={cx(styles.faceEngineOutput, className)}>
         <EngineOutputHeader
           title="Faces"
+          hideTitle={editMode}
           engines={engines}
           selectedEngineId={selectedEngineId}
           onEngineChange={onEngineChange}
@@ -345,6 +364,9 @@ class FaceEngineOutput extends Component {
           }
           disableEngineSelect={!!editMode}
         >
+          {editMode &&
+            <div className={styles.faceTabHeaderContainer}>{faceTabs}</div>
+          }
           {!editMode &&
             selectedEngine &&
             selectedEngine.hasUserEdits && (
@@ -447,22 +469,7 @@ class FaceEngineOutput extends Component {
             </Select>
           )}
         </EngineOutputHeader>
-        <Tabs
-          value={activeTab}
-          onChange={this.handleTabChange}
-          indicatorColor="primary"
-        >
-          <Tab
-            classes={{ root: styles.faceTab }}
-            label={`Face Recognition (${recognizedFaceCount || 0})`}
-            value="faceRecognition"
-          />
-          <Tab
-            classes={{ root: styles.faceTab }}
-            label={`Face Detection (${get(unrecognizedFaces, 'length', 0)})`}
-            value="faceDetection"
-          />
-        </Tabs>
+        {!editMode && faceTabs}
         {outputNullState}
         {editMode && (
           <div className={styles.multiEditActionBox}>

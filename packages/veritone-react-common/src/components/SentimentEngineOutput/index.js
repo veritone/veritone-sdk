@@ -369,8 +369,10 @@ export default class SentimentEngineOutput extends Component {
             />
           )}
         {outputNullState}
-        {!outputNullState && this.renderSummary(extractedData.average)}
-        {!outputNullState && this.renderChart(extractedData)}
+        <div className={styles.sentimentOutputContent}>
+          {!outputNullState && this.renderSummary(extractedData.average)}
+          {!outputNullState && this.renderChart(extractedData)}
+        </div>
       </div>
     );
   }
