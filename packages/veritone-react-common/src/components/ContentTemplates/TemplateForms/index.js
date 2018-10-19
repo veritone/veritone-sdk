@@ -1,6 +1,6 @@
 import React from 'react';
-import { string, shape, any, objectOf, func } from 'prop-types';
-import { isObject, compact, cloneDeep, isArray } from 'lodash';
+import { string, shape, any, objectOf, func, number } from 'prop-types';
+import { isObject, compact, cloneDeep, isArray, isNumber, toSafeInteger } from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,7 +20,8 @@ export default class TemplateForms extends React.Component {
       })
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
-    onRemoveTemplate: func.isRequired
+    onRemoveTemplate: func.isRequired,
+    textInputMaxRows: number
   };
   static defaultProps = {};
 
@@ -143,6 +144,7 @@ export default class TemplateForms extends React.Component {
                     handleArrayElementAdd={this.handleArrayElementAdd}
                     handleArrayElementRemove={this.handleArrayElementRemove}
                     key={schemaProp}
+                    textInputMaxRows={this.props.textInputMaxRows}
                   />
                 )
               );
@@ -177,6 +179,7 @@ function TemplateFormFieldRenderer({
   depth = 0,
   handleArrayElementAdd,
   handleArrayElementRemove,
+  textInputMaxRows,
   ...rest
 }) {
   if (!type) {
@@ -196,7 +199,9 @@ function TemplateFormFieldRenderer({
     // make all text fields `textarea` inputs
     if (type === 'string') {
       fieldProps.multiline = true,
-      fieldProps.rowsMax = 15
+      fieldProps.rowsMax = (textInputMaxRows && isNumber(textInputMaxRows) && textInputMaxRows >= 1)
+        ? toSafeInteger(textInputMaxRows)
+        : 15
     };
 
     element = (

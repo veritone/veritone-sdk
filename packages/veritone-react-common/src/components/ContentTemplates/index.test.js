@@ -123,4 +123,25 @@ describe('Content Templates', () => {
       inputVal
     );
   });
+  it('should only allow valid row size for text input fields', () => {
+    const maxRows = [[-1, 15], [0, 15], [5,  5], ["test", 15]];
+
+    maxRows.forEach(rowSize => {
+      const wrapper = mount(
+        <ContentTemplateForm
+          templateData={templateData}
+          initialTemplates={initialTemplates}
+          onSubmit={handleSubmit}
+          textInputMaxRows={rowSize[0]}
+        />
+      );
+
+      const firstTemplate = Object.keys(templateData)[0];
+      const firstTemplateDefProp = Object.keys(templateData[firstTemplate].definition.properties)[0];
+      const templateDataField = `${firstTemplateDefProp}-${templateData[firstTemplate].id}`;
+
+      const formField = wrapper.find(`#${templateDataField}`).first();
+      expect(formField.prop('rowsMax')).toEqual(rowSize[1])
+    });
+  });
 });

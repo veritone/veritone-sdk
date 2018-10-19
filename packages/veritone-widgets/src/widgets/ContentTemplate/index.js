@@ -1,6 +1,6 @@
 import React from 'react';
 import { get } from 'lodash';
-import { objectOf, any, func } from 'prop-types';
+import { objectOf, any, func, number } from 'prop-types';
 import { ContentTemplate } from 'veritone-react-common';
 
 import widget from '../../shared/widget';
@@ -9,7 +9,8 @@ class ContentTemplateWidget extends React.Component {
   static propTypes = {
     templateData: objectOf(any).isRequired,
     initialTemplates: objectOf(any),
-    handleUpdateContentTemplates: func.isRequired
+    handleUpdateContentTemplates: func.isRequired,
+    textInputMaxRows: number
   };
 
   static defaultProps = {
@@ -115,6 +116,7 @@ class ContentTemplateWidget extends React.Component {
         onAddTemplate={this.addToTemplateList}
         onRemoveTemplate={this.removeFromTemplateList}
         onInputChange={this.onInputChange}
+        textInputMaxRows={this.props.textInputMaxRows}
       />
     );
   }
