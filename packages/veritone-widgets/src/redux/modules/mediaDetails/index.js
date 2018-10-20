@@ -1002,7 +1002,9 @@ export const createQuickExport = (
       formats: formatTypes.map(type => {
         return {
           extension: type,
-          options: {}
+          options: {
+            withSpeakerData: true
+          }
         };
       })
     }
