@@ -1,6 +1,13 @@
 import React from 'react';
 import { string, shape, any, objectOf, func, number } from 'prop-types';
-import { isObject, compact, cloneDeep, isArray, isNumber, toSafeInteger } from 'lodash';
+import {
+  isObject,
+  compact,
+  cloneDeep,
+  isArray,
+  isNumber,
+  toSafeInteger
+} from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -193,16 +200,19 @@ function TemplateFormFieldRenderer({
       id: fieldId,
       type,
       title,
-      value: value || '',
-    }
+      value: value || ''
+    };
 
     // make all text fields `textarea` inputs
     if (type === 'string') {
-      fieldProps.multiline = true,
-      fieldProps.rowsMax = (textInputMaxRows && isNumber(textInputMaxRows) && textInputMaxRows >= 1)
-        ? toSafeInteger(textInputMaxRows)
-        : 15
-    };
+      (fieldProps.multiline = true),
+        (fieldProps.rowsMax =
+          textInputMaxRows &&
+          isNumber(textInputMaxRows) &&
+          textInputMaxRows >= 1
+            ? toSafeInteger(textInputMaxRows)
+            : 15);
+    }
 
     element = (
       <SourceTypeField
