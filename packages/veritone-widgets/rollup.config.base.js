@@ -24,6 +24,7 @@ export default {
     'redux-api-middleware-fixed',
     'redux-saga',
     'redux-saga/effects',
+    'recompose',
     ...Object.keys(lodash).map(name => `lodash/${name}`),
     ...Object.keys(lodash).map(name => `lodash/fp/${name}`),
     ...Object.keys(muiIcons).map(name => `material-ui-icons/${name}`),
