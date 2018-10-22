@@ -124,7 +124,7 @@ describe('Content Templates', () => {
     );
   });
   it('should only allow valid row size for text input fields', () => {
-    const maxRows = [[-1, 15], [0, 15], [5,  5], ["test", 15]];
+    const maxRows = [[-1, 15], [0, 15], [5,  5], [1.5, 1], [-1.5, 15] ];
 
     maxRows.forEach(rowSize => {
       const wrapper = mount(
