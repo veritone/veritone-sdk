@@ -134,7 +134,7 @@ export default class EngineConfigItem extends Component {
               horizontal: 'left'
             },
             getContentAnchorEl: null,
-            "data-veritone-element": "export-format-select-menu"
+            'data-veritone-element': 'export-format-select-menu'
           }}
           data-veritone-element="export-format-select"
         >
