@@ -17,6 +17,7 @@ _This is WIP and may change as we find a better process_
     * Increment the version field using [semver](http://semver.org/)
 3. Update each package's `CHANGELOG` file with your new version
     * To diff individual packages in git: `git diff <hash of previous release> -- packages/<packagename>`
+    * If there's a backlog of unreleased code, **Yours may not be the only changes in the release!** If that's the case, talk with each code author to get changelog entries from them.
 4. Commit the `package.json` and `CHANGELOG` changes (only!) to master.
 5. [Tag the commit as a release](https://github.com/veritone/veritone-sdk/releases). Create a release for _each_ package you updated, being sure to set the _release target_ to the correct commit, and using the naming scheme:
     * Tag version: version-packagename, ie. `1.0.0-veritone-client-js`

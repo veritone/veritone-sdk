@@ -1,6 +1,7 @@
 import React from 'react';
-import { objectOf, any, func } from 'prop-types';
+import { objectOf, any, func, number } from 'prop-types';
 import { ContentTemplateForm } from 'veritone-react-common';
+import { pick } from 'lodash';
 
 import widget from '../../shared/widget';
 
@@ -8,14 +9,19 @@ class ContentTemplateFormWidget extends React.Component {
   static propTypes = {
     templateData: objectOf(any).isRequired,
     initialTemplates: objectOf(any),
-    onSubmit: func.isRequired
+    onSubmit: func.isRequired,
+    textInputMaxRows: number
   };
 
   render() {
+    const templateFormProps = pick(this.props, [
+      'templateData',
+      'initialTemplates',
+      'textInputMaxRows'
+    ]);
     return (
       <ContentTemplateForm
-        templateData={this.props.templateData}
-        initialTemplates={this.props.initialTemplates}
+        {...templateFormProps}
         onSubmit={this.props.onSubmit}
       />
     );
