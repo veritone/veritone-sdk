@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, shape, objectOf, any, func } from 'prop-types';
+import { string, shape, objectOf, any, func, number } from 'prop-types';
 
 import TemplateForms from './TemplateForms';
 import TemplateList from './TemplateList';
@@ -27,7 +27,8 @@ export default class ContentTemplates extends React.Component {
     ),
     onAddTemplate: func.isRequired,
     onRemoveTemplate: func.isRequired,
-    onInputChange: func.isRequired
+    onInputChange: func.isRequired,
+    textInputMaxRows: number
   };
   static defaultProps = {
     selectedTemplateSchemas: {}
@@ -55,6 +56,7 @@ export default class ContentTemplates extends React.Component {
               templates={selectedTemplateSchemas}
               onRemoveTemplate={this.props.onRemoveTemplate}
               onTemplateDetailsChange={this.props.onInputChange}
+              textInputMaxRows={this.props.textInputMaxRows}
             />
           )}
         </div>

@@ -159,7 +159,8 @@ class Story extends React.Component {
       initialTemplates,
       onSubmit: function(data) {
         console.log('data:', data);
-      }
+      },
+      textInputMaxRows: 5
     });
   }
 

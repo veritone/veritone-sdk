@@ -1,6 +1,6 @@
 import React from 'react';
-import { string, shape, any, objectOf, func } from 'prop-types';
-import { isObject, compact, cloneDeep, isArray } from 'lodash';
+import { string, shape, any, objectOf, func, number } from 'prop-types';
+import { isObject, compact, cloneDeep, isArray, isNumber, toSafeInteger } from 'lodash';
 import AddIcon from '@material-ui/icons/Add';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,7 +20,8 @@ export default class TemplateForms extends React.Component {
       })
     ).isRequired,
     onTemplateDetailsChange: func.isRequired,
-    onRemoveTemplate: func.isRequired
+    onRemoveTemplate: func.isRequired,
+    textInputMaxRows: number
   };
   static defaultProps = {};
 
@@ -130,7 +131,7 @@ export default class TemplateForms extends React.Component {
 
               return (
                 type && (
-                  <BuildFormElements
+                  <TemplateFormFieldRenderer
                     fieldId={`${schemaProp}-${schemaId}`}
                     schemaId={schemaId}
                     schemaProp={schemaProp}
@@ -143,6 +144,7 @@ export default class TemplateForms extends React.Component {
                     handleArrayElementAdd={this.handleArrayElementAdd}
                     handleArrayElementRemove={this.handleArrayElementRemove}
                     key={schemaProp}
+                    textInputMaxRows={this.props.textInputMaxRows}
                   />
                 )
               );
@@ -164,7 +166,7 @@ export default class TemplateForms extends React.Component {
   }
 }
 
-function BuildFormElements({
+function TemplateFormFieldRenderer({
   fieldId,
   schemaId,
   schemaProp,
@@ -177,6 +179,7 @@ function BuildFormElements({
   depth = 0,
   handleArrayElementAdd,
   handleArrayElementRemove,
+  textInputMaxRows,
   ...rest
 }) {
   if (!type) {
@@ -186,12 +189,24 @@ function BuildFormElements({
   let element;
 
   if (!type.includes('object') && !type.includes('array')) {
+    const fieldProps = {
+      id: fieldId,
+      type,
+      title,
+      value: value || '',
+    }
+
+    // make all text fields `textarea` inputs
+    if (type === 'string') {
+      fieldProps.multiline = true,
+      fieldProps.rowsMax = (textInputMaxRows && isNumber(textInputMaxRows) && textInputMaxRows >= 1)
+        ? toSafeInteger(textInputMaxRows)
+        : 15
+    };
+
     element = (
       <SourceTypeField
-        id={fieldId}
-        type={type}
-        title={title}
-        value={value || ''}
+        {...fieldProps}
         onChange={onChange(schemaId, schemaProp, type)}
         {...rest}
       />
@@ -205,7 +220,7 @@ function BuildFormElements({
           key={`${schemaProp}.${'container' + index}`}
           className={styles.arrayRow}
         >
-          <BuildFormElements
+          <TemplateFormFieldRenderer
             {...rest}
             fieldId={`${fieldId}.${index}`}
             schemaId={schemaId}
@@ -252,7 +267,7 @@ function BuildFormElements({
   if (type.includes('object') && objectProperties) {
     element = Object.keys(objectProperties).map(objProp => {
       return (
-        <BuildFormElements
+        <TemplateFormFieldRenderer
           {...rest}
           fieldId={`${fieldId}.${objProp}`}
           schemaId={schemaId}
