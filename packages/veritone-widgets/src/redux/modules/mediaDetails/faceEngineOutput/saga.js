@@ -67,29 +67,6 @@ function* fetchEntities(entityIds) {
   }
 }
 
-function* fetchLibraries(action) {
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-  const { libraryType } = action.payload;
-
-  try {
-    const response = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: gqlQuery.getLibrariesByType,
-      variables: { type: libraryType },
-      token
-    });
-
-    yield put(
-      faceEngineOutput.fetchLibrariesSuccess(response, { libraryType })
-    );
-  } catch (error) {
-    yield put(faceEngineOutput.fetchLibrariesFailure(error, { libraryType }));
-  }
-}
-
 function* createNewEntity(action) {
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
@@ -203,13 +180,6 @@ function* watchFetchEngineResultsSuccess() {
   );
 }
 
-function* watchFetchLibraries() {
-  yield takeEvery(
-    action => action.type === faceEngineOutput.FETCH_LIBRARIES,
-    fetchLibraries
-  );
-}
-
 function* watchCreateEntity() {
   yield takeEvery(
     action => action.type === faceEngineOutput.CREATE_ENTITY,
@@ -252,7 +222,6 @@ function* watchRemoveFaceDetections() {
 export default function* root({ tdo, selectedEngineId }) {
   yield all([
     fork(watchFetchEngineResultsSuccess),
-    fork(watchFetchLibraries),
     fork(watchCreateEntity),
     fork(watchSearchEntities),
     fork(watchMediaDetailCancelEdit, tdo.id),

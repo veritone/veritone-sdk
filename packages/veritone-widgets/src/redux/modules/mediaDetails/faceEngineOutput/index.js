@@ -17,6 +17,9 @@ export const SEARCHING_ENTITIES = `vtn/${namespace}/SEARCHING_ENTITIES`;
 export const SEARCH_ENTITIES_SUCCESS = `vtn/${namespace}/SEARCH_ENTITIES_SUCCESS`;
 export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE`;
 
+export const CLOSE_ADD_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_ENTITY_DIALOG`;
+export const OPEN_ADD_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_ENTITY_DIALOG`;
+
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
@@ -46,7 +49,6 @@ import {
   find,
   keyBy,
   isEmpty,
-  pick,
   flatten,
   reduce,
   cloneDeep,
@@ -58,8 +60,9 @@ import {
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
 import { saveAsset, removeAwsSignatureParams } from '../../../../shared/asset';
+import * as gqlQuery from './queries';
 
-const { createReducer } = helpers;
+const { createReducer, callGraphQLApi } = helpers;
 const { engineResults: engineResultsModule } = modules;
 
 const defaultState = {
@@ -67,6 +70,7 @@ const defaultState = {
   libraries: {},
   entitySearchResults: [],
   isFetchingEntities: false,
+  creatingEntity: false,
   isFetchingLibraries: false,
   isSearchingEntities: false,
   facesEditedByUser: {},
@@ -81,7 +85,8 @@ const defaultState = {
     faceRecognition: [],
     faceDetection: []
   },
-  activeTab: 'faceRecognition'
+  activeTab: 'faceRecognition',
+  addNewEntityDialogOpen: false
 };
 
 const reducer = createReducer(defaultState, {
@@ -124,7 +129,7 @@ const reducer = createReducer(defaultState, {
       return this[FETCH_LIBRARIES_FAILURE](state, action);
     }
 
-    const libraries = keyBy(action.payload.data.libraries.records, 'id');
+    const libraries = keyBy(get(action, 'payload.libraries.records', []), 'id');
 
     return {
       ...state,
@@ -141,21 +146,26 @@ const reducer = createReducer(defaultState, {
       isFetchingLibraries: false
     };
   },
+  [CREATE_ENTITY](state) {
+    return {
+      ...state,
+      creatingEntity: true
+    }
+  },
   [CREATE_ENTITY_SUCCESS](state, action) {
-    if (action.payload.errors) {
+    if (action.errors) {
       return this[CREATE_ENTITY_FAILURE](state, action);
     }
 
-    const payload = {
-      ...pick(action.meta, ['faceObj', 'selectedEngineId']),
-      entity: action.payload.data.entity
-    };
-
-    return this[ADD_DETECTED_FACE](state, { payload });
+    return {
+      ...state,
+      creatingEntity:false
+    }
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
-      ...state
+      ...state,
+      creatingEntity:false
     };
   },
   [SEARCHING_ENTITIES](state, action) {
@@ -415,6 +425,18 @@ const reducer = createReducer(defaultState, {
       ...state,
       activeTab
     };
+  },
+  [OPEN_ADD_ENTITY_DIALOG](state) {
+    return {
+      ...state,
+      addNewEntityDialogOpen: true
+    }
+  },
+  [CLOSE_ADD_ENTITY_DIALOG](state) {
+    return {
+      ...state,
+      addNewEntityDialogOpen: false
+    }
   }
 });
 export default reducer;
@@ -496,16 +518,6 @@ export const fetchEntitiesFailure = (error, meta) => ({
   error,
   meta
 });
-export const createEntity = (payload, meta) => ({
-  type: CREATE_ENTITY,
-  payload,
-  meta
-});
-export const createEntitySuccess = (payload, meta) => ({
-  type: CREATE_ENTITY_SUCCESS,
-  payload,
-  meta
-});
 export const createEntityFailure = (payload, meta) => ({
   type: CREATE_ENTITY_FAILURE,
   payload,
@@ -532,6 +544,12 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
   payload,
   meta
 });
+export const openAddEntityDialog = () => ({
+  type: OPEN_ADD_ENTITY_DIALOG
+});
+export const closeAddEntityDialog = () => ({
+  type: CLOSE_ADD_ENTITY_DIALOG
+});
 
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
@@ -548,22 +566,23 @@ export function getEntitySearchResults(state) {
   return get(local(state), 'entitySearchResults', []);
 }
 
-/* LIBRARIES */
-export const fetchLibraries = payload => ({
-  type: FETCH_LIBRARIES,
-  payload
-});
-export const fetchLibrariesSuccess = (payload, meta) => ({
-  type: FETCH_LIBRARIES_SUCCESS,
-  payload,
-  meta
-});
-export const fetchLibrariesFailure = (payload, meta) => ({
-  type: FETCH_LIBRARIES_FAILURE,
-  payload,
-  meta
-});
+export const getAddNewEntityDialogOpen = state => get(local(state), 'addNewEntityDialogOpen');
 
+export const createEntity = input => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [
+      CREATE_ENTITY,
+      CREATE_ENTITY_SUCCESS,
+      CREATE_ENTITY_FAILURE
+    ],
+    query:gqlQuery.createEntity,
+    variables: { input },
+    dispatch,
+    getState
+  });
+};
+
+/* LIBRARIES */
 export function isFetchingLibraries(state) {
   return local(state).isFetchingLibraries;
 }
@@ -571,6 +590,20 @@ export function isFetchingLibraries(state) {
 export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
+
+export const fetchLibraries = ({ libraryType }) => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_LIBRARIES,
+      FETCH_LIBRARIES_SUCCESS,
+      FETCH_LIBRARIES_FAILURE
+    ],
+    query:gqlQuery.getLibrariesByType,
+    variables: { libraryType },
+    dispatch,
+    getState
+  });
+};
 
 /* USER DETECTED FACES */
 export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({

@@ -448,7 +448,10 @@ class FaceEngineOutput extends Component {
             />
             {get(bulkEditActionItems, [activeTab, 'length']) > 0 && (
               <div className={styles.bulkFaceEditActions}>
-                <IconButton classes={{ root: styles.bulkFaceEditActionButton }}>
+                <IconButton
+                  classes={{ root: styles.bulkFaceEditActionButton }}
+                  onClick={onAddNewEntity}
+                >
                   <CreateIcon />
                 </IconButton>
                 <IconButton

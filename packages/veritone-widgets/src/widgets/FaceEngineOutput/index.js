@@ -2,16 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { util, modules } from 'veritone-redux-common';
 
-import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent/SnackbarContent';
@@ -32,6 +23,7 @@ import { FaceEngineOutput, AlertDialog } from 'veritone-react-common';
 
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
+import AddNewEntityDialog from './EntityDialogs/AddNewEntity';
 
 const { engineResults: engineResultsModule } = modules;
 
@@ -82,7 +74,9 @@ const saga = util.reactReduxSaga.saga;
     toggleEditMode: faceEngineOutput.toggleEditMode,
     selectFaceObjects: faceEngineOutput.selectFaceObjects,
     removeSelectedFaceObjects: faceEngineOutput.removeSelectedFaceObjects,
-    setActiveTab: faceEngineOutput.setActiveTab
+    setActiveTab: faceEngineOutput.setActiveTab,
+    onAddNewEntity: faceEngineOutput.openAddEntityDialog,
+    closeAddEntityDialog: faceEngineOutput.closeAddEntityDialog
   },
   null,
   { withRef: true }
@@ -192,7 +186,9 @@ class FaceEngineOutputContainer extends Component {
     toggleEditMode: func,
     selectFaceObjects: func,
     removeSelectedFaceObjects: func,
-    activeTab: string
+    activeTab: string,
+    onAddNewEntity: func,
+    closeAddEntityDialog: func
   };
 
   state = {
@@ -262,11 +258,6 @@ class FaceEngineOutputContainer extends Component {
   openDialog = () => {
     this.setState({ dialogOpen: true });
   };
-  closeDialog = () => {
-    this.setState({
-      dialogOpen: false
-    });
-  };
 
   handleAddNewEntity = currentlyEditedFace => {
     if (!this.props.libraries.length) {
@@ -279,10 +270,6 @@ class FaceEngineOutputContainer extends Component {
     this.setState({
       currentlyEditedFace
     });
-  };
-
-  handleNewEntityLibraryChange = e => {
-    this.setNewEntityLibrary(e.target.value);
   };
 
   handleRemoveFaces = faceObjects => {
@@ -298,42 +285,9 @@ class FaceEngineOutputContainer extends Component {
     }));
   };
 
-  setNewEntityName = e => {
-    e.persist();
-    this.setState(prevState => ({
-      newEntity: {
-        ...prevState.newEntity,
-        name: e.target.value
-      }
-    }));
-  };
-
-  clearNewEntityForm = () => {
-    this.setState(prevState => ({
-      newEntity: {
-        libraryId: '',
-        name: ''
-      }
-    }));
-  };
-
-  saveNewEntity = () => {
-    const entity = {
-      ...this.state.newEntity,
-      profileImageUrl: this.state.currentlyEditedFace.object.uri
-    };
-
-    this.props.createEntity(
-      { entity },
-      {
-        selectedEngineId: this.props.selectedEngineId,
-        faceObj: this.state.currentlyEditedFace
-      }
-    );
-
-    this.showFaceDetectionDoneSnack(entity);
-
-    return this.closeDialog();
+  saveNewEntity = entity => {
+    console.log(entity);
+    this.props.closeAddEntityDialog();
   };
 
   showFaceDetectionDoneSnack = entity => {
@@ -367,125 +321,6 @@ class FaceEngineOutputContainer extends Component {
         Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
       ignoreUserEdited: !showUserEdited
     });
-  };
-
-  renderAddNewEntityModal = () => {
-    const { isFetchingLibraries, libraries } = this.props;
-    return (
-      <Dialog
-        open={this.state.dialogOpen}
-        onClose={this.closeDialog}
-        aria-labelledby="new-entity-title"
-        disableBackdropClick
-        onExited={this.clearNewEntityForm}
-        classes={{
-          paper: styles.editNewEntityDialogPaper
-        }}
-      >
-        <DialogTitle
-          id="new-entity-title"
-          classes={{
-            root: styles.dialogTitle
-          }}
-        >
-          <div className={styles.dialogTitleLabel}>Add New</div>
-          <IconButton
-            onClick={this.closeDialog}
-            aria-label="Close"
-            classes={{
-              root: styles.closeButton
-            }}
-          >
-            <Icon className="icon-close-exit" />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText
-            classes={{
-              root: styles.dialogHintText
-            }}
-          >
-            Identify and help train face recognition engines to find this
-            individual. You can view and add additional images in the Library
-            application.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="normal"
-            id="name"
-            label="Name"
-            fullWidth
-            required
-            classes={{
-              root: styles.inputField
-            }}
-            value={this.state.newEntity.name || ''}
-            onChange={this.setNewEntityName}
-          />
-          <TextField
-            id="select-library"
-            select
-            label="Choose Library"
-            margin="normal"
-            fullWidth
-            required
-            classes={{
-              root: styles.inputField
-            }}
-            value={
-              this.state.newEntity.libraryId ||
-              (libraries.length ? libraries[0].id : 'Loading...')
-            }
-            onChange={this.handleNewEntityLibraryChange}
-            SelectProps={{
-              MenuProps: {
-                /* temporary fix to address scrolling issue discussed here: https://github.com/mui-org/material-ui/issues/10601 */
-                PaperProps: {
-                  style: {
-                    transform: 'translate3d(0, 0, 0)',
-                    fontSize: '14px'
-                  }
-                }
-              },
-              classes: {
-                root: styles.librarySelect
-              }
-            }}
-          >
-            {isFetchingLibraries ? (
-              <MenuItem
-                value={'Loading...'}
-                classes={{
-                  root: styles.librarySelectMenuItem
-                }}
-              >
-                {'Loading...'}
-              </MenuItem>
-            ) : (
-              libraries.map(library => (
-                <MenuItem
-                  key={library.id}
-                  value={library.id}
-                  classes={{
-                    root: styles.librarySelectMenuItem
-                  }}
-                >
-                  {library.name}
-                </MenuItem>
-              ))
-            )}
-          </TextField>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.closeDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.saveNewEntity} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
   };
 
   handleEngineChange = engineId => {
@@ -575,7 +410,8 @@ class FaceEngineOutputContainer extends Component {
       'bulkEditActionItems',
       'activeTab',
       'setActiveTab',
-      'moreMenuItems'
+      'moreMenuItems',
+      'onAddNewEntity'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -605,7 +441,6 @@ class FaceEngineOutputContainer extends Component {
             this.props.showEditButton && !this.props.editModeEnabled
           }
           onEngineChange={this.handleEngineChange}
-          onAddNewEntity={this.handleAddNewEntity}
           onSearchForEntities={this.handleSearchEntities}
           onEditFaceDetection={this.handleFaceDetectionEntitySelect}
           onRemoveFaces={this.handleRemoveFaces}
@@ -636,7 +471,10 @@ class FaceEngineOutputContainer extends Component {
             </Button>
           </div>
         )}
-        {this.renderAddNewEntityModal()}
+        <AddNewEntityDialog
+          onSubmit={this.saveNewEntity}
+          onCancel={this.props.closeAddEntityDialog}
+        />
         {this.renderFaceDetectionDoneSnackbar()}
         <AlertDialog
           open={this.props.showConfirmationDialog}
