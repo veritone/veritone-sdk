@@ -147,3 +147,6 @@
   * fix profile image location
 * SDOTable
   * Make SdoTable able to render schemas with nested object properties flatten all to one level and build columns. Surface onClick and focusedRow to allow users react to on row/cell click and highlight specific rows.
+
+## 6.3.1
+* Add recompose to excluded dependencies (fixes build issues)
