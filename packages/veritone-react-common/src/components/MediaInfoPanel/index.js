@@ -289,11 +289,11 @@ class MediaInfoPanel extends Component {
                 {get(tdo, 'details.veritoneFile.filename', 'No Filename')}
               </div>
             </div>
-            {tdo.details.date && (
+            {tdo.startDateTime && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Date Created</div>
                 <div className={styles.infoFieldData}>
-                  {this.toFormattedDate(get(tdo, 'details.date'))}
+                  {this.toFormattedDate(tdo.startDateTime)}
                 </div>
               </div>
             )}
