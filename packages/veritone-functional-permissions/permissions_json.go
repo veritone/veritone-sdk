@@ -227,6 +227,14 @@ const PermissionsJSON = `
 	"asset": {
 		"all": 122,
 		"uri": 123
-	}
+  },
+  "mentions": {
+    "create": 127,
+    "read": 128,
+    "update": 129,
+    "delete": 130,
+    "share": 131,
+    "download": 132
+  }
 }
 `
