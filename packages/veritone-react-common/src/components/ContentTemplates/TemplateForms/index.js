@@ -198,7 +198,6 @@ export default class TemplateForms extends React.Component {
             }
 
             if (type === 'string' && !enums) {
-              console.log(this.props.textInputMaxRows)
               fieldProps.multiline = true,
               fieldProps.rowsMax = (
                 this.props.textInputMaxRows
