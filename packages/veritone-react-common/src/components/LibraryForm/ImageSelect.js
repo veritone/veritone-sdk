@@ -90,6 +90,7 @@ class ImageSelect extends Component {
           type="file"
           onChange={this.handleOnChange}
           ref={this.fileInputRef}
+          className={styles.hiddenFileInput}
         />
         {!imageSrc && (
           <Fragment>

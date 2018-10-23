@@ -4,6 +4,18 @@
   z-index: 1;
 }
 
+.mediaDetailsPage {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  &.fullScreen {
+    position: absolute;
+    z-index: 50;
+  }
+}
+
 .mediaDetailsPageContent {
   width: 100% !important;
   height: 100% !important;
