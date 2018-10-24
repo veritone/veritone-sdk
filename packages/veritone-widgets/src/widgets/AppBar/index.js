@@ -42,7 +42,7 @@ class AppBar extends React.Component {
   };
 
   handleSwitchApp = id => {
-    window.location = `${this.props.switchAppRoute}/${id}`;
+    window.open(`${this.props.switchAppRoute}/${id}`);
   };
 
   handleEditProfile = () => {
