@@ -25,6 +25,7 @@ const saga = util.reactReduxSaga.saga;
 @saga(transcriptSaga)
 @connect(
   (state, { tdo, selectedEngineId }) => ({
+    selectedCombineEngineId: TranscriptRedux.getSelectedCombineEngineId(state),
     hasUserEdits: TranscriptRedux.hasUserEdits(state),
     currentData: TranscriptRedux.currentData(state),
     isDisplayingUserEditedOutput: engineResultsModule.isDisplayingUserEditedOutput(
@@ -40,7 +41,7 @@ const saga = util.reactReduxSaga.saga;
     selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
       state,
       tdo.id,
-      '8ab65047-99ca-4f3e-b2d5-3d4bd7ef1eed'
+      state.veritoneTranscriptWidget.selectedCombineEngineId
     ),
     showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
       state
@@ -68,7 +69,8 @@ const saga = util.reactReduxSaga.saga;
     closeErrorSnackbar: TranscriptRedux.closeErrorSnackbar,
     toggleEditMode: TranscriptRedux.toggleEditMode,
     openConfirmationDialog: TranscriptRedux.openConfirmationDialog,
-    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog
+    closeConfirmationDialog: TranscriptRedux.closeConfirmationDialog,
+    setSelectedCombineEngineId: TranscriptRedux.setSelectedCombineEngineId
   },
   null,
   { withRef: true }
@@ -136,6 +138,7 @@ export default class TranscriptEngineOutputContainer extends Component {
       )
     }),
     combineCategory: string,
+    setSelectedCombineEngineId: func,
     title: string,
 
     className: string,
@@ -213,21 +216,33 @@ export default class TranscriptEngineOutputContainer extends Component {
   componentDidUpdate() {
     const speakerEngines = get(this.props, ['combineEngines', this.props.combineCategory]);
     if (
-      !this.state.selectedCombineEngineId &&
+      !this.props.selectedCombineEngineId &&
       speakerEngines &&
       speakerEngines.length
     ) {
       const speakerEngineId = speakerEngines[0].id;
-
+      this.props.setSelectedCombineEngineId(speakerEngineId);
+    } else if (
+      !this.props.selectedCombineEngineResults.length &&
+      this.props.selectedCombineEngineId &&
+      !this.state.isFetchingCombineData
+    ) {
       this.setState({
-        selectedCombineEngineId: speakerEngineId
+        isFetchingCombineData: true
+      }, () => {
+        this.props.fetchEngineResults({
+          engineId: this.props.selectedCombineEngineId,
+          tdo: this.props.tdo,
+          startOffsetMs: 0,
+          stopOffsetMs:
+            Date.parse(this.props.tdo.stopDateTime) - Date.parse(this.props.tdo.startDateTime)
+        });
       });
-      this.props.fetchEngineResults({
-        engineId: speakerEngineId,
-        tdo: this.props.tdo,
-        startOffsetMs: 0,
-        stopOffsetMs:
-          Date.parse(this.props.tdo.stopDateTime) - Date.parse(this.props.tdo.startDateTime)
+    } else if (
+      this.props.selectedCombineEngineResults.length &&
+      this.state.isFetchingCombineData) {
+      this.setState({
+        isFetchingCombineData: false
       });
     }
   }

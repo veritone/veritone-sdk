@@ -58,6 +58,8 @@ export const OPEN_CONFIRMATION_DIALOG =
   transcriptNamespace + '_OPEN_CONFIRMATION_DIALOG';
 export const CLOSE_CONFIRMATION_DIALOG =
   transcriptNamespace + '_CLOSE_CONFIRMATION_DIALOG';
+export const STORE_SELECTED_COMBINE_ENGINE_ID =
+  transcriptNamespace + '_SET_SELECTED_COMBINE_ENGINE_ID';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -250,6 +252,17 @@ const transcriptReducer = createReducer(initialState, {
       showConfirmationDialog: false,
       confirmationType: 'cancelEdits'
     };
+  },
+  [STORE_SELECTED_COMBINE_ENGINE_ID](
+    state,
+    {
+      payload: { selectedCombineEngineId }
+    }
+  ) {
+    return {
+      ...state,
+      selectedCombineEngineId
+    };
   }
 });
 
@@ -439,7 +452,17 @@ export const getConfirmationType = state =>
   get(local(state), 'confirmationType');
 export const combineCategory = state =>
   get(local(state), 'combineCategory');
+export const getSelectedCombineEngineId = state =>
+  get(local(state), 'selectedCombineEngineId');
 
+export const setSelectedCombineEngineId = engineId => {
+  return {
+    type: STORE_SELECTED_COMBINE_ENGINE_ID,
+    payload: {
+      selectedCombineEngineId: engineId
+    }
+  };
+};
 const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset
   const getPrimaryTranscriptAssetQuery = `query temporalDataObject($tdoId: ID!){
