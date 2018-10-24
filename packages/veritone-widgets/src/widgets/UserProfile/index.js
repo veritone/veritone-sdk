@@ -25,7 +25,6 @@ const {
 } = modules;
 import widget from '../../shared/widget';
 import FilePicker from '../FilePicker';
-import rootSaga from '../../redux/modules/userProfile/saga';
 import PersonalInfoField from './PersonalInfoField';
 import PasswordField from './PasswordField';
 import ChangeNameModal from './Modals/ChangeName';
@@ -322,5 +321,5 @@ class UserProfileDialog extends React.Component {
   }
 }
 
-const UserProfileWidget = widget(UserProfileDialog, rootSaga);
+const UserProfileWidget = widget(UserProfileDialog);
 export { UserProfileDialog as default, UserProfileWidget };
