@@ -105,20 +105,51 @@ describe('Content Templates', () => {
       />
     );
 
-    const formCard = wrapper.find(TemplateForms).find(FormCard);
+    const firstTemplate = Object.keys(templateData)[0];
+    const firstTemplateDefProp = Object.keys(
+      templateData[firstTemplate].definition.properties
+    )[0];
+
+    const fieldSelector = `[id^="${firstTemplateDefProp}"]`;
     const inputVal = 'Hello';
 
-    const formField = formCard.find('input[type="text"]').at(0);
-    const formFieldName = formField.prop('id').split('-')[0];
+    const formField = wrapper.find(fieldSelector).last();
 
     formField.simulate('change', { target: { value: inputVal } });
-    wrapper.find('button[type="submit"]').simulate('submit');
+    expect(
+      wrapper
+        .find(fieldSelector)
+        .last()
+        .props().value
+    ).toEqual(inputVal);
 
-    expect(testFn.mock.calls[0][0]).toHaveProperty('contentTemplates');
-    const requestContentTemplates = testFn.mock.calls[0][0].contentTemplates;
-    expect(requestContentTemplates[0]).toHaveProperty(
-      `data.${formFieldName}`,
+    wrapper.find('button[type="submit"]').simulate('submit');
+    expect(testFn.mock.calls[0][0]).toHaveProperty(
+      `contentTemplates.0.data.${firstTemplateDefProp}`,
       inputVal
     );
+  });
+  it('should only allow valid row size for text input fields', () => {
+    const maxRows = [[-1, 15], [0, 15], [5, 5], [1.5, 1], [-1.5, 15]];
+
+    maxRows.forEach(rowSize => {
+      const wrapper = mount(
+        <ContentTemplateForm
+          templateData={templateData}
+          initialTemplates={initialTemplates}
+          onSubmit={handleSubmit}
+          textInputMaxRows={rowSize[0]}
+        />
+      );
+
+      const firstTemplate = Object.keys(templateData)[0];
+      const firstTemplateDefProp = Object.keys(
+        templateData[firstTemplate].definition.properties
+      )[0];
+      const fieldSelector = `[id^="${firstTemplateDefProp}"]`;
+
+      const formField = wrapper.find(fieldSelector).first();
+      expect(formField.prop('rowsMax')).toEqual(rowSize[1]);
+    });
   });
 });

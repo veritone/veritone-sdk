@@ -16,7 +16,7 @@ import {
   oneOf,
   arrayOf
 } from 'prop-types';
-import { isFunction, isArray, isUndefined, isString } from 'lodash';
+import { isFunction, isArray, isUndefined, isString, omit } from 'lodash';
 import DateTimePicker from 'components/formComponents/DateTimePicker';
 
 import styles from './styles.scss';
@@ -130,7 +130,7 @@ export default class SourceTypeField extends React.Component {
 
     return (
       <FieldTypeComponent
-        {...rest}
+        {...omit(rest, ['getFieldOptions'])}
         id={id}
         onChange={this.handleChange}
         options={filteredOptions || []}
