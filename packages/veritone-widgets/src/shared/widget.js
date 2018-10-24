@@ -2,7 +2,7 @@ import { forOwn } from 'lodash';
 import { guid } from './util';
 import VeritoneApp from './VeritoneApp';
 
-export default function widget(Component) {
+export default function widget(Component, saga) {
   return class Widget {
     constructor({ elId, widgetId, ...props }) {
       this._elId = elId;
@@ -11,12 +11,12 @@ export default function widget(Component) {
       this._id = guid();
 
       if (this._app) {
-        this._app._register(this);
+        this._app._register(this, saga);
       }
     }
 
     destroy() {
-      this._app._unregister(this);
+      this._app._unregister(this, saga);
     }
 
     setRefProperties(ref) {

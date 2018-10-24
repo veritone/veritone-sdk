@@ -4,22 +4,32 @@ const { createReducer } = helpers;
 
 export const namespace = 'veritoneApp';
 
-const WIDGET_ADDED = 'vtn/veritoneApp/WIDGET_ADDED';
-const WIDGET_REMOVED = 'vtn/veritoneApp/WIDGET_REMOVED';
+export const WIDGET_ADDED = 'vtn/veritoneApp/WIDGET_ADDED';
+export const WIDGET_REMOVED = 'vtn/veritoneApp/WIDGET_REMOVED';
 
 const defaultState = {
   widgets: []
 };
 
 const reducer = createReducer(defaultState, {
-  [WIDGET_ADDED](state, { payload: widget }) {
+  [WIDGET_ADDED](
+    state,
+    {
+      payload: { widget }
+    }
+  ) {
     return {
       ...state,
       widgets: [...state.widgets, widget]
     };
   },
 
-  [WIDGET_REMOVED](state, { payload: widget }) {
+  [WIDGET_REMOVED](
+    state,
+    {
+      payload: { widget }
+    }
+  ) {
     return {
       ...state,
       widgets: without(state.widgets, widget)
@@ -33,17 +43,17 @@ function local(state) {
   return state[namespace];
 }
 
-export function widgetAdded(widget) {
+export function widgetAdded(widget, saga) {
   return {
     type: WIDGET_ADDED,
-    payload: widget
+    payload: { widget, saga }
   };
 }
 
-export function widgetRemoved(widget) {
+export function widgetRemoved(widget, saga) {
   return {
     type: WIDGET_REMOVED,
-    payload: widget
+    payload: { widget, saga }
   };
 }
 
