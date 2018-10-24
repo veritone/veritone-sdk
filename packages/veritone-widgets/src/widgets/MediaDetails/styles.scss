@@ -9,11 +9,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-
-  &.fullScreen {
-    position: absolute;
-    z-index: 50;
-  }
+  display: flex;
+  position: fixed;
+  z-index: 50;
 }
 
 .mediaDetailsPageContent {
@@ -174,24 +172,6 @@
       line-height: 18px;
       margin-left: 80px;
     }
-
-    .actionButtonsEditMode {
-      display: flex;
-      align-items: center;
-
-      button {
-        height: 36px;
-        border-radius: 3px;
-        font-size: 14px;
-        font-weight: 500;
-        text-transform: uppercase;
-      }
-
-      .actionButtonEditMode {
-        width: 88px;
-        margin-right: 20px;
-      }
-    }
   }
 
   .actionButtonsEditMode {
@@ -199,7 +179,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    margin: 15px 80px 15px 0;
+    margin: 12px 80px 12px 0;
     border-right: 1px solid $grey-4;
 
     button {
