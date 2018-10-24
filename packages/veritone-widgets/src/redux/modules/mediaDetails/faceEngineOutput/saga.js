@@ -67,37 +67,6 @@ function* fetchEntities(entityIds) {
   }
 }
 
-function* createNewEntity(action) {
-  const config = yield select(configModule.getConfig);
-  const { apiRoot, graphQLEndpoint } = config;
-  const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
-  const token = yield select(authModule.selectSessionToken);
-  const { meta } = action;
-
-  try {
-    const response = yield call(fetchGraphQLApi, {
-      endpoint: graphQLUrl,
-      query: gqlQuery.createEntity,
-      variables: { input: action.payload.entity },
-      token
-    });
-
-    if (response.errors) {
-      return faceEngineOutput.createEntityFailure(response);
-    }
-
-    yield put(
-      faceEngineOutput.addDetectedFace(
-        meta.selectedEngineId,
-        meta.faceObj,
-        response.data.entity
-      )
-    );
-  } catch (error) {
-    yield put(faceEngineOutput.createEntityFailure(error, meta));
-  }
-}
-
 function* searchForEntities(action) {
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
@@ -180,13 +149,6 @@ function* watchFetchEngineResultsSuccess() {
   );
 }
 
-function* watchCreateEntity() {
-  yield takeEvery(
-    action => action.type === faceEngineOutput.CREATE_ENTITY,
-    createNewEntity
-  );
-}
-
 function* watchSearchEntities() {
   yield takeLatest(
     action => action.type === faceEngineOutput.SEARCH_ENTITIES,
@@ -210,7 +172,7 @@ function* watchMediaDetailCancelEdit() {
 
 function* watchRemoveFaceDetections() {
   yield takeEvery([faceEngineOutput.REMOVE_FACES], function*({
-    payload: { faceObjects, selectedEngineId, objectType }
+    payload: { faceObjects, selectedEngineId }
   }) {
     yield call(delay, 800);
     yield put(
@@ -219,13 +181,24 @@ function* watchRemoveFaceDetections() {
   });
 }
 
+function* watchAddFaces() {
+  yield takeEvery([faceEngineOutput.ADD_DETECTED_FACE], function*({
+    payload: { faceObjects, selectedEngineId, entity }
+  }) {
+    yield call(delay, 800);
+    yield put(
+      faceEngineOutput.processAddedFaces(selectedEngineId, faceObjects, entity)
+    );
+  });
+}
+
 export default function* root({ tdo, selectedEngineId }) {
   yield all([
     fork(watchFetchEngineResultsSuccess),
-    fork(watchCreateEntity),
     fork(watchSearchEntities),
     fork(watchMediaDetailCancelEdit, tdo.id),
     fork(watchRemoveFaceDetections),
+    fork(watchAddFaces),
     fork(onMount, tdo, selectedEngineId)
   ]);
 }

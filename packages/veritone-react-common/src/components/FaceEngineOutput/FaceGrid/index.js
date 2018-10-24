@@ -54,8 +54,8 @@ class FaceGrid extends Component {
     }
   };
 
-  handleAddNewEntity = faceIdx => (face, entity) => {
-    this.props.onAddNewEntity(face);
+  handleAddNewEntity = faceIdx => face => {
+    this.props.onAddNewEntity([face]);
   };
 
   render() {

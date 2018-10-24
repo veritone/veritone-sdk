@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {arrayOf, bool, func, shape, string} from 'prop-types';
+import {arrayOf, bool, func, number, shape, string} from 'prop-types';
 import { get } from 'lodash';
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import IconButton from "@material-ui/core/IconButton/IconButton";
@@ -10,7 +10,7 @@ import Dialog from "@material-ui/core/Dialog/Dialog";
 import AddNewEntityForm from './AddNewEntityForm';
 import connect from "react-redux/es/connect/connect";
 import * as faceEngineOutput from "../../../redux/modules/mediaDetails/faceEngineOutput";
-// import { LibraryForm } from 'veritone-react-common';
+import { removeAwsSignatureParams } from '../../../shared/asset';
 
 import styles from "./styles.scss";
 
@@ -18,7 +18,8 @@ import styles from "./styles.scss";
   (state) => ({
     open: faceEngineOutput.getAddNewEntityDialogOpen(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
-    libraries: faceEngineOutput.getLibraries(state)
+    libraries: faceEngineOutput.getLibraries(state),
+    currentlyEditedFaces: faceEngineOutput.getCurrentlyEditedFaces(state)
   }),
   {
     fetchLibraries: faceEngineOutput.fetchLibraries,
@@ -40,7 +41,17 @@ export default class AddNewEntityDialog extends Component {
     isFetchingLibraries: bool,
     createEntity: func,
     onSubmit: func,
-    onCancel: func
+    onCancel: func,
+    currentlyEditedFaces: arrayOf(shape({
+      startTimeMs: number,
+      stopTimeMs: number,
+      object: shape({
+        label: string,
+        uri: string,
+        entityId: string,
+        libraryId: string
+      })
+    }))
   };
 
   state = {
@@ -56,10 +67,14 @@ export default class AddNewEntityDialog extends Component {
   };
 
   handleSubmit = formData => {
+    const { currentlyEditedFaces } = this.props;
     this.props.createEntity({
-      ...formData
+      ...formData,
+      profileImageUrl: removeAwsSignatureParams(get(currentlyEditedFaces, '[0].object.uri'))
     }).then(res => {
-      this.props.onSubmit(res.entity);
+      if (currentlyEditedFaces) {
+        this.props.onSubmit(currentlyEditedFaces, res.entity);
+      }
       return res;
     })
   };

@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent/SnackbarContent';
-import { pick, head, get } from 'lodash';
+import {pick, get, isArray, isObject} from 'lodash';
 import {
   shape,
   number,
@@ -192,12 +192,6 @@ class FaceEngineOutputContainer extends Component {
   };
 
   state = {
-    currentlyEditedFace: null, // selected unrecognized face object from which to create a new 'entity'
-    dialogOpen: false,
-    newEntity: {
-      libraryId: '',
-      name: ''
-    },
     showFaceDetectionDoneSnack: false,
     faceDetectionDoneEntity: null
   };
@@ -206,11 +200,6 @@ class FaceEngineOutputContainer extends Component {
     const {
       faces: { unrecognizedFaces }
     } = nextProps;
-
-    // set the first library as default (for `New Entity` form)
-    if (!this.props.libraries.length && nextProps.libraries.length) {
-      this.setNewEntityLibrary(head(nextProps.libraries).id);
-    }
 
     // disable editing if they are no unrecognized faces
     if (
@@ -245,48 +234,26 @@ class FaceEngineOutputContainer extends Component {
     this.props.fetchEntitySearchResults('people', searchText);
   };
 
-  handleFaceDetectionEntitySelect = (currentlyEditedFace, selectedEntity) => {
-    this.props.addDetectedFace(
-      this.props.selectedEngineId,
-      currentlyEditedFace,
-      selectedEntity
-    );
-
-    this.showFaceDetectionDoneSnack(selectedEntity);
-  };
-
-  openDialog = () => {
-    this.setState({ dialogOpen: true });
-  };
-
-  handleAddNewEntity = currentlyEditedFace => {
-    if (!this.props.libraries.length) {
-      this.props.fetchLibraries({
-        libraryType: 'people'
-      });
-    }
-
-    this.openDialog();
-    this.setState({
-      currentlyEditedFace
-    });
-  };
-
   handleRemoveFaces = faceObjects => {
     this.props.removeFaces(this.props.selectedEngineId, faceObjects);
   };
 
-  setNewEntityLibrary = libraryId => {
-    this.setState(prevState => ({
-      newEntity: {
-        ...prevState.newEntity,
-        libraryId
-      }
-    }));
-  };
+  handleFaceUpdates = (updatedFaces, entity) => {
+    if (isArray(updatedFaces)) {
+      this.props.addDetectedFace(
+        this.props.selectedEngineId,
+        updatedFaces,
+        entity
+      );
+    } else if (isObject(updatedFaces)) {
+      this.props.addDetectedFace(
+        this.props.selectedEngineId,
+        [updatedFaces],
+        entity
+      );
+    }
 
-  saveNewEntity = entity => {
-    console.log(entity);
+    this.showFaceDetectionDoneSnack(entity);
     this.props.closeAddEntityDialog();
   };
 
@@ -442,7 +409,7 @@ class FaceEngineOutputContainer extends Component {
           }
           onEngineChange={this.handleEngineChange}
           onSearchForEntities={this.handleSearchEntities}
-          onEditFaceDetection={this.handleFaceDetectionEntitySelect}
+          onEditFaceDetection={this.handleFaceUpdates}
           onRemoveFaces={this.handleRemoveFaces}
           showingUserEditedOutput={this.props.isDisplayingUserEditedOutput}
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
@@ -472,7 +439,7 @@ class FaceEngineOutputContainer extends Component {
           </div>
         )}
         <AddNewEntityDialog
-          onSubmit={this.saveNewEntity}
+          onSubmit={this.handleFaceUpdates}
           onCancel={this.props.closeAddEntityDialog}
         />
         {this.renderFaceDetectionDoneSnackbar()}

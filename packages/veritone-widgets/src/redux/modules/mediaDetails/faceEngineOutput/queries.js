@@ -34,6 +34,7 @@ export const getLibrariesByType = `
         name
         libraryType {
           id
+          label
           entityTypeName
         }
       }

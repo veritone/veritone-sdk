@@ -24,6 +24,7 @@ export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
 export const CANCEL_FACE_EDITS = `vtn/${namespace}/CANCEL_FACE_EDITS`;
 export const PROCESS_REMOVED_FACES = `vtn/${namespace}/PROCESS_REMOVED_FACES`;
+export const PROCESS_ADDED_FACES = `vtn/${namespace}/PROCESS_ADDED_FACES`;
 
 export const OPEN_CONFIRMATION_DIALOG = `vtn/${namespace}/OPEN_CONFIRMATION_DIALOG`;
 export const CLOSE_CONFIRMATION_DIALOG = `vtn/${namespace}/CLOSE_CONFIMATION_DIALOG`;
@@ -86,7 +87,8 @@ const defaultState = {
     faceDetection: []
   },
   activeTab: 'faceRecognition',
-  addNewEntityDialogOpen: false
+  addNewEntityDialogOpen: false,
+  currentlyEditedFaces: [] // selected unrecognized face objects from which to create a new 'entity'
 };
 
 const reducer = createReducer(defaultState, {
@@ -105,10 +107,10 @@ const reducer = createReducer(defaultState, {
 
     return {
       ...state,
-      entities: {
+      entities: [
         ...state.entities,
         ...entities
-      },
+      ],
       isFetchingEntities: false
     };
   },
@@ -202,32 +204,72 @@ const reducer = createReducer(defaultState, {
     };
   },
   [ADD_DETECTED_FACE](state, action) {
-    const { faceObj, selectedEngineId, entity } = action.payload;
+    const { faceObjects, selectedEngineId, entity } = action.payload;
 
     return {
       ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: [
+          ...(state.pendingFaceEdits[selectedEngineId] || []),
+          ...faceObjects.map(face => {
+            return {
+              ...face,
+              editAction: 'Added'
+            };
+          })
+        ]
+      },
+      entities: uniqBy([
+        ...state.entities,
+        entity
+      ] , 'id')
+    };
+  },
+  [PROCESS_ADDED_FACES](state, action) {
+    const { faceObjects, selectedEngineId, entity } = action.payload;
+
+    return {
+      ...state,
+      pendingFaceEdits: {
+        ...state.pendingFaceEdits,
+        [selectedEngineId]: state.pendingFaceEdits[selectedEngineId].filter(
+          faceEdit => {
+            return !find(faceObjects, { guid: faceEdit.guid });
+          }
+        )
+      },
       facesEditedByUser: {
         ...state.facesEditedByUser,
         [selectedEngineId]: uniqBy(
           [
-            {
-              ...faceObj,
+            ...faceObjects.map(face => ({
+              ...face,
               object: {
-                ...faceObj.object,
+                ...face.object,
                 entityId: entity.id,
                 libraryId: entity.libraryId
               }
-            },
+            })),
             ...(state.facesEditedByUser[selectedEngineId] || [])
           ],
           'guid'
         )
       },
-      entities: {
-        ...state.entities,
-        [entity.id]: entity
+      currentlyEditedFaces: state.currentlyEditedFaces.filter(edit => {
+        return !find(faceObjects, {'guid': edit.guid});
+      }),
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: [
+          ...differenceBy(
+            state.bulkEditActionItems[state.activeTab],
+            faceObjects,
+            'guid'
+          )
+        ]
       }
-    };
+    }
   },
   [REMOVE_FACES](state, action) {
     const { faceObjects, selectedEngineId } = action.payload;
@@ -426,10 +468,11 @@ const reducer = createReducer(defaultState, {
       activeTab
     };
   },
-  [OPEN_ADD_ENTITY_DIALOG](state) {
+  [OPEN_ADD_ENTITY_DIALOG](state, { payload: { faces } }) {
     return {
       ...state,
-      addNewEntityDialogOpen: true
+      addNewEntityDialogOpen: true,
+      currentlyEditedFaces: [...faces]
     }
   },
   [CLOSE_ADD_ENTITY_DIALOG](state) {
@@ -518,11 +561,6 @@ export const fetchEntitiesFailure = (error, meta) => ({
   error,
   meta
 });
-export const createEntityFailure = (payload, meta) => ({
-  type: CREATE_ENTITY_FAILURE,
-  payload,
-  meta
-});
 
 export const fetchingEntitySearchResults = () => ({
   type: SEARCHING_ENTITIES
@@ -544,9 +582,14 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
   payload,
   meta
 });
-export const openAddEntityDialog = () => ({
-  type: OPEN_ADD_ENTITY_DIALOG
-});
+export const openAddEntityDialog = faces => {
+  return {
+    type: OPEN_ADD_ENTITY_DIALOG,
+    payload: {
+      faces
+    }
+  }
+};
 export const closeAddEntityDialog = () => ({
   type: CLOSE_ADD_ENTITY_DIALOG
 });
@@ -567,6 +610,8 @@ export function getEntitySearchResults(state) {
 }
 
 export const getAddNewEntityDialogOpen = state => get(local(state), 'addNewEntityDialogOpen');
+
+export const getCurrentlyEditedFaces = state => get(local(state), 'currentlyEditedFaces');
 
 export const createEntity = input => async (dispatch, getState) => {
   return await callGraphQLApi({
@@ -606,11 +651,11 @@ export const fetchLibraries = ({ libraryType }) => async (dispatch, getState) =>
 };
 
 /* USER DETECTED FACES */
-export const addDetectedFace = (selectedEngineId, faceObj, entity) => ({
+export const addDetectedFace = (selectedEngineId, faceObjects, entity) => ({
   type: ADD_DETECTED_FACE,
   payload: {
     selectedEngineId,
-    faceObj,
+    faceObjects,
     entity
   }
 });
@@ -628,6 +673,15 @@ export const processRemovedFaces = (selectedEngineId, faceObjects) => ({
   payload: {
     selectedEngineId,
     faceObjects
+  }
+});
+
+export const processAddedFaces = (selectedEngineId, faceObjects, entity) => ({
+  type: PROCESS_ADDED_FACES,
+  payload: {
+    selectedEngineId,
+    faceObjects,
+    entity
   }
 });
 

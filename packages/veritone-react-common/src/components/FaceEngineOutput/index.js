@@ -437,7 +437,7 @@ class FaceEngineOutput extends Component {
                 get(bulkEditActionItems, [activeTab, 'length']) > 0
                   ? `${get(bulkEditActionItems, [activeTab, 'length'])} ${
                       activeTab === 'faceDetection' ? 'Unknown' : 'Known'
-                    } Faces Selected`
+                    } Face${get(bulkEditActionItems, [activeTab, 'length']) > 1 ? 's' : ''} Selected`
                   : 'Select All'
               }
               onChange={this.handleSelectAllToggle}
@@ -450,7 +450,8 @@ class FaceEngineOutput extends Component {
               <div className={styles.bulkFaceEditActions}>
                 <IconButton
                   classes={{ root: styles.bulkFaceEditActionButton }}
-                  onClick={onAddNewEntity}
+                  // eslint-disable-next-line
+                  onClick={() => {onAddNewEntity(get(bulkEditActionItems, [activeTab]))}}
                 >
                   <CreateIcon />
                 </IconButton>

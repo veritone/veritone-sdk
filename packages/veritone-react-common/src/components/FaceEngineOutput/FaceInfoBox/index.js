@@ -105,8 +105,8 @@ class FaceInfoBox extends Component {
   };
 
   // evt is mandatory here to avoid infinite call loop
-  handleAddNewEntity = entity => evt => {
-    this.props.addNewEntity(this.props.face, entity);
+  handleAddNewEntity = face => evt => {
+    this.props.addNewEntity(face);
   };
 
   handleEntitySelect = entity => {
