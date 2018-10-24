@@ -156,7 +156,6 @@ const programLiveImageNullState =
 class MediaDetailsWidget extends React.Component {
   static propTypes = {
     id: string.isRequired,
-    fullScreen: bool,
     initializeWidget: func,
     mediaId: number.isRequired,
     kvp: shape({
@@ -365,7 +364,6 @@ class MediaDetailsWidget extends React.Component {
   };
 
   static defaultProps = {
-    fullScreen: true,
     entities: [],
     schemasById: {}
   };
@@ -800,7 +798,6 @@ class MediaDetailsWidget extends React.Component {
 
   render() {
     let {
-      fullScreen,
       engineCategories,
       selectedEngineCategory,
       selectedEngineId,
@@ -848,9 +845,7 @@ class MediaDetailsWidget extends React.Component {
     }
 
     return (
-      <div className={cx(styles.mediaDetailsPage, className, {
-        [styles.fullScreen]: fullScreen
-      })}>
+      <div className={cx(styles.mediaDetailsPage, className)}>
         {alertDialogConfig && (
           <Dialog
             open={alertDialogConfig.show}
