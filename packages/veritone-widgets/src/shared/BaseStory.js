@@ -12,6 +12,10 @@ const { user } = modules;
 import VeritoneApp from './VeritoneApp';
 import devConfig from '../../config.dev.json';
 import { OAuthLoginButtonWidget } from '../widgets/OAuthLoginButton';
+import {
+  GlobalSnackBar,
+  GlobalNotificationDialog
+} from '../widgets/Notifications';
 
 const app = VeritoneApp();
 
@@ -147,11 +151,11 @@ export default class BaseStory extends React.Component {
                   />
                   <button
                     onClick={this.handleLogin}
-                    disabled={!this.state.sessionToken}
+                    // disabled={!this.state.sessionToken}
                   >
                     {this.state.sessionToken
                       ? 'Log In via session token'
-                      : 'Log In via session token (Please set a token)'}
+                      : 'Log In via stored cookie'}
                   </button>
                 </p>
                 or log in via oauth:
@@ -163,6 +167,9 @@ export default class BaseStory extends React.Component {
                 </p>
               </div>
             )}
+
+            <GlobalNotificationDialog />
+            <GlobalSnackBar />
           </AppContainer>
         </div>
       </Provider>

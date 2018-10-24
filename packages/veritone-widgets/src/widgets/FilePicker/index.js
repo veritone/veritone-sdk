@@ -59,7 +59,9 @@ class FilePicker extends React.Component {
   };
 
   static defaultProps = {
-    open: false
+    open: false,
+    onPickCancelled: noop,
+    onPick: noop
   };
 
   handlePick = () => {
