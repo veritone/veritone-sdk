@@ -73,7 +73,8 @@ const initialState = {
   savingTranscript: false,
   editModeEnabled: false,
   showConfirmationDialog: false,
-  confirmationType: 'cancelEdits'
+  confirmationType: 'cancelEdits',
+  combineCategory: 'speaker'
 };
 
 const transcriptReducer = createReducer(initialState, {
@@ -436,6 +437,8 @@ export const showConfirmationDialog = state =>
   get(local(state), 'showConfirmationDialog');
 export const getConfirmationType = state =>
   get(local(state), 'confirmationType');
+export const combineCategory = state =>
+  get(local(state), 'combineCategory');
 
 const getPrimaryTranscriptAsset = (tdoId, dispatch, getState) => {
   // to run bulk-edit-transcript task first try to find original 'transcript' ttml asset

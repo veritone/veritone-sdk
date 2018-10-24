@@ -37,6 +37,11 @@ const saga = util.reactReduxSaga.saga;
       tdo.id,
       selectedEngineId
     ),
+    selectedCombineEngineResults: engineResultsModule.engineResultsByEngineId(
+      state,
+      tdo.id,
+      '8ab65047-99ca-4f3e-b2d5-3d4bd7ef1eed'
+    ),
     showTranscriptBulkEditSnack: TranscriptRedux.getShowTranscriptBulkEditSnack(
       state
     ),
@@ -44,7 +49,8 @@ const saga = util.reactReduxSaga.saga;
     savingTranscript: TranscriptRedux.getSavingTranscriptEdits(state),
     editModeEnabled: TranscriptRedux.getEditModeEnabled(state),
     showConfirmationDialog: TranscriptRedux.showConfirmationDialog(state),
-    confirmationType: TranscriptRedux.getConfirmationType(state)
+    confirmationType: TranscriptRedux.getConfirmationType(state),
+    combineCategory: TranscriptRedux.combineCategory(state)
   }),
   {
     //undo: TranscriptRedux.undo,           //Uncomment when needed to enable undo option
@@ -121,6 +127,15 @@ export default class TranscriptEngineOutputContainer extends Component {
         name: string
       })
     ),
+    combineEngines: shape({
+      speaker: arrayOf(
+        shape({
+          id: string,
+          name: string
+        })
+      )
+    }),
+    combineCategory: string,
     title: string,
 
     className: string,
@@ -193,6 +208,28 @@ export default class TranscriptEngineOutputContainer extends Component {
     !isEqual(prevProps.selectedEngineResults, nextData) &&
       prevProps.receiveData(nextData);
     return { ...prevState, props: nextProps };
+  }
+
+  componentDidUpdate() {
+    const speakerEngines = get(this.props, ['combineEngines', this.props.combineCategory]);
+    if (
+      !this.state.selectedCombineEngineId &&
+      speakerEngines &&
+      speakerEngines.length
+    ) {
+      const speakerEngineId = speakerEngines[0].id;
+
+      this.setState({
+        selectedCombineEngineId: speakerEngineId
+      });
+      this.props.fetchEngineResults({
+        engineId: speakerEngineId,
+        tdo: this.props.tdo,
+        startOffsetMs: 0,
+        stopOffsetMs:
+          Date.parse(this.props.tdo.stopDateTime) - Date.parse(this.props.tdo.startDateTime)
+      });
+    }
   }
 
   componentWillUnmount() {

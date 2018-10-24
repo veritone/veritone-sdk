@@ -29,7 +29,7 @@ import {
   objectOf
 } from 'prop-types';
 import { connect } from 'react-redux';
-import { find, get, some, includes, isEqual, isUndefined } from 'lodash';
+import { find, get, some, includes, isEqual, isUndefined, isArray } from 'lodash';
 import { Manager, Target, Popper } from 'react-popper';
 import {
   EngineCategorySelector,
@@ -119,6 +119,7 @@ const programLiveImageNullState =
       state,
       id
     ),
+    categoryCombinationMapper: mediaDetailsModule.categoryCombinationMapper(state, id),
     categoryExportFormats: mediaDetailsModule.categoryExportFormats(state, id),
     betaFlagEnabled: userModule.hasFeature(state, 'beta'),
     exportClosedCaptionsEnabled: userModule.hasFeature(
@@ -820,10 +821,41 @@ class MediaDetailsWidget extends React.Component {
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
-      cancelEdit
+      cancelEdit,
+      categoryCombinationMapper
     } = this.props;
 
     const { isMenuOpen } = this.state;
+
+    // secondaryEngineCombiner will be loaded with the following format:
+    // {
+    //   [withType]: {
+    //     [combineType]: ARRAY_OF_combineType_ENGINES
+    //   }
+    // }
+    const secondaryEngineCombiner = {};
+    const engineCategorySelectorItems = isArray(this.props.engineCategories) ? 
+      this.props.engineCategories.filter(category => {
+        // If the current category is to be combined with another
+        // then load it's engines into the combiner using withId as the key
+        const isCombineCategory = !find(categoryCombinationMapper, map => {
+          const isCombineMatch = map.combineType === category.categoryType;
+          if (isCombineMatch) {
+            if (!secondaryEngineCombiner[map.withType]) {
+              secondaryEngineCombiner[map.withType] = {};
+            }
+            const combineCategory = find(this.props.engineCategories, category => category.categoryType === map.combineType);
+            secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
+          }
+          return isCombineMatch;
+        });
+
+        return isCombineCategory;
+      }) : [];
+
+    const combineEngines = selectedEngineCategory ? 
+      get(secondaryEngineCombiner, selectedEngineCategory.categoryType) :
+      undefined;
 
     const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')
@@ -1162,7 +1194,7 @@ class MediaDetailsWidget extends React.Component {
                     <div className={styles.engineActionHeader}>
                       <div className={styles.engineCategorySelector}>
                         <EngineCategorySelector
-                          engineCategories={this.props.engineCategories}
+                          engineCategories={engineCategorySelectorItems}
                           selectedEngineCategoryId={selectedEngineCategory.id}
                           onSelectEngineCategory={
                             this.handleEngineCategoryChange
@@ -1260,6 +1292,7 @@ class MediaDetailsWidget extends React.Component {
                         mediaPlayerTimeMs={mediaPlayerTimeInMs}
                         mediaPlayerTimeIntervalMs={500}
                         engines={selectedEngineCategory.engines}
+                        combineEngines={combineEngines}
                         onEngineChange={this.handleSelectEngine}
                         selectedEngineId={selectedEngineId}
                         onClick={this.handleUpdateMediaPlayerTime}
