@@ -34,6 +34,7 @@ export default {
     'react-dom',
     'react-infinite-calendar',
     'react-redux',
+    'recompose',
     'redux',
     'redux-form',
     'react-dotdotdot',

@@ -171,3 +171,6 @@ const MyPage = () => (
   * Added props.textInputMaxRows to allow user to specify the maximum number of rows to display
 * ContentTemplateForm
   * Added props.textInputMaxRows to allow user to specify the maximum number of rows to display
+
+## 6.3.1
+* Add recompose to excluded dependencies (fixes build issues)

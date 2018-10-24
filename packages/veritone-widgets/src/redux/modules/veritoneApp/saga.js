@@ -1,14 +1,5 @@
 import { isFunction, get } from 'lodash';
-import {
-  all,
-  fork,
-  call,
-  takeLatest,
-  takeEvery,
-  put,
-  select,
-  cancel
-} from 'redux-saga/effects';
+import { fork, call, takeLatest, put, select } from 'redux-saga/effects';
 import { modules } from 'veritone-redux-common';
 const { user: userModule, auth: authModule } = modules;
 
@@ -49,49 +40,6 @@ export function* watchAppAuth() {
   );
 }
 
-const widgetSagaRegistry = new Map();
-function* handleWidgetRegistration({ payload: { saga } }) {
-  if (saga) {
-    const runningSagasEntry = widgetSagaRegistry.get(saga) || {};
-    const alreadyRunningCount = runningSagasEntry.count || 0;
-    let task = runningSagasEntry.task;
-
-    if (!task) {
-      task = yield fork(saga);
-    }
-
-    widgetSagaRegistry.set(saga, {
-      task,
-      count: alreadyRunningCount + 1
-    });
-  }
-}
-
-function* handleWidgetUnregistration({ payload: { saga } }) {
-  if (saga) {
-    const runningSagasEntry = widgetSagaRegistry.get(saga);
-    const alreadyRunningCount = runningSagasEntry.count;
-    const task = runningSagasEntry.task;
-    const isUnregisteringLastInstanceOfWidget = alreadyRunningCount === 1;
-
-    if (isUnregisteringLastInstanceOfWidget) {
-      yield cancel(task);
-    }
-
-    widgetSagaRegistry.set(saga, {
-      task: isUnregisteringLastInstanceOfWidget ? null : task,
-      count: alreadyRunningCount - 1
-    });
-  }
-}
-
-function* watchWidgetRegistration() {
-  yield all([
-    takeEvery(appModule.WIDGET_ADDED, handleWidgetRegistration),
-    takeEvery(appModule.WIDGET_REMOVED, handleWidgetUnregistration)
-  ]);
-}
-
 export default function* root() {
-  yield all([fork(watchAppAuth), fork(watchWidgetRegistration)]);
+  yield fork(watchAppAuth);
 }
