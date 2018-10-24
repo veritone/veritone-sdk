@@ -10,7 +10,6 @@ import {
 } from 'veritone-react-common';
 
 import * as filePickerModule from '../../redux/modules/filePicker';
-import filePickerRootSaga from '../../redux/modules/filePicker/filePickerSaga';
 import { guid } from '../../shared/util';
 import widget from '../../shared/widget';
 
@@ -174,5 +173,5 @@ class FilePickerWidgetComponent extends React.Component {
   }
 }
 
-const FilePickerWidget = widget(FilePickerWidgetComponent, filePickerRootSaga);
+const FilePickerWidget = widget(FilePickerWidgetComponent);
 export { FilePicker as default, FilePickerWidget };
