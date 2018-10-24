@@ -42,6 +42,20 @@ class ProgramInfoWidget extends React.Component {
         })
       )
     }),
+    acls: arrayOf(
+      shape({
+        organizationId: string.isRequired,
+        permission: string.isRequired
+      })
+    ),
+    isPublic: bool,
+    canShare: bool,
+    organizations: arrayOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired
+      })
+    ),
     programFormats: arrayOf(string),
     canBulkAddAffiliates: bool,
     showAffiliates: bool,
