@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent/SnackbarContent';
-import {pick, get, isArray, isObject} from 'lodash';
+import { pick, get, isArray, isObject } from 'lodash';
 import {
   shape,
   number,

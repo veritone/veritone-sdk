@@ -7,6 +7,12 @@ export const FETCH_ENTITIES_FAILURE = `vtn/${namespace}/FETCH_ENTITIES_FAILURE`;
 export const FETCH_LIBRARIES = `vtn/${namespace}/FETCH_LIBRARIES`;
 export const FETCH_LIBRARIES_SUCCESS = `vtn/${namespace}/FETCH_LIBRARIES_SUCCESS`;
 export const FETCH_LIBRARIES_FAILURE = `vtn/${namespace}/FETCH_LIBRARIES_FAILURE`;
+export const CREATE_LIBRARY = `vtn/${namespace}/CREATE_LIBRARY`;
+export const CREATE_LIBRARY_SUCCESS = `vtn/${namespace}/CREATE_LIBRARY_SUCCESS`;
+export const CREATE_LIBRARY_FAILURE = `vtn/${namespace}/CREATE_LIBRARY_FAILURE`;
+export const FETCH_UPLOAD_URL = `vtn/${namespace}/FETCH_UPLOAD_URL`;
+export const FETCH_UPLOAD_URL_SUCCESS = `vtn/${namespace}/FETCH_UPLOAD_URL_SUCCESS`;
+export const FETCH_UPLOAD_URL_FAILURE = `vtn/${namespace}/FETCH_UPLOAD_URL_FAILURE`;
 
 export const CREATE_ENTITY = `vtn/${namespace}/CREATE_ENTITY`;
 export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
@@ -69,6 +75,9 @@ const { engineResults: engineResultsModule } = modules;
 const defaultState = {
   entities: {},
   libraries: {},
+  creatingLibrary: false,
+  uploadingLibraryImage: false,
+  fetchingUploadUrl: false,
   entitySearchResults: [],
   isFetchingEntities: false,
   creatingEntity: false,
@@ -107,10 +116,7 @@ const reducer = createReducer(defaultState, {
 
     return {
       ...state,
-      entities: [
-        ...state.entities,
-        ...entities
-      ],
+      entities: [...state.entities, ...entities],
       isFetchingEntities: false
     };
   },
@@ -148,11 +154,38 @@ const reducer = createReducer(defaultState, {
       isFetchingLibraries: false
     };
   },
+  [CREATE_LIBRARY](state) {
+    return {
+      ...state,
+      createNewLibrary: true
+    };
+  },
+  [CREATE_LIBRARY_SUCCESS](
+    state,
+    {
+      payload: { createLibrary }
+    }
+  ) {
+    return {
+      ...state,
+      createNewLibrary: false,
+      libraries: {
+        ...state.libraries,
+        [createLibrary.id]: createLibrary
+      }
+    };
+  },
+  [CREATE_LIBRARY_FAILURE](state) {
+    return {
+      ...state,
+      createNewLibrary: false
+    };
+  },
   [CREATE_ENTITY](state) {
     return {
       ...state,
       creatingEntity: true
-    }
+    };
   },
   [CREATE_ENTITY_SUCCESS](state, action) {
     if (action.errors) {
@@ -161,13 +194,13 @@ const reducer = createReducer(defaultState, {
 
     return {
       ...state,
-      creatingEntity:false
-    }
+      creatingEntity: false
+    };
   },
   [CREATE_ENTITY_FAILURE](state, action) {
     return {
       ...state,
-      creatingEntity:false
+      creatingEntity: false
     };
   },
   [SEARCHING_ENTITIES](state, action) {
@@ -220,10 +253,7 @@ const reducer = createReducer(defaultState, {
           })
         ]
       },
-      entities: uniqBy([
-        ...state.entities,
-        entity
-      ] , 'id')
+      entities: uniqBy([...state.entities, entity], 'id')
     };
   },
   [PROCESS_ADDED_FACES](state, action) {
@@ -257,7 +287,7 @@ const reducer = createReducer(defaultState, {
         )
       },
       currentlyEditedFaces: state.currentlyEditedFaces.filter(edit => {
-        return !find(faceObjects, {'guid': edit.guid});
+        return !find(faceObjects, { guid: edit.guid });
       }),
       bulkEditActionItems: {
         ...state.bulkEditActionItems,
@@ -269,7 +299,7 @@ const reducer = createReducer(defaultState, {
           )
         ]
       }
-    }
+    };
   },
   [REMOVE_FACES](state, action) {
     const { faceObjects, selectedEngineId } = action.payload;
@@ -468,18 +498,23 @@ const reducer = createReducer(defaultState, {
       activeTab
     };
   },
-  [OPEN_ADD_ENTITY_DIALOG](state, { payload: { faces } }) {
+  [OPEN_ADD_ENTITY_DIALOG](
+    state,
+    {
+      payload: { faces }
+    }
+  ) {
     return {
       ...state,
       addNewEntityDialogOpen: true,
       currentlyEditedFaces: [...faces]
-    }
+    };
   },
   [CLOSE_ADD_ENTITY_DIALOG](state) {
     return {
       ...state,
       addNewEntityDialogOpen: false
-    }
+    };
   }
 });
 export default reducer;
@@ -588,7 +623,7 @@ export const openAddEntityDialog = faces => {
     payload: {
       faces
     }
-  }
+  };
 };
 export const closeAddEntityDialog = () => ({
   type: CLOSE_ADD_ENTITY_DIALOG
@@ -609,18 +644,16 @@ export function getEntitySearchResults(state) {
   return get(local(state), 'entitySearchResults', []);
 }
 
-export const getAddNewEntityDialogOpen = state => get(local(state), 'addNewEntityDialogOpen');
+export const getAddNewEntityDialogOpen = state =>
+  get(local(state), 'addNewEntityDialogOpen');
 
-export const getCurrentlyEditedFaces = state => get(local(state), 'currentlyEditedFaces');
+export const getCurrentlyEditedFaces = state =>
+  get(local(state), 'currentlyEditedFaces');
 
 export const createEntity = input => async (dispatch, getState) => {
   return await callGraphQLApi({
-    actionTypes: [
-      CREATE_ENTITY,
-      CREATE_ENTITY_SUCCESS,
-      CREATE_ENTITY_FAILURE
-    ],
-    query:gqlQuery.createEntity,
+    actionTypes: [CREATE_ENTITY, CREATE_ENTITY_SUCCESS, CREATE_ENTITY_FAILURE],
+    query: gqlQuery.createEntity,
     variables: { input },
     dispatch,
     getState
@@ -636,15 +669,118 @@ export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
 
-export const fetchLibraries = ({ libraryType }) => async (dispatch, getState) => {
+export const fetchLibraries = ({ libraryType }) => async (
+  dispatch,
+  getState
+) => {
   return await callGraphQLApi({
     actionTypes: [
       FETCH_LIBRARIES,
       FETCH_LIBRARIES_SUCCESS,
       FETCH_LIBRARIES_FAILURE
     ],
-    query:gqlQuery.getLibrariesByType,
+    query: gqlQuery.getLibrariesByType,
     variables: { libraryType },
+    dispatch,
+    getState
+  });
+};
+
+const uploadCoverImage = (url, file) => {
+  return new Promise(function(resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response);
+      } else {
+        reject('Error uploading image');
+      }
+    });
+    xhr.addEventListener('error', () => {
+      reject('Error uploading image');
+    });
+    xhr.open('PUT', url);
+    xhr.send(file);
+  });
+};
+
+export const createNewLibrary = ({
+  libraryName,
+  libraryTypeId,
+  coverImage,
+  description
+}) => async (dispatch, getState) => {
+  let signedImageUrl;
+  if (coverImage) {
+    const getSignedWriteableUrlQuery = `
+      query {
+        getSignedWritableUrl {
+          url
+          key
+          bucket
+          expiresInSeconds
+          getUrl
+          unsignedUrl
+        }
+      }
+    `;
+    let signedUrlResponse;
+    try {
+      signedUrlResponse = await callGraphQLApi({
+        actionTypes: [
+          FETCH_UPLOAD_URL,
+          FETCH_UPLOAD_URL_SUCCESS,
+          FETCH_UPLOAD_URL_FAILURE
+        ],
+        query: getSignedWriteableUrlQuery,
+        dispatch,
+        getState
+      });
+    } catch (e) {
+      dispatch({
+        type: CREATE_LIBRARY_FAILURE,
+        payload: {
+          error: 'Could not get url to upload image.'
+        }
+      });
+      return Promise.reject('Could not get url to upload image.');
+    }
+
+    try {
+      await uploadCoverImage(
+        get(signedUrlResponse, 'getSignedWritableUrl.url'),
+        coverImage
+      ).then(res => {
+        //TODO: sending an unsigned url doesn't work
+        signedImageUrl = get(signedUrlResponse, 'getSignedWritableUrl.getUrl');
+        return res;
+      });
+    } catch (e) {
+      dispatch({
+        type: CREATE_LIBRARY_FAILURE,
+        payload: {
+          error: 'Could not upload cover image.'
+        }
+      });
+      return Promise.reject('Could not upload cover image.');
+    }
+  }
+
+  return await callGraphQLApi({
+    actionTypes: [
+      CREATE_LIBRARY,
+      CREATE_LIBRARY_SUCCESS,
+      CREATE_LIBRARY_FAILURE
+    ],
+    query: gqlQuery.createLibrary,
+    variables: {
+      input: {
+        name: libraryName,
+        libraryTypeId,
+        description,
+        coverImageUrl: signedImageUrl
+      }
+    },
     dispatch,
     getState
   });

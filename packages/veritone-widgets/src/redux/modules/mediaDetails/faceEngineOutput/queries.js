@@ -41,6 +41,15 @@ export const getLibrariesByType = `
     }
   }`;
 
+export const createLibrary = `
+  mutation CreateLibrary($input: CreateLibrary!) {
+    createLibrary(input: $input) {
+      id
+      name
+    }
+  }  
+`;
+
 export const createEntity = `
   ${entityFieldsFragment}
   mutation CreateEntity($input: CreateEntity!) {

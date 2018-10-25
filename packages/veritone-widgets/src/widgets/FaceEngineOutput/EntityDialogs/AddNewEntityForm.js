@@ -1,14 +1,14 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { get } from 'lodash';
-import {arrayOf, bool, shape, string} from 'prop-types';
+import { arrayOf, bool, shape, string } from 'prop-types';
 import { formComponents } from 'veritone-react-common';
-import Grid from "@material-ui/core/Grid/Grid";
-import FormControl from "@material-ui/core/FormControl/FormControl";
-import MenuItem from "@material-ui/core/MenuItem/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel/InputLabel";
-import Button from "@material-ui/core/Button/Button";
-import styles from "./styles.scss";
+import Grid from '@material-ui/core/Grid/Grid';
+import FormControl from '@material-ui/core/FormControl/FormControl';
+import MenuItem from '@material-ui/core/MenuItem/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel/InputLabel';
+import Button from '@material-ui/core/Button/Button';
+import styles from './styles.scss';
 
 export const validate = values => {
   const errors = {};
@@ -25,124 +25,148 @@ const AddNewEntityForm = reduxForm({
   form: 'addNewEntityForm',
   initialValues: {},
   validate
-})(({ handleSubmit, onCancel, children, submitting, invalid, libraries, isFetchingLibraries, disableSubmit }) => (
-  <form onSubmit={handleSubmit} data-veritone-component="add-new-entity-form">
-    <Grid container direction="column" spacing={32} >
-      <Grid
-        item
-        container
-        direction="column"
-        justify="space-between"
-        spacing={32}
-      >
-        <Grid item xs={12}>
-          <FormControl fullWidth data-veritone-element="entity-name">
-            <Field
-              name="name"
-              label="Name *"
-              component={formComponents.TextField}
-              data-veritone-element="entity-name-input"
-              InputProps={{
-                classes: {
-                  root: styles.inputField
-                }
-              }}
-              InputLabelProps={{
-                shrink: true,
-                classes: {
-                  shrink: styles.entityInputLabel
-                }
-              }}
-            />
-          </FormControl>
+})(
+  ({
+    handleSubmit,
+    onCancel,
+    children,
+    submitting,
+    invalid,
+    libraries,
+    isFetchingLibraries,
+    disableSubmit,
+    showCreateLibraryButton,
+    onCreateNewLibrary
+  }) => (
+    <form onSubmit={handleSubmit} data-veritone-component="add-new-entity-form">
+      <Grid container direction="column" spacing={32}>
+        <Grid
+          item
+          container
+          direction="column"
+          justify="space-between"
+          spacing={32}
+        >
+          <Grid item xs={12}>
+            <FormControl fullWidth data-veritone-element="entity-name">
+              <Field
+                name="name"
+                label="Name *"
+                component={formComponents.TextField}
+                data-veritone-element="entity-name-input"
+                InputProps={{
+                  classes: {
+                    root: styles.inputField
+                  }
+                }}
+                InputLabelProps={{
+                  shrink: true,
+                  classes: {
+                    shrink: styles.entityInputLabel
+                  }
+                }}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth data-veritone-element="library-id">
+              <InputLabel shrink classes={{ shrink: styles.entityInputLabel }}>
+                Choose Library *
+              </InputLabel>
+              <Field
+                component={formComponents.Select}
+                name="libraryId"
+                className={styles.librarySelect}
+                MenuProps={{
+                  anchorOrigin: {
+                    vertical: 'bottom',
+                    horizontal: 'left'
+                  },
+                  getContentAnchorEl: null
+                }}
+                data-veritone-element="library-id-select"
+              >
+                {isFetchingLibraries && (
+                  <MenuItem
+                    value=""
+                    classes={{
+                      root: styles.librarySelectMenuItem
+                    }}
+                  >
+                    Loading...
+                  </MenuItem>
+                )}
+                {!isFetchingLibraries &&
+                  !!get(libraries, 'length') &&
+                  libraries.map(library => (
+                    <MenuItem
+                      key={library.id}
+                      value={library.id}
+                      classes={{
+                        root: styles.librarySelectMenuItem
+                      }}
+                    >
+                      {library.name}
+                    </MenuItem>
+                  ))}
+                {!isFetchingLibraries &&
+                  !get(libraries, 'length') && (
+                    <MenuItem
+                      value=""
+                      classes={{
+                        root: styles.librarySelectMenuItem
+                      }}
+                    >
+                      Libraries not found
+                    </MenuItem>
+                  )}
+              </Field>
+            </FormControl>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth data-veritone-element="library-id">
-            <InputLabel
-              shrink
-              classes={{ shrink: styles.entityInputLabel }}
-            >
-              Choose Library *
-            </InputLabel>
-            <Field
-              component={formComponents.Select}
-              name="libraryId"
-              className={styles.librarySelect}
-              MenuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                },
-                getContentAnchorEl: null
-              }}
-              data-veritone-element="library-id-select"
-            >
-              {isFetchingLibraries && (
-                <MenuItem
-                  value=""
-                  classes={{
-                    root: styles.librarySelectMenuItem
-                  }}
-                >
-                  Loading...
-                </MenuItem>
-              )}
-              {!isFetchingLibraries && !!get(libraries, 'length') && libraries.map(library => (
-                <MenuItem
-                  key={library.id}
-                  value={library.id}
-                  classes={{
-                    root: styles.librarySelectMenuItem
-                  }}
-                >
-                  {library.name}
-                </MenuItem>
-              ))}
-              {!isFetchingLibraries && !get(libraries, 'length') && (
-                <MenuItem
-                  value=""
-                  classes={{
-                    root: styles.librarySelectMenuItem
-                  }}
-                >
-                  Libraries not found
-                </MenuItem>
-              )}
-            </Field>
-          </FormControl>
+        <Grid
+          item
+          container
+          direction="row"
+          className={styles.addEntityActions}
+        >
+          {showCreateLibraryButton && (
+            <Grid item xs>
+              <Button
+                color="primary"
+                onClick={onCreateNewLibrary}
+                data-veritone-element="create-new-library-button"
+              >
+                Create New Library
+              </Button>
+            </Grid>
+          )}
+          <Grid item xs={6} container direction="row" justify="flex-end">
+            <Grid item>
+              <Button
+                color="primary"
+                onClick={onCancel}
+                data-veritone-element="cancel-button"
+              >
+                Cancel
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                type="submit"
+                color="primary"
+                disabled={submitting || invalid || disableSubmit}
+                data-veritone-element="create-button"
+              >
+                Save
+              </Button>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
-      <Grid
-        item
-        container
-        direction="row"
-        justify="flex-end"
-        spacing={16}
-        className={styles.addEntityActions}
-      >
-        <Grid item>
-          <Button
-            color="primary"
-            onClick={onCancel}
-            data-veritone-element="cancel-button"
-          >
-            Cancel
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            type="submit"
-            color="primary"
-            disabled={submitting || invalid || disableSubmit}
-            data-veritone-element="create-button"
-          >
-            Save
-          </Button>
-        </Grid>
-      </Grid>
-    </Grid>
-  </form>
-));
+    </form>
+  )
+);
 
 AddNewEntityForm.propTypes = {
   isFetchingLibraries: bool,
@@ -155,7 +179,8 @@ AddNewEntityForm.propTypes = {
   initialValues: shape({
     name: string,
     libraryId: string
-  })
+  }),
+  showCreateLibraryButton: bool
 };
 
 export default AddNewEntityForm;
