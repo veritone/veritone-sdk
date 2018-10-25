@@ -3,7 +3,9 @@
   "version": "1.0.1",
   "description": "responsible for managing functional permissions",
   "main": "index.js",
-  "homepage": "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-functional-permissions",
+  "types": "index.d.ts",
+  "homepage":
+    "https://github.com/veritone/veritone-sdk/tree/master/packages/veritone-functional-permissions",
   "scripts": {
     "test": "gulp test",
     "lint": "gulp lint"
