@@ -42,7 +42,8 @@ class MediaInfoPanel extends Component {
         global: bool
       }),
       startDateTime: string,
-      stopDateTime: string
+      stopDateTime: string,
+      createdDateTime: string
     }).isRequired,
     engineCategories: arrayOf(
       shape({
@@ -289,11 +290,11 @@ class MediaInfoPanel extends Component {
                 {get(tdo, 'details.veritoneFile.filename', 'No Filename')}
               </div>
             </div>
-            {tdo.startDateTime && (
+            {tdo.createdDateTime && (
               <div className={styles.infoField}>
                 <div className={styles.infoFieldLabel}>Date Created</div>
                 <div className={styles.infoFieldData}>
-                  {this.toFormattedDate(tdo.startDateTime)}
+                  {this.toFormattedDate(tdo.createdDateTime)}
                 </div>
               </div>
             )}

@@ -90,6 +90,7 @@ const tdoInfoQueryClause = `id
     details
     startDateTime
     stopDateTime
+    createdDateTime
     applicationId
     security {
       global
