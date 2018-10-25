@@ -1,5 +1,3 @@
-import { namespace } from '../../src/client/modules/user';
-
 /**
  * Combine Permissions.
  * This combines two permissions into one.
