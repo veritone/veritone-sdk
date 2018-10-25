@@ -8,7 +8,7 @@ import {
   shape,
   func
 } from 'prop-types';
-import { isEmpty, get } from 'lodash';
+import { isEmpty, get, isArray } from 'lodash';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Icon from '@material-ui/core/Icon';
@@ -34,15 +34,31 @@ class EngineOutputHeader extends Component {
         name: string.isRequired
       })
     ),
+    combineEngines: arrayOf(
+      shape({
+        id: string.isRequired,
+        name: string.isRequired
+      })
+    ),
     selectedEngineId: string,
+    selectedCombineEngineId: string,
     onEngineChange: func,
+    onCombineEngineChange: func,
     onExpandClick: func,
     children: oneOfType([arrayOf(node), node]),
     moreMenuItems: arrayOf(node),
     showEditButton: bool,
     onEditButtonClick: func,
     disableEditButton: bool,
-    disableEngineSelect: bool
+    disableEngineSelect: bool,
+    combineViewTypes: arrayOf(
+      shape({
+        name: string,
+        id: string
+      })
+    ),
+    selectedCombineViewTypeId: string,
+    handleCombineViewTypeChange: func
   };
 
   static defaultProps = {
@@ -64,6 +80,24 @@ class EngineOutputHeader extends Component {
     }
   };
 
+  handleCombineEngineChange = evt => {
+    if (
+      this.props.onCombineEngineChange &&
+      this.props.selectedCombineEngineId !== evt.target.value 
+    ) {
+      this.props.onCombineEngineChange(evt.target.value);
+    }
+  }
+
+  handleCombineViewTypeChange = evt => {
+    if (
+      this.props.handleCombineViewTypeChange &&
+      this.props.selectedCombineViewTypeId !== evt.target.value
+    ) {
+      this.props.handleCombineViewTypeChange(evt.target.value);
+    }
+  }
+
   toggleIsMoreMenuOpen = () => {
     this.setState(prevState => {
       return {
@@ -80,12 +114,16 @@ class EngineOutputHeader extends Component {
       hideTitle,
       hideExpandButton,
       engines,
+      combineEngines,
       selectedEngineId,
+      selectedCombineEngineId,
       onExpandClick,
       showEditButton,
       onEditButtonClick,
       disableEditButton,
-      disableEngineSelect
+      disableEngineSelect,
+      combineViewTypes,
+      selectedCombineViewTypeId
     } = this.props;
     const { isMoreMenuOpen } = this.state;
 
@@ -100,6 +138,43 @@ class EngineOutputHeader extends Component {
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
         <div className={styles.headerActions}>
           {children}
+          {isArray(combineViewTypes) && (
+            <FormControl
+              className={styles.engineFormControl}
+            >
+              <Select
+                autoWidth
+                value={selectedCombineViewTypeId || combineViewTypes[0].id}
+                className={styles.engineSelect}
+                onChange={this.handleCombineViewTypeChange}
+                MenuProps={{
+                  anchorOrigin: {
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                  },
+                  transformOrigin: {
+                    horizontal: 'center',
+                    vertical: 'top'
+                  },
+                  getContentAnchorEl: null
+                }}
+              >
+                {combineViewTypes.map(e => {
+                  return (
+                    <MenuItem
+                      key={`engine-menu-item-${e.id}`}
+                      value={e.id}
+                      classes={{
+                        root: styles.engine
+                      }}
+                    >
+                      {e.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          )}
           {!isEmpty(engines) && (
             <FormControl
               className={styles.engineFormControl}
@@ -123,6 +198,44 @@ class EngineOutputHeader extends Component {
                 }}
               >
                 {engines.map(e => {
+                  return (
+                    <MenuItem
+                      key={`engine-menu-item-${e.id}`}
+                      value={e.id}
+                      classes={{
+                        root: styles.engine
+                      }}
+                    >
+                      {e.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          )}
+          {isArray(combineEngines) && combineEngines.length > 1 && (
+            <FormControl
+              className={styles.engineFormControl}
+              disabled={disableEngineSelect}
+            >
+              <Select
+                autoWidth
+                value={selectedCombineEngineId || combineEngines[0].id}
+                className={styles.engineSelect}
+                onChange={this.handleCombineEngineChange}
+                MenuProps={{
+                  anchorOrigin: {
+                    horizontal: 'center',
+                    vertical: 'bottom'
+                  },
+                  transformOrigin: {
+                    horizontal: 'center',
+                    vertical: 'top'
+                  },
+                  getContentAnchorEl: null
+                }}
+              >
+                {combineEngines.map(e => {
                   return (
                     <MenuItem
                       key={`engine-menu-item-${e.id}`}

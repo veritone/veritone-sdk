@@ -351,6 +351,12 @@ class MediaDetailsWidget extends React.Component {
         types: arrayOf(string).isRequired
       })
     ),
+    categoryCombinationMapper: arrayOf(
+      shape({
+        combineType: string,
+        withType: string
+      })
+    ),
     createQuickExport: func.isRequired,
     onExport: func,
     exportClosedCaptionsEnabled: bool,

@@ -60,6 +60,8 @@ export const CLOSE_CONFIRMATION_DIALOG =
   transcriptNamespace + '_CLOSE_CONFIRMATION_DIALOG';
 export const STORE_SELECTED_COMBINE_ENGINE_ID =
   transcriptNamespace + '_SET_SELECTED_COMBINE_ENGINE_ID';
+export const SET_SELECTED_COMBINE_VIEW_TYPE =
+  transcriptNamespace + '_SET_SELECTED_COMBINE_VIEW_TYPE';
 
 const removeableIndex = 1; // index 0 is reserved for initial value
 const maxBulkHistorySize = 100; // Only alow user to undo 50 times in bulk edit
@@ -263,6 +265,17 @@ const transcriptReducer = createReducer(initialState, {
       ...state,
       selectedCombineEngineId
     };
+  },
+  [SET_SELECTED_COMBINE_VIEW_TYPE](
+    state,
+    {
+      payload: { selectedCombineViewTypeId }
+    }
+  ) {
+    return {
+      ...state,
+      selectedCombineViewTypeId
+    }
   }
 });
 
@@ -454,6 +467,31 @@ export const combineCategory = state =>
   get(local(state), 'combineCategory');
 export const getSelectedCombineEngineId = state =>
   get(local(state), 'selectedCombineEngineId');
+export const getCombineViewTypes = state => {
+  const viewTypes = [{
+    name: 'Transcript',
+    id: 'transcript-view'
+  }];
+  const selectedCombineEngineId = get(local(state), 'selectedCombineEngineId');
+  if (selectedCombineEngineId) {
+    viewTypes.unshift({
+      name: 'Speaker Separation',
+      id: 'speaker-view'
+    });
+  }
+  return viewTypes;
+};
+export const selectedCombineViewTypeId = state =>
+  get(local(state), 'selectedCombineViewTypeId');
+
+export const setSelectedCombineViewTypeId = viewTypeId => {
+  return {
+    type: SET_SELECTED_COMBINE_VIEW_TYPE,
+    payload: {
+      selectedCombineViewTypeId: viewTypeId
+    }
+  };
+};
 
 export const setSelectedCombineEngineId = engineId => {
   return {
