@@ -1,8 +1,10 @@
+import { namespace } from '../../src/client/modules/user';
+
 /**
  * Combine Permissions.
  * This combines two permissions into one.
  */
-export function combinePermissions(
+function combinePermissions(
   permissions1: number[],
   permissions2: number[]
 ): number[];
@@ -11,13 +13,13 @@ export function combinePermissions(
  * Get Permissions IDs from mask.
  * This converts a mask to permission ids.
  */
-export function getPermissionIdsFromMask(permissions: number[]): number[];
+function getPermissionIdsFromMask(permissions: number[]): number[];
 
 /**
  * Get Mask From Permissions.
  * This converts permission ids to a mask. Optionally, the caller can pass in a mask that will be used to add the permissions to.
  */
-export function getMaskFromPermissionIds(
+function getMaskFromPermissionIds(
   permissionIds: number | number[],
   mask?: number[]
 ): number[];
@@ -26,16 +28,13 @@ export function getMaskFromPermissionIds(
  * Has Permission.
  * This checks if the user's permissions satisfies the the requested permission check.
  */
-export function hasAccessTo(
-  permissionId: number,
-  userPermissions: number[]
-): boolean;
+function hasAccessTo(permissionId: number, userPermissions: number[]): boolean;
 
 /**
  * Has Any Permission.
  * This checks if the user's permissions satisfies any of the requested permission checks.
  */
-export function hasAccessToAny(
+function hasAccessToAny(
   permissionIds: number[],
   userPermissions: number[]
 ): boolean;
@@ -44,7 +43,16 @@ export function hasAccessToAny(
  * Has All Permissions.
  * This checks if the user's permissions satisfies all of the requested permission checks.
  */
-export function hasAccessToAll(
+function hasAccessToAll(
   permissionIds: number[],
   userPermissions: number[]
 ): boolean;
+
+export const util = {
+  combinePermissions,
+  getPermissionIdsFromMask,
+  getMaskFromPermissionIds,
+  hasAccessTo,
+  hasAccessToAll,
+  hasAccessToAny
+};
