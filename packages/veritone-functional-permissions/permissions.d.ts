@@ -1,4 +1,6 @@
-export const permissions: Permissions;
+declare const permissions: Permissions;
+
+export = permissions;
 
 export interface Permissions {
   superadmin: 1;

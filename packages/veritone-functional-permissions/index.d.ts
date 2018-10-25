@@ -1,2 +1,4 @@
-export * from './permissions';
-export * from './util';
+import permissions from './permissions';
+import * as util from './util';
+
+export { permissions, util };
