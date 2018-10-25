@@ -10,6 +10,9 @@ const PermissionsJSON = `
 		"superadmin": 1,
 		"financeadmin": 121
 	},
+	"admin_ui_legacy": {
+		"access": 124
+	},
 	"admin": {
 		"access": 2,
 		"org": {
@@ -102,7 +105,8 @@ const PermissionsJSON = `
 		},
 		"analytics": {
 			"read": 39
-		}
+		},
+		"customerservice": 125
 	},
 	"collections": {
 		"access": 40,
@@ -205,28 +209,41 @@ const PermissionsJSON = `
 			"create": 120
 		}
 	},
-
-    "job": {
-        "create": 26,
-        "read": 27,
-        "update": 28,
-        "delete": 29
-    },
-    "task": {
-        "create": 30,
-        "read": 31,
-        "update": 32,
-        "delete": 33
-    },
-    "recording": {
-        "create": 34,
-        "read": 35,
-        "update": 36,
-        "delete": 37
-    },
+	"job": {
+		"create": 26,
+		"read": 27,
+		"update": 28,
+		"delete": 29
+	},
+	"task": {
+		"create": 30,
+		"read": 31,
+		"update": 32,
+		"delete": 33
+	},
+	"recording": {
+		"create": 34,
+		"read": 35,
+		"update": 36,
+		"delete": 37
+	},
 	"asset": {
 		"all": 122,
 		"uri": 123
+	},
+	"source": {
+		"update": 126
+	},
+	"workflow": {
+		"create": 253
+	},
+	"mentions": {
+		"create": 127,
+		"read": 128,
+		"update": 129,
+		"delete": 130,
+		"share": 131,
+		"download": 132
 	}
 }
 `
