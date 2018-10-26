@@ -25,6 +25,8 @@ export const SEARCH_ENTITIES_FAILURE = `vtn/${namespace}/SEARCH_ENTITIES_FAILURE
 
 export const CLOSE_ADD_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_ENTITY_DIALOG`;
 export const OPEN_ADD_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_ENTITY_DIALOG`;
+export const OPEN_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_TO_EXISTING_ENTITY_DIALOG`;
+export const CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG`;
 
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
@@ -97,6 +99,7 @@ const defaultState = {
   },
   activeTab: 'faceRecognition',
   addNewEntityDialogOpen: false,
+  addToExistingEntityDialogOpen: false,
   currentlyEditedFaces: [] // selected unrecognized face objects from which to create a new 'entity'
 };
 
@@ -513,7 +516,27 @@ const reducer = createReducer(defaultState, {
   [CLOSE_ADD_ENTITY_DIALOG](state) {
     return {
       ...state,
-      addNewEntityDialogOpen: false
+      addNewEntityDialogOpen: false,
+      currentlyEditedFaces: []
+    };
+  },
+  [OPEN_ADD_TO_EXISTING_ENTITY_DIALOG](
+    state,
+    {
+      payload: { faces }
+    }
+  ) {
+    return {
+      ...state,
+      addToExistingEntityDialogOpen: true,
+      currentlyEditedFaces: [...faces]
+    };
+  },
+  [CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG](state) {
+    return {
+      ...state,
+      addToExistingEntityDialogOpen: false,
+      currentlyEditedFaces: []
     };
   }
 });
@@ -629,6 +652,18 @@ export const closeAddEntityDialog = () => ({
   type: CLOSE_ADD_ENTITY_DIALOG
 });
 
+export const openAddToExistingEntityDialog = faces => {
+  return {
+    type: OPEN_ADD_TO_EXISTING_ENTITY_DIALOG,
+    payload: {
+      faces
+    }
+  };
+};
+export const closeAddToExistingEntityDialog = () => ({
+  type: CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG
+});
+
 export function isFetchingEntities(state) {
   return local(state).isFetchingEntities;
 }
@@ -646,6 +681,9 @@ export function getEntitySearchResults(state) {
 
 export const getAddNewEntityDialogOpen = state =>
   get(local(state), 'addNewEntityDialogOpen');
+
+export const getAddToExistingEntityDialogOpen = state =>
+  get(local(state), 'addToExistingEntityDialogOpen');
 
 export const getCurrentlyEditedFaces = state =>
   get(local(state), 'currentlyEditedFaces');

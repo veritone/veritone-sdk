@@ -3,11 +3,11 @@ import { Field, reduxForm } from 'redux-form';
 import { get } from 'lodash';
 import { arrayOf, bool, shape, string } from 'prop-types';
 import { formComponents } from 'veritone-react-common';
-import Grid from '@material-ui/core/Grid/Grid';
-import FormControl from '@material-ui/core/FormControl/FormControl';
-import MenuItem from '@material-ui/core/MenuItem/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel/InputLabel';
-import Button from '@material-ui/core/Button/Button';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import Button from '@material-ui/core/Button';
 import styles from './styles.scss';
 
 export const validate = values => {
@@ -136,6 +136,7 @@ const AddNewEntityForm = reduxForm({
                 color="primary"
                 onClick={onCreateNewLibrary}
                 data-veritone-element="create-new-library-button"
+                classes={{ root: styles.entityDialogButton }}
               >
                 Create New Library
               </Button>
@@ -147,6 +148,7 @@ const AddNewEntityForm = reduxForm({
                 color="primary"
                 onClick={onCancel}
                 data-veritone-element="cancel-button"
+                classes={{ root: styles.entityDialogButton }}
               >
                 Cancel
               </Button>
@@ -157,6 +159,7 @@ const AddNewEntityForm = reduxForm({
                 color="primary"
                 disabled={submitting || invalid || disableSubmit}
                 data-veritone-element="create-button"
+                classes={{ root: styles.entityDialogButton }}
               >
                 Save
               </Button>

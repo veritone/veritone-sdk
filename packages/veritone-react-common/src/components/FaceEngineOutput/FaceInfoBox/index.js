@@ -138,6 +138,8 @@ class FaceInfoBox extends Component {
   inputRef = node => (this._inputRef = node);
 
   handleCheckboxClicked = face => evt => {
+    evt.stopPropagation();
+    evt.nativeEvent.stopImmediatePropagation();
     this.props.onCheckboxClicked(face, evt.target.checked);
   };
 
@@ -161,10 +163,13 @@ class FaceInfoBox extends Component {
         })}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseOut}
-        onClick={onClick}
       >
         <div className={styles.entityImageContainer}>
-          <img className={styles.entityImage} src={face.object.uri} />
+          <img
+            className={styles.entityImage}
+            src={face.object.uri}
+            onClick={onClick}
+          />
           {enableEdit &&
             !face.editAction && (
               <span className={styles.selectFaceCheckboxBackground} />
@@ -197,7 +202,7 @@ class FaceInfoBox extends Component {
             </div>
           )}
         </div>
-        <div className={styles.faceInformation}>
+        <div className={styles.faceInformation} onClick={onClick}>
           <span className={styles.faceTimeOccurrence}>
             {`${msToReadableString(face.startTimeMs)} - ${msToReadableString(
               face.stopTimeMs

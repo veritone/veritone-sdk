@@ -1,8 +1,9 @@
 @import '../../../styles/modules/variables';
 
-.editNewEntityDialogPaper {
+.entityDialogPaper {
   min-width: 640px;
   width: 640px;
+  overflow-y: visible !important;
 
   .dialogTitle {
     h2 {
@@ -38,6 +39,72 @@
 
   .addEntityContent {
     overflow-x: hidden;
+  }
+}
+
+.entitySearchPaper {
+  position: absolute;
+  overflow-y: hidden;
+  z-index: 1;
+
+  .libraryMatchesTitle {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 20px 15px 10px;
+    text-align: start;
+  }
+
+  .circularProgressContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .entitySearchList {
+    overflow-y: auto;
+
+    .entityMenuItem {
+      margin: 5px 0;
+
+      .entityInfo {
+        width: 160px;
+        margin-left: 15px;
+        text-align: left;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: $dark-black;
+
+        .menuEntityName {
+          width: 100%;
+          height: 16px;
+          font-size: 14px;
+          color: $light-black;
+          line-height: 16px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .menuLibraryName {
+          width: 100%;
+          height: 14px;
+          font-size: 12px;
+          color: $light-black;
+          line-height: 14px;
+          text-align: left;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+
+  .notFoundEntityMessage {
+    width: 100%;
+    height: 24px;
+    font-size: 14px;
+    line-height: 24px;
+    margin: 12px 0;
+    text-align: center;
   }
 }
 
@@ -80,4 +147,19 @@
 
 .addEntityActions {
   padding: 16px 0 0 !important;
+
+  .nextButton {
+    min-width: 0 !important;
+  }
+}
+
+.entityDialogButton {
+  font-size: 14px !important;
+  line-height: 16px !important;
+  font-weight: 500 !important;
+}
+
+.menuEntityNameMatch {
+  color: $dark-black;
+  font-weight: bold;
 }

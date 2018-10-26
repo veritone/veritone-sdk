@@ -9,9 +9,11 @@ import IconButton from '@material-ui/core/IconButton';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
+import PizzaIcon from '@material-ui/icons/LocalPizza';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
   shape,
   number,
@@ -66,6 +68,7 @@ class FaceEngineOutput extends Component {
     outputNullState: node,
     currentMediaPlayerTime: number,
     onAddNewEntity: func,
+    onAddToExistingEntity: func,
     className: string,
     onFaceOccurrenceClicked: func,
     onRemoveFaces: func,
@@ -265,7 +268,8 @@ class FaceEngineOutput extends Component {
       disableEditButton,
       unrecognizedFaces,
       bulkEditActionItems,
-      activeTab
+      activeTab,
+      onAddToExistingEntity
     } = this.props;
 
     const { viewMode, selectedEntityId } = this.state;
@@ -452,23 +456,58 @@ class FaceEngineOutput extends Component {
             />
             {get(bulkEditActionItems, [activeTab, 'length']) > 0 && (
               <div className={styles.bulkFaceEditActions}>
-                <IconButton
-                  classes={{ root: styles.bulkFaceEditActionButton }}
-                  // eslint-disable-next-line
-                  onClick={() => {
-                    onAddNewEntity(get(bulkEditActionItems, [activeTab]));
-                  }}
+                <Tooltip
+                  title="Add to an Existing Entity"
+                  placement="bottom-start"
                 >
-                  <CreateIcon />
-                </IconButton>
-                <IconButton
-                  classes={{ root: styles.bulkFaceEditActionButton }}
-                  onClick={this.handleRemoveFaces(
-                    get(bulkEditActionItems, [activeTab])
-                  )}
+                  <IconButton
+                    classes={{ root: styles.bulkFaceEditActionButton }}
+                    // eslint-disable-next-line
+                    onClick={() => {
+                      onAddToExistingEntity(
+                        get(bulkEditActionItems, [activeTab])
+                      );
+                    }}
+                  >
+                    <PizzaIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Create New Entity" placement="bottom-start">
+                  <IconButton
+                    classes={{ root: styles.bulkFaceEditActionButton }}
+                    // eslint-disable-next-line
+                    onClick={() => {
+                      onAddNewEntity(get(bulkEditActionItems, [activeTab]));
+                    }}
+                  >
+                    <CreateIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    activeTab === 'faceRecognition'
+                      ? `Remove Entit${
+                          get(bulkEditActionItems, [activeTab, 'length']) > 1
+                            ? 'ies'
+                            : 'y'
+                        }`
+                      : `Delete Face Detection${
+                          get(bulkEditActionItems, [activeTab, 'length']) > 1
+                            ? 's'
+                            : ''
+                        }`
+                  }
+                  placement="bottom-start"
                 >
-                  <DeleteIcon />
-                </IconButton>
+                  <IconButton
+                    classes={{ root: styles.bulkFaceEditActionButton }}
+                    onClick={this.handleRemoveFaces(
+                      get(bulkEditActionItems, [activeTab])
+                    )}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </div>
             )}
           </div>

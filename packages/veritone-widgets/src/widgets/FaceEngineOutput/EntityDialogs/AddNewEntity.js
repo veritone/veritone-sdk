@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
+import { connect } from 'react-redux';
 import { get } from 'lodash';
-import DialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import IconButton from '@material-ui/core/IconButton/IconButton';
-import Icon from '@material-ui/core/Icon/Icon';
-import DialogContent from '@material-ui/core/DialogContent/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText/DialogContentText';
-import Dialog from '@material-ui/core/Dialog/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import Dialog from '@material-ui/core/Dialog';
 import AddNewEntityForm from './AddNewEntityForm';
-import connect from 'react-redux/es/connect/connect';
 import * as faceEngineOutput from '../../../redux/modules/mediaDetails/faceEngineOutput';
 import { removeAwsSignatureParams } from '../../../shared/asset';
 import { LibraryForm } from 'veritone-react-common';
@@ -113,8 +113,9 @@ export default class AddNewEntityDialog extends Component {
       <Dialog
         open={this.props.open}
         classes={{
-          paper: styles.editNewEntityDialogPaper
+          paper: styles.entityDialogPaper
         }}
+        data-veritone-component="add-to-new-entity-dialog"
       >
         <DialogTitle
           id="add-new-entity-title"
@@ -129,6 +130,7 @@ export default class AddNewEntityDialog extends Component {
             classes={{
               root: styles.closeButton
             }}
+            data-veritone-element="close-button"
           >
             <Icon className="icon-close-exit" />
           </IconButton>

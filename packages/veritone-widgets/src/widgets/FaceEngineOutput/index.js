@@ -24,6 +24,7 @@ import { FaceEngineOutput, AlertDialog } from 'veritone-react-common';
 import * as faceEngineOutput from '../../redux/modules/mediaDetails/faceEngineOutput';
 import rootSaga from '../../redux/modules/mediaDetails/faceEngineOutput/saga';
 import AddNewEntityDialog from './EntityDialogs/AddNewEntity';
+import AddToAnExistingEntityDialog from './EntityDialogs/AddToExisting';
 
 const { engineResults: engineResultsModule } = modules;
 
@@ -76,7 +77,10 @@ const saga = util.reactReduxSaga.saga;
     removeSelectedFaceObjects: faceEngineOutput.removeSelectedFaceObjects,
     setActiveTab: faceEngineOutput.setActiveTab,
     onAddNewEntity: faceEngineOutput.openAddEntityDialog,
-    closeAddEntityDialog: faceEngineOutput.closeAddEntityDialog
+    closeAddEntityDialog: faceEngineOutput.closeAddEntityDialog,
+    onAddToExistingEntity: faceEngineOutput.openAddToExistingEntityDialog,
+    closeAddToExistingEntityDialog:
+      faceEngineOutput.closeAddToExistingEntityDialog
   },
   null,
   { withRef: true }
@@ -188,7 +192,8 @@ class FaceEngineOutputContainer extends Component {
     removeSelectedFaceObjects: func,
     activeTab: string,
     onAddNewEntity: func,
-    closeAddEntityDialog: func
+    closeAddEntityDialog: func,
+    closeAddToExistingEntityDialog: func
   };
 
   state = {
@@ -255,6 +260,7 @@ class FaceEngineOutputContainer extends Component {
 
     this.showFaceDetectionDoneSnack(entity);
     this.props.closeAddEntityDialog();
+    this.props.closeAddToExistingEntityDialog();
   };
 
   showFaceDetectionDoneSnack = entity => {
@@ -378,7 +384,8 @@ class FaceEngineOutputContainer extends Component {
       'activeTab',
       'setActiveTab',
       'moreMenuItems',
-      'onAddNewEntity'
+      'onAddNewEntity',
+      'onAddToExistingEntity'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -441,6 +448,10 @@ class FaceEngineOutputContainer extends Component {
         <AddNewEntityDialog
           onSubmit={this.handleFaceUpdates}
           onCancel={this.props.closeAddEntityDialog}
+        />
+        <AddToAnExistingEntityDialog
+          onSubmit={this.handleFaceUpdates}
+          onCancel={this.props.closeAddToExistingEntityDialog}
         />
         {this.renderFaceDetectionDoneSnackbar()}
         <AlertDialog
