@@ -30,6 +30,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 @connect(
   (state, { categoryId }) => ({
     category: engineOutputExportModule.getCategoryById(state, categoryId),
+    transcriptCategoryType: engineOutputExportModule.transcriptCategoryType(state),
     initialSubtitleConfig: engineOutputExportModule.getSubtitleConfig(
       state,
       categoryId
@@ -125,10 +126,10 @@ export default class EngineCategoryConfig extends Component {
       onExpandConfigs,
       expanded,
       initialSubtitleConfig,
-      initialSpeakerToggle
+      initialSpeakerToggle,
+      transcriptCategoryType
     } = this.props;
-    const transcriptCategoryId = '67cd4dd0-2f75-445d-a6f0-2f297d6cd182';
-    const isTranscriptionCategory = category.id === transcriptCategoryId;
+    const isTranscriptionCategory = category.categoryType === transcriptCategoryType;
 
     let hasSubtitleFormatsSelected = false;
     forEach(engineCategoryConfigs, config => {

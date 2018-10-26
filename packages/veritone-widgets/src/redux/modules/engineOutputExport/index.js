@@ -1,4 +1,4 @@
-import { forEach, get, uniqWith } from 'lodash';
+import { forEach, get, uniqWith, pick } from 'lodash';
 import { helpers } from 'veritone-redux-common';
 const { createReducer, callGraphQLApi } = helpers;
 
@@ -44,7 +44,9 @@ const defaultState = {
   errorSnackBars: [],
   fetchEngineRunsFailed: false,
   exportAndDownloadFailed: false,
-  isBulkExport: false
+  isBulkExport: false,
+  transcriptCategoryType: 'transcript',
+  speakerCategoryType: 'speaker'
 };
 
 export default createReducer(defaultState, {
@@ -77,12 +79,14 @@ export default createReducer(defaultState, {
           if (!categoryLookup[engineRun.category.id]) {
             newOutputConfigurations.push({
               categoryId: engineRun.category.id,
+              categoryType: engineRun.category.categoryType,
               formats: []
             });
           }
         } else {
           newOutputConfigurations.push({
             engineId: engineRun.id,
+            categoryType: engineRun.category.categoryType,
             formats: []
           });
         }
@@ -401,6 +405,10 @@ export const getOutputConfigurations = state =>
 export const errorSnackBars = state => get(local(state), 'errorSnackBars');
 export const fetchEngineRunsFailed = state =>
   get(local(state), 'fetchEngineRunsFailed');
+export const speakerCategoryType = state =>
+  get(local(state), 'speakerCategoryType');
+export const transcriptCategoryType = state =>
+  get(local(state), 'transcriptCategoryType');
 export const getSubtitleConfig = (state, categoryId) =>
   get(local(state), ['subtitleConfigCache', categoryId]);
 export const getSpeakerToggle = (state, categoryId) => {
@@ -433,6 +441,7 @@ export const fetchEngineRuns = tdos => async (dispatch, getState) => {
               category {
                 id
                 name
+                categoryType
                 iconClass
                 exportFormats {
                   format
@@ -518,7 +527,8 @@ export const exportAndDownload = tdoData => async (dispatch, getState) => {
     query,
     variables: {
       includeMedia: getIncludeMedia(getState()),
-      outputConfigurations: getOutputConfigurations(getState()),
+      outputConfigurations: getOutputConfigurations(getState())
+        .map(config => pick(config, ['engineId', 'categoryId', 'formats'])),
       tdoData
     },
     dispatch,
