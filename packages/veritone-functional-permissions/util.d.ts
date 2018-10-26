@@ -3,26 +3,26 @@
  * This combines two permissions into one.
  */
 export declare function combinePermissions(
-  permissions1: number[],
-  permissions2: number[]
-): number[];
+  permissions1: ReadonlyArray<number>,
+  permissions2: ReadonlyArray<number>
+): ReadonlyArray<number>;
 
 /**
  * Get Permissions IDs from mask.
  * This converts a mask to permission ids.
  */
 export declare function getPermissionIdsFromMask(
-  permissions: number[]
-): number[];
+  permissions: ReadonlyArray<number>
+): ReadonlyArray<number>;
 
 /**
  * Get Mask From Permissions.
  * This converts permission ids to a mask. Optionally, the caller can pass in a mask that will be used to add the permissions to.
  */
 export declare function getMaskFromPermissionIds(
-  permissionIds: number | number[],
-  mask?: number[]
-): number[];
+  permissionIds: number | ReadonlyArray<number>,
+  mask?: ReadonlyArray<number>
+): ReadonlyArray<number>;
 
 /**
  * Has Permission.
@@ -30,7 +30,7 @@ export declare function getMaskFromPermissionIds(
  */
 export declare function hasAccessTo(
   permissionId: number,
-  userPermissions: number[]
+  userPermissions: ReadonlyArray<number>
 ): boolean;
 
 /**
@@ -38,8 +38,8 @@ export declare function hasAccessTo(
  * This checks if the user's permissions satisfies any of the requested permission checks.
  */
 export declare function hasAccessToAny(
-  permissionIds: number[],
-  userPermissions: number[]
+  permissionIds: ReadonlyArray<number>,
+  userPermissions: ReadonlyArray<number>
 ): boolean;
 
 /**
@@ -47,6 +47,6 @@ export declare function hasAccessToAny(
  * This checks if the user's permissions satisfies all of the requested permission checks.
  */
 export declare function hasAccessToAll(
-  permissionIds: number[],
-  userPermissions: number[]
+  permissionIds: ReadonlyArray<number>,
+  userPermissions: ReadonlyArray<number>
 ): boolean;
