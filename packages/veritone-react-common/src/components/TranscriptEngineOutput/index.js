@@ -15,6 +15,7 @@ import DoneIcon from '@material-ui/icons/Done';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import TranscriptContent, { View, Edit } from './TranscriptContent';
+import SpeakerTranscriptContent from './SpeakerTranscriptContent';
 import styles from './styles.scss';
 
 export default class TranscriptEngineOutput extends Component {
@@ -47,14 +48,7 @@ export default class TranscriptEngineOutput extends Component {
         series: arrayOf(
           shape({
             startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired,
-            guid: string,
-            words: arrayOf(
-              shape({
-                word: string.isRequired,
-                confidence: number
-              })
-            )
+            stopTimeMs: number.isRequired
           })
         )
       })
@@ -356,7 +350,8 @@ export default class TranscriptEngineOutput extends Component {
       mediaPlayerTimeIntervalMs,
       outputNullState,
       selectedEngineId,
-      selectedCombineViewTypeId
+      selectedCombineViewTypeId,
+      speakerData
     } = this.props;
 
     const currentEditType = onEditTypeChange ? editType : this.state.editType;
@@ -366,7 +361,26 @@ export default class TranscriptEngineOutput extends Component {
         <div className={styles.content}>
           {
             selectedCombineViewTypeId === 'speaker-view' ? 
-            (<span>SPEAKER COMPONENT</span>) : (
+            (
+              <SpeakerTranscriptContent
+                data={data}
+                editMode={editMode}
+                viewType={this.state.viewType}
+                editType={currentEditType}
+                mediaPlayerTimeMs={mediaPlayerTimeMs}
+                mediaPlayerTimeIntervalMs={mediaPlayerTimeIntervalMs}
+                estimatedDisplayTimeMs={estimatedDisplayTimeMs}
+                mediaLengthMs={mediaLengthMs}
+                neglectableTimeMs={neglectableTimeMs}
+                onClick={onClick}
+                onScroll={onScroll}
+                onChange={onChange}
+                selectedEngineId={selectedEngineId}
+                className={contentClassName}
+
+                speakerData={speakerData}
+              />
+            ) : (
               <TranscriptContent
                 data={data}
                 editMode={editMode}

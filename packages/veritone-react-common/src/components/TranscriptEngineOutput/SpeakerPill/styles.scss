@@ -1,0 +1,14 @@
+.speakerPill {
+  min-width: 50px;
+  height: 24px !important;
+  font-weight: bold;
+  &.highlight {
+    $highlight-color: #2196f3 !important;
+
+    background-color: $highlight-color;
+    color: white;
+    &:hover {
+      background-color: $highlight-color;
+    }
+  }
+}
