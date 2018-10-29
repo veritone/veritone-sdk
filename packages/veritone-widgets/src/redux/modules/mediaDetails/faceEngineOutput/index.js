@@ -14,6 +14,10 @@ export const FETCH_UPLOAD_URL = `vtn/${namespace}/FETCH_UPLOAD_URL`;
 export const FETCH_UPLOAD_URL_SUCCESS = `vtn/${namespace}/FETCH_UPLOAD_URL_SUCCESS`;
 export const FETCH_UPLOAD_URL_FAILURE = `vtn/${namespace}/FETCH_UPLOAD_URL_FAILURE`;
 
+export const CREATE_ENTITY_IDENTIFIERS = `vtn/${namespace}/CREATE_ENTITY_IDENTIFIERS`;
+export const CREATE_ENTITY_IDENTIFIERS_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_IDENTIFIERS_SUCCESS`;
+export const CREATE_ENTITY_IDENTIFIERS_FAILURE = `vtn/${namespace}/CREATE_ENTITY_IDENTIFIERS_FAILURE`;
+
 export const CREATE_ENTITY = `vtn/${namespace}/CREATE_ENTITY`;
 export const CREATE_ENTITY_SUCCESS = `vtn/${namespace}/CREATE_ENTITY_SUCCESS`;
 export const CREATE_ENTITY_FAILURE = `vtn/${namespace}/CREATE_ENTITY_FAILURE`;
@@ -85,6 +89,7 @@ const defaultState = {
   creatingEntity: false,
   isFetchingLibraries: false,
   isSearchingEntities: false,
+  creatingIdentifiers: false,
   facesEditedByUser: {},
   facesRemovedByUser: {},
   pendingFaceEdits: {},
@@ -237,6 +242,24 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       isSearchingEntities: false
+    };
+  },
+  [CREATE_ENTITY_IDENTIFIERS](state) {
+    return {
+      ...state,
+      createEntityIdentifiers: true
+    };
+  },
+  [CREATE_ENTITY_IDENTIFIERS_SUCCESS](state) {
+    return {
+      ...state,
+      createEntityIdentifiers: false
+    };
+  },
+  [CREATE_ENTITY_IDENTIFIERS_FAILURE](state) {
+    return {
+      ...state,
+      createEntityIdentifiers: false
     };
   },
   [ADD_DETECTED_FACE](state, action) {
@@ -601,6 +624,54 @@ export const removeSelectedFaceObjects = faces => ({
     faces
   }
 });
+
+/* ENTITY IDENTIFIERS */
+function generateCreateIdentifierQuery(identifiers) {
+  return identifiers.reduce((acc, identifier, idx) => {
+    return (
+      acc +
+      `
+      identifier${idx}: createEntityIdentifier(input: {
+        entityId: "${identifier.entityId}"
+        identifierTypeId: "${identifier.identifierTypeId}"
+        contentType: "${identifier.contentType}"
+        url: "${identifier.url}"
+        isPriority: ${identifier.isPriority}
+      }) {
+        id
+        entityId
+        identifierTypeId
+        isPriority
+      }
+    `
+    );
+  }, ``);
+}
+
+export const isCreatingIdentifiers = state =>
+  get(local(state), 'creatingIdentifiers');
+
+export const createEntityIdentifiers = identifiers => async (
+  dispatch,
+  getState
+) => {
+  const query = `
+    mutation {
+      ${generateCreateIdentifierQuery(identifiers)}
+    }
+  `;
+
+  return await callGraphQLApi({
+    actionTypes: [
+      CREATE_ENTITY_IDENTIFIERS,
+      CREATE_ENTITY_IDENTIFIERS_SUCCESS,
+      CREATE_ENTITY_IDENTIFIERS_FAILURE
+    ],
+    query,
+    dispatch,
+    getState
+  });
+};
 
 /* ENTITIES */
 export const fetchingEntities = meta => ({

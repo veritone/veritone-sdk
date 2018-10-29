@@ -123,7 +123,10 @@ export default class AddNewEntityDialog extends Component {
             root: styles.dialogTitle
           }}
         >
-          <div className={styles.dialogTitleLabel}>{'Create New Entity'}</div>
+          <div className={styles.dialogTitleLabel}>
+            {!this.state.configuringNewLibrary && 'Add to Library'}
+            {this.state.configuringNewLibrary && 'Create New Library'}
+          </div>
           <IconButton
             onClick={this.props.onCancel}
             aria-label="Close Add New Entity"

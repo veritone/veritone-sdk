@@ -451,7 +451,7 @@ class FaceEngineOutputContainer extends Component {
         />
         <AddToAnExistingEntityDialog
           onSubmit={this.handleFaceUpdates}
-          onCancel={this.props.closeAddToExistingEntityDialog}
+          onClose={this.props.closeAddToExistingEntityDialog}
         />
         {this.renderFaceDetectionDoneSnackbar()}
         <AlertDialog
