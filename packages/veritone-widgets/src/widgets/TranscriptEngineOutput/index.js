@@ -118,6 +118,18 @@ export default class TranscriptEngineOutputContainer extends Component {
         )
       })
     ),
+    selectedCombineEngineResults: arrayOf(
+      shape({
+        sourceEngineId: string.isRequired,
+        series: arrayOf(
+          shape({
+            startTimeMs: number.isRequired,
+            stopTimeMs: number.isRequired,
+            speakerId: string
+          })
+        )
+      })
+    ),
     currentData: arrayOf(
       shape({
         startTimeMs: number,
@@ -141,8 +153,17 @@ export default class TranscriptEngineOutputContainer extends Component {
         })
       )
     }),
+    combineViewTypes: arrayOf(
+      shape({
+        name: string.isRequired,
+        id: string.isRequired
+      })
+    ),
     combineCategory: string,
+    selectedCombineEngineId: string,
     setSelectedCombineEngineId: func,
+    selectedCombineViewTypeId: string,
+    setSelectedCombineViewTypeId: func,
     title: string,
 
     className: string,
@@ -233,7 +254,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     const {
       isFetchingCombineData
     } = this.state;
-    const speakerEngines = get(combineEngines, this.props.combineCategory);
+    const speakerEngines = get(combineEngines, combineCategory);
     if (
       !selectedCombineEngineId &&
       speakerEngines &&
@@ -398,7 +419,7 @@ export default class TranscriptEngineOutputContainer extends Component {
     const {
       isFetchingCombineData
     } = this.state;
-    const speakerEngines = get(this.props, ['combineEngines', combineCategory], []);
+    const speakerEngines = get(combineEngines, combineCategory, []);
     const combineEngineTask = speakerEngines
       .find(engine => engine.id === selectedCombineEngineId);
 

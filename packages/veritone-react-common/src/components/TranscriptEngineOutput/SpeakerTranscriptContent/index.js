@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy, reduce, get } from 'lodash';
+import { orderBy, reduce } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
 import Grid from '@material-ui/core/Grid';
 
 import DynamicContentScroll from '../../share-components/scrolls/DynamicContentScroll';
-import NoDataSegment from '../TranscriptSegment/NoDataSegment';
 import SnippetSegment from '../TranscriptSegment/SnippetSegment';
 import OverviewSegment from '../TranscriptSegment/OverviewSegment';
 import TranscriptBulkEdit from '../TranscriptBulkEdit';

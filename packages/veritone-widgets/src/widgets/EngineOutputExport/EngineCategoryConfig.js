@@ -51,6 +51,7 @@ import * as engineOutputExportModule from '../../redux/modules/engineOutputExpor
 )
 export default class EngineCategoryConfig extends Component {
   static propTypes = {
+    transcriptCategoryType: string,
     category: shape({
       id: string.isRequired,
       iconClass: string.isRequired,

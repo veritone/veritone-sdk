@@ -826,8 +826,10 @@ class MediaDetailsWidget extends React.Component {
             if (!secondaryEngineCombiner[map.withType]) {
               secondaryEngineCombiner[map.withType] = {};
             }
-            const combineCategory = find(engineCategories, category => category.categoryType === map.combineType);
-            secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
+            const combineCategory = find(engineCategories, ['categoryType', map.combineType]);
+            if (combineCategory) {
+              secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
+            }
           }
           return isCombineMatch;
         });
@@ -868,8 +870,7 @@ class MediaDetailsWidget extends React.Component {
       onExport,
       exportClosedCaptionsEnabled,
       bulkEditEnabled,
-      cancelEdit,
-      categoryCombinationMapper
+      cancelEdit
     } = this.props;
 
     const { isMenuOpen } = this.state;

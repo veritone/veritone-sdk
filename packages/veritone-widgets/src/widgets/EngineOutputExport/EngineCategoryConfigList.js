@@ -9,7 +9,6 @@ import {
   string,
   func
 } from 'prop-types';
-import { get } from 'lodash';
 
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
@@ -61,7 +60,8 @@ export default class EngineCategoryConfigList extends Component {
     fetchingEngineRuns: bool,
     toggleConfigExpand: func,
     setHasSpeakerData: func,
-    hasSpeakerData: bool
+    hasSpeakerData: bool,
+    speakerCategoryType: string
   };
 
   componentDidMount() {
