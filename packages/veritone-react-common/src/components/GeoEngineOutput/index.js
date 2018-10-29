@@ -5,6 +5,7 @@ import classNames from 'classnames';
 
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import { get } from 'lodash';
 import { format } from '../../helpers/date';
 
 import EngineOutputHeader from '../EngineOutputHeader';
@@ -34,7 +35,19 @@ export default class GeoEngineOutput extends Component {
                 velocity: number, // in meters
                 altitude: number // in meters
               }).isRequired
-            ).isRequired
+            ),
+            object: shape({
+              gps: arrayOf(
+                shape({
+                  latitude: number, // in meters
+                  longitude: number, // in meters
+                  precision: number, // in meters
+                  direction: number, // 0-360
+                  velocity: number, // in meters
+                  altitude: number // in meters
+                }).isRequired
+              )
+            })
           })
         )
       })
@@ -152,25 +165,33 @@ export default class GeoEngineOutput extends Component {
     data.forEach(dataChunk => {
       const series = dataChunk.series;
       series &&
-        series.forEach(entry => {
-          const entryStartTime = entry.startTimeMs;
-          const entryStopTime = entry.stopTimeMs;
-          const parsedEntry = Object.assign(entry, entry.gps[0]);
-          parsedEntry.lat = entry.gps[0].latitude;
-          parsedEntry.lng = entry.gps[0].longitude;
-          parsedEntry.startTimeStamp = format(
-            timeStampMS + entryStartTime,
-            'hh:mm:ss A'
-          );
-          parsedEntry.stopTimeStamp = format(
-            timeStampMS + entryStopTime,
-            'hh:mm:ss A'
-          );
-          parsedEntry.active = !(
-            stopMediaPlayHeadMs < entryStartTime ||
-            startMediaPlayHeadMs > entryStopTime
-          );
-          extractedData.push(parsedEntry);
+        series
+          .filter(seriesItem =>
+              get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
+          )
+          .forEach(entry => {
+            const entryStartTime = entry.startTimeMs;
+            const entryStopTime = entry.stopTimeMs;
+            let gps = get(entry, 'gps');
+            if (!gps || !gps.length) {
+              gps = get(entry, 'object.gps');
+            }
+            const parsedEntry = Object.assign(entry, gps[0]);
+            parsedEntry.lat = gps[0].latitude;
+            parsedEntry.lng = gps[0].longitude;
+            parsedEntry.startTimeStamp = format(
+              timeStampMS + entryStartTime,
+              'hh:mm:ss A'
+            );
+            parsedEntry.stopTimeStamp = format(
+              timeStampMS + entryStopTime,
+              'hh:mm:ss A'
+            );
+            parsedEntry.active = !(
+              stopMediaPlayHeadMs < entryStartTime ||
+              startMediaPlayHeadMs > entryStopTime
+            );
+            extractedData.push(parsedEntry);
         });
     });
     return extractedData;
