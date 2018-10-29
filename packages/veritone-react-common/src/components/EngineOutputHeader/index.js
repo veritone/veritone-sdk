@@ -138,7 +138,7 @@ class EngineOutputHeader extends Component {
         {!hideTitle && <div className={styles.headerTitle}>{title}</div>}
         <div className={styles.headerActions}>
           {children}
-          {isArray(combineViewTypes) && (
+          {isArray(combineViewTypes) && combineViewTypes.length > 1 (
             <FormControl
               className={styles.engineFormControl}
             >
