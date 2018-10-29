@@ -670,7 +670,7 @@ function* fetchEntities(entityIds) {
   }
   yield put({
     type: REQUEST_ENTITIES_SUCCESS,
-    payload: response.data.entities.records
+    payload: get(response, 'data.entities.records', [])
   });
 }
 
