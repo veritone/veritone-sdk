@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { number, string, arrayOf, func, shape, node } from 'prop-types';
 import classNames from 'classnames';
-import { keyBy, sortBy, toArray, cloneDeep } from 'lodash';
+import { keyBy, sortBy, toArray, cloneDeep, some } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FingerprintContent from './FingerprintContent';
@@ -122,12 +122,11 @@ export default class FingerprintEngineOutput extends Component {
             entity.matches
               ? entity.matches.push(entry)
               : (entity.matches = [entry]); // Add entry to matching entity
-            if (!entity.libraryName) {
-              // Entity hasn't been registered to any library object
-              library.entities
-                ? library.entities.push(entity)
-                : (library.entities = [entity]); // Add entity to matching library
-              entity.libraryName = library.name;
+            entity.libraryName = library.name;
+            if (!library.entities) {
+              library.entities = [entity];
+            } else if (!some(library.entities, (item => item.id === entity.id))) {
+              library.entities.push(entity)
             }
           }
         });
