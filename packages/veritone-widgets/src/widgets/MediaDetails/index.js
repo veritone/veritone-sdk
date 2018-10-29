@@ -803,6 +803,47 @@ class MediaDetailsWidget extends React.Component {
     this.closeEngineOutputExport();
   };
 
+  getCombineAggregations = () => {
+    const {
+      engineCategories,
+      categoryCombinationMapper,
+      selectedEngineCategory
+    } = this.props;
+    // secondaryEngineCombiner will be loaded with the following format:
+    // {
+    //   [withType]: {
+    //     [combineType]: ARRAY_OF_combineType_ENGINES
+    //   }
+    // }
+    const secondaryEngineCombiner = {};
+    const engineCategorySelectorItems = isArray(engineCategories) ? 
+      engineCategories.filter(category => {
+        // If the current category is to be combined with another
+        // then load it's engines into the combiner using withId as the key
+        const isCombineCategory = !find(categoryCombinationMapper, map => {
+          const isCombineMatch = map.combineType === category.categoryType;
+          if (isCombineMatch) {
+            if (!secondaryEngineCombiner[map.withType]) {
+              secondaryEngineCombiner[map.withType] = {};
+            }
+            const combineCategory = find(engineCategories, category => category.categoryType === map.combineType);
+            secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
+          }
+          return isCombineMatch;
+        });
+
+        return isCombineCategory;
+      }) : [];
+
+    const combineEngines = selectedEngineCategory ? 
+      get(secondaryEngineCombiner, selectedEngineCategory.categoryType) :
+      [];
+    return {
+      combineEngines,
+      engineCategorySelectorItems
+    };
+  }
+
   render() {
     let {
       engineCategories,
@@ -833,35 +874,11 @@ class MediaDetailsWidget extends React.Component {
 
     const { isMenuOpen } = this.state;
 
-    // secondaryEngineCombiner will be loaded with the following format:
-    // {
-    //   [withType]: {
-    //     [combineType]: ARRAY_OF_combineType_ENGINES
-    //   }
-    // }
-    const secondaryEngineCombiner = {};
-    const engineCategorySelectorItems = isArray(this.props.engineCategories) ? 
-      this.props.engineCategories.filter(category => {
-        // If the current category is to be combined with another
-        // then load it's engines into the combiner using withId as the key
-        const isCombineCategory = !find(categoryCombinationMapper, map => {
-          const isCombineMatch = map.combineType === category.categoryType;
-          if (isCombineMatch) {
-            if (!secondaryEngineCombiner[map.withType]) {
-              secondaryEngineCombiner[map.withType] = {};
-            }
-            const combineCategory = find(this.props.engineCategories, category => category.categoryType === map.combineType);
-            secondaryEngineCombiner[map.withType][map.combineType] = combineCategory.engines;
-          }
-          return isCombineMatch;
-        });
-
-        return isCombineCategory;
-      }) : [];
-
-    const combineEngines = selectedEngineCategory ? 
-      get(secondaryEngineCombiner, selectedEngineCategory.categoryType) :
-      undefined;
+    // Filter out any categories that should be combined with another category
+    const {
+      combineEngines,
+      engineCategorySelectorItems
+    } = this.getCombineAggregations();
 
     const isImage = /^image\/.*/.test(
       get(tdo, 'details.veritoneFile.mimetype')

@@ -11,7 +11,8 @@ import transcriptSaga, {
 import {
   AlertDialog,
   TranscriptEngineOutput,
-  TranscriptEditMode
+  TranscriptEditMode,
+  EngineOutputNullState
 } from 'veritone-react-common';
 import Button from '@material-ui/core/Button/Button';
 import styles from '../MediaDetails/styles.scss';
@@ -269,6 +270,17 @@ export default class TranscriptEngineOutputContainer extends Component {
       combineViewTypes.length
     ) {
       setSelectedCombineViewTypeId(combineViewTypes[0].id);
+    } else if (
+      speakerEngines &&
+      speakerEngines.length
+    ) {
+      const combineEngine = speakerEngines.find(sEngine => sEngine.id === selectedCombineEngineId);
+      switch (combineEngine.status) {
+        case 'failed':
+          break;
+        case 'running':
+          break;
+      }
     }
   }
 
@@ -374,6 +386,41 @@ export default class TranscriptEngineOutputContainer extends Component {
     this.props.setShowTranscriptBulkEditSnackState(false);
   };
 
+  determineSpeakerNullstate = () => {
+    const {
+      selectedCombineEngineId,
+      selectedCombineEngineResults,
+      selectedCombineViewTypeId,
+      combineCategory,
+      combineEngines,
+      outputNullState
+    } = this.props;
+    const {
+      isFetchingCombineData
+    } = this.state;
+    const speakerEngines = get(this.props, ['combineEngines', combineCategory], []);
+    const combineEngineTask = speakerEngines
+      .find(engine => engine.id === selectedCombineEngineId);
+
+    if (combineEngineTask && selectedCombineViewTypeId == 'speaker-view') {
+      let combineStatus = combineEngineTask.status;
+      if (isFetchingCombineData) {
+        combineStatus = 'fetching';
+      } else if (!selectedCombineEngineResults && combineStatus === 'complete') {
+        combineStatus = 'no_data';
+      } else if (selectedCombineEngineResults && combineStatus === 'complete') {
+        return outputNullState;
+      }
+      return outputNullState || (
+        <EngineOutputNullState
+          engineStatus={combineStatus}
+          engineName={combineEngineTask.name}
+        />
+      );
+    }
+    return outputNullState;
+  };
+
   render() {
     const transcriptEngineProps = pick(this.props, [
       'title',
@@ -392,7 +439,6 @@ export default class TranscriptEngineOutputContainer extends Component {
       'estimatedDisplayTimeMs',
       'mediaPlayerTimeMs',
       'mediaPlayerTimeIntervalMs',
-      'outputNullState',
       'bulkEditEnabled',
       'moreMenuItems',
       'disableEditButton',
@@ -400,6 +446,8 @@ export default class TranscriptEngineOutputContainer extends Component {
       'combineViewTypes',
       'selectedCombineViewTypeId'
     ]);
+
+    const outputNullState = this.determineSpeakerNullstate();
 
     const alertTitle = 'Unsaved Changes';
     let alertDescription =
@@ -435,6 +483,7 @@ export default class TranscriptEngineOutputContainer extends Component {
           speakerData={this.props.selectedCombineEngineResults}
           selectedSpeakerEngineId={this.props.selectedCombineEngineId}
           handleCombineViewTypeChange={this.props.setSelectedCombineViewTypeId}
+          outputNullState={outputNullState}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
