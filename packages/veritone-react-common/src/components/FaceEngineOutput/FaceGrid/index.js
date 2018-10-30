@@ -59,7 +59,14 @@ class FaceGrid extends Component {
   };
 
   render() {
-    const { faces, selectedFaces, hideEntityLabels } = this.props;
+    const {
+      faces,
+      selectedFaces,
+      hideEntityLabels,
+      onFaceCheckboxClicked,
+      editMode,
+      entitySearchResults
+    } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
       'onRemoveFace',
@@ -80,11 +87,11 @@ class FaceGrid extends Component {
                   face.stopTimeMs
                 }-${face.object.uri}`}
                 isSelected={!!selectedFace}
-                onCheckboxClicked={this.props.onFaceCheckboxClicked}
+                onCheckboxClicked={onFaceCheckboxClicked}
                 face={face}
-                enableEdit={this.props.editMode}
+                enableEdit={editMode}
                 addNewEntity={this.handleAddNewEntity(idx)}
-                searchResults={this.props.entitySearchResults}
+                searchResults={entitySearchResults}
                 onClick={this.handleFaceClick(face)}
                 hideEntityLabel={hideEntityLabels}
                 {...detectionBoxProps}

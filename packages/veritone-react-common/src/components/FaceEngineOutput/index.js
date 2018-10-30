@@ -26,7 +26,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce, get, isArray, isObject, uniqBy } from 'lodash';
+import { find, reduce, get, isArray, isObject, findIndex } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -143,7 +143,8 @@ class FaceEngineOutput extends Component {
 
   state = {
     viewMode: 'summary',
-    selectedEntityId: null
+    selectedEntityId: null,
+    lastCheckedFace: null
   };
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -186,49 +187,74 @@ class FaceEngineOutput extends Component {
 
   handleSelectAllToggle = evt => {
     const { selectedEntityId } = this.state;
-    const { bulkEditActionItems, activeTab } = this.props;
+    const {
+      recognizedFaces,
+      activeTab,
+      unrecognizedFaces,
+      onUnselectFaces,
+      onSelectFaces
+    } = this.props;
 
-    if (activeTab === 'faceDetection' && this.props.unrecognizedFaces.length) {
+    if (activeTab === 'faceDetection' && unrecognizedFaces.length) {
       if (!evt.target.checked) {
-        this.props.onUnselectFaces(this.props.unrecognizedFaces);
+        onUnselectFaces(unrecognizedFaces);
         return;
       }
 
-      this.props.onSelectFaces(this.props.unrecognizedFaces);
+      onSelectFaces(unrecognizedFaces);
     } else if (activeTab === 'faceRecognition') {
-      let recognizedFaces = [];
+      let selectedRecognizedFaces = [];
       if (selectedEntityId) {
-        recognizedFaces = uniqBy(
-          bulkEditActionItems[activeTab].concat(
-            this.props.recognizedFaces[selectedEntityId]
-          ),
-          'guid'
-        );
+        selectedRecognizedFaces = recognizedFaces[selectedEntityId];
       } else {
-        recognizedFaces = reduce(
-          Object.values(this.props.recognizedFaces),
+        selectedRecognizedFaces = reduce(
+          Object.values(recognizedFaces),
           (acc, faces) => {
             return acc.concat(faces);
           },
           []
         );
       }
-      if (recognizedFaces.length > 0) {
+      if (selectedRecognizedFaces.length > 0) {
         if (!evt.target.checked) {
-          this.props.onUnselectFaces(recognizedFaces);
+          onUnselectFaces(selectedRecognizedFaces);
           return;
         }
 
-        this.props.onSelectFaces(recognizedFaces);
+        onSelectFaces(selectedRecognizedFaces);
       }
     }
   };
 
-  handleSelectFace = (face, checked) => {
-    if (checked) {
-      this.props.onSelectFaces([face]);
+  handleSelectFace = (face, evt) => {
+    const { lastCheckedFace, selectedEntityId } = this.state;
+    const { activeTab, unrecognizedFaces, recognizedFaces, onSelectFaces, onUnselectFaces } = this.props;
+    if (evt.target.checked) {
+      if (get(evt, 'nativeEvent.shiftKey') && lastCheckedFace) {
+        let faces;
+        if (activeTab === 'faceDetection') {
+          faces = unrecognizedFaces;
+        } else if (activeTab === 'faceRecognition') {
+          if (selectedEntityId) {
+            faces = recognizedFaces[selectedEntityId];
+          }
+        }
+        const selectedIndex = findIndex(faces, {'guid': face.guid});
+        const lastIndex = findIndex(faces,  {'guid': lastCheckedFace.guid});
+        onSelectFaces(
+          faces.slice(
+            Math.min(selectedIndex, lastIndex),
+            Math.max(selectedIndex, lastIndex) + 1
+          )
+        );
+      } else {
+        onSelectFaces([face]);
+      }
+      this.setState({
+        lastCheckedFace: { ...face }
+      });
     } else {
-      this.props.onUnselectFaces([face]);
+      onUnselectFaces([face]);
     }
   };
 

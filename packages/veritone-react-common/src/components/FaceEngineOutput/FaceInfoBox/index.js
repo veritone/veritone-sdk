@@ -140,7 +140,7 @@ class FaceInfoBox extends Component {
   handleCheckboxClicked = face => evt => {
     evt.stopPropagation();
     evt.nativeEvent.stopImmediatePropagation();
-    this.props.onCheckboxClicked(face, evt.target.checked);
+    this.props.onCheckboxClicked(face, evt);
   };
 
   render() {

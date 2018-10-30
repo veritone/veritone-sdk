@@ -68,7 +68,8 @@ import {
   forEach,
   omit,
   uniqBy,
-  differenceBy
+  differenceBy,
+  orderBy
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -479,17 +480,17 @@ const reducer = createReducer(defaultState, {
   [SELECT_FACE_OBJECTS](
     state,
     {
-      payload: { activeTab, faces }
+      payload: { faces }
     }
   ) {
     return {
       ...state,
       bulkEditActionItems: {
         ...state.bulkEditActionItems,
-        [state.activeTab]: [
+        [state.activeTab]: orderBy(uniqBy([
           ...state.bulkEditActionItems[state.activeTab],
           ...faces
-        ]
+        ], 'guid'), 'startTimeMs', 'stopTimeMs')
       }
     };
   },
