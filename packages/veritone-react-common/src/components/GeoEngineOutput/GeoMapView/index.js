@@ -59,7 +59,7 @@ export default class GeoMapView extends Component {
 
   getGeoLocation = seriesItem => {
     if (get(seriesItem, 'gps.length')) {
-      return get(seriesItem, 'gps.length');
+      return get(seriesItem, 'gps');
     }
     return get(seriesItem, 'object.gps');
   };
@@ -77,7 +77,7 @@ export default class GeoMapView extends Component {
           get(seriesItem, 'gps.length') || get(seriesItem, 'object.gps.length')
         )
         .forEach(entry => {
-          const gps = this.getGeoLocation(entry, 'gps');
+          const gps = this.getGeoLocation(entry);
           const entryPos = gps[0];
           const entryLat = entryPos.latitude;
           const entryLng = entryPos.longitude;
@@ -118,7 +118,7 @@ export default class GeoMapView extends Component {
       }
 
       if (nearestEntry) {
-        const gps = this.getGeoLocation(nearestEntry, 'gps');
+        const gps = this.getGeoLocation(nearestEntry);
         this.setState({
           currentPos: {
             latitude: gps[0].latitude,
@@ -157,7 +157,7 @@ export default class GeoMapView extends Component {
 
     for (const entry of data) {
       const entryMidPoint = (entry.stopTimeMs + entry.startTimeMs) / 2;
-      const gps = this.getGeoLocation(entry, 'gps');
+      const gps = this.getGeoLocation(entry);
       if (entryMidPoint === timeMs) {
         return gps[0];
       } else if (entryMidPoint < timeMs) {

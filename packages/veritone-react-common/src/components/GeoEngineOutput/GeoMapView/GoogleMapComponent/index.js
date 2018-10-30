@@ -74,42 +74,45 @@ export default class GoogleMapComponent extends Component {
       const map = this.map;
       const { path, currentPos, travelMode } = this.props;
 
+      if (!path.length) {
+        return;
+      }
+
       const startPoint = path[0];
       const endPoint = path[path.length - 1];
       const currentPoint = currentPos || startPoint;
 
-      // Draw Markers
-      if (path.length > 0) {
-        this.destination = GoogleMapHelpers.genDestinationMarker(
-          endPoint,
-          1,
-          map
-        );
-        if (path.length > 1) {
-          this.origin = GoogleMapHelpers.genOriginMarker(startPoint, 0.2, map);
-          this.body = GoogleMapHelpers.genOriginMarker(currentPoint, 1, map);
+      this.destination = GoogleMapHelpers.genDestinationMarker(
+        endPoint,
+        1,
+        map
+      );
 
-          // Draw Route
-          GoogleMapHelpers.drawDirection(
-            startPoint,
-            endPoint,
-            map,
-            path,
-            travelMode
-          ).then(route => {
-            this.route = route;
-            const bounds = GoogleMapHelpers.genLatLngBounds(path);
-            map.fitBounds(bounds);
-
-            // Add Listeners
-            route.addListener('click', this.handleClicked);
-            this.origin.addListener('click', this.handleClicked);
-            this.destination.addListener('click', this.handleClicked);
-
-            return route;
-          });
-        }
+      if (path.length > 1) {
+        this.origin = GoogleMapHelpers.genOriginMarker(startPoint, 0.2, map);
+        this.body = GoogleMapHelpers.genOriginMarker(currentPoint, 1, map);
       }
+
+      // Draw Route
+      GoogleMapHelpers.drawDirection(
+        startPoint,
+        endPoint,
+        map,
+        path,
+        travelMode
+      ).then(route => {
+        this.route = route;
+        const bounds = GoogleMapHelpers.genLatLngBounds(path);
+        map.fitBounds(bounds);
+
+        // Add Listeners
+        this.destination.addListener('click', this.handleClicked);
+        if (this.origin) {
+          route.addListener('click', this.handleClicked);
+          this.origin.addListener('click', this.handleClicked);
+        }
+        return route;
+      });
     }
   }
 
