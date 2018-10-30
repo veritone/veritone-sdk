@@ -248,19 +248,19 @@ const reducer = createReducer(defaultState, {
   [CREATE_ENTITY_IDENTIFIERS](state) {
     return {
       ...state,
-      createEntityIdentifiers: true
+      creatingIdentifiers: true
     };
   },
   [CREATE_ENTITY_IDENTIFIERS_SUCCESS](state) {
     return {
       ...state,
-      createEntityIdentifiers: false
+      creatingIdentifiers: false
     };
   },
   [CREATE_ENTITY_IDENTIFIERS_FAILURE](state) {
     return {
       ...state,
-      createEntityIdentifiers: false
+      creatingIdentifiers: false
     };
   },
   [ADD_DETECTED_FACE](state, action) {

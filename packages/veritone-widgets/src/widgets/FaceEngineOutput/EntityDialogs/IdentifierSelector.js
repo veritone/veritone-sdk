@@ -5,8 +5,8 @@ import cx from 'classnames';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
 import styles from './styles.scss';
-import Button from '@material-ui/core/Button/Button';
 
 export default class IdentifierSelector extends Component {
   static propTypes = {
@@ -28,7 +28,7 @@ export default class IdentifierSelector extends Component {
       imageContainer: string
     }),
     defaultSelectAll: bool,
-    disableConfirm: bool
+    creatingIdentifiers: bool
   };
 
   state = {
@@ -102,7 +102,7 @@ export default class IdentifierSelector extends Component {
   };
 
   render() {
-    const { identifiers, classes, onCancel, disableConfirm } = this.props;
+    const { identifiers, classes, onCancel, creatingIdentifiers } = this.props;
     const { selectedIdentifiers } = this.state;
     return (
       <Grid container direction="column" spacing={0}>
@@ -191,7 +191,7 @@ export default class IdentifierSelector extends Component {
             data-veritone-element="finish-button"
             classes={{ root: styles.entityDialogButton }}
             onClick={this.handleFinishClick}
-            disabled={disableConfirm}
+            disabled={creatingIdentifiers}
           >
             Finish
           </Button>

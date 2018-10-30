@@ -259,7 +259,7 @@ export default class AddNewEntityDialog extends Component {
               defaultSelectAll
               onConfirm={this.handleCreateIdentifiers}
               onCancel={this.handleBackClick}
-              disableConfirm={isCreatingIdentifiers}
+              creatingIdentifiers={isCreatingIdentifiers}
             />
           )}
         </DialogContent>
