@@ -299,12 +299,13 @@ export default class SpeakerTranscriptContent extends Component {
         fragments: totalTranscriptSegmentData
           .filter(segment => 
             speakerStartTime <= segment.startTimeMs &&
-            segment.stopTimeMs < speakerStopTime
+            segment.startTimeMs < speakerStopTime
           )
       };
 
       const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-      const speakerTiming = format(speakerStartTime, timeFormat);
+      const speakerTimingStart = format(speakerStartTime, timeFormat);
+      const speakerTimingStop = format(speakerStopTime, timeFormat);
 
       const speakerGridKey = `speaker-edit-row-${speakerSegment.guid}`;
 
@@ -326,7 +327,7 @@ export default class SpeakerTranscriptContent extends Component {
           </Grid>
           <Grid item xs sm md lg xl>
             <span className={styles.speakerStartTimeLabel}>
-              {speakerTiming}
+              {`${speakerTimingStart} - ${speakerTimingStop}`}
             </span>
             {
               <SnippetSegment
@@ -377,12 +378,13 @@ export default class SpeakerTranscriptContent extends Component {
         fragments: totalTranscriptSegmentData
           .filter(segment => 
             speakerStartTime <= segment.startTimeMs &&
-            segment.stopTimeMs < speakerStopTime
+            segment.startTimeMs < speakerStopTime
           )
       };
 
       const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
-      const speakerTiming = format(speakerStartTime, timeFormat);
+      const speakerTimingStart = format(speakerStartTime, timeFormat);
+      const speakerTimingStop = format(speakerStopTime, timeFormat);
 
       const speakerGridKey = `speaker-row-${speakerSegment.guid}`;
 
@@ -404,7 +406,7 @@ export default class SpeakerTranscriptContent extends Component {
           </Grid>
           <Grid item xs sm md lg xl>
             <span className={styles.speakerStartTimeLabel}>
-              {speakerTiming}
+              {`${speakerTimingStart} - ${speakerTimingStop}`}
             </span>
             {
               <OverviewSegment
