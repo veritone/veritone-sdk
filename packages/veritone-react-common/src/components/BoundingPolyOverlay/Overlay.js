@@ -63,6 +63,7 @@ export default class Overlay extends React.Component {
         // optional type for styles + future stuff maybe
         // (corresponds to props.stylesByObjectType)
         overlayObjectType: string,
+        readOnly: bool,
         // vertices
         boundingPoly: arrayOf(
           shape({
@@ -242,14 +243,23 @@ export default class Overlay extends React.Component {
   handleClickBox = e => {
     e.stopPropagation();
 
+    // fixme: try to ignore clicks that are the result of mouseup after resize/drag
+    const focusedId = e.target.getAttribute('data-boxid');
+
+    // full read/add only
     if (this.props.readOnly || this.props.addOnly) {
       return;
     }
 
-    this.removeStagedBoundingBox();
+    // individual box marked as readonly
+    const focusedIndex = findIndex(this.state.boundingBoxPositions, {
+      id: focusedId
+    });
+    if (this.state.boundingBoxPositions[focusedIndex].readOnly) {
+      return;
+    }
 
-    // fixme: try to ignore clicks that are the result of mouseup after resize/drag
-    const focusedId = e.target.getAttribute('data-boxid');
+    this.removeStagedBoundingBox();
 
     this.setState(state => {
       return {
@@ -408,6 +418,7 @@ export default class Overlay extends React.Component {
           ({
             id,
             overlayObjectType,
+            readOnly,
             boundingPoly: { x, y, width, height }
           }) => (
             <RndBox
@@ -423,6 +434,7 @@ export default class Overlay extends React.Component {
                 // do not let this box interfere with mouse events as we draw out
                 // the initial bounding box
                 pointerEvents:
+                  readOnly ||
                   this.props.readOnly ||
                   this.props.addOnly ||
                   this.state.drawingInitialBoundingBox
@@ -435,8 +447,9 @@ export default class Overlay extends React.Component {
               onDrag={this.handleDragExistingBox}
               onResize={this.handleResizeExistingBox}
               onResizeStop={this.handleResizeExistingBoxStop}
-              disableDragging={this.props.readOnly || this.props.addOnly}
+              disableDragging={readOnly || this.props.readOnly || this.props.addOnly}
               enableResizing={
+                !readOnly &&
                 !this.props.readOnly &&
                 !this.props.addOnly &&
                 this.state.focusedBoundingBoxId === id
