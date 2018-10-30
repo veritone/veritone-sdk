@@ -194,7 +194,7 @@ export default class AddToExistingEntityDialog extends Component {
           selectingIdentifiers: false
         },
         () => {
-          onSubmit(currentlyEditedFaces, this.state.selectedEntity);
+          onSubmit(currentlyEditedFaces, selectedEntity);
         }
       );
       return res;
