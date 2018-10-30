@@ -42,7 +42,7 @@ export default class SpeakerPill extends Component {
       startMediaPlayHeadMs,
       stopMediaPlayHeadMs
     } = this.props;
-    const speakerKey = guid ? guid : `speaker-pill-${startTimeMs}-${stopTimeMs}`;
+    const speakerKey = guid ? guid : `speaker-pill-${speakerId}-${startTimeMs}-${stopTimeMs}`;
     const isHighlighted = !(stopMediaPlayHeadMs < startTimeMs || startMediaPlayHeadMs > stopTimeMs);
     const colorClass = isHighlighted ? styles.highlight : '';
 

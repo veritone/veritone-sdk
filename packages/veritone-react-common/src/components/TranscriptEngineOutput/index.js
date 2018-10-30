@@ -48,7 +48,8 @@ export default class TranscriptEngineOutput extends Component {
         series: arrayOf(
           shape({
             startTimeMs: number.isRequired,
-            stopTimeMs: number.isRequired
+            stopTimeMs: number.isRequired,
+            speakerId: string.isRequired
           })
         )
       })
@@ -364,6 +365,7 @@ export default class TranscriptEngineOutput extends Component {
             (
               <SpeakerTranscriptContent
                 data={data}
+                speakerData={speakerData}
                 editMode={editMode}
                 viewType={this.state.viewType}
                 editType={currentEditType}
@@ -377,8 +379,6 @@ export default class TranscriptEngineOutput extends Component {
                 onChange={onChange}
                 selectedEngineId={selectedEngineId}
                 className={contentClassName}
-
-                speakerData={speakerData}
               />
             ) : (
               <TranscriptContent
