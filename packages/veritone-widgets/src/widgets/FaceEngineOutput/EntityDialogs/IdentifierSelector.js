@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, number, shape, string, bool, func } from 'prop-types';
-import { get, find } from 'lodash';
+import { get, find, uniqBy, findIndex } from 'lodash';
 import cx from 'classnames';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -34,7 +34,8 @@ export default class IdentifierSelector extends Component {
   state = {
     selectedIdentifiers: this.props.defaultSelectAll
       ? this.props.identifiers
-      : []
+      : [],
+    lastSelectedIdentifier: null
   };
 
   handleSelectAll = evt => {
@@ -57,10 +58,36 @@ export default class IdentifierSelector extends Component {
   };
 
   handleSingleIdentifierSelect = identifier => evt => {
+    const { nativeEvent } = evt;
+    const { identifiers } = this.props;
     if (evt.target.checked) {
-      this.setState(prevState => ({
-        selectedIdentifiers: [...prevState.selectedIdentifiers, identifier]
-      }));
+      this.setState(prevState => {
+        let newIdentifiers = [identifier];
+        if (nativeEvent.shiftKey && prevState.lastSelectedIdentifier) {
+          const selectedIndex = findIndex(identifiers, {
+            guid: identifier.guid
+          });
+          const lastIndex = findIndex(identifiers, {
+            guid: prevState.lastSelectedIdentifier.guid
+          });
+          newIdentifiers = identifiers.slice(
+            Math.min(selectedIndex, lastIndex),
+            Math.max(selectedIndex, lastIndex) + 1
+          );
+        }
+        return {
+          selectedIdentifiers: uniqBy(
+            [...prevState.selectedIdentifiers, ...newIdentifiers],
+            'guid'
+          ),
+          lastSelectedIdentifier: {
+            ...identifier,
+            object: {
+              ...identifier.object
+            }
+          }
+        };
+      });
     } else {
       this.setState(prevState => ({
         selectedIdentifiers: prevState.selectedIdentifiers.filter(i => {

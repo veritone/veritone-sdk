@@ -487,10 +487,14 @@ const reducer = createReducer(defaultState, {
       ...state,
       bulkEditActionItems: {
         ...state.bulkEditActionItems,
-        [state.activeTab]: orderBy(uniqBy([
-          ...state.bulkEditActionItems[state.activeTab],
-          ...faces
-        ], 'guid'), 'startTimeMs', 'stopTimeMs')
+        [state.activeTab]: orderBy(
+          uniqBy(
+            [...state.bulkEditActionItems[state.activeTab], ...faces],
+            'guid'
+          ),
+          'startTimeMs',
+          'stopTimeMs'
+        )
       }
     };
   },

@@ -228,7 +228,13 @@ class FaceEngineOutput extends Component {
 
   handleSelectFace = (face, evt) => {
     const { lastCheckedFace, selectedEntityId } = this.state;
-    const { activeTab, unrecognizedFaces, recognizedFaces, onSelectFaces, onUnselectFaces } = this.props;
+    const {
+      activeTab,
+      unrecognizedFaces,
+      recognizedFaces,
+      onSelectFaces,
+      onUnselectFaces
+    } = this.props;
     if (evt.target.checked) {
       if (get(evt, 'nativeEvent.shiftKey') && lastCheckedFace) {
         let faces;
@@ -239,8 +245,8 @@ class FaceEngineOutput extends Component {
             faces = recognizedFaces[selectedEntityId];
           }
         }
-        const selectedIndex = findIndex(faces, {'guid': face.guid});
-        const lastIndex = findIndex(faces,  {'guid': lastCheckedFace.guid});
+        const selectedIndex = findIndex(faces, { guid: face.guid });
+        const lastIndex = findIndex(faces, { guid: lastCheckedFace.guid });
         onSelectFaces(
           faces.slice(
             Math.min(selectedIndex, lastIndex),
