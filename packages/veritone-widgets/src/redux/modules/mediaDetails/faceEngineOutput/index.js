@@ -31,6 +31,7 @@ export const CLOSE_ADD_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_ENTITY_DIALOG
 export const OPEN_ADD_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_ENTITY_DIALOG`;
 export const OPEN_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/OPEN_ADD_TO_EXISTING_ENTITY_DIALOG`;
 export const CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG = `vtn/${namespace}/CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG`;
+export const UPDATE_INITIAL_ENTITY_NAME = `vtn/${namespace}/UPDATE_INITIAL_ENTITY_NAME`;
 
 export const ADD_DETECTED_FACE = `vtn/${namespace}/ADD_DETECTED_FACE`;
 export const REMOVE_FACES = `vtn/${namespace}/REMOVE_FACES`;
@@ -105,6 +106,7 @@ const defaultState = {
   },
   activeTab: 'faceRecognition',
   addNewEntityDialogOpen: false,
+  initialEntityName: '',
   addToExistingEntityDialogOpen: false,
   currentlyEditedFaces: [] // selected unrecognized face objects from which to create a new 'entity'
 };
@@ -532,19 +534,32 @@ const reducer = createReducer(defaultState, {
   [OPEN_ADD_ENTITY_DIALOG](
     state,
     {
-      payload: { faces }
+      payload: { faces, initialEntityName }
     }
   ) {
     return {
       ...state,
       addNewEntityDialogOpen: true,
+      initialEntityName,
       currentlyEditedFaces: [...faces]
+    };
+  },
+  [UPDATE_INITIAL_ENTITY_NAME](
+    state,
+    {
+      payload: { initialEntityName }
+    }
+  ) {
+    return {
+      ...state,
+      initialEntityName
     };
   },
   [CLOSE_ADD_ENTITY_DIALOG](state) {
     return {
       ...state,
       addNewEntityDialogOpen: false,
+      initialEntityName: '',
       currentlyEditedFaces: []
     };
   },
@@ -716,11 +731,12 @@ export const fetchEntitySearchResultsFailure = (payload, meta) => ({
   payload,
   meta
 });
-export const openAddEntityDialog = faces => {
+export const openAddEntityDialog = (faces, initialEntityName) => {
   return {
     type: OPEN_ADD_ENTITY_DIALOG,
     payload: {
-      faces
+      faces,
+      initialEntityName
     }
   };
 };
@@ -738,6 +754,13 @@ export const openAddToExistingEntityDialog = faces => {
 };
 export const closeAddToExistingEntityDialog = () => ({
   type: CLOSE_ADD_TO_EXISTING_ENTITY_DIALOG
+});
+
+export const updateInitialEntityName = initialEntityName => ({
+  type: UPDATE_INITIAL_ENTITY_NAME,
+  payload: {
+    initialEntityName
+  }
 });
 
 export function isFetchingEntities(state) {
@@ -763,6 +786,9 @@ export const getAddToExistingEntityDialogOpen = state =>
 
 export const getCurrentlyEditedFaces = state =>
   get(local(state), 'currentlyEditedFaces');
+
+export const getInitialEntityName = state =>
+  get(local(state), 'initialEntityName');
 
 export const createEntity = input => async (dispatch, getState) => {
   return await callGraphQLApi({

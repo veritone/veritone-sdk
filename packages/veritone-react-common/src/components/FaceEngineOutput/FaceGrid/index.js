@@ -54,8 +54,8 @@ class FaceGrid extends Component {
     }
   };
 
-  handleAddNewEntity = faceIdx => face => {
-    this.props.onAddNewEntity([face]);
+  handleAddNewEntity = (face, inputValue) => {
+    this.props.onAddNewEntity([face], inputValue);
   };
 
   render() {
@@ -90,7 +90,7 @@ class FaceGrid extends Component {
                 onCheckboxClicked={onFaceCheckboxClicked}
                 face={face}
                 enableEdit={editMode}
-                addNewEntity={this.handleAddNewEntity(idx)}
+                addNewEntity={this.handleAddNewEntity}
                 searchResults={entitySearchResults}
                 onClick={this.handleFaceClick(face)}
                 hideEntityLabel={hideEntityLabels}

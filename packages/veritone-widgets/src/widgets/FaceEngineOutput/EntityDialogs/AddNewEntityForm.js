@@ -36,7 +36,8 @@ const AddNewEntityForm = reduxForm({
     isFetchingLibraries,
     disableSubmit,
     showCreateLibraryButton,
-    onCreateNewLibrary
+    onCreateNewLibrary,
+    onNameChange
   }) => (
     <form onSubmit={handleSubmit} data-veritone-component="add-new-entity-form">
       <Grid container direction="column" spacing={32}>
@@ -54,7 +55,9 @@ const AddNewEntityForm = reduxForm({
                 label="Name *"
                 component={formComponents.TextField}
                 data-veritone-element="entity-name-input"
+                onChange={onNameChange}
                 InputProps={{
+                  autoFocus: true,
                   classes: {
                     root: styles.inputField
                   }

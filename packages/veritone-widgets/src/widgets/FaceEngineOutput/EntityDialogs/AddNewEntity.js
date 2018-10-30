@@ -23,13 +23,15 @@ import cx from 'classnames';
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
     libraries: faceEngineOutput.getLibraries(state),
     currentlyEditedFaces: faceEngineOutput.getCurrentlyEditedFaces(state),
-    isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state)
+    isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state),
+    initialEntityName: faceEngineOutput.getInitialEntityName(state)
   }),
   {
     fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
     createNewLibrary: faceEngineOutput.createNewLibrary,
-    createEntityIdentifiers: faceEngineOutput.createEntityIdentifiers
+    createEntityIdentifiers: faceEngineOutput.createEntityIdentifiers,
+    updateInitialEntityName: faceEngineOutput.updateInitialEntityName
   },
   null,
   { withRef: true }
@@ -62,7 +64,9 @@ export default class AddNewEntityDialog extends Component {
     ),
     createNewLibrary: func,
     isCreatingIdentifiers: bool,
-    createEntityIdentifiers: func
+    createEntityIdentifiers: func,
+    initialEntityName: string,
+    updateInitialEntityName: func
   };
 
   state = {
@@ -172,12 +176,18 @@ export default class AddNewEntityDialog extends Component {
     );
   };
 
+  handleNameChange = evt => {
+    const { value } = evt.target;
+    this.props.updateInitialEntityName(value);
+  };
+
   render() {
     const {
       libraries,
       isFetchingLibraries,
       currentlyEditedFaces,
-      isCreatingIdentifiers
+      isCreatingIdentifiers,
+      initialEntityName
     } = this.props;
     const initialLibraryId =
       this.state.selectedLibraryId || get(libraries, '[0].id');
@@ -200,7 +210,7 @@ export default class AddNewEntityDialog extends Component {
             {this.state.configuringNewLibrary && 'Create New Library'}
           </div>
           <IconButton
-            onClick={this.props.onCancel}
+            onClick={this.handleCancel}
             aria-label="Close Add New Entity"
             classes={{
               root: styles.closeButton
@@ -231,7 +241,8 @@ export default class AddNewEntityDialog extends Component {
                   isFetchingLibraries={isFetchingLibraries}
                   libraries={libraries}
                   initialValues={{
-                    libraryId: initialLibraryId
+                    libraryId: initialLibraryId,
+                    name: initialEntityName
                   }}
                   showCreateLibraryButton
                   onCreateNewLibrary={this.handleNewLibraryClick}
@@ -241,6 +252,7 @@ export default class AddNewEntityDialog extends Component {
                     !this.state.configuringNewLibrary &&
                     !this.state.selectingIdentifiers
                   }
+                  onNameChange={this.handleNameChange}
                 />
               </Fragment>
             )}

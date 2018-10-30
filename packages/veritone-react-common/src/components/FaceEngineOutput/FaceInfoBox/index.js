@@ -105,8 +105,8 @@ class FaceInfoBox extends Component {
   };
 
   // evt is mandatory here to avoid infinite call loop
-  handleAddNewEntity = face => evt => {
-    this.props.addNewEntity(face);
+  handleAddNewEntity = (face, inputValue) => evt => {
+    this.props.addNewEntity(face, inputValue);
   };
 
   handleEntitySelect = entity => {
@@ -221,7 +221,8 @@ class FaceInfoBox extends Component {
                     getItemProps,
                     isOpen,
                     selectedItem,
-                    highlightedIndex
+                    highlightedIndex,
+                    inputValue
                   }) => (
                     <div>
                       <div ref={this.inputRef}>
@@ -269,7 +270,10 @@ class FaceInfoBox extends Component {
                               <Button
                                 color="primary"
                                 className={styles.addNewEntityButton}
-                                onClick={this.handleAddNewEntity(face)}
+                                onClick={this.handleAddNewEntity(
+                                  face,
+                                  inputValue
+                                )}
                               >
                                 ADD NEW
                               </Button>
