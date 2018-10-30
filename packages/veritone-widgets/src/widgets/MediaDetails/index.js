@@ -96,7 +96,8 @@ const programLiveImageNullState =
     isEditModeEnabled: mediaDetailsModule.isEditModeEnabled(state, id),
     isInfoPanelOpen: mediaDetailsModule.isInfoPanelOpen(state, id),
     isExpandedMode: mediaDetailsModule.isExpandedModeEnabled(state, id),
-    entities: mediaDetailsModule.getEntities(state, id),
+    entities: mediaDetailsModule.getEntities(state),
+    isFetchingEntities: mediaDetailsModule.isFetchingEntities(state),
     schemasById: mediaDetailsModule.getSchemasById(state),
     currentMediaPlayerTime: mediaDetailsModule.currentMediaPlayerTime(
       state,
@@ -288,6 +289,7 @@ class MediaDetailsWidget extends React.Component {
         })
       })
     ),
+    isFetchingEntities: bool,
     loadContentTemplates: func,
     updateTdoContentTemplates: func,
     contentTemplates: objectOf(
@@ -585,7 +587,8 @@ class MediaDetailsWidget extends React.Component {
     const isRealTimeEngine = this.isRealTimeEngine(selectedEngine);
     if (
       this.props.isFetchingEngineResults ||
-      this.props.isRestoringOriginalEngineResult
+      this.props.isRestoringOriginalEngineResult ||
+      this.props.isFetchingEntities
     ) {
       // show fetching nullstate if fetching engine results
       engineStatus = 'fetching';

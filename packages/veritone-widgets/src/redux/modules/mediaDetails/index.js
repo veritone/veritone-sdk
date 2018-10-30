@@ -61,7 +61,7 @@ const defaultMDPState = {
   isEditModeEnabled: false,
   isExpandedMode: false,
   entities: [],
-  fetchingEntities: false,
+  isFetchingEntities: false,
   contentTemplates: {},
   tdoContentTemplates: [],
   schemasById: {},
@@ -476,55 +476,41 @@ export default createReducer(defaultState, {
     };
   },
   [REQUEST_ENTITIES](
-    state,
-    {
-      meta: { widgetId }
-    }
+    state
   ) {
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingEntities: true
-      }
+      isFetchingEntities: true
     };
   },
   [REQUEST_ENTITIES_SUCCESS](
     state,
     {
-      payload,
-      meta: { widgetId }
+      payload
     }
   ) {
     const allEntities = uniqBy(
-      values(payload).concat(state[widgetId].entities),
+      values(payload).concat(get(state, 'entities', [])),
       'id'
     );
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        fetchingEntities: false,
-        error: null,
-        entities: allEntities
-      }
+      isFetchingEntities: false,
+      error: null,
+      entities: allEntities
     };
   },
   [REQUEST_ENTITIES_FAILURE](
     state,
     {
-      error,
-      meta: { widgetId }
+      error
     }
   ) {
     const errorMessage = get(error, 'message', error);
     return {
       ...state,
-      [widgetId]: {
-        ...state[widgetId],
-        error: errorMessage || 'unknown error',
-        fetchingEntities: false
-      }
+      error: errorMessage || 'unknown error',
+      isFetchingEntities: false
     };
   },
   [REQUEST_SCHEMAS](state) {
@@ -750,8 +736,10 @@ export const isInfoPanelOpen = (state, widgetId) =>
   get(local(state), [widgetId, 'isInfoPanelOpen']);
 export const isExpandedModeEnabled = (state, widgetId) =>
   get(local(state), [widgetId, 'isExpandedMode']);
-export const getEntities = (state, widgetId) =>
-  get(local(state), [widgetId, 'entities']);
+export const getEntities = (state) =>
+  get(local(state), 'entities');
+export const isFetchingEntities = (state) =>
+  get(local(state), 'isFetchingEntities');
 export const getContentTemplates = (state, widgetId) =>
   get(local(state), [widgetId, 'contentTemplates']);
 export const getTdoContentTemplates = (state, widgetId) =>
@@ -759,7 +747,7 @@ export const getTdoContentTemplates = (state, widgetId) =>
 export const getSchemasById = state => get(local(state), 'schemasById');
 export const isSaveEnabled = state => get(local(state), 'enableSave');
 export const getWidgetError = (state, widgetId) =>
-  get(local(state), [widgetId, 'error']);
+  get(local(state), [widgetId, 'error']) || get(local(state), 'error');
 export const getAlertDialogConfig = (state, widgetId) =>
   get(local(state), [widgetId, 'alertDialogConfig']);
 export const isEditButtonDisabled = (state, widgetId) =>
