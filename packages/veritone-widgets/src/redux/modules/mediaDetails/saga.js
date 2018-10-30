@@ -619,11 +619,12 @@ function* watchUpdateTdoContentTemplates() {
   });
 }
 
-function* fetchEntities(widgetId, entityIds) {
-  yield put({ type: REQUEST_ENTITIES, meta: { widgetId } });
-  let entityQueries = entityIds.map((id, index) => {
-    return `
-      entity${index}: entity(id:"${id}") {
+function* fetchEntities(entityIds) {
+  yield put({ type: REQUEST_ENTITIES });
+
+  const entitiesQuery = `query entities($entityIds: [ID!]!){
+    entities(ids: $entityIds) {
+      records {
         id
         name
         description
@@ -637,40 +638,39 @@ function* fetchEntities(widgetId, entityIds) {
           coverImageUrl
         }
       }
-    `;
-  });
+    }
+  }`;
 
   const config = yield select(configModule.getConfig);
   const { apiRoot, graphQLEndpoint } = config;
   const graphQLUrl = `${apiRoot}/${graphQLEndpoint}`;
   const token = yield select(authModule.selectSessionToken);
+  const variables = { entityIds };
 
   let response;
   try {
     response = yield call(fetchGraphQLApi, {
       endpoint: graphQLUrl,
-      query: `query{${entityQueries.join(' ')}}`,
-      token
+      query: entitiesQuery,
+      token,
+      variables
     });
   } catch (error) {
     return yield put({
       type: REQUEST_ENTITIES_FAILURE,
-      error: 'Error fetching entities from server.',
-      meta: { widgetId }
+      error: 'Error fetching entities from server.'
     });
   }
 
   if (response.errors) {
     return yield put({
       type: REQUEST_ENTITIES_FAILURE,
-      error: 'Error thrown while fetching entities',
-      meta: { widgetId }
+      error: 'Error fetching entities from server.'
     });
   }
   yield put({
     type: REQUEST_ENTITIES_SUCCESS,
-    payload: response.data,
-    meta: { widgetId }
+    payload: get(response, 'data.entities.records', [])
   });
 }
 
@@ -916,7 +916,7 @@ function* watchLoadEngineResultsComplete(widgetId) {
     });
 
     if (entityIds.length) {
-      yield call(fetchEntities, action.meta.widgetId, uniq(entityIds));
+      yield call(fetchEntities, uniq(entityIds));
     }
     if (schemaIds.length) {
       yield call(fetchSchemas, uniq(schemaIds));
