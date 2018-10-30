@@ -22,14 +22,16 @@ export default function attachAutocomplete(url, config) {
         }).then(response => response.json()).then(response => {
           let resultNamespace = Object.keys(response.fields)[0];  // autocomplete response always provides at least one property
           let results = response.fields[resultNamespace] || [];
-          let items = results.map(result => {
-            let normalizedResult = {
-              id: result.key,
-              type: searchType,
-              label: result.key
-            };
-            if (result.doc) {
-              if (searchType === 'library') {
+          let items = [];
+
+          if(searchType === 'library') {
+            items = results.map(result => {
+              let normalizedResult = {
+                id: result.key,
+                type: searchType,
+                label: result.key
+              };
+              if (result.doc) {
                 normalizedResult.id = result.doc.libraryId;
                 normalizedResult.image = result.doc.libraryCoverImageUrl;
                 if(result.doc_count === 1) {
@@ -37,14 +39,24 @@ export default function attachAutocomplete(url, config) {
                 } else if (result.doc_count > 1) {
                   normalizedResult.description = `${result.doc_count} Items`;
                 }
-              } else if (searchType === 'entity') {
-                normalizedResult.id = result.doc.entityId;
-                normalizedResult.image = result.doc.profileImageUrl;
-                normalizedResult.description = result.doc.libraryName;
               }
-            }
-            return normalizedResult;
-          });
+              return normalizedResult;
+            });
+          } else if (searchType === 'entity') {
+            results.map(result => {
+              if(result && result.docs) {
+                result.docs.map( entity => {
+                  items.push({
+                    id: entity.entityId,
+                    type: searchType,
+                    label: entity.entityName,
+                    image: entity.profileImageUrl,
+                    description: entity.libraryName
+                  });
+                })
+              }
+            });
+          }
           return {
             header: sectionHeader,
             items: items
