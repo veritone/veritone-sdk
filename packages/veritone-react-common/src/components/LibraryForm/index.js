@@ -103,7 +103,7 @@ const LibraryForm = reduxForm({
                             key={libraryType.id}
                             className={styles.libraryType}
                           >
-                            {libraryType.name}
+                            {libraryType.label}
                           </MenuItem>
                         ))}
                       </Field>
@@ -205,7 +205,7 @@ LibraryForm.propTypes = {
   libraryTypes: arrayOf(
     shape({
       id: string.isRequired,
-      name: string.isRequired
+      label: string.isRequired
     })
   ).isRequired,
   description: string

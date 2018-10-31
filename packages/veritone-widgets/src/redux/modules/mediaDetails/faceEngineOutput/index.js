@@ -10,6 +10,9 @@ export const FETCH_LIBRARIES_FAILURE = `vtn/${namespace}/FETCH_LIBRARIES_FAILURE
 export const CREATE_LIBRARY = `vtn/${namespace}/CREATE_LIBRARY`;
 export const CREATE_LIBRARY_SUCCESS = `vtn/${namespace}/CREATE_LIBRARY_SUCCESS`;
 export const CREATE_LIBRARY_FAILURE = `vtn/${namespace}/CREATE_LIBRARY_FAILURE`;
+export const FETCH_LIBRARY_TYPES = `vtn/${namespace}/FETCH_LIBRARY_TYPES`;
+export const FETCH_LIBRARY_TYPES_SUCCESS = `vtn/${namespace}/FETCH_LIBRARY_TYPES_SUCCESS`;
+export const FETCH_LIBRARY_TYPES_FAILURE = `vtn/${namespace}/FETCH_LIBRARY_TYPES_FAILURE`;
 export const FETCH_UPLOAD_URL = `vtn/${namespace}/FETCH_UPLOAD_URL`;
 export const FETCH_UPLOAD_URL_SUCCESS = `vtn/${namespace}/FETCH_UPLOAD_URL_SUCCESS`;
 export const FETCH_UPLOAD_URL_FAILURE = `vtn/${namespace}/FETCH_UPLOAD_URL_FAILURE`;
@@ -70,7 +73,8 @@ import {
   omit,
   uniqBy,
   differenceBy,
-  orderBy
+  orderBy,
+  filter
 } from 'lodash';
 import { helpers, modules } from 'veritone-redux-common';
 import { createSelector } from 'reselect';
@@ -90,6 +94,8 @@ const defaultState = {
   isFetchingEntities: false,
   creatingEntity: false,
   isFetchingLibraries: false,
+  libraryTypes: [],
+  fetchingLibraryTypes: false,
   isSearchingEntities: false,
   creatingIdentifiers: false,
   facesEditedByUser: {},
@@ -190,6 +196,30 @@ const reducer = createReducer(defaultState, {
     return {
       ...state,
       createNewLibrary: false
+    };
+  },
+  [FETCH_LIBRARY_TYPES](state) {
+    return {
+      ...state,
+      fetchingLibraryTypes: true
+    };
+  },
+  [FETCH_LIBRARY_TYPES_SUCCESS](
+    state,
+    {
+      payload: { libraryTypes }
+    }
+  ) {
+    return {
+      ...state,
+      fetchingLibraryTypes: false,
+      libraryTypes: [...libraryTypes.records]
+    };
+  },
+  [FETCH_LIBRARY_TYPES_FAILURE](state) {
+    return {
+      ...state,
+      fetchingLibraryTypes: false
     };
   },
   [CREATE_ENTITY](state) {
@@ -809,7 +839,7 @@ export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
 
-export const fetchLibraries = (entityIdentifierTypeIds) => async (
+export const fetchLibraries = entityIdentifierTypeIds => async (
   dispatch,
   getState
 ) => {
@@ -821,6 +851,26 @@ export const fetchLibraries = (entityIdentifierTypeIds) => async (
     ],
     query: gqlQuery.getLibrariesByIdentifierType,
     variables: { entityIdentifierTypeIds },
+    dispatch,
+    getState
+  });
+};
+
+export const isFetchingLibraryTypes = state =>
+  get(local(state), 'fetchingLibraryTypes');
+export const getLibraryTypesByIdentifierType = (state, identifierType) =>
+  filter(local(state).libraryTypes, type => {
+    return !!find(get(type, 'entityIdentifierTypes'), { id: identifierType });
+  });
+
+export const fetchLibraryTypes = () => async (dispatch, getState) => {
+  return await callGraphQLApi({
+    actionTypes: [
+      FETCH_LIBRARY_TYPES,
+      FETCH_LIBRARY_TYPES_SUCCESS,
+      FETCH_LIBRARY_TYPES_FAILURE
+    ],
+    query: gqlQuery.getLibraryTypes,
     dispatch,
     getState
   });

@@ -23,13 +23,19 @@ import cx from 'classnames';
   state => ({
     open: faceEngineOutput.getAddNewEntityDialogOpen(state),
     isFetchingLibraries: faceEngineOutput.isFetchingLibraries(state),
+    isFetchingLibraryTypes: faceEngineOutput.isFetchingLibraryTypes(state),
     libraries: faceEngineOutput.getLibraries(state),
     currentlyEditedFaces: faceEngineOutput.getCurrentlyEditedFaces(state),
     isCreatingIdentifiers: faceEngineOutput.isCreatingIdentifiers(state),
-    initialEntityName: faceEngineOutput.getInitialEntityName(state)
+    initialEntityName: faceEngineOutput.getInitialEntityName(state),
+    faceLibraryTypes: faceEngineOutput.getLibraryTypesByIdentifierType(
+      state,
+      'face'
+    )
   }),
   {
     fetchLibraries: faceEngineOutput.fetchLibraries,
+    fetchLibraryTypes: faceEngineOutput.fetchLibraryTypes,
     createEntity: faceEngineOutput.createEntity,
     createNewLibrary: faceEngineOutput.createNewLibrary,
     createEntityIdentifiers: faceEngineOutput.createEntityIdentifiers,
@@ -48,7 +54,9 @@ export default class AddNewEntityDialog extends Component {
       })
     ).isRequired,
     fetchLibraries: func.isRequired,
+    fetchLibraryTypes: func.isRequired,
     isFetchingLibraries: bool,
+    isFetchingLibraryTypes: bool,
     createEntity: func,
     onSubmit: func.isRequired,
     onCancel: func.isRequired,
@@ -68,7 +76,11 @@ export default class AddNewEntityDialog extends Component {
     isCreatingIdentifiers: bool,
     createEntityIdentifiers: func,
     initialEntityName: string,
-    updateInitialEntityName: func
+    updateInitialEntityName: func,
+    faceLibraryTypes: shape({
+      id: string.isRequired,
+      label: string.isRequired
+    }).isRequired
   };
 
   state = {
@@ -81,8 +93,17 @@ export default class AddNewEntityDialog extends Component {
   };
 
   componentDidMount() {
-    if (!get(this.props, 'libraries.length')) {
+    const {
+      libraries,
+      faceLibraryTypes,
+      isFetchingLibraries,
+      isFetchingLibraryTypes
+    } = this.props;
+    if (!libraries.length && !isFetchingLibraries) {
       this.props.fetchLibraries(['face']);
+    }
+    if (!faceLibraryTypes.length & !isFetchingLibraryTypes) {
+      this.props.fetchLibraryTypes();
     }
   }
 
@@ -157,10 +178,9 @@ export default class AddNewEntityDialog extends Component {
   handleCreateLibrary = library => {
     this.props.createNewLibrary(library).then(res => {
       this.setState(prevState => {
-        console.log(prevState);
         return {
           configuringNewLibrary: false,
-          firstLibraryCreation: !prevState.firstLibraryCreation,
+          firstLibraryCreation: false,
           showLibraryCreationSuccess: prevState.firstLibraryCreation,
           selectedLibraryId: get(res, 'createLibrary.id')
         };
@@ -200,7 +220,8 @@ export default class AddNewEntityDialog extends Component {
       isFetchingLibraries,
       currentlyEditedFaces,
       isCreatingIdentifiers,
-      initialEntityName
+      initialEntityName,
+      faceLibraryTypes
     } = this.props;
     const initialLibraryId =
       this.state.selectedLibraryId || get(libraries, '[0].id');
@@ -305,8 +326,8 @@ export default class AddNewEntityDialog extends Component {
             )}
           {this.state.configuringNewLibrary && (
             <LibraryForm
-              initialValues={{ libraryTypeId: 'people' }}
-              libraryTypes={[{ id: 'people', name: 'People' }]}
+              initialValues={{ libraryTypeId: faceLibraryTypes[0].id }}
+              libraryTypes={faceLibraryTypes}
               onSubmit={this.handleCreateLibrary}
               onCancel={this.handleBackClick}
             />

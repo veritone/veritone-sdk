@@ -85,7 +85,12 @@ const AddNewEntityForm = reduxForm({
                     vertical: 'bottom',
                     horizontal: 'left'
                   },
-                  getContentAnchorEl: null
+                  getContentAnchorEl: null,
+                  PaperProps: {
+                    style: {
+                      maxHeight: 225
+                    }
+                  }
                 }}
                 data-veritone-element="library-id-select"
               >
