@@ -36,7 +36,7 @@ const NoLibrary = ({ width, height, onButtonClick }) => {
           color="primary"
           onClick={onButtonClick}
           classes={{ root: styles.entityDialogButton }}
-          data-veritone-element="cancel-button"
+          data-veritone-element="create-new-library-button"
         >
           Create New Library
         </Button>
@@ -46,7 +46,7 @@ const NoLibrary = ({ width, height, onButtonClick }) => {
 };
 
 NoLibrary.propTypes = {
-  onButtonClick: func,
+  onButtonClick: func.isRequired,
   width: oneOfType([string, number]),
   height: oneOfType([string, number])
 };

@@ -251,6 +251,34 @@
   font-size: 14px !important;
   font-weight: 300 !important;
   line-height: 18px !important;
-  margin-top: 10px;
+  margin-top: 5px;
   text-align: center;
+}
+
+.createLibrarySuccessIcon {
+  width: 60px !important;
+  height: 60px !important;
+  color: $green-primary;
+}
+
+.createLibrarySuccess {
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  line-height: 24px !important;
+  text-align: center;
+}
+
+.createLibrarySubText {
+  font-size: 14px !important;
+  line-height: 21px !important;
+  margin-top: 5px;
+  text-align: center;
+
+  .libraryName {
+    font-weight: 500 !important;
+  }
+}
+
+.createEntityButton {
+  margin-top: 40px !important;
 }

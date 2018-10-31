@@ -11,6 +11,7 @@ import Dialog from '@material-ui/core/Dialog';
 import AddNewEntityForm from './AddNewEntityForm';
 import IdentifierSelector from './IdentifierSelector';
 import NoLibrary from './NoLibrary';
+import CreateLibrarySuccess from './CreateLibrarySuccess';
 import * as faceEngineOutput from '../../../redux/modules/mediaDetails/faceEngineOutput';
 import { removeAwsSignatureParams } from '../../../shared/asset';
 import { LibraryForm } from 'veritone-react-common';
@@ -75,15 +76,9 @@ export default class AddNewEntityDialog extends Component {
     configuringNewLibrary: false,
     selectingIdentifiers: false,
     cachedEntity: null,
-    firstLibraryCreation: false,
+    firstLibraryCreation: get(this.props, 'libraries.length') === 0,
     showLibraryCreationSuccess: false
   };
-
-  static getDerivedStateFromProps(nextProps) {
-    return {
-      firstLibraryCreation: get(nextProps, 'libraries.length', 0) > 0
-    };
-  }
 
   componentDidMount() {
     if (!get(this.props, 'libraries.length')) {
@@ -163,12 +158,15 @@ export default class AddNewEntityDialog extends Component {
 
   handleCreateLibrary = library => {
     this.props.createNewLibrary(library).then(res => {
-      this.setState(prevState => ({
-        configuringNewLibrary: false,
-        firstLibraryCreation: !prevState.firstLibraryCreation,
-        showLibraryCreationSuccess: prevState.firstLibraryCreation,
-        selectedLibraryId: get(res, 'createLibrary.id')
-      }));
+      this.setState(prevState => {
+        console.log(prevState);
+        return {
+          configuringNewLibrary: false,
+          firstLibraryCreation: !prevState.firstLibraryCreation,
+          showLibraryCreationSuccess: prevState.firstLibraryCreation,
+          selectedLibraryId: get(res, 'createLibrary.id')
+        };
+      });
       return res;
     });
   };
@@ -190,6 +188,12 @@ export default class AddNewEntityDialog extends Component {
   handleNameChange = evt => {
     const { value } = evt.target;
     this.props.updateInitialEntityName(value);
+  };
+
+  handleContinueCreateEntity = () => {
+    this.setState({
+      showLibraryCreationSuccess: false
+    });
   };
 
   render() {
@@ -218,9 +222,11 @@ export default class AddNewEntityDialog extends Component {
         >
           <div className={styles.dialogTitleLabel}>
             {!this.state.configuringNewLibrary &&
+              !this.state.showLibraryCreationSuccess &&
               get(libraries, 'length') > 0 &&
               'Create New Entity'}
-            {this.state.configuringNewLibrary &&
+            {(this.state.configuringNewLibrary ||
+              this.state.showLibraryCreationSuccess) &&
               get(libraries, 'length') > 0 &&
               'Create New Library'}
           </div>
@@ -244,52 +250,61 @@ export default class AddNewEntityDialog extends Component {
             !this.state.configuringNewLibrary && (
               <NoLibrary onButtonClick={this.handleNewLibraryClick} />
             )}
-          {}
-          {get(libraries, 'length') > 0 && (
-            <Fragment>
-              {!this.state.configuringNewLibrary &&
-                !this.state.selectingIdentifiers && (
-                  <Fragment>
-                    <DialogContentText
-                      classes={{
-                        root: styles.dialogHintText
-                      }}
-                    >
-                      Identify and help train face recognition engines to find
-                      this individual. You can view and add additional images in
-                      the Library application.
-                    </DialogContentText>
-                    <AddNewEntityForm
-                      isFetchingLibraries={isFetchingLibraries}
-                      libraries={libraries}
-                      initialValues={{
-                        libraryId: initialLibraryId,
-                        name: initialEntityName
-                      }}
-                      showCreateLibraryButton
-                      onCreateNewLibrary={this.handleNewLibraryClick}
-                      onSubmit={this.handleCreateNewEntity}
-                      onCancel={this.handleCancel}
-                      destroyOnUnmount={
-                        !this.state.configuringNewLibrary &&
-                        !this.state.selectingIdentifiers
-                      }
-                      onNameChange={this.handleNameChange}
-                    />
-                  </Fragment>
-                )}
-              {this.state.selectingIdentifiers && (
-                <IdentifierSelector
-                  identifiers={currentlyEditedFaces}
-                  classes={{ imageContainer: styles.imageContainer }}
-                  defaultSelectAll
-                  onConfirm={this.handleCreateIdentifiers}
-                  onCancel={this.handleBackClick}
-                  creatingIdentifiers={isCreatingIdentifiers}
-                />
+          {this.state.showLibraryCreationSuccess && (
+            <CreateLibrarySuccess
+              libraryName={get(
+                find(libraries, { id: this.state.selectedLibraryId }),
+                'name'
               )}
-            </Fragment>
+              onButtonClick={this.handleContinueCreateEntity}
+            />
           )}
+          {get(libraries, 'length') > 0 &&
+            !this.state.showLibraryCreationSuccess && (
+              <Fragment>
+                {!this.state.configuringNewLibrary &&
+                  !this.state.selectingIdentifiers && (
+                    <Fragment>
+                      <DialogContentText
+                        classes={{
+                          root: styles.dialogHintText
+                        }}
+                      >
+                        Identify and help train face recognition engines to find
+                        this individual. You can view and add additional images
+                        in the Library application.
+                      </DialogContentText>
+                      <AddNewEntityForm
+                        isFetchingLibraries={isFetchingLibraries}
+                        libraries={libraries}
+                        initialValues={{
+                          libraryId: initialLibraryId,
+                          name: initialEntityName
+                        }}
+                        showCreateLibraryButton
+                        onCreateNewLibrary={this.handleNewLibraryClick}
+                        onSubmit={this.handleCreateNewEntity}
+                        onCancel={this.handleCancel}
+                        destroyOnUnmount={
+                          !this.state.configuringNewLibrary &&
+                          !this.state.selectingIdentifiers
+                        }
+                        onNameChange={this.handleNameChange}
+                      />
+                    </Fragment>
+                  )}
+                {this.state.selectingIdentifiers && (
+                  <IdentifierSelector
+                    identifiers={currentlyEditedFaces}
+                    classes={{ imageContainer: styles.imageContainer }}
+                    defaultSelectAll
+                    onConfirm={this.handleCreateIdentifiers}
+                    onCancel={this.handleBackClick}
+                    creatingIdentifiers={isCreatingIdentifiers}
+                  />
+                )}
+              </Fragment>
+            )}
           {this.state.configuringNewLibrary && (
             <LibraryForm
               initialValues={{ libraryTypeId: 'people' }}
