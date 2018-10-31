@@ -120,31 +120,37 @@ export default class IdentifierSelector extends Component {
             Select the best images of this person to be used to recognize them
             next time.
           </Grid>
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  color="primary"
-                  indeterminate={!!selectedIdentifiers.length}
-                  checked={!!selectedIdentifiers.length}
-                />
-              }
-              label={
-                selectedIdentifiers.length > 0
-                  ? `${selectedIdentifiers.length} Face${
-                      selectedIdentifiers.length > 1 ? 's' : ''
-                    } Selected`
-                  : 'Select Faces'
-              }
-              onChange={this.handleSelectAll}
-              classes={{ label: styles.selectAllCheckboxLabel }}
-            />
-          </Grid>
+          {identifiers.length > 1 && (
+            <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                    indeterminate={!!selectedIdentifiers.length}
+                    checked={!!selectedIdentifiers.length}
+                  />
+                }
+                label={
+                  selectedIdentifiers.length > 0
+                    ? `${selectedIdentifiers.length} Face${
+                        selectedIdentifiers.length > 1 ? 's' : ''
+                      } Selected`
+                    : 'Select Faces'
+                }
+                onChange={this.handleSelectAll}
+                classes={{ label: styles.selectAllCheckboxLabel }}
+              />
+            </Grid>
+          )}
           <Grid
             item
             container
             spacing={16}
-            classes={{ container: styles.identifierImages }}
+            classes={{
+              container: cx(styles.identifierImages, {
+                [styles.marginTop]: identifiers.length <= 1
+              })
+            }}
           >
             {identifiers.map(identifier => {
               return (

@@ -196,6 +196,10 @@
   .identifierImages {
     overflow-y: auto;
 
+    &.marginTop {
+      margin-top: 10px;
+    }
+
     .imageGridItem {
       width: 98px;
       height: 98px;
@@ -227,4 +231,26 @@
 
 .identifierSelectActions {
   padding-top: 25px;
+}
+
+.noLibraryImage {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.noLibraryText {
+  color: $dark-black;
+  font-size: 20px !important;
+  font-weight: 300 !important;
+  line-height: 24px !important;
+  text-align: center;
+}
+
+.noLibrarySubText {
+  color: $light-black;
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  line-height: 18px !important;
+  margin-top: 10px;
+  text-align: center;
 }
