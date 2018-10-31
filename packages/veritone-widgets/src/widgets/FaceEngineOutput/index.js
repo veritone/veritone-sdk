@@ -59,7 +59,6 @@ const saga = util.reactReduxSaga.saga;
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
-    fetchLibraries: faceEngineOutput.fetchLibraries,
     createEntity: faceEngineOutput.createEntity,
     addDetectedFace: faceEngineOutput.addDetectedFace,
     fetchEntitySearchResults: faceEngineOutput.fetchEntitySearchResults,
@@ -161,7 +160,6 @@ class FaceEngineOutputContainer extends Component {
     onSearchForEntities: func,
     onExpandClicked: func,
     outputNullState: node,
-    fetchLibraries: func,
     isFetchingEngineResults: bool,
     isFetchingEntities: bool,
     isFetchingLibraries: bool,

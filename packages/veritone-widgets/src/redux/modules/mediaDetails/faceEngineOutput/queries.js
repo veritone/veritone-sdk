@@ -41,6 +41,21 @@ export const getLibrariesByType = `
     }
   }`;
 
+export const getLibrariesByIdentifierType = `
+  query libraries($entityIdentifierTypeIds: [String!]) {
+    libraries(limit:500, entityIdentifierTypeIds: $entityIdentifierTypeIds) {
+      records {
+        id
+        name
+        libraryType {
+          id
+          label
+          entityTypeName
+        }
+      }
+    }
+  }`;
+
 export const createLibrary = `
   mutation CreateLibrary($input: CreateLibrary!) {
     createLibrary(input: $input) {

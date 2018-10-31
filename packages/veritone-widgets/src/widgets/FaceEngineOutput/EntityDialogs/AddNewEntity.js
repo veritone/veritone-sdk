@@ -82,9 +82,7 @@ export default class AddNewEntityDialog extends Component {
 
   componentDidMount() {
     if (!get(this.props, 'libraries.length')) {
-      this.props.fetchLibraries({
-        libraryType: 'people'
-      });
+      this.props.fetchLibraries(['face']);
     }
   }
 

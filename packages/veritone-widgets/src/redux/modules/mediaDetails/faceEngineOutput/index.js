@@ -809,7 +809,7 @@ export function getLibraries(state) {
   return Object.values(local(state).libraries);
 }
 
-export const fetchLibraries = ({ libraryType }) => async (
+export const fetchLibraries = (entityIdentifierTypeIds) => async (
   dispatch,
   getState
 ) => {
@@ -819,8 +819,8 @@ export const fetchLibraries = ({ libraryType }) => async (
       FETCH_LIBRARIES_SUCCESS,
       FETCH_LIBRARIES_FAILURE
     ],
-    query: gqlQuery.getLibrariesByType,
-    variables: { libraryType },
+    query: gqlQuery.getLibrariesByIdentifierType,
+    variables: { entityIdentifierTypeIds },
     dispatch,
     getState
   });
