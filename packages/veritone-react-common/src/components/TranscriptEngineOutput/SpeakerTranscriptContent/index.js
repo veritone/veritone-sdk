@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
-import { orderBy, reduce } from 'lodash';
+import { orderBy, reduce, isArray } from 'lodash';
 import { format } from 'date-fns';
 import classNames from 'classnames';
 
@@ -85,6 +85,40 @@ export default class SpeakerTranscriptContent extends Component {
 
   handleDataChanged = value => {
     this.props.onChange && this.props.onChange(value);
+  };
+
+  // totalTranscriptSegments will be mutated. This function picks off the first element
+  // and allocates it to a speakers' fragments
+  allocateSpeakerTranscripts = (totalTranscriptSegments, currentSpeaker, nextSpeaker) => {
+    const speakerStartTime = currentSpeaker.startTimeMs;
+    const speakerStopTime = currentSpeaker.stopTimeMs;
+    const fragments = [];
+    while (isArray(totalTranscriptSegments) && totalTranscriptSegments.length) {
+      const currentSnippet = totalTranscriptSegments[0];
+      // Allocate to current speaker if:
+      if (
+        (
+          // the snippet starts within speaker interval
+          speakerStartTime <= currentSnippet.startTimeMs &&
+          currentSnippet.startTimeMs < speakerStopTime
+        ) || (
+          // there are no more speakers then shove it into the current speaker
+          // OR
+          // the current snippet doesn't start in the next speaker interval
+          // so give it to the current speaker
+          !nextSpeaker || !(
+            nextSpeaker.startTimeMs <= currentSnippet.startTimeMs &&
+            currentSnippet.startTimeMs < nextSpeaker.stopTimeMs
+          )
+        )
+      ) {
+        fragments.push(totalTranscriptSegments.shift());
+      } else {
+        // There is a next speaker and the current snippet does belong to the next speaker
+        break;
+      }
+    }
+    return fragments;
   };
 
   parseData() {
@@ -294,14 +328,13 @@ export default class SpeakerTranscriptContent extends Component {
     const speakerSnippetSegments = speakerSeries.map(speakerSegment => {
       const speakerStartTime = speakerSegment.startTimeMs;
       const speakerStopTime = speakerSegment.stopTimeMs;
+      const fragments = this.allocateSpeakerTranscripts(
+        totalTranscriptSegmentData,
+        speakerSegment,
+        nextSpeaker,
+      );
 
-      const filteredSpeakerSegmentDataWrapper = {
-        fragments: totalTranscriptSegmentData
-          .filter(segment => 
-            speakerStartTime <= segment.startTimeMs &&
-            segment.startTimeMs < speakerStopTime
-          )
-      };
+      const filteredSpeakerSegmentDataWrapper = { fragments };
 
       const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
       const speakerTimingStart = format(speakerStartTime, timeFormat);
@@ -370,17 +403,17 @@ export default class SpeakerTranscriptContent extends Component {
       totalTranscriptSegmentData = totalTranscriptSegmentData.concat(segmentData.fragments);
     });
 
-    const speakerOverviewSegments = speakerSeries.map(speakerSegment => {
+    const speakerOverviewSegments = speakerSeries.map((speakerSegment, index) => {
+      const nextSpeaker = speakerSeries[index + 1];
       const speakerStartTime = speakerSegment.startTimeMs;
       const speakerStopTime = speakerSegment.stopTimeMs;
+      const fragments = this.allocateSpeakerTranscripts(
+        totalTranscriptSegmentData,
+        speakerSegment,
+        nextSpeaker,
+      );
 
-      const filteredSpeakerSegmentDataWrapper = {
-        fragments: totalTranscriptSegmentData
-          .filter(segment => 
-            speakerStartTime <= segment.startTimeMs &&
-            segment.startTimeMs < speakerStopTime
-          )
-      };
+      const filteredSpeakerSegmentDataWrapper = { fragments };
 
       const timeFormat = speakerStartTime >= 3600000 ? 'HH:mm:ss' : 'mm:ss';
       const speakerTimingStart = format(speakerStartTime, timeFormat);
