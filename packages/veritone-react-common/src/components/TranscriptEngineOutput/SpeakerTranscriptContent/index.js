@@ -101,16 +101,7 @@ export default class SpeakerTranscriptContent extends Component {
           // the snippet starts within speaker interval
           speakerStartTime <= currentSnippet.startTimeMs &&
           currentSnippet.startTimeMs < speakerStopTime
-        ) || (
-          // there are no more speakers then shove it into the current speaker
-          // OR
-          // the current snippet doesn't start in the next speaker interval
-          // so give it to the current speaker
-          !nextSpeaker || !(
-            nextSpeaker.startTimeMs <= currentSnippet.startTimeMs &&
-            currentSnippet.startTimeMs < nextSpeaker.stopTimeMs
-          )
-        )
+        ) || !nextSpeaker // there are no more speakers then shove it into the current speaker
       ) {
         fragments.push(totalTranscriptSegments.shift());
       } else {
@@ -325,13 +316,14 @@ export default class SpeakerTranscriptContent extends Component {
       totalTranscriptSegmentData = totalTranscriptSegmentData.concat(segmentData.fragments);
     });
 
-    const speakerSnippetSegments = speakerSeries.map(speakerSegment => {
+    const speakerSnippetSegments = speakerSeries.map((speakerSegment, index) => {
+      const nextSpeaker = speakerSeries[index + 1];
       const speakerStartTime = speakerSegment.startTimeMs;
       const speakerStopTime = speakerSegment.stopTimeMs;
       const fragments = this.allocateSpeakerTranscripts(
         totalTranscriptSegmentData,
         speakerSegment,
-        nextSpeaker,
+        nextSpeaker
       );
 
       const filteredSpeakerSegmentDataWrapper = { fragments };
@@ -410,7 +402,7 @@ export default class SpeakerTranscriptContent extends Component {
       const fragments = this.allocateSpeakerTranscripts(
         totalTranscriptSegmentData,
         speakerSegment,
-        nextSpeaker,
+        nextSpeaker
       );
 
       const filteredSpeakerSegmentDataWrapper = { fragments };
