@@ -60,6 +60,8 @@ export const REMOVE_SELECTED_FACE_OBJECTS = `vtn/${namespace}/REMOVE_SELECTED_FA
 
 export const SET_ACTIVE_TAB = `vtn/${namespace}/SET_ACTIVE_TAB`;
 
+export const SET_SELECTED_ENTITY_ID = `vtn/${namespace}/SET_SELECTED_ENTITY_ID`;
+
 import {
   get,
   map,
@@ -114,7 +116,8 @@ const defaultState = {
   addNewEntityDialogOpen: false,
   initialEntityName: '',
   addToExistingEntityDialogOpen: false,
-  currentlyEditedFaces: [] // selected unrecognized face objects from which to create a new 'entity'
+  currentlyEditedFaces: [], // selected unrecognized face objects from which to create a new 'entity'
+  selectedEntityId: null
 };
 
 const reducer = createReducer(defaultState, {
@@ -558,7 +561,12 @@ const reducer = createReducer(defaultState, {
   ) {
     return {
       ...state,
-      activeTab
+      selectedEntityId: null,
+      activeTab,
+      bulkEditActionItems: {
+        faceRecognition: [],
+        faceDetection: []
+      }
     };
   },
   [OPEN_ADD_ENTITY_DIALOG](
@@ -611,6 +619,23 @@ const reducer = createReducer(defaultState, {
       addToExistingEntityDialogOpen: false,
       currentlyEditedFaces: []
     };
+  },
+  [SET_SELECTED_ENTITY_ID](
+    state,
+    {
+      payload: { selectedEntityId }
+    }
+  ) {
+    return {
+      ...state,
+      selectedEntityId,
+      bulkEditActionItems: {
+        ...state.bulkEditActionItems,
+        [state.activeTab]: !selectedEntityId
+          ? []
+          : state.bulkEditActionItems[state.activeTab]
+      }
+    };
   }
 });
 export default reducer;
@@ -654,6 +679,15 @@ export const setActiveTab = activeTab => ({
   type: SET_ACTIVE_TAB,
   payload: {
     activeTab
+  }
+});
+
+export const getSelectedEntityId = state =>
+  get(local(state), 'selectedEntityId');
+export const setSelectedEntityId = selectedEntityId => ({
+  type: SET_SELECTED_ENTITY_ID,
+  payload: {
+    selectedEntityId
   }
 });
 

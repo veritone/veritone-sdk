@@ -131,12 +131,13 @@ class FaceEngineOutput extends Component {
     onSelectFaces: func,
     onUnselectFaces: func,
     activeTab: string,
-    setActiveTab: func
+    setActiveTab: func,
+    selectedEntityId: string,
+    onSelectEntity: func
   };
 
   state = {
     viewMode: 'summary',
-    selectedEntityId: null,
     lastCheckedFace: null
   };
 
@@ -157,9 +158,9 @@ class FaceEngineOutput extends Component {
 
   handleViewModeChange = evt => {
     this.setState({
-      viewMode: evt.target.value,
-      selectedEntityId: null
+      viewMode: evt.target.value
     });
+    this.props.onSelectEntity(null);
   };
 
   handleUserEditChange = evt => {
@@ -169,12 +170,6 @@ class FaceEngineOutput extends Component {
     }
     this.props.onToggleUserEditedOutput &&
       this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
-  };
-
-  handleSelectEntity = entityId => {
-    this.setState({
-      selectedEntityId: entityId
-    });
   };
 
   render() {
@@ -203,10 +198,12 @@ class FaceEngineOutput extends Component {
       onSelectFaces,
       onUnselectFaces,
       onRemoveFaces,
-      onAddToExistingEntity
+      onAddToExistingEntity,
+      selectedEntityId,
+      onSelectEntity
     } = this.props;
 
-    const { viewMode, selectedEntityId } = this.state;
+    const { viewMode } = this.state;
     const recognizedFaceCount = reduce(
       Object.values(this.props.recognizedFaces),
       (acc, faces) => {
@@ -373,7 +370,7 @@ class FaceEngineOutput extends Component {
                 onSelectFaces={onSelectFaces}
                 onUnselectFaces={onUnselectFaces}
                 entities={this.props.entities}
-                onSelectEntity={this.handleSelectEntity}
+                onSelectEntity={onSelectEntity}
                 selectedEntityId={selectedEntityId}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}

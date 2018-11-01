@@ -55,7 +55,8 @@ const saga = util.reactReduxSaga.saga;
     error: faceEngineOutput.getError(state),
     editModeEnabled: faceEngineOutput.getEditModeEnabled(state),
     bulkEditActionItems: faceEngineOutput.getBulkEditActionItems(state),
-    activeTab: faceEngineOutput.getActiveTab(state)
+    activeTab: faceEngineOutput.getActiveTab(state),
+    selectedEntityId: faceEngineOutput.getSelectedEntityId(state)
   }),
   {
     fetchEngineResults: engineResultsModule.fetchEngineResults,
@@ -79,7 +80,8 @@ const saga = util.reactReduxSaga.saga;
     closeAddEntityDialog: faceEngineOutput.closeAddEntityDialog,
     onAddToExistingEntity: faceEngineOutput.openAddToExistingEntityDialog,
     closeAddToExistingEntityDialog:
-      faceEngineOutput.closeAddToExistingEntityDialog
+      faceEngineOutput.closeAddToExistingEntityDialog,
+    setSelectedEntityId: faceEngineOutput.setSelectedEntityId
   },
   null,
   { withRef: true }
@@ -191,7 +193,9 @@ class FaceEngineOutputContainer extends Component {
     activeTab: string,
     onAddNewEntity: func,
     closeAddEntityDialog: func,
-    closeAddToExistingEntityDialog: func
+    closeAddToExistingEntityDialog: func,
+    selectedEntityId: string,
+    setSelectedEntityId: func
   };
 
   state = {
@@ -304,7 +308,8 @@ class FaceEngineOutputContainer extends Component {
       selectedEngineId,
       toggleEditMode,
       saveFaceEdits,
-      fetchEngineResults
+      fetchEngineResults,
+      setSelectedEntityId
     } = this.props;
     saveFaceEdits(tdo.id, selectedEngineId).then(res => {
       fetchEngineResults({
@@ -315,7 +320,9 @@ class FaceEngineOutputContainer extends Component {
           Date.parse(tdo.stopDateTime) - Date.parse(tdo.startDateTime),
         ignoreUserEdited: false
       });
+      setSelectedEntityId(null);
       toggleEditMode();
+
       return res;
     });
   };
@@ -383,7 +390,8 @@ class FaceEngineOutputContainer extends Component {
       'setActiveTab',
       'moreMenuItems',
       'onAddNewEntity',
-      'onAddToExistingEntity'
+      'onAddToExistingEntity',
+      'selectedEntityId'
     ]);
 
     if (this.props.isFetchingEngineResults || this.props.isFetchingEntities) {
@@ -420,6 +428,7 @@ class FaceEngineOutputContainer extends Component {
           onToggleUserEditedOutput={this.handleToggleEditedOutput}
           onSelectFaces={this.props.selectFaceObjects}
           onUnselectFaces={this.props.removeSelectedFaceObjects}
+          onSelectEntity={this.props.setSelectedEntityId}
         />
         {this.props.editModeEnabled && (
           <div className={styles.actionButtonsEditMode}>
