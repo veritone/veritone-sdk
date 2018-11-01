@@ -46,7 +46,10 @@ class EntityInformation extends Component {
     onOccurrenceClicked: func,
     editModeEnabled: bool,
     onRemoveFaceRecognition: func,
-    onFaceCheckboxClicked: func
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    onAddNewEntity: func,
+    onAddToExistingEntity: func
   };
 
   state = {
@@ -68,7 +71,10 @@ class EntityInformation extends Component {
       editModeEnabled,
       onRemoveFaceRecognition,
       selectedFaces,
-      onFaceCheckboxClicked
+      onSelectFaces,
+      onUnselectFaces,
+      onAddNewEntity,
+      onAddToExistingEntity
     } = this.props;
 
     return (
@@ -131,8 +137,11 @@ class EntityInformation extends Component {
                 onFaceOccurrenceClicked={this.props.onOccurrenceClicked}
                 hideEntityLabels
                 editMode={editModeEnabled}
-                onRemoveFace={onRemoveFaceRecognition}
-                onFaceCheckboxClicked={onFaceCheckboxClicked}
+                onRemoveFaces={onRemoveFaceRecognition}
+                onSelectFaces={onSelectFaces}
+                onUnselectFaces={onUnselectFaces}
+                onAddNewEntity={onAddNewEntity}
+                onAddToExistingEntity={onAddToExistingEntity}
               />
             </div>
           )}

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { arrayOf, shape, number, string, bool, func } from 'prop-types';
-import { pick, find } from 'lodash';
+import { pick, find, get, findIndex, isArray, isObject } from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import NoFacesFound from '../NoFacesFound';
 import FaceInfoBox from '../FaceInfoBox';
@@ -41,11 +41,17 @@ class FaceGrid extends Component {
     onAddNewEntity: func,
     onEditFaceDetection: func,
     onFaceOccurrenceClicked: func,
-    onRemoveFace: func,
+    onRemoveFaces: func,
     onSearchForEntities: func,
     isSearchingEntities: bool,
-    onFaceCheckboxClicked: func,
-    hideEntityLabels: bool
+    hideEntityLabels: bool,
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    onAddToExistingEntity: func
+  };
+
+  state = {
+    lastCheckedFace: null
   };
 
   // evt is mandatory here to avoid infinite call loop
@@ -59,58 +65,120 @@ class FaceGrid extends Component {
     this.props.onAddNewEntity([face], inputValue);
   };
 
+  handleSelectAll = evt => {
+    const { faces, onUnselectFaces, onSelectFaces } = this.props;
+    if (evt.target.checked) {
+      onSelectFaces(faces);
+    } else {
+      onUnselectFaces(faces);
+    }
+  };
+
+  handleAllToNewEntity = () => {
+    const { faces } = this.props;
+    this.props.onAddNewEntity(faces);
+  };
+
+  handleAddAllToExistingEntity = () => {
+    const { faces } = this.props;
+    this.props.onAddToExistingEntity(faces);
+  };
+
+  handleSingleFaceSelect = (face, evt) => {
+    const { faces, onUnselectFaces, onSelectFaces } = this.props;
+    const { lastCheckedFace } = this.state;
+    if (evt.target.checked) {
+      if (get(evt, 'nativeEvent.shiftKey') && lastCheckedFace) {
+        const selectedIndex = findIndex(faces, { guid: face.guid });
+        const lastIndex = findIndex(faces, { guid: lastCheckedFace.guid });
+        onSelectFaces(
+          faces.slice(
+            Math.min(selectedIndex, lastIndex),
+            Math.max(selectedIndex, lastIndex) + 1
+          )
+        );
+      } else {
+        onSelectFaces([face]);
+      }
+      this.setState({
+        lastCheckedFace: { ...face }
+      });
+    } else {
+      onUnselectFaces([face]);
+    }
+  };
+
+  handleRemoveFaces = faces => () => {
+    if (isArray(faces)) {
+      this.props.onRemoveFaces(faces);
+    } else if (isObject(faces)) {
+      this.props.onRemoveFaces([faces]);
+    }
+  };
+
   render() {
     const {
       faces,
       selectedFaces,
       hideEntityLabels,
-      onFaceCheckboxClicked,
       editMode,
       entitySearchResults,
       itemsRecognized
     } = this.props;
     const detectionBoxProps = pick(this.props, [
       'onEditFaceDetection',
-      'onRemoveFace',
       'onSearchForEntities',
       'isSearchingEntities'
     ]);
 
-    console.log(itemsRecognized);
     return (
       <Grid item container direction="column" className={styles.faceGrid}>
         {!faces.length ? (
-          <Grid item><NoFacesFound /></Grid>
+          <Grid item>
+            <NoFacesFound />
+          </Grid>
         ) : (
           <Fragment>
-            {editMode && <Grid item>
-              <MultiEditActionBar
-                selectedItemsCount={selectedFaces.length}
-                itemsRecognized={itemsRecognized}
-              />
-            </Grid>}
-            <Grid item xs container direction="row" className={styles.imageList}>
-              {
-                faces.map(face => {
-                  const selectedFace = find(selectedFaces, { guid: face.guid });
-                  return (
-                    <FaceInfoBox
-                      key={`face-${face.guid}-${face.startTimeMs}-${
-                        face.stopTimeMs
-                        }-${face.object.uri}`}
-                      isSelected={!!selectedFace}
-                      onCheckboxClicked={onFaceCheckboxClicked}
-                      face={face}
-                      enableEdit={editMode}
-                      addNewEntity={this.handleAddNewEntity}
-                      searchResults={entitySearchResults}
-                      onClick={this.handleFaceClick(face)}
-                      hideEntityLabel={hideEntityLabels}
-                      {...detectionBoxProps}
-                    />
-                  );
-                })
-              }
+            {editMode && (
+              <Grid item>
+                <MultiEditActionBar
+                  selectedItemsCount={selectedFaces.length}
+                  itemType="Face"
+                  itemsRecognized={itemsRecognized}
+                  onSelectAllChange={this.handleSelectAll}
+                  onAddToExistingEntityClick={this.handleAddAllToExistingEntity}
+                  onAddNewEntityClick={this.handleAllToNewEntity}
+                  onDeleteItemClick={this.handleRemoveFaces(selectedFaces)}
+                />
+              </Grid>
+            )}
+            <Grid
+              item
+              xs
+              container
+              direction="row"
+              className={styles.imageList}
+            >
+              {faces.map(face => {
+                const selectedFace = find(selectedFaces, { guid: face.guid });
+                return (
+                  <FaceInfoBox
+                    key={`face-${face.guid}-${face.startTimeMs}-${
+                      face.stopTimeMs
+                    }-${face.object.uri}`}
+                    isSelected={!!selectedFace}
+                    onCheckboxClicked={this.handleSingleFaceSelect}
+                    face={face}
+                    enableEdit={editMode}
+                    addNewEntity={this.handleAddNewEntity}
+                    searchResults={entitySearchResults}
+                    onClick={this.handleFaceClick(face)}
+                    hideEntityLabel={hideEntityLabels}
+                    onRemoveFace={this.handleRemoveFaces(face)}
+                    {...detectionBoxProps}
+                  />
+                );
+              })}
             </Grid>
           </Fragment>
         )}

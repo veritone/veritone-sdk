@@ -9,7 +9,7 @@ import {
   oneOfType,
   bool
 } from 'prop-types';
-import { find, isObject, get, reduce, pick, findIndex, isEqual } from 'lodash';
+import { find, isObject, get, reduce, pick, isEqual, findIndex } from 'lodash';
 import EntityInformation from './EntityInformation';
 import FacesByScene from './FacesByScene';
 import FacesByFrame from './FacesByFrame';
@@ -62,8 +62,11 @@ export default class FaceEntities extends Component {
     onSelectEntity: func,
     onFaceOccurrenceClicked: func,
     onRemoveFaceRecognition: func,
-    onFaceCheckboxClicked: func,
-    selectedEntityId: string
+    selectedEntityId: string,
+    onSelectFaces: func,
+    onUnselectFaces: func,
+    onAddNewEntity: func,
+    onAddToExistingEntity: func
   };
 
   state = {
@@ -83,9 +86,9 @@ export default class FaceEntities extends Component {
       nextProps.entities.length !== this.props.entities.length ||
       !isEqual(nextProps.faces, this.props.faces)
     ) {
-      this.setState(prevState => ({
+      this.setState({
         ...buildFaceDataPayload(nextProps.faces, nextProps.entities)
-      }));
+      });
     }
   }
 
@@ -106,8 +109,11 @@ export default class FaceEntities extends Component {
       editMode,
       onRemoveFaceRecognition,
       selectedFaces,
-      onFaceCheckboxClicked,
-      selectedEntityId
+      selectedEntityId,
+      onSelectFaces,
+      onUnselectFaces,
+      onAddNewEntity,
+      onAddToExistingEntity
     } = this.props;
     const { faceEntities } = this.state;
 
@@ -124,7 +130,10 @@ export default class FaceEntities extends Component {
           onBackClicked={this.removeSelectedEntity}
           onOccurrenceClicked={this.props.onFaceOccurrenceClicked}
           onRemoveFaceRecognition={onRemoveFaceRecognition}
-          onFaceCheckboxClicked={onFaceCheckboxClicked}
+          onSelectFaces={onSelectFaces}
+          onUnselectFaces={onUnselectFaces}
+          onAddNewEntity={onAddNewEntity}
+          onAddToExistingEntity={onAddToExistingEntity}
         />
       );
     }

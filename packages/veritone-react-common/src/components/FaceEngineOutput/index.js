@@ -19,7 +19,7 @@ import {
   node
 } from 'prop-types';
 import cx from 'classnames';
-import { find, reduce, get, isArray, isObject, findIndex } from 'lodash';
+import { find, reduce, get } from 'lodash';
 
 import EngineOutputHeader from '../EngineOutputHeader';
 import FaceGrid from './FaceGrid';
@@ -145,13 +145,6 @@ class FaceEngineOutput extends Component {
       return {
         viewMode: 'summary'
       };
-    } else if (!nextProps.editMode) {
-      return {
-        bulkEditActionItems: {
-          faceRecognition: [],
-          faceDetection: []
-        }
-      };
     }
     return null;
   }
@@ -176,93 +169,6 @@ class FaceEngineOutput extends Component {
     }
     this.props.onToggleUserEditedOutput &&
       this.props.onToggleUserEditedOutput(evt.target.value === 'userEdited');
-  };
-
-  handleSelectAllToggle = evt => {
-    const { selectedEntityId } = this.state;
-    const {
-      recognizedFaces,
-      activeTab,
-      unrecognizedFaces,
-      onUnselectFaces,
-      onSelectFaces
-    } = this.props;
-
-    if (activeTab === 'faceDetection' && unrecognizedFaces.length) {
-      if (!evt.target.checked) {
-        onUnselectFaces(unrecognizedFaces);
-        return;
-      }
-
-      onSelectFaces(unrecognizedFaces);
-    } else if (activeTab === 'faceRecognition') {
-      let selectedRecognizedFaces = [];
-      if (selectedEntityId) {
-        selectedRecognizedFaces = recognizedFaces[selectedEntityId];
-      } else {
-        selectedRecognizedFaces = reduce(
-          Object.values(recognizedFaces),
-          (acc, faces) => {
-            return acc.concat(faces);
-          },
-          []
-        );
-      }
-      if (selectedRecognizedFaces.length > 0) {
-        if (!evt.target.checked) {
-          onUnselectFaces(selectedRecognizedFaces);
-          return;
-        }
-
-        onSelectFaces(selectedRecognizedFaces);
-      }
-    }
-  };
-
-  handleSelectFace = (face, evt) => {
-    const { lastCheckedFace, selectedEntityId } = this.state;
-    const {
-      activeTab,
-      unrecognizedFaces,
-      recognizedFaces,
-      onSelectFaces,
-      onUnselectFaces
-    } = this.props;
-    if (evt.target.checked) {
-      if (get(evt, 'nativeEvent.shiftKey') && lastCheckedFace) {
-        let faces;
-        if (activeTab === 'faceDetection') {
-          faces = unrecognizedFaces;
-        } else if (activeTab === 'faceRecognition') {
-          if (selectedEntityId) {
-            faces = recognizedFaces[selectedEntityId];
-          }
-        }
-        const selectedIndex = findIndex(faces, { guid: face.guid });
-        const lastIndex = findIndex(faces, { guid: lastCheckedFace.guid });
-        onSelectFaces(
-          faces.slice(
-            Math.min(selectedIndex, lastIndex),
-            Math.max(selectedIndex, lastIndex) + 1
-          )
-        );
-      } else {
-        onSelectFaces([face]);
-      }
-      this.setState({
-        lastCheckedFace: { ...face }
-      });
-    } else {
-      onUnselectFaces([face]);
-    }
-  };
-
-  handleRemoveFaces = faces => () => {
-    if (isArray(faces)) {
-      this.props.onRemoveFaces(faces);
-    } else if (isObject(faces)) {
-      this.props.onRemoveFaces([faces]);
-    }
   };
 
   handleSelectEntity = entityId => {
@@ -293,7 +199,11 @@ class FaceEngineOutput extends Component {
       disableEditButton,
       unrecognizedFaces,
       bulkEditActionItems,
-      activeTab
+      activeTab,
+      onSelectFaces,
+      onUnselectFaces,
+      onRemoveFaces,
+      onAddToExistingEntity
     } = this.props;
 
     const { viewMode, selectedEntityId } = this.state;
@@ -448,95 +358,6 @@ class FaceEngineOutput extends Component {
         </EngineOutputHeader>
         {!editMode && faceTabs}
         {outputNullState}
-        {/*editMode && (
-          <div className={styles.multiEditActionBox}>
-            <FormControlLabel
-              checked={get(bulkEditActionItems, [activeTab, 'length']) > 0}
-              control={
-                <Checkbox
-                  value="selectAll"
-                  color="primary"
-                  indeterminate={
-                    !!get(bulkEditActionItems, [activeTab, 'length'])
-                  }
-                  classes={{ root: styles.selectAllCheckBox }}
-                />
-              }
-              label={
-                get(bulkEditActionItems, [activeTab, 'length']) > 0
-                  ? `${get(bulkEditActionItems, [activeTab, 'length'])} ${
-                      activeTab === 'faceDetection' ? 'Unknown' : 'Known'
-                    } Face${
-                      get(bulkEditActionItems, [activeTab, 'length']) > 1
-                        ? 's'
-                        : ''
-                    } Selected`
-                  : 'Select All'
-              }
-              onChange={this.handleSelectAllToggle}
-              classes={{
-                root: styles.selectAllFormControl,
-                label: styles.selectAllLabel
-              }}
-            />
-            {get(bulkEditActionItems, [activeTab, 'length']) > 0 && (
-              <div className={styles.bulkFaceEditActions}>
-                <Tooltip
-                  title="Add to an Existing Entity"
-                  placement="bottom-start"
-                >
-                  <IconButton
-                    classes={{ root: styles.bulkFaceEditActionButton }}
-                    // eslint-disable-next-line
-                    onClick={() => {
-                      onAddToExistingEntity(
-                        get(bulkEditActionItems, [activeTab])
-                      );
-                    }}
-                  >
-                    <PizzaIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Create New Entity" placement="bottom-start">
-                  <IconButton
-                    classes={{ root: styles.bulkFaceEditActionButton }}
-                    // eslint-disable-next-line
-                    onClick={() => {
-                      onAddNewEntity(get(bulkEditActionItems, [activeTab]));
-                    }}
-                  >
-                    <CreateIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  title={
-                    activeTab === 'faceRecognition'
-                      ? `Remove Entit${
-                          get(bulkEditActionItems, [activeTab, 'length']) > 1
-                            ? 'ies'
-                            : 'y'
-                        }`
-                      : `Delete Face Detection${
-                          get(bulkEditActionItems, [activeTab, 'length']) > 1
-                            ? 's'
-                            : ''
-                        }`
-                  }
-                  placement="bottom-start"
-                >
-                  <IconButton
-                    classes={{ root: styles.bulkFaceEditActionButton }}
-                    onClick={this.handleRemoveFaces(
-                      get(bulkEditActionItems, [activeTab])
-                    )}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            )}
-          </div>
-        )*/}
         {!outputNullState &&
           activeTab === 'faceRecognition' && (
             <div
@@ -549,13 +370,16 @@ class FaceEngineOutput extends Component {
                 viewMode={viewMode}
                 faces={this.props.recognizedFaces}
                 selectedFaces={get(bulkEditActionItems, activeTab, [])}
+                onSelectFaces={onSelectFaces}
+                onUnselectFaces={onUnselectFaces}
                 entities={this.props.entities}
                 onSelectEntity={this.handleSelectEntity}
                 selectedEntityId={selectedEntityId}
                 currentMediaPlayerTime={currentMediaPlayerTime}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-                onRemoveFaceRecognition={this.handleRemoveFaces}
-                onFaceCheckboxClicked={this.handleSelectFace}
+                onRemoveFaceRecognition={onRemoveFaces}
+                onAddNewEntity={onAddNewEntity}
+                onAddToExistingEntity={onAddToExistingEntity}
               />
             </div>
           )}
@@ -574,11 +398,13 @@ class FaceEngineOutput extends Component {
                 onAddNewEntity={onAddNewEntity}
                 entitySearchResults={entitySearchResults}
                 onFaceOccurrenceClicked={onFaceOccurrenceClicked}
-                onRemoveFace={this.handleRemoveFaces}
+                onRemoveFaces={onRemoveFaces}
                 onEditFaceDetection={onEditFaceDetection}
                 onSearchForEntities={onSearchForEntities}
                 isSearchingEntities={this.props.isSearchingEntities}
-                onFaceCheckboxClicked={this.handleSelectFace}
+                onSelectFaces={onSelectFaces}
+                onUnselectFaces={onUnselectFaces}
+                onAddToExistingEntity={onAddToExistingEntity}
               />
             </div>
           )}

@@ -186,10 +186,7 @@ class FaceInfoBox extends Component {
             )}
           {enableEdit &&
             this.state.hovered && (
-              <div
-                className={styles.imageButtonOverlay}
-                onClick={onRemoveFace(face)}
-              >
+              <div className={styles.imageButtonOverlay} onClick={onRemoveFace}>
                 <div className={styles.faceActionIcon}>
                   <i className="icon-trashcan" />
                 </div>
