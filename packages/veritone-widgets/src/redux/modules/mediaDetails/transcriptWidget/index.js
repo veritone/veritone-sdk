@@ -515,7 +515,7 @@ const runBulkEditJob = (
           originalTranscriptAssetId: "${originalTranscriptAssetId}",
           temporaryBulkEditAssetId: "${bulkTextAssetId}",
           originalEngineId: "${engineId}",
-          saveTtmlToVtnStandard: true
+          saveToVtnStandard: true
         }
       },
       {
