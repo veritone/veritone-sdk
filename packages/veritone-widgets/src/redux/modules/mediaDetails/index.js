@@ -51,6 +51,8 @@ export const CREATE_QUICK_EXPORT = `${namespace}_CREATE_QUICK_EXPORT`;
 export const CREATE_QUICK_EXPORT_SUCCESS = `${namespace}_CREATE_QUICK_EXPORT_SUCCESS`;
 export const CREATE_QUICK_EXPORT_FAILURE = `${namespace}_CREATE_QUICK_EXPORT_FAILURE`;
 export const CANCEL_EDIT = `${namespace}_CANCEL_EDIT`;
+export const INSERT_INTO_INDEX_FAILURE = `${namespace}_INSERT_INTO_INDEX_FAILURE`;
+export const EMIT_ENTITY_UPDATED_EVENT_FAILURE = `${namespace}_EMIT_ENTITY_UPDATED_EVENT_FAILURE`;
 
 const defaultMDPState = {
   engineCategories: [],
@@ -710,7 +712,31 @@ export default createReducer(defaultState, {
     return {
       ...state
     };
-  }
+  },
+  [INSERT_INTO_INDEX_FAILURE](
+    state,
+    {
+      meta: { error }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      error: errorMessage || 'unknown error'
+    };
+  },
+  [EMIT_ENTITY_UPDATED_EVENT_FAILURE](
+    state,
+    {
+      meta: { error }
+    }
+  ) {
+    const errorMessage = get(error, 'message', error);
+    return {
+      ...state,
+      error: errorMessage || 'unknown error'
+    };
+  },
 });
 
 const local = state => state[namespace];
@@ -953,6 +979,16 @@ export const restoreOriginalEngineResultsSuccess = widgetId => ({
 export const cancelEdit = (widgetId, selectedEngineId) => ({
   type: CANCEL_EDIT,
   meta: { widgetId, selectedEngineId }
+});
+
+export const insertIntoIndexFailure = error => ({
+  type: INSERT_INTO_INDEX_FAILURE,
+  meta: { error }
+});
+
+export const emitEntityUpdatedEventFailure = error => ({
+  type: EMIT_ENTITY_UPDATED_EVENT_FAILURE,
+  meta: { error }
 });
 
 export const createQuickExport = (
