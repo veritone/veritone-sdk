@@ -679,8 +679,8 @@ export const saveTranscriptEdit = (tdoId, selectedEngineId) => {
       }
 
       let originalTranscriptAssetId;
-      // use vlf instead of the primary transcript asset if it exists for the current engine
-      // if not found 'transcript' ttml asset - try to find original 'vtn-standard' asset for selected transcript engine
+      // order of original transcript preference:
+      // vtn-standard => v-vlf => primary transcript
       const assets = get(getPrimaryTranscriptAssetResponse,
           'temporalDataObject.assets.records', []);
 
